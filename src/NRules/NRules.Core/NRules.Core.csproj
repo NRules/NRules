@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D60C7588-09B6-47DA-9459-4C88363E3EAE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NRules.Core</RootNamespace>
+    <AssemblyName>NRules.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActionContext.cs" />
+    <Compile Include="Rete\Activation.cs" />
+    <Compile Include="Rete\AlphaMemoryAdapter.cs" />
+    <Compile Include="Rete\EventAggregator.cs" />
+    <Compile Include="Rete\IEventSink.cs" />
+    <Compile Include="Rete\IEventSource.cs" />
+    <Compile Include="Rete\IObjectMemory.cs" />
+    <Compile Include="Rete\IObjectSource.cs" />
+    <Compile Include="Rete\ITupleSource.cs" />
+    <Compile Include="Rete\BetaAdapter.cs" />
+    <Compile Include="Rete\JoinConditionAdaptor.cs" />
+    <Compile Include="ICondition.cs" />
+    <Compile Include="IJoinCondition.cs" />
+    <Compile Include="IRuleAction.cs" />
+    <Compile Include="Rules\RuleAction.cs" />
+    <Compile Include="Agenda.cs" />
+    <Compile Include="Rules\JoinCondition.cs" />
+    <Compile Include="Rete\AlphaMemory.cs" />
+    <Compile Include="Rete\BetaMemory.cs" />
+    <Compile Include="Rules\Condition.cs" />
+    <Compile Include="Rete\Fact.cs" />
+    <Compile Include="Rete\IObjectSink.cs" />
+    <Compile Include="Rete\ITupleSink.cs" />
+    <Compile Include="Rete\ITupleMemory.cs" />
+    <Compile Include="Rete\JoinNode.cs" />
+    <Compile Include="Rete\Network.cs" />
+    <Compile Include="Rete\ReteBuilder.cs" />
+    <Compile Include="Rete\RootNode.cs" />
+    <Compile Include="Rete\AlphaNode.cs" />
+    <Compile Include="Rete\ActivationEventArgs.cs" />
+    <Compile Include="Rete\RuleNode.cs" />
+    <Compile Include="Rete\SelectionNode.cs" />
+    <Compile Include="Rete\Tuple.cs" />
+    <Compile Include="Rete\TypeNode.cs" />
+    <Compile Include="Rules\Rule.cs" />
+    <Compile Include="RuleDefinition.cs" />
+    <Compile Include="RuleSet.cs" />
+    <Compile Include="RuleRepository.cs" />
+    <Compile Include="Rules\Declaration.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NRules\NRules.csproj">
+      <Project>{F87E8784-7496-478C-B9A1-8B7504D9964B}</Project>
+      <Name>NRules</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Config\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
