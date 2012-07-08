@@ -36,6 +36,11 @@ namespace NRules.Core.Tests
                 .Do(ctx => Results += _a)
                 .Do(ctx => Results += _b);
         }
+
+        public void InjectEventHandler(EventHandler eventHandler)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class TestFact1

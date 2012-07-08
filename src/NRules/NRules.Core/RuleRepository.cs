@@ -10,7 +10,7 @@ namespace NRules.Core
     {
         private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
 
-        public void AddRuleSet(Assembly assembly)
+        public void AddRuleSet(Assembly assembly, EventHandler eventHandler = null)
         {
             IEnumerable<Type> ruleTypes = assembly.GetTypes().Where(IsRule);
 
@@ -19,7 +19,7 @@ namespace NRules.Core
                                                           "any concrete IRule implementations!",
                                                           assembly.FullName));
 
-            var ruleSet = new RuleSet(ruleTypes);
+            var ruleSet = new RuleSet(ruleTypes, eventHandler);
             _ruleSets.Add(ruleSet);
         }
 
@@ -32,13 +32,24 @@ namespace NRules.Core
             {
                 foreach (Type ruleType in ruleSet.RuleTypes)
                 {
-                    IRule ruleInstance = BuildRule(ruleType);
-                    var rule = new Rule(ruleInstance.GetType().FullName);
-                    var definition = new RuleDefinition(rule);
-                    ruleInstance.Define(definition);
+                    Rule rule = InstantiateRule(ruleType, ruleSet.EventHandler);
                     yield return rule;
                 }
             }
+        }
+
+        private static Rule InstantiateRule(Type ruleType, EventHandler eventHandler)
+        {
+            IRule ruleInstance = BuildRule(ruleType);
+
+            if(eventHandler != null)
+                ruleInstance.InjectEventHandler(eventHandler);
+
+            var rule = new Rule(ruleInstance.GetType().FullName);
+            var definition = new RuleDefinition(rule);
+
+            ruleInstance.Define(definition);
+            return rule;
         }
 
         private static bool IsRule(Type type)

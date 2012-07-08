@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules", "NRules\NRules.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Core.Tests", "NRules.Core.Tests\NRules.Core.Tests.csproj", "{B13BAC49-AF13-47E2-95F0-0C2CAF9A0257}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Core.IntegrationTests", "NRules.Core.IntegrationTests\NRules.Core.IntegrationTests.csproj", "{08DB9D89-412B-405A-813A-E19261039881}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,16 @@ Global
 		{B13BAC49-AF13-47E2-95F0-0C2CAF9A0257}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B13BAC49-AF13-47E2-95F0-0C2CAF9A0257}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B13BAC49-AF13-47E2-95F0-0C2CAF9A0257}.Release|x86.ActiveCfg = Release|Any CPU
+		{08DB9D89-412B-405A-813A-E19261039881}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08DB9D89-412B-405A-813A-E19261039881}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08DB9D89-412B-405A-813A-E19261039881}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{08DB9D89-412B-405A-813A-E19261039881}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{08DB9D89-412B-405A-813A-E19261039881}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{08DB9D89-412B-405A-813A-E19261039881}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08DB9D89-412B-405A-813A-E19261039881}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08DB9D89-412B-405A-813A-E19261039881}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{08DB9D89-412B-405A-813A-E19261039881}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{08DB9D89-412B-405A-813A-E19261039881}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
