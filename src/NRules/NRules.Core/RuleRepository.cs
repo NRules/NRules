@@ -12,17 +12,25 @@ namespace NRules.Core
 
         public void AddRuleSet(Assembly assembly)
         {
-            var ruleTypes = assembly.GetTypes()
-                .Where(IsRule);
+            IEnumerable<Type> ruleTypes = assembly.GetTypes().Where(IsRule);
+
+            if(!ruleTypes.Any())
+                throw new ArgumentException(string.Format("The supplied assembly ({0}) does not contain " + 
+                                                          "any concrete IRule implementations!",
+                                                          assembly.FullName));
+
             var ruleSet = new RuleSet(ruleTypes);
             _ruleSets.Add(ruleSet);
         }
 
         internal IEnumerable<Rule> Compile()
         {
-            foreach (var ruleSet in _ruleSets)
+            if(!_ruleSets.Any())
+                throw new ArgumentException("Rules cannot be compiled! No valid rulesets have been added to the rule repository.");
+
+            foreach (RuleSet ruleSet in _ruleSets)
             {
-                foreach (var ruleType in ruleSet.RuleTypes)
+                foreach (Type ruleType in ruleSet.RuleTypes)
                 {
                     IRule ruleInstance = BuildRule(ruleType);
                     var rule = new Rule(ruleInstance.GetType().FullName);
@@ -33,7 +41,7 @@ namespace NRules.Core
             }
         }
 
-        private bool IsRule(Type type)
+        private static bool IsRule(Type type)
         {
             if (IsConcrete(type) &&
                 typeof (IRule).IsAssignableFrom(type)) return true;
@@ -41,7 +49,7 @@ namespace NRules.Core
             return false;
         }
 
-        private bool IsConcrete(Type type)
+        private static bool IsConcrete(Type type)
         {
             if (type.IsAbstract) return false;
             if (type.IsInterface) return false;
@@ -50,7 +58,7 @@ namespace NRules.Core
             return true;
         }
 
-        private IRule BuildRule(Type type)
+        private static IRule BuildRule(Type type)
         {
             var rule = (IRule) Activator.CreateInstance(type);
             return rule;

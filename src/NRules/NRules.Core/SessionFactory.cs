@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NRules.Core.Rete;
 using NRules.Core.Rules;
 
 namespace NRules.Core
@@ -15,7 +16,9 @@ namespace NRules.Core
 
         public ISession CreateSession()
         {
-            var session = new Session(_rules);
+            //todo: use di container
+            var session = new Session(new ReteBuilder(), new Agenda());
+            session.SetRules(_rules);
             return session;
         }
     }

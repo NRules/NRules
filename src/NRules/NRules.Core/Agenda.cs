@@ -4,7 +4,14 @@ using NRules.Core.Rules;
 
 namespace NRules.Core
 {
-    internal class Agenda
+    internal interface IAgenda
+    {
+        Queue<Activation> ActivationQueue { get; }
+        void RegisterRule(Rule rule);
+        void Subscribe(IEventSource eventSource);
+    }
+
+    internal class Agenda : IAgenda
     {
         public Queue<Activation> ActivationQueue { get; private set; }
         private readonly Dictionary<string, Rule> _ruleMap = new Dictionary<string, Rule>();
@@ -19,7 +26,7 @@ namespace NRules.Core
             _ruleMap.Add(rule.Handle, rule);
         }
 
-        internal void Subscribe(IEventSource eventSource)
+        public void Subscribe(IEventSource eventSource)
         {
             eventSource.RuleActivatedEvent += OnRuleActivated;
         }

@@ -5,7 +5,13 @@ using NRules.Core.Rules;
 
 namespace NRules.Core.Rete
 {
-    internal class ReteBuilder
+    internal interface IReteBuilder
+    {
+        void AddRule(Rule rule);
+        INetwork GetNetwork();
+    }
+
+    internal class ReteBuilder : IReteBuilder
     {
         private readonly RootNode _root = new RootNode();
         private readonly EventAggregator _aggregator = new EventAggregator();
@@ -83,9 +89,9 @@ namespace NRules.Core.Rete
             left.Attach(ruleNode);
         }
 
-        public Network GetNetwork()
+        public INetwork GetNetwork()
         {
-            var network = new Network(_root, _aggregator);
+            INetwork network = new Network(_root, _aggregator);
             return network;
         }
     }

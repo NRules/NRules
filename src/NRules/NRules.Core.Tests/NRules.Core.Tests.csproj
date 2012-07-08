@@ -49,6 +49,10 @@
     <Compile Include="Rete\FactTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rete\TypeNodeTests.cs" />
+    <Compile Include="RuleRepositoryTest.cs" />
+    <Compile Include="RuleSetTest.cs" />
+    <Compile Include="SessionTest.cs" />
+    <Compile Include="TestRules.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NRules.Core\NRules.Core.csproj">

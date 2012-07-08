@@ -1,6 +1,14 @@
 ﻿namespace NRules.Core.Rete
 {
-    internal class Network : IObjectSink
+    internal interface INetwork
+    {
+        IEventSource EventSource { get; }
+        void PropagateAssert(Fact fact);
+        void PropagateUpdate(Fact fact);
+        void PropagateRetract(Fact fact);
+    }
+
+    internal class Network : IObjectSink, INetwork
     {
         private readonly RootNode _root;
 
