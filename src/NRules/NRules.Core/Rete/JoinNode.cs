@@ -40,6 +40,16 @@ namespace NRules.Core.Rete
             }
         }
 
+        public void PropagateUpdate(Fact fact)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void PropagateRetract(Fact fact)
+        {
+            throw new System.NotImplementedException();
+        }
+
         private void PropagateMatchingTuple(Tuple tuple, Fact rightFact)
         {
             if (!MatchesConditions(tuple, rightFact)) return;

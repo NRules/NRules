@@ -12,5 +12,7 @@ namespace NRules.Core.Rete
         public IList<AlphaNode> ChildNodes { get; private set; }
 
         public abstract void PropagateAssert(Fact fact);
+        public abstract void PropagateUpdate(Fact fact);
+        public abstract void PropagateRetract(Fact fact);
     }
 }

@@ -16,5 +16,15 @@
         {
             _root.PropagateAssert(fact);
         }
+
+        public void PropagateUpdate(Fact fact)
+        {
+            _root.PropagateUpdate(fact);
+        }
+
+        public void PropagateRetract(Fact fact)
+        {
+            _root.PropagateRetract(fact);
+        }
     }
 }

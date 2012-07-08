@@ -19,5 +19,15 @@
             var tuple = new Tuple(fact);
             _sink.PropagateAssert(tuple);
         }
+
+        public void PropagateUpdate(Fact fact)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void PropagateRetract(Fact fact)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

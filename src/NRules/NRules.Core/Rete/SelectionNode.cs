@@ -24,5 +24,15 @@
                 }
             }
         }
+
+        public override void PropagateUpdate(Fact fact)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void PropagateRetract(Fact fact)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

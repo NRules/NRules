@@ -13,5 +13,15 @@
         {
             _memory.PropagateAssert(fact);
         }
+
+        public override void PropagateUpdate(Fact fact)
+        {
+            _memory.PropagateUpdate(fact);
+        }
+
+        public override void PropagateRetract(Fact fact)
+        {
+            _memory.PropagateRetract(fact);
+        }
     }
 }

@@ -21,6 +21,16 @@ namespace NRules.Core.Rete
             _sink.PropagateAssert(fact);
         }
 
+        public void PropagateUpdate(Fact fact)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PropagateRetract(Fact fact)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<Fact> GetFacts()
         {
             return _facts;
