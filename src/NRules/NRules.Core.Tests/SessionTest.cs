@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NRules.Core.Rete;
 using NRules.Core.Rules;
 using NUnit.Framework;
@@ -9,17 +10,16 @@ namespace NRules.Core.Tests
     [TestFixture]
     public class SessionTest
     {
-        private IReteBuilder _reteBuilder;
         private IAgenda _agenda;
         private INetwork _network;
         private IEventSource _eventSource;
 
         private List<Rule> _rules;
+        private Dictionary<string, Rule> _ruleMap;
 
         [SetUp]
         public void Setup()
         {
-            _reteBuilder = MockRepository.GenerateStub<IReteBuilder>();
             _agenda = MockRepository.GenerateStub<IAgenda>();
             _network = MockRepository.GenerateStub<INetwork>();
             _eventSource = MockRepository.GenerateStub<IEventSource>();
@@ -27,58 +27,27 @@ namespace NRules.Core.Tests
             _rules = new List<Rule> { new Rule("rule1"), 
                                       new Rule("rule2"), 
                                       new Rule("rule3") };
-            
+            _ruleMap = _rules.ToDictionary(x => x.Handle);
         }
 
         internal Session CreateTarget()
         {
-            return new Session(_reteBuilder, _agenda);
+            return new Session(_network, _agenda, _ruleMap);
         }
 
         [Test]
-        public void Constructor_Always_DefaultsToNotConfigured()
+        public void Insert_Always_PropagatesAssert()
         {
             // Arrange
+            _network = MockRepository.GenerateMock<INetwork>();
+            var myFact = new object();
             var target = CreateTarget();
 
             // Act
-            bool configured = target.IsConfigured;
+            target.Insert(myFact);
 
             // Assert
-            Assert.False(configured);
-        }
-
-        [Test]
-        public void SetRules_ValidRules_AreAllAddedToReteBuilder()
-        {
-            // Arrange
-            _reteBuilder = MockRepository.GenerateMock<IReteBuilder>();
-            _reteBuilder.Stub(x => x.GetNetwork()).Return(_network);
-            var target = CreateTarget();
-
-            // Act
-            target.SetRules(_rules);
-
-            // Assert
-            _reteBuilder.AssertWasCalled(x => x.AddRule(_rules[0]));
-            _reteBuilder.AssertWasCalled(x => x.AddRule(_rules[1]));
-            _reteBuilder.AssertWasCalled(x => x.AddRule(_rules[2]));
-        }
-
-        [Test]
-        public void SetRules_ValidRules_AgendaSubscribesToEventSource()
-        {
-            // Arrange
-            _agenda = MockRepository.GenerateMock<IAgenda>();
-            _network.Stub(x => x.EventSource).Return(_eventSource);
-            _reteBuilder.Stub(x => x.GetNetwork()).Return(_network);
-            var target = CreateTarget();
-
-            // Act
-            target.SetRules(_rules);
-
-            // Assert
-            _agenda.AssertWasCalled(x => x.Subscribe(_eventSource));
+            _network.AssertWasCalled(x => x.PropagateAssert(new Fact(myFact)));
         }
     }
 }

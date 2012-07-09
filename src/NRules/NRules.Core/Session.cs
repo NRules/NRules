@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NRules.Core.Rete;
 using NRules.Core.Rules;
@@ -15,50 +13,25 @@ namespace NRules.Core
 
     internal class Session : ISession
     {
-        private readonly IReteBuilder _reteBuilder;
         private readonly IAgenda _agenda;
-        private INetwork _network;
-        private IDictionary<string, Rule> _ruleMap;
+        private readonly INetwork _network;
+        private readonly IDictionary<string, Rule> _ruleMap;
 
-        //todo: possibly move session setup to factory.
-        public bool IsConfigured { get; private set; }
-
-        public Session(IReteBuilder reteBuilder, IAgenda agenda)
+        public Session(INetwork network, IAgenda agenda, Dictionary<string, Rule> ruleMap)
         {
-            _reteBuilder = reteBuilder;
+            _network = network;
             _agenda = agenda;
-            IsConfigured = false;
+            _ruleMap = ruleMap;
         }
-
-        public void SetRules(IEnumerable<Rule> rules)
-        {
-            if(IsConfigured)
-                throw new ApplicationException("This session has already been configured with a set of " + 
-                                               "rules and cannot be configured with another.");
-
-            IsConfigured = true;
-            _ruleMap = rules.ToDictionary(r => r.Handle);
-
-            foreach (Rule rule in _ruleMap.Values)
-            {
-                _reteBuilder.AddRule(rule);
-            }
-
-            _network = _reteBuilder.GetNetwork();
-            _agenda.Subscribe(_network.EventSource);
-        }
-
+       
         public void Insert(object fact)
         {
-            AssertIsConfigured();
             var internalFact = new Fact(fact);
             _network.PropagateAssert(internalFact);
         }
 
         public void Fire()
         {
-            AssertIsConfigured();
-
             while (_agenda.ActivationQueue.Count > 0)
             {
                 Activation activation = _agenda.ActivationQueue.Dequeue();
@@ -71,13 +44,6 @@ namespace NRules.Core
                     action.Invoke(context);
                 }
             }
-        }
-
-        private void AssertIsConfigured()
-        {
-            if (!IsConfigured)
-                throw new ApplicationException("This session has not been configured with a set of " +
-                                               "rules and must be before this action can be performed.");
         }
     }
 }
