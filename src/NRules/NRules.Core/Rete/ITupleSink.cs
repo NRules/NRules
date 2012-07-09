@@ -3,5 +3,6 @@
     internal interface ITupleSink
     {
         void PropagateAssert(Tuple tuple);
+        void PropagateRetract(Fact fact);
     }
 }

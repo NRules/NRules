@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using NRules.Core.Rete;
 using NRules.Core.Rules;

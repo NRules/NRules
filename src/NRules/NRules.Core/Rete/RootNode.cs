@@ -17,7 +17,10 @@
 
         public override void PropagateRetract(Fact fact)
         {
-            throw new System.NotImplementedException();
+            foreach (TypeNode typeNode in ChildNodes)
+            {
+                typeNode.PropagateRetract(fact);
+            }
         }
     }
 }

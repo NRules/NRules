@@ -32,7 +32,13 @@
 
         public override void PropagateRetract(Fact fact)
         {
-            throw new System.NotImplementedException();
+            if (IsSatisfiedBy(fact))
+            {
+                foreach (var childNode in ChildNodes)
+                {
+                    childNode.PropagateRetract(fact);
+                }
+            }
         }
     }
 }

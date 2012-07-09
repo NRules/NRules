@@ -47,7 +47,7 @@ namespace NRules.Core.Rete
 
         public void PropagateRetract(Fact fact)
         {
-            throw new System.NotImplementedException();
+            _sink.PropagateRetract(fact);
         }
 
         private void PropagateMatchingTuple(Tuple tuple, Fact rightFact)

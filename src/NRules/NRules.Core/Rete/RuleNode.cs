@@ -16,5 +16,10 @@
             var activation = new Activation(_ruleHandle, tuple);
             _eventSink.Activate(activation);
         }
+
+        public void PropagateRetract(Fact fact)
+        {
+            //todo: deactivate
+        }
     }
 }

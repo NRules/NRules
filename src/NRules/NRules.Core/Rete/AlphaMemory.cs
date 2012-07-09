@@ -28,7 +28,8 @@ namespace NRules.Core.Rete
 
         public void PropagateRetract(Fact fact)
         {
-            throw new NotImplementedException();
+            _facts.Remove(fact);
+            _sink.PropagateRetract(fact);
         }
 
         public IEnumerable<Fact> GetFacts()

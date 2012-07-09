@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace NRules.Core.Rete
 {
@@ -16,6 +17,16 @@ namespace NRules.Core.Rete
         {
             _tuples.Add(tuple);
             _sink.PropagateAssert(tuple);
+        }
+
+        public void PropagateRetract(Fact fact)
+        {
+            var matchingTuples = _tuples.Where(t => t.Elements.Contains(fact)).ToArray();
+            foreach (var matchingTuple in matchingTuples)
+            {
+                _tuples.Remove(matchingTuple);
+            }
+            _sink.PropagateRetract(fact);
         }
 
         public IEnumerable<Tuple> GetTuples()
