@@ -6,11 +6,28 @@ using NRules.Core.Rules;
 
 namespace NRules.Core
 {
-    public class RuleRepository
+    public interface IRuleRepository
+    {
+        void AddRuleSet(Assembly assembly);
+    }
+
+    public class RuleRepository : IRuleRepository
     {
         private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
 
-        public void AddRuleSet(Assembly assembly, EventHandler eventHandler = null)
+        private readonly IDIContainer _diContainer;
+
+        public RuleRepository()
+        {
+            _diContainer = null;
+        }
+
+        public RuleRepository(IDIContainer diContainer)
+        {
+            _diContainer = diContainer;
+        }
+
+        public void AddRuleSet(Assembly assembly)
         {
             IEnumerable<Type> ruleTypes = assembly.GetTypes().Where(IsRule);
 
@@ -19,7 +36,7 @@ namespace NRules.Core
                                                           "any concrete IRule implementations!",
                                                           assembly.FullName));
 
-            var ruleSet = new RuleSet(ruleTypes, eventHandler);
+            var ruleSet = new RuleSet(ruleTypes);
             _ruleSets.Add(ruleSet);
         }
 
@@ -32,18 +49,29 @@ namespace NRules.Core
             {
                 foreach (Type ruleType in ruleSet.RuleTypes)
                 {
-                    Rule rule = InstantiateRule(ruleType, ruleSet.EventHandler);
+                    Rule rule = InstantiateRule(ruleType);
                     yield return rule;
                 }
             }
         }
 
-        private static Rule InstantiateRule(Type ruleType, EventHandler eventHandler)
+        private Rule InstantiateRule(Type ruleType)
         {
-            IRule ruleInstance = BuildRule(ruleType);
-
-            if(eventHandler != null)
-                ruleInstance.InjectEventHandler(eventHandler);
+            IRule ruleInstance;
+            
+            if(_diContainer == null)
+            {
+                ruleInstance = BuildRule(ruleType);        
+            }
+            else
+            {
+                ruleInstance = _diContainer.GetObjectInstance(ruleType) as IRule;
+                if(ruleInstance == null)
+                    throw new ApplicationException(string.Format("Failed to initialize rule of type {0} from dependency injection " + 
+                                                                 "container of type {1}.", 
+                                                                 ruleType,
+                                                                 _diContainer.GetType()));
+            }
 
             var rule = new Rule(ruleInstance.GetType().FullName);
             var definition = new RuleDefinition(rule);

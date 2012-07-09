@@ -11,16 +11,19 @@ namespace NRules.Core.IntegrationTests.Tests
     [TestFixture]
     public class SimplePersonalFinancesRuleTests
     {
-        private readonly List<InsuranceApplicant> _qualifiers = new List<InsuranceApplicant>();
+        private List<InsuranceApplicant> _qualifiers;
         private ISession _session;
+        private RuleFactory _ruleFactory;
 
         [SetUp]
         public void Setup()
         {
-            _qualifiers.Clear();
+            _qualifiers = new List<InsuranceApplicant>();
 
-            var repository = new RuleRepository();
-            repository.AddRuleSet(Assembly.GetAssembly(typeof(SimplePersonalFinancesRule)), QualificationHandler);
+            _ruleFactory = new RuleFactory(QualificationHandler);
+
+            var repository = new RuleRepository(_ruleFactory);
+            repository.AddRuleSet(Assembly.GetAssembly(typeof(SimplePersonalFinancesRule)));
 
             var factory = new SessionFactory(repository);
             _session = factory.CreateSession();

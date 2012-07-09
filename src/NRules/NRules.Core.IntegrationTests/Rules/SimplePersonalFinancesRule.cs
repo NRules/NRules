@@ -5,9 +5,14 @@ using NRules.Dsl;
 namespace NRules.Core.IntegrationTests.Rules
 {
     //Applicant is likely to commit insurance fraud.
-    internal class SimplePersonalFinancesRule : IRule
+    public class SimplePersonalFinancesRule : IRule
     {
-        private EventHandler _ruleHanlder;
+        private readonly EventHandler _ruleHandler;
+
+        public SimplePersonalFinancesRule(EventHandler ruleHandler)
+        {
+            _ruleHandler = ruleHandler;
+        }
 
         public void Define(IRuleDefinition definition)
         {
@@ -20,12 +25,7 @@ namespace NRules.Core.IntegrationTests.Rules
                 .Do(ctx => Console.WriteLine(ctx.Arg<PersonalFinances>().LiquidAssets + 
                                               ctx.Arg<PersonalFinances>().YearlyPreTaxIncome))
                 .Do(ctx => Console.WriteLine(ctx.Arg<PersonalFinances>().TotalDebt * 0.6m))
-                .Do(ctx => _ruleHanlder(this, new QualificationEventArgs(ctx.Arg<InsuranceApplicant>())));
-        }
-
-        public void InjectEventHandler(EventHandler eventHandler)
-        {
-            _ruleHanlder = eventHandler;
+                .Do(ctx => _ruleHandler(this, new QualificationEventArgs(ctx.Arg<InsuranceApplicant>())));
         }
     }
 }

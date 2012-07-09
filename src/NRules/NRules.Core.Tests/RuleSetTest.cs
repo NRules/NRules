@@ -36,7 +36,7 @@ namespace NRules.Core.Tests
 
         public static RuleSet CreateTarget(IEnumerable<Type> types)
         {
-            return new RuleSet(types, null);
+            return new RuleSet(types);
         }
     }
 }

@@ -44,6 +44,7 @@
     <Compile Include="Dsl\ILeftHandSide.cs" />
     <Compile Include="Dsl\IRightHandSide.cs" />
     <Compile Include="IActionContext.cs" />
+    <Compile Include="IDIContainer.cs" />
     <Compile Include="IRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -57,6 +57,7 @@
     <Compile Include="Tests\Helpers\AddressFactory.cs" />
     <Compile Include="Tests\Helpers\ApplicantFactory.cs" />
     <Compile Include="Tests\Helpers\PersonalFinancesFactory.cs" />
+    <Compile Include="Tests\Helpers\RuleFactory.cs" />
     <Compile Include="Tests\SimplePersonalFinancesRuleTests.cs" />
   </ItemGroup>
   <ItemGroup />
