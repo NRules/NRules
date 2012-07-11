@@ -15,14 +15,14 @@ namespace NRules.Core
     {
         private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
 
-        private readonly IDIContainer _diContainer;
+        private readonly IContainer _diContainer;
 
         public RuleRepository()
         {
             _diContainer = null;
         }
 
-        public RuleRepository(IDIContainer diContainer)
+        public RuleRepository(IContainer diContainer)
         {
             _diContainer = diContainer;
         }
@@ -65,7 +65,8 @@ namespace NRules.Core
             }
             else
             {
-                ruleInstance = _diContainer.GetObjectInstance(ruleType) as IRule;
+                object objectInstance = _diContainer.GetObjectInstance(ruleType);
+                ruleInstance = objectInstance as IRule;
                 if(ruleInstance == null)
                     throw new ApplicationException(string.Format("Failed to initialize rule of type {0} from dependency injection " + 
                                                                  "container of type {1}.", 

@@ -13,16 +13,16 @@ namespace NRules.Core.IntegrationTests.Tests
     {
         private List<InsuranceApplicant> _qualifiers;
         private ISession _session;
-        private RuleFactory _ruleFactory;
+        private IContainer _container;
+        private InsuranceHistory _insuranceHistory = new InsuranceHistory(new List<InsurancePolicy>(), 0, 0, 0);
 
         [SetUp]
         public void Setup()
         {
             _qualifiers = new List<InsuranceApplicant>();
+            _container = DependencyFactory.GetContainer(QualificationHandler);
 
-            _ruleFactory = new RuleFactory(QualificationHandler);
-
-            var repository = new RuleRepository(_ruleFactory);
+            var repository = new RuleRepository(_container);
             repository.AddRuleSet(Assembly.GetAssembly(typeof(SimplePersonalFinancesRule)));
 
             var factory = new SessionFactory(repository);
@@ -31,7 +31,7 @@ namespace NRules.Core.IntegrationTests.Tests
 
         private void QualificationHandler(object sender, EventArgs data)
         {
-            QualificationEventArgs args = data as QualificationEventArgs;
+            var args = data as QualificationEventArgs;
             _qualifiers.Add(args.Applicant);
         }
 
@@ -41,8 +41,10 @@ namespace NRules.Core.IntegrationTests.Tests
             // Arrange
             PersonalFinances poorFinances = PersonalFinancesFactory.PoorAndNotInDebt();
             PersonalFinances richFinances = PersonalFinancesFactory.RichAndInDebt();
-            InsuranceApplicant poorApplicant = ApplicantFactory.YoungApplicant(poorFinances);
-            InsuranceApplicant richApplicant = ApplicantFactory.YoungApplicant(richFinances);
+            Person poorPerson = PersonFactory.YoungPerson();
+            Person richPerson = PersonFactory.YoungPerson();
+            var poorApplicant = new InsuranceApplicant(poorPerson, _insuranceHistory, poorFinances);
+            var richApplicant = new InsuranceApplicant(richPerson, _insuranceHistory, richFinances);
             _session.Insert(poorApplicant);
             _session.Insert(richApplicant);
             _session.Insert(poorFinances);
@@ -60,7 +62,8 @@ namespace NRules.Core.IntegrationTests.Tests
         {
             // Arrange
             PersonalFinances richFinances = PersonalFinancesFactory.RichAndInDebt();
-            InsuranceApplicant richApplicant = ApplicantFactory.MiddleAgedApplicant(richFinances);
+            Person middledAgedPerson = PersonFactory.MiddledAgedPerson();
+            var richApplicant = new InsuranceApplicant(middledAgedPerson, _insuranceHistory, richFinances);
             _session.Insert(richApplicant);
             _session.Insert(richFinances);
 
@@ -77,7 +80,8 @@ namespace NRules.Core.IntegrationTests.Tests
         {
             // Arrange
             PersonalFinances poorFinances = PersonalFinancesFactory.PoorAndInDebt();
-            InsuranceApplicant poorApplicant = ApplicantFactory.MiddleAgedApplicant(poorFinances);
+            Person middledAgedPerson = PersonFactory.MiddledAgedPerson();
+            var poorApplicant = new InsuranceApplicant(middledAgedPerson, _insuranceHistory, poorFinances);
             _session.Insert(poorApplicant);
             _session.Insert(poorFinances);
 

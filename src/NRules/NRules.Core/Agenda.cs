@@ -7,23 +7,16 @@ namespace NRules.Core
     internal interface IAgenda
     {
         Queue<Activation> ActivationQueue { get; }
-        void RegisterRule(Rule rule);
         void Subscribe(IEventSource eventSource);
     }
 
     internal class Agenda : IAgenda
     {
         public Queue<Activation> ActivationQueue { get; private set; }
-        private readonly Dictionary<string, Rule> _ruleMap = new Dictionary<string, Rule>();
 
         public Agenda()
         {
             ActivationQueue = new Queue<Activation>();
-        }
-
-        public void RegisterRule(Rule rule)
-        {
-            _ruleMap.Add(rule.Handle, rule);
         }
 
         public void Subscribe(IEventSource eventSource)

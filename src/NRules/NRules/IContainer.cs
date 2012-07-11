@@ -2,7 +2,7 @@
 
 namespace NRules
 {
-    public interface IDIContainer
+    public interface IContainer
     {
         object GetObjectInstance(Type type);
     }
