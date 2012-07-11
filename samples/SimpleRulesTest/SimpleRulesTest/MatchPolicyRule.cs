@@ -19,5 +19,10 @@ namespace SimpleRulesTest
                 .Do(ctx => Console.WriteLine("Policy={0}, Customer={1} from {2}",
                                              ctx.Arg<Policy>().Name, ctx.Arg<Customer>().Name, ctx.Arg<Dwelling>().Address));
         }
+
+        public void InjectEventHandler(EventHandler eventHandler)
+        {
+            
+        }
     }
 }

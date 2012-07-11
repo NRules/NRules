@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionContext.cs" />
+    <Compile Include="ActivationQueue.cs" />
     <Compile Include="Rete\Activation.cs" />
     <Compile Include="Rete\AlphaMemoryAdapter.cs" />
     <Compile Include="Rete\EventAggregator.cs" />

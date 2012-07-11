@@ -16,9 +16,11 @@ namespace NRules.Core.Rete
 
         public bool IsSatisfiedBy(Tuple leftTuple, Fact rightFact)
         {
+            //todo: optimize
             IEnumerable<Fact> facts =
                 _factSelectionTable.Select(
-                    idx => (idx == leftTuple.Elements.Count) ? rightFact : leftTuple.Elements[idx]);
+                    idx => leftTuple.Reverse().ElementAtOrDefault(idx) ?? rightFact);
+
             return _condition.IsSatisfiedBy(facts.ToArray());
         }
     }

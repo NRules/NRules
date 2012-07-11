@@ -26,7 +26,7 @@ namespace SimpleRulesTest
             session.Insert(dwelling1);
             session.Insert(dwelling2);
 
-            session.Retract(customer1);
+            session.Retract(customer2);
 
             session.Fire();
         }

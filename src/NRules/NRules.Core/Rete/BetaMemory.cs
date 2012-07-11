@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.Core.Rete
 {
@@ -19,14 +18,10 @@ namespace NRules.Core.Rete
             _sink.PropagateAssert(tuple);
         }
 
-        public void PropagateRetract(Fact fact)
+        public void PropagateRetract(Tuple tuple)
         {
-            var matchingTuples = _tuples.Where(t => t.Elements.Contains(fact)).ToArray();
-            foreach (var matchingTuple in matchingTuples)
-            {
-                _tuples.Remove(matchingTuple);
-            }
-            _sink.PropagateRetract(fact);
+            _tuples.Remove(tuple);
+            _sink.PropagateRetract(tuple);
         }
 
         public IEnumerable<Tuple> GetTuples()

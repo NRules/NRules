@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace NRules.Core.Rete
 {
@@ -8,10 +9,12 @@ namespace NRules.Core.Rete
         {
             Object = @object;
             FactType = Object.GetType();
+            ChildTuples = new List<Tuple>();
         }
 
         public Type FactType { get; private set; }
         public object Object { get; private set; }
+        public IList<Tuple> ChildTuples { get; private set; }
 
         public bool Equals(Fact other)
         {

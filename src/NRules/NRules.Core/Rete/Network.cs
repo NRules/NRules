@@ -10,10 +10,10 @@ namespace NRules.Core.Rete
         void PropagateRetract(object factObject);
     }
 
-    internal class Network: INetwork
+    internal class Network : INetwork
     {
         private readonly RootNode _root;
-        private readonly IDictionary<object, Fact> _factMap = new Dictionary<object,Fact>();
+        private readonly IDictionary<object, Fact> _factMap = new Dictionary<object, Fact>();
 
         public IEventSource EventSource { get; private set; }
 

@@ -31,6 +31,16 @@ namespace NRules.Core.Rete
             }
         }
 
+        public void PropagateRetract(Tuple tuple)
+        {
+            var childTuples = tuple.ChildTuples.ToList();
+            foreach (var childTuple in childTuples)
+            {
+                _sink.PropagateRetract(childTuple);
+            }
+            tuple.Clear();
+        }
+
         public void PropagateAssert(Fact rightFact)
         {
             IEnumerable<Tuple> leftTuples = _leftSource.GetTuples();
@@ -47,7 +57,11 @@ namespace NRules.Core.Rete
 
         public void PropagateRetract(Fact fact)
         {
-            _sink.PropagateRetract(fact);
+            var childTuples = fact.ChildTuples.ToList();
+            foreach (var childTuple in childTuples)
+            {
+                _sink.PropagateRetract(childTuple);
+            }
         }
 
         private void PropagateMatchingTuple(Tuple tuple, Fact rightFact)
