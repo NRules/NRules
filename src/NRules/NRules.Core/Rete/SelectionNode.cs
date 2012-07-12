@@ -27,7 +27,17 @@
 
         public override void PropagateUpdate(Fact fact)
         {
-            throw new System.NotImplementedException();
+            if (IsSatisfiedBy(fact))
+            {
+                foreach (var childNode in ChildNodes)
+                {
+                    childNode.PropagateUpdate(fact);
+                }
+            }
+            else
+            {
+                ForceRetract(fact);
+            }
         }
 
         public override void PropagateRetract(Fact fact)
@@ -38,6 +48,14 @@
                 {
                     childNode.PropagateRetract(fact);
                 }
+            }
+        }
+
+        public override void ForceRetract(Fact fact)
+        {
+            foreach (var childNode in ChildNodes)
+            {
+                childNode.ForceRetract(fact);
             }
         }
     }

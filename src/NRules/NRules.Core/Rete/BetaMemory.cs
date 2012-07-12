@@ -2,7 +2,7 @@
 
 namespace NRules.Core.Rete
 {
-    internal class BetaMemory : ITupleSink, ITupleMemory
+    internal class BetaMemory : ITupleMemory
     {
         private readonly List<Tuple> _tuples = new List<Tuple>();
         private ITupleSink _sink;
@@ -16,6 +16,11 @@ namespace NRules.Core.Rete
         {
             _tuples.Add(tuple);
             _sink.PropagateAssert(tuple);
+        }
+
+        public void PropagateUpdate(Tuple tuple)
+        {
+            _sink.PropagateUpdate(tuple);
         }
 
         public void PropagateRetract(Tuple tuple)

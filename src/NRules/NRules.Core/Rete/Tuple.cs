@@ -1,39 +1,45 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.Core.Rete
 {
     internal class Tuple : IEnumerable<Fact>
     {
         private readonly List<Tuple> _leftTuples = new List<Tuple>();
-        private readonly List<Tuple> _childTuples = new List<Tuple>(); 
+        private readonly List<Tuple> _childTuples = new List<Tuple>();
 
-        public Tuple(Fact fact)
+        public Tuple(Fact fact, ITupleMemory origin)
         {
             RightFact = fact;
             RightFact.ChildTuples.Add(this);
+            Origin = origin;
         }
 
-        public Tuple(Tuple left, Fact right) : this(right)
+        public Tuple(Tuple left, Fact right, ITupleMemory origin) : this(right, origin)
         {
-            _leftTuples.AddRange(left.LeftTuples);
+            _leftTuples.AddRange(left._leftTuples);
             _leftTuples.Add(left);
-            left.ChildTuples.Add(this);
+            LeftTuple = left;
+            LeftTuple.ChildTuples.Add(this);
         }
 
         public Fact RightFact { get; private set; }
-        public IList<Tuple> LeftTuples { get { return _leftTuples; } }
-        public IList<Tuple> ChildTuples { get { return _childTuples; } }
+        public Tuple LeftTuple { get; private set; }
+
+        public IList<Tuple> ChildTuples
+        {
+            get { return _childTuples; }
+        }
+
+        public ITupleMemory Origin { get; private set; }
 
         public void Clear()
         {
             RightFact.ChildTuples.Remove(this);
             RightFact = null;
 
-            Tuple left = LeftTuples.LastOrDefault();
-            if (left != null) left.ChildTuples.Remove(this);
-            LeftTuples.Clear();
+            if (LeftTuple != null) LeftTuple.ChildTuples.Remove(this);
+            _leftTuples.Clear();
 
             ChildTuples.Clear();
         }
@@ -69,14 +75,14 @@ namespace NRules.Core.Rete
             {
                 if (_index < 0) return false;
                 _index--;
-                _currentTuple = (_index < 0) ? _rootTuple : _rootTuple.LeftTuples[_index];
+                _currentTuple = (_index < 0) ? _rootTuple : _rootTuple._leftTuples[_index];
                 return true;
             }
 
             public void Reset()
             {
                 _currentTuple = null;
-                _index = _rootTuple.LeftTuples.Count;
+                _index = _rootTuple._leftTuples.Count;
             }
 
             public Fact Current

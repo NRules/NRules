@@ -23,7 +23,14 @@ namespace NRules.Core.Rete
 
         public void PropagateUpdate(Fact fact)
         {
-            throw new NotImplementedException();
+            if (_facts.Contains(fact))
+            {
+                _sink.PropagateUpdate(fact);
+            }
+            else
+            {
+                PropagateAssert(fact);
+            }
         }
 
         public void PropagateRetract(Fact fact)

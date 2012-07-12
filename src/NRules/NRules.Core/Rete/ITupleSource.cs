@@ -2,6 +2,6 @@
 {
     internal interface ITupleSource
     {
-        void Attach(ITupleSink sink);
+        void Attach(ITupleMemory sink);
     }
 }

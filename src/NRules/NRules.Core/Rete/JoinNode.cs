@@ -7,7 +7,7 @@ namespace NRules.Core.Rete
     {
         private readonly ITupleMemory _leftSource;
         private readonly IObjectMemory _rightSource;
-        private ITupleSink _sink;
+        private ITupleMemory _memory;
 
         public IList<JoinConditionAdaptor> Conditions { get; private set; }
 
@@ -27,16 +27,32 @@ namespace NRules.Core.Rete
             IEnumerable<Fact> rightFacts = _rightSource.GetFacts();
             foreach (var rightFact in rightFacts)
             {
-                PropagateMatchingTuple(leftTuple, rightFact);
+                PropagateAssertedMatchingTuple(leftTuple, rightFact);
+            }
+        }
+
+        public void PropagateUpdate(Tuple tuple)
+        {
+            var childTuples = tuple.ChildTuples.Where(t => t.Origin == _memory).ToList();
+            if (childTuples.Any())
+            {
+                foreach (var childTuple in childTuples)
+                {
+                    PropagateUpdatedMatchingTuple(childTuple);
+                }
+            }
+            else
+            {
+                PropagateAssert(tuple);
             }
         }
 
         public void PropagateRetract(Tuple tuple)
         {
-            var childTuples = tuple.ChildTuples.ToList();
+            var childTuples = tuple.ChildTuples.Where(t => t.Origin == _memory).ToList();
             foreach (var childTuple in childTuples)
             {
-                _sink.PropagateRetract(childTuple);
+                _memory.PropagateRetract(childTuple);
             }
             tuple.Clear();
         }
@@ -46,30 +62,53 @@ namespace NRules.Core.Rete
             IEnumerable<Tuple> leftTuples = _leftSource.GetTuples();
             foreach (var leftTuple in leftTuples)
             {
-                PropagateMatchingTuple(leftTuple, rightFact);
+                PropagateAssertedMatchingTuple(leftTuple, rightFact);
             }
         }
 
         public void PropagateUpdate(Fact fact)
         {
-            throw new System.NotImplementedException();
+            var childTuples = fact.ChildTuples.Where(t => t.Origin == _memory).ToList();
+            if (childTuples.Any())
+            {
+                foreach (var childTuple in childTuples)
+                {
+                    PropagateUpdatedMatchingTuple(childTuple);
+                }
+            }
+            else
+            {
+                PropagateAssert(fact);
+            }
         }
 
         public void PropagateRetract(Fact fact)
         {
-            var childTuples = fact.ChildTuples.ToList();
+            var childTuples = fact.ChildTuples.Where(t => t.Origin == _memory).ToList();
             foreach (var childTuple in childTuples)
             {
-                _sink.PropagateRetract(childTuple);
+                _memory.PropagateRetract(childTuple);
             }
         }
 
-        private void PropagateMatchingTuple(Tuple tuple, Fact rightFact)
+        private void PropagateAssertedMatchingTuple(Tuple tuple, Fact rightFact)
         {
             if (!MatchesConditions(tuple, rightFact)) return;
 
-            var newTuple = new Tuple(tuple, rightFact);
-            _sink.PropagateAssert(newTuple);
+            var newTuple = new Tuple(tuple, rightFact, _memory);
+            _memory.PropagateAssert(newTuple);
+        }
+
+        private void PropagateUpdatedMatchingTuple(Tuple tuple)
+        {
+            if (MatchesConditions(tuple.LeftTuple, tuple.RightFact))
+            {
+                _memory.PropagateUpdate(tuple);
+            }
+            else
+            {
+                _memory.PropagateRetract(tuple);
+            }
         }
 
         private bool MatchesConditions(Tuple left, Fact right)
@@ -79,9 +118,9 @@ namespace NRules.Core.Rete
             return Conditions.All(joinCondition => joinCondition.IsSatisfiedBy(left, right));
         }
 
-        public void Attach(ITupleSink sink)
+        public void Attach(ITupleMemory sink)
         {
-            _sink = sink;
+            _memory = sink;
         }
     }
 }

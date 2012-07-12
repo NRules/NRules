@@ -12,7 +12,10 @@
 
         public override void PropagateUpdate(Fact fact)
         {
-            throw new System.NotImplementedException();
+            foreach (TypeNode typeNode in ChildNodes)
+            {
+                typeNode.PropagateUpdate(fact);
+            }
         }
 
         public override void PropagateRetract(Fact fact)
@@ -21,6 +24,11 @@
             {
                 typeNode.PropagateRetract(fact);
             }
+        }
+
+        public override void ForceRetract(Fact fact)
+        {
+            PropagateRetract(fact);
         }
     }
 }

@@ -8,7 +8,8 @@ namespace NRules.Core
     public interface ISession
     {
         void Insert(object fact);
-		void Retract(object fact);
+		void Update(object fact);
+        void Retract(object fact);
         void Fire();
     }
 
@@ -28,6 +29,11 @@ namespace NRules.Core
         public void Insert(object fact)
         {
             _network.PropagateAssert(fact);
+        }
+		
+        public void Update(object fact)
+        {
+            _network.PropagateUpdate(fact);
         }
 		
 		public void Retract(object fact)

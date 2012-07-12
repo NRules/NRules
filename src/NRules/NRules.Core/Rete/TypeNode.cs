@@ -30,7 +30,13 @@ namespace NRules.Core.Rete
 
         public override void PropagateUpdate(Fact fact)
         {
-            throw new NotImplementedException();
+            if (IsSatisfiedBy(fact))
+            {
+                foreach (var childNode in ChildNodes)
+                {
+                    childNode.PropagateUpdate(fact);
+                }
+            }
         }
 
         public override void PropagateRetract(Fact fact)
@@ -42,6 +48,11 @@ namespace NRules.Core.Rete
                     childNode.PropagateRetract(fact);
                 }
             }
+        }
+
+        public override void ForceRetract(Fact fact)
+        {
+            PropagateRetract(fact);
         }
     }
 }

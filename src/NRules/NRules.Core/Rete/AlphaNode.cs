@@ -14,5 +14,6 @@ namespace NRules.Core.Rete
         public abstract void PropagateAssert(Fact fact);
         public abstract void PropagateUpdate(Fact fact);
         public abstract void PropagateRetract(Fact fact);
+        public abstract void ForceRetract(Fact fact);
     }
 }

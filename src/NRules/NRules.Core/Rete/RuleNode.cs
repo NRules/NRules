@@ -17,6 +17,11 @@
             _eventSink.Activate(activation);
         }
 
+        public void PropagateUpdate(Tuple tuple)
+        {
+            //Do nothing
+        }
+
         public void PropagateRetract(Tuple tuple)
         {
             var activation = new Activation(_ruleHandle, tuple);

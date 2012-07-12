@@ -23,5 +23,10 @@
         {
             _memory.PropagateRetract(fact);
         }
+
+        public override void ForceRetract(Fact fact)
+        {
+            PropagateRetract(fact);
+        }
     }
 }
