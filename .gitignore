@@ -7,6 +7,7 @@ binaries
 # mstest test results
 TestResults
 
-# Files
+# VS/RS files
 *.suo
 *.ReSharper.user
+*.DotSettings.user

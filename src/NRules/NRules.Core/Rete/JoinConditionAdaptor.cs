@@ -19,7 +19,7 @@ namespace NRules.Core.Rete
             //todo: optimize
             IEnumerable<Fact> facts =
                 _factSelectionTable.Select(
-                    idx => leftTuple.Reverse().ElementAtOrDefault(idx) ?? rightFact);
+                    idx => leftTuple.ElementAtOrDefault(idx) ?? rightFact);
 
             return _condition.IsSatisfiedBy(facts.ToArray());
         }

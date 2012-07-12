@@ -1,4 +1,6 @@
-﻿namespace NRules.Core.Rete
+﻿using System.Linq;
+
+namespace NRules.Core.Rete
 {
     internal class BetaAdapter : IObjectSink, ITupleSource
     {
@@ -27,7 +29,11 @@
 
         public void PropagateRetract(Fact fact)
         {
-            throw new System.NotImplementedException();
+            var childTuples = fact.ChildTuples.ToList();
+            foreach (var childTuple in childTuples)
+            {
+                _sink.PropagateRetract(childTuple);
+            }
         }
     }
 }
