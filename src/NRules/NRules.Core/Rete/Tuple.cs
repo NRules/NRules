@@ -39,6 +39,7 @@ namespace NRules.Core.Rete
             RightFact = null;
 
             if (LeftTuple != null) LeftTuple.ChildTuples.Remove(this);
+            LeftTuple = null;
             _leftTuples.Clear();
 
             ChildTuples.Clear();
@@ -64,7 +65,6 @@ namespace NRules.Core.Rete
             public FactEnumerator(Tuple tuple)
             {
                 _rootTuple = tuple;
-                Reset();
             }
 
             public void Dispose()
@@ -73,16 +73,18 @@ namespace NRules.Core.Rete
 
             public bool MoveNext()
             {
-                if (_index < 0) return false;
-                _index--;
-                _currentTuple = (_index < 0) ? _rootTuple : _rootTuple._leftTuples[_index];
+                if (_index > _rootTuple._leftTuples.Count) return false;
+                _currentTuple = (_index == _rootTuple._leftTuples.Count) 
+                    ? _rootTuple 
+                    : _rootTuple._leftTuples[_index];
+                _index++;
                 return true;
             }
 
             public void Reset()
             {
                 _currentTuple = null;
-                _index = _rootTuple._leftTuples.Count;
+                _index = 0;
             }
 
             public Fact Current

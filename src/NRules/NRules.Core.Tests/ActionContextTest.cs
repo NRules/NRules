@@ -8,12 +8,6 @@ namespace NRules.Core.Tests
     [TestFixture]
     public class ActionContextTest
     {
-        [SetUp]
-        public void Setup()
-        {
-            
-        }
-
         internal static ActionContext CreateTarget(Tuple tuple)
         {
             return new ActionContext(tuple);
@@ -23,9 +17,9 @@ namespace NRules.Core.Tests
         public void Arg_HasOneObjectOfEachType_ReturnsCorrectObject()
         {
             // Arrange
-            var tuple1 = new Tuple(new Fact(new ObjectA()));
-            var tuple2 = new Tuple(tuple1, new Fact(new ObjectB()));
-            var tuple3 = new Tuple(tuple2, new Fact(new ObjectC()));
+            var tuple1 = new Tuple(new Fact(new ObjectA()), null);
+            var tuple2 = new Tuple(tuple1, new Fact(new ObjectB()), null);
+            var tuple3 = new Tuple(tuple2, new Fact(new ObjectC()), null);
             var target = CreateTarget(tuple3);
 
             // Act
@@ -34,40 +28,47 @@ namespace NRules.Core.Tests
             object c = target.Arg<ObjectC>();
 
             // Assert
-            Assert.True(a.GetType() == typeof(ObjectA));
-            Assert.True(b.GetType() == typeof(ObjectB));
-            Assert.True(c.GetType() == typeof(ObjectC));
+            Assert.True(a.GetType() == typeof (ObjectA));
+            Assert.True(b.GetType() == typeof (ObjectB));
+            Assert.True(c.GetType() == typeof (ObjectC));
         }
 
         [Test]
         public void Arg_HasNoObjectOfGivenType_ThrowsException()
         {
             // Arrange
-            const string expectedMessage = "Could not get argument of type NRules.Core.Tests.ActionContextTest+ObjectB from action context!";
-            var tuple1 = new Tuple(new Fact(new ObjectA()));
+            var tuple1 = new Tuple(new Fact(new ObjectA()), null);
             var target = CreateTarget(tuple1);
 
             // Act - Assert
-            string actualMessage = Assert.Throws<ApplicationException>(() => target.Arg<ObjectB>()).Message;
-            Assert.AreEqual(expectedMessage, actualMessage);
+            Assert.Throws<InvalidOperationException>(() => target.Arg<ObjectB>());
         }
 
         [Test]
-        public void Arg_HasMoreThanOneObjectOfGivenType_ThrowsException()
+        public void Arg_HasMoreThanOneObjectOfGivenType_ReturnsFirst()
         {
             // Arrange
-            const string expectedMessage = "Tuple contained more than one fact of type NRules.Core.Tests.ActionContextTest+ObjectA in action context!";
-            var tuple1 = new Tuple(new Fact(new ObjectA()));
-            var tuple2 = new Tuple(tuple1, new Fact(new ObjectA()));
+            var tuple1 = new Tuple(new Fact(new ObjectA()), null);
+            var tuple2 = new Tuple(tuple1, new Fact(new ObjectA()), null);
             var target = CreateTarget(tuple2);
 
-            // Act - Assert
-            string actualMessage = Assert.Throws<ApplicationException>(() => target.Arg<ObjectA>()).Message;
-            Assert.AreEqual(expectedMessage, actualMessage);
+            // Act
+            var a = target.Arg<ObjectA>();
+
+            // Assert
+            Assert.AreSame(tuple1.RightFact.Object, a);
         }
 
-        private class ObjectA {}
-        private class ObjectB {}
-        private class ObjectC {}
+        private class ObjectA
+        {
+        }
+
+        private class ObjectB
+        {
+        }
+
+        private class ObjectC
+        {
+        }
     }
 }

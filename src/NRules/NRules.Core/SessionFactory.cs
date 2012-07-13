@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NRules.Core.Rete;
 using NRules.Core.Rules;
@@ -7,7 +8,6 @@ namespace NRules.Core
 {
     public class SessionFactory
     {
-        private readonly IReteBuilder _reteBuilder;
         private readonly IAgenda _agenda;
         private readonly INetwork _network;
         private readonly IEnumerable<Rule> _rules;
@@ -16,11 +16,9 @@ namespace NRules.Core
         public SessionFactory(RuleRepository repository)
         {
             _rules = repository.Compile().ToArray();
+            _ruleMap = _rules.ToDictionary(r => r.Handle);
 
-            //todo: use di container
-            _reteBuilder = new ReteBuilder();
-            _network = GetNetwork(_rules);
-            _ruleMap = GetRuleMap(_rules);
+            _network = BuildReteNetwork(_rules, () => new ReteBuilder());
             _agenda = new Agenda();
             _agenda.Subscribe(_network.EventSource);
         }
@@ -31,21 +29,16 @@ namespace NRules.Core
             return session;
         }
 
-        private INetwork GetNetwork(IEnumerable<Rule> rules)
+        private INetwork BuildReteNetwork(IEnumerable<Rule> rules, Func<IReteBuilder> builderFactory)
         {
+            IReteBuilder reteBuilder = builderFactory.Invoke();
             foreach (Rule rule in rules)
             {
-                _reteBuilder.AddRule(rule);
+                reteBuilder.AddRule(rule);
             }
 
-            INetwork network = _reteBuilder.GetNetwork();
+            INetwork network = reteBuilder.GetNetwork();
             return network;
-        }
-
-        private static Dictionary<string, Rule> GetRuleMap(IEnumerable<Rule> rules)
-        {
-            Dictionary<string, Rule> ruleMap = rules.ToDictionary(r => r.Handle);
-            return ruleMap;
         }
     }
 }

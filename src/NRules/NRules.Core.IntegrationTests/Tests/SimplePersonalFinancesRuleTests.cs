@@ -14,7 +14,7 @@ namespace NRules.Core.IntegrationTests.Tests
         private List<InsuranceApplicant> _qualifiers;
         private ISession _session;
         private IContainer _container;
-        private InsuranceHistory _insuranceHistory = new InsuranceHistory(new List<InsurancePolicy>(), 0, 0, 0);
+        private readonly InsuranceHistory _insuranceHistory = new InsuranceHistory(new List<InsurancePolicy>(), 0, 0, 0);
 
         [SetUp]
         public void Setup()

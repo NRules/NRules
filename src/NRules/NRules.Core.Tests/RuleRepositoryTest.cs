@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using NRules.Core.Rete;
 using NRules.Core.Rules;
-using NRules.Dsl;
+using NRules.Core.Tests.TestAssets;
 using NUnit.Framework;
 
 namespace NRules.Core.Tests
@@ -26,13 +26,13 @@ namespace NRules.Core.Tests
             _ruleAssembly = Assembly.GetAssembly(typeof (TestRule1));
             _badAssembly = Assembly.GetAssembly(typeof (Object));
 
-            var testFact1 = new TestFact1 { Name = "Hello" };
-            var testFact2 = new TestFact1 { Name = "Goodbye" };
+            var testFact1 = new TestFact1 {Name = "Hello"};
+            var testFact2 = new TestFact1 {Name = "Goodbye"};
             _helloFact = new Fact(testFact1);
             _goodbyeFact = new Fact(testFact2);
 
-            _relevantFact = new Fact(new TestFact2 { Amount = 100, Fact1 = testFact1 });
-            _irrelevantFact = new Fact(new TestFact2 { Amount = 100, Fact1 = testFact2 });
+            _relevantFact = new Fact(new TestFact2 {Amount = 100, Fact1 = testFact1});
+            _irrelevantFact = new Fact(new TestFact2 {Amount = 100, Fact1 = testFact2});
         }
 
         public static RuleRepository CreateTarget()
@@ -44,12 +44,10 @@ namespace NRules.Core.Tests
         public void AddRuleSet_NoRulesInAssembly_ThrowsException()
         {
             // Arrange
-            const string expectedMessage = "The supplied assembly (mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089) does not contain any concrete IRule implementations!";
             var target = CreateTarget();
 
             // Act - Assert
-            string actualMessage = Assert.Throws<ArgumentException>(() => target.AddRuleSet(_badAssembly)).Message;
-            Assert.AreEqual(expectedMessage, actualMessage);
+            Assert.Throws<ArgumentException>(() => target.AddRuleSet(_badAssembly));
         }
 
         [Test]
@@ -66,13 +64,11 @@ namespace NRules.Core.Tests
         public void Compile_NoValidRuleSetAdded_ThrowsException()
         {
             // Arrange
-            const string expectedMessage = "Rules cannot be compiled! No valid rulesets have been added to the rule repository.";
             var target = CreateTarget();
 
             // Act - Assert
-            var rules = target.Compile();  //delayed execution
-            string actualMessage = Assert.Throws<ArgumentException>(() => rules.ToList()).Message;
-            Assert.AreEqual(expectedMessage, actualMessage);
+            var rules = target.Compile(); //delayed execution
+            Assert.Throws<ArgumentException>(() => rules.ToList());
         }
 
         [Test]
@@ -89,10 +85,10 @@ namespace NRules.Core.Tests
             Assert.AreEqual(1, rules.Count);
             List<IDeclaration> declarations = rules[0].Declarations.ToList();
             Assert.AreEqual(2, declarations.Count);
-            Assert.True(declarations.Contains(new Declaration("", typeof(TestFact1))));
-            Assert.True(declarations.Contains(new Declaration("", typeof(TestFact2))));
+            Assert.True(declarations.Contains(new Declaration("", typeof (TestFact1))));
+            Assert.True(declarations.Contains(new Declaration("", typeof (TestFact2))));
         }
-        
+
         [Test]
         public void Compile_ValidRulesInAssembly_ReturnsCorrectConditions()
         {
@@ -107,7 +103,7 @@ namespace NRules.Core.Tests
             Assert.AreEqual(1, rules.Count);
             List<ICondition> conditions = rules[0].Conditions.ToList();
             Assert.AreEqual(1, conditions.Count);
-            Assert.AreEqual(typeof(TestFact1), conditions[0].FactType);
+            Assert.AreEqual(typeof (TestFact1), conditions[0].FactType);
             Assert.True(conditions[0].IsSatisfiedBy(_helloFact));
             Assert.False(conditions[0].IsSatisfiedBy(_goodbyeFact));
         }
@@ -119,7 +115,6 @@ namespace NRules.Core.Tests
             var target = CreateTarget();
             target.AddRuleSet(_ruleAssembly);
 
-
             // Act
             List<Rule> rules = target.Compile().ToList();
 
@@ -129,10 +124,10 @@ namespace NRules.Core.Tests
             Assert.AreEqual(1, joinConditions.Count);
             Assert.True(joinConditions[0].FactTypes.Contains(typeof (TestFact1)));
             Assert.True(joinConditions[0].FactTypes.Contains(typeof (TestFact2)));
-            Assert.True(joinConditions[0].IsSatisfiedBy(new[] { _helloFact, _relevantFact }));
-            Assert.False(joinConditions[0].IsSatisfiedBy(new[] { _helloFact, _irrelevantFact }));
-            Assert.False(joinConditions[0].IsSatisfiedBy(new[] { _goodbyeFact, _relevantFact }));
-            Assert.True(joinConditions[0].IsSatisfiedBy(new []{ _goodbyeFact, _irrelevantFact}));
+            Assert.True(joinConditions[0].IsSatisfiedBy(new[] {_helloFact, _relevantFact}));
+            Assert.False(joinConditions[0].IsSatisfiedBy(new[] {_helloFact, _irrelevantFact}));
+            Assert.False(joinConditions[0].IsSatisfiedBy(new[] {_goodbyeFact, _relevantFact}));
+            Assert.True(joinConditions[0].IsSatisfiedBy(new[] {_goodbyeFact, _irrelevantFact}));
         }
 
         [Test]
@@ -141,7 +136,6 @@ namespace NRules.Core.Tests
             // Arrange
             var target = CreateTarget();
             target.AddRuleSet(_ruleAssembly);
-
 
             // Act
             List<Rule> rules = target.Compile().ToList();

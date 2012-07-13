@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using NRules.Core.Rete;
 using NUnit.Framework;
-using Rhino.Mocks;
 
 namespace NRules.Core.Tests
 {
@@ -9,15 +7,11 @@ namespace NRules.Core.Tests
     public class AgendaTest
     {
         private EventAggregator _eventAggregator;
-        private EventAggregator _eventAggregator2;
-        private EventAggregator _eventAggregator3;
 
         [SetUp]
         public void Setup()
         {
             _eventAggregator = new EventAggregator();
-            _eventAggregator2 = new EventAggregator();
-            _eventAggregator3 = new EventAggregator();
         }
 
         internal static Agenda CreateTarget()
@@ -29,40 +23,38 @@ namespace NRules.Core.Tests
         public void Subscribe_RuleActivated_ActivationEndsUpInQueue()
         {
             // Arrange
-            Activation activation = new Activation("rule1", new Tuple(new Fact(new object())));
+            var activation = new Activation("rule1", new Tuple(new Fact(new object()), null));
             var target = CreateTarget();
+            target.Subscribe(_eventAggregator);
 
             // Act
-            target.Subscribe(_eventAggregator);
-            target.Subscribe(_eventAggregator2);
             _eventAggregator.Activate(activation);
-            Queue<Activation> activationQueue = target.ActivationQueue;
+            var queuedItem = target.ActivationQueue.Dequeue();
 
             // Assert
-            Assert.AreEqual(1, activationQueue.Count);
-            Assert.AreEqual("rule1", activationQueue.Peek().RuleHandle);
+            Assert.AreEqual(0, target.ActivationQueue.Count());
+            Assert.AreEqual("rule1", queuedItem.RuleHandle);
         }
-        
+
         [Test]
         public void Subscribe_MultipleRulesActivated_RulesAreQueuedInOrder()
         {
             // Arrange
-            Activation activation = new Activation("rule1", new Tuple(new Fact(new object())));
-            Activation activation2 = new Activation("rule2", new Tuple(new Fact(new object())));
+            var activation1 = new Activation("rule1", new Tuple(new Fact(new object()), null));
+            var activation2 = new Activation("rule2", new Tuple(new Fact(new object()), null));
             var target = CreateTarget();
+            target.Subscribe(_eventAggregator);
 
             // Act
-            target.Subscribe(_eventAggregator);
-            target.Subscribe(_eventAggregator2);
-            target.Subscribe(_eventAggregator3);
-            _eventAggregator.Activate(activation);
-            _eventAggregator2.Activate(activation2);
-            Queue<Activation> activationQueue = target.ActivationQueue;
+            _eventAggregator.Activate(activation1);
+            _eventAggregator.Activate(activation2);
+            var queuedItem1 = target.ActivationQueue.Dequeue();
+            var queuedItem2 = target.ActivationQueue.Dequeue();
 
             // Assert
-            Assert.AreEqual(2, activationQueue.Count);
-            Assert.AreEqual("rule1", activationQueue.Dequeue().RuleHandle);
-            Assert.AreEqual("rule2", activationQueue.Dequeue().RuleHandle);
+            Assert.AreEqual(0, target.ActivationQueue.Count());
+            Assert.AreEqual("rule1", queuedItem1.RuleHandle);
+            Assert.AreEqual("rule2", queuedItem2.RuleHandle);
         }
     }
 }

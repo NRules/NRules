@@ -1,5 +1,6 @@
-﻿using System.Linq;
-using NRules.Core.Rete;
+﻿using System;
+using System.Linq;
+using Tuple = NRules.Core.Rete.Tuple;
 
 namespace NRules.Core
 {
@@ -14,7 +15,15 @@ namespace NRules.Core
 
         public T Arg<T>()
         {
-            return _tuple.Where(f => f.FactType == typeof (T)).Select(f => f.Object).Cast<T>().First();
+            try
+            {
+                var arg = _tuple.Where(f => f.FactType == typeof(T)).Select(f => f.Object).Cast<T>().First();
+                return arg;
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new InvalidOperationException(string.Format("Could not get rule argument of type {0}", typeof(T)), e);
+            }
         }
     }
 }

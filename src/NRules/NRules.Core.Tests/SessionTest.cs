@@ -12,7 +12,6 @@ namespace NRules.Core.Tests
     {
         private IAgenda _agenda;
         private INetwork _network;
-        private IEventSource _eventSource;
 
         private List<Rule> _rules;
         private Dictionary<string, Rule> _ruleMap;
@@ -22,11 +21,13 @@ namespace NRules.Core.Tests
         {
             _agenda = MockRepository.GenerateStub<IAgenda>();
             _network = MockRepository.GenerateStub<INetwork>();
-            _eventSource = MockRepository.GenerateStub<IEventSource>();
 
-            _rules = new List<Rule> { new Rule("rule1"), 
-                                      new Rule("rule2"), 
-                                      new Rule("rule3") };
+            _rules = new List<Rule>
+                         {
+                             new Rule("rule1"),
+                             new Rule("rule2"),
+                             new Rule("rule3")
+                         };
             _ruleMap = _rules.ToDictionary(x => x.Handle);
         }
 
@@ -47,7 +48,7 @@ namespace NRules.Core.Tests
             target.Insert(myFact);
 
             // Assert
-            _network.AssertWasCalled(x => x.PropagateAssert(new Fact(myFact)));
+            _network.AssertWasCalled(x => x.PropagateAssert(myFact));
         }
     }
 }

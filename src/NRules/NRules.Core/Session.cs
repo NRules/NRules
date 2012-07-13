@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using NRules.Core.Rete;
 using NRules.Core.Rules;
 
@@ -8,7 +7,7 @@ namespace NRules.Core
     public interface ISession
     {
         void Insert(object fact);
-		void Update(object fact);
+        void Update(object fact);
         void Retract(object fact);
         void Fire();
     }
@@ -25,25 +24,25 @@ namespace NRules.Core
             _agenda = agenda;
             _ruleMap = ruleMap;
         }
-       
+
         public void Insert(object fact)
         {
             _network.PropagateAssert(fact);
         }
-		
+
         public void Update(object fact)
         {
             _network.PropagateUpdate(fact);
         }
-		
-		public void Retract(object fact)
+
+        public void Retract(object fact)
         {
             _network.PropagateRetract(fact);
         }
 
         public void Fire()
         {
-            while (_agenda.ActivationQueue.Count > 0)
+            while (_agenda.ActivationQueue.Count() > 0)
             {
                 Activation activation = _agenda.ActivationQueue.Dequeue();
                 var context = new ActionContext(activation.Tuple);

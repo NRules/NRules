@@ -6,11 +6,28 @@ using NRules.Core.Rules;
 
 namespace NRules.Core
 {
-    public class RuleRepository
+    public interface IRuleRepository
+    {
+        void AddRuleSet(Assembly assembly);
+    }
+
+    public class RuleRepository : IRuleRepository
     {
         private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
 
-        public void AddRuleSet(Assembly assembly, EventHandler eventHandler = null)
+        private readonly IContainer _diContainer;
+
+        public RuleRepository()
+        {
+            _diContainer = null;
+        }
+
+        public RuleRepository(IContainer diContainer)
+        {
+            _diContainer = diContainer;
+        }
+
+        public void AddRuleSet(Assembly assembly)
         {
             IEnumerable<Type> ruleTypes = assembly.GetTypes().Where(IsRule);
 
@@ -19,32 +36,43 @@ namespace NRules.Core
                                                           "any concrete IRule implementations!",
                                                           assembly.FullName));
 
-            var ruleSet = new RuleSet(ruleTypes, eventHandler);
+            var ruleSet = new RuleSet(ruleTypes);
             _ruleSets.Add(ruleSet);
         }
 
         internal IEnumerable<Rule> Compile()
         {
             if (!_ruleSets.Any())
-                throw new ArgumentException(
-                    "Rules cannot be compiled! No valid rulesets have been added to the rule repository.");
+                throw new ArgumentException("Rules cannot be compiled! No valid rulesets have been added to the rule repository.");
 
             foreach (RuleSet ruleSet in _ruleSets)
             {
                 foreach (Type ruleType in ruleSet.RuleTypes)
                 {
-                    Rule rule = InstantiateRule(ruleType, ruleSet.EventHandler);
+                    Rule rule = InstantiateRule(ruleType);
                     yield return rule;
                 }
             }
         }
 
-        private static Rule InstantiateRule(Type ruleType, EventHandler eventHandler)
+        private Rule InstantiateRule(Type ruleType)
         {
-            IRule ruleInstance = BuildRule(ruleType);
+            IRule ruleInstance;
 
-            if (eventHandler != null)
-                ruleInstance.InjectEventHandler(eventHandler);
+            if (_diContainer == null)
+            {
+                ruleInstance = BuildRule(ruleType);
+            }
+            else
+            {
+                object objectInstance = _diContainer.GetObjectInstance(ruleType);
+                ruleInstance = objectInstance as IRule;
+                if (ruleInstance == null)
+                    throw new ApplicationException(string.Format("Failed to initialize rule of type {0} from dependency injection " +
+                                                                 "container of type {1}.",
+                                                                 ruleType,
+                                                                 _diContainer.GetType()));
+            }
 
             var rule = new Rule(ruleInstance.GetType().FullName);
             var definition = new RuleDefinition(rule);
@@ -56,7 +84,7 @@ namespace NRules.Core
         private static bool IsRule(Type type)
         {
             if (IsConcrete(type) &&
-                typeof (IRule).IsAssignableFrom(type)) return true;
+                typeof(IRule).IsAssignableFrom(type)) return true;
 
             return false;
         }
@@ -72,7 +100,7 @@ namespace NRules.Core
 
         private static IRule BuildRule(Type type)
         {
-            var rule = (IRule) Activator.CreateInstance(type);
+            var rule = (IRule)Activator.CreateInstance(type);
             return rule;
         }
     }
