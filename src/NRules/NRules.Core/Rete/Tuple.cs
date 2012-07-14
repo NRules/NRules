@@ -74,9 +74,9 @@ namespace NRules.Core.Rete
             public bool MoveNext()
             {
                 if (_index > _rootTuple._leftTuples.Count) return false;
-                _currentTuple = (_index == _rootTuple._leftTuples.Count) 
-                    ? _rootTuple 
-                    : _rootTuple._leftTuples[_index];
+                _currentTuple = (_index == _rootTuple._leftTuples.Count)
+                                    ? _rootTuple
+                                    : _rootTuple._leftTuples[_index];
                 _index++;
                 return true;
             }

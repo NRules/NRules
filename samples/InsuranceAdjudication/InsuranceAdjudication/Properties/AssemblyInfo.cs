@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("NRules.Core.IntegrationTests")]
+[assembly: AssemblyTitle("InsuranceAdjudication")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("NRules")]
-[assembly: AssemblyProduct("NRules.Core.IntegrationTests")]
-[assembly: AssemblyCopyright("Copyright © NRules 2012")]
+[assembly: AssemblyProduct("InsuranceAdjudication")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
-[assembly: Guid("5cd5d96f-0d00-4eee-9114-6620bee61454")]
+[assembly: Guid("74283a8a-235a-4c8e-8e03-0d7602ad78ed")]
 
 // Version information for an assembly consists of the following four values:
 //

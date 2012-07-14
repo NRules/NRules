@@ -47,26 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\Address.cs" />
-    <Compile Include="Domain\Beneficiary.cs" />
-    <Compile Include="Domain\Gender.cs" />
-    <Compile Include="Domain\InsuranceApplicant.cs" />
-    <Compile Include="Domain\InsuranceHistory.cs" />
-    <Compile Include="Domain\InsurancePolicy.cs" />
-    <Compile Include="Domain\Person.cs" />
-    <Compile Include="Domain\PersonalFinances.cs" />
-    <Compile Include="Domain\PolicyType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rules\SelfBeneficialPolicyRule.cs" />
-    <Compile Include="Rules\SimplePersonalFinancesRule.cs" />
-    <Compile Include="Domain\QualificationEventArgs.cs" />
-    <Compile Include="Tests\Helpers\AddressFactory.cs" />
-    <Compile Include="Tests\Helpers\DependencyFactory.cs" />
-    <Compile Include="Tests\Helpers\InsuranceHistoryFactory.cs" />
-    <Compile Include="Tests\Helpers\PersonalFinancesFactory.cs" />
-    <Compile Include="Tests\Helpers\PersonFactory.cs" />
-    <Compile Include="Tests\SimpleJoinRuleTests.cs" />
-    <Compile Include="Tests\SimplePersonalFinancesRuleTests.cs" />
+    <Compile Include="BaseRuleTestFixture.cs" />
+    <Compile Include="TestAssets\FactType1.cs" />
+    <Compile Include="TestAssets\FactType2.cs" />
+    <Compile Include="OneFactRuleTests.cs" />
+    <Compile Include="TestAssets\INotifier.cs" />
+    <Compile Include="TestAssets\OneFactRule.cs" />
+    <Compile Include="TestAssets\BaseRule.cs" />
+    <Compile Include="TestAssets\TwoFactRule.cs" />
+    <Compile Include="TwoFactRuleTests.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

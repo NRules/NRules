@@ -29,7 +29,7 @@ namespace NRules.Core
 
         public void AddRuleSet(Assembly assembly)
         {
-            IEnumerable<Type> ruleTypes = assembly.GetTypes().Where(IsRule);
+            var ruleTypes = assembly.GetTypes().Where(IsRule).ToArray();
 
             if (!ruleTypes.Any())
                 throw new ArgumentException(string.Format("The supplied assembly ({0}) does not contain " +
@@ -40,10 +40,26 @@ namespace NRules.Core
             _ruleSets.Add(ruleSet);
         }
 
+        public void AddRuleSet(params Type[] types)
+        {
+            var invalidTypes = types.Where(IsNotRule).ToArray();
+
+            if (invalidTypes.Any())
+            {
+                var invalidTypesString = String.Join(", ", (string[]) invalidTypes.Select(t => t.FullName));
+                throw new ArgumentException(string.Format("The supplied types are not rules {0}",
+                                                          invalidTypesString));
+            }
+
+            var ruleSet = new RuleSet(types);
+            _ruleSets.Add(ruleSet);
+        }
+
         internal IEnumerable<Rule> Compile()
         {
             if (!_ruleSets.Any())
-                throw new ArgumentException("Rules cannot be compiled! No valid rulesets have been added to the rule repository.");
+                throw new ArgumentException(
+                    "Rules cannot be compiled! No valid rulesets have been added to the rule repository.");
 
             foreach (RuleSet ruleSet in _ruleSets)
             {
@@ -68,10 +84,11 @@ namespace NRules.Core
                 object objectInstance = _diContainer.GetObjectInstance(ruleType);
                 ruleInstance = objectInstance as IRule;
                 if (ruleInstance == null)
-                    throw new ApplicationException(string.Format("Failed to initialize rule of type {0} from dependency injection " +
-                                                                 "container of type {1}.",
-                                                                 ruleType,
-                                                                 _diContainer.GetType()));
+                    throw new ApplicationException(
+                        string.Format("Failed to initialize rule of type {0} from dependency injection " +
+                                      "container of type {1}.",
+                                      ruleType,
+                                      _diContainer.GetType()));
             }
 
             var rule = new Rule(ruleInstance.GetType().FullName);
@@ -81,10 +98,15 @@ namespace NRules.Core
             return rule;
         }
 
+        private static bool IsNotRule(Type type)
+        {
+            return !IsRule(type);
+        }
+
         private static bool IsRule(Type type)
         {
             if (IsConcrete(type) &&
-                typeof(IRule).IsAssignableFrom(type)) return true;
+                typeof (IRule).IsAssignableFrom(type)) return true;
 
             return false;
         }
@@ -100,7 +122,7 @@ namespace NRules.Core
 
         private static IRule BuildRule(Type type)
         {
-            var rule = (IRule)Activator.CreateInstance(type);
+            var rule = (IRule) Activator.CreateInstance(type);
             return rule;
         }
     }

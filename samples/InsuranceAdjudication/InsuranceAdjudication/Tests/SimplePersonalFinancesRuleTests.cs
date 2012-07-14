@@ -23,7 +23,7 @@ namespace NRules.Core.IntegrationTests.Tests
             _container = DependencyFactory.GetContainer(QualificationHandler);
 
             var repository = new RuleRepository(_container);
-            repository.AddRuleSet(Assembly.GetAssembly(typeof(SimplePersonalFinancesRule)));
+            repository.AddRuleSet(Assembly.GetAssembly(typeof (SimplePersonalFinancesRule)));
 
             var factory = new SessionFactory(repository);
             _session = factory.CreateSession();

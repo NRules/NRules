@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NRules.Core.Rete
 {
@@ -25,20 +26,46 @@ namespace NRules.Core.Rete
 
         public void PropagateAssert(object factObject)
         {
-            var fact = new Fact(factObject);
+            Fact fact;
+            if (factObject == null)
+            {
+                throw new ArgumentNullException("factObject");
+            }
+            if (_factMap.TryGetValue(factObject, out fact))
+            {
+                throw new ArgumentException("Fact for insert already exists", "factObject");
+            }
+            fact = new Fact(factObject);
             _factMap[factObject] = fact;
             _root.PropagateAssert(fact);
         }
 
         public void PropagateUpdate(object factObject)
         {
-            Fact fact = _factMap[factObject];
+            Fact fact;
+            if (factObject == null)
+            {
+                throw new ArgumentNullException("factObject");
+            }
+            if (!_factMap.TryGetValue(factObject, out fact))
+            {
+                throw new ArgumentException("Fact for update does not exist", "factObject");
+            }
             _root.PropagateUpdate(fact);
         }
 
         public void PropagateRetract(object factObject)
         {
-            Fact fact = _factMap[factObject];
+            Fact fact;
+            if (factObject == null)
+            {
+                throw new ArgumentNullException("factObject");
+            }
+            if (!_factMap.TryGetValue(factObject, out fact))
+            {
+                throw new ArgumentException("Fact for retract does not exist", "factObject");
+            }
+            _factMap.Remove(factObject);
             _root.PropagateRetract(fact);
         }
     }
