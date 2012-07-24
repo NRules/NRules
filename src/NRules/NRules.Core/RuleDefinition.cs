@@ -8,17 +8,18 @@ namespace NRules.Core
 {
     internal class RuleDefinition : IRuleDefinition, ILeftHandSide, IRightHandSide
     {
-        private readonly Rule _rule;
+        private readonly CompiledRule _rule;
 
-        public RuleDefinition(Rule rule)
+        public RuleDefinition(CompiledRule rule)
         {
             _rule = rule;
         }
 
         public ILeftHandSide If<T>(Expression<Func<T, bool>> condition)
         {
-            CheckDeclaration(typeof (T));
-            _rule.Conditions.Add(new Condition<T>(condition));
+            var declaration = CheckDeclaration(typeof (T));
+            var conditionElement = CreateConditionElement(condition);
+            declaration.Conditions.Add(conditionElement);
             return this;
         }
 
@@ -26,14 +27,24 @@ namespace NRules.Core
         {
             CheckDeclaration(typeof (T1));
             CheckDeclaration(typeof (T2));
-            _rule.JoinConditions.Add(new JoinCondition<T1, T2>(condition));
+            var conditionElement = CreateConditionElement(condition);
+            _rule.Conditions.Add(conditionElement);
             return this;
         }
 
-        private void CheckDeclaration(Type type)
+        public ILeftHandSide Collect<T>(Expression<Func<T, bool>> itemCondition)
         {
-            if (_rule.Declarations.Any(d => d.Type == type)) return;
-            _rule.Declarations.Add(new Declaration(string.Empty, type));
+            var conditionElement = CreateConditionElement(itemCondition);
+            var compositeDeclaration = new CompositeDeclaration(new CollectionAggregate<T>());
+            compositeDeclaration.Conditions.Add(conditionElement);
+            compositeDeclaration.FactTypes.Add(typeof (T));
+            _rule.Composites.Add(compositeDeclaration);
+            return this;
+        }
+
+        public ILeftHandSide Collect<T1, T2>(Expression<Func<T1, T2, bool>> itemCondition)
+        {
+            return this;
         }
 
         public IRightHandSide Do(Action<IActionContext> action)
@@ -50,6 +61,33 @@ namespace NRules.Core
         public IRightHandSide Then()
         {
             return this;
+        }
+
+        private IDeclaration CheckDeclaration(Type type)
+        {
+            var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type);
+            if (declaration == null)
+            {
+                declaration = new Declaration(string.Empty, type);
+                _rule.Declarations.Add(declaration);
+            }
+            return declaration;
+        }
+
+        private Condition CreateConditionElement<T>(Expression<Func<T, bool>> condition)
+        {
+            string key = condition.ToString();
+            Delegate compiledExpression = condition.Compile();
+            var conditionElement = new Condition(key, compiledExpression, new[] {typeof (T)});
+            return conditionElement;
+        }
+
+        private Condition CreateConditionElement<T1, T2>(Expression<Func<T1, T2, bool>> condition)
+        {
+            string key = condition.ToString();
+            Delegate compiledExpression = condition.Compile();
+            var conditionElement = new Condition(key, compiledExpression, new[] {typeof (T1), typeof (T2)});
+            return conditionElement;
         }
     }
 }

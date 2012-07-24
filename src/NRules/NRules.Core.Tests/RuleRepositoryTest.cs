@@ -79,7 +79,7 @@ namespace NRules.Core.Tests
             target.AddRuleSet(_ruleAssembly);
 
             // Act
-            List<Rule> rules = target.Compile().ToList();
+            List<CompiledRule> rules = target.Compile().ToList();
 
             // Assert
             Assert.AreEqual(1, rules.Count);
@@ -90,20 +90,20 @@ namespace NRules.Core.Tests
         }
 
         [Test]
-        public void Compile_ValidRulesInAssembly_ReturnsCorrectConditions()
+        public void Compile_ValidRulesInAssembly_ReturnsCorrectDeclarationConditions()
         {
             // Arrange
             var target = CreateTarget();
             target.AddRuleSet(_ruleAssembly);
 
             // Act
-            List<Rule> rules = target.Compile().ToList();
+            List<CompiledRule> rules = target.Compile().ToList();
 
             // Assert
             Assert.AreEqual(1, rules.Count);
-            List<ICondition> conditions = rules[0].Conditions.ToList();
+            List<ICondition> conditions = rules[0].Declarations.First().Conditions.ToList();
             Assert.AreEqual(1, conditions.Count);
-            Assert.AreEqual(typeof (TestFact1), conditions[0].FactType);
+            Assert.AreEqual(typeof (TestFact1), conditions[0].FactTypes.First());
             Assert.True(conditions[0].IsSatisfiedBy(_helloFact));
             Assert.False(conditions[0].IsSatisfiedBy(_goodbyeFact));
         }
@@ -116,11 +116,11 @@ namespace NRules.Core.Tests
             target.AddRuleSet(_ruleAssembly);
 
             // Act
-            List<Rule> rules = target.Compile().ToList();
+            List<CompiledRule> rules = target.Compile().ToList();
 
             // Assert
             Assert.AreEqual(1, rules.Count);
-            List<IJoinCondition> joinConditions = rules[0].JoinConditions.ToList();
+            List<ICondition> joinConditions = rules[0].Conditions.ToList();
             Assert.AreEqual(1, joinConditions.Count);
             Assert.True(joinConditions[0].FactTypes.Contains(typeof (TestFact1)));
             Assert.True(joinConditions[0].FactTypes.Contains(typeof (TestFact2)));
@@ -138,7 +138,7 @@ namespace NRules.Core.Tests
             target.AddRuleSet(_ruleAssembly);
 
             // Act
-            List<Rule> rules = target.Compile().ToList();
+            List<CompiledRule> rules = target.Compile().ToList();
 
             // Assert
             Assert.AreEqual(1, rules.Count);

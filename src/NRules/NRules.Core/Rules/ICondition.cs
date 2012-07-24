@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using NRules.Core.Rete;
 
-namespace NRules.Core
+namespace NRules.Core.Rules
 {
-    internal interface IJoinCondition
+    internal interface ICondition
     {
         string Key { get; }
         IEnumerable<Type> FactTypes { get; }

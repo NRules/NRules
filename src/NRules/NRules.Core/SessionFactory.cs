@@ -10,8 +10,8 @@ namespace NRules.Core
     {
         private readonly IAgenda _agenda;
         private readonly INetwork _network;
-        private readonly IEnumerable<Rule> _rules;
-        private readonly Dictionary<string, Rule> _ruleMap;
+        private readonly IEnumerable<CompiledRule> _rules;
+        private readonly Dictionary<string, CompiledRule> _ruleMap;
 
         public SessionFactory(RuleRepository repository)
         {
@@ -29,10 +29,10 @@ namespace NRules.Core
             return session;
         }
 
-        private INetwork BuildReteNetwork(IEnumerable<Rule> rules, Func<IReteBuilder> builderFactory)
+        private INetwork BuildReteNetwork(IEnumerable<CompiledRule> rules, Func<IReteBuilder> builderFactory)
         {
             IReteBuilder reteBuilder = builderFactory.Invoke();
-            foreach (Rule rule in rules)
+            foreach (CompiledRule rule in rules)
             {
                 reteBuilder.AddRule(rule);
             }

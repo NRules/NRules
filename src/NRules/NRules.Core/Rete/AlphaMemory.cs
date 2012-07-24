@@ -6,7 +6,7 @@ namespace NRules.Core.Rete
     internal class AlphaMemory : IObjectSink, IObjectMemory
     {
         private readonly List<Fact> _facts = new List<Fact>();
-        private IObjectSink _sink;
+        private readonly List<IObjectSink> _sinks = new List<IObjectSink>();
 
         public Type FactType { get; private set; }
 
@@ -18,14 +18,14 @@ namespace NRules.Core.Rete
         public void PropagateAssert(Fact fact)
         {
             _facts.Add(fact);
-            _sink.PropagateAssert(fact);
+            _sinks.ForEach(s => s.PropagateAssert(fact));
         }
 
         public void PropagateUpdate(Fact fact)
         {
             if (_facts.Contains(fact))
             {
-                _sink.PropagateUpdate(fact);
+                _sinks.ForEach(s => s.PropagateUpdate(fact));
             }
             else
             {
@@ -36,7 +36,7 @@ namespace NRules.Core.Rete
         public void PropagateRetract(Fact fact)
         {
             _facts.Remove(fact);
-            _sink.PropagateRetract(fact);
+            _sinks.ForEach(s => s.PropagateRetract(fact));
         }
 
         public IEnumerable<Fact> GetFacts()
@@ -46,7 +46,7 @@ namespace NRules.Core.Rete
 
         public void Attach(IObjectSink sink)
         {
-            _sink = sink;
+            _sinks.Add(sink);
         }
     }
 }

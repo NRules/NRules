@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NRules.Core.Rete
 {
@@ -8,15 +9,15 @@ namespace NRules.Core.Rete
         private readonly List<Tuple> _leftTuples = new List<Tuple>();
         private readonly List<Tuple> _childTuples = new List<Tuple>();
 
-        public Tuple(Fact fact, ITupleMemory origin)
+        public Tuple(ITupleMemory origin)
         {
-            RightFact = fact;
-            RightFact.ChildTuples.Add(this);
             Origin = origin;
         }
 
-        public Tuple(Tuple left, Fact right, ITupleMemory origin) : this(right, origin)
+        public Tuple(Tuple left, Fact right, ITupleMemory origin) : this(origin)
         {
+            RightFact = right;
+            RightFact.ChildTuples.Add(this);
             _leftTuples.AddRange(left._leftTuples);
             _leftTuples.Add(left);
             LeftTuple = left;
@@ -33,9 +34,14 @@ namespace NRules.Core.Rete
 
         public ITupleMemory Origin { get; private set; }
 
+        public object[] GetFactObjects()
+        {
+            return this.Select(f => f.Object).ToArray();
+        }
+
         public void Clear()
         {
-            RightFact.ChildTuples.Remove(this);
+            if (RightFact != null) RightFact.ChildTuples.Remove(this);
             RightFact = null;
 
             if (LeftTuple != null) LeftTuple.ChildTuples.Remove(this);
@@ -65,6 +71,7 @@ namespace NRules.Core.Rete
             public FactEnumerator(Tuple tuple)
             {
                 _rootTuple = tuple;
+                _index = 1;
             }
 
             public void Dispose()
@@ -84,7 +91,7 @@ namespace NRules.Core.Rete
             public void Reset()
             {
                 _currentTuple = null;
-                _index = 0;
+                _index = 1;
             }
 
             public Fact Current

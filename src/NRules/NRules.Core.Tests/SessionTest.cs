@@ -13,8 +13,8 @@ namespace NRules.Core.Tests
         private IAgenda _agenda;
         private INetwork _network;
 
-        private List<Rule> _rules;
-        private Dictionary<string, Rule> _ruleMap;
+        private List<CompiledRule> _rules;
+        private Dictionary<string, CompiledRule> _ruleMap;
 
         [SetUp]
         public void Setup()
@@ -22,11 +22,11 @@ namespace NRules.Core.Tests
             _agenda = MockRepository.GenerateStub<IAgenda>();
             _network = MockRepository.GenerateStub<INetwork>();
 
-            _rules = new List<Rule>
+            _rules = new List<CompiledRule>
                          {
-                             new Rule("rule1"),
-                             new Rule("rule2"),
-                             new Rule("rule3")
+                             new CompiledRule("rule1"),
+                             new CompiledRule("rule2"),
+                             new CompiledRule("rule3")
                          };
             _ruleMap = _rules.ToDictionary(x => x.Handle);
         }

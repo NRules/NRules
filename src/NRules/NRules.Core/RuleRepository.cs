@@ -55,7 +55,7 @@ namespace NRules.Core
             _ruleSets.Add(ruleSet);
         }
 
-        internal IEnumerable<Rule> Compile()
+        internal IEnumerable<CompiledRule> Compile()
         {
             if (!_ruleSets.Any())
                 throw new ArgumentException(
@@ -65,13 +65,13 @@ namespace NRules.Core
             {
                 foreach (Type ruleType in ruleSet.RuleTypes)
                 {
-                    Rule rule = InstantiateRule(ruleType);
+                    CompiledRule rule = InstantiateRule(ruleType);
                     yield return rule;
                 }
             }
         }
 
-        private Rule InstantiateRule(Type ruleType)
+        private CompiledRule InstantiateRule(Type ruleType)
         {
             IRule ruleInstance;
 
@@ -91,7 +91,7 @@ namespace NRules.Core
                                       _diContainer.GetType()));
             }
 
-            var rule = new Rule(ruleInstance.GetType().FullName);
+            var rule = new CompiledRule(ruleInstance.GetType().FullName);
             var definition = new RuleDefinition(rule);
 
             ruleInstance.Define(definition);

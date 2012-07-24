@@ -1,10 +1,11 @@
 ﻿using NRules.Core.IntegrationTests.TestAssets;
+using NRules.Core.IntegrationTests.TestRules;
 using NUnit.Framework;
 
 namespace NRules.Core.IntegrationTests
 {
     [TestFixture]
-    public class TwoFactRuleTests : BaseRuleTestFixture<TwoFactRule>
+    public class TwoFactRuleTests : BaseRuleTestFixture
     {
         [Test]
         public void TwoFactRule_MatchingFacts_FiresOnce()
@@ -206,6 +207,11 @@ namespace NRules.Core.IntegrationTests
 
             //Assert
             AssertDidNotFire();
+        }
+
+        protected override void SetUpRules()
+        {
+            SetUpRule<TwoFactRule>();
         }
     }
 }

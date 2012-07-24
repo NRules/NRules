@@ -1,4 +1,6 @@
-﻿namespace NRules.Core.Rete
+﻿using NRules.Core.Rules;
+
+namespace NRules.Core.Rete
 {
     internal class SelectionNode : AlphaNode
     {

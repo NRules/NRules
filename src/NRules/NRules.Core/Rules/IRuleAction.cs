@@ -1,4 +1,4 @@
-namespace NRules.Core
+namespace NRules.Core.Rules
 {
     internal interface IRuleAction
     {

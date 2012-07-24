@@ -2,26 +2,26 @@
 {
     internal class AlphaMemoryAdapter : AlphaNode
     {
-        private readonly AlphaMemory _memory;
+        public AlphaMemory AlphaMemory { get; private set; }
 
         public AlphaMemoryAdapter(AlphaMemory memory)
         {
-            _memory = memory;
+            AlphaMemory = memory;
         }
 
         public override void PropagateAssert(Fact fact)
         {
-            _memory.PropagateAssert(fact);
+            AlphaMemory.PropagateAssert(fact);
         }
 
         public override void PropagateUpdate(Fact fact)
         {
-            _memory.PropagateUpdate(fact);
+            AlphaMemory.PropagateUpdate(fact);
         }
 
         public override void PropagateRetract(Fact fact)
         {
-            _memory.PropagateRetract(fact);
+            AlphaMemory.PropagateRetract(fact);
         }
 
         public override void ForceRetract(Fact fact)

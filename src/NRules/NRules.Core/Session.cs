@@ -16,9 +16,9 @@ namespace NRules.Core
     {
         private readonly IAgenda _agenda;
         private readonly INetwork _network;
-        private readonly IDictionary<string, Rule> _ruleMap;
+        private readonly IDictionary<string, CompiledRule> _ruleMap;
 
-        public Session(INetwork network, IAgenda agenda, Dictionary<string, Rule> ruleMap)
+        public Session(INetwork network, IAgenda agenda, Dictionary<string, CompiledRule> ruleMap)
         {
             _network = network;
             _agenda = agenda;
@@ -45,9 +45,9 @@ namespace NRules.Core
             while (_agenda.ActivationQueue.Count() > 0)
             {
                 Activation activation = _agenda.ActivationQueue.Dequeue();
-                var context = new ActionContext(activation.Tuple);
+                var context = new ActionContext(_network, activation.Tuple);
 
-                Rule rule = _ruleMap[activation.RuleHandle];
+                CompiledRule rule = _ruleMap[activation.RuleHandle];
 
                 foreach (IRuleAction action in rule.Actions)
                 {

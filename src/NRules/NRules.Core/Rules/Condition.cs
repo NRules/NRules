@@ -1,36 +1,41 @@
 ﻿using System;
-using System.Linq.Expressions;
+using System.Collections.Generic;
+using System.Linq;
 using NRules.Core.Rete;
 
 namespace NRules.Core.Rules
 {
-    internal class Condition<T> : ICondition
+    internal class Condition : ICondition
     {
-        private readonly Expression<Func<T, bool>> _expression;
-        private readonly Func<T, bool> _compiledExpression;
+        private readonly Delegate _compiledExpression;
+        private readonly List<Type> _factTypes = new List<Type>();
 
         public string Key { get; private set; }
-        public Type FactType { get; private set; }
 
-        public Condition(Expression<Func<T, bool>> expression)
+        public IEnumerable<Type> FactTypes
         {
-            _expression = expression;
-            _compiledExpression = _expression.Compile();
-            FactType = typeof (T);
-            Key = _expression.ToString();
+            get { return _factTypes; }
         }
 
-        public bool IsSatisfiedBy(Fact fact)
+        public bool IsSatisfiedBy(params Fact[] facts)
         {
             try
             {
-                bool result = _compiledExpression.Invoke((T) fact.Object);
+                var objects = facts.Select(f => f.Object).ToArray();
+                var result = (bool) _compiledExpression.DynamicInvoke(objects);
                 return result;
             }
             catch (InvalidCastException e)
             {
                 throw new InvalidOperationException("Fact type does not match condition type", e);
             }
+        }
+
+        public Condition(string key, Delegate compiledExpression, IEnumerable<Type> inputTypes)
+        {
+            Key = key;
+            _compiledExpression = compiledExpression;
+            _factTypes.AddRange(inputTypes);
         }
     }
 }

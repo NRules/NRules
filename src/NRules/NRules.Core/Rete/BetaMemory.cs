@@ -7,11 +7,6 @@ namespace NRules.Core.Rete
         private readonly List<Tuple> _tuples = new List<Tuple>();
         private ITupleSink _sink;
 
-        public BetaMemory(ITupleSource source)
-        {
-            source.Attach(this);
-        }
-
         public void PropagateAssert(Tuple tuple)
         {
             _tuples.Add(tuple);

@@ -1,11 +1,12 @@
 ﻿using System;
 using NRules.Core.IntegrationTests.TestAssets;
+using NRules.Core.IntegrationTests.TestRules;
 using NUnit.Framework;
 
 namespace NRules.Core.IntegrationTests
 {
     [TestFixture]
-    public class OneFactRuleTests : BaseRuleTestFixture<OneFactRule>
+    public class OneFactRuleTests : BaseRuleTestFixture
     {
         [Test]
         public void OneFactRule_OneMatchingFact_FiresOnce()
@@ -145,6 +146,11 @@ namespace NRules.Core.IntegrationTests
 
             //Act - Assert
             Assert.Throws<ArgumentException>(() => Session.Retract(fact));
+        }
+
+        protected override void SetUpRules()
+        {
+            SetUpRule<OneFactRule>();
         }
     }
 }

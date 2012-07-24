@@ -1,15 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace NRules.Core.Rules
 {
-    internal interface IDeclaration
-    {
-        string Name { get; }
-        Type Type { get; }
-    }
-
     internal class Declaration : IDeclaration, IEquatable<Declaration>
     {
+        private readonly List<ICondition> _conditions = new List<ICondition>();
+
         public Declaration(string name, Type type)
         {
             Name = name;
@@ -18,6 +15,11 @@ namespace NRules.Core.Rules
 
         public string Name { get; private set; }
         public Type Type { get; private set; }
+
+        public IList<ICondition> Conditions
+        {
+            get { return _conditions; }
+        }
 
         public bool Equals(Declaration other)
         {

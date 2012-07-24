@@ -7,7 +7,7 @@ namespace NRules.Core.Rete
 {
     internal interface IReteBuilder
     {
-        void AddRule(Rule rule);
+        void AddRule(CompiledRule rule);
         INetwork GetNetwork();
     }
 
@@ -16,77 +16,149 @@ namespace NRules.Core.Rete
         private readonly RootNode _root = new RootNode();
         private readonly EventAggregator _aggregator = new EventAggregator();
 
-        public void AddRule(Rule rule)
+        public void AddRule(CompiledRule rule)
         {
-            var memories = new Queue<AlphaMemory>();
+            var context = new ReteBuilderContext(rule);
 
             foreach (var declaration in rule.Declarations)
             {
                 Type declarationType = declaration.Type;
-                TypeNode typeNode = _root.ChildNodes
-                    .Cast<TypeNode>().FirstOrDefault(tn => tn.FilterType == declarationType);
+                IEnumerable<ICondition> conditions = declaration.Conditions;
 
-                if (typeNode == null)
-                {
-                    typeNode = new TypeNode(declarationType);
-                    _root.ChildNodes.Add(typeNode);
-                }
-
-                AlphaNode currentNode = typeNode;
-
-                IEnumerable<ICondition> conditions = rule.Conditions.Where(c => c.FactType == declarationType);
-                foreach (var condition in conditions)
-                {
-                    currentNode = new SelectionNode(condition);
-                    typeNode.ChildNodes.Add(currentNode);
-                }
-
-                var memory = new AlphaMemory(declarationType);
-                var adapter = new AlphaMemoryAdapter(memory);
-                currentNode.ChildNodes.Add(adapter);
-                memories.Enqueue(memory);
+                BuildAlphaSubtree(context, declarationType, conditions);
             }
 
-            var currentFactTypes = new List<Type>();
-            var joinConditions = new List<IJoinCondition>(rule.JoinConditions);
+            ITupleMemory left = new DummyNode();
 
-            //First
-            var alphaMemory = memories.Dequeue();
-            currentFactTypes.Add(alphaMemory.FactType);
-            var betaAdapter = new BetaAdapter(alphaMemory);
-            ITupleMemory left = new BetaMemory(betaAdapter);
+            var joinConditions = new List<ICondition>(rule.Conditions);
+            left = BuildBetaSubtree(context, left, joinConditions);
 
-            //All other
-            while (memories.Count > 0)
+            foreach (var composite in rule.Composites)
             {
-                var right = memories.Dequeue();
-                currentFactTypes.Add(right.FactType);
-
-                var join = new JoinNode(left, right);
-
-                IEnumerable<IJoinCondition> matchingConditions =
-                    rule.JoinConditions.Where(
-                        jc => jc.FactTypes.All(currentFactTypes.Contains));
-
-                foreach (var joinCondition in matchingConditions)
-                {
-                    joinConditions.Remove(joinCondition);
-                    var selectionTable = new List<int>();
-                    foreach (var factType in joinCondition.FactTypes)
-                    {
-                        int selectionIndex = currentFactTypes.FindIndex(0, t => factType == t);
-                        selectionTable.Add(selectionIndex);
-                    }
-
-                    var joinConditionAdapter = new JoinConditionAdaptor(joinCondition, selectionTable.ToArray());
-                    join.Conditions.Add(joinConditionAdapter);
-                }
-
-                left = new BetaMemory(join);
+                left = BuildComposite(context, left, composite);
             }
 
             var ruleNode = new RuleNode(rule.Handle, _aggregator);
             left.Attach(ruleNode);
+        }
+
+        private ITupleMemory BuildComposite(ReteBuilderContext context, ITupleMemory left,
+                                            ICompositeDeclaration composite)
+        {
+            ITupleMemory aggregateLeft = new DummyNode();
+            foreach (var type in composite.FactTypes)
+            {
+                BuildAlphaSubtree(context, type, new ICondition[] {});
+                aggregateLeft = BuildBetaSubtree(context, aggregateLeft, composite.Conditions);
+            }
+
+            var aggregateNode = new AggregateNode(composite.AggregationStrategy, aggregateLeft);
+            left = BuildJoin(left, composite.Conditions, composite.FactTypes.ToList(), aggregateNode);
+
+            return left;
+        }
+
+        private ITupleMemory BuildBetaSubtree(ReteBuilderContext context, ITupleMemory left,
+                                              IList<ICondition> conditions)
+        {
+            var currentFactTypes = new List<Type>();
+
+            while (context.AlphaMemories.Count > 0)
+            {
+                var right = context.AlphaMemories.Dequeue();
+                currentFactTypes.Add(right.FactType);
+
+                left = BuildJoin(left, conditions, currentFactTypes, right);
+            }
+
+            return left;
+        }
+
+        private ITupleMemory BuildJoin(ITupleMemory left, IList<ICondition> conditions, List<Type> currentFactTypes,
+                                       IObjectMemory right)
+        {
+            var join = new JoinNode(left, right);
+            left.Attach(@join);
+            right.Attach(@join);
+
+            IEnumerable<ICondition> matchingConditions =
+                conditions.Where(
+                    jc => jc.FactTypes.All(currentFactTypes.Contains)).ToList();
+
+            foreach (var condition in matchingConditions)
+            {
+                conditions.Remove(condition);
+                var selectionTable = new List<int>();
+                foreach (var factType in condition.FactTypes)
+                {
+                    int selectionIndex = currentFactTypes.FindIndex(0, t => factType == t);
+                    selectionTable.Add(selectionIndex);
+                }
+
+                var joinConditionAdapter = new JoinConditionAdaptor(condition, selectionTable.ToArray());
+                @join.Conditions.Add(joinConditionAdapter);
+            }
+
+            left = new BetaMemory();
+            @join.Attach(left);
+            return left;
+        }
+
+        private void BuildAlphaSubtree(ReteBuilderContext context, Type declarationType,
+                                       IEnumerable<ICondition> conditions)
+        {
+            TypeNode typeNode = BuildTypeNode(declarationType, _root);
+            AlphaNode currentNode = typeNode;
+
+            foreach (var condition in conditions)
+            {
+                SelectionNode selectionNode = BuildSlectionNode(condition, currentNode);
+                currentNode = selectionNode;
+            }
+
+            var memory = BuildAlphaMemory(declarationType, currentNode);
+            context.AlphaMemories.Enqueue(memory);
+        }
+
+        private TypeNode BuildTypeNode(Type declarationType, AlphaNode parent)
+        {
+            TypeNode typeNode = parent.ChildNodes
+                .Cast<TypeNode>().FirstOrDefault(tn => tn.FilterType == declarationType);
+
+            if (typeNode == null)
+            {
+                typeNode = new TypeNode(declarationType);
+                parent.ChildNodes.Add(typeNode);
+            }
+            return typeNode;
+        }
+
+        private SelectionNode BuildSlectionNode(ICondition condition, AlphaNode parent)
+        {
+            SelectionNode selectionNode = parent.ChildNodes
+                .OfType<SelectionNode>().FirstOrDefault(sn => sn.Condition.Key == condition.Key);
+
+            if (selectionNode == null)
+            {
+                selectionNode = new SelectionNode(condition);
+                parent.ChildNodes.Add(selectionNode);
+            }
+            return selectionNode;
+        }
+
+        private AlphaMemory BuildAlphaMemory(Type declarationType, AlphaNode parent)
+        {
+            AlphaMemoryAdapter adapter = parent.ChildNodes
+                .OfType<AlphaMemoryAdapter>().FirstOrDefault();
+
+            if (adapter == null)
+            {
+                var memory = new AlphaMemory(declarationType);
+                adapter = new AlphaMemoryAdapter(memory);
+                parent.ChildNodes.Add(adapter);
+            }
+
+            return adapter.AlphaMemory;
         }
 
         public INetwork GetNetwork()

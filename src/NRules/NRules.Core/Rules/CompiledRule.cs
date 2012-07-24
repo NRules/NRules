@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace NRules.Core.Rules
 {
-    internal class Rule
+    internal class CompiledRule
     {
         private readonly ISet<IDeclaration> _declarations = new HashSet<IDeclaration>();
         private readonly IList<ICondition> _conditions = new List<ICondition>();
-        private readonly IList<IJoinCondition> _joinConditions = new List<IJoinCondition>();
+        private readonly IList<ICompositeDeclaration> _composites = new List<ICompositeDeclaration>();
         private readonly IList<IRuleAction> _actions = new List<IRuleAction>();
 
-        public Rule(string name)
+        public CompiledRule(string name)
         {
             Handle = Guid.NewGuid().ToString();
             Name = name;
@@ -29,9 +29,9 @@ namespace NRules.Core.Rules
             get { return _conditions; }
         }
 
-        public IList<IJoinCondition> JoinConditions
+        public IList<ICompositeDeclaration> Composites
         {
-            get { return _joinConditions; }
+            get { return _composites; }
         }
 
         public IList<IRuleAction> Actions

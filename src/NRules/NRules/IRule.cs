@@ -1,5 +1,4 @@
-﻿using System;
-using NRules.Dsl;
+﻿using NRules.Dsl;
 
 namespace NRules
 {

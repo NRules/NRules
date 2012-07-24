@@ -16,9 +16,6 @@ namespace NRules.Core.Rete
             _leftSource = leftSource;
             _rightSource = rightSource;
 
-            leftSource.Attach(this);
-            rightSource.Attach(this);
-
             Conditions = new List<JoinConditionAdaptor>();
         }
 
