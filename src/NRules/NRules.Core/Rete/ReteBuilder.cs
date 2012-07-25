@@ -20,22 +20,29 @@ namespace NRules.Core.Rete
         {
             var context = new ReteBuilderContext(rule);
 
-            foreach (var declaration in rule.Declarations)
+            var selectionPredicates = rule.Predicates
+                .Where(p => p.PredicateType == PredicateTypes.Selection);
+            foreach (var predicate in selectionPredicates)
             {
-                Type declarationType = declaration.Type;
-                IEnumerable<ICondition> conditions = declaration.Conditions;
+                Type declarationType = predicate.Declarations.First().Type;
+                IEnumerable<ICondition> conditions = predicate.Conditions;
 
                 BuildAlphaSubtree(context, declarationType, conditions);
             }
 
             ITupleMemory left = new DummyNode();
 
-            var joinConditions = new List<ICondition>(rule.Conditions);
+            var joinConditions = rule.Predicates
+                .Where(p => p.PredicateType == PredicateTypes.Join)
+                .SelectMany(p => p.Conditions).ToList();
             left = BuildBetaSubtree(context, left, joinConditions);
 
-            foreach (var composite in rule.Composites)
+            var aggregatePredicates = rule.Predicates
+                .Where(p => p.PredicateType == PredicateTypes.Aggregate);
+            foreach (var predicate in aggregatePredicates)
             {
-                left = BuildComposite(context, left, composite);
+                context.BetaFactTypes.Clear();
+                left = BuildComposite(context, left, predicate);
             }
 
             var ruleNode = new RuleNode(rule.Handle, _aggregator);
@@ -43,17 +50,17 @@ namespace NRules.Core.Rete
         }
 
         private ITupleMemory BuildComposite(ReteBuilderContext context, ITupleMemory left,
-                                            ICompositeDeclaration composite)
+                                            IPredicate aggregatePredicate)
         {
             ITupleMemory aggregateLeft = new DummyNode();
-            foreach (var type in composite.FactTypes)
+            foreach (var declaration in aggregatePredicate.Declarations)
             {
-                BuildAlphaSubtree(context, type, new ICondition[] {});
-                aggregateLeft = BuildBetaSubtree(context, aggregateLeft, composite.Conditions);
+                BuildAlphaSubtree(context, declaration.Type, new ICondition[] {});
             }
+            aggregateLeft = BuildBetaSubtree(context, aggregateLeft, aggregatePredicate.Conditions);
 
-            var aggregateNode = new AggregateNode(composite.AggregationStrategy, aggregateLeft);
-            left = BuildJoin(left, composite.Conditions, composite.FactTypes.ToList(), aggregateNode);
+            var aggregateNode = new AggregateNode(aggregatePredicate.AggregationStrategy, aggregateLeft);
+            left = BuildJoin(context, left, aggregatePredicate.Conditions, aggregateNode);
 
             return left;
         }
@@ -61,20 +68,18 @@ namespace NRules.Core.Rete
         private ITupleMemory BuildBetaSubtree(ReteBuilderContext context, ITupleMemory left,
                                               IList<ICondition> conditions)
         {
-            var currentFactTypes = new List<Type>();
-
             while (context.AlphaMemories.Count > 0)
             {
                 var right = context.AlphaMemories.Dequeue();
-                currentFactTypes.Add(right.FactType);
+                context.BetaFactTypes.Add(right.FactType);
 
-                left = BuildJoin(left, conditions, currentFactTypes, right);
+                left = BuildJoin(context, left, conditions, right);
             }
 
             return left;
         }
 
-        private ITupleMemory BuildJoin(ITupleMemory left, IList<ICondition> conditions, List<Type> currentFactTypes,
+        private ITupleMemory BuildJoin(ReteBuilderContext context, ITupleMemory left, IList<ICondition> conditions,
                                        IObjectMemory right)
         {
             var join = new JoinNode(left, right);
@@ -83,7 +88,7 @@ namespace NRules.Core.Rete
 
             IEnumerable<ICondition> matchingConditions =
                 conditions.Where(
-                    jc => jc.FactTypes.All(currentFactTypes.Contains)).ToList();
+                    jc => jc.FactTypes.All(context.BetaFactTypes.Contains)).ToList();
 
             foreach (var condition in matchingConditions)
             {
@@ -91,7 +96,7 @@ namespace NRules.Core.Rete
                 var selectionTable = new List<int>();
                 foreach (var factType in condition.FactTypes)
                 {
-                    int selectionIndex = currentFactTypes.FindIndex(0, t => factType == t);
+                    int selectionIndex = context.BetaFactTypes.FindIndex(0, t => factType == t);
                     selectionTable.Add(selectionIndex);
                 }
 
@@ -136,7 +141,7 @@ namespace NRules.Core.Rete
         private SelectionNode BuildSlectionNode(ICondition condition, AlphaNode parent)
         {
             SelectionNode selectionNode = parent.ChildNodes
-                .OfType<SelectionNode>().FirstOrDefault(sn => sn.Condition.Key == condition.Key);
+                .OfType<SelectionNode>().FirstOrDefault(sn => sn.Condition.Equals(condition));
 
             if (selectionNode == null)
             {

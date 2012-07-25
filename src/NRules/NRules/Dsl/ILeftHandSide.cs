@@ -8,6 +8,6 @@ namespace NRules.Dsl
         ILeftHandSide If<T>(Expression<Func<T, bool>> condition);
         ILeftHandSide If<T1, T2>(Expression<Func<T1, T2, bool>> condition);
         ILeftHandSide Collect<T>(Expression<Func<T, bool>> itemCondition);
-        ILeftHandSide Collect<T1, T2>(Expression<Func<T1, T2, bool>> itemCondition);
+        ILeftHandSide Exists<T>(Expression<Func<T, bool>> condition);
     }
 }

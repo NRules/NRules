@@ -19,30 +19,39 @@ namespace NRules.Core
         {
             var declaration = CheckDeclaration(typeof (T));
             var conditionElement = CreateConditionElement(condition);
-            declaration.Conditions.Add(conditionElement);
+            var predicate = new Predicate(PredicateTypes.Selection);
+            predicate.Declarations.Add(declaration);
+            predicate.Conditions.Add(conditionElement);
+            _rule.Predicates.Add(predicate);
             return this;
         }
 
         public ILeftHandSide If<T1, T2>(Expression<Func<T1, T2, bool>> condition)
         {
-            CheckDeclaration(typeof (T1));
-            CheckDeclaration(typeof (T2));
+            var declaration1 = CheckDeclaration(typeof (T1));
+            var declaration2 = CheckDeclaration(typeof (T2));
             var conditionElement = CreateConditionElement(condition);
-            _rule.Conditions.Add(conditionElement);
+            var predicate = new Predicate(PredicateTypes.Join);
+            predicate.Declarations.Add(declaration1);
+            predicate.Declarations.Add(declaration2);
+            predicate.Conditions.Add(conditionElement);
+            _rule.Predicates.Add(predicate);
             return this;
         }
 
         public ILeftHandSide Collect<T>(Expression<Func<T, bool>> itemCondition)
         {
+            var localDeclaration = new Declaration(string.Empty, typeof (T));
             var conditionElement = CreateConditionElement(itemCondition);
-            var compositeDeclaration = new CompositeDeclaration(new CollectionAggregate<T>());
-            compositeDeclaration.Conditions.Add(conditionElement);
-            compositeDeclaration.FactTypes.Add(typeof (T));
-            _rule.Composites.Add(compositeDeclaration);
+            var predicate = new Predicate(PredicateTypes.Aggregate);
+            predicate.Declarations.Add(localDeclaration);
+            predicate.Conditions.Add(conditionElement);
+            predicate.AggregationStrategy = new CollectionAggregate<T>();
+            _rule.Predicates.Add(predicate);
             return this;
         }
 
-        public ILeftHandSide Collect<T1, T2>(Expression<Func<T1, T2, bool>> itemCondition)
+        public ILeftHandSide Exists<T>(Expression<Func<T, bool>> condition)
         {
             return this;
         }

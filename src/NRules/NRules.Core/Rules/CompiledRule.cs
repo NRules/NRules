@@ -5,10 +5,9 @@ namespace NRules.Core.Rules
 {
     internal class CompiledRule
     {
-        private readonly ISet<IDeclaration> _declarations = new HashSet<IDeclaration>();
-        private readonly IList<ICondition> _conditions = new List<ICondition>();
-        private readonly IList<ICompositeDeclaration> _composites = new List<ICompositeDeclaration>();
-        private readonly IList<IRuleAction> _actions = new List<IRuleAction>();
+        private readonly HashSet<IDeclaration> _declarations = new HashSet<IDeclaration>();
+        private readonly List<IPredicate> _predicates = new List<IPredicate>();
+        private readonly List<IRuleAction> _actions = new List<IRuleAction>();
 
         public CompiledRule(string name)
         {
@@ -24,14 +23,9 @@ namespace NRules.Core.Rules
             get { return _declarations; }
         }
 
-        public IList<ICondition> Conditions
+        public IList<IPredicate> Predicates
         {
-            get { return _conditions; }
-        }
-
-        public IList<ICompositeDeclaration> Composites
-        {
-            get { return _composites; }
+            get { return _predicates; }
         }
 
         public IList<IRuleAction> Actions

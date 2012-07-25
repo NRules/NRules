@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace NRules.Core.Rules
 {
@@ -7,6 +6,5 @@ namespace NRules.Core.Rules
     {
         string Name { get; }
         Type Type { get; }
-        IList<ICondition> Conditions { get; }
     }
 }

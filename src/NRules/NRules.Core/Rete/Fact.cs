@@ -17,10 +17,11 @@ namespace NRules.Core.Rete
         {
             Type result = @object.GetType();
 
-            Type genericCollectionType = result.GetInterfaces().FirstOrDefault(x =>
-                                                                               x.IsGenericType &&
-                                                                               x.GetGenericTypeDefinition() ==
-                                                                               typeof (IEnumerable<>));
+            Type genericCollectionType = result.GetInterfaces()
+                .FirstOrDefault(x =>
+                                x.IsGenericType &&
+                                x.GetGenericTypeDefinition() ==
+                                typeof (IEnumerable<>));
             if (genericCollectionType != null)
             {
                 result = typeof (IEnumerable<>).MakeGenericType(genericCollectionType.GetGenericArguments());

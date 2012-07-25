@@ -5,10 +5,17 @@ using NRules.Core.Rete;
 
 namespace NRules.Core.Rules
 {
-    internal class Condition : ICondition
+    internal class Condition : ICondition, IEquatable<Condition>
     {
         private readonly Delegate _compiledExpression;
         private readonly List<Type> _factTypes = new List<Type>();
+
+        public Condition(string key, Delegate compiledExpression, IEnumerable<Type> inputTypes)
+        {
+            Key = key;
+            _compiledExpression = compiledExpression;
+            _factTypes.AddRange(inputTypes);
+        }
 
         public string Key { get; private set; }
 
@@ -31,11 +38,24 @@ namespace NRules.Core.Rules
             }
         }
 
-        public Condition(string key, Delegate compiledExpression, IEnumerable<Type> inputTypes)
+        public bool Equals(Condition other)
         {
-            Key = key;
-            _compiledExpression = compiledExpression;
-            _factTypes.AddRange(inputTypes);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(other.Key, Key);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != typeof (Condition)) return false;
+            return Equals((Condition) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Key.GetHashCode();
         }
     }
 }

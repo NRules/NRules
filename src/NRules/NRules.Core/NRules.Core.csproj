@@ -45,7 +45,6 @@
     <Compile Include="CollectionAggregate.cs" />
     <Compile Include="Rete\DummyNode.cs" />
     <Compile Include="Rete\ReteBuilderContext.cs" />
-    <Compile Include="Rules\CompositeDeclaration.cs" />
     <Compile Include="Rules\IAggregate.cs" />
     <Compile Include="Rete\Activation.cs" />
     <Compile Include="Rete\AggregateNode.cs" />
@@ -57,10 +56,10 @@
     <Compile Include="Rete\IObjectSource.cs" />
     <Compile Include="Rete\ITupleSource.cs" />
     <Compile Include="Rete\JoinConditionAdaptor.cs" />
-    <Compile Include="Rules\ICompositeDeclaration.cs" />
     <Compile Include="Rules\ICondition.cs" />
     <Compile Include="Rules\IRuleAction.cs" />
     <Compile Include="Rules\IDeclaration.cs" />
+    <Compile Include="Rules\IPredicate.cs" />
     <Compile Include="Rules\RuleAction.cs" />
     <Compile Include="Agenda.cs" />
     <Compile Include="Rete\AlphaMemory.cs" />
@@ -85,6 +84,7 @@
     <Compile Include="RuleSet.cs" />
     <Compile Include="RuleRepository.cs" />
     <Compile Include="Rules\Declaration.cs" />
+    <Compile Include="Rules\Predicate.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionFactory.cs" />
