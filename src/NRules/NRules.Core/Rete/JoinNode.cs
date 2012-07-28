@@ -1,123 +1,40 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace NRules.Core.Rete
 {
-    internal class JoinNode : ITupleSink, ITupleSource, IObjectSink
+    internal class JoinNode : BetaNode
     {
-        private readonly ITupleMemory _leftSource;
-        private readonly IObjectMemory _rightSource;
-        private ITupleMemory _memory;
-
-        public IList<JoinConditionAdaptor> Conditions { get; private set; }
-
         public JoinNode(ITupleMemory leftSource, IObjectMemory rightSource)
+            : base(leftSource, rightSource)
         {
-            _leftSource = leftSource;
-            _rightSource = rightSource;
-
-            Conditions = new List<JoinConditionAdaptor>();
         }
 
-        public void PropagateAssert(Tuple leftTuple)
+        protected override void PropagateMatchedAssert(Tuple leftTuple, Fact rightFact)
         {
-            IEnumerable<Fact> rightFacts = _rightSource.GetFacts();
-            foreach (var rightFact in rightFacts)
-            {
-                PropagateAssertedMatchingTuple(leftTuple, rightFact);
-            }
+            var newTuple = CreateTuple(leftTuple, rightFact);
+            Memory.PropagateAssert(newTuple);
         }
 
-        public void PropagateUpdate(Tuple tuple)
+        protected override void PropagateMatchedUpdate(Tuple leftTuple, Fact rightFact)
         {
-            var childTuples = tuple.ChildTuples.Where(t => t.Origin == _memory).ToList();
-            if (childTuples.Any())
+            Tuple tuple = leftTuple.ChildTuples.FirstOrDefault(t => t.RightFact == rightFact);
+            if (tuple == null)
             {
-                foreach (var childTuple in childTuples)
-                {
-                    PropagateUpdatedMatchingTuple(childTuple);
-                }
+                PropagateMatchedAssert(leftTuple, rightFact);
             }
             else
             {
-                PropagateAssert(tuple);
+                Memory.PropagateUpdate(tuple);
             }
         }
 
-        public void PropagateRetract(Tuple tuple)
+        protected override void PropagateMatchedRetract(Tuple leftTuple, Fact rightFact)
         {
-            var childTuples = tuple.ChildTuples.Where(t => t.Origin == _memory).ToList();
-            foreach (var childTuple in childTuples)
+            Tuple tuple = leftTuple.ChildTuples.FirstOrDefault(t => t.RightFact == rightFact);
+            if (tuple != null)
             {
-                _memory.PropagateRetract(childTuple);
+                Memory.PropagateRetract(tuple);
             }
-            tuple.Clear();
-        }
-
-        public void PropagateAssert(Fact rightFact)
-        {
-            IEnumerable<Tuple> leftTuples = _leftSource.GetTuples();
-            foreach (var leftTuple in leftTuples)
-            {
-                PropagateAssertedMatchingTuple(leftTuple, rightFact);
-            }
-        }
-
-        public void PropagateUpdate(Fact fact)
-        {
-            var childTuples = fact.ChildTuples.Where(t => t.Origin == _memory).ToList();
-            if (childTuples.Any())
-            {
-                foreach (var childTuple in childTuples)
-                {
-                    PropagateUpdatedMatchingTuple(childTuple);
-                }
-            }
-            else
-            {
-                PropagateAssert(fact);
-            }
-        }
-
-        public void PropagateRetract(Fact fact)
-        {
-            var childTuples = fact.ChildTuples.Where(t => t.Origin == _memory).ToList();
-            foreach (var childTuple in childTuples)
-            {
-                _memory.PropagateRetract(childTuple);
-            }
-        }
-
-        private void PropagateAssertedMatchingTuple(Tuple tuple, Fact rightFact)
-        {
-            if (!MatchesConditions(tuple, rightFact)) return;
-
-            var newTuple = new Tuple(tuple, rightFact, _memory);
-            _memory.PropagateAssert(newTuple);
-        }
-
-        private void PropagateUpdatedMatchingTuple(Tuple tuple)
-        {
-            if (MatchesConditions(tuple.LeftTuple, tuple.RightFact))
-            {
-                _memory.PropagateUpdate(tuple);
-            }
-            else
-            {
-                _memory.PropagateRetract(tuple);
-            }
-        }
-
-        private bool MatchesConditions(Tuple left, Fact right)
-        {
-            if (left == null) return true;
-
-            return Conditions.All(joinCondition => joinCondition.IsSatisfiedBy(left, right));
-        }
-
-        public void Attach(ITupleMemory sink)
-        {
-            _memory = sink;
         }
     }
 }

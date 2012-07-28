@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NRules.Core.Rules
 {
     internal class Predicate : IPredicate
     {
-        public Predicate(PredicateTypes predicateType)
+        public Predicate(PredicateTypes predicateType, IDeclaration declaration)
         {
             PredicateType = predicateType;
-            Declarations = new List<IDeclaration>();
+            Declaration = declaration;
             Conditions = new List<ICondition>();
         }
 
         public PredicateTypes PredicateType { get; private set; }
-        public IList<IDeclaration> Declarations { get; private set; }
+        public IDeclaration Declaration { get; private set; }
         public IList<ICondition> Conditions { get; private set; }
-        public IAggregate AggregationStrategy { get; set; }
+        public Type StrategyType { get; set; }
     }
 }

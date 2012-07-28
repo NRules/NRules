@@ -1,20 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 namespace NRules.Core.Rules
 {
     internal enum PredicateTypes
     {
         Selection = 0,
-        Join = 1,
-        Aggregate = 2,
-        Existential = 3,
+        Aggregate = 1,
+        Existential = 2,
     }
 
     internal interface IPredicate
     {
         PredicateTypes PredicateType { get; }
-        IList<IDeclaration> Declarations { get; }
-        IList<ICondition> Conditions { get; }
-        IAggregate AggregationStrategy { get; }
+        IDeclaration Declaration { get; }
+        Type StrategyType { get; set; }
     }
 }

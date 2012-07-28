@@ -1,14 +1,18 @@
-﻿using System;
-
-namespace NRules.Core.Rules
+﻿namespace NRules.Core.Rules
 {
+    internal enum AggregationResults
+    {
+        None = 0,
+        Added = 1,
+        Modified = 2,
+        Removed = 3,
+    }
+
     internal interface IAggregate
     {
-        void Add(params object[] facts);
-        void Modify(params object[] facts);
-        void Remove(params object[] facts);
-        event EventHandler<EventArgs> ResultAdded;
-        event EventHandler<EventArgs> ResultModified;
-        event EventHandler<EventArgs> ResultRemoved;
+        AggregationResults Add(object fact);
+        AggregationResults Modify(object fact);
+        AggregationResults Remove(object fact);
+        object Result { get; }
     }
 }

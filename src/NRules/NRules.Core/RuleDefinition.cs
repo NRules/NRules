@@ -17,42 +17,79 @@ namespace NRules.Core
 
         public ILeftHandSide If<T>(Expression<Func<T, bool>> condition)
         {
-            var declaration = CheckDeclaration(typeof (T));
+            var declaration = Declare(typeof (T));
             var conditionElement = CreateConditionElement(condition);
-            var predicate = new Predicate(PredicateTypes.Selection);
-            predicate.Declarations.Add(declaration);
-            predicate.Conditions.Add(conditionElement);
-            _rule.Predicates.Add(predicate);
+
+            var predicate =
+                _rule.Predicates.FirstOrDefault(
+                    p => p.PredicateType == PredicateTypes.Selection &&
+                         p.Declaration == declaration);
+            if (predicate == null)
+            {
+                predicate = new Predicate(PredicateTypes.Selection, declaration);
+                _rule.Predicates.Add(predicate);
+            }
+
+            _rule.Conditions.Add(conditionElement);
             return this;
         }
 
         public ILeftHandSide If<T1, T2>(Expression<Func<T1, T2, bool>> condition)
         {
-            var declaration1 = CheckDeclaration(typeof (T1));
-            var declaration2 = CheckDeclaration(typeof (T2));
+            var declaration = Declare(typeof (T1));
+            CheckDeclaration(typeof (T2));
             var conditionElement = CreateConditionElement(condition);
-            var predicate = new Predicate(PredicateTypes.Join);
-            predicate.Declarations.Add(declaration1);
-            predicate.Declarations.Add(declaration2);
-            predicate.Conditions.Add(conditionElement);
-            _rule.Predicates.Add(predicate);
+
+            var predicate = _rule.Predicates.FirstOrDefault(
+                p => p.PredicateType == PredicateTypes.Selection &&
+                     p.Declaration == declaration);
+            if (predicate == null)
+            {
+                predicate = new Predicate(PredicateTypes.Selection, declaration);
+                _rule.Predicates.Add(predicate);
+            }
+
+            _rule.Conditions.Add(conditionElement);
             return this;
         }
 
         public ILeftHandSide Collect<T>(Expression<Func<T, bool>> itemCondition)
         {
-            var localDeclaration = new Declaration(string.Empty, typeof (T));
+            var declaration = Declare(typeof (T));
             var conditionElement = CreateConditionElement(itemCondition);
-            var predicate = new Predicate(PredicateTypes.Aggregate);
-            predicate.Declarations.Add(localDeclaration);
-            predicate.Conditions.Add(conditionElement);
-            predicate.AggregationStrategy = new CollectionAggregate<T>();
+
+            var predicate = _rule.Predicates.FirstOrDefault(
+                p => p.PredicateType == PredicateTypes.Aggregate &&
+                     p.Declaration == declaration);
+            if (predicate != null)
+            {
+                throw new InvalidOperationException(string.Format("More than one collection of type {0} defined",
+                                                                  typeof (T).Name));
+            }
+
+            predicate = new Predicate(PredicateTypes.Aggregate, declaration);
+            predicate.StrategyType = typeof (CollectionAggregate<T>);
             _rule.Predicates.Add(predicate);
+
+            _rule.Conditions.Add(conditionElement);
             return this;
         }
 
         public ILeftHandSide Exists<T>(Expression<Func<T, bool>> condition)
         {
+            var declaration = Declare(typeof (T));
+            var conditionElement = CreateConditionElement(condition);
+
+            var predicate = _rule.Predicates.FirstOrDefault(
+                p => p.PredicateType == PredicateTypes.Existential &&
+                     p.Declaration == declaration);
+            if (predicate == null)
+            {
+                predicate = new Predicate(PredicateTypes.Existential, declaration);
+                _rule.Predicates.Add(predicate);
+            }
+
+            _rule.Conditions.Add(conditionElement);
             return this;
         }
 
@@ -72,13 +109,24 @@ namespace NRules.Core
             return this;
         }
 
-        private IDeclaration CheckDeclaration(Type type)
+        private IDeclaration Declare(Type type)
         {
             var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type);
             if (declaration == null)
             {
                 declaration = new Declaration(string.Empty, type);
                 _rule.Declarations.Add(declaration);
+            }
+            return declaration;
+        }
+
+        private IDeclaration CheckDeclaration(Type type)
+        {
+            var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type);
+            if (declaration == null)
+            {
+                throw new InvalidOperationException(string.Format("Rule {0} uses input of type {1} before defining it",
+                                                                  _rule.Name, type.Name));
             }
             return declaration;
         }

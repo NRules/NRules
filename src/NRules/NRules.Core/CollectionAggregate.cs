@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NRules.Core.Rules;
 
 namespace NRules.Core
@@ -9,40 +8,35 @@ namespace NRules.Core
         private readonly List<T> _items = new List<T>();
         private bool _initialized;
 
-        public void Add(params object[] facts)
+        public AggregationResults Add(object fact)
         {
-            _items.Add((T) facts[0]);
+            _items.Add((T) fact);
             if (!_initialized)
             {
                 _initialized = true;
-                ResultAdded(_items, EventArgs.Empty);
+                return AggregationResults.Added;
             }
-            else
-            {
-                ResultModified(_items, EventArgs.Empty);
-            }
+            return AggregationResults.Modified;
         }
 
-        public void Modify(params object[] facts)
+        public AggregationResults Modify(object fact)
         {
-            ResultModified(_items, EventArgs.Empty);
+            return AggregationResults.Modified;
         }
 
-        public void Remove(params object[] facts)
+        public AggregationResults Remove(object fact)
         {
-            _items.Remove((T) facts[0]);
+            _items.Remove((T) fact);
             if (_items.Count > 0)
             {
-                ResultModified(_items, EventArgs.Empty);
+                return AggregationResults.Modified;
             }
-            else
-            {
-                ResultRemoved(_items, EventArgs.Empty);
-            }
+            return AggregationResults.Removed;
         }
 
-        public event EventHandler<EventArgs> ResultAdded;
-        public event EventHandler<EventArgs> ResultModified;
-        public event EventHandler<EventArgs> ResultRemoved;
+        public object Result
+        {
+            get { return _items; }
+        }
     }
 }

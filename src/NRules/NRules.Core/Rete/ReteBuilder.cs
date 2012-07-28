@@ -20,71 +20,50 @@ namespace NRules.Core.Rete
         {
             var context = new ReteBuilderContext(rule);
 
-            var selectionPredicates = rule.Predicates
-                .Where(p => p.PredicateType == PredicateTypes.Selection);
-            foreach (var predicate in selectionPredicates)
-            {
-                Type declarationType = predicate.Declarations.First().Type;
-                IEnumerable<ICondition> conditions = predicate.Conditions;
-
-                BuildAlphaSubtree(context, declarationType, conditions);
-            }
+            var alphaConditions = rule.Conditions
+                .Where(c => c.FactTypes.Count() == 1).ToList();
+            var betaConditions = rule.Conditions
+                .Where(c => c.FactTypes.Count() > 1).ToList();
 
             ITupleMemory left = new DummyNode();
-
-            var joinConditions = rule.Predicates
-                .Where(p => p.PredicateType == PredicateTypes.Join)
-                .SelectMany(p => p.Conditions).ToList();
-            left = BuildBetaSubtree(context, left, joinConditions);
-
-            var aggregatePredicates = rule.Predicates
-                .Where(p => p.PredicateType == PredicateTypes.Aggregate);
-            foreach (var predicate in aggregatePredicates)
+            foreach (var predicate in rule.Predicates)
             {
-                context.BetaFactTypes.Clear();
-                left = BuildComposite(context, left, predicate);
+                var type = predicate.Declaration.Type;
+                context.BetaFactTypes.Add(type);
+
+                var conditions = alphaConditions.Where(c => c.FactTypes.First() == type);
+                var alphaMemory = BuildAlphaSubtree(context, type, conditions);
+
+                BetaNode betaNode;
+                switch (predicate.PredicateType)
+                {
+                    case PredicateTypes.Selection:
+                        betaNode = new JoinNode(left, alphaMemory);
+                        break;
+                    case PredicateTypes.Aggregate:
+                        betaNode = new AggregateNode(left, alphaMemory, predicate.StrategyType);
+                        break;
+                    case PredicateTypes.Existential:
+                        betaNode = new ExistsNode(left, alphaMemory);
+                        break;
+                    default:
+                        throw new ArgumentException(string.Format("Unsupported predicate type {0}",
+                                                                  predicate.PredicateType));
+                }
+
+                left = BuildBetaNodeAssembly(context, betaNode, left, alphaMemory, betaConditions);
             }
 
             var ruleNode = new RuleNode(rule.Handle, _aggregator);
             left.Attach(ruleNode);
         }
 
-        private ITupleMemory BuildComposite(ReteBuilderContext context, ITupleMemory left,
-                                            IPredicate aggregatePredicate)
+        private ITupleMemory BuildBetaNodeAssembly(ReteBuilderContext context, BetaNode betaNode, ITupleMemory left,
+                                                   IObjectMemory right,
+                                                   IList<ICondition> conditions)
         {
-            ITupleMemory aggregateLeft = new DummyNode();
-            foreach (var declaration in aggregatePredicate.Declarations)
-            {
-                BuildAlphaSubtree(context, declaration.Type, new ICondition[] {});
-            }
-            aggregateLeft = BuildBetaSubtree(context, aggregateLeft, aggregatePredicate.Conditions);
-
-            var aggregateNode = new AggregateNode(aggregatePredicate.AggregationStrategy, aggregateLeft);
-            left = BuildJoin(context, left, aggregatePredicate.Conditions, aggregateNode);
-
-            return left;
-        }
-
-        private ITupleMemory BuildBetaSubtree(ReteBuilderContext context, ITupleMemory left,
-                                              IList<ICondition> conditions)
-        {
-            while (context.AlphaMemories.Count > 0)
-            {
-                var right = context.AlphaMemories.Dequeue();
-                context.BetaFactTypes.Add(right.FactType);
-
-                left = BuildJoin(context, left, conditions, right);
-            }
-
-            return left;
-        }
-
-        private ITupleMemory BuildJoin(ReteBuilderContext context, ITupleMemory left, IList<ICondition> conditions,
-                                       IObjectMemory right)
-        {
-            var join = new JoinNode(left, right);
-            left.Attach(@join);
-            right.Attach(@join);
+            left.Attach(betaNode);
+            right.Attach(betaNode);
 
             IEnumerable<ICondition> matchingConditions =
                 conditions.Where(
@@ -101,16 +80,16 @@ namespace NRules.Core.Rete
                 }
 
                 var joinConditionAdapter = new JoinConditionAdaptor(condition, selectionTable.ToArray());
-                @join.Conditions.Add(joinConditionAdapter);
+                betaNode.Conditions.Add(joinConditionAdapter);
             }
 
             left = new BetaMemory();
-            @join.Attach(left);
+            betaNode.Attach(left);
             return left;
         }
 
-        private void BuildAlphaSubtree(ReteBuilderContext context, Type declarationType,
-                                       IEnumerable<ICondition> conditions)
+        private AlphaMemory BuildAlphaSubtree(ReteBuilderContext context, Type declarationType,
+                                              IEnumerable<ICondition> conditions)
         {
             TypeNode typeNode = BuildTypeNode(declarationType, _root);
             AlphaNode currentNode = typeNode;
@@ -122,7 +101,7 @@ namespace NRules.Core.Rete
             }
 
             var memory = BuildAlphaMemory(declarationType, currentNode);
-            context.AlphaMemories.Enqueue(memory);
+            return memory;
         }
 
         private TypeNode BuildTypeNode(Type declarationType, AlphaNode parent)

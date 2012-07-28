@@ -5,65 +5,94 @@ using NRules.Core.Rules;
 
 namespace NRules.Core.Rete
 {
-    internal class AggregateNode : ITupleSink, IObjectMemory
+    internal class AggregateNode : BetaNode
     {
-        private readonly List<Fact> _facts = new List<Fact>();
-        private IObjectSink _sink;
-        private readonly IAggregate _aggregate;
+        private readonly Dictionary<Tuple, IAggregate> _aggregates = new Dictionary<Tuple, IAggregate>();
+        private readonly Dictionary<IAggregate, Fact> _aggregatedFacts = new Dictionary<IAggregate, Fact>();
+        private readonly Func<IAggregate> _aggregateFactory;
 
-        public AggregateNode(IAggregate aggregate, ITupleMemory source)
+        public AggregateNode(ITupleMemory leftSource, IObjectMemory rightSource, Type aggregateType)
+            : base(leftSource, rightSource)
         {
-            _aggregate = aggregate;
-            _aggregate.ResultAdded += AggregateResultAdded;
-            _aggregate.ResultModified += AggregateResultModified;
-            _aggregate.ResultRemoved += AggregateResultRemoved;
-
-            source.Attach(this);
+            _aggregateFactory = () => (IAggregate) Activator.CreateInstance(aggregateType);
         }
 
-        private void AggregateResultAdded(object sender, EventArgs e)
+        protected override void PropagateMatchedAssert(Tuple leftTuple, Fact rightFact)
         {
-            var fact = new Fact(sender);
-            _facts.Add(fact);
-            _sink.PropagateAssert(fact);
+            IAggregate aggregate = GetAggregate(leftTuple);
+            var result = aggregate.Add(rightFact.Object);
+            HandleAggregateResult(result, leftTuple, aggregate);
         }
 
-        private void AggregateResultModified(object sender, EventArgs e)
+        protected override void PropagateMatchedUpdate(Tuple leftTuple, Fact rightFact)
         {
-            var fact = _facts.First(f => f.Object == sender);
-            _sink.PropagateUpdate(fact);
+            IAggregate aggregate = GetAggregate(leftTuple);
+            var result = aggregate.Modify(rightFact.Object);
+            HandleAggregateResult(result, leftTuple, aggregate);
         }
 
-        private void AggregateResultRemoved(object sender, EventArgs e)
+        protected override void PropagateMatchedRetract(Tuple leftTuple, Fact rightFact)
         {
-            var fact = _facts.First(f => f.Object == sender);
-            _facts.Remove(fact);
-            _sink.PropagateRetract(fact);
+            IAggregate aggregate = GetAggregate(leftTuple);
+            var result = aggregate.Remove(rightFact.Object);
+            HandleAggregateResult(result, leftTuple, aggregate);
         }
 
-        public void PropagateAssert(Tuple tuple)
+        private void HandleAggregateResult(AggregationResults result, Tuple leftTuple, IAggregate aggregate)
         {
-            _aggregate.Add(tuple.GetFactObjects());
+            switch (result)
+            {
+                case AggregationResults.Added:
+                    PropagateAggregateAssert(leftTuple, aggregate);
+                    break;
+                case AggregationResults.Modified:
+                    PropagateAggregateUpdate(leftTuple, aggregate);
+                    break;
+                case AggregationResults.Removed:
+                    PropagateAggregateRetract(leftTuple, aggregate);
+                    break;
+            }
         }
 
-        public void PropagateUpdate(Tuple tuple)
+        private void PropagateAggregateAssert(Tuple leftTuple, IAggregate aggregate)
         {
-            _aggregate.Modify(tuple.GetFactObjects());
+            //todo: register in session fact map
+            var fact = new Fact(aggregate.Result);
+            _aggregatedFacts[aggregate] = fact;
+            var newTuple = CreateTuple(leftTuple, fact);
+            Memory.PropagateAssert(newTuple);
         }
 
-        public void PropagateRetract(Tuple tuple)
+        private void PropagateAggregateUpdate(Tuple leftTuple, IAggregate aggregate)
         {
-            _aggregate.Remove(tuple.GetFactObjects());
+            Fact fact = _aggregatedFacts[aggregate];
+            var childTuples = leftTuple.ChildTuples.Where(t => t.RightFact == fact).ToList();
+            foreach (var childTuple in childTuples)
+            {
+                Memory.PropagateUpdate(childTuple);
+            }
         }
 
-        public void Attach(IObjectSink sink)
+        private void PropagateAggregateRetract(Tuple leftTuple, IAggregate aggregate)
         {
-            _sink = sink;
+            Fact fact = _aggregatedFacts[aggregate];
+            _aggregatedFacts.Remove(aggregate);
+            var childTuples = leftTuple.ChildTuples.Where(t => t.RightFact == fact).ToList();
+            foreach (var childTuple in childTuples)
+            {
+                Memory.PropagateRetract(childTuple);
+            }
         }
 
-        public IEnumerable<Fact> GetFacts()
+        private IAggregate GetAggregate(Tuple tuple)
         {
-            return _facts;
+            IAggregate aggregate;
+            if (!_aggregates.TryGetValue(tuple, out aggregate))
+            {
+                aggregate = _aggregateFactory();
+                _aggregates[tuple] = aggregate;
+            }
+            return aggregate;
         }
     }
 }

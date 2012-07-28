@@ -43,11 +43,13 @@
     <Compile Include="ActionContext.cs" />
     <Compile Include="ActivationQueue.cs" />
     <Compile Include="CollectionAggregate.cs" />
+    <Compile Include="Rete\AggregateNode.cs" />
+    <Compile Include="Rete\BetaNode.cs" />
     <Compile Include="Rete\DummyNode.cs" />
+    <Compile Include="Rete\ExistsNode.cs" />
     <Compile Include="Rete\ReteBuilderContext.cs" />
     <Compile Include="Rules\IAggregate.cs" />
     <Compile Include="Rete\Activation.cs" />
-    <Compile Include="Rete\AggregateNode.cs" />
     <Compile Include="Rete\AlphaMemoryAdapter.cs" />
     <Compile Include="Rete\EventAggregator.cs" />
     <Compile Include="Rete\IEventSink.cs" />
@@ -95,9 +97,7 @@
       <Name>NRules</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Config\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
