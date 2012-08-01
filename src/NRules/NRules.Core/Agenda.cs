@@ -8,7 +8,7 @@ namespace NRules.Core
     {
         ActivationQueue ActivationQueue { get; }
         void RegisterRule(CompiledRule rule);
-        void Subscribe(IEventSource eventSource);
+        void Subscribe(IEventAggregator eventAggregator);
     }
 
     internal class Agenda : IAgenda
@@ -26,10 +26,10 @@ namespace NRules.Core
             _ruleMap.Add(rule.Handle, rule);
         }
 
-        public void Subscribe(IEventSource eventSource)
+        public void Subscribe(IEventAggregator eventAggregator)
         {
-            eventSource.RuleActivatedEvent += OnRuleActivated;
-            eventSource.RuleDeactivatedEvent += OnRuleDeactivated;
+            eventAggregator.RuleActivatedEvent += OnRuleActivated;
+            eventAggregator.RuleDeactivatedEvent += OnRuleDeactivated;
         }
 
         private void OnRuleActivated(object sender, ActivationEventArgs e)

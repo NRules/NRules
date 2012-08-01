@@ -1,40 +1,33 @@
-﻿using System.Collections.Generic;
-
-namespace NRules.Core.Rete
+﻿namespace NRules.Core.Rete
 {
     internal class ExistsNode : BetaNode
     {
-        private readonly Dictionary<Tuple, int> _hitMap = new Dictionary<Tuple, int>();
-
-        public ExistsNode(ITupleMemory leftSource, IObjectMemory rightSource) : base(leftSource, rightSource)
+        public ExistsNode(IBetaMemoryNode leftSource, IAlphaMemoryNode rightSource) : base(leftSource, rightSource)
         {
         }
 
-        protected override void PropagateMatchedAssert(Tuple leftTuple, Fact rightFact)
+        protected override void PropagateMatchedAssert(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
         {
-            int count;
-            _hitMap.TryGetValue(leftTuple, out count);
-            _hitMap[leftTuple] = count + 1;
-            if (count == 0)
+            int hitCount = leftTuple.GetStateObject<int>() + 1;
+            leftTuple.SetStateObject(hitCount);
+            if (hitCount == 1)
             {
-                Memory.PropagateAssert(leftTuple);
+                MemoryNode.PropagateAssert(workingMemory, leftTuple);
             }
         }
 
-        protected override void PropagateMatchedUpdate(Tuple leftTuple, Fact rightFact)
+        protected override void PropagateMatchedUpdate(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
         {
-            Memory.PropagateUpdate(leftTuple);
+            MemoryNode.PropagateUpdate(workingMemory, leftTuple);
         }
 
-        protected override void PropagateMatchedRetract(Tuple leftTuple, Fact rightFact)
+        protected override void PropagateMatchedRetract(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
         {
-            int count;
-            _hitMap.TryGetValue(leftTuple, out count);
-            _hitMap[leftTuple] = count - 1;
-            if (count == 1)
+            int hitCount = leftTuple.GetStateObject<int>() - 1;
+            leftTuple.SetStateObject(hitCount);
+            if (hitCount == 0)
             {
-                _hitMap.Remove(leftTuple);
-                Memory.PropagateRetract(leftTuple);
+                MemoryNode.PropagateRetract(workingMemory, leftTuple);
             }
         }
     }

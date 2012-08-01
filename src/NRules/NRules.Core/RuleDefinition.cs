@@ -120,7 +120,7 @@ namespace NRules.Core
             return declaration;
         }
 
-        private IDeclaration CheckDeclaration(Type type)
+        private void CheckDeclaration(Type type)
         {
             var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type);
             if (declaration == null)
@@ -128,7 +128,6 @@ namespace NRules.Core
                 throw new InvalidOperationException(string.Format("Rule {0} uses input of type {1} before defining it",
                                                                   _rule.Name, type.Name));
             }
-            return declaration;
         }
 
         private Condition CreateConditionElement<T>(Expression<Func<T, bool>> condition)

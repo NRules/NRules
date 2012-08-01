@@ -3,29 +3,27 @@
     internal class RuleNode : ITupleSink
     {
         private readonly string _ruleHandle;
-        private readonly IEventSink _eventSink;
 
-        public RuleNode(string ruleHandle, IEventSink eventSink)
+        public RuleNode(string ruleHandle)
         {
             _ruleHandle = ruleHandle;
-            _eventSink = eventSink;
         }
 
-        public void PropagateAssert(Tuple tuple)
+        public void PropagateAssert(IWorkingMemory workingMemory, Tuple tuple)
         {
             var activation = new Activation(_ruleHandle, tuple);
-            _eventSink.Activate(activation);
+            workingMemory.EventAggregator.Activate(activation);
         }
 
-        public void PropagateUpdate(Tuple tuple)
+        public void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
         {
             //Do nothing
         }
 
-        public void PropagateRetract(Tuple tuple)
+        public void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
         {
             var activation = new Activation(_ruleHandle, tuple);
-            _eventSink.Deactivate(activation);
+            workingMemory.EventAggregator.Deactivate(activation);
             tuple.Clear();
         }
     }

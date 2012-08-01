@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,13 +9,13 @@ namespace NRules.Core.Rete
     {
         private readonly List<Tuple> _leftTuples = new List<Tuple>();
         private readonly List<Tuple> _childTuples = new List<Tuple>();
+        private readonly Dictionary<Type, object> _objects = new Dictionary<Type, object>();
 
-        public Tuple(ITupleMemory origin)
+        public Tuple()
         {
-            Origin = origin;
         }
 
-        public Tuple(Tuple left, Fact right, ITupleMemory origin) : this(origin)
+        public Tuple(Tuple left, Fact right)
         {
             RightFact = right;
             RightFact.ChildTuples.Add(this);
@@ -27,12 +28,25 @@ namespace NRules.Core.Rete
         public Fact RightFact { get; private set; }
         public Tuple LeftTuple { get; private set; }
 
+        public T GetStateObject<T>()
+        {
+            object obj;
+            if (!_objects.TryGetValue(typeof (T), out obj))
+            {
+                return default(T);
+            }
+            return (T) obj;
+        }
+
+        public void SetStateObject<T>(T obj)
+        {
+            _objects[typeof (T)] = obj;
+        }
+
         public IList<Tuple> ChildTuples
         {
             get { return _childTuples; }
         }
-
-        public ITupleMemory Origin { get; private set; }
 
         public object[] GetFactObjects()
         {

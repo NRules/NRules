@@ -4,36 +4,36 @@ namespace NRules.Core.Rete
 {
     internal class JoinNode : BetaNode
     {
-        public JoinNode(ITupleMemory leftSource, IObjectMemory rightSource)
+        public JoinNode(IBetaMemoryNode leftSource, IAlphaMemoryNode rightSource)
             : base(leftSource, rightSource)
         {
         }
 
-        protected override void PropagateMatchedAssert(Tuple leftTuple, Fact rightFact)
+        protected override void PropagateMatchedAssert(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
         {
             var newTuple = CreateTuple(leftTuple, rightFact);
-            Memory.PropagateAssert(newTuple);
+            MemoryNode.PropagateAssert(workingMemory, newTuple);
         }
 
-        protected override void PropagateMatchedUpdate(Tuple leftTuple, Fact rightFact)
+        protected override void PropagateMatchedUpdate(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
         {
             Tuple tuple = leftTuple.ChildTuples.FirstOrDefault(t => t.RightFact == rightFact);
             if (tuple == null)
             {
-                PropagateMatchedAssert(leftTuple, rightFact);
+                PropagateMatchedAssert(workingMemory, leftTuple, rightFact);
             }
             else
             {
-                Memory.PropagateUpdate(tuple);
+                MemoryNode.PropagateUpdate(workingMemory, tuple);
             }
         }
 
-        protected override void PropagateMatchedRetract(Tuple leftTuple, Fact rightFact)
+        protected override void PropagateMatchedRetract(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
         {
             Tuple tuple = leftTuple.ChildTuples.FirstOrDefault(t => t.RightFact == rightFact);
             if (tuple != null)
             {
-                Memory.PropagateRetract(tuple);
+                MemoryNode.PropagateRetract(workingMemory, tuple);
             }
         }
     }

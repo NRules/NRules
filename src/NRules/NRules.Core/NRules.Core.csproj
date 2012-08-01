@@ -42,21 +42,19 @@
   <ItemGroup>
     <Compile Include="ActionContext.cs" />
     <Compile Include="ActivationQueue.cs" />
+    <Compile Include="Rete\AlphaMemory.cs" />
+    <Compile Include="Rete\BetaMemory.cs" />
     <Compile Include="CollectionAggregate.cs" />
     <Compile Include="Rete\AggregateNode.cs" />
     <Compile Include="Rete\BetaNode.cs" />
     <Compile Include="Rete\DummyNode.cs" />
     <Compile Include="Rete\ExistsNode.cs" />
     <Compile Include="Rete\ReteBuilderContext.cs" />
+    <Compile Include="Rete\RootNode.cs" />
+    <Compile Include="Rete\SelectionNode.cs" />
     <Compile Include="Rules\IAggregate.cs" />
     <Compile Include="Rete\Activation.cs" />
-    <Compile Include="Rete\AlphaMemoryAdapter.cs" />
     <Compile Include="Rete\EventAggregator.cs" />
-    <Compile Include="Rete\IEventSink.cs" />
-    <Compile Include="Rete\IEventSource.cs" />
-    <Compile Include="Rete\IObjectMemory.cs" />
-    <Compile Include="Rete\IObjectSource.cs" />
-    <Compile Include="Rete\ITupleSource.cs" />
     <Compile Include="Rete\JoinConditionAdaptor.cs" />
     <Compile Include="Rules\ICondition.cs" />
     <Compile Include="Rules\IRuleAction.cs" />
@@ -64,21 +62,18 @@
     <Compile Include="Rules\IPredicate.cs" />
     <Compile Include="Rules\RuleAction.cs" />
     <Compile Include="Agenda.cs" />
-    <Compile Include="Rete\AlphaMemory.cs" />
-    <Compile Include="Rete\BetaMemory.cs" />
+    <Compile Include="Rete\AlphaMemoryNode.cs" />
+    <Compile Include="Rete\BetaMemoryNode.cs" />
     <Compile Include="Rules\Condition.cs" />
     <Compile Include="Rete\Fact.cs" />
     <Compile Include="Rete\IObjectSink.cs" />
     <Compile Include="Rete\ITupleSink.cs" />
-    <Compile Include="Rete\ITupleMemory.cs" />
     <Compile Include="Rete\JoinNode.cs" />
     <Compile Include="Rete\Network.cs" />
     <Compile Include="Rete\ReteBuilder.cs" />
-    <Compile Include="Rete\RootNode.cs" />
     <Compile Include="Rete\AlphaNode.cs" />
     <Compile Include="Rete\ActivationEventArgs.cs" />
     <Compile Include="Rete\RuleNode.cs" />
-    <Compile Include="Rete\SelectionNode.cs" />
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />
     <Compile Include="Rules\CompiledRule.cs" />
@@ -90,6 +85,7 @@
     <Compile Include="Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionFactory.cs" />
+    <Compile Include="WorkingMemory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NRules\NRules.csproj">

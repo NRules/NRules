@@ -3,15 +3,15 @@ using System.Linq;
 
 namespace NRules.Core.Rete
 {
-    internal abstract class BetaNode : ITupleSink, ITupleSource, IObjectSink
+    internal abstract class BetaNode : ITupleSink, IObjectSink
     {
-        private readonly ITupleMemory _leftSource;
-        private readonly IObjectMemory _rightSource;
-        protected ITupleMemory Memory { get; private set; }
+        private readonly IBetaMemoryNode _leftSource;
+        private readonly IAlphaMemoryNode _rightSource;
+        public BetaMemoryNode MemoryNode { get; set; }
 
         public IList<JoinConditionAdaptor> Conditions { get; private set; }
 
-        protected BetaNode(ITupleMemory leftSource, IObjectMemory rightSource)
+        protected BetaNode(IBetaMemoryNode leftSource, IAlphaMemoryNode rightSource)
         {
             _leftSource = leftSource;
             _rightSource = rightSource;
@@ -19,88 +19,94 @@ namespace NRules.Core.Rete
             Conditions = new List<JoinConditionAdaptor>();
         }
 
-        protected abstract void PropagateMatchedAssert(Tuple leftTuple, Fact rightFact);
-        protected abstract void PropagateMatchedUpdate(Tuple leftTuple, Fact rightFact);
-        protected abstract void PropagateMatchedRetract(Tuple leftTuple, Fact rightFact);
+        protected abstract void PropagateMatchedAssert(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact);
+        protected abstract void PropagateMatchedUpdate(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact);
+        protected abstract void PropagateMatchedRetract(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact);
 
-        public void PropagateAssert(Tuple leftTuple)
+        public void PropagateAssert(IWorkingMemory workingMemory, Tuple leftTuple)
         {
-            IEnumerable<Fact> rightFacts = _rightSource.GetFacts();
+            IAlphaMemory memory = workingMemory.GetNodeMemory(_rightSource);
+            IEnumerable<Fact> rightFacts = memory.Facts;
             foreach (var rightFact in rightFacts)
             {
                 if (MatchesConditions(leftTuple, rightFact))
                 {
-                    PropagateMatchedAssert(leftTuple, rightFact);
+                    PropagateMatchedAssert(workingMemory, leftTuple, rightFact);
                 }
             }
         }
 
-        public void PropagateUpdate(Tuple tuple)
+        public void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
         {
-            IEnumerable<Fact> rightFacts = _rightSource.GetFacts();
+            IAlphaMemory memory = workingMemory.GetNodeMemory(_rightSource);
+            IEnumerable<Fact> rightFacts = memory.Facts;
             foreach (var rightFact in rightFacts)
             {
                 if (MatchesConditions(tuple, rightFact))
                 {
-                    PropagateMatchedUpdate(tuple, rightFact);
+                    PropagateMatchedUpdate(workingMemory, tuple, rightFact);
                 }
                 else
                 {
-                    PropagateMatchedRetract(tuple, rightFact);
+                    PropagateMatchedRetract(workingMemory, tuple, rightFact);
                 }
             }
         }
 
-        public void PropagateRetract(Tuple tuple)
+        public void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
         {
-            IEnumerable<Fact> rightFacts = _rightSource.GetFacts();
+            IAlphaMemory memory = workingMemory.GetNodeMemory(_rightSource);
+            IEnumerable<Fact> rightFacts = memory.Facts;
             foreach (var rightFact in rightFacts)
             {
-                PropagateMatchedRetract(tuple, rightFact);
+                PropagateMatchedRetract(workingMemory, tuple, rightFact);
             }
             tuple.Clear();
         }
 
-        public void PropagateAssert(Fact rightFact)
+        public void PropagateAssert(IWorkingMemory workingMemory, Fact rightFact)
         {
-            IEnumerable<Tuple> leftTuples = _leftSource.GetTuples();
+            IBetaMemory memory = workingMemory.GetNodeMemory(_leftSource);
+            IEnumerable<Tuple> leftTuples = memory.Tuples;
             foreach (var leftTuple in leftTuples)
             {
                 if (MatchesConditions(leftTuple, rightFact))
                 {
-                    PropagateMatchedAssert(leftTuple, rightFact);
+                    PropagateMatchedAssert(workingMemory, leftTuple, rightFact);
                 }
             }
         }
 
-        public void PropagateUpdate(Fact fact)
+        public void PropagateUpdate(IWorkingMemory workingMemory, Fact fact)
         {
-            IEnumerable<Tuple> leftTuples = _leftSource.GetTuples();
+            IBetaMemory memory = workingMemory.GetNodeMemory(_leftSource);
+            IEnumerable<Tuple> leftTuples = memory.Tuples;
             foreach (var leftTuple in leftTuples)
             {
                 if (MatchesConditions(leftTuple, fact))
                 {
-                    PropagateMatchedUpdate(leftTuple, fact);
+                    PropagateMatchedUpdate(workingMemory, leftTuple, fact);
                 }
                 else
                 {
-                    PropagateMatchedRetract(leftTuple, fact);
+                    PropagateMatchedRetract(workingMemory, leftTuple, fact);
                 }
             }
         }
 
-        public void PropagateRetract(Fact fact)
+        public void PropagateRetract(IWorkingMemory workingMemory, Fact fact)
         {
-            IEnumerable<Tuple> leftTuples = _leftSource.GetTuples();
+            IBetaMemory memory = workingMemory.GetNodeMemory(_leftSource);
+            IEnumerable<Tuple> leftTuples = memory.Tuples;
             foreach (var leftTuple in leftTuples)
             {
-                PropagateMatchedRetract(leftTuple, fact);
+                PropagateMatchedRetract(workingMemory, leftTuple, fact);
             }
         }
 
         protected Tuple CreateTuple(Tuple left, Fact right)
         {
-            var newTuple = new Tuple(left, right, Memory);
+            var newTuple = new Tuple(left, right);
             return newTuple;
         }
 
@@ -109,11 +115,6 @@ namespace NRules.Core.Rete
             if (left == null) return true;
 
             return Conditions.All(joinCondition => joinCondition.IsSatisfiedBy(left, right));
-        }
-
-        public void Attach(ITupleMemory sink)
-        {
-            Memory = sink;
         }
     }
 }

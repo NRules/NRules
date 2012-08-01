@@ -10,16 +10,16 @@ namespace NRules.Core.Tests
     {
         internal static ActionContext CreateTarget(Tuple tuple)
         {
-            return new ActionContext(null, tuple);
+            return new ActionContext(null, null, tuple);
         }
 
         [Test]
         public void Arg_HasOneObjectOfEachType_ReturnsCorrectObject()
         {
             // Arrange
-            var tuple1 = new Tuple(new Tuple(null), new Fact(new ObjectA()), null);
-            var tuple2 = new Tuple(tuple1, new Fact(new ObjectB()), null);
-            var tuple3 = new Tuple(tuple2, new Fact(new ObjectC()), null);
+            var tuple1 = new Tuple(new Tuple(), new Fact(new ObjectA()));
+            var tuple2 = new Tuple(tuple1, new Fact(new ObjectB()));
+            var tuple3 = new Tuple(tuple2, new Fact(new ObjectC()));
             var target = CreateTarget(tuple3);
 
             // Act
@@ -37,7 +37,7 @@ namespace NRules.Core.Tests
         public void Arg_HasNoObjectOfGivenType_ThrowsException()
         {
             // Arrange
-            var tuple1 = new Tuple(new Tuple(null), new Fact(new ObjectA()), null);
+            var tuple1 = new Tuple(new Tuple(), new Fact(new ObjectA()));
             var target = CreateTarget(tuple1);
 
             // Act - Assert
@@ -48,8 +48,8 @@ namespace NRules.Core.Tests
         public void Arg_HasMoreThanOneObjectOfGivenType_ReturnsFirst()
         {
             // Arrange
-            var tuple1 = new Tuple(new Tuple(null), new Fact(new ObjectA()), null);
-            var tuple2 = new Tuple(tuple1, new Fact(new ObjectA()), null);
+            var tuple1 = new Tuple(new Tuple(), new Fact(new ObjectA()));
+            var tuple2 = new Tuple(tuple1, new Fact(new ObjectA()));
             var target = CreateTarget(tuple2);
 
             // Act

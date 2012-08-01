@@ -1,39 +1,15 @@
-﻿using System.Collections.Generic;
-
-namespace NRules.Core.Rete
+﻿namespace NRules.Core.Rete
 {
-    internal class DummyNode : ITupleMemory
+    internal class DummyNode : IBetaMemoryNode
     {
-        private readonly IList<Tuple> _tuples = new List<Tuple>();
-
-        public DummyNode()
+        public void InitializeMemory(IBetaMemory memory)
         {
-            _tuples.Add(new Tuple(this));
-        }
-
-        public void PropagateAssert(Tuple tuple)
-        {
-            //Do nothing
-        }
-
-        public void PropagateUpdate(Tuple tuple)
-        {
-            //Do nothing
-        }
-
-        public void PropagateRetract(Tuple tuple)
-        {
-            //Do nothing
+            memory.Tuples.Add(new Tuple());
         }
 
         public void Attach(ITupleSink sink)
         {
             //Do nothing
-        }
-
-        public IEnumerable<Tuple> GetTuples()
-        {
-            return _tuples;
         }
     }
 }

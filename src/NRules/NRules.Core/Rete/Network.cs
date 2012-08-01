@@ -1,72 +1,66 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace NRules.Core.Rete
 {
     internal interface INetwork
     {
-        IEventSource EventSource { get; }
-        void PropagateAssert(object factObject);
-        void PropagateUpdate(object factObject);
-        void PropagateRetract(object factObject);
+        void PropagateAssert(IWorkingMemory workingMemory, object factObject);
+        void PropagateUpdate(IWorkingMemory workingMemory, object factObject);
+        void PropagateRetract(IWorkingMemory workingMemory, object factObject);
     }
 
     internal class Network : INetwork
     {
         private readonly RootNode _root;
-        private readonly IDictionary<object, Fact> _factMap = new Dictionary<object, Fact>();
 
-        public IEventSource EventSource { get; private set; }
-
-        public Network(RootNode root, IEventSource eventSource)
+        public Network(RootNode root)
         {
             _root = root;
-            EventSource = eventSource;
         }
 
-        public void PropagateAssert(object factObject)
+        public void PropagateAssert(IWorkingMemory workingMemory, object factObject)
         {
-            Fact fact;
             if (factObject == null)
             {
                 throw new ArgumentNullException("factObject");
             }
-            if (_factMap.TryGetValue(factObject, out fact))
+            Fact fact = workingMemory.GetFact(factObject);
+            if (fact != null)
             {
                 throw new ArgumentException("Fact for insert already exists", "factObject");
             }
             fact = new Fact(factObject);
-            _factMap[factObject] = fact;
-            _root.PropagateAssert(fact);
+            workingMemory.SetFact(fact);
+            _root.PropagateAssert(workingMemory, fact);
         }
 
-        public void PropagateUpdate(object factObject)
+        public void PropagateUpdate(IWorkingMemory workingMemory, object factObject)
         {
-            Fact fact;
             if (factObject == null)
             {
                 throw new ArgumentNullException("factObject");
             }
-            if (!_factMap.TryGetValue(factObject, out fact))
+            Fact fact = workingMemory.GetFact(factObject);
+            if (fact == null)
             {
                 throw new ArgumentException("Fact for update does not exist", "factObject");
             }
-            _root.PropagateUpdate(fact);
+            _root.PropagateUpdate(workingMemory, fact);
         }
 
-        public void PropagateRetract(object factObject)
+        public void PropagateRetract(IWorkingMemory workingMemory, object factObject)
         {
-            Fact fact;
             if (factObject == null)
             {
                 throw new ArgumentNullException("factObject");
             }
-            if (!_factMap.TryGetValue(factObject, out fact))
+            Fact fact = workingMemory.GetFact(factObject);
+            if (fact == null)
             {
                 throw new ArgumentException("Fact for retract does not exist", "factObject");
             }
-            _factMap.Remove(factObject);
-            _root.PropagateRetract(fact);
+            _root.PropagateRetract(workingMemory, fact);
+            workingMemory.RemoveFact(fact);
         }
     }
 }

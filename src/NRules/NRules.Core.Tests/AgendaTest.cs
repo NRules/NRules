@@ -23,7 +23,7 @@ namespace NRules.Core.Tests
         public void Subscribe_RuleActivated_ActivationEndsUpInQueue()
         {
             // Arrange
-            var activation = new Activation("rule1", new Tuple(new Tuple(null), new Fact(new object()), null));
+            var activation = new Activation("rule1", new Tuple(new Tuple(), new Fact(new object())));
             var target = CreateTarget();
             target.Subscribe(_eventAggregator);
 
@@ -40,8 +40,8 @@ namespace NRules.Core.Tests
         public void Subscribe_MultipleRulesActivated_RulesAreQueuedInOrder()
         {
             // Arrange
-            var activation1 = new Activation("rule1", new Tuple(new Tuple(null), new Fact(new object()), null));
-            var activation2 = new Activation("rule2", new Tuple(new Tuple(null), new Fact(new object()), null));
+            var activation1 = new Activation("rule1", new Tuple(new Tuple(), new Fact(new object())));
+            var activation2 = new Activation("rule2", new Tuple(new Tuple(), new Fact(new object())));
             var target = CreateTarget();
             target.Subscribe(_eventAggregator);
 

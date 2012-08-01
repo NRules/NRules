@@ -8,7 +8,6 @@ namespace NRules.Core
 {
     public class SessionFactory
     {
-        private readonly IAgenda _agenda;
         private readonly INetwork _network;
         private readonly IEnumerable<CompiledRule> _rules;
         private readonly Dictionary<string, CompiledRule> _ruleMap;
@@ -19,13 +18,17 @@ namespace NRules.Core
             _ruleMap = _rules.ToDictionary(r => r.Handle);
 
             _network = BuildReteNetwork(_rules, () => new ReteBuilder());
-            _agenda = new Agenda();
-            _agenda.Subscribe(_network.EventSource);
         }
 
         public ISession CreateSession()
         {
-            var session = new Session(_network, _agenda, _ruleMap);
+            var eventAggregator = new EventAggregator();
+            var workingMemory = new WorkingMemory(eventAggregator);
+
+            var agenda = new Agenda();
+            agenda.Subscribe(eventAggregator);
+
+            var session = new Session(_network, agenda, workingMemory, _ruleMap);
             return session;
         }
 

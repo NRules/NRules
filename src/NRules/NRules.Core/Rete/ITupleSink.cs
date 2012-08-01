@@ -2,8 +2,8 @@
 {
     internal interface ITupleSink
     {
-        void PropagateAssert(Tuple tuple);
-        void PropagateUpdate(Tuple tuple);
-        void PropagateRetract(Tuple tuple);
+        void PropagateAssert(IWorkingMemory workingMemory, Tuple tuple);
+        void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple);
+        void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple);
     }
 }

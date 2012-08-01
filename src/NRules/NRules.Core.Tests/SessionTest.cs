@@ -12,6 +12,7 @@ namespace NRules.Core.Tests
     {
         private IAgenda _agenda;
         private INetwork _network;
+        private IWorkingMemory _workingMemory;
 
         private List<CompiledRule> _rules;
         private Dictionary<string, CompiledRule> _ruleMap;
@@ -21,6 +22,7 @@ namespace NRules.Core.Tests
         {
             _agenda = MockRepository.GenerateStub<IAgenda>();
             _network = MockRepository.GenerateStub<INetwork>();
+            _workingMemory = MockRepository.GenerateStub<IWorkingMemory>();
 
             _rules = new List<CompiledRule>
                          {
@@ -33,7 +35,7 @@ namespace NRules.Core.Tests
 
         internal Session CreateTarget()
         {
-            return new Session(_network, _agenda, _ruleMap);
+            return new Session(_network, _agenda, _workingMemory, _ruleMap);
         }
 
         [Test]
@@ -48,7 +50,7 @@ namespace NRules.Core.Tests
             target.Insert(myFact);
 
             // Assert
-            _network.AssertWasCalled(x => x.PropagateAssert(myFact));
+            _network.AssertWasCalled(x => x.PropagateAssert(_workingMemory, myFact));
         }
     }
 }

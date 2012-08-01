@@ -9,27 +9,29 @@ namespace NRules.Core
     internal class ActionContext : IActionContext
     {
         private readonly INetwork _network;
+        private readonly IWorkingMemory _workingMemory;
         private readonly Tuple _tuple;
 
-        public ActionContext(INetwork network, Tuple tuple)
+        public ActionContext(INetwork network, IWorkingMemory workingMemory, Tuple tuple)
         {
             _network = network;
+            _workingMemory = workingMemory;
             _tuple = tuple;
         }
 
         public void Insert(object fact)
         {
-            _network.PropagateAssert(fact);
+            _network.PropagateAssert(_workingMemory, fact);
         }
 
         public void Update(object fact)
         {
-            _network.PropagateUpdate(fact);
+            _network.PropagateUpdate(_workingMemory, fact);
         }
 
         public void Retract(object fact)
         {
-            _network.PropagateRetract(fact);
+            _network.PropagateRetract(_workingMemory, fact);
         }
 
         public T Arg<T>()

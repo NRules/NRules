@@ -14,7 +14,6 @@ namespace NRules.Core.Rete
     internal class ReteBuilder : IReteBuilder
     {
         private readonly RootNode _root = new RootNode();
-        private readonly EventAggregator _aggregator = new EventAggregator();
 
         public void AddRule(CompiledRule rule)
         {
@@ -25,42 +24,43 @@ namespace NRules.Core.Rete
             var betaConditions = rule.Conditions
                 .Where(c => c.FactTypes.Count() > 1).ToList();
 
-            ITupleMemory left = new DummyNode();
+            IBetaMemoryNode left = new DummyNode();
             foreach (var predicate in rule.Predicates)
             {
                 var type = predicate.Declaration.Type;
                 context.BetaFactTypes.Add(type);
 
                 var conditions = alphaConditions.Where(c => c.FactTypes.First() == type);
-                var alphaMemory = BuildAlphaSubtree(context, type, conditions);
+                var alphaMemoryNode = BuildAlphaSubtree(context, type, conditions);
 
                 BetaNode betaNode;
                 switch (predicate.PredicateType)
                 {
                     case PredicateTypes.Selection:
-                        betaNode = new JoinNode(left, alphaMemory);
+                        betaNode = new JoinNode(left, alphaMemoryNode);
                         break;
                     case PredicateTypes.Aggregate:
-                        betaNode = new AggregateNode(left, alphaMemory, predicate.StrategyType);
+                        betaNode = new AggregateNode(left, alphaMemoryNode, predicate.StrategyType);
                         break;
                     case PredicateTypes.Existential:
-                        betaNode = new ExistsNode(left, alphaMemory);
+                        betaNode = new ExistsNode(left, alphaMemoryNode);
                         break;
                     default:
                         throw new ArgumentException(string.Format("Unsupported predicate type {0}",
                                                                   predicate.PredicateType));
                 }
 
-                left = BuildBetaNodeAssembly(context, betaNode, left, alphaMemory, betaConditions);
+                left = BuildBetaNodeAssembly(context, betaNode, left, alphaMemoryNode, betaConditions);
             }
 
-            var ruleNode = new RuleNode(rule.Handle, _aggregator);
+            var ruleNode = new RuleNode(rule.Handle);
             left.Attach(ruleNode);
         }
 
-        private ITupleMemory BuildBetaNodeAssembly(ReteBuilderContext context, BetaNode betaNode, ITupleMemory left,
-                                                   IObjectMemory right,
-                                                   IList<ICondition> conditions)
+        private IBetaMemoryNode BuildBetaNodeAssembly(ReteBuilderContext context, BetaNode betaNode,
+                                                      IBetaMemoryNode left,
+                                                      IAlphaMemoryNode right,
+                                                      IList<ICondition> conditions)
         {
             left.Attach(betaNode);
             right.Attach(betaNode);
@@ -83,13 +83,13 @@ namespace NRules.Core.Rete
                 betaNode.Conditions.Add(joinConditionAdapter);
             }
 
-            left = new BetaMemory();
-            betaNode.Attach(left);
-            return left;
+            var memoryNode = new BetaMemoryNode();
+            betaNode.MemoryNode = memoryNode;
+            return memoryNode;
         }
 
-        private AlphaMemory BuildAlphaSubtree(ReteBuilderContext context, Type declarationType,
-                                              IEnumerable<ICondition> conditions)
+        private AlphaMemoryNode BuildAlphaSubtree(ReteBuilderContext context, Type declarationType,
+                                                  IEnumerable<ICondition> conditions)
         {
             TypeNode typeNode = BuildTypeNode(declarationType, _root);
             AlphaNode currentNode = typeNode;
@@ -100,8 +100,8 @@ namespace NRules.Core.Rete
                 currentNode = selectionNode;
             }
 
-            var memory = BuildAlphaMemory(declarationType, currentNode);
-            return memory;
+            var memoryNode = BuildAlphaMemoryNode(declarationType, currentNode);
+            return memoryNode;
         }
 
         private TypeNode BuildTypeNode(Type declarationType, AlphaNode parent)
@@ -120,7 +120,7 @@ namespace NRules.Core.Rete
         private SelectionNode BuildSlectionNode(ICondition condition, AlphaNode parent)
         {
             SelectionNode selectionNode = parent.ChildNodes
-                .OfType<SelectionNode>().FirstOrDefault(sn => sn.Condition.Equals(condition));
+                .OfType<SelectionNode>().FirstOrDefault(sn => sn.Conditions.First().Equals(condition));
 
             if (selectionNode == null)
             {
@@ -130,24 +130,22 @@ namespace NRules.Core.Rete
             return selectionNode;
         }
 
-        private AlphaMemory BuildAlphaMemory(Type declarationType, AlphaNode parent)
+        private AlphaMemoryNode BuildAlphaMemoryNode(Type declarationType, AlphaNode parent)
         {
-            AlphaMemoryAdapter adapter = parent.ChildNodes
-                .OfType<AlphaMemoryAdapter>().FirstOrDefault();
+            AlphaMemoryNode memoryNode = parent.MemoryNode;
 
-            if (adapter == null)
+            if (memoryNode == null)
             {
-                var memory = new AlphaMemory(declarationType);
-                adapter = new AlphaMemoryAdapter(memory);
-                parent.ChildNodes.Add(adapter);
+                memoryNode = new AlphaMemoryNode(declarationType);
+                parent.MemoryNode = memoryNode;
             }
 
-            return adapter.AlphaMemory;
+            return memoryNode;
         }
 
         public INetwork GetNetwork()
         {
-            INetwork network = new Network(_root, _aggregator);
+            INetwork network = new Network(_root);
             return network;
         }
     }
