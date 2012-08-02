@@ -14,17 +14,18 @@ namespace NRules.Core
     public class RuleRepository : IRuleRepository
     {
         private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
-
-        private readonly IContainer _diContainer;
+        private readonly IContainer _container;
+        private readonly Func<Type, IRule> _ruleFactory;
 
         public RuleRepository()
         {
-            _diContainer = null;
+            _ruleFactory = type => (IRule) Activator.CreateInstance(type);
         }
 
-        public RuleRepository(IContainer diContainer)
+        public RuleRepository(IContainer container)
         {
-            _diContainer = diContainer;
+            _container = container;
+            _ruleFactory = type => (IRule) _container.GetObjectInstance(type);
         }
 
         public void AddRuleSet(Assembly assembly)
@@ -32,9 +33,11 @@ namespace NRules.Core
             var ruleTypes = assembly.GetTypes().Where(IsRule).ToArray();
 
             if (!ruleTypes.Any())
-                throw new ArgumentException(string.Format("The supplied assembly ({0}) does not contain " +
-                                                          "any concrete IRule implementations!",
-                                                          assembly.FullName));
+            {
+                throw new ArgumentException(string.Format(
+                    "The supplied assembly does not contain any concrete IRule implementations. Assembly={0}",
+                    assembly.FullName));
+            }
 
             var ruleSet = new RuleSet(ruleTypes);
             _ruleSets.Add(ruleSet);
@@ -47,8 +50,9 @@ namespace NRules.Core
             if (invalidTypes.Any())
             {
                 var invalidTypesString = String.Join(", ", (string[]) invalidTypes.Select(t => t.FullName));
-                throw new ArgumentException(string.Format("The supplied types are not rules {0}",
-                                                          invalidTypesString));
+                throw new ArgumentException(string.Format(
+                    "The supplied types are not recognized as valid rules. Types={0}",
+                    invalidTypesString));
             }
 
             var ruleSet = new RuleSet(types);
@@ -58,8 +62,9 @@ namespace NRules.Core
         internal IEnumerable<CompiledRule> Compile()
         {
             if (!_ruleSets.Any())
-                throw new ArgumentException(
-                    "Rules cannot be compiled! No valid rulesets have been added to the rule repository.");
+            {
+                throw new ArgumentException("No valid rulesets in the repository");
+            }
 
             foreach (RuleSet ruleSet in _ruleSets)
             {
@@ -75,23 +80,17 @@ namespace NRules.Core
         {
             IRule ruleInstance;
 
-            if (_diContainer == null)
+            try
             {
-                ruleInstance = BuildRule(ruleType);
+                ruleInstance = _ruleFactory.Invoke(ruleType);
             }
-            else
+            catch (Exception e)
             {
-                object objectInstance = _diContainer.GetObjectInstance(ruleType);
-                ruleInstance = objectInstance as IRule;
-                if (ruleInstance == null)
-                    throw new ApplicationException(
-                        string.Format("Failed to initialize rule of type {0} from dependency injection " +
-                                      "container of type {1}.",
-                                      ruleType,
-                                      _diContainer.GetType()));
+                throw new InvalidOperationException(
+                    string.Format("Failed to instantiate a rule. Rule Type={0}", ruleType), e);
             }
 
-            var rule = new CompiledRule(ruleInstance.GetType().FullName);
+            var rule = new CompiledRule(ruleType.FullName);
             var definition = new RuleDefinition(rule);
 
             ruleInstance.Define(definition);
@@ -118,12 +117,6 @@ namespace NRules.Core
             if (type.IsGenericTypeDefinition) return false;
 
             return true;
-        }
-
-        private static IRule BuildRule(Type type)
-        {
-            var rule = (IRule) Activator.CreateInstance(type);
-            return rule;
         }
     }
 }

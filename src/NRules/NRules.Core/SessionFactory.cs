@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Logging;
 using NRules.Core.Rete;
 using NRules.Core.Rules;
 
@@ -11,11 +12,13 @@ namespace NRules.Core
         private readonly INetwork _network;
         private readonly IEnumerable<CompiledRule> _rules;
         private readonly Dictionary<string, CompiledRule> _ruleMap;
+        private static readonly ILog Log = LogManager.GetCurrentClassLogger();
 
         public SessionFactory(RuleRepository repository)
         {
             _rules = repository.Compile().ToArray();
             _ruleMap = _rules.ToDictionary(r => r.Handle);
+            Log.DebugFormat("Compiled rules from repository. Count={0}", _rules.Count());
 
             _network = BuildReteNetwork(_rules, () => new ReteBuilder());
         }

@@ -8,10 +8,8 @@ namespace SimpleRulesTest
         {
             var dwelling = new Dwelling() {Address = "1 Main Street, New York, NY", Type = DwellingTypes.SingleHouse};
             var dwelling2 = new Dwelling() {Address = "2 Main Street, New York, NY", Type = DwellingTypes.SingleHouse};
-            var policy1 = new Policy()
-                              {Name = "Silver", PolicyType = PolicyTypes.Home, Price = 1200, Dwelling = dwelling};
-            var policy2 = new Policy()
-                              {Name = "Gold", PolicyType = PolicyTypes.Home, Price = 2300, Dwelling = dwelling2};
+            var policy1 = new Policy() {Name = "Silver", PolicyType = PolicyTypes.Home, Price = 1200, Dwelling = dwelling};
+            var policy2 = new Policy() {Name = "Gold", PolicyType = PolicyTypes.Home, Price = 2300, Dwelling = dwelling2};
             var customer1 = new Customer() {Name = "John Do", Age = 22, Sex = SexTypes.Male, Policy = policy1};
             var customer2 = new Customer() {Name = "Emily Brown", Age = 32, Sex = SexTypes.Female, Policy = policy2};
 

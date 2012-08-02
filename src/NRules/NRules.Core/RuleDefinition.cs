@@ -63,8 +63,9 @@ namespace NRules.Core
                      p.Declaration == declaration);
             if (predicate != null)
             {
-                throw new InvalidOperationException(string.Format("More than one collection of type {0} defined",
-                                                                  typeof (T).Name));
+                throw new InvalidOperationException(
+                    string.Format("More than one collection of a given type defined. Type={0}",
+                                  typeof (T).Name));
             }
 
             predicate = new Predicate(PredicateTypes.Aggregate, declaration);
@@ -125,8 +126,9 @@ namespace NRules.Core
             var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type);
             if (declaration == null)
             {
-                throw new InvalidOperationException(string.Format("Rule {0} uses input of type {1} before defining it",
-                                                                  _rule.Name, type.Name));
+                throw new InvalidOperationException(string.Format(
+                    "Rule uses input of a given type before defining it. Rule={0}, Type={1}",
+                    _rule.Name, type.Name));
             }
         }
 

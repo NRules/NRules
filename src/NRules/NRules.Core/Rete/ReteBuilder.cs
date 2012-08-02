@@ -46,7 +46,7 @@ namespace NRules.Core.Rete
                         betaNode = new ExistsNode(left, alphaMemoryNode);
                         break;
                     default:
-                        throw new ArgumentException(string.Format("Unsupported predicate type {0}",
+                        throw new ArgumentException(string.Format("Unsupported predicate type. Type={0}",
                                                                   predicate.PredicateType));
                 }
 
