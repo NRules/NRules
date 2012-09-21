@@ -14,18 +14,17 @@ namespace NRules.Core.Tests
             _eventAggregator = new EventAggregator();
         }
 
-        internal static Agenda CreateTarget()
+        internal Agenda CreateTarget()
         {
-            return new Agenda();
+            return new Agenda(_eventAggregator);
         }
 
         [Test]
-        public void Subscribe_RuleActivated_ActivationEndsUpInQueue()
+        public void Activate_Called_ActivationEndsUpInQueue()
         {
             // Arrange
             var activation = new Activation("rule1", new Tuple(new Tuple(), new Fact(new object())));
             var target = CreateTarget();
-            target.Subscribe(_eventAggregator);
 
             // Act
             _eventAggregator.Activate(activation);
@@ -37,13 +36,12 @@ namespace NRules.Core.Tests
         }
 
         [Test]
-        public void Subscribe_MultipleRulesActivated_RulesAreQueuedInOrder()
+        public void Activate_CalledWithMultipleRules_RulesAreQueuedInOrder()
         {
             // Arrange
             var activation1 = new Activation("rule1", new Tuple(new Tuple(), new Fact(new object())));
             var activation2 = new Activation("rule2", new Tuple(new Tuple(), new Fact(new object())));
             var target = CreateTarget();
-            target.Subscribe(_eventAggregator);
 
             // Act
             _eventAggregator.Activate(activation1);

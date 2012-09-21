@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using NRules.Config;
 using NRules.Core.Tests.TestAssets;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace NRules.Core.Tests
 {
@@ -11,17 +13,21 @@ namespace NRules.Core.Tests
     {
         private Assembly _ruleAssembly;
         private Assembly _badAssembly;
+        private IContainer _container;
 
         [SetUp]
         public void Setup()
         {
             _ruleAssembly = Assembly.GetAssembly(typeof (TestRule1));
             _badAssembly = Assembly.GetAssembly(typeof (Object));
+            _container = MockRepository.GenerateStub<IContainer>();
         }
 
-        public static RuleRepository CreateTarget()
+        private RuleRepository CreateTarget()
         {
-            return new RuleRepository();
+            var repository = new RuleRepository();
+            repository.Container = _container;
+            return repository;
         }
 
         [Test]

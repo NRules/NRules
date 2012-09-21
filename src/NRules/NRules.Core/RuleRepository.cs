@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using NRules.Config;
 using NRules.Core.Rules;
 
 namespace NRules.Core
@@ -9,24 +10,13 @@ namespace NRules.Core
     public interface IRuleRepository
     {
         void AddRuleSet(Assembly assembly);
+        ISessionFactory CreateSessionFactory();
     }
 
-    public class RuleRepository : IRuleRepository
+    internal class RuleRepository : IRuleRepository
     {
         private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
-        private readonly IContainer _container;
-        private readonly Func<Type, IRule> _ruleFactory;
-
-        public RuleRepository()
-        {
-            _ruleFactory = type => (IRule) Activator.CreateInstance(type);
-        }
-
-        public RuleRepository(IContainer container)
-        {
-            _container = container;
-            _ruleFactory = type => (IRule) _container.GetObjectInstance(type);
-        }
+        public IContainer Container { get; set; }
 
         public void AddRuleSet(Assembly assembly)
         {
@@ -39,8 +29,14 @@ namespace NRules.Core
                     assembly.FullName));
             }
 
+            WireRulesWithContainer(ruleTypes);
             var ruleSet = new RuleSet(ruleTypes);
             _ruleSets.Add(ruleSet);
+        }
+
+        public ISessionFactory CreateSessionFactory()
+        {
+            return Container.Build<ISessionFactory>();
         }
 
         public void AddRuleSet(params Type[] types)
@@ -55,8 +51,14 @@ namespace NRules.Core
                     invalidTypesString));
             }
 
+            WireRulesWithContainer(types);
             var ruleSet = new RuleSet(types);
             _ruleSets.Add(ruleSet);
+        }
+
+        private void WireRulesWithContainer(Type[] ruleTypes)
+        {
+            Array.ForEach(ruleTypes, t => Container.Configure(t, DependencyLifecycle.InstancePerCall));
         }
 
         internal IEnumerable<CompiledRule> Compile()
@@ -82,7 +84,7 @@ namespace NRules.Core
 
             try
             {
-                ruleInstance = _ruleFactory.Invoke(ruleType);
+                ruleInstance = (IRule) Container.Build(ruleType);
             }
             catch (Exception e)
             {

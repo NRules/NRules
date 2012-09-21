@@ -31,7 +31,7 @@ namespace NRules.Core.Rete
                 context.BetaFactTypes.Add(type);
 
                 var conditions = alphaConditions.Where(c => c.FactTypes.First() == type);
-                var alphaMemoryNode = BuildAlphaSubtree(context, type, conditions);
+                var alphaMemoryNode = BuildAlphaSubtree(type, conditions);
 
                 BetaNode betaNode;
                 switch (predicate.PredicateType)
@@ -88,7 +88,7 @@ namespace NRules.Core.Rete
             return memoryNode;
         }
 
-        private AlphaMemoryNode BuildAlphaSubtree(ReteBuilderContext context, Type declarationType,
+        private AlphaMemoryNode BuildAlphaSubtree(Type declarationType,
                                                   IEnumerable<ICondition> conditions)
         {
             TypeNode typeNode = BuildTypeNode(declarationType, _root);

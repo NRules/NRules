@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Core.Tests", "NRules
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Core.IntegrationTests", "NRules.Core.IntegrationTests\NRules.Core.IntegrationTests.csproj", "{08DB9D89-412B-405A-813A-E19261039881}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Integration.Container.Autofac", "NRules.Integration.Container.Autofac\NRules.Integration.Container.Autofac.csproj", "{421A136A-7F5E-40CD-A445-35E84CE65108}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,16 @@ Global
 		{08DB9D89-412B-405A-813A-E19261039881}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{08DB9D89-412B-405A-813A-E19261039881}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{08DB9D89-412B-405A-813A-E19261039881}.Release|x86.ActiveCfg = Release|Any CPU
+		{421A136A-7F5E-40CD-A445-35E84CE65108}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{421A136A-7F5E-40CD-A445-35E84CE65108}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{421A136A-7F5E-40CD-A445-35E84CE65108}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{421A136A-7F5E-40CD-A445-35E84CE65108}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{421A136A-7F5E-40CD-A445-35E84CE65108}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{421A136A-7F5E-40CD-A445-35E84CE65108}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{421A136A-7F5E-40CD-A445-35E84CE65108}.Release|Any CPU.Build.0 = Release|Any CPU
+		{421A136A-7F5E-40CD-A445-35E84CE65108}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{421A136A-7F5E-40CD-A445-35E84CE65108}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{421A136A-7F5E-40CD-A445-35E84CE65108}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

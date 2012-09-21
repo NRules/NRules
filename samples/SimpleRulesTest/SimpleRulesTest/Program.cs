@@ -1,4 +1,7 @@
-﻿using NRules.Core;
+﻿using NRules.Config;
+using NRules.Core;
+using NRules.Core.Config;
+using NRules.Integration.Container.Autofac;
 
 namespace SimpleRulesTest
 {
@@ -13,10 +16,15 @@ namespace SimpleRulesTest
             var customer1 = new Customer() {Name = "John Do", Age = 22, Sex = SexTypes.Male, Policy = policy1};
             var customer2 = new Customer() {Name = "Emily Brown", Age = 32, Sex = SexTypes.Female, Policy = policy2};
 
-            var repository = new RuleRepository();
+            IRuleRepository repository =
+                Configure.With()
+                .AutofacContainer()
+                .InMemoryRepository()
+                .CreateRepository();
+
             repository.AddRuleSet(typeof (Program).Assembly);
 
-            var factory = new SessionFactory(repository);
+            var factory = repository.CreateSessionFactory();
             var session = factory.CreateSession();
 
             session.Insert(policy1);

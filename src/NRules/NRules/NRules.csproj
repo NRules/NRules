@@ -40,11 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ComponentConfig.cs" />
+    <Compile Include="Config\Configuration.cs" />
+    <Compile Include="Config\Configure.cs" />
+    <Compile Include="Config\ContainerExtensions.cs" />
+    <Compile Include="Config\DependencyLifecycle.cs" />
+    <Compile Include="Config\IContainer.cs" />
     <Compile Include="Dsl\IRuleDefinition.cs" />
     <Compile Include="Dsl\ILeftHandSide.cs" />
     <Compile Include="Dsl\IRightHandSide.cs" />
     <Compile Include="IActionContext.cs" />
-    <Compile Include="IContainer.cs" />
     <Compile Include="IRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

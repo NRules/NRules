@@ -2,20 +2,18 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A40A15F2-290D-4C18-85BE-D686FE35601E}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{421A136A-7F5E-40CD-A445-35E84CE65108}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SimpleRulesTest</RootNamespace>
-    <AssemblyName>SimpleRulesTest</AssemblyName>
+    <RootNamespace>NRules.Integration.Container.Autofac</RootNamespace>
+    <AssemblyName>NRules.Integration.Container.Autofac</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,8 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -35,16 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac">
-      <HintPath>..\..\..\binaries\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules">
-      <HintPath>..\..\..\binaries\NRules.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.Core">
-      <HintPath>..\..\..\binaries\NRules.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.Integration.Container.Autofac">
-      <HintPath>..\..\..\binaries\NRules.Integration.Container.Autofac.dll</HintPath>
+      <HintPath>..\..\..\lib\Autofac\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -55,15 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Customer.cs" />
-    <Compile Include="Dwelling.cs" />
-    <Compile Include="MatchPolicyRule.cs" />
-    <Compile Include="Policy.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="AutofacContainer.cs" />
+    <Compile Include="AutofacContainerConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <ProjectReference Include="..\NRules\NRules.csproj">
+      <Project>{F87E8784-7496-478C-B9A1-8B7504D9964B}</Project>
+      <Name>NRules</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
