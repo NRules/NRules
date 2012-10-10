@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using NRules.Core.Rete;
 
 namespace NRules.Core.Rules
@@ -10,11 +11,11 @@ namespace NRules.Core.Rules
         private readonly Delegate _compiledExpression;
         private readonly List<Type> _factTypes = new List<Type>();
 
-        public Condition(string key, Delegate compiledExpression, IEnumerable<Type> inputTypes)
+        public Condition(string key, LambdaExpression expression)
         {
             Key = key;
-            _compiledExpression = compiledExpression;
-            _factTypes.AddRange(inputTypes);
+            _compiledExpression = expression.Compile();
+            _factTypes.AddRange(expression.Parameters.Select(p => p.Type));
         }
 
         public string Key { get; private set; }

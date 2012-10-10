@@ -7,7 +7,8 @@ namespace NRules.Integration.Container.Autofac
     {
         public static Configuration AutofacContainer(this Configure config, ILifetimeScope scope)
         {
-            return config.Container(new AutofacContainer(scope));
+            ILifetimeScope childScope = scope.BeginLifetimeScope();
+            return config.Container(new AutofacContainer(childScope));
         }
 
         public static Configuration AutofacContainer(this Configure config)

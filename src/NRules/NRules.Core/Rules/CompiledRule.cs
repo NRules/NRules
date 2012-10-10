@@ -5,9 +5,9 @@ namespace NRules.Core.Rules
 {
     internal class CompiledRule
     {
-        public CompiledRule(string name)
+        public CompiledRule()
         {
-            Name = name;
+            Name = string.Empty;
             Handle = Guid.NewGuid().ToString();
             Declarations = new HashSet<IDeclaration>();
             Predicates = new List<IPredicate>();
@@ -16,7 +16,7 @@ namespace NRules.Core.Rules
         }
 
         public string Handle { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         public ISet<IDeclaration> Declarations { get; private set; }
         public IList<IPredicate> Predicates { get; private set; }

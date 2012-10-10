@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Reflection;
 using NRules.Config;
 using NRules.Core.Tests.TestAssets;
@@ -27,6 +26,8 @@ namespace NRules.Core.Tests
         {
             var repository = new RuleRepository();
             repository.Container = _container;
+            _container.Stub(x => x.CreateChildContainer()).Return(_container);
+            _container.Stub(x => x.BuildAll(typeof (IRule))).Return(new IRule[] {});
             return repository;
         }
 
@@ -48,17 +49,6 @@ namespace NRules.Core.Tests
 
             // Act - Assert
             Assert.DoesNotThrow(() => target.AddRuleSet(_ruleAssembly));
-        }
-
-        [Test]
-        public void Compile_NoValidRuleSetAdded_ThrowsException()
-        {
-            // Arrange
-            var target = CreateTarget();
-
-            // Act - Assert
-            var rules = target.Compile(); //delayed execution
-            Assert.Throws<ArgumentException>(() => rules.ToList());
         }
     }
 }

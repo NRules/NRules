@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 namespace NRules.Config
 {
-    public interface IContainer
+    public interface IContainer : IDisposable
     {
+        IContainer CreateChildContainer();
         object Build(Type typeToBuild);
         IEnumerable<object> BuildAll(Type typeToBuild);
         void Configure(Type component, DependencyLifecycle lifecycle);

@@ -15,17 +15,15 @@ namespace NRules.Core
     internal class SessionFactory : ISessionFactory
     {
         private readonly INetwork _network;
-        private readonly IEnumerable<CompiledRule> _rules;
-        private readonly Dictionary<string, CompiledRule> _ruleMap;
+        private readonly IList<CompiledRule> _rules;
         private static readonly ILog Log = LogManager.GetCurrentClassLogger();
 
         public IContainer Container { get; set; }
 
-        public SessionFactory(RuleRepository repository, IReteBuilder reteBuilder)
+        public SessionFactory(IRuleBase ruleBase, IReteBuilder reteBuilder)
         {
-            _rules = repository.Compile().ToArray();
-            _ruleMap = _rules.ToDictionary(r => r.Handle);
-            Log.DebugFormat("Compiled rules from repository. Count={0}", _rules.Count());
+            _rules = ruleBase.Rules.ToList();
+            Log.DebugFormat("Loaded rules from repository. Count={0}", _rules.Count());
 
             _network = BuildReteNetwork(_rules, reteBuilder);
         }
@@ -34,8 +32,8 @@ namespace NRules.Core
         {
             var eventAggregator = new EventAggregator();
             var workingMemory = new WorkingMemory(eventAggregator);
-            var agenda = new Agenda(eventAggregator);
-            var session = new Session(_network, agenda, workingMemory, _ruleMap);
+            var agenda = new Agenda(_rules, eventAggregator);
+            var session = new Session(_network, agenda, workingMemory);
             return session;
         }
 

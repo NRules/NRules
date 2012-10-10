@@ -1,21 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using NRules.Core.Rules;
 
 namespace NRules.Core
 {
-    public class RuleSet
+    public interface IRuleSet
     {
-        private readonly IList<Type> _ruleTypes;
+        IRuleBuilder AddRule();
+    }
 
-        internal RuleSet(IEnumerable<Type> ruleTypes)
+    internal class RuleSet : IRuleSet
+    {
+        private readonly List<CompiledRule> _rules = new List<CompiledRule>();
+
+        public IRuleBuilder AddRule()
         {
-            _ruleTypes = ruleTypes.ToList();
+            var rule = new CompiledRule();
+            _rules.Add(rule);
+            return new RuleBuilder(rule);
         }
 
-        public IEnumerable<Type> RuleTypes
+        internal IEnumerable<CompiledRule> Rules
         {
-            get { return _ruleTypes; }
+            get { return _rules; }
         }
     }
 }

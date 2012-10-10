@@ -22,6 +22,7 @@ namespace NRules.Core.IntegrationTests.TestAssets
         public void SetUp()
         {
             _container = MockRepository.GenerateStub<IContainer>();
+            _container.Stub(x => x.CreateChildContainer()).Return(_container);
             _builder = new ReteBuilder();
             _repository = new RuleRepository();
             _repository.Container = _container;
@@ -29,6 +30,9 @@ namespace NRules.Core.IntegrationTests.TestAssets
             _rules = new List<BaseRule>();
 
             SetUpRules();
+            _container.Stub(x => x.BuildAll(typeof (IRule))).Return(_rules);
+
+            _repository.AddRuleSet(_rules.Select(r => r.GetType()).ToArray());
 
             var factory = new SessionFactory(_repository, _builder);
             Session = factory.CreateSession();
@@ -43,9 +47,6 @@ namespace NRules.Core.IntegrationTests.TestAssets
 
             var ruleInstance = new T() {Notifier = notifier};
             _rules.Add(ruleInstance);
-
-            _container.Stub(x => x.Build(typeof (T))).Return(ruleInstance);
-            _repository.AddRuleSet(typeof (T));
         }
 
         protected T GetRuleInstance<T>() where T : BaseRule

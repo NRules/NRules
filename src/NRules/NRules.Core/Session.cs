@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NRules.Core.Rete;
 using NRules.Core.Rules;
 
@@ -17,15 +16,12 @@ namespace NRules.Core
         private readonly IAgenda _agenda;
         private readonly INetwork _network;
         private readonly IWorkingMemory _workingMemory;
-        private readonly IDictionary<string, CompiledRule> _ruleMap;
 
-        public Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory,
-                       Dictionary<string, CompiledRule> ruleMap)
+        public Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory)
         {
             _network = network;
             _agenda = agenda;
             _workingMemory = workingMemory;
-            _ruleMap = ruleMap;
         }
 
         public void Insert(object fact)
@@ -45,14 +41,12 @@ namespace NRules.Core
 
         public void Fire()
         {
-            while (_agenda.ActivationQueue.Count() > 0)
+            while (_agenda.HasActiveRules())
             {
-                Activation activation = _agenda.ActivationQueue.Dequeue();
+                RuleActivation activation = _agenda.NextActivation();
                 var context = new ActionContext(_network, _workingMemory, activation.Tuple);
 
-                CompiledRule rule = _ruleMap[activation.RuleHandle];
-
-                foreach (IRuleAction action in rule.Actions)
+                foreach (IRuleAction action in activation.Rule.Actions)
                 {
                     action.Invoke(context);
                 }

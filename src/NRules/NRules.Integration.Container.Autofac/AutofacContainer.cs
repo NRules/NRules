@@ -27,6 +27,11 @@ namespace NRules.Integration.Container.Autofac
             }
         }
 
+        public IContainer CreateChildContainer()
+        {
+            return new AutofacContainer(_container.BeginLifetimeScope());
+        }
+
         public object Build(Type typeToBuild)
         {
             return _container.Resolve(typeToBuild);
@@ -95,6 +100,11 @@ namespace NRules.Integration.Container.Autofac
             return
                 _container.ComponentRegistry.Registrations.FirstOrDefault(
                     x => x.Activator.LimitType == concreteComponent);
+        }
+
+        public void Dispose()
+        {
+            _container.Dispose();
         }
     }
 }

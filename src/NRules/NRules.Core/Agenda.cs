@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NRules.Core.Rete;
 using NRules.Core.Rules;
 
@@ -6,19 +7,34 @@ namespace NRules.Core
 {
     internal interface IAgenda
     {
-        ActivationQueue ActivationQueue { get; }
+        bool HasActiveRules();
+        RuleActivation NextActivation();
         void RegisterRule(CompiledRule rule);
     }
 
     internal class Agenda : IAgenda
     {
-        public ActivationQueue ActivationQueue { get; private set; }
-        private readonly Dictionary<string, CompiledRule> _ruleMap = new Dictionary<string, CompiledRule>();
+        private readonly Dictionary<string, CompiledRule> _ruleMap;
+        private readonly ActivationQueue _activationQueue;
 
-        public Agenda(IEventAggregator eventAggregator)
+        public Agenda(IEnumerable<CompiledRule> rules, IEventAggregator eventAggregator)
         {
-            ActivationQueue = new ActivationQueue();
+            _activationQueue = new ActivationQueue();
+            _ruleMap = rules.ToDictionary(r => r.Handle);
             Subscribe(eventAggregator);
+        }
+
+        public bool HasActiveRules()
+        {
+            return _activationQueue.Count() > 0;
+        }
+
+        public RuleActivation NextActivation()
+        {
+            Activation activation = _activationQueue.Dequeue();
+            CompiledRule rule = _ruleMap[activation.RuleHandle];
+            var ruleActivation = new RuleActivation(rule, activation.Tuple);
+            return ruleActivation;
         }
 
         public void RegisterRule(CompiledRule rule)
@@ -34,12 +50,12 @@ namespace NRules.Core
 
         private void OnRuleActivated(object sender, ActivationEventArgs e)
         {
-            ActivationQueue.Enqueue(e.Activation);
+            _activationQueue.Enqueue(e.Activation);
         }
 
         private void OnRuleDeactivated(object sender, ActivationEventArgs e)
         {
-            ActivationQueue.Remove(e.Activation);
+            _activationQueue.Remove(e.Activation);
         }
     }
 }

@@ -52,8 +52,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rete\TupleTests.cs" />
     <Compile Include="Rete\TypeNodeTests.cs" />
+    <Compile Include="RuleBuilderTest.cs" />
     <Compile Include="RuleRepositoryTest.cs" />
-    <Compile Include="RuleSetTest.cs" />
     <Compile Include="SessionTest.cs" />
     <Compile Include="TestAssets\TestRules.cs" />
   </ItemGroup>

@@ -44,8 +44,13 @@ namespace NRules.Core.Rete
             }
             else
             {
-                ForceRetract(workingMemory, fact);
+                UnsatisfiedFactUpdate(workingMemory, fact);
             }
+        }
+
+        protected virtual void UnsatisfiedFactUpdate(IWorkingMemory workingMemory, Fact fact)
+        {
+            ForceRetract(workingMemory, fact);
         }
 
         public void PropagateRetract(IWorkingMemory workingMemory, Fact fact)

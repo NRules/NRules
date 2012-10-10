@@ -9,16 +9,22 @@ namespace NRules.Core
 {
     public interface IRuleRepository
     {
-        void AddRuleSet(Assembly assembly);
+        IRuleSet AddRuleSet(Assembly assembly);
+        IRuleSet AddRuleSet(params Type[] ruleTypes);
         ISessionFactory CreateSessionFactory();
     }
 
-    internal class RuleRepository : IRuleRepository
+    internal interface IRuleBase
+    {
+        IEnumerable<CompiledRule> Rules { get; }
+    }
+
+    internal class RuleRepository : IRuleRepository, IRuleBase
     {
         private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
         public IContainer Container { get; set; }
 
-        public void AddRuleSet(Assembly assembly)
+        public IRuleSet AddRuleSet(Assembly assembly)
         {
             var ruleTypes = assembly.GetTypes().Where(IsRule).ToArray();
 
@@ -29,9 +35,8 @@ namespace NRules.Core
                     assembly.FullName));
             }
 
-            WireRulesWithContainer(ruleTypes);
-            var ruleSet = new RuleSet(ruleTypes);
-            _ruleSets.Add(ruleSet);
+            var ruleSet = AddRuleSet(ruleTypes);
+            return ruleSet;
         }
 
         public ISessionFactory CreateSessionFactory()
@@ -39,7 +44,7 @@ namespace NRules.Core
             return Container.Build<ISessionFactory>();
         }
 
-        public void AddRuleSet(params Type[] types)
+        public IRuleSet AddRuleSet(params Type[] types)
         {
             var invalidTypes = types.Where(IsNotRule).ToArray();
 
@@ -51,52 +56,30 @@ namespace NRules.Core
                     invalidTypesString));
             }
 
-            WireRulesWithContainer(types);
-            var ruleSet = new RuleSet(types);
+            var ruleSet = new RuleSet();
             _ruleSets.Add(ruleSet);
+
+            AddRulesToRuleSet(types, ruleSet);
+
+            return ruleSet;
         }
 
-        private void WireRulesWithContainer(Type[] ruleTypes)
+        private void AddRulesToRuleSet(Type[] types, RuleSet ruleSet)
         {
-            Array.ForEach(ruleTypes, t => Container.Configure(t, DependencyLifecycle.InstancePerCall));
-        }
-
-        internal IEnumerable<CompiledRule> Compile()
-        {
-            if (!_ruleSets.Any())
+            IEnumerable<IRule> ruleInstances;
+            using (var container = Container.CreateChildContainer())
             {
-                throw new ArgumentException("No valid rulesets in the repository");
+                Array.ForEach(types, t => Container.Configure(t, DependencyLifecycle.InstancePerCall));
+                ruleInstances = container.BuildAll<IRule>();
             }
 
-            foreach (RuleSet ruleSet in _ruleSets)
+            foreach (var ruleInstance in ruleInstances)
             {
-                foreach (Type ruleType in ruleSet.RuleTypes)
-                {
-                    CompiledRule rule = InstantiateRule(ruleType);
-                    yield return rule;
-                }
+                var builder = ruleSet.AddRule();
+                builder.Name(ruleInstance.GetType().FullName);
+                var definition = new RuleDefinition(builder);
+                ruleInstance.Define(definition);
             }
-        }
-
-        private CompiledRule InstantiateRule(Type ruleType)
-        {
-            IRule ruleInstance;
-
-            try
-            {
-                ruleInstance = (IRule) Container.Build(ruleType);
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException(
-                    string.Format("Failed to instantiate a rule. Rule Type={0}", ruleType), e);
-            }
-
-            var rule = new CompiledRule(ruleType.FullName);
-            var definition = new RuleDefinition(rule);
-
-            ruleInstance.Define(definition);
-            return rule;
         }
 
         private static bool IsNotRule(Type type)
@@ -106,19 +89,25 @@ namespace NRules.Core
 
         private static bool IsRule(Type type)
         {
-            if (IsConcrete(type) &&
+            if (IsPublicConcrete(type) &&
                 typeof (IRule).IsAssignableFrom(type)) return true;
 
             return false;
         }
 
-        private static bool IsConcrete(Type type)
+        private static bool IsPublicConcrete(Type type)
         {
+            if (!type.IsPublic) return false;
             if (type.IsAbstract) return false;
             if (type.IsInterface) return false;
             if (type.IsGenericTypeDefinition) return false;
 
             return true;
+        }
+
+        public IEnumerable<CompiledRule> Rules
+        {
+            get { return _ruleSets.SelectMany(rs => rs.Rules, (rs, r) => r); }
         }
     }
 }

@@ -57,6 +57,8 @@
     <Compile Include="Rete\ReteBuilderContext.cs" />
     <Compile Include="Rete\RootNode.cs" />
     <Compile Include="Rete\SelectionNode.cs" />
+    <Compile Include="RuleActivation.cs" />
+    <Compile Include="RuleBuilder.cs" />
     <Compile Include="Rules\IAggregate.cs" />
     <Compile Include="Rete\Activation.cs" />
     <Compile Include="Rete\EventAggregator.cs" />

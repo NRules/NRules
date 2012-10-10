@@ -16,5 +16,10 @@ namespace NRules.Core.Rete
             bool isMatchingType = FilterType.IsAssignableFrom(fact.FactType);
             return isMatchingType;
         }
+
+        protected override void UnsatisfiedFactUpdate(IWorkingMemory workingMemory, Fact fact)
+        {
+            //Do nothing, since fact type will never change
+        }
     }
 }
