@@ -49,6 +49,7 @@
     <Compile Include="Dsl\IRuleDefinition.cs" />
     <Compile Include="Dsl\ILeftHandSide.cs" />
     <Compile Include="Dsl\IRightHandSide.cs" />
+    <Compile Include="Dsl\RulePriorityAttribute.cs" />
     <Compile Include="IActionContext.cs" />
     <Compile Include="IRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

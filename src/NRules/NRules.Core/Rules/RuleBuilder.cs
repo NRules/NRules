@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using NRules.Core.Rules;
 
-namespace NRules.Core
+namespace NRules.Core.Rules
 {
     public interface IRuleBuilder
     {
         IRuleBuilder Name(string name);
+        IRuleBuilder Priority(int priority);
         IRuleBuilder Condition(LambdaExpression expression);
         IRuleBuilder Collect(LambdaExpression itemExpression);
         IRuleBuilder Exists(LambdaExpression expression);
@@ -26,6 +26,12 @@ namespace NRules.Core
         public IRuleBuilder Name(string name)
         {
             _rule.Name = name;
+            return this;
+        }
+
+        public IRuleBuilder Priority(int priority)
+        {
+            _rule.Priority = priority;
             return this;
         }
 

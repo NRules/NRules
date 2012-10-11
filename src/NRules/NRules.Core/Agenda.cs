@@ -26,7 +26,7 @@ namespace NRules.Core
 
         public bool HasActiveRules()
         {
-            return _activationQueue.Count() > 0;
+            return _activationQueue.HasActive();
         }
 
         public RuleActivation NextActivation()
@@ -50,7 +50,8 @@ namespace NRules.Core
 
         private void OnRuleActivated(object sender, ActivationEventArgs e)
         {
-            _activationQueue.Enqueue(e.Activation);
+            CompiledRule rule = _ruleMap[e.Activation.RuleHandle];
+            _activationQueue.Enqueue(rule.Priority, e.Activation);
         }
 
         private void OnRuleDeactivated(object sender, ActivationEventArgs e)

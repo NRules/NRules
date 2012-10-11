@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using NRules.Core.Rules;
 using NRules.Dsl;
 
 namespace NRules.Core
@@ -8,9 +9,12 @@ namespace NRules.Core
     {
         private readonly IRuleBuilder _builder;
 
-        public RuleDefinition(IRuleBuilder builder)
+        public RuleDefinition(IRuleBuilder builder, RuleMetadata metadata)
         {
             _builder = builder;
+
+            if (metadata.Priority.HasValue)
+                _builder.Priority(metadata.Priority.Value);
         }
 
         public ILeftHandSide If<T>(Expression<Func<T, bool>> condition)

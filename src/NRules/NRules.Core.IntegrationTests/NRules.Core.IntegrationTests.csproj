@@ -48,7 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OneFactOneExistsCheckRuleTests.cs" />
+    <Compile Include="PriorityTests.cs" />
     <Compile Include="TestRules\OneFactOneExistsCheckRule.cs" />
+    <Compile Include="TestRules\PriorityHighRule.cs" />
+    <Compile Include="TestRules\PriorityLowRule.cs" />
     <Compile Include="TwoFactTwoCollectionRuleTests.cs" />
     <Compile Include="TestRules\TwoFactTwoCollectionRule.cs" />
     <Compile Include="TwoFactOneCollectionRuleTests.cs" />

@@ -75,9 +75,10 @@ namespace NRules.Core
 
             foreach (var ruleInstance in ruleInstances)
             {
+                var metadata = new RuleMetadata(ruleInstance);
                 var builder = ruleSet.AddRule();
                 builder.Name(ruleInstance.GetType().FullName);
-                var definition = new RuleDefinition(builder);
+                var definition = new RuleDefinition(builder, metadata);
                 ruleInstance.Define(definition);
             }
         }

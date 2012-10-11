@@ -5,9 +5,15 @@ namespace NRules.Core.Rules
 {
     internal class CompiledRule
     {
+        public static int DefaultPriority
+        {
+            get { return 0; }
+        }
+
         public CompiledRule()
         {
             Name = string.Empty;
+            Priority = DefaultPriority;
             Handle = Guid.NewGuid().ToString();
             Declarations = new HashSet<IDeclaration>();
             Predicates = new List<IPredicate>();
@@ -17,6 +23,7 @@ namespace NRules.Core.Rules
 
         public string Handle { get; private set; }
         public string Name { get; set; }
+        public int Priority { get; set; }
 
         public ISet<IDeclaration> Declarations { get; private set; }
         public IList<IPredicate> Predicates { get; private set; }
