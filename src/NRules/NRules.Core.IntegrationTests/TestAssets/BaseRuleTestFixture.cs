@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.Config;
 using NRules.Core.Rete;
+using NRules.Fluent;
 using NUnit.Framework;
 using Rhino.Mocks;
 

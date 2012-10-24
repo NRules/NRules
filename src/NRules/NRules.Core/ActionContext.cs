@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NRules.Core.Rete;
+using NRules.Fluent;
 using Tuple = NRules.Core.Rete.Tuple;
 
 namespace NRules.Core

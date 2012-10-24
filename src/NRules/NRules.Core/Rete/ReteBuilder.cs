@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NRules.Core.Rules;
+using NRules.Rule;
 
 namespace NRules.Core.Rete
 {
     internal interface IReteBuilder
     {
-        void AddRule(CompiledRule rule);
+        void AddRule(ICompiledRule rule);
         INetwork GetNetwork();
     }
 
@@ -15,7 +15,7 @@ namespace NRules.Core.Rete
     {
         private readonly RootNode _root = new RootNode();
 
-        public void AddRule(CompiledRule rule)
+        public void AddRule(ICompiledRule rule)
         {
             var context = new ReteBuilderContext(rule);
 

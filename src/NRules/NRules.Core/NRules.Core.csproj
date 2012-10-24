@@ -51,7 +51,6 @@
     <Compile Include="Collections\PriorityQueue.cs" />
     <Compile Include="Rete\AlphaMemory.cs" />
     <Compile Include="Rete\BetaMemory.cs" />
-    <Compile Include="CollectionAggregate.cs" />
     <Compile Include="Rete\AggregateNode.cs" />
     <Compile Include="Rete\BetaNode.cs" />
     <Compile Include="Rete\DummyNode.cs" />
@@ -61,20 +60,12 @@
     <Compile Include="Rete\SelectionNode.cs" />
     <Compile Include="RuleActivation.cs" />
     <Compile Include="RuleMetadata.cs" />
-    <Compile Include="Rules\RuleBuilder.cs" />
-    <Compile Include="Rules\IAggregate.cs" />
     <Compile Include="Rete\Activation.cs" />
     <Compile Include="Rete\EventAggregator.cs" />
     <Compile Include="Rete\JoinConditionAdaptor.cs" />
-    <Compile Include="Rules\ICondition.cs" />
-    <Compile Include="Rules\IRuleAction.cs" />
-    <Compile Include="Rules\IDeclaration.cs" />
-    <Compile Include="Rules\IPredicate.cs" />
-    <Compile Include="Rules\RuleAction.cs" />
     <Compile Include="Agenda.cs" />
     <Compile Include="Rete\AlphaMemoryNode.cs" />
     <Compile Include="Rete\BetaMemoryNode.cs" />
-    <Compile Include="Rules\Condition.cs" />
     <Compile Include="Rete\Fact.cs" />
     <Compile Include="Rete\IObjectSink.cs" />
     <Compile Include="Rete\ITupleSink.cs" />
@@ -86,21 +77,25 @@
     <Compile Include="Rete\RuleNode.cs" />
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />
-    <Compile Include="Rules\CompiledRule.cs" />
     <Compile Include="RuleDefinition.cs" />
-    <Compile Include="RuleSet.cs" />
     <Compile Include="RuleRepository.cs" />
-    <Compile Include="Rules\Declaration.cs" />
-    <Compile Include="Rules\Predicate.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="WorkingMemory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NRules\NRules.csproj">
+    <ProjectReference Include="..\NRules.Config\NRules.Config.csproj">
+      <Project>{402FD881-5AEE-4B5D-9248-1AC237D991BA}</Project>
+      <Name>NRules.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NRules.Fluent\NRules.Fluent.csproj">
       <Project>{F87E8784-7496-478C-B9A1-8B7504D9964B}</Project>
-      <Name>NRules</Name>
+      <Name>NRules.Fluent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NRules.Rule\NRules.Rule.csproj">
+      <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
+      <Name>NRules.Rule</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

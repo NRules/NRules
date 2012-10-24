@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NRules.Core.Rules;
+using NRules.Rule;
 
 namespace NRules.Core.Rete
 {
@@ -16,7 +16,7 @@ namespace NRules.Core.Rete
 
         public override bool IsSatisfiedBy(Fact fact)
         {
-            return Conditions.All(c => c.IsSatisfiedBy(fact));
+            return Conditions.All(c => c.IsSatisfiedBy(fact.Object));
         }
     }
 }

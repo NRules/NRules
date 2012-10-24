@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NRules.Core.Rete;
-using NRules.Core.Rules;
+using NRules.Rule;
 
 namespace NRules.Core
 {
@@ -9,15 +9,15 @@ namespace NRules.Core
     {
         bool HasActiveRules();
         RuleActivation NextActivation();
-        void RegisterRule(CompiledRule rule);
+        void RegisterRule(ICompiledRule rule);
     }
 
     internal class Agenda : IAgenda
     {
-        private readonly Dictionary<string, CompiledRule> _ruleMap;
+        private readonly Dictionary<string, ICompiledRule> _ruleMap;
         private readonly ActivationQueue _activationQueue;
 
-        public Agenda(IEnumerable<CompiledRule> rules, IEventAggregator eventAggregator)
+        public Agenda(IEnumerable<ICompiledRule> rules, IEventAggregator eventAggregator)
         {
             _activationQueue = new ActivationQueue();
             _ruleMap = rules.ToDictionary(r => r.Handle);
@@ -32,12 +32,12 @@ namespace NRules.Core
         public RuleActivation NextActivation()
         {
             Activation activation = _activationQueue.Dequeue();
-            CompiledRule rule = _ruleMap[activation.RuleHandle];
+            ICompiledRule rule = _ruleMap[activation.RuleHandle];
             var ruleActivation = new RuleActivation(rule, activation.Tuple);
             return ruleActivation;
         }
 
-        public void RegisterRule(CompiledRule rule)
+        public void RegisterRule(ICompiledRule rule)
         {
             _ruleMap.Add(rule.Handle, rule);
         }
@@ -50,7 +50,7 @@ namespace NRules.Core
 
         private void OnRuleActivated(object sender, ActivationEventArgs e)
         {
-            CompiledRule rule = _ruleMap[e.Activation.RuleHandle];
+            ICompiledRule rule = _ruleMap[e.Activation.RuleHandle];
             _activationQueue.Enqueue(rule.Priority, e.Activation);
         }
 

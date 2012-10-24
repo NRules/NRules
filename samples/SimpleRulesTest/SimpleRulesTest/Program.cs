@@ -19,7 +19,7 @@ namespace SimpleRulesTest
             IRuleRepository repository =
                 Configure.With()
                 .AutofacContainer()
-                .InMemoryRepository()
+                .DefaultSettings()
                 .CreateRepository();
 
             repository.AddRuleSet(typeof (Program).Assembly);

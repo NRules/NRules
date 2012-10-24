@@ -1,5 +1,5 @@
 using NRules.Core.Rete;
-using NRules.Core.Rules;
+using NRules.Rule;
 
 namespace NRules.Core
 {

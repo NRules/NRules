@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NRules.Core.Rules;
+using NRules.Rule;
 
 namespace NRules.Core.Rete
 {
@@ -22,7 +22,8 @@ namespace NRules.Core.Rete
                 _factSelectionTable.Select(
                     idx => leftTuple.ElementAtOrDefault(idx) ?? rightFact);
 
-            return _condition.IsSatisfiedBy(facts.ToArray());
+            var factObjects = facts.Select(f => f.Object).ToArray();
+            return _condition.IsSatisfiedBy(factObjects);
         }
     }
 }

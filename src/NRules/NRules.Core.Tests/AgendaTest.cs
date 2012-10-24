@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using NRules.Core.Rete;
-using NRules.Core.Rules;
+using NRules.Rule;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace NRules.Core.Tests
 {
@@ -9,18 +10,22 @@ namespace NRules.Core.Tests
     public class AgendaTest
     {
         private EventAggregator _eventAggregator;
-        private IList<CompiledRule> _rules;
+        private IList<ICompiledRule> _rules;
 
         [SetUp]
         public void Setup()
         {
             _eventAggregator = new EventAggregator();
-            _rules = new List<CompiledRule>
-                         {
-                             new CompiledRule() {Name = "rule1"},
-                             new CompiledRule() {Name = "rule2"},
-                             new CompiledRule() {Name = "rule3"}
-                         };
+            var rule1 = MockRepository.GenerateStub<ICompiledRule>();
+            rule1.Stub(x => x.Name).Return("rule1");
+            rule1.Stub(x => x.Handle).Return("handle1");
+            var rule2 = MockRepository.GenerateStub<ICompiledRule>();
+            rule2.Stub(x => x.Name).Return("rule2");
+            rule2.Stub(x => x.Handle).Return("handle2");
+            var rule3 = MockRepository.GenerateStub<ICompiledRule>();
+            rule3.Stub(x => x.Name).Return("rule3");
+            rule3.Stub(x => x.Handle).Return("handle3");
+            _rules = new List<ICompiledRule> {rule1, rule2, rule3};
         }
 
         internal Agenda CreateTarget()

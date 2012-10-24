@@ -3,7 +3,7 @@ using System.Linq;
 using Common.Logging;
 using NRules.Config;
 using NRules.Core.Rete;
-using NRules.Core.Rules;
+using NRules.Rule;
 
 namespace NRules.Core
 {
@@ -15,7 +15,7 @@ namespace NRules.Core
     internal class SessionFactory : ISessionFactory
     {
         private readonly INetwork _network;
-        private readonly IList<CompiledRule> _rules;
+        private readonly IList<ICompiledRule> _rules;
         private static readonly ILog Log = LogManager.GetCurrentClassLogger();
 
         public IContainer Container { get; set; }
@@ -37,9 +37,9 @@ namespace NRules.Core
             return session;
         }
 
-        private INetwork BuildReteNetwork(IEnumerable<CompiledRule> rules, IReteBuilder reteBuilder)
+        private INetwork BuildReteNetwork(IEnumerable<ICompiledRule> rules, IReteBuilder reteBuilder)
         {
-            foreach (CompiledRule rule in rules)
+            foreach (ICompiledRule rule in rules)
             {
                 reteBuilder.AddRule(rule);
             }

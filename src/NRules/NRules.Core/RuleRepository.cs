@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NRules.Config;
-using NRules.Core.Rules;
+using NRules.Fluent;
+using NRules.Rule;
 
 namespace NRules.Core
 {
-    public interface IRuleRepository
+    public interface IRuleBase
+    {
+        IEnumerable<ICompiledRule> Rules { get; }
+    }
+
+    public interface IRuleRepository : IRuleBase
     {
         IRuleSet AddRuleSet(Assembly assembly);
         IRuleSet AddRuleSet(params Type[] ruleTypes);
         ISessionFactory CreateSessionFactory();
     }
 
-    internal interface IRuleBase
+    internal class RuleRepository : IRuleRepository
     {
-        IEnumerable<CompiledRule> Rules { get; }
-    }
-
-    internal class RuleRepository : IRuleRepository, IRuleBase
-    {
-        private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
+        private readonly IList<IRuleSet> _ruleSets = new List<IRuleSet>();
         public IContainer Container { get; set; }
 
         public IRuleSet AddRuleSet(Assembly assembly)
@@ -64,7 +65,7 @@ namespace NRules.Core
             return ruleSet;
         }
 
-        private void AddRulesToRuleSet(Type[] types, RuleSet ruleSet)
+        private void AddRulesToRuleSet(Type[] types, IRuleSet ruleSet)
         {
             IEnumerable<IRule> ruleInstances;
             using (var container = Container.CreateChildContainer())
@@ -106,7 +107,7 @@ namespace NRules.Core
             return true;
         }
 
-        public IEnumerable<CompiledRule> Rules
+        public IEnumerable<ICompiledRule> Rules
         {
             get { return _ruleSets.SelectMany(rs => rs.Rules, (rs, r) => r); }
         }

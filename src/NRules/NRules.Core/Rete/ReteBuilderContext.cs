@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using NRules.Core.Rules;
+using NRules.Rule;
 
 namespace NRules.Core.Rete
 {
     internal class ReteBuilderContext
     {
-        public ReteBuilderContext(CompiledRule rule)
+        public ReteBuilderContext(ICompiledRule rule)
         {
             Rule = rule;
             BetaFactTypes = new List<Type>();
         }
 
         public List<Type> BetaFactTypes { get; private set; }
-        public CompiledRule Rule { get; private set; }
+        public ICompiledRule Rule { get; private set; }
     }
 }

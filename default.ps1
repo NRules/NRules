@@ -19,6 +19,7 @@ $buildBase = "$baseDir\build"
 $outDir =  "$buildBase\output"
 $libDir = "$baseDir\lib" 
 $toolsDir = "$baseDir\tools"
+$ilMergeExclude = "$toolsDir\IlMerge\ilmerge.exclude"
 $script:architecture = "x86"
 $script:msBuild = ""
 $script:msBuildTargetFramework = ""	
@@ -48,7 +49,8 @@ task InitEnvironment -description "Initializes the environment for build" {
 			$script:msBuild = $netfxCurrent + "\msbuild.exe"
 			
 			echo ".NET 4.0 build requested - $script:msBuild" 
-
+			
+			$script:ilmergeTargetFramework  = "/targetplatform:v4," + $netfxCurrent
 			$script:msBuildTargetFramework ="/p:TargetFrameworkVersion=v4.0 /ToolsVersion:4.0"
 			$script:nunitTargetFramework = "/framework=4.0";
 			$script:isEnvironmentInitialized = $true
@@ -76,6 +78,11 @@ task Compile -depends InitEnvironment -description "Builds NRules and keeps the 
 		$solutionFile = $_.FullName
 		exec { &$script:msBuild $solutionFile /p:OutDir="$outDir\" /p:Configuration=$buildConfiguration }
 	}
+	
+	$assemblies = @()
+	$assemblies += dir $outDir\NRules.*.dll -Exclude **Tests.dll
+
+	Ilmerge $outDir "NRules" $assemblies "dll" $script:ilmergeTargetFramework "$buildBase\NRulesMergeLog.txt" $ilMergeExclude
 }
 
 task Build -depends Init, Compile -description "Builds all the source code" {
@@ -85,6 +92,5 @@ task Build -depends Init, Compile -description "Builds all the source code" {
 	
 	Create-Directory $binariesDir
 	
-	Copy-Item $outDir\*.dll $binariesDir -Force;
-	Copy-Item $outDir\*.pdb $binariesDir -Force;
+	Get-ChildItem "$outDir\**" -Include *.dll, *.pdb, *.xml -Exclude NRules.*.dll, NRules.*.pdb, NRules.*.xml | Copy-Item -Destination $binariesDir -Force
 }
