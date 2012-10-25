@@ -17,8 +17,10 @@ $binariesDir = "$baseDir\binaries"
 $srcDir = "$baseDir\src"
 $buildBase = "$baseDir\build"
 $outDir =  "$buildBase\output"
+$mergeDir = "$buildBase\merge"
 $libDir = "$baseDir\lib" 
 $toolsDir = "$baseDir\tools"
+$ilMergeExec = "$toolsDir\IlMerge\ilmerge.exe"
 $ilMergeExclude = "$toolsDir\IlMerge\ilmerge.exclude"
 $script:architecture = "x86"
 $script:msBuild = ""
@@ -72,25 +74,33 @@ task Init -depends Clean -description "Initializes the build" {
 	echo "Current Directory: $currentDirectory" 
  }
   
-task Compile -depends InitEnvironment -description "Builds NRules and keeps the output in \binaries" { 
+task Compile -depends InitEnvironment -description "Compiles source code into assemblies" { 
 	$solutions = dir "$srcDir\NRules\*.sln"
 	$solutions | % {
 		$solutionFile = $_.FullName
 		exec { &$script:msBuild $solutionFile /p:OutDir="$outDir\" /p:Configuration=$buildConfiguration }
 	}
-	
-	$assemblies = @()
-	$assemblies += dir $outDir\NRules.*.dll -Exclude **Tests.dll
-
-	Ilmerge $outDir "NRules" $assemblies "dll" $script:ilmergeTargetFramework "$buildBase\NRulesMergeLog.txt" $ilMergeExclude
 }
 
-task Build -depends Init, Compile -description "Builds all the source code" {
+task Merge -depends Init, Compile -description "Merges compiled assemblies into coarse-grained components"{
+	$assemblies = @()
+	$assemblies += dir $outDir\NRules.*.dll -Exclude **Tests.dll
+	
+	$logFileName = "$buildBase\NRulesMergeLog.txt"
+	Create-Directory $mergeDir
+	
+	&$ilMergeExec /out:"$mergeDir\NRules.dll" /log:$logFileName /internalize:$ilMergeExclude $script:ilmergeTargetFramework $assemblies /xmldocs
+	$mergeLogContent = Get-Content "$logFileName"
+	echo $mergeLogContent
+}
+
+task Build -depends Merge -description "Builds final binaries" {
 	if(Test-Path $binariesDir) {
 		Delete-Directory "binaries"
 	}
 	
 	Create-Directory $binariesDir
 	
-	Get-ChildItem "$outDir\**" -Include *.dll, *.pdb, *.xml -Exclude NRules.*.dll, NRules.*.pdb, NRules.*.xml | Copy-Item -Destination $binariesDir -Force
+	Get-ChildItem "$mergeDir\**" -Include *.dll, *.pdb, *.xml | Copy-Item -Destination $binariesDir -Force	
+	Get-ChildItem "$outDir\**" -Include *.dll, *.pdb, *.xml -Exclude NRules** | Copy-Item -Destination $binariesDir -Force
 }
