@@ -93,7 +93,7 @@ task Merge -depends Compile -description "Merges compiled assemblies into coarse
 	
 	&$ilMergeExec /out:"$mergeDir\NRules.dll" /log:$logFileName /internalize:$ilMergeExclude $script:ilmergeTargetFramework $assemblies /xmldocs /attr:$attributeFile
 	$mergeLogContent = Get-Content "$logFileName"
-	Write-Host $mergeLogContent
+	echo $mergeLogContent
 }
 
 task ResetVersion -description "Resets version in source files to default" {
