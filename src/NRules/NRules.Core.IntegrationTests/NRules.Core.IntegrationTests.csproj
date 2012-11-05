@@ -47,6 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="OneFactOneExistsCheckRuleTests.cs" />
     <Compile Include="PriorityTests.cs" />
     <Compile Include="TestRules\OneFactOneExistsCheckRule.cs" />

@@ -9,9 +9,9 @@ properties {
 $baseDir  = resolve-path .
 $binariesDir = "$baseDir\binaries"
 $srcDir = "$baseDir\src"
-$buildBase = "$baseDir\build"
-$outDir =  "$buildBase\output"
-$mergeDir = "$buildBase\merge"
+$buildDir = "$baseDir\build"
+$outDir =  "$buildDir\output"
+$mergeDir = "$buildDir\merge"
 $pkgDir = "$baseDir\packages"
 $libDir = "$baseDir\lib" 
 $toolsDir = "$baseDir\tools"
@@ -19,6 +19,7 @@ $nugetExec = "$toolsDir\NuGet\nuget.exe"
 $ilMergeExec = "$toolsDir\IlMerge\ilmerge.exe"
 $ilMergeExclude = "$toolsDir\IlMerge\ilmerge.exclude"
 
+$script:version = ""
 $script:msBuild = ""
 $script:msBuildTargetFramework = ""
 $script:ilmergeTargetFramework = ""
@@ -28,82 +29,86 @@ include $toolsDir\build\buildutils.ps1
 
 task default -depends Build -description "Invokes Build task"
  
-task Clean -description "Cleans the eviorment for the build" {
-	if(Test-Path $buildBase) {
-		Delete-Directory $buildBase
+task Clean -description "Cleans the environment for the build" {
+	if (Test-Path $buildDir) {
+		Delete-Directory $buildDir
 	}
 	
-	if(Test-Path $binariesDir) {
+	if (Test-Path $binariesDir) {
 		Delete-Directory $binariesDir
 	}
 }
 
-task InitEnvironment -description "Initializes the environment for build" {
-	if($script:isEnvironmentInitialized -ne $true) {
+task Init -depends Clean -description "Initializes the build" {
+	Write-Host "Creating build directory at the following path $buildDir"
+	Create-Directory $buildDir
+	
+	Write-Host "Creating binaries directory at the following path $binariesDir"
+	Create-Directory $binariesDir
+	
+	$currentDirectory = Resolve-Path .
+	Write-Host "Current Directory: $currentDirectory" 
+}
+
+task InitEnvironment -depends Init -description "Initializes the environment for build" {
+	if ($script:isEnvironmentInitialized -ne $true) {
 		if ($TargetFramework -eq "net-4.0") {
 			$netfxInstallroot = "" 
 			$netfxInstallroot =	Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
 			$netfxCurrent = $netfxInstallroot + "v4.0.30319"
 			$script:msBuild = $netfxCurrent + "\msbuild.exe"
 			
-			echo ".NET 4.0 build requested - $script:msBuild" 
+			Write-Host ".NET 4.0 build requested - $script:msBuild" 
 			
 			$script:ilmergeTargetFramework  = "/targetplatform:v4," + $netfxCurrent
 			$script:msBuildTargetFramework ="/p:TargetFrameworkVersion=v4.0 /ToolsVersion:4.0"
 			$script:isEnvironmentInitialized = $true
 		}
 	}
-	$binariesExists = Test-Path $binariesDir;
-	if ($binariesExists -eq $false) {	
-		Create-Directory $binariesDir
-		echo "Created binaries"
-	}
 }
 
-task Init -depends Clean -description "Initializes the build" {
-	echo "Creating build directory at the following path $buildBase"
-	Delete-Directory $buildBase
-	Create-Directory $buildBase
+task Version -description "Sets version in the source files" {
+	$script:version = "$ProductVersion.$BuildNumber"
+	Write-Host Build Version: $script:version
 	
-	$currentDirectory = Resolve-Path .
-	echo "Current Directory: $currentDirectory" 
- }
-  
-task Compile -depends InitEnvironment -description "Compiles source code into assemblies" { 
-	$solutions = dir "$srcDir\NRules\*.sln"
+	Update-AssemblyVersion $script:version
+}
+
+task Compile -depends InitEnvironment, Version -description "Compiles source code into assemblies" { 
+	$solutions = Get-ChildItem $srcDir\NRules\*.sln
 	$solutions | % {
 		$solutionFile = $_.FullName
 		exec { &$script:msBuild $solutionFile /p:OutDir="$outDir\" /p:Configuration=$buildConfiguration }
 	}
 }
 
-task Merge -depends Init, Compile -description "Merges compiled assemblies into coarse-grained components"{
+task Merge -depends Compile -description "Merges compiled assemblies into coarse-grained components" {
 	$assemblies = @()
-	$assemblies += dir $outDir\NRules.*.dll -Exclude **Tests.dll
+	$assemblies += Get-ChildItem $outDir\NRules.*.dll -Exclude **Tests.dll
 	
-	$logFileName = "$buildBase\NRulesMergeLog.txt"
+	$attributeFile = "$outDir\NRules.Core.dll"
+	
+	$logFileName = "$buildDir\NRulesMergeLog.txt"
 	Create-Directory $mergeDir
 	
-	&$ilMergeExec /out:"$mergeDir\NRules.dll" /log:$logFileName /internalize:$ilMergeExclude $script:ilmergeTargetFramework $assemblies /xmldocs
+	&$ilMergeExec /out:"$mergeDir\NRules.dll" /log:$logFileName /internalize:$ilMergeExclude $script:ilmergeTargetFramework $assemblies /xmldocs /attr:$attributeFile
 	$mergeLogContent = Get-Content "$logFileName"
-	echo $mergeLogContent
+	Write-Host $mergeLogContent
 }
 
-task Build -depends Merge -description "Builds final binaries" {
-	if(Test-Path $binariesDir) {
-		Delete-Directory "binaries"
-	}
-	
-	Create-Directory $binariesDir
-	
+task ResetVersion -description "Resets version in source files to default" {
+	Reset-AssemblyVersion
+}
+
+task Build -depends Merge, ResetVersion -description "Builds final binaries" {
 	Get-ChildItem "$mergeDir\**" -Include *.dll, *.pdb, *.xml | Copy-Item -Destination $binariesDir -Force	
 	Get-ChildItem "$outDir\**" -Include *.dll, *.pdb, *.xml -Exclude NRules**, nunit**, Rhino.Mocks** | Copy-Item -Destination $binariesDir -Force
 }
 
-task NuGet -depends Build -description "Generates NuGet package" {
+task Package -depends Build -description "Generates NuGet package" {
 	Remove-Item $pkgDir\NRules*.nupkg
 
-	$nugetDir = "$buildBase\NuGet"
+	$nugetDir = "$buildDir\NuGet"
 	Remove-Item $nugetDir -Force -Recurse -ErrorAction SilentlyContinue
 	New-Item $nugetDir -Type directory | Out-Null
 

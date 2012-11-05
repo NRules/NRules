@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ActionContextTest.cs" />
     <Compile Include="AgendaTest.cs" />
     <Compile Include="Collections\OrderedPriorityQueueTest.cs" />
