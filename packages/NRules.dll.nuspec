@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>NRules.dll</id>
+    <version>1.0.0</version>
+    <authors>Sergiy Nikolayev</authors>
+    <owners>Sergiy Nikolayev</owners>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/snikolayev/NRules</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Business rules engine for .NET</description>
+    <copyright>Copyright 2012</copyright>
+    <dependencies>
+      <dependency id="Common.Logging" version="2.1.1" />
+    </dependencies>
+  </metadata>
+</package>

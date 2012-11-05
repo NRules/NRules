@@ -1,14 +1,8 @@
 properties {
 	$ProductVersion = "0.1"
 	$BuildNumber = "0";
-	$PatchVersion = "0"
-	$PreRelease = "-build"	
 	$PackageNameSuffix = ""
 	$TargetFramework = "net-4.0"
-	$UploadPackage = $false;
-	$NugetKey = ""
-	$PackageIds = ""
-	$DownloadDependentPackages = $false
 	$buildConfiguration = "Release"
 }
 
@@ -18,14 +12,16 @@ $srcDir = "$baseDir\src"
 $buildBase = "$baseDir\build"
 $outDir =  "$buildBase\output"
 $mergeDir = "$buildBase\merge"
+$pkgDir = "$baseDir\packages"
 $libDir = "$baseDir\lib" 
 $toolsDir = "$baseDir\tools"
+$nugetExec = "$toolsDir\NuGet\nuget.exe"
 $ilMergeExec = "$toolsDir\IlMerge\ilmerge.exe"
 $ilMergeExclude = "$toolsDir\IlMerge\ilmerge.exclude"
-$script:architecture = "x86"
+
 $script:msBuild = ""
-$script:msBuildTargetFramework = ""	
-$script:nunitTargetFramework = "/framework=4.0";
+$script:msBuildTargetFramework = ""
+$script:ilmergeTargetFramework = ""
 $script:isEnvironmentInitialized = $false
 
 include $toolsDir\build\buildutils.ps1
@@ -45,7 +41,7 @@ task Clean -description "Cleans the eviorment for the build" {
 task InitEnvironment -description "Initializes the environment for build" {
 	if($script:isEnvironmentInitialized -ne $true) {
 		if ($TargetFramework -eq "net-4.0") {
-			$netfxInstallroot ="" 
+			$netfxInstallroot = "" 
 			$netfxInstallroot =	Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
 			$netfxCurrent = $netfxInstallroot + "v4.0.30319"
 			$script:msBuild = $netfxCurrent + "\msbuild.exe"
@@ -54,14 +50,13 @@ task InitEnvironment -description "Initializes the environment for build" {
 			
 			$script:ilmergeTargetFramework  = "/targetplatform:v4," + $netfxCurrent
 			$script:msBuildTargetFramework ="/p:TargetFrameworkVersion=v4.0 /ToolsVersion:4.0"
-			$script:nunitTargetFramework = "/framework=4.0";
 			$script:isEnvironmentInitialized = $true
 		}
 	}
 	$binariesExists = Test-Path $binariesDir;
 	if ($binariesExists -eq $false) {	
 		Create-Directory $binariesDir
-		echo "created binaries"
+		echo "Created binaries"
 	}
 }
 
@@ -102,5 +97,49 @@ task Build -depends Merge -description "Builds final binaries" {
 	Create-Directory $binariesDir
 	
 	Get-ChildItem "$mergeDir\**" -Include *.dll, *.pdb, *.xml | Copy-Item -Destination $binariesDir -Force	
-	Get-ChildItem "$outDir\**" -Include *.dll, *.pdb, *.xml -Exclude NRules** | Copy-Item -Destination $binariesDir -Force
+	Get-ChildItem "$outDir\**" -Include *.dll, *.pdb, *.xml -Exclude NRules**, nunit**, Rhino.Mocks** | Copy-Item -Destination $binariesDir -Force
+}
+
+task NuGet -depends Build -description "Generates NuGet package" {
+	Remove-Item $pkgDir\NRules*.nupkg
+
+	$nugetDir = "$buildBase\NuGet"
+	Remove-Item $nugetDir -Force -Recurse -ErrorAction SilentlyContinue
+	New-Item $nugetDir -Type directory | Out-Null
+
+	New-Item $nugetDir\NRules\lib\net40 -Type directory | Out-Null
+	
+	Copy-Item $pkgDir\NRules.dll.nuspec $nugetDir\NRules\NRules.nuspec
+	@("NRules.???") |% { Copy-Item "$binariesDir\$_" $nugetDir\NRules\lib\net40 }
+
+	$nugetVersion = "$ProductVersion"
+
+	# Sets the package version in all the nuspec
+	$packages = Get-ChildItem $nugetDir *.nuspec -recurse
+	$packages |% { 
+		$nuspec = [xml](Get-Content $_.FullName)
+		$nuspec.package.metadata.version = $nugetVersion
+		$nuspec | Select-Xml '//dependency' |% {
+			if($_.Node.Id.StartsWith('NRules')){
+				$_.Node.Version = "[$nugetVersion]"
+			}
+		}
+		$nuspec.Save($_.FullName);
+		&"$nugetExec" pack $_.FullName -OutputDirectory $nugetDir
+	}
+
+	# Upload packages
+	$accessPath = "$baseDir\..\Nuget-Access-Key.txt"
+	if ( (Test-Path $accessPath) ) {
+		$accessKey = Get-Content $accessPath
+		$accessKey = $accessKey.Trim()
+
+		# Push to nuget repository
+		$packages | ForEach-Object {
+			&"$nugetExec" push "$($_.BaseName).$nugetVersion.nupkg" $accessKey
+		}
+	}
+	else {
+		Write-Host "Nuget-Access-Key.txt does not exit. Cannot publish the nuget package." -ForegroundColor Yellow
+	}
 }
