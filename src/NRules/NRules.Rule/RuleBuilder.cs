@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using NRules.Fluent;
+using NRules.Dsl;
 
 namespace NRules.Rule
 {

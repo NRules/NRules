@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace NRules.Fluent.Dsl
+namespace NRules.Dsl
 {
     public interface ILeftHandSide
     {

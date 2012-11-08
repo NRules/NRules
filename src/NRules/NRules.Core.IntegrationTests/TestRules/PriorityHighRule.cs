@@ -1,6 +1,6 @@
 ﻿using System;
 using NRules.Core.IntegrationTests.TestAssets;
-using NRules.Fluent.Dsl;
+using NRules.Dsl;
 
 namespace NRules.Core.IntegrationTests.TestRules
 {

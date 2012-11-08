@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NRules.Fluent.Dsl
+namespace NRules.Dsl
 {
     public interface IRightHandSide
     {

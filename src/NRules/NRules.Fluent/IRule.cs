@@ -1,6 +1,4 @@
-﻿using NRules.Fluent.Dsl;
-
-namespace NRules.Fluent
+﻿namespace NRules.Dsl
 {
     public interface IRule
     {

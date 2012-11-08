@@ -1,5 +1,5 @@
 ﻿using System;
-using NRules.Fluent;
+using NRules.Dsl;
 
 namespace NRules.Rule
 {

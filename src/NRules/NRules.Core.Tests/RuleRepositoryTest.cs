@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using NRules.Config;
 using NRules.Core.Tests.TestAssets;
-using NRules.Fluent;
+using NRules.Dsl;
 using NUnit.Framework;
 using Rhino.Mocks;
 

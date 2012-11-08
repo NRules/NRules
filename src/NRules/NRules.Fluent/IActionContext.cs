@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NRules.Fluent
+namespace NRules.Dsl
 {
     public interface IActionContext
     {

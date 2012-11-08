@@ -1,6 +1,5 @@
 ﻿using System;
-using NRules.Fluent;
-using NRules.Fluent.Dsl;
+using NRules.Dsl;
 
 namespace SimpleRulesTest
 {

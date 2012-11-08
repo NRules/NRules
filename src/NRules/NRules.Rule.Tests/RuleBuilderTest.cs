@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using NRules.Fluent;
+using NRules.Dsl;
 using NUnit.Framework;
 
 namespace NRules.Rule.Tests

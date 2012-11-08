@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
-using NRules.Fluent;
-using NRules.Fluent.Dsl;
+using NRules.Dsl;
 
 namespace NRules.Core
 {
