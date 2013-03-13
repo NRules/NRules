@@ -3,6 +3,20 @@ using System.Collections.Generic;
 
 namespace NRules.Rule
 {
+    public enum PredicateTypes
+    {
+        Selection = 0,
+        Aggregate = 1,
+        Existential = 2,
+    }
+
+    public interface IPredicate
+    {
+        PredicateTypes PredicateType { get; }
+        IDeclaration Declaration { get; }
+        Type StrategyType { get; set; }
+    }
+
     internal class Predicate : IPredicate
     {
         public Predicate(PredicateTypes predicateType, IDeclaration declaration)

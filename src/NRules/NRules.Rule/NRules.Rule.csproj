@@ -48,12 +48,6 @@
     <Compile Include="Condition.cs" />
     <Compile Include="Declaration.cs" />
     <Compile Include="IAggregate.cs" />
-    <Compile Include="ICompiledRule.cs" />
-    <Compile Include="ICondition.cs" />
-    <Compile Include="IDeclaration.cs" />
-    <Compile Include="IPredicate.cs" />
-    <Compile Include="IRuleAction.cs" />
-    <Compile Include="IRuleBuilder.cs" />
     <Compile Include="Predicate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RuleAction.cs" />

@@ -5,6 +5,12 @@ using System.Linq.Expressions;
 
 namespace NRules.Rule
 {
+    public interface ICondition
+    {
+        IEnumerable<Type> FactTypes { get; }
+        bool IsSatisfiedBy(params object[] factObjects);
+    }
+
     internal class Condition : ICondition, IEquatable<Condition>
     {
         private readonly Delegate _compiledExpression;

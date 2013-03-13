@@ -5,6 +5,16 @@ using NRules.Dsl;
 
 namespace NRules.Rule
 {
+    public interface IRuleBuilder
+    {
+        IRuleBuilder Name(string name);
+        IRuleBuilder Priority(int priority);
+        IRuleBuilder Condition(LambdaExpression expression);
+        IRuleBuilder Collect(LambdaExpression itemExpression);
+        IRuleBuilder Exists(LambdaExpression expression);
+        IRuleBuilder Action(Action<IActionContext> action);
+    }
+
     internal class RuleBuilder : IRuleBuilder
     {
         private readonly CompiledRule _rule;
@@ -36,7 +46,7 @@ namespace NRules.Rule
 
             var predicate = _rule.Predicates.FirstOrDefault(
                 p => p.PredicateType == PredicateTypes.Selection &&
-                     p.Declaration == declaration);
+                     Equals(p.Declaration, declaration));
             if (predicate == null)
             {
                 predicate = new Predicate(PredicateTypes.Selection, declaration);
@@ -55,7 +65,7 @@ namespace NRules.Rule
 
             var predicate = _rule.Predicates.FirstOrDefault(
                 p => p.PredicateType == PredicateTypes.Aggregate &&
-                     p.Declaration == declaration);
+                     Equals(p.Declaration, declaration));
             if (predicate != null)
             {
                 throw new InvalidOperationException(
@@ -79,7 +89,7 @@ namespace NRules.Rule
 
             var predicate = _rule.Predicates.FirstOrDefault(
                 p => p.PredicateType == PredicateTypes.Existential &&
-                     p.Declaration == declaration);
+                     Equals(p.Declaration, declaration));
             if (predicate == null)
             {
                 predicate = new Predicate(PredicateTypes.Existential, declaration);

@@ -2,6 +2,12 @@
 
 namespace NRules.Rule
 {
+    public interface IDeclaration
+    {
+        string Name { get; }
+        Type Type { get; }
+    }
+
     internal class Declaration : IDeclaration, IEquatable<Declaration>
     {
         public Declaration(string name, Type type)
@@ -17,14 +23,14 @@ namespace NRules.Rule
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.Type, Type) && Equals(other.Name, Name);
+            return string.Equals(Name, other.Name) && Type.Equals(other.Type);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (Declaration)) return false;
+            if (obj.GetType() != this.GetType()) return false;
             return Equals((Declaration) obj);
         }
 
@@ -32,7 +38,7 @@ namespace NRules.Rule
         {
             unchecked
             {
-                return (Type.GetHashCode()*397) ^ Name.GetHashCode();
+                return (Name.GetHashCode()*397) ^ Type.GetHashCode();
             }
         }
     }
