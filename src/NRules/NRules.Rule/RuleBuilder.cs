@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.Dsl;
@@ -38,101 +39,81 @@ namespace NRules.Rule
 
         public IRuleBuilder Condition(LambdaExpression expression)
         {
-            var parameters = expression.Parameters.Select(p => p.Type).ToArray();
-            var declaration = Declare(parameters.First());
-            parameters.Skip(1).ToList().ForEach(CheckDeclaration);
+            var parameter = expression.Parameters.First();
+            var declaration = Declare(parameter.Name, parameter.Type);
+            var declarations = expression.Parameters.Select(p => GetDeclaration(p.Name, p.Type));
 
-            var conditionElement = CreateConditionElement(expression);
-
-            var predicate = _rule.Predicates.FirstOrDefault(
-                p => p.PredicateType == PredicateTypes.Selection &&
-                     Equals(p.Declaration, declaration));
-            if (predicate == null)
+            if (declaration.Source == null)
             {
-                predicate = new Predicate(PredicateTypes.Selection, declaration);
-                _rule.Predicates.Add(predicate);
+                declaration.Source = new ConditionElement {ObjectType = declaration.Type};
             }
 
-            _rule.Conditions.Add(conditionElement);
+            var condition = new Condition(declarations, expression);
+            declaration.Source.Add(condition);
+
             return this;
         }
 
         public IRuleBuilder Collect(LambdaExpression itemExpression)
         {
-            var parameterType = itemExpression.Parameters.Select(p => p.Type).First();
-            var declaration = Declare(parameterType);
-            var conditionElement = CreateConditionElement(itemExpression);
+            var inputParameter = itemExpression.Parameters.First();
+            var inputDeclaration = new Declaration(inputParameter.Name, inputParameter.Type);
 
-            var predicate = _rule.Predicates.FirstOrDefault(
-                p => p.PredicateType == PredicateTypes.Aggregate &&
-                     Equals(p.Declaration, declaration));
-            if (predicate != null)
-            {
-                throw new InvalidOperationException(
-                    string.Format("More than one collection of a given type defined. Type={0}",
-                                  parameterType.Name));
-            }
+            inputDeclaration.Source = new ConditionElement { ObjectType = inputDeclaration.Type };
+            var condition = new Condition(new[] { inputDeclaration }, itemExpression);
+            inputDeclaration.Source.Add(condition);
+            
+            Type collectionType = typeof(IEnumerable<>).MakeGenericType(inputParameter.Type);
+            var outputParameter = Expression.Parameter(collectionType, "collection");
+            var outputDeclaration = Declare(outputParameter.Name, outputParameter.Type);
+            outputDeclaration.Source = new AggregateElement { ObjectType = outputDeclaration.Type, Declaration = inputDeclaration};
 
-            predicate = new Predicate(PredicateTypes.Aggregate, declaration);
-            predicate.StrategyType = typeof (CollectionAggregate<>).MakeGenericType(parameterType);
-            _rule.Predicates.Add(predicate);
-
-            _rule.Conditions.Add(conditionElement);
             return this;
         }
 
         public IRuleBuilder Exists(LambdaExpression expression)
         {
-            var parameterType = expression.Parameters.Select(p => p.Type).First();
-            var declaration = Declare(parameterType);
-            var conditionElement = CreateConditionElement(expression);
+            var inputParameter = expression.Parameters.First();
+            var inputDeclaration = new Declaration(inputParameter.Name, inputParameter.Type);
 
-            var predicate = _rule.Predicates.FirstOrDefault(
-                p => p.PredicateType == PredicateTypes.Existential &&
-                     Equals(p.Declaration, declaration));
-            if (predicate == null)
-            {
-                predicate = new Predicate(PredicateTypes.Existential, declaration);
-                _rule.Predicates.Add(predicate);
-            }
+            inputDeclaration.Source = new ConditionElement(){ObjectType = inputDeclaration.Type};
+            var condition = new Condition(new []{inputDeclaration}, expression);
+            inputDeclaration.Source.Add(condition);
 
-            _rule.Conditions.Add(conditionElement);
+            var outputParameter = Expression.Parameter(inputParameter.Type, "exists");
+            var outputDeclaration = Declare(outputParameter.Name, outputParameter.Type);
+            outputDeclaration.Source = new ExistsElement {ObjectType = outputDeclaration.Type, Declaration = inputDeclaration};
+
             return this;
         }
 
         public IRuleBuilder Action(Action<IActionContext> action)
         {
-            _rule.Actions.Add(new RuleAction(action));
+            _rule.AddAction(new RuleAction(action));
             return this;
         }
 
-        private IDeclaration Declare(Type type)
+        private Declaration Declare(string name, Type type)
         {
-            var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type);
+            var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type && d.Name == name);
             if (declaration == null)
             {
-                declaration = new Declaration(string.Empty, type);
+                declaration = new Declaration(name, type);
                 _rule.Declarations.Add(declaration);
             }
             return declaration;
         }
 
-        private void CheckDeclaration(Type type)
+        private Declaration GetDeclaration(string name, Type type)
         {
-            var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type);
+            var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type && d.Name == name);
             if (declaration == null)
             {
                 throw new InvalidOperationException(string.Format(
-                    "Rule uses input of a given type before defining it. Rule={0}, Type={1}",
-                    _rule.Name, type.Name));
+                    "Rule uses undeclared variable. Rule={0}, Name={1}, Type={2}",
+                    _rule.Name, name, type.Name));
             }
-        }
-
-        private Condition CreateConditionElement(LambdaExpression expression)
-        {
-            string key = expression.ToString();
-            var conditionElement = new Condition(key, expression);
-            return conditionElement;
+            return declaration;
         }
     }
 }

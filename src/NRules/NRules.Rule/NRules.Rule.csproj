@@ -43,15 +43,19 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AggregateElement.cs" />
     <Compile Include="CollectionAggregate.cs" />
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Condition.cs" />
+    <Compile Include="ConditionElement.cs" />
     <Compile Include="Declaration.cs" />
+    <Compile Include="ExistsElement.cs" />
     <Compile Include="IAggregate.cs" />
-    <Compile Include="Predicate.cs" />
+    <Compile Include="ICondition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleBuilder.cs" />
+    <Compile Include="RuleComponent.cs" />
     <Compile Include="RuleSet.cs" />
   </ItemGroup>
   <ItemGroup>

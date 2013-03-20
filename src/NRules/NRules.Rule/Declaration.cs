@@ -2,13 +2,7 @@
 
 namespace NRules.Rule
 {
-    public interface IDeclaration
-    {
-        string Name { get; }
-        Type Type { get; }
-    }
-
-    internal class Declaration : IDeclaration, IEquatable<Declaration>
+    public class Declaration : IEquatable<Declaration>
     {
         public Declaration(string name, Type type)
         {
@@ -18,6 +12,8 @@ namespace NRules.Rule
 
         public string Name { get; private set; }
         public Type Type { get; private set; }
+
+        public ConditionElement Source { get; internal set; }
 
         public bool Equals(Declaration other)
         {

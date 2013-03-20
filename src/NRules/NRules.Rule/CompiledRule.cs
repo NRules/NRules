@@ -8,14 +8,15 @@ namespace NRules.Rule
         string Handle { get; }
         string Name { get; }
         int Priority { get; }
-        ISet<IDeclaration> Declarations { get; }
-        IList<IPredicate> Predicates { get; }
-        IList<ICondition> Conditions { get; }
-        IList<IRuleAction> Actions { get; }
+        ISet<Declaration> Declarations { get; }
+        IEnumerable<IRuleAction> Actions { get; }
     }
 
     internal class CompiledRule : ICompiledRule
     {
+        private readonly HashSet<Declaration> _declarations;
+        private readonly IList<IRuleAction> _actions;
+
         public static int DefaultPriority
         {
             get { return 0; }
@@ -26,19 +27,27 @@ namespace NRules.Rule
             Name = string.Empty;
             Priority = DefaultPriority;
             Handle = Guid.NewGuid().ToString();
-            Declarations = new HashSet<IDeclaration>();
-            Predicates = new List<IPredicate>();
-            Conditions = new List<ICondition>();
-            Actions = new List<IRuleAction>();
+            _declarations = new HashSet<Declaration>();
+            _actions = new List<IRuleAction>();
         }
 
         public string Handle { get; private set; }
         public string Name { get; set; }
         public int Priority { get; set; }
 
-        public ISet<IDeclaration> Declarations { get; private set; }
-        public IList<IPredicate> Predicates { get; private set; }
-        public IList<ICondition> Conditions { get; private set; }
-        public IList<IRuleAction> Actions { get; private set; }
+        public ISet<Declaration> Declarations
+        {
+            get { return _declarations; }
+        }
+
+        public IEnumerable<IRuleAction> Actions
+        {
+            get { return _actions; }
+        }
+
+        public void AddAction(IRuleAction action)
+        {
+            _actions.Add(action);
+        }
     }
 }
