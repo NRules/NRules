@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Linq.Expressions;
 
 namespace NRules.Dsl
 {
     public interface IRightHandSide
     {
-        IRightHandSide Do(Action<IActionContext> action);
+        IRightHandSide Do(Expression<Action<IActionContext>> action);
     }
 }

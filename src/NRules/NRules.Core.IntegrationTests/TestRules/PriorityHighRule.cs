@@ -14,11 +14,8 @@ namespace NRules.Core.IntegrationTests.TestRules
             definition.When()
                 .If<FactType2>(f2 => f2.TestProperty == "Valid Value");
             definition.Then()
-                .Do(ctx =>
-                        {
-                            Notifier.RuleActivated();
-                            InvocationHandler.Invoke(this);
-                        });
+                .Do(ctx => Notifier.RuleActivated())
+                .Do(ctx => InvocationHandler.Invoke(this));
         }
     }
 }

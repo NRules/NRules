@@ -13,7 +13,7 @@ namespace NRules.Rule
         IRuleBuilder Condition(LambdaExpression expression);
         IRuleBuilder Collect(LambdaExpression itemExpression);
         IRuleBuilder Exists(LambdaExpression expression);
-        IRuleBuilder Action(Action<IActionContext> action);
+        IRuleBuilder Action(LambdaExpression action);
     }
 
     internal class RuleBuilder : IRuleBuilder
@@ -76,7 +76,7 @@ namespace NRules.Rule
             var inputParameter = expression.Parameters.First();
             var inputDeclaration = new Declaration(inputParameter.Name, inputParameter.Type);
 
-            inputDeclaration.Source = new ConditionElement(){ObjectType = inputDeclaration.Type};
+            inputDeclaration.Source = new ConditionElement {ObjectType = inputDeclaration.Type};
             var condition = new Condition(new []{inputDeclaration}, expression);
             inputDeclaration.Source.Add(condition);
 
@@ -87,9 +87,10 @@ namespace NRules.Rule
             return this;
         }
 
-        public IRuleBuilder Action(Action<IActionContext> action)
+        public IRuleBuilder Action(LambdaExpression action)
         {
-            _rule.AddAction(new RuleAction(action));
+            var compiledAction = (Action<IActionContext>)action.Compile();
+            _rule.AddAction(new RuleAction(compiledAction));
             return this;
         }
 

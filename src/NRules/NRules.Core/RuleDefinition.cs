@@ -41,7 +41,7 @@ namespace NRules.Core
             return this;
         }
 
-        public IRightHandSide Do(Action<IActionContext> action)
+        public IRightHandSide Do(Expression<Action<IActionContext>> action)
         {
             _builder.Action(action);
             return this;
