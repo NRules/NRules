@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NRules.Rule
+namespace NRules.Core.Rete
 {
     public interface ICondition
     {

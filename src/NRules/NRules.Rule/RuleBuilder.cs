@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NRules.Dsl;
 
 namespace NRules.Rule
 {
@@ -89,8 +88,7 @@ namespace NRules.Rule
 
         public IRuleBuilder Action(LambdaExpression action)
         {
-            var compiledAction = (Action<IActionContext>)action.Compile();
-            _rule.AddAction(new RuleAction(compiledAction));
+            _rule.AddAction(new RuleAction(action));
             return this;
         }
 
@@ -100,7 +98,7 @@ namespace NRules.Rule
             if (declaration == null)
             {
                 declaration = new Declaration(name, type);
-                _rule.Declarations.Add(declaration);
+                _rule.AddDeclaration(declaration);
             }
             return declaration;
         }

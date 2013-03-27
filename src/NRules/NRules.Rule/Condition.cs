@@ -8,6 +8,7 @@ namespace NRules.Rule
         private readonly List<Declaration> _declarations;
 
         public LambdaExpression Expression { get; set; }
+
         public IEnumerable<Declaration> Declarations
         {
             get { return _declarations; }

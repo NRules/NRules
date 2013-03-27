@@ -1,25 +1,14 @@
-﻿using System;
-using NRules.Dsl;
+﻿using System.Linq.Expressions;
 
 namespace NRules.Rule
 {
-    public interface IRuleAction
+    public class RuleAction
     {
-        void Invoke(IActionContext context);
-    }
+        public LambdaExpression Expression { get; set; }
 
-    internal class RuleAction : IRuleAction
-    {
-        private readonly Action<IActionContext> _action;
-
-        public RuleAction(Action<IActionContext> action)
+        internal RuleAction(LambdaExpression expression)
         {
-            _action = action;
-        }
-
-        public void Invoke(IActionContext context)
-        {
-            _action.Invoke(context);
+            Expression = expression;
         }
     }
 }

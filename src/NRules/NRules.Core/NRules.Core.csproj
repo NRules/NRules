@@ -58,6 +58,8 @@
     <Compile Include="Rete\BetaNode.cs" />
     <Compile Include="Rete\DummyNode.cs" />
     <Compile Include="Rete\ExistsNode.cs" />
+    <Compile Include="Rete\ICondition.cs" />
+    <Compile Include="Rete\IRuleAction.cs" />
     <Compile Include="Rete\ReteBuilderContext.cs" />
     <Compile Include="Rete\RootNode.cs" />
     <Compile Include="Rete\SelectionNode.cs" />
