@@ -1,28 +1,23 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace NRules.Rule
 {
-    public class ConditionElement : RuleComponent
+    public class ConditionElement
     {
-        private readonly List<Condition> _conditions = new List<Condition>();
+        private readonly List<Declaration> _declarations;
 
-        internal ConditionElement(RuleComponentTypes componentType) : base(componentType)
+        public LambdaExpression Expression { get; set; }
+
+        public IEnumerable<Declaration> Declarations
         {
+            get { return _declarations; }
         }
 
-        internal ConditionElement() : base(RuleComponentTypes.Conditional)
+        internal ConditionElement(IEnumerable<Declaration> declarations, LambdaExpression expression)
         {
-        }
-
-        public IEnumerable<Condition> Conditions
-        {
-            get { return _conditions; }
-        }
-
-        internal void Add(Condition condition)
-        {
-            _conditions.Add(condition);
+            _declarations = new List<Declaration>(declarations);
+            Expression = expression;
         }
     }
 }

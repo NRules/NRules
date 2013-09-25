@@ -46,7 +46,7 @@ namespace NRules.Core
                 RuleActivation activation = _agenda.NextActivation();
                 var context = new ActionContext(_network, _workingMemory, activation.Tuple);
 
-                foreach (IRuleAction action in activation.Rule.Actions)
+                foreach (IRuleAction action in activation.Rule.RightSide)
                 {
                     action.Invoke(context);
                 }

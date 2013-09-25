@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NRules.Dsl;
 
 namespace NRules.Rule
 {
@@ -12,7 +13,7 @@ namespace NRules.Rule
         IRuleBuilder Condition(LambdaExpression expression);
         IRuleBuilder Collect(LambdaExpression itemExpression);
         IRuleBuilder Exists(LambdaExpression expression);
-        IRuleBuilder Action(LambdaExpression action);
+        IRuleBuilder Action(Expression<Action<IActionContext>> action);
     }
 
     internal class RuleBuilder : IRuleBuilder
@@ -38,81 +39,62 @@ namespace NRules.Rule
 
         public IRuleBuilder Condition(LambdaExpression expression)
         {
+            var root = _rule.LeftSide; 
+            
             var parameter = expression.Parameters.First();
-            var declaration = Declare(parameter.Name, parameter.Type);
-            var declarations = expression.Parameters.Select(p => GetDeclaration(p.Name, p.Type));
-
-            if (declaration.Source == null)
+            var declaration = root.SymbolTable.Lookup(parameter.Name, parameter.Type);
+            if (declaration == null)
             {
-                declaration.Source = new ConditionElement {ObjectType = declaration.Type};
+                var matchElement = new MatchElement(parameter.Type);
+                root.AddChild(matchElement);
+                declaration = matchElement.Declare(parameter.Name);
+                root.SymbolTable.Add(declaration);
             }
 
-            var condition = new Condition(declarations, expression);
-            declaration.Source.Add(condition);
+            var declarations = expression.Parameters.Select(p => root.SymbolTable.Lookup(p.Name, p.Type));
+            var condition = new ConditionElement(declarations, expression);
+            declaration.Target.Add(condition);
 
             return this;
         }
 
         public IRuleBuilder Collect(LambdaExpression itemExpression)
         {
-            var inputParameter = itemExpression.Parameters.First();
-            var inputDeclaration = new Declaration(inputParameter.Name, inputParameter.Type);
-
-            inputDeclaration.Source = new ConditionElement { ObjectType = inputDeclaration.Type };
-            var condition = new Condition(new[] { inputDeclaration }, itemExpression);
-            inputDeclaration.Source.Add(condition);
+            var parameter = itemExpression.Parameters.First();
             
-            Type collectionType = typeof(IEnumerable<>).MakeGenericType(inputParameter.Type);
-            var outputParameter = Expression.Parameter(collectionType, "collection");
-            var outputDeclaration = Declare(outputParameter.Name, outputParameter.Type);
-            outputDeclaration.Source = new AggregateElement { ObjectType = outputDeclaration.Type, Declaration = inputDeclaration};
+            var matchElement = new MatchElement(parameter.Type);
+            var matchDeclaration = matchElement.Declare(parameter.Name);
+            var condition = new ConditionElement(new[] { matchDeclaration }, itemExpression);
+            matchElement.Add(condition);
 
+            Type collectionType = typeof(IEnumerable<>).MakeGenericType(parameter.Type);
+            Type aggregateType = typeof (CollectionAggregate<>).MakeGenericType(parameter.Type);
+            var aggregateElement = new AggregateElement(collectionType, matchElement, aggregateType);
+            _rule.LeftSide.AddChild(aggregateElement);
+            
             return this;
         }
 
         public IRuleBuilder Exists(LambdaExpression expression)
         {
-            var inputParameter = expression.Parameters.First();
-            var inputDeclaration = new Declaration(inputParameter.Name, inputParameter.Type);
+            var parameter = expression.Parameters.First();
 
-            inputDeclaration.Source = new ConditionElement {ObjectType = inputDeclaration.Type};
-            var condition = new Condition(new []{inputDeclaration}, expression);
-            inputDeclaration.Source.Add(condition);
+            var matchElement = new MatchElement(parameter.Type);
+            var matchDeclaration = matchElement.Declare(parameter.Name);
+            var condition = new ConditionElement(new[] { matchDeclaration }, expression);
+            matchElement.Add(condition);
 
-            var outputParameter = Expression.Parameter(inputParameter.Type, "exists");
-            var outputDeclaration = Declare(outputParameter.Name, outputParameter.Type);
-            outputDeclaration.Source = new ExistsElement {ObjectType = outputDeclaration.Type, Declaration = inputDeclaration};
+            var existsElement = new GroupElement(GroupType.Exists);
+            existsElement.AddChild(matchElement);
+            _rule.LeftSide.AddChild(existsElement);
 
             return this;
         }
 
-        public IRuleBuilder Action(LambdaExpression action)
+        public IRuleBuilder Action(Expression<Action<IActionContext>> action)
         {
             _rule.AddAction(new RuleAction(action));
             return this;
-        }
-
-        private Declaration Declare(string name, Type type)
-        {
-            var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type && d.Name == name);
-            if (declaration == null)
-            {
-                declaration = new Declaration(name, type);
-                _rule.AddDeclaration(declaration);
-            }
-            return declaration;
-        }
-
-        private Declaration GetDeclaration(string name, Type type)
-        {
-            var declaration = _rule.Declarations.FirstOrDefault(d => d.Type == type && d.Name == name);
-            if (declaration == null)
-            {
-                throw new InvalidOperationException(string.Format(
-                    "Rule uses undeclared variable. Rule={0}, Name={1}, Type={2}",
-                    _rule.Name, name, type.Name));
-            }
-            return declaration;
         }
     }
 }

@@ -2,12 +2,14 @@ using System;
 
 namespace NRules.Rule
 {
-    public class AggregateElement : ConditionElement
+    public class AggregateElement : MatchElement
     {
-        internal AggregateElement() : base(RuleComponentTypes.Aggregate)
-        {
-        }
+        public Type AggregateType { get; private set; }
 
-        public Declaration Declaration { get; internal set; }
+        internal AggregateElement(Type valueType, MatchElement source, Type aggregateType) : base(valueType, source)
+        {
+            AggregateType = aggregateType;
+            RuleElementType = RuleElementTypes.Aggregate;
+        }
     }
 }

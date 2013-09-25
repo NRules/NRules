@@ -4,22 +4,24 @@ namespace NRules.Rule
 {
     public class Declaration : IEquatable<Declaration>
     {
-        public Declaration(string name, Type type)
+        internal Declaration(string name, Type type, MatchElement target)
         {
             Name = name;
             Type = type;
+            Target = target;
+            Target.Declaration = this;
         }
 
         public string Name { get; private set; }
         public Type Type { get; private set; }
 
-        public ConditionElement Source { get; internal set; }
+        public MatchElement Target { get; private set; }
 
         public bool Equals(Declaration other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(Name, other.Name) && Type.Equals(other.Type);
+            return string.Equals(Name, other.Name);
         }
 
         public override bool Equals(object obj)
@@ -32,10 +34,7 @@ namespace NRules.Rule
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return (Name.GetHashCode()*397) ^ Type.GetHashCode();
-            }
+            return Name.GetHashCode();
         }
     }
 }
