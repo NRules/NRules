@@ -2,7 +2,7 @@
 
 namespace NRules.Rule
 {
-    public enum GroupType
+    internal enum GroupType
     {
         And = 0,
         Or = 1,
@@ -16,11 +16,10 @@ namespace NRules.Rule
         
         internal GroupElement(GroupType groupType)
         {
-            RuleElementType = RuleElementTypes.Group;
             GroupType = groupType;
         }
 
-        public GroupType GroupType { get; private set; }
+        internal GroupType GroupType { get; private set; }
 
         public IEnumerable<RuleElement> ChildElements
         {

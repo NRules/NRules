@@ -24,41 +24,19 @@ namespace NRules.Core.Rete
 
         private void BuildNode(ReteBuilderContext context, RuleElement element)
         {
-            switch (element.RuleElementType)
-            {
-                case RuleElementTypes.Match:
-                    BuildMatchNode(context, (MatchElement) element);
-                    break;
-                case RuleElementTypes.Group:
-                    BuildGroupNode(context, (GroupElement) element);
-                    break;
-                case RuleElementTypes.Aggregate:
-                    BuildAggregateNode(context, (AggregateElement) element);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("element", 
-                        string.Format("Invalid rule element type. ElementType={0}", element.RuleElementType));
-            }
+            element.Match(
+                pattern => BuildPatternNode(context, pattern),
+                group => BuildGroupNode(context, group),
+                aggregate => BuildAggregateNode(context, aggregate));
         }
 
         private void BuildGroupNode(ReteBuilderContext context, GroupElement element)
         {
-            switch (element.GroupType)
-            {
-                case GroupType.And:
-                    BuildAndGroupNode(context, element);
-                    break;
-                case GroupType.Or:
-                    //fall through - not yet supported
-                case GroupType.Not:
-                    //fall through - not yet supported
-                case GroupType.Exists:
-                    BuildExistsGroupNode(context, element);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("element",
-                        string.Format("Invalid grouping type. GroupType={0}", element.GroupType));
-            }
+            element.Match(
+                and => BuildAndGroupNode(context, element),
+                or => BuildOrGroupNode(context, element),
+                not => BuildNotGroupNode(context, element),
+                exists => BuildExistsGroupNode(context, element));
         }
 
         private void BuildAndGroupNode(ReteBuilderContext context, GroupElement element)
@@ -75,6 +53,16 @@ namespace NRules.Core.Rete
             }
         }
 
+        private void BuildOrGroupNode(ReteBuilderContext context, GroupElement element)
+        {
+            throw new NotSupportedException("Group Or conditions are not supported");
+        }
+
+        private void BuildNotGroupNode(ReteBuilderContext context, GroupElement element)
+        {
+            throw new NotSupportedException("Group Not conditions are not supported");
+        }
+
         private void BuildExistsGroupNode(ReteBuilderContext context, GroupElement element)
         {
             BuildNode(context, element.ChildElements.Single());
@@ -83,7 +71,7 @@ namespace NRules.Core.Rete
             context.AlphaMemoryNode = null;
         }
 
-        private void BuildMatchNode(ReteBuilderContext context, MatchElement element)
+        private void BuildPatternNode(ReteBuilderContext context, PatternElement element)
         {
             AlphaNode currentNode = BuildTypeNode(element.ValueType, _root);
 

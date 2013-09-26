@@ -45,9 +45,9 @@ namespace NRules.Rule
             var declaration = root.SymbolTable.Lookup(parameter.Name, parameter.Type);
             if (declaration == null)
             {
-                var matchElement = new MatchElement(parameter.Type);
-                root.AddChild(matchElement);
-                declaration = matchElement.Declare(parameter.Name);
+                var patternElement = new PatternElement(parameter.Type);
+                root.AddChild(patternElement);
+                declaration = patternElement.Declare(parameter.Name);
                 root.SymbolTable.Add(declaration);
             }
 
@@ -62,14 +62,14 @@ namespace NRules.Rule
         {
             var parameter = itemExpression.Parameters.First();
             
-            var matchElement = new MatchElement(parameter.Type);
-            var matchDeclaration = matchElement.Declare(parameter.Name);
-            var condition = new ConditionElement(new[] { matchDeclaration }, itemExpression);
-            matchElement.Add(condition);
+            var patternElement = new PatternElement(parameter.Type);
+            var patternDeclaration = patternElement.Declare(parameter.Name);
+            var condition = new ConditionElement(new[] { patternDeclaration }, itemExpression);
+            patternElement.Add(condition);
 
             Type collectionType = typeof(IEnumerable<>).MakeGenericType(parameter.Type);
             Type aggregateType = typeof (CollectionAggregate<>).MakeGenericType(parameter.Type);
-            var aggregateElement = new AggregateElement(collectionType, matchElement, aggregateType);
+            var aggregateElement = new AggregateElement(collectionType, aggregateType, patternElement);
             _rule.LeftSide.AddChild(aggregateElement);
             
             return this;
@@ -79,13 +79,13 @@ namespace NRules.Rule
         {
             var parameter = expression.Parameters.First();
 
-            var matchElement = new MatchElement(parameter.Type);
-            var matchDeclaration = matchElement.Declare(parameter.Name);
-            var condition = new ConditionElement(new[] { matchDeclaration }, expression);
-            matchElement.Add(condition);
+            var patternElement = new PatternElement(parameter.Type);
+            var patternDeclaration = patternElement.Declare(parameter.Name);
+            var condition = new ConditionElement(new[] { patternDeclaration }, expression);
+            patternElement.Add(condition);
 
             var existsElement = new GroupElement(GroupType.Exists);
-            existsElement.AddChild(matchElement);
+            existsElement.AddChild(patternElement);
             _rule.LeftSide.AddChild(existsElement);
 
             return this;

@@ -3,23 +3,22 @@ using System.Collections.Generic;
 
 namespace NRules.Rule
 {
-    public class MatchElement : RuleElement
+    public class PatternElement : RuleElement
     {
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
 
-        internal MatchElement(Type valueType)
+        internal PatternElement(Type valueType)
         {
-            RuleElementType = RuleElementTypes.Match;
             ValueType = valueType;
         }
 
-        internal MatchElement(Type valueType, MatchElement source) : this(valueType)
+        internal PatternElement(Type valueType, PatternSourceElement source) : this(valueType)
         {
             Source = source;
             Source.SymbolTable.ParentScope = SymbolTable;
         }
 
-        public MatchElement Source { get; private set; }
+        public PatternSourceElement Source { get; private set; }
         public Declaration Declaration { get; internal set; }
         public Type ValueType { get; private set; }
 

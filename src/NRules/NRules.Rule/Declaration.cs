@@ -4,7 +4,7 @@ namespace NRules.Rule
 {
     public class Declaration : IEquatable<Declaration>
     {
-        internal Declaration(string name, Type type, MatchElement target)
+        internal Declaration(string name, Type type, PatternElement target)
         {
             Name = name;
             Type = type;
@@ -15,7 +15,7 @@ namespace NRules.Rule
         public string Name { get; private set; }
         public Type Type { get; private set; }
 
-        public MatchElement Target { get; private set; }
+        public PatternElement Target { get; private set; }
 
         public bool Equals(Declaration other)
         {
