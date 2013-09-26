@@ -1,8 +1,5 @@
-using System.Collections.Generic;
 using NRules.Core.Rete;
-using NRules.Rule;
 using NUnit.Framework;
-using Rhino.Mocks;
 
 namespace NRules.Core.Tests
 {
@@ -10,27 +7,11 @@ namespace NRules.Core.Tests
     public class AgendaTest
     {
         private EventAggregator _eventAggregator;
-        private IList<IRuleDefinition> _rules;
 
         [SetUp]
         public void Setup()
         {
             _eventAggregator = new EventAggregator();
-            var rule1 = MockRepository.GenerateStub<IRuleDefinition>();
-            rule1.Stub(x => x.Name).Return("rule1");
-            rule1.Stub(x => x.Handle).Return("handle1");
-            var rule2 = MockRepository.GenerateStub<IRuleDefinition>();
-            rule2.Stub(x => x.Name).Return("rule2");
-            rule2.Stub(x => x.Handle).Return("handle2");
-            var rule3 = MockRepository.GenerateStub<IRuleDefinition>();
-            rule3.Stub(x => x.Name).Return("rule3");
-            rule3.Stub(x => x.Handle).Return("handle3");
-            _rules = new List<IRuleDefinition> {rule1, rule2, rule3};
-        }
-
-        internal Agenda CreateTarget()
-        {
-            return new Agenda(_rules, _eventAggregator);
         }
 
         [Test]
@@ -48,7 +29,7 @@ namespace NRules.Core.Tests
         public void Activate_Called_ActivationEndsUpInQueue()
         {
             // Arrange
-            var activation = new Activation(_rules[0].Handle, new Tuple());
+            var activation = new Activation("rule1", 0, new Tuple());
             var target = CreateTarget();
 
             // Act
@@ -56,15 +37,15 @@ namespace NRules.Core.Tests
 
             // Assert
             Assert.True(target.HasActiveRules());
-            Assert.AreEqual(_rules[0], target.NextActivation().RuleDefinition);
+            Assert.AreEqual("rule1", target.NextActivation().RuleHandle);
         }
 
         [Test]
         public void Activate_CalledWithMultipleRules_RulesAreQueuedInOrder()
         {
             // Arrange
-            var activation1 = new Activation(_rules[0].Handle, new Tuple());
-            var activation2 = new Activation(_rules[1].Handle, new Tuple());
+            var activation1 = new Activation("rule1", 0, new Tuple());
+            var activation2 = new Activation("rule2", 0, new Tuple());
             var target = CreateTarget();
 
             // Act
@@ -73,9 +54,14 @@ namespace NRules.Core.Tests
 
             // Assert
             Assert.True(target.HasActiveRules());
-            Assert.AreEqual(_rules[0], target.NextActivation().RuleDefinition);
+            Assert.AreEqual("rule1", target.NextActivation().RuleHandle);
             Assert.True(target.HasActiveRules());
-            Assert.AreEqual(_rules[1], target.NextActivation().RuleDefinition);
+            Assert.AreEqual("rule2", target.NextActivation().RuleHandle);
+        }
+
+        private Agenda CreateTarget()
+        {
+            return new Agenda(_eventAggregator);
         }
     }
 }

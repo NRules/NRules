@@ -32,8 +32,8 @@ namespace NRules.Core
         {
             var eventAggregator = new EventAggregator();
             var workingMemory = new WorkingMemory(eventAggregator);
-            var agenda = new Agenda(_rules, eventAggregator);
-            var session = new Session(_network, agenda, workingMemory);
+            var agenda = new Agenda(eventAggregator);
+            var session = new Session(_rules, _network, agenda, workingMemory);
             return session;
         }
 

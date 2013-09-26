@@ -104,7 +104,7 @@ namespace NRules.Core.Rete
 
         private static void BuildRuleNode(ReteBuilderContext context, IRuleDefinition ruleDefinition)
         {
-            var ruleNode = new RuleNode(ruleDefinition.Handle);
+            var ruleNode = new RuleNode(ruleDefinition.Handle, ruleDefinition.Priority);
             context.BetaMemoryNode.Attach(ruleNode);
         }
 

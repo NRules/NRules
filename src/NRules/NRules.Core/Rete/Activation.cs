@@ -4,13 +4,15 @@ namespace NRules.Core.Rete
 {
     internal class Activation : IEquatable<Activation>
     {
-        public Activation(string ruleHandle, Tuple tuple)
+        public Activation(string ruleHandle, int rulePriority, Tuple tuple)
         {
             RuleHandle = ruleHandle;
+            RulePriority = rulePriority;
             Tuple = tuple;
         }
 
         public string RuleHandle { get; private set; }
+        public int RulePriority { get; private set; }
         public Tuple Tuple { get; private set; }
 
         public bool Equals(Activation other)
