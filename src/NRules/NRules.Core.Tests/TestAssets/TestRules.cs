@@ -29,8 +29,13 @@ namespace NRules.Core.Tests.TestAssets
                 .If<TestFact1, TestFact2>((fact1, fact2) => fact2.Fact1 == fact1);
 
             definition.Then()
-                .Do(ctx => Results += _a)
-                .Do(ctx => Results += _b);
+                .Do(ctx => SaveResult(_a))
+                .Do(ctx => SaveResult(_b));
+        }
+
+        private void SaveResult(string result)
+        {
+            Results += result;
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using NRules.Dsl;
 using NUnit.Framework;
@@ -25,8 +26,8 @@ namespace NRules.Rule.Tests
 
             //Assert
             Assert.AreEqual(string.Empty, _rule.Name);
-            Assert.AreEqual(0, _rule.Conditions.Count);
-            Assert.AreEqual(0, _rule.Actions.Count);
+            Assert.AreEqual(0, _rule.LeftSide.ChildElements.Count());
+            Assert.AreEqual(0, _rule.RightSide.Count());
         }
 
         [Test]
@@ -53,7 +54,7 @@ namespace NRules.Rule.Tests
             target.Condition(expression);
 
             //Assert
-            Assert.AreEqual(1, _rule.Conditions.Count);
+            Assert.AreEqual(1, _rule.LeftSide.ChildElements.Count());
         }
 
         [Test]
@@ -61,13 +62,13 @@ namespace NRules.Rule.Tests
         {
             //Arrange
             var target = CreateTarget();
-            Action<IActionContext> action = ctx => ctx.Arg<string>();
+            Expression<Action<IActionContext>> action = ctx => ctx.Arg<string>();
 
             //Act
             target.Action(action);
 
             //Assert
-            Assert.AreEqual(1, _rule.Actions.Count);
+            Assert.AreEqual(1, _rule.RightSide.Count());
         }
 
         private RuleBuilder CreateTarget()
