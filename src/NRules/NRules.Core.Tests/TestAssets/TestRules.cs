@@ -22,7 +22,7 @@ namespace NRules.Core.Tests.TestAssets
             Results = string.Empty;
         }
 
-        public void Define(IRuleDefinition definition)
+        public void Define(IDefinition definition)
         {
             definition.When()
                 .If<TestFact1>(fact1 => fact1.Name == "Hello")

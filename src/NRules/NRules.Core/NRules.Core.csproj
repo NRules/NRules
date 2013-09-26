@@ -82,7 +82,7 @@
     <Compile Include="Rete\RuleNode.cs" />
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />
-    <Compile Include="RuleDefinition.cs" />
+    <Compile Include="Definition.cs" />
     <Compile Include="RuleRepository.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

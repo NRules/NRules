@@ -5,7 +5,7 @@ namespace NRules.Core.IntegrationTests.TestRules
 {
     public class TwoFactRule : BaseRule
     {
-        public override void Define(IRuleDefinition definition)
+        public override void Define(IDefinition definition)
         {
             definition.When()
                 .If<FactType1>(f1 => f1.TestProperty == "Valid Value")

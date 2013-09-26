@@ -18,28 +18,28 @@ namespace NRules.Rule
 
     internal class RuleBuilder : IRuleBuilder
     {
-        private readonly CompiledRule _rule;
+        private readonly RuleDefinition _ruleDefinition;
 
-        public RuleBuilder(CompiledRule rule)
+        public RuleBuilder(RuleDefinition ruleDefinition)
         {
-            _rule = rule;
+            _ruleDefinition = ruleDefinition;
         }
 
         public IRuleBuilder Name(string name)
         {
-            _rule.Name = name;
+            _ruleDefinition.Name = name;
             return this;
         }
 
         public IRuleBuilder Priority(int priority)
         {
-            _rule.Priority = priority;
+            _ruleDefinition.Priority = priority;
             return this;
         }
 
         public IRuleBuilder Condition(LambdaExpression expression)
         {
-            var root = _rule.LeftSide; 
+            var root = _ruleDefinition.LeftHandSide; 
             
             var parameter = expression.Parameters.First();
             var declaration = root.SymbolTable.Lookup(parameter.Name, parameter.Type);
@@ -70,7 +70,7 @@ namespace NRules.Rule
             Type collectionType = typeof(IEnumerable<>).MakeGenericType(parameter.Type);
             Type aggregateType = typeof (CollectionAggregate<>).MakeGenericType(parameter.Type);
             var aggregateElement = new AggregateElement(collectionType, aggregateType, patternElement);
-            _rule.LeftSide.AddChild(aggregateElement);
+            _ruleDefinition.LeftHandSide.AddChild(aggregateElement);
             
             return this;
         }
@@ -86,14 +86,14 @@ namespace NRules.Rule
 
             var existsElement = new GroupElement(GroupType.Exists);
             existsElement.AddChild(patternElement);
-            _rule.LeftSide.AddChild(existsElement);
+            _ruleDefinition.LeftHandSide.AddChild(existsElement);
 
             return this;
         }
 
         public IRuleBuilder Action(Expression<Action<IActionContext>> action)
         {
-            _rule.AddAction(new RuleAction(action));
+            _ruleDefinition.AddAction(new RuleAction(action));
             return this;
         }
     }

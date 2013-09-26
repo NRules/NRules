@@ -7,7 +7,7 @@ namespace NRules.Core.Rete
 {
     internal interface IReteBuilder
     {
-        void AddRule(ICompiledRule rule);
+        void AddRule(IRuleDefinition ruleDefinition);
         INetwork GetNetwork();
     }
 
@@ -15,11 +15,11 @@ namespace NRules.Core.Rete
     {
         private readonly RootNode _root = new RootNode();
 
-        public void AddRule(ICompiledRule rule)
+        public void AddRule(IRuleDefinition ruleDefinition)
         {
             var context = new ReteBuilderContext();
-            BuildNode(context, rule.LeftSide);
-            BuildRuleNode(context, rule);
+            BuildNode(context, ruleDefinition.LeftHandSide);
+            BuildRuleNode(context, ruleDefinition);
         }
 
         private void BuildNode(ReteBuilderContext context, RuleElement element)
@@ -102,9 +102,9 @@ namespace NRules.Core.Rete
             context.AlphaMemoryNode = null;
         }
 
-        private static void BuildRuleNode(ReteBuilderContext context, ICompiledRule rule)
+        private static void BuildRuleNode(ReteBuilderContext context, IRuleDefinition ruleDefinition)
         {
-            var ruleNode = new RuleNode(rule.Handle);
+            var ruleNode = new RuleNode(ruleDefinition.Handle);
             context.BetaMemoryNode.Attach(ruleNode);
         }
 

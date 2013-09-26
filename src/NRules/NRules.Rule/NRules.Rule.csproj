@@ -45,7 +45,7 @@
     </Compile>
     <Compile Include="AggregateElement.cs" />
     <Compile Include="CollectionAggregate.cs" />
-    <Compile Include="CompiledRule.cs" />
+    <Compile Include="RuleDefinition.cs" />
     <Compile Include="ConditionElement.cs" />
     <Compile Include="RuleElementExtensions.cs" />
     <Compile Include="PatternElement.cs" />

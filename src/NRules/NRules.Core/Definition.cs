@@ -5,11 +5,11 @@ using NRules.Rule;
 
 namespace NRules.Core
 {
-    internal class RuleDefinition : IRuleDefinition, ILeftHandSide, IRightHandSide
+    internal class Definition : IDefinition, ILeftHandSide, IRightHandSide
     {
         private readonly IRuleBuilder _builder;
 
-        public RuleDefinition(IRuleBuilder builder, RuleMetadata metadata)
+        public Definition(IRuleBuilder builder, RuleMetadata metadata)
         {
             _builder = builder;
 

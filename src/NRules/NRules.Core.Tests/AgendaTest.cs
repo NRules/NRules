@@ -10,22 +10,22 @@ namespace NRules.Core.Tests
     public class AgendaTest
     {
         private EventAggregator _eventAggregator;
-        private IList<ICompiledRule> _rules;
+        private IList<IRuleDefinition> _rules;
 
         [SetUp]
         public void Setup()
         {
             _eventAggregator = new EventAggregator();
-            var rule1 = MockRepository.GenerateStub<ICompiledRule>();
+            var rule1 = MockRepository.GenerateStub<IRuleDefinition>();
             rule1.Stub(x => x.Name).Return("rule1");
             rule1.Stub(x => x.Handle).Return("handle1");
-            var rule2 = MockRepository.GenerateStub<ICompiledRule>();
+            var rule2 = MockRepository.GenerateStub<IRuleDefinition>();
             rule2.Stub(x => x.Name).Return("rule2");
             rule2.Stub(x => x.Handle).Return("handle2");
-            var rule3 = MockRepository.GenerateStub<ICompiledRule>();
+            var rule3 = MockRepository.GenerateStub<IRuleDefinition>();
             rule3.Stub(x => x.Name).Return("rule3");
             rule3.Stub(x => x.Handle).Return("handle3");
-            _rules = new List<ICompiledRule> {rule1, rule2, rule3};
+            _rules = new List<IRuleDefinition> {rule1, rule2, rule3};
         }
 
         internal Agenda CreateTarget()
@@ -56,7 +56,7 @@ namespace NRules.Core.Tests
 
             // Assert
             Assert.True(target.HasActiveRules());
-            Assert.AreEqual(_rules[0], target.NextActivation().Rule);
+            Assert.AreEqual(_rules[0], target.NextActivation().RuleDefinition);
         }
 
         [Test]
@@ -73,9 +73,9 @@ namespace NRules.Core.Tests
 
             // Assert
             Assert.True(target.HasActiveRules());
-            Assert.AreEqual(_rules[0], target.NextActivation().Rule);
+            Assert.AreEqual(_rules[0], target.NextActivation().RuleDefinition);
             Assert.True(target.HasActiveRules());
-            Assert.AreEqual(_rules[1], target.NextActivation().Rule);
+            Assert.AreEqual(_rules[1], target.NextActivation().RuleDefinition);
         }
     }
 }

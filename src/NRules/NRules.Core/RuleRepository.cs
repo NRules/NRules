@@ -10,7 +10,7 @@ namespace NRules.Core
 {
     public interface IRuleBase
     {
-        IEnumerable<ICompiledRule> Rules { get; }
+        IEnumerable<IRuleDefinition> Rules { get; }
     }
 
     public interface IRuleRepository : IRuleBase
@@ -79,7 +79,7 @@ namespace NRules.Core
                 var metadata = new RuleMetadata(ruleInstance);
                 var builder = ruleSet.AddRule();
                 builder.Name(ruleInstance.GetType().FullName);
-                var definition = new RuleDefinition(builder, metadata);
+                var definition = new Definition(builder, metadata);
                 ruleInstance.Define(definition);
             }
         }
@@ -107,7 +107,7 @@ namespace NRules.Core
             return true;
         }
 
-        public IEnumerable<ICompiledRule> Rules
+        public IEnumerable<IRuleDefinition> Rules
         {
             get { return _ruleSets.SelectMany(rs => rs.Rules, (rs, r) => r); }
         }

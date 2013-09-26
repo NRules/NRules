@@ -9,12 +9,12 @@ namespace NRules.Rule.Tests
     [TestFixture]
     public class RuleBuilderTest
     {
-        private CompiledRule _rule;
+        private RuleDefinition _ruleDefinition;
 
         [SetUp]
         public void SetUp()
         {
-            _rule = new CompiledRule();
+            _ruleDefinition = new RuleDefinition();
         }
 
         [Test]
@@ -25,9 +25,9 @@ namespace NRules.Rule.Tests
             var target = CreateTarget();
 
             //Assert
-            Assert.AreEqual(string.Empty, _rule.Name);
-            Assert.AreEqual(0, _rule.LeftSide.ChildElements.Count());
-            Assert.AreEqual(0, _rule.RightSide.Count());
+            Assert.AreEqual(string.Empty, _ruleDefinition.Name);
+            Assert.AreEqual(0, _ruleDefinition.LeftHandSide.ChildElements.Count());
+            Assert.AreEqual(0, _ruleDefinition.RightHandSide.Count());
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace NRules.Rule.Tests
             target.Name("Test Name");
 
             //Assert
-            Assert.AreEqual("Test Name", _rule.Name);
+            Assert.AreEqual("Test Name", _ruleDefinition.Name);
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace NRules.Rule.Tests
             target.Condition(expression);
 
             //Assert
-            Assert.AreEqual(1, _rule.LeftSide.ChildElements.Count());
+            Assert.AreEqual(1, _ruleDefinition.LeftHandSide.ChildElements.Count());
         }
 
         [Test]
@@ -68,12 +68,12 @@ namespace NRules.Rule.Tests
             target.Action(action);
 
             //Assert
-            Assert.AreEqual(1, _rule.RightSide.Count());
+            Assert.AreEqual(1, _ruleDefinition.RightHandSide.Count());
         }
 
         private RuleBuilder CreateTarget()
         {
-            return new RuleBuilder(_rule);
+            return new RuleBuilder(_ruleDefinition);
         }
     }
 }

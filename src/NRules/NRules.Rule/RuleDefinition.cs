@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace NRules.Rule
 {
-    public interface ICompiledRule
+    public interface IRuleDefinition
     {
         string Handle { get; }
         string Name { get; }
         int Priority { get; }
-        GroupElement LeftSide { get; }
-        IEnumerable<IRuleAction> RightSide { get; }
+        GroupElement LeftHandSide { get; }
+        IEnumerable<IRuleAction> RightHandSide { get; }
     }
 
-    internal class CompiledRule : ICompiledRule
+    internal class RuleDefinition : IRuleDefinition
     {
         private readonly IList<RuleAction> _rightSide;
 
@@ -21,12 +21,12 @@ namespace NRules.Rule
             get { return 0; }
         }
 
-        public CompiledRule()
+        public RuleDefinition()
         {
             Name = string.Empty;
             Priority = DefaultPriority;
             Handle = Guid.NewGuid().ToString();
-            LeftSide = new GroupElement(GroupType.And);
+            LeftHandSide = new GroupElement(GroupType.And);
             _rightSide = new List<RuleAction>();
         }
 
@@ -34,9 +34,9 @@ namespace NRules.Rule
         public string Name { get; set; }
         public int Priority { get; set; }
 
-        public GroupElement LeftSide { get; set; }
+        public GroupElement LeftHandSide { get; set; }
 
-        public IEnumerable<IRuleAction> RightSide
+        public IEnumerable<IRuleAction> RightHandSide
         {
             get { return _rightSide; }
         }

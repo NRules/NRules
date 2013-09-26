@@ -5,7 +5,7 @@ namespace NRules.Core.IntegrationTests.TestRules
 {
     public class ForwardChainingSecondRule : BaseRule
     {
-        public override void Define(IRuleDefinition definition)
+        public override void Define(IDefinition definition)
         {
             definition.When()
                 .If<FactType2>(f2 => f2.TestProperty == "Valid Value");

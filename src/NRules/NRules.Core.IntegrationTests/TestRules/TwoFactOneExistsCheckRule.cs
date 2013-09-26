@@ -5,7 +5,7 @@ namespace NRules.Core.IntegrationTests.TestRules
 {
     public class TwoFactOneExistsCheckRule : BaseRule
     {
-        public override void Define(IRuleDefinition definition)
+        public override void Define(IDefinition definition)
         {
             definition.When()
                 .Exists<FactType1>(f1 => f1.TestProperty.StartsWith("Valid"))

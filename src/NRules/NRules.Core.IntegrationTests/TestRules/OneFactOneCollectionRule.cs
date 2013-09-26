@@ -8,7 +8,7 @@ namespace NRules.Core.IntegrationTests.TestRules
     {
         public int FactCount { get; set; }
 
-        public override void Define(IRuleDefinition definition)
+        public override void Define(IDefinition definition)
         {
             definition.When()
                 .Collect<FactType1>(f1 => f1.TestProperty.StartsWith("Valid"));

@@ -9,15 +9,15 @@ namespace NRules.Core
     {
         bool HasActiveRules();
         RuleActivation NextActivation();
-        void RegisterRule(ICompiledRule rule);
+        void RegisterRule(IRuleDefinition ruleDefinition);
     }
 
     internal class Agenda : IAgenda
     {
-        private readonly Dictionary<string, ICompiledRule> _ruleMap;
+        private readonly Dictionary<string, IRuleDefinition> _ruleMap;
         private readonly ActivationQueue _activationQueue;
 
-        public Agenda(IEnumerable<ICompiledRule> rules, IEventAggregator eventAggregator)
+        public Agenda(IEnumerable<IRuleDefinition> rules, IEventAggregator eventAggregator)
         {
             _activationQueue = new ActivationQueue();
             _ruleMap = rules.ToDictionary(r => r.Handle);
@@ -32,14 +32,14 @@ namespace NRules.Core
         public RuleActivation NextActivation()
         {
             Activation activation = _activationQueue.Dequeue();
-            ICompiledRule rule = _ruleMap[activation.RuleHandle];
-            var ruleActivation = new RuleActivation(rule, activation.Tuple);
+            IRuleDefinition ruleDefinition = _ruleMap[activation.RuleHandle];
+            var ruleActivation = new RuleActivation(ruleDefinition, activation.Tuple);
             return ruleActivation;
         }
 
-        public void RegisterRule(ICompiledRule rule)
+        public void RegisterRule(IRuleDefinition ruleDefinition)
         {
-            _ruleMap.Add(rule.Handle, rule);
+            _ruleMap.Add(ruleDefinition.Handle, ruleDefinition);
         }
 
         private void Subscribe(IEventAggregator eventAggregator)
@@ -50,8 +50,8 @@ namespace NRules.Core
 
         private void OnRuleActivated(object sender, ActivationEventArgs e)
         {
-            ICompiledRule rule = _ruleMap[e.Activation.RuleHandle];
-            _activationQueue.Enqueue(rule.Priority, e.Activation);
+            IRuleDefinition ruleDefinition = _ruleMap[e.Activation.RuleHandle];
+            _activationQueue.Enqueue(ruleDefinition.Priority, e.Activation);
         }
 
         private void OnRuleDeactivated(object sender, ActivationEventArgs e)

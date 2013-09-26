@@ -1,6 +1,6 @@
 ﻿namespace NRules.Dsl
 {
-    public interface IRuleDefinition
+    public interface IDefinition
     {
         ILeftHandSide When();
         IRightHandSide Then();

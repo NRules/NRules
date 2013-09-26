@@ -2,6 +2,6 @@
 {
     public interface IRule
     {
-        void Define(IRuleDefinition definition);
+        void Define(IDefinition definition);
     }
 }

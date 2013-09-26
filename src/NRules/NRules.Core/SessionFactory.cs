@@ -15,7 +15,7 @@ namespace NRules.Core
     internal class SessionFactory : ISessionFactory
     {
         private readonly INetwork _network;
-        private readonly IList<ICompiledRule> _rules;
+        private readonly IList<IRuleDefinition> _rules;
         private static readonly ILog Log = LogManager.GetCurrentClassLogger();
 
         public IContainer Container { get; set; }
@@ -37,9 +37,9 @@ namespace NRules.Core
             return session;
         }
 
-        private INetwork BuildReteNetwork(IEnumerable<ICompiledRule> rules, IReteBuilder reteBuilder)
+        private INetwork BuildReteNetwork(IEnumerable<IRuleDefinition> rules, IReteBuilder reteBuilder)
         {
-            foreach (ICompiledRule rule in rules)
+            foreach (IRuleDefinition rule in rules)
             {
                 reteBuilder.AddRule(rule);
             }
