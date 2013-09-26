@@ -7,7 +7,7 @@ using Rhino.Mocks;
 namespace NRules.Core.IntegrationTests
 {
     [TestFixture]
-    public class PriorityTests : BaseRuleTestFixture
+    public class PriorityTest : BaseRuleTestFixture
     {
         [Test]
         public void Priority_LowPriorityActivatesTwiceTriggersHighPriority_HighPriorityPreemptsLowPriority()

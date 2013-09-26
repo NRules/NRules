@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NRules.Core.IntegrationTests
 {
     [TestFixture]
-    public class OneFactOneExistsCheckRuleTests : BaseRuleTestFixture
+    public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
     {
         [Test]
         public void OneFactOneExistsCheckRule_MatchingFacts_FiresOnce()
@@ -119,7 +119,7 @@ namespace NRules.Core.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactOneExistsCheckRule>();
+            SetUpRule<TwoFactOneExistsCheckRule>();
         }
     }
 }

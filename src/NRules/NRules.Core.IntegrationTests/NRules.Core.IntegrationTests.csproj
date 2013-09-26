@@ -50,24 +50,24 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="OneFactOneExistsCheckRuleTests.cs" />
-    <Compile Include="PriorityTests.cs" />
-    <Compile Include="TestRules\OneFactOneExistsCheckRule.cs" />
+    <Compile Include="TwoFactOneExistsCheckRuleTest.cs" />
+    <Compile Include="PriorityTest.cs" />
+    <Compile Include="TestRules\TwoFactOneExistsCheckRule.cs" />
     <Compile Include="TestRules\PriorityHighRule.cs" />
     <Compile Include="TestRules\PriorityLowRule.cs" />
-    <Compile Include="TwoFactTwoCollectionRuleTests.cs" />
+    <Compile Include="TwoFactTwoCollectionRuleTest.cs" />
     <Compile Include="TestRules\TwoFactTwoCollectionRule.cs" />
-    <Compile Include="TwoFactOneCollectionRuleTests.cs" />
-    <Compile Include="NodeSharingTests.cs" />
-    <Compile Include="ForwardChainingTests.cs" />
-    <Compile Include="OneFactOneCollectionRuleTests.cs" />
+    <Compile Include="TwoFactOneCollectionRuleTest.cs" />
+    <Compile Include="NodeSharingTest.cs" />
+    <Compile Include="ForwardChainingTest.cs" />
+    <Compile Include="OneFactOneCollectionRuleTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestAssets\BaseRuleTestFixture.cs" />
     <Compile Include="TestRules\TwoFactOneCollectionRule.cs" />
     <Compile Include="TestRules\TwinRuleTwo.cs" />
     <Compile Include="TestAssets\FactType1.cs" />
     <Compile Include="TestAssets\FactType2.cs" />
-    <Compile Include="OneFactRuleTests.cs" />
+    <Compile Include="OneFactRuleTest.cs" />
     <Compile Include="TestRules\ForwardChainingFirstRule.cs" />
     <Compile Include="TestRules\ForwardChainingSecondRule.cs" />
     <Compile Include="TestAssets\INotifier.cs" />
@@ -76,7 +76,7 @@
     <Compile Include="TestAssets\BaseRule.cs" />
     <Compile Include="TestRules\TwinRuleOne.cs" />
     <Compile Include="TestRules\TwoFactRule.cs" />
-    <Compile Include="TwoFactRuleTests.cs" />
+    <Compile Include="TwoFactRuleTest.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

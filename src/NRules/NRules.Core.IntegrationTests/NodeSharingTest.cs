@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NRules.Core.IntegrationTests
 {
     [TestFixture]
-    public class NodeSharingTests : BaseRuleTestFixture
+    public class NodeSharingTest : BaseRuleTestFixture
     {
         [Test]
         public void NodeSharing_TwoMatchingFacts_BothRulesFireOnceEach()

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NRules.Core.IntegrationTests
 {
     [TestFixture]
-    public class ForwardChainingTests : BaseRuleTestFixture
+    public class ForwardChainingTest : BaseRuleTestFixture
     {
         [Test]
         public void ForwardChaining_OneMatchingFact_FiresFirstRuleAndChainsSecond()

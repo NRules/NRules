@@ -3,7 +3,7 @@ using NRules.Dsl;
 
 namespace NRules.Core.IntegrationTests.TestRules
 {
-    public class OneFactOneExistsCheckRule : BaseRule
+    public class TwoFactOneExistsCheckRule : BaseRule
     {
         public override void Define(IRuleDefinition definition)
         {

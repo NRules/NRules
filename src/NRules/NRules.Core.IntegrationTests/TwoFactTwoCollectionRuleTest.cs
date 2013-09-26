@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NRules.Core.IntegrationTests
 {
     [TestFixture]
-    public class TwoFactTwoCollectionRuleTests : BaseRuleTestFixture
+    public class TwoFactTwoCollectionRuleTest : BaseRuleTestFixture
     {
         [Test]
         public void TwoFactTwoCollectionRule_MatchingFactsOfEachKind_FiresOnceWithValidFactsInTwoCollections()

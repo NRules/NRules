@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NRules.Core.IntegrationTests
 {
     [TestFixture]
-    public class OneFactRuleTests : BaseRuleTestFixture
+    public class OneFactRuleTest : BaseRuleTestFixture
     {
         [Test]
         public void OneFactRule_OneMatchingFact_FiresOnce()

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NRules.Core.Tests.Rete
 {
     [TestFixture]
-    public class TupleTests
+    public class TupleTest
     {
         [Test]
         public void Ctor_WhenFactPassed_ExposedAsRightFactAndChained()

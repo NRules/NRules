@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NRules.Core.Tests.Rete
 {
     [TestFixture]
-    public class TypeNodeTests
+    public class TypeNodeTest
     {
         [Test]
         public void FilterType_PassedToCtor_Returns()

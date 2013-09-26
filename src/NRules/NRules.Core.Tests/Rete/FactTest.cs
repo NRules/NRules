@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NRules.Core.Tests.Rete
 {
     [TestFixture]
-    public class FactTests
+    public class FactTest
     {
         [Test]
         public void FactType_WhenObjectPassed_ReturnsItsType()
