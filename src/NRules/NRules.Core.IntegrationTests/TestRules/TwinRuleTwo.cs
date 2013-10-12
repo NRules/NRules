@@ -7,10 +7,12 @@ namespace NRules.Core.IntegrationTests.TestRules
     {
         public override void Define(IDefinition definition)
         {
+            FactType1 fact1 = null;
+            FactType2 fact2 = null;
+
             definition.When()
-                .If<FactType1>(f1 => f1.TestProperty == "Valid Value")
-                .If<FactType2>(f2 => f2.TestProperty == "Valid Value")
-                .If<FactType1, FactType2>((f1, f2) => f1 == f2.JoinReference);
+                .If<FactType1>(() => fact1, f => f.TestProperty == "Valid Value")
+                .If<FactType2>(() => fact2, f => f.TestProperty == "Valid Value", f => fact1 == f.JoinReference);
 
             definition.Then()
                 .Do(ctx => Notifier.RuleActivated());

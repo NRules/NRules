@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NRules.Core.IntegrationTests.TestAssets;
 using NRules.Dsl;
 
@@ -10,9 +11,12 @@ namespace NRules.Core.IntegrationTests.TestRules
 
         public override void Define(IDefinition definition)
         {
+            FactType1 fact1 = null;
+            IEnumerable<FactType2> collection2 = null;
+
             definition.When()
-                .If<FactType1>(f1 => f1.TestProperty == "Valid Value")
-                .Collect<FactType2>(f2 => f2.TestProperty.StartsWith("Valid"));
+                .If<FactType1>(() => fact1, f => f.TestProperty == "Valid Value")
+                .Collect<FactType2>(() => collection2, f => f.TestProperty.StartsWith("Valid"));
             definition.Then()
                 .Do(ctx => Notifier.RuleActivated())
                 .Do(ctx => SetCount(ctx.Collection<FactType2>().Count()));

@@ -7,8 +7,10 @@ namespace NRules.Core.IntegrationTests.TestRules
     {
         public override void Define(IDefinition definition)
         {
+            FactType1 fact1 = null;
+
             definition.When()
-                .If<FactType1>(f1 => f1.TestProperty == "Valid Value");
+                .If<FactType1>(() => fact1, f => f.TestProperty == "Valid Value");
             definition.Then()
                 .Do(ctx => Notifier.RuleActivated())
                 .Do(ctx => ctx.Insert(new FactType2()

@@ -24,7 +24,8 @@ namespace NRules.Rule
 
         public Declaration Declare(string name)
         {
-            var declaration = new Declaration(name, ValueType, this);
+            var declaration = new Declaration(name, ValueType);
+            declaration.Target = this;
             SymbolTable.Add(declaration);
             return declaration;
         }

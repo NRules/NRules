@@ -24,9 +24,12 @@ namespace NRules.Core.Tests.TestAssets
 
         public void Define(IDefinition definition)
         {
+            TestFact1 fact1 = null;
+            TestFact2 fact2 = null;
+
             definition.When()
-                .If<TestFact1>(fact1 => fact1.Name == "Hello")
-                .If<TestFact1, TestFact2>((fact1, fact2) => fact2.Fact1 == fact1);
+                .If<TestFact1>(() => fact1, f => f.Name == "Hello")
+                .If<TestFact2>(() => fact2, f => f.Fact1 == fact1);
 
             definition.Then()
                 .Do(ctx => SaveResult(_a))

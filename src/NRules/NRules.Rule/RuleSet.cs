@@ -4,19 +4,17 @@ namespace NRules.Rule
 {
     public interface IRuleSet
     {
-        IRuleBuilder AddRule();
+        void AddRule(IRuleDefinition ruleDefinition);
         IEnumerable<IRuleDefinition> Rules { get; }
     }
 
     public class RuleSet : IRuleSet
     {
-        private readonly List<RuleDefinition> _rules = new List<RuleDefinition>();
+        private readonly List<IRuleDefinition> _rules = new List<IRuleDefinition>();
 
-        public IRuleBuilder AddRule()
+        public void AddRule(IRuleDefinition ruleDefinition)
         {
-            var rule = new RuleDefinition();
-            _rules.Add(rule);
-            return new RuleBuilder(rule);
+            _rules.Add(ruleDefinition);
         }
 
         public IEnumerable<IRuleDefinition> Rules

@@ -34,7 +34,7 @@ namespace NRules.Rule
         public string Name { get; set; }
         public int Priority { get; set; }
 
-        public GroupElement LeftHandSide { get; set; }
+        public GroupElement LeftHandSide { get; internal set; }
 
         public IEnumerable<IRuleAction> RightHandSide
         {

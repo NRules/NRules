@@ -2,7 +2,7 @@
 
 namespace NRules.Rule
 {
-    internal enum GroupType
+    public enum GroupType
     {
         And = 0,
         Or = 1,

@@ -5,6 +5,7 @@ using System.Reflection;
 using NRules.Config;
 using NRules.Dsl;
 using NRules.Rule;
+using NRules.Rule.Builders;
 
 namespace NRules.Core
 {
@@ -77,10 +78,12 @@ namespace NRules.Core
             foreach (var ruleInstance in ruleInstances)
             {
                 var metadata = new RuleMetadata(ruleInstance);
-                var builder = ruleSet.AddRule();
+                var builder = new RuleBuilder();
                 builder.Name(ruleInstance.GetType().FullName);
                 var definition = new Definition(builder, metadata);
                 ruleInstance.Define(definition);
+                var rule = builder.Build();
+                ruleSet.AddRule(rule);
             }
         }
 
