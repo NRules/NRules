@@ -39,8 +39,10 @@ namespace NRules.Rule.Builders
         AggregateElement IRuleElementBuilder<AggregateElement>.Build()
         {
             Validate();
-            IRuleElementBuilder<PatternElement> builder = _sourceBuilder;
-            return new AggregateElement(_resultType, _aggregateType, builder.Build());
+            IRuleElementBuilder<PatternElement> sourceBuilder = _sourceBuilder;
+            var sourceElement = sourceBuilder.Build();
+            var aggregateElement = new AggregateElement(_resultType, _aggregateType, sourceElement);
+            return aggregateElement;
         }
 
         private void Validate()

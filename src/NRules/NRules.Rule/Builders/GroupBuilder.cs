@@ -42,12 +42,13 @@ namespace NRules.Rule.Builders
         GroupElement IRuleElementBuilder<GroupElement>.Build()
         {
             Validate();
-            var groupElement = new GroupElement(_groupType);
+            var childElements = new List<RuleElement>();
             foreach (var nestedBuilder in _nestedBuilders)
             {
                 var childElement = nestedBuilder.Build();
-                groupElement.AddChild(childElement);
+                childElements.Add(childElement);
             }
+            var groupElement = new GroupElement(_groupType, childElements);
             return groupElement;
         }
 

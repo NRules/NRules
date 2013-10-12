@@ -8,14 +8,9 @@ namespace NRules.Rule
     {
         private readonly HashSet<Declaration> _symbolTable = new HashSet<Declaration>();
 
-        public SymbolTable ParentScope { get; internal set; }
+        public SymbolTable ParentScope { get; private set; }
 
-        //todo: refactor this
-        public SymbolTable()
-        {
-        }
-
-        public SymbolTable(SymbolTable parentScope)
+        public SymbolTable(SymbolTable parentScope = null)
         {
             ParentScope = parentScope;
         }

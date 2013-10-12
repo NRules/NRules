@@ -12,11 +12,12 @@ namespace NRules.Rule
 
     public class GroupElement : RuleElement
     {
-        private readonly List<RuleElement> _childElements = new List<RuleElement>(); 
+        private readonly List<RuleElement> _childElements; 
         
-        internal GroupElement(GroupType groupType)
+        internal GroupElement(GroupType groupType, IEnumerable<RuleElement> childElements)
         {
             GroupType = groupType;
+            _childElements = new List<RuleElement>(childElements);
         }
 
         internal GroupType GroupType { get; private set; }
@@ -24,12 +25,6 @@ namespace NRules.Rule
         public IEnumerable<RuleElement> ChildElements
         {
             get { return _childElements; }
-        }
-
-        internal void AddChild(RuleElement ruleElement)
-        {
-            _childElements.Add(ruleElement);
-            ruleElement.SymbolTable.ParentScope = SymbolTable;
         }
     }
 }

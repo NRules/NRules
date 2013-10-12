@@ -11,7 +11,6 @@ namespace NRules.Rule
         {
             AggregateType = aggregateType;
             Source = source;
-            Source.SymbolTable.ParentScope = SymbolTable;
         }
     }
 }

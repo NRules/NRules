@@ -26,7 +26,6 @@ namespace NRules.Rule
             Name = string.Empty;
             Priority = DefaultPriority;
             Handle = Guid.NewGuid().ToString();
-            LeftHandSide = new GroupElement(GroupType.And);
             _rightSide = new List<RuleAction>();
         }
 
