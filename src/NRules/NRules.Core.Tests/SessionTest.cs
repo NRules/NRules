@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using NRules.Core.Rete;
-using NRules.Rule;
 using NUnit.Framework;
 using Rhino.Mocks;
 
@@ -12,12 +11,12 @@ namespace NRules.Core.Tests
         private IAgenda _agenda;
         private INetwork _network;
         private IWorkingMemory _workingMemory;
-        private IList<IRuleDefinition> _rules;
+        private IList<ICompiledRule> _rules;
 
         [SetUp]
         public void Setup()
         {
-            _rules = new List<IRuleDefinition>();
+            _rules = new List<ICompiledRule>();
             _agenda = MockRepository.GenerateStub<IAgenda>();
             _network = MockRepository.GenerateStub<INetwork>();
             _workingMemory = MockRepository.GenerateStub<IWorkingMemory>();

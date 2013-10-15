@@ -8,10 +8,10 @@ namespace NRules.Rule.Builders
     public class RuleBuilder : RuleElementBuilder
     {
         private string _name;
-        private int _priority; 
+        private int _priority = RuleDefinition.DefaultPriority; 
         private readonly SymbolTable _rootScope = new SymbolTable();
         private readonly GroupBuilder _groupBuilder;
-        private readonly List<RuleAction> _actions = new List<RuleAction>();
+        private readonly List<ActionElement> _actions = new List<ActionElement>();
 
         public RuleBuilder()
         {
@@ -35,16 +35,18 @@ namespace NRules.Rule.Builders
 
         public void Action(Expression<Action<IActionContext>> action)
         {
-            _actions.Add(new RuleAction(action));
+            var actionElement = new ActionElement(action);
+            _actions.Add(actionElement);
         }
 
         public IRuleDefinition Build()
         {
             Validate();
-            IRuleElementBuilder<GroupElement> builder = _groupBuilder;
-            var ruleDefinition = new RuleDefinition { Name = _name, Priority = _priority };
-            ruleDefinition.LeftHandSide = builder.Build();
-            _actions.ForEach(ruleDefinition.AddAction);
+
+            IRuleElementBuilder<GroupElement> groupBuilder = _groupBuilder;
+            var conditions = groupBuilder.Build();
+
+            var ruleDefinition = new RuleDefinition(_name, _priority, conditions, _actions);
             return ruleDefinition;
         }
 

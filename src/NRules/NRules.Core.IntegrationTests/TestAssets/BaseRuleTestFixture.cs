@@ -18,6 +18,7 @@ namespace NRules.Core.IntegrationTests.TestAssets
         private IReteBuilder _builder;
         private Dictionary<Type, INotifier> _notifiers;
         private List<BaseRule> _rules;
+        private IRuleCompiler _compiler;
 
         [SetUp]
         public void SetUp()
@@ -25,6 +26,7 @@ namespace NRules.Core.IntegrationTests.TestAssets
             _container = MockRepository.GenerateStub<IContainer>();
             _container.Stub(x => x.CreateChildContainer()).Return(_container);
             _builder = new ReteBuilder();
+            _compiler = new RuleCompiler();
             _repository = new RuleRepository();
             _repository.Container = _container;
             _notifiers = new Dictionary<Type, INotifier>();
@@ -35,7 +37,7 @@ namespace NRules.Core.IntegrationTests.TestAssets
 
             _repository.AddRuleSet(_rules.Select(r => r.GetType()).ToArray());
 
-            var factory = new SessionFactory(_repository, _builder);
+            var factory = new SessionFactory(_repository, _compiler, _builder);
             Session = factory.CreateSession();
         }
 

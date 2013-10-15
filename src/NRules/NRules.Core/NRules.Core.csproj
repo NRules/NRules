@@ -49,12 +49,15 @@
     <Compile Include="ActionContext.cs" />
     <Compile Include="ActivationQueue.cs" />
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
+    <Compile Include="CompiledRule.cs" />
     <Compile Include="Config\ConfigurationExtensions.cs" />
     <Compile Include="Config\EngineConfiguration.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
     <Compile Include="Expressions\ExpressionUtils.cs" />
     <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Expressions\InputRewriter.cs" />
+    <Compile Include="RuleAction.cs" />
+    <Compile Include="RuleCompiler.cs" />
     <Compile Include="Rete\AlphaMemory.cs" />
     <Compile Include="Rete\BetaMemory.cs" />
     <Compile Include="Rete\AggregateNode.cs" />

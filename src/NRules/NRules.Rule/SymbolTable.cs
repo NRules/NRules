@@ -46,7 +46,15 @@ namespace NRules.Rule
 
         public Declaration Lookup(string name, Type type)
         {
-            Declaration declaration = _symbolTable.FirstOrDefault(d => d.Name == name);
+            return Lookup(name, type, includeLocal: true);
+        }
+
+        private Declaration Lookup(string name, Type type, bool includeLocal)
+        {
+            Declaration declaration = includeLocal 
+                ? _symbolTable.FirstOrDefault(d => d.Name == name) 
+                : _symbolTable.FirstOrDefault(d => d.Name == name && !d.IsLocal);
+
             if (declaration != null)
             {
                 if (declaration.Type != type)
@@ -59,7 +67,7 @@ namespace NRules.Rule
             }
             if (ParentScope != null)
             {
-                return ParentScope.Lookup(name, type);
+                return ParentScope.Lookup(name, type, includeLocal: false);
             }
             return null;
         }

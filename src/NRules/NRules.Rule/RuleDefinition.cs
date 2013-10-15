@@ -1,48 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace NRules.Rule
 {
     public interface IRuleDefinition
     {
-        string Handle { get; }
         string Name { get; }
         int Priority { get; }
         GroupElement LeftHandSide { get; }
-        IEnumerable<IRuleAction> RightHandSide { get; }
+        IEnumerable<ActionElement> RightHandSide { get; }
     }
 
     internal class RuleDefinition : IRuleDefinition
     {
-        private readonly IList<RuleAction> _rightSide;
-
         public static int DefaultPriority
         {
             get { return 0; }
         }
 
-        public RuleDefinition()
+        public RuleDefinition(string name, int priority, GroupElement leftHandSide, IEnumerable<ActionElement> rightHandSide)
         {
-            Name = string.Empty;
-            Priority = DefaultPriority;
-            Handle = Guid.NewGuid().ToString();
-            _rightSide = new List<RuleAction>();
+            Name = name;
+            Priority = priority;
+            LeftHandSide = leftHandSide;
+            RightHandSide = new List<ActionElement>(rightHandSide);
         }
 
-        public string Handle { get; private set; }
-        public string Name { get; set; }
-        public int Priority { get; set; }
+        public string Name { get; private set; }
+        public int Priority { get; private set; }
 
-        public GroupElement LeftHandSide { get; internal set; }
-
-        public IEnumerable<IRuleAction> RightHandSide
-        {
-            get { return _rightSide; }
-        }
-
-        public void AddAction(RuleAction action)
-        {
-            _rightSide.Add(action);
-        }
+        public GroupElement LeftHandSide { get; private set; }
+        public IEnumerable<ActionElement> RightHandSide { get; private set; }
     }
 }
