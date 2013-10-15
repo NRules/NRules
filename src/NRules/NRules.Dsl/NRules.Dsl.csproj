@@ -43,11 +43,11 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Context.cs" />
     <Compile Include="IDefinition.cs" />
     <Compile Include="ILeftHandSide.cs" />
     <Compile Include="IRightHandSide.cs" />
     <Compile Include="RulePriorityAttribute.cs" />
-    <Compile Include="IActionContext.cs" />
     <Compile Include="IRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

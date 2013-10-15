@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using NRules.Dsl;
 
 namespace NRules.Rule
 {
@@ -8,7 +7,7 @@ namespace NRules.Rule
     {
         public LambdaExpression Expression { get; set; }
 
-        internal ActionElement(Expression<Action<IActionContext>> expression)
+        internal ActionElement(LambdaExpression expression)
         {
             Expression = expression;
         }

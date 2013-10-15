@@ -23,14 +23,14 @@ namespace NRules.Core.Tests
             var target = CreateTarget(tuple3);
 
             // Act
-            object a = target.Arg<ObjectA>();
-            object b = target.Arg<ObjectB>();
-            object c = target.Arg<ObjectC>();
+            object a = target.Get(typeof(ObjectA));
+            object b = target.Get(typeof(ObjectB));
+            object c = target.Get(typeof(ObjectC));
 
             // Assert
-            Assert.True(a.GetType() == typeof (ObjectA));
-            Assert.True(b.GetType() == typeof (ObjectB));
-            Assert.True(c.GetType() == typeof (ObjectC));
+            Assert.True(a.GetType() == typeof(ObjectA));
+            Assert.True(b.GetType() == typeof(ObjectB));
+            Assert.True(c.GetType() == typeof(ObjectC));
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace NRules.Core.Tests
             var target = CreateTarget(tuple1);
 
             // Act - Assert
-            Assert.Throws<InvalidOperationException>(() => target.Arg<ObjectB>());
+            Assert.Throws<InvalidOperationException>(() => target.Get(typeof(ObjectB)));
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace NRules.Core.Tests
             var target = CreateTarget(tuple2);
 
             // Act
-            var a = target.Arg<ObjectA>();
+            var a = target.Get(typeof(ObjectA));
 
             // Assert
             Assert.AreSame(tuple1.RightFact.Object, a);

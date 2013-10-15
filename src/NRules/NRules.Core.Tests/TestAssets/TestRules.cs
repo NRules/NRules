@@ -32,8 +32,8 @@ namespace NRules.Core.Tests.TestAssets
                 .If<TestFact2>(() => fact2, f => f.Fact1 == fact1);
 
             definition.Then()
-                .Do(ctx => SaveResult(_a))
-                .Do(ctx => SaveResult(_b));
+                .Do(() => SaveResult(_a))
+                .Do(() => SaveResult(_b));
         }
 
         private void SaveResult(string result)

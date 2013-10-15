@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using NRules.Dsl;
 using NRules.Rule;
 
 namespace NRules.Core
@@ -23,8 +21,7 @@ namespace NRules.Core
             var actions = new List<IRuleAction>();
             foreach (var actionElement in ruleDefinition.RightHandSide)
             {
-                var compiledAction = (Action<IActionContext>) actionElement.Expression.Compile();
-                var ruleAction = new RuleAction(compiledAction);
+                var ruleAction = new RuleAction(actionElement.Expression);
                 actions.Add(ruleAction);
             }
             var rule = new CompiledRule(ruleDefinition, actions);

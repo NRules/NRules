@@ -13,7 +13,7 @@ namespace NRules.Core.IntegrationTests.TestRules
                 .Exists<FactType1>(f => f.TestProperty.StartsWith("Valid"))
                 .If<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
             definition.Then()
-                .Do(ctx => Notifier.RuleActivated());
+                .Do(() => Notifier.RuleActivated());
         }
     }
 }

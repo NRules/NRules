@@ -2,27 +2,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NRules.Dsl;
 using NRules.Rule;
 
 namespace NRules.Core.Expressions
 {
-    internal class InputRewriter : ExpressionVisitor
+    internal class ActionRewriter : ExpressionVisitor
     {
         private readonly IDictionary<string, Declaration> _declarations;
         private List<ParameterExpression> _parameters;
-        private ParameterExpression _oldParameter;
+        private ParameterExpression _context;
 
-        public InputRewriter(IEnumerable<Declaration> declarations)
+        public ActionRewriter(IEnumerable<Declaration> declarations)
         {
             _declarations = declarations.ToDictionary(d => d.Name);
         }
 
-        public LambdaExpression Rewrite(Declaration declaration, LambdaExpression expression)
+        public LambdaExpression Rewrite(LambdaExpression expression)
         {
-            _oldParameter = expression.Parameters.Single();
-            _parameters = new List<ParameterExpression>{Expression.Parameter(declaration.Type, declaration.Name)};
+            _context = Expression.Parameter(typeof (IActionContext), "context");
+            _parameters = new List<ParameterExpression>{_context};
             Expression body = Visit(expression.Body);
             return Expression.Lambda(body, expression.TailCall, _parameters);
+        }
+
+        protected override Expression VisitMethodCall(MethodCallExpression m)
+        {
+            if (m.Method.DeclaringType == typeof(Context))
+            {
+                var method = typeof (IActionContext).GetMethod(m.Method.Name);
+                IEnumerable<Expression> args = VisitExpressionList(m.Arguments);
+                return Expression.Call(_context, method, args);
+            }
+            return base.VisitMethodCall(m);
         }
 
         protected override Expression VisitMemberAccess(MemberExpression m)
@@ -40,15 +52,6 @@ namespace NRules.Core.Expressions
             }
 
             return base.VisitMemberAccess(m);
-        }
-
-        protected override Expression VisitParameter(ParameterExpression p)
-        {
-            if (p.Name == _oldParameter.Name)
-            {
-                return _parameters.First();
-            }
-            return base.VisitParameter(p);
         }
     }
 }

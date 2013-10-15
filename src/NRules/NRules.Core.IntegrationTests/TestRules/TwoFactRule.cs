@@ -15,7 +15,7 @@ namespace NRules.Core.IntegrationTests.TestRules
                 .If<FactType2>(() => fact2, f => f.TestProperty == "Valid Value", f => f.JoinReference == fact1);
 
             definition.Then()
-                .Do(ctx => Notifier.RuleActivated());
+                .Do(() => Notifier.RuleActivated());
         }
     }
 }

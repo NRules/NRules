@@ -19,9 +19,9 @@ namespace NRules.Core.IntegrationTests.TestRules
                 .Collect<FactType1>(() => collection1, f => f.TestProperty.StartsWith("Valid"))
                 .Collect<FactType2>(() => collection2, f => f.TestProperty.StartsWith("Valid"));
             definition.Then()
-                .Do(ctx => Notifier.RuleActivated())
-                .Do(ctx => SetCount1(ctx.Collection<FactType1>().Count()))
-                .Do(ctx => SetCount2(ctx.Collection<FactType2>().Count()));
+                .Do(() => Notifier.RuleActivated())
+                .Do(() => SetCount1(collection1.Count()))
+                .Do(() => SetCount2(collection2.Count()));
         }
 
         private void SetCount1(int count)

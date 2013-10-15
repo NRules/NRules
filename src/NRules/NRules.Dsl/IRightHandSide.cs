@@ -5,6 +5,6 @@ namespace NRules.Dsl
 {
     public interface IRightHandSide
     {
-        IRightHandSide Do(Expression<Action<IActionContext>> action);
+        IRightHandSide Do(Expression<Action> action);
     }
 }

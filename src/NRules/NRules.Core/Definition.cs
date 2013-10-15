@@ -33,7 +33,7 @@ namespace NRules.Core
             var patternBuilder = leftHandSide.Pattern(declaration);
             foreach (var condition in conditions)
             {
-                var rewriter = new InputRewriter(declarations);
+                var rewriter = new ConditionRewriter(declarations);
                 var rewrittenCondition = rewriter.Rewrite(declaration, condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
@@ -52,7 +52,7 @@ namespace NRules.Core
 
             var patternDeclaration = aggregateBuilder.Declare(typeof (T));
             var patternBuilder = aggregateBuilder.SourcePattern(patternDeclaration);
-            var rewriter = new InputRewriter(declarations);
+            var rewriter = new ConditionRewriter(declarations);
             var rewrittenCondition = rewriter.Rewrite(patternDeclaration, itemCondition);
             patternBuilder.Condition(rewrittenCondition);
 
@@ -68,16 +68,22 @@ namespace NRules.Core
 
             var patternDeclaration = existsBuilder.Declare(typeof (T));
             var patternBuilder = existsBuilder.Pattern(patternDeclaration);
-            var rewriter = new InputRewriter(declarations);
+            var rewriter = new ConditionRewriter(declarations);
             var rewrittenCondition = rewriter.Rewrite(patternDeclaration, condition);
             patternBuilder.Condition(rewrittenCondition);
 
             return this;
         }
 
-        public IRightHandSide Do(Expression<Action<IActionContext>> action)
+        public IRightHandSide Do(Expression<Action> action)
         {
-            _builder.Action(action);
+            var leftHandSide = _builder.LeftHandSide();
+            IEnumerable<Declaration> declarations = leftHandSide.Declarations.ToList();
+
+            var rewriter = new ActionRewriter(declarations);
+            var rewrittenAction = rewriter.Rewrite(action);
+            _builder.Action(rewrittenAction);
+
             return this;
         }
 

@@ -1,12 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using NRules.Core.Rete;
-using NRules.Dsl;
 using Tuple = NRules.Core.Rete.Tuple;
 
 namespace NRules.Core
 {
+    internal interface IActionContext
+    {
+        void Insert(object fact);
+        void Update(object fact);
+        void Retract(object fact);
+        object Get(Type objectType);
+    }
+
     internal class ActionContext : IActionContext
     {
         private readonly INetwork _network;
@@ -35,23 +41,18 @@ namespace NRules.Core
             _network.PropagateRetract(_workingMemory, fact);
         }
 
-        public T Arg<T>()
+        public object Get(Type objectType)
         {
             try
             {
-                var arg = _tuple.Where(f => f.FactType == typeof (T)).Select(f => f.Object).Cast<T>().First();
+                var arg = _tuple.Where(f => f.FactType == objectType).Select(f => f.Object).First();
                 return arg;
             }
             catch (Exception e)
             {
                 throw new InvalidOperationException(
-                    string.Format("Could not get rule argument of requested type. Type={0}", typeof (T)), e);
+                    string.Format("Could not get rule argument of requested type. Type={0}", objectType), e);
             }
-        }
-
-        public IEnumerable<T> Collection<T>()
-        {
-            return Arg<IEnumerable<T>>();
         }
     }
 }

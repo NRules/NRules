@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using NRules.Dsl;
 
 namespace NRules.Rule.Builders
 {
@@ -33,7 +32,7 @@ namespace NRules.Rule.Builders
             return _groupBuilder;
         }
 
-        public void Action(Expression<Action<IActionContext>> action)
+        public void Action(LambdaExpression action)
         {
             var actionElement = new ActionElement(action);
             _actions.Add(actionElement);
