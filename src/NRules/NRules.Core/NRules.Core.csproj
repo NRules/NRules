@@ -55,7 +55,6 @@
     <Compile Include="Collections\PriorityQueue.cs" />
     <Compile Include="Expressions\ActionRewriter.cs" />
     <Compile Include="Expressions\ExpressionUtils.cs" />
-    <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Expressions\ConditionRewriter.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleCompiler.cs" />

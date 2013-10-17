@@ -24,7 +24,7 @@ namespace NRules.Core.Expressions
             return Expression.Lambda(body, expression.TailCall, _parameters);
         }
 
-        protected override Expression VisitMemberAccess(MemberExpression m)
+        protected override Expression VisitMember(MemberExpression m)
         {
             Declaration declaration;
             if (_declarations.TryGetValue(m.Member.Name, out declaration))
@@ -38,7 +38,7 @@ namespace NRules.Core.Expressions
                 return parameter;
             }
 
-            return base.VisitMemberAccess(m);
+            return base.VisitMember(m);
         }
 
         protected override Expression VisitParameter(ParameterExpression p)

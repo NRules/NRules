@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -31,13 +30,13 @@ namespace NRules.Core.Expressions
             if (m.Method.DeclaringType == typeof(Context))
             {
                 var method = typeof (IActionContext).GetMethod(m.Method.Name);
-                IEnumerable<Expression> args = VisitExpressionList(m.Arguments);
+                var args = m.Arguments.Select(Visit);
                 return Expression.Call(_context, method, args);
             }
             return base.VisitMethodCall(m);
         }
 
-        protected override Expression VisitMemberAccess(MemberExpression m)
+        protected override Expression VisitMember(MemberExpression m)
         {
             Declaration declaration;
             if (_declarations.TryGetValue(m.Member.Name, out declaration))
@@ -51,7 +50,7 @@ namespace NRules.Core.Expressions
                 return parameter;
             }
 
-            return base.VisitMemberAccess(m);
+            return base.VisitMember(m);
         }
     }
 }
