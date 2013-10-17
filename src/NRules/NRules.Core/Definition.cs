@@ -40,7 +40,7 @@ namespace NRules.Core
             return this;
         }
 
-        public ILeftHandSide Collect<T>(Expression<Func<IEnumerable<T>>> alias, Expression<Func<T, bool>> itemCondition)
+        public ILeftHandSide Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] itemConditions)
         {
             var collectionSymbol = alias.ExtractSymbol();
             var leftHandSide = _builder.LeftHandSide();
@@ -52,14 +52,16 @@ namespace NRules.Core
 
             var patternDeclaration = aggregateBuilder.Declare(typeof (T));
             var patternBuilder = aggregateBuilder.SourcePattern(patternDeclaration);
-            var rewriter = new ConditionRewriter(declarations);
-            var rewrittenCondition = rewriter.Rewrite(patternDeclaration, itemCondition);
-            patternBuilder.Condition(rewrittenCondition);
-
+            foreach (var condition in itemConditions)
+            {
+                var rewriter = new ConditionRewriter(declarations);
+                var rewrittenCondition = rewriter.Rewrite(patternDeclaration, condition);
+                patternBuilder.Condition(rewrittenCondition);
+            }
             return this;
         }
 
-        public ILeftHandSide Exists<T>(Expression<Func<T, bool>> condition)
+        public ILeftHandSide Exists<T>(params Expression<Func<T, bool>>[] conditions)
         {
             var leftHandSide = _builder.LeftHandSide();
             IEnumerable<Declaration> declarations = leftHandSide.Declarations.ToList();
@@ -68,10 +70,12 @@ namespace NRules.Core
 
             var patternDeclaration = existsBuilder.Declare(typeof (T));
             var patternBuilder = existsBuilder.Pattern(patternDeclaration);
-            var rewriter = new ConditionRewriter(declarations);
-            var rewrittenCondition = rewriter.Rewrite(patternDeclaration, condition);
-            patternBuilder.Condition(rewrittenCondition);
-
+            foreach (var condition in conditions)
+            {
+                var rewriter = new ConditionRewriter(declarations);
+                var rewrittenCondition = rewriter.Rewrite(patternDeclaration, condition);
+                patternBuilder.Condition(rewrittenCondition);
+            }
             return this;
         }
 
