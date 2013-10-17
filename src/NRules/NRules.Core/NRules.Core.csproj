@@ -72,7 +72,7 @@
     <Compile Include="RuleMetadata.cs" />
     <Compile Include="Rete\Activation.cs" />
     <Compile Include="Rete\EventAggregator.cs" />
-    <Compile Include="Rete\JoinConditionAdaptor.cs" />
+    <Compile Include="Rete\JoinConditionAdapter.cs" />
     <Compile Include="Agenda.cs" />
     <Compile Include="Rete\AlphaMemoryNode.cs" />
     <Compile Include="Rete\BetaMemoryNode.cs" />

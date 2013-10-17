@@ -4,12 +4,12 @@ using NRules.Rule;
 
 namespace NRules.Core.Rete
 {
-    internal class JoinConditionAdaptor
+    internal class JoinConditionAdapter
     {
         private readonly ICondition _condition;
         private readonly int[] _factSelectionTable;
 
-        public JoinConditionAdaptor(ICondition condition, int[] factSelectionTable)
+        public JoinConditionAdapter(ICondition condition, int[] factSelectionTable)
         {
             _condition = condition;
             _factSelectionTable = factSelectionTable;

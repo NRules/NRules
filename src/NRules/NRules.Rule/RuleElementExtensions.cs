@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace NRules.Rule
 {
     public static class RuleElementExtensions
     {
+        [DebuggerStepThrough]
         public static void Match(this RuleElement element, Action<PatternElement> pattern, Action<GroupElement> group, Action<AggregateElement> aggregate)
         {
             if (element == null)
@@ -28,6 +30,7 @@ namespace NRules.Rule
             }
         }
 
+        [DebuggerStepThrough]
         public static void Match(this GroupElement group, Action<GroupElement> and, Action<GroupElement> or, Action<GroupElement> not, Action<GroupElement> exists)
         {
             if (group == null)

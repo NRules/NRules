@@ -9,14 +9,14 @@ namespace NRules.Core.Rete
         private readonly IAlphaMemoryNode _rightSource;
         public BetaMemoryNode MemoryNode { get; set; }
 
-        public IList<JoinConditionAdaptor> Conditions { get; private set; }
+        public IList<JoinConditionAdapter> Conditions { get; private set; }
 
         protected BetaNode(IBetaMemoryNode leftSource, IAlphaMemoryNode rightSource)
         {
             _leftSource = leftSource;
             _rightSource = rightSource;
 
-            Conditions = new List<JoinConditionAdaptor>();
+            Conditions = new List<JoinConditionAdapter>();
         }
 
         protected abstract void PropagateMatchedAssert(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact);

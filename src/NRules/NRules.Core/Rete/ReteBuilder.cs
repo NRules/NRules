@@ -130,7 +130,7 @@ namespace NRules.Core.Rete
                     selectionTable.Add(selectionIndex);
                 }
 
-                var joinConditionAdapter = new JoinConditionAdaptor(condition, selectionTable.ToArray());
+                var joinConditionAdapter = new JoinConditionAdapter(condition, selectionTable.ToArray());
                 betaNode.Conditions.Add(joinConditionAdapter);
             }
 
