@@ -79,8 +79,7 @@ namespace NRules.Core.Rete
             {
                 if (conditionElement.Declarations.Count() > 1)
                 {
-                    var betaCondition = new BetaCondition(conditionElement.Expression);
-                    context.BetaConditions.Add(betaCondition);
+                    context.BetaConditions.Add(conditionElement);
                     continue;
                 }
 
@@ -89,7 +88,7 @@ namespace NRules.Core.Rete
                 currentNode = selectionNode;
             }
 
-            context.BetaFactTypes.Add(element.ValueType);
+            context.Declarations.Add(element.Declaration);
             var memoryNode = BuildAlphaMemoryNode(element.ValueType, currentNode);
             context.AlphaSource = memoryNode;
         }
@@ -116,22 +115,22 @@ namespace NRules.Core.Rete
             left.Attach(betaNode);
             right.Attach(betaNode);
 
-            IEnumerable<BetaCondition> matchingConditions =
+            List<ConditionElement> matchingConditions =
                 context.BetaConditions.Where(
-                    jc => jc.FactTypes.All(context.BetaFactTypes.Contains)).ToList();
+                    bc => bc.Declarations.All(context.Declarations.Contains)).ToList();
 
             foreach (var condition in matchingConditions)
             {
                 context.BetaConditions.Remove(condition);
                 var selectionTable = new List<int>();
-                foreach (var factType in condition.FactTypes)
+                foreach (var declaration in condition.Declarations)
                 {
-                    int selectionIndex = context.BetaFactTypes.FindIndex(0, t => factType == t);
+                    int selectionIndex = context.Declarations.FindIndex(0, d => Equals(declaration, d));
                     selectionTable.Add(selectionIndex);
                 }
 
-                condition.FactSelectionTable = selectionTable.ToArray();
-                betaNode.Conditions.Add(condition);
+                var betaCondition = new BetaCondition(condition.Expression, selectionTable.ToArray());
+                betaNode.Conditions.Add(betaCondition);
             }
 
             var memoryNode = new BetaMemoryNode();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NRules.Rule;
 
 namespace NRules.Core.Rete
 {
@@ -7,12 +8,12 @@ namespace NRules.Core.Rete
     {
         public ReteBuilderContext()
         {
-            BetaFactTypes = new List<Type>();
-            BetaConditions = new List<BetaCondition>();
+            Declarations = new List<Declaration>();
+            BetaConditions = new List<ConditionElement>();
         }
 
-        public List<Type> BetaFactTypes { get; private set; } 
-        public List<BetaCondition> BetaConditions { get; private set; } 
+        public List<Declaration> Declarations { get; private set; } 
+        public List<ConditionElement> BetaConditions { get; private set; } 
         public IAlphaMemoryNode AlphaSource { get; set; }
         public IBetaMemoryNode BetaSource { get; set; }
     }

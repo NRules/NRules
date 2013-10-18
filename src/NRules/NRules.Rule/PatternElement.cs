@@ -7,18 +7,20 @@ namespace NRules.Rule
     {
         private readonly List<ConditionElement> _conditions;
 
-        internal PatternElement(Type valueType, IEnumerable<ConditionElement> conditions)
+        internal PatternElement(Declaration declaration, IEnumerable<ConditionElement> conditions)
         {
-            ValueType = valueType;
+            Declaration = declaration;
+            ValueType = declaration.Type;
             _conditions = new List<ConditionElement>(conditions);
         }
 
-        internal PatternElement(Type valueType, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
-            : this(valueType, conditions)
+        internal PatternElement(Declaration declaration, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
+            : this(declaration, conditions)
         {
             Source = source;
         }
 
+        public Declaration Declaration { get; private set; }
         public PatternSourceElement Source { get; private set; }
         public Type ValueType { get; private set; }
 

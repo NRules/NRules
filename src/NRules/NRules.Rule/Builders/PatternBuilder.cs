@@ -23,7 +23,7 @@ namespace NRules.Rule.Builders
 
         PatternElement IRuleElementBuilder<PatternElement>.Build()
         {
-            var patternElement = new PatternElement(_declaration.Type, _conditions);
+            var patternElement = new PatternElement(_declaration, _conditions);
             _declaration.Target = patternElement;
             return patternElement;
         }
