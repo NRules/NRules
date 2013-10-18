@@ -8,7 +8,7 @@ namespace NRules.Rule.Builders
         private Type _aggregateType;
         private PatternBuilder _sourceBuilder;
 
-        internal AggregateBuilder(Declaration declaration, SymbolTable parentScope) : base(parentScope)
+        internal AggregateBuilder(Declaration declaration, SymbolTable scope) : base(scope)
         {
             _resultType = declaration.Type;
         }

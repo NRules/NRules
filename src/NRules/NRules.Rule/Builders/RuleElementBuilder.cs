@@ -19,13 +19,10 @@ namespace NRules.Rule.Builders
     {
         internal SymbolTable Scope { get; private set; }
 
-        internal RuleElementBuilder(SymbolTable parentScope)
+        internal RuleElementBuilder(SymbolTable scope, bool startNewScope = false)
         {
-            Scope = new SymbolTable(parentScope);
-        }
-
-        protected RuleElementBuilder() : this(null)
-        {
+            var currentScope = scope ?? new SymbolTable();
+            Scope = (startNewScope) ? new SymbolTable(currentScope) : currentScope;
         }
 
         public Declaration Declare(string name, Type type)

@@ -8,7 +8,7 @@ namespace NRules.Rule.Builders
         private GroupType _groupType = Rule.GroupType.And;
         private readonly List<IRuleElementBuilder<RuleElement>> _nestedBuilders = new List<IRuleElementBuilder<RuleElement>>(); 
 
-        internal GroupBuilder(SymbolTable parentScope) : base(parentScope)
+        internal GroupBuilder(SymbolTable scope = null) : base(scope)
         {
         }
 

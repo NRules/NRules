@@ -9,7 +9,7 @@ namespace NRules.Rule.Builders
         private readonly Declaration _declaration;
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
 
-        internal PatternBuilder(Declaration declaration, SymbolTable parentScope) : base(parentScope)
+        internal PatternBuilder(Declaration declaration, SymbolTable scope) : base(scope, startNewScope: true)
         {
             _declaration = declaration;
         }

@@ -4,18 +4,12 @@ using System.Linq.Expressions;
 
 namespace NRules.Rule.Builders
 {
-    public class RuleBuilder : RuleElementBuilder
+    public class RuleBuilder
     {
         private string _name;
         private int _priority = RuleDefinition.DefaultPriority; 
-        private readonly SymbolTable _rootScope = new SymbolTable();
-        private readonly GroupBuilder _groupBuilder;
+        private readonly GroupBuilder _groupBuilder = new GroupBuilder();
         private readonly List<ActionElement> _actions = new List<ActionElement>();
-
-        public RuleBuilder()
-        {
-            _groupBuilder = new GroupBuilder(_rootScope);
-        }
 
         public void Name(string name)
         {
