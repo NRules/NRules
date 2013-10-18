@@ -5,12 +5,12 @@ using System.Linq.Expressions;
 
 namespace NRules.Core.Rete
 {
-    internal class Condition : ICondition, IEquatable<Condition>
+    internal abstract class Condition : IEquatable<Condition>
     {
         private readonly string _key;
         private readonly Delegate _compiledExpression;
 
-        public Condition(LambdaExpression expression)
+        protected Condition(LambdaExpression expression)
         {
             _key = expression.ToString();
             FactTypes = expression.Parameters.Select(p => p.Type).ToList();
@@ -19,7 +19,7 @@ namespace NRules.Core.Rete
 
         public IEnumerable<Type> FactTypes { get; private set; }
 
-        public bool IsSatisfiedBy(params object[] factObjects)
+        protected bool IsSatisfiedBy(params object[] factObjects)
         {
             return (bool)_compiledExpression.DynamicInvoke(factObjects);
         }

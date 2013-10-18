@@ -8,12 +8,12 @@ namespace NRules.Core.Rete
         public ReteBuilderContext()
         {
             BetaFactTypes = new List<Type>();
-            BetaConditions = new List<ICondition>();
+            BetaConditions = new List<BetaCondition>();
         }
 
         public List<Type> BetaFactTypes { get; private set; } 
-        public List<ICondition> BetaConditions { get; private set; } 
-        public IAlphaMemoryNode AlphaMemoryNode { get; set; }
-        public IBetaMemoryNode BetaMemoryNode { get; set; }
+        public List<BetaCondition> BetaConditions { get; private set; } 
+        public IAlphaMemoryNode AlphaSource { get; set; }
+        public IBetaMemoryNode BetaSource { get; set; }
     }
 }

@@ -1,22 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NRules.Rule;
 
 namespace NRules.Core.Rete
 {
     internal class SelectionNode : AlphaNode
     {
-        public IList<ICondition> Conditions { get; private set; }
+        public IList<AlphaCondition> Conditions { get; private set; }
 
-        public SelectionNode(ICondition condition)
+        public SelectionNode(AlphaCondition condition)
         {
-            Conditions = new List<ICondition>();
+            Conditions = new List<AlphaCondition>();
             Conditions.Add(condition);
         }
 
         public override bool IsSatisfiedBy(Fact fact)
         {
-            return Conditions.All(c => c.IsSatisfiedBy(fact.Object));
+            return Conditions.All(c => c.IsSatisfiedBy(fact));
         }
     }
 }
