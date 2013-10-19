@@ -109,8 +109,8 @@ namespace NRules.Core.Rete
 
         private IBetaMemoryNode BuildBetaNodeAssembly(ReteBuilderContext context, BetaNode betaNode)
         {
-            IBetaMemoryNode left = context.BetaSource;
-            IAlphaMemoryNode right = context.AlphaSource;
+            ITupleSource left = context.BetaSource;
+            IObjectSource right = context.AlphaSource;
         
             left.Attach(betaNode);
             right.Attach(betaNode);

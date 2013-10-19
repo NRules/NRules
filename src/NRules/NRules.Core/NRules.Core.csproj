@@ -57,6 +57,8 @@
     <Compile Include="Expressions\ExpressionUtils.cs" />
     <Compile Include="Expressions\ConditionRewriter.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
+    <Compile Include="Rete\IObjectSource.cs" />
+    <Compile Include="Rete\ITupleSource.cs" />
     <Compile Include="Rete\ObjectInputAdapter.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleCompiler.cs" />

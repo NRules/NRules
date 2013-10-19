@@ -8,7 +8,7 @@ namespace NRules.Core.Rete
     {
         private readonly Func<IAggregate> _aggregateFactory;
 
-        public AggregateNode(IBetaMemoryNode leftSource, IAlphaMemoryNode rightSource, Type aggregateType)
+        public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, Type aggregateType)
             : base(leftSource, rightSource)
         {
             _aggregateFactory = () => (IAggregate) Activator.CreateInstance(aggregateType);

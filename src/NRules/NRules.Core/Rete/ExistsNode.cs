@@ -2,7 +2,7 @@
 {
     internal class ExistsNode : BetaNode
     {
-        public ExistsNode(IBetaMemoryNode leftSource, IAlphaMemoryNode rightSource) : base(leftSource, rightSource)
+        public ExistsNode(ITupleSource leftSource, IObjectSource rightSource) : base(leftSource, rightSource)
         {
         }
 

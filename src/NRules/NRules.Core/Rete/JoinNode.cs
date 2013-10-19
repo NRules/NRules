@@ -4,7 +4,7 @@ namespace NRules.Core.Rete
 {
     internal class JoinNode : BetaNode
     {
-        public JoinNode(IBetaMemoryNode leftSource, IAlphaMemoryNode rightSource)
+        public JoinNode(ITupleSource leftSource, IObjectSource rightSource)
             : base(leftSource, rightSource)
         {
         }

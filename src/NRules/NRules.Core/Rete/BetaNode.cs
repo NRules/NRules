@@ -5,13 +5,13 @@ namespace NRules.Core.Rete
 {
     internal abstract class BetaNode : ITupleSink, IObjectSink
     {
-        private readonly IBetaMemoryNode _leftSource;
-        private readonly IAlphaMemoryNode _rightSource;
+        private readonly ITupleSource _leftSource;
+        private readonly IObjectSource _rightSource;
         public BetaMemoryNode MemoryNode { get; set; }
 
         public IList<BetaCondition> Conditions { get; private set; }
 
-        protected BetaNode(IBetaMemoryNode leftSource, IAlphaMemoryNode rightSource)
+        protected BetaNode(ITupleSource leftSource, IObjectSource rightSource)
         {
             _leftSource = leftSource;
             _rightSource = rightSource;
@@ -25,8 +25,7 @@ namespace NRules.Core.Rete
 
         public void PropagateAssert(IWorkingMemory workingMemory, Tuple leftTuple)
         {
-            IAlphaMemory memory = workingMemory.GetNodeMemory(_rightSource);
-            IEnumerable<Fact> rightFacts = memory.Facts;
+            IEnumerable<Fact> rightFacts = _rightSource.GetFacts(workingMemory);
             foreach (var rightFact in rightFacts)
             {
                 if (MatchesConditions(leftTuple, rightFact))
@@ -38,8 +37,7 @@ namespace NRules.Core.Rete
 
         public void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
         {
-            IAlphaMemory memory = workingMemory.GetNodeMemory(_rightSource);
-            IEnumerable<Fact> rightFacts = memory.Facts;
+            IEnumerable<Fact> rightFacts = _rightSource.GetFacts(workingMemory);
             foreach (var rightFact in rightFacts)
             {
                 if (MatchesConditions(tuple, rightFact))
@@ -55,8 +53,7 @@ namespace NRules.Core.Rete
 
         public void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
         {
-            IAlphaMemory memory = workingMemory.GetNodeMemory(_rightSource);
-            IEnumerable<Fact> rightFacts = memory.Facts;
+            IEnumerable<Fact> rightFacts = _rightSource.GetFacts(workingMemory);
             foreach (var rightFact in rightFacts)
             {
                 PropagateMatchedRetract(workingMemory, tuple, rightFact);
@@ -66,8 +63,7 @@ namespace NRules.Core.Rete
 
         public void PropagateAssert(IWorkingMemory workingMemory, Fact rightFact)
         {
-            IBetaMemory memory = workingMemory.GetNodeMemory(_leftSource);
-            IEnumerable<Tuple> leftTuples = memory.Tuples;
+            IEnumerable<Tuple> leftTuples = _leftSource.GetTuples(workingMemory);
             foreach (var leftTuple in leftTuples)
             {
                 if (MatchesConditions(leftTuple, rightFact))
@@ -79,8 +75,7 @@ namespace NRules.Core.Rete
 
         public void PropagateUpdate(IWorkingMemory workingMemory, Fact fact)
         {
-            IBetaMemory memory = workingMemory.GetNodeMemory(_leftSource);
-            IEnumerable<Tuple> leftTuples = memory.Tuples;
+            IEnumerable<Tuple> leftTuples = _leftSource.GetTuples(workingMemory);
             foreach (var leftTuple in leftTuples)
             {
                 if (MatchesConditions(leftTuple, fact))
@@ -96,8 +91,7 @@ namespace NRules.Core.Rete
 
         public void PropagateRetract(IWorkingMemory workingMemory, Fact fact)
         {
-            IBetaMemory memory = workingMemory.GetNodeMemory(_leftSource);
-            IEnumerable<Tuple> leftTuples = memory.Tuples;
+            IEnumerable<Tuple> leftTuples = _leftSource.GetTuples(workingMemory);
             foreach (var leftTuple in leftTuples)
             {
                 PropagateMatchedRetract(workingMemory, leftTuple, fact);

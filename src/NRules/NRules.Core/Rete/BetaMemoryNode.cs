@@ -1,9 +1,10 @@
-﻿namespace NRules.Core.Rete
+﻿using System.Collections.Generic;
+
+namespace NRules.Core.Rete
 {
-    internal interface IBetaMemoryNode
+    internal interface IBetaMemoryNode : ITupleSource
     {
         void InitializeMemory(IBetaMemory memory);
-        void Attach(ITupleSink sink);
     }
 
     internal class BetaMemoryNode : ITupleSink, IBetaMemoryNode
@@ -32,6 +33,12 @@
         public void InitializeMemory(IBetaMemory memory)
         {
             //Do nothing
+        }
+
+        public IEnumerable<Tuple> GetTuples(IWorkingMemory workingMemory)
+        {
+            IBetaMemory memory = workingMemory.GetNodeMemory(this);
+            return memory.Tuples;
         }
 
         public void Attach(ITupleSink sink)

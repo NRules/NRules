@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace NRules.Core.Rete
 {
-    internal interface IAlphaMemoryNode
+    internal interface IAlphaMemoryNode : IObjectSource
     {
-        void Attach(IObjectSink sink);
     }
 
     internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode

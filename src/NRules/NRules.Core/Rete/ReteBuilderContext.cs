@@ -14,7 +14,7 @@ namespace NRules.Core.Rete
 
         public List<Declaration> Declarations { get; private set; } 
         public List<ConditionElement> BetaConditions { get; private set; } 
-        public IAlphaMemoryNode AlphaSource { get; set; }
-        public IBetaMemoryNode BetaSource { get; set; }
+        public IObjectSource AlphaSource { get; set; }
+        public ITupleSource BetaSource { get; set; }
     }
 }
