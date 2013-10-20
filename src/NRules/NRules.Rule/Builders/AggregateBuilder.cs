@@ -2,7 +2,7 @@ using System;
 
 namespace NRules.Rule.Builders
 {
-    public class AggregateBuilder : RuleElementBuilder, IRuleElementBuilder<AggregateElement>
+    public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
     {
         private readonly Type _resultType;
         private Type _aggregateType;
@@ -11,7 +11,6 @@ namespace NRules.Rule.Builders
         internal AggregateBuilder(Type resultType, SymbolTable scope) : base(scope)
         {
             _resultType = resultType;
-            StartSymbolScope();
         }
 
         public void AggregateType(Type aggregateType)
@@ -32,20 +31,19 @@ namespace NRules.Rule.Builders
                 throw new InvalidOperationException("Aggregate can only have a single source pattern");
             }
 
-            var builder = new PatternBuilder(Scope);
-            _sourceBuilder = builder;
+            SymbolTable scope = Scope.New();
+            Declaration declaration = scope.Declare(null, type);
 
-            var declaration = builder.Declare(null, type);
-            builder.Declaration = declaration;
+            _sourceBuilder = new PatternBuilder(scope, declaration);
 
-            return builder;   
+            return _sourceBuilder;
         }
 
-        AggregateElement IRuleElementBuilder<AggregateElement>.Build()
+        AggregateElement IBuilder<AggregateElement>.Build()
         {
             Validate();
-            IRuleElementBuilder<PatternElement> sourceBuilder = _sourceBuilder;
-            var sourceElement = sourceBuilder.Build();
+            IBuilder<PatternElement> sourceBuilder = _sourceBuilder;
+            PatternElement sourceElement = sourceBuilder.Build();
             var aggregateElement = new AggregateElement(_resultType, _aggregateType, sourceElement);
             return aggregateElement;
         }
@@ -56,7 +54,7 @@ namespace NRules.Rule.Builders
             {
                 throw new InvalidOperationException("Aggregate type not specified");
             }
-            if (!typeof(IAggregate).IsAssignableFrom(_aggregateType))
+            if (!typeof (IAggregate).IsAssignableFrom(_aggregateType))
             {
                 throw new InvalidOperationException("Aggregate type must implement IAggregate interface");
             }

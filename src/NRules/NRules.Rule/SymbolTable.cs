@@ -10,9 +10,11 @@ namespace NRules.Rule
 
         public SymbolTable ParentScope { get; private set; }
 
-        public SymbolTable(SymbolTable parentScope = null)
+        internal SymbolTable New()
         {
-            ParentScope = parentScope;
+            var childScope = new SymbolTable();
+            childScope.ParentScope = this;
+            return childScope;
         }
 
         public IEnumerable<Declaration> LocalDeclarations
@@ -41,6 +43,9 @@ namespace NRules.Rule
             bool isLocal = (name == null);
             var declaration = new Declaration(declarationName, type, isLocal);
             Add(declaration);
+
+            if (!declaration.IsLocal && ParentScope != null) ParentScope.Add(declaration);
+
             return declaration;
         }
 
@@ -67,9 +72,10 @@ namespace NRules.Rule
             }
             if (ParentScope != null)
             {
-                return ParentScope.Lookup(name, type, includeLocal: true);
+                return ParentScope.Lookup(name, type, includeLocal: false);
             }
-            return null;
+
+            throw new ArgumentException(string.Format("Declaration not found. Name={0}, Type={1}", name, type));
         }
     }
 }

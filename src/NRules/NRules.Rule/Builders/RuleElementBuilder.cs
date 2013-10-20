@@ -1,44 +1,24 @@
-using System;
 using System.Collections.Generic;
 
 namespace NRules.Rule.Builders
 {
-    public interface INamingScope
+    internal interface IBuilder<out T>
     {
-        Declaration Declare(string name, Type type);
-        Declaration Declare(Type type);
-        IEnumerable<Declaration> Declarations { get; }
+        T Build();
     }
 
-    internal interface IRuleElementBuilder<out TElement> where TElement: RuleElement
-    {
-        TElement Build();
-    }
-
-    public abstract class RuleElementBuilder : INamingScope
+    public abstract class RuleElementBuilder
     {
         internal SymbolTable Scope { get; private set; }
 
         internal RuleElementBuilder(SymbolTable scope)
         {
-            Scope = scope ?? new SymbolTable();
+            Scope = scope;
         }
 
-        protected void StartSymbolScope()
+        public IEnumerable<Declaration> Declarations
         {
-            Scope = new SymbolTable(Scope);
+            get { return Scope.Declarations; }
         }
-
-        public Declaration Declare(string name, Type type)
-        {
-            return Scope.Declare(name, type);
-        }
-
-        public Declaration Declare(Type type)
-        {
-            return Declare(null, type);
-        }
-
-        public IEnumerable<Declaration> Declarations { get { return Scope.Declarations; } }
     }
 }

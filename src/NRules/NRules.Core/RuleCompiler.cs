@@ -18,8 +18,9 @@ namespace NRules.Core
 
         private ICompiledRule CompileRule(IRuleDefinition ruleDefinition)
         {
+            var rightHandSide = ruleDefinition.RightHandSide;
             var actions = new List<IRuleAction>();
-            foreach (var actionElement in ruleDefinition.RightHandSide)
+            foreach (var actionElement in rightHandSide.Actions)
             {
                 var ruleAction = new RuleAction(actionElement.Expression);
                 actions.Add(ruleAction);

@@ -1,15 +1,20 @@
 using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 
 namespace NRules.Rule.Builders
 {
     public class RuleBuilder
     {
         private string _name;
-        private int _priority = RuleDefinition.DefaultPriority; 
-        private readonly GroupBuilder _groupBuilder = new GroupBuilder();
-        private readonly List<ActionElement> _actions = new List<ActionElement>();
+        private int _priority = RuleDefinition.DefaultPriority;
+        private readonly GroupBuilder _groupBuilder;
+        private readonly ActionGroupBuilder _actionGroupBuilder;
+
+        public RuleBuilder()
+        {
+            var rootScope = new SymbolTable();
+            _groupBuilder = new GroupBuilder(rootScope, GroupType.And);
+            _actionGroupBuilder = new ActionGroupBuilder(rootScope);
+        }
 
         public void Name(string name)
         {
@@ -26,20 +31,22 @@ namespace NRules.Rule.Builders
             return _groupBuilder;
         }
 
-        public void Action(LambdaExpression action)
+        public ActionGroupBuilder RightHandSide()
         {
-            var actionElement = new ActionElement(action);
-            _actions.Add(actionElement);
+            return _actionGroupBuilder;
         }
 
         public IRuleDefinition Build()
         {
             Validate();
 
-            IRuleElementBuilder<GroupElement> groupBuilder = _groupBuilder;
-            var conditions = groupBuilder.Build();
+            IBuilder<GroupElement> groupBuilder = _groupBuilder;
+            GroupElement conditions = groupBuilder.Build();
 
-            var ruleDefinition = new RuleDefinition(_name, _priority, conditions, _actions);
+            IBuilder<ActionGroupElement> actionBuilder = _actionGroupBuilder;
+            ActionGroupElement actions = actionBuilder.Build();
+
+            var ruleDefinition = new RuleDefinition(_name, _priority, conditions, actions);
             return ruleDefinition;
         }
 

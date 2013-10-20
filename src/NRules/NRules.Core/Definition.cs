@@ -74,12 +74,11 @@ namespace NRules.Core
 
         public IRightHandSide Do(Expression<Action> action)
         {
-            var leftHandSide = _builder.LeftHandSide();
-            IEnumerable<Declaration> declarations = leftHandSide.Declarations.ToList();
+            var rightHandSide = _builder.RightHandSide();
 
-            var rewriter = new ActionRewriter(declarations);
+            var rewriter = new ActionRewriter(rightHandSide.Declarations);
             var rewrittenAction = rewriter.Rewrite(action);
-            _builder.Action(rewrittenAction);
+            rightHandSide.Action(rewrittenAction);
 
             return this;
         }

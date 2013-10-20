@@ -4,25 +4,25 @@ using System.Linq.Expressions;
 
 namespace NRules.Rule.Builders
 {
-    public class PatternBuilder : RuleElementBuilder, IRuleElementBuilder<PatternElement>
+    public class PatternBuilder : RuleElementBuilder, IBuilder<PatternElement>
     {
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
 
-        internal PatternBuilder(SymbolTable scope) : base(scope)
+        internal PatternBuilder(SymbolTable scope, Declaration declaration) : base(scope)
         {
-            StartSymbolScope();
+            Declaration = declaration;
         }
 
         public void Condition(LambdaExpression expression)
         {
-            var declarations = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
+            IEnumerable<Declaration> declarations = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
             var condition = new ConditionElement(declarations, expression);
             _conditions.Add(condition);
         }
 
-        public Declaration Declaration { get; internal set; }
+        public Declaration Declaration { get; private set; }
 
-        PatternElement IRuleElementBuilder<PatternElement>.Build()
+        PatternElement IBuilder<PatternElement>.Build()
         {
             var patternElement = new PatternElement(Declaration, _conditions);
             Declaration.Target = patternElement;

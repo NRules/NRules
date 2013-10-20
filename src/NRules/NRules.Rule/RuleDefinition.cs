@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace NRules.Rule
+﻿namespace NRules.Rule
 {
     public interface IRuleDefinition
     {
         string Name { get; }
         int Priority { get; }
         GroupElement LeftHandSide { get; }
-        IEnumerable<ActionElement> RightHandSide { get; }
+        ActionGroupElement RightHandSide { get; }
     }
 
     internal class RuleDefinition : IRuleDefinition
@@ -17,18 +15,18 @@ namespace NRules.Rule
             get { return 0; }
         }
 
-        public RuleDefinition(string name, int priority, GroupElement leftHandSide, IEnumerable<ActionElement> rightHandSide)
+        public RuleDefinition(string name, int priority, GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
             Name = name;
             Priority = priority;
             LeftHandSide = leftHandSide;
-            RightHandSide = new List<ActionElement>(rightHandSide);
+            RightHandSide = rightHandSide;
         }
 
         public string Name { get; private set; }
         public int Priority { get; private set; }
 
         public GroupElement LeftHandSide { get; private set; }
-        public IEnumerable<ActionElement> RightHandSide { get; private set; }
+        public ActionGroupElement RightHandSide { get; private set; }
     }
 }
