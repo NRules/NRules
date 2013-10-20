@@ -27,14 +27,12 @@ namespace NRules.Core
         {
             var patternSymbol = alias.ExtractSymbol();
             var leftHandSide = _builder.LeftHandSide();
-            IEnumerable<Declaration> declarations = leftHandSide.Declarations.ToList();
             
-            Declaration declaration = leftHandSide.Declare(patternSymbol.Name, patternSymbol.Type);
-            var patternBuilder = leftHandSide.Pattern(declaration);
+            var patternBuilder = leftHandSide.Pattern(patternSymbol.Type, patternSymbol.Name);
             foreach (var condition in conditions)
             {
-                var rewriter = new ConditionRewriter(declarations);
-                var rewrittenCondition = rewriter.Rewrite(declaration, condition);
+                var rewriter = new ConditionRewriter(leftHandSide.Declarations);
+                var rewrittenCondition = rewriter.Rewrite(patternBuilder.Declaration, condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
             return this;
@@ -44,18 +42,15 @@ namespace NRules.Core
         {
             var collectionSymbol = alias.ExtractSymbol();
             var leftHandSide = _builder.LeftHandSide();
-            IEnumerable<Declaration> declarations = leftHandSide.Declarations.ToList();
 
-            Declaration declaration = leftHandSide.Declare(collectionSymbol.Name, collectionSymbol.Type);
-            var aggregateBuilder = leftHandSide.Aggregate(declaration);
+            var aggregateBuilder = leftHandSide.Aggregate(collectionSymbol.Type, collectionSymbol.Name);
             aggregateBuilder.CollectionOf(typeof(T));
 
-            var patternDeclaration = aggregateBuilder.Declare(typeof (T));
-            var patternBuilder = aggregateBuilder.SourcePattern(patternDeclaration);
+            var patternBuilder = aggregateBuilder.SourcePattern(typeof(T));
             foreach (var condition in itemConditions)
             {
-                var rewriter = new ConditionRewriter(declarations);
-                var rewrittenCondition = rewriter.Rewrite(patternDeclaration, condition);
+                var rewriter = new ConditionRewriter(leftHandSide.Declarations);
+                var rewrittenCondition = rewriter.Rewrite(patternBuilder.Declaration, condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
             return this;
@@ -64,16 +59,14 @@ namespace NRules.Core
         public ILeftHandSide Exists<T>(params Expression<Func<T, bool>>[] conditions)
         {
             var leftHandSide = _builder.LeftHandSide();
-            IEnumerable<Declaration> declarations = leftHandSide.Declarations.ToList();
 
             var existsBuilder = leftHandSide.Group(GroupType.Exists);
 
-            var patternDeclaration = existsBuilder.Declare(typeof (T));
-            var patternBuilder = existsBuilder.Pattern(patternDeclaration);
+            var patternBuilder = existsBuilder.Pattern(typeof(T));
             foreach (var condition in conditions)
             {
-                var rewriter = new ConditionRewriter(declarations);
-                var rewrittenCondition = rewriter.Rewrite(patternDeclaration, condition);
+                var rewriter = new ConditionRewriter(leftHandSide.Declarations);
+                var rewrittenCondition = rewriter.Rewrite(patternBuilder.Declaration, condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
             return this;

@@ -8,9 +8,9 @@ namespace NRules.Rule.Builders
         private Type _aggregateType;
         private PatternBuilder _sourceBuilder;
 
-        internal AggregateBuilder(Declaration declaration, SymbolTable scope) : base(scope)
+        internal AggregateBuilder(Type resultType, SymbolTable scope) : base(scope)
         {
-            _resultType = declaration.Type;
+            _resultType = resultType;
             StartSymbolScope();
         }
 
@@ -25,15 +25,19 @@ namespace NRules.Rule.Builders
             AggregateType(aggregateType);
         }
 
-        public PatternBuilder SourcePattern(Declaration declaration)
+        public PatternBuilder SourcePattern(Type type)
         {
             if (_sourceBuilder != null)
             {
                 throw new InvalidOperationException("Aggregate can only have a single source pattern");
             }
 
-            var builder = new PatternBuilder(declaration, Scope);
+            var builder = new PatternBuilder(Scope);
             _sourceBuilder = builder;
+
+            var declaration = builder.Declare(null, type);
+            builder.Declaration = declaration;
+
             return builder;   
         }
 

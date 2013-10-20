@@ -23,25 +23,36 @@ namespace NRules.Rule.Builders
             _groupType = groupType;
         }
 
-        public AggregateBuilder Aggregate(Declaration declaration)
+        public AggregateBuilder Aggregate(Type type, string name = null)
         {
-            var builder = new AggregateBuilder(declaration, Scope);
+            var builder = new AggregateBuilder(type, Scope);
             _nestedBuilders.Add(builder);
+
+            var declaration = builder.Declare(name, type);
+            if (!declaration.IsLocal) Scope.Add(declaration);
+
             return builder;
         }
 
-        public PatternBuilder Pattern(Declaration declaration)
+        public PatternBuilder Pattern(Type type, string name = null)
         {
-            var builder = new PatternBuilder(declaration, Scope);
+            var builder = new PatternBuilder(Scope);
             _nestedBuilders.Add(builder);
+
+            var declaration = builder.Declare(name, type);
+            builder.Declaration = declaration;
+            if (!declaration.IsLocal) Scope.Add(declaration);
+
             return builder;
         }
 
         public GroupBuilder Group(GroupType groupType)
         {
             var builder = new GroupBuilder(Scope);
-            builder.GroupType(groupType);
             _nestedBuilders.Add(builder);
+
+            builder.GroupType(groupType);
+
             return builder;
         }
 

@@ -6,12 +6,10 @@ namespace NRules.Rule.Builders
 {
     public class PatternBuilder : RuleElementBuilder, IRuleElementBuilder<PatternElement>
     {
-        private readonly Declaration _declaration;
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
 
-        internal PatternBuilder(Declaration declaration, SymbolTable scope) : base(scope)
+        internal PatternBuilder(SymbolTable scope) : base(scope)
         {
-            _declaration = declaration;
             StartSymbolScope();
         }
 
@@ -22,10 +20,12 @@ namespace NRules.Rule.Builders
             _conditions.Add(condition);
         }
 
+        public Declaration Declaration { get; internal set; }
+
         PatternElement IRuleElementBuilder<PatternElement>.Build()
         {
-            var patternElement = new PatternElement(_declaration, _conditions);
-            _declaration.Target = patternElement;
+            var patternElement = new PatternElement(Declaration, _conditions);
+            Declaration.Target = patternElement;
             return patternElement;
         }
     }
