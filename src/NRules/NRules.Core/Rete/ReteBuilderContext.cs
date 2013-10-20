@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NRules.Rule;
 
 namespace NRules.Core.Rete
@@ -9,6 +8,13 @@ namespace NRules.Core.Rete
         public ReteBuilderContext()
         {
             Declarations = new List<Declaration>();
+            BetaConditions = new List<ConditionElement>();
+        }
+
+        public ReteBuilderContext(ReteBuilderContext context)
+        {
+            BetaSource = context.BetaSource;
+            Declarations = new List<Declaration>(context.Declarations);
             BetaConditions = new List<ConditionElement>();
         }
 

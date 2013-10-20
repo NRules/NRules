@@ -12,14 +12,16 @@ namespace NRules.Core.IntegrationTests
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType2() {TestProperty = "Valid Value"};
-            var fact3 = new FactType2() {TestProperty = "Invalid Value"};
-            var fact4 = new FactType2() {TestProperty = "Valid Value"};
+            var fact2 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact1};
+            var fact3 = new FactType2() {TestProperty = "Valid Value", JoinReference = null};
+            var fact4 = new FactType2() { TestProperty = "Invalid Value", JoinReference = fact1 };
+            var fact5 = new FactType2() { TestProperty = "Valid Value", JoinReference = fact1 };
 
             Session.Insert(fact1);
             Session.Insert(fact2);
             Session.Insert(fact3);
             Session.Insert(fact4);
+            Session.Insert(fact5);
 
             //Act
             Session.Fire();
@@ -28,7 +30,7 @@ namespace NRules.Core.IntegrationTests
             AssertFiredOnce();
             Assert.AreEqual(2, GetRuleInstance<TwoFactOneCollectionRule>().FactCount);
         }
-
+        
         [Test]
         public void TwoFactOneCollectionRule_FactOfOneKindIsInvalidAndTwoOfAnotherKindAreValid_DoesNotFire()
         {

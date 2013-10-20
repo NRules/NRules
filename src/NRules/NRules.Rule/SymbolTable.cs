@@ -67,7 +67,7 @@ namespace NRules.Rule
             }
             if (ParentScope != null)
             {
-                return ParentScope.Lookup(name, type, includeLocal: false);
+                return ParentScope.Lookup(name, type, includeLocal: true);
             }
             return null;
         }

@@ -10,6 +10,12 @@ namespace NRules.Rule.Builders
 
         internal GroupBuilder(SymbolTable scope = null) : base(scope)
         {
+            switch (_groupType)
+            {
+                case Rule.GroupType.Exists:
+                    StartSymbolScope();
+                    break;
+            }
         }
 
         public void GroupType(GroupType groupType)

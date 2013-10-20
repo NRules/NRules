@@ -11,26 +11,27 @@ namespace NRules.Core.Rete
         public ObjectInputAdapter(ITupleSource source)
         {
             _source = source;
+            source.Attach(this);
         }
 
         public void PropagateAssert(IWorkingMemory workingMemory, Tuple tuple)
         {
-            _sink.PropagateAssert(workingMemory, tuple.First());
+            _sink.PropagateAssert(workingMemory, tuple.RightFact);
         }
 
         public void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
         {
-            _sink.PropagateUpdate(workingMemory, tuple.First());
+            _sink.PropagateUpdate(workingMemory, tuple.RightFact);
         }
 
         public void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
         {
-            _sink.PropagateRetract(workingMemory, tuple.First());
+            _sink.PropagateRetract(workingMemory, tuple.RightFact);
         }
 
         public IEnumerable<Fact> GetFacts(IWorkingMemory workingMemory)
         {
-            return _source.GetTuples(workingMemory).Select(t => t.First());
+            return _source.GetTuples(workingMemory).Select(t => t.RightFact);
         }
 
         public void Attach(IObjectSink sink)

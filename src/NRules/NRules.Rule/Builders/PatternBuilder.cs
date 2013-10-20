@@ -9,9 +9,10 @@ namespace NRules.Rule.Builders
         private readonly Declaration _declaration;
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
 
-        internal PatternBuilder(Declaration declaration, SymbolTable scope) : base(scope, startNewScope: true)
+        internal PatternBuilder(Declaration declaration, SymbolTable scope) : base(scope)
         {
             _declaration = declaration;
+            StartSymbolScope();
         }
 
         public void Condition(LambdaExpression expression)

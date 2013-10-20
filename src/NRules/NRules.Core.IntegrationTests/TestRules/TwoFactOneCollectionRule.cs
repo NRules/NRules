@@ -16,7 +16,7 @@ namespace NRules.Core.IntegrationTests.TestRules
 
             definition.When()
                 .If<FactType1>(() => fact1, f => f.TestProperty == "Valid Value")
-                .Collect<FactType2>(() => collection2, f => f.TestProperty.StartsWith("Valid"));
+                .Collect<FactType2>(() => collection2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinReference == fact1);
             definition.Then()
                 .Do(() => Notifier.RuleActivated())
                 .Do(() => SetCount(collection2.Count()));

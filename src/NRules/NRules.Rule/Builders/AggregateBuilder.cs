@@ -11,6 +11,7 @@ namespace NRules.Rule.Builders
         internal AggregateBuilder(Declaration declaration, SymbolTable scope) : base(scope)
         {
             _resultType = declaration.Type;
+            StartSymbolScope();
         }
 
         public void AggregateType(Type aggregateType)

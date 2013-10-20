@@ -49,6 +49,7 @@ namespace NRules.Core.Rete
                 {
                     var betaNode = new JoinNode(context.BetaSource, context.AlphaSource);
                     context.BetaSource = BuildBetaNodeAssembly(context, betaNode);
+                    context.AlphaSource = null;
                 }
             }
         }
@@ -84,18 +85,33 @@ namespace NRules.Core.Rete
                 }
 
                 var alphaCondition = new AlphaCondition(conditionElement.Expression);
-                SelectionNode selectionNode = BuildSlectionNode(alphaCondition, currentNode);
+                SelectionNode selectionNode = BuildSelectionNode(alphaCondition, currentNode);
                 currentNode = selectionNode;
             }
 
             context.Declarations.Add(element.Declaration);
-            var memoryNode = BuildAlphaMemoryNode(element.ValueType, currentNode);
-            context.AlphaSource = memoryNode;
+            context.AlphaSource = BuildAlphaMemoryNode(element.ValueType, currentNode);
+
+            if (context.BetaConditions.Count > 0)
+            {
+                var betaNode = new JoinNode(context.BetaSource, context.AlphaSource);
+                context.BetaSource = BuildBetaNodeAssembly(context, betaNode);
+                context.AlphaSource = null;
+            }
         }
 
         private void BuildAggregateNode(ReteBuilderContext context, AggregateElement element)
         {
-            BuildNode(context, element.Source);
+            //BuildNode(context, element.Source);
+            var subnetContext = new ReteBuilderContext(context);
+            BuildNode(subnetContext, element.Source);
+
+            if (subnetContext.AlphaSource == null)
+            {
+                var adapter = new ObjectInputAdapter(subnetContext.BetaSource);
+                subnetContext.AlphaSource = adapter;
+            }
+            context.AlphaSource = subnetContext.AlphaSource;
             var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
             context.BetaSource = BuildBetaNodeAssembly(context, betaNode);
             context.AlphaSource = null;
@@ -151,7 +167,7 @@ namespace NRules.Core.Rete
             return typeNode;
         }
 
-        private SelectionNode BuildSlectionNode(AlphaCondition condition, AlphaNode parent)
+        private SelectionNode BuildSelectionNode(AlphaCondition condition, AlphaNode parent)
         {
             SelectionNode selectionNode = parent.ChildNodes
                 .OfType<SelectionNode>().FirstOrDefault(sn => sn.Conditions.First().Equals(condition));
