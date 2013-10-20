@@ -66,7 +66,7 @@ namespace NRules.Core.Rete
 
         private void BuildExistsGroupNode(ReteBuilderContext context, GroupElement element)
         {
-            BuildNode(context, element.ChildElements.Single());
+            BuildSubNode(context, element.ChildElements.Single());
             var betaNode = new ExistsNode(context.BetaSource, context.AlphaSource);
             context.BetaSource = BuildBetaNodeAssembly(context, betaNode);
             context.AlphaSource = null;
@@ -102,16 +102,7 @@ namespace NRules.Core.Rete
 
         private void BuildAggregateNode(ReteBuilderContext context, AggregateElement element)
         {
-            //BuildNode(context, element.Source);
-            var subnetContext = new ReteBuilderContext(context);
-            BuildNode(subnetContext, element.Source);
-
-            if (subnetContext.AlphaSource == null)
-            {
-                var adapter = new ObjectInputAdapter(subnetContext.BetaSource);
-                subnetContext.AlphaSource = adapter;
-            }
-            context.AlphaSource = subnetContext.AlphaSource;
+            BuildSubNode(context, element.Source);
             var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
             context.BetaSource = BuildBetaNodeAssembly(context, betaNode);
             context.AlphaSource = null;
@@ -121,6 +112,19 @@ namespace NRules.Core.Rete
         {
             var ruleNode = new RuleNode(rule.Handle, rule.Definition.Priority);
             context.BetaSource.Attach(ruleNode);
+        }
+
+        private void BuildSubNode(ReteBuilderContext context, RuleElement element)
+        {
+            var subnetContext = new ReteBuilderContext(context);
+            BuildNode(subnetContext, element);
+
+            if (subnetContext.AlphaSource == null)
+            {
+                var adapter = new ObjectInputAdapter(subnetContext.BetaSource);
+                subnetContext.AlphaSource = adapter;
+            }
+            context.AlphaSource = subnetContext.AlphaSource;
         }
 
         private IBetaMemoryNode BuildBetaNodeAssembly(ReteBuilderContext context, BetaNode betaNode)

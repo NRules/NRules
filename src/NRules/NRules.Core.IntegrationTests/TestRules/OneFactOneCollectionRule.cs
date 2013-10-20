@@ -12,7 +12,7 @@ namespace NRules.Core.IntegrationTests.TestRules
         public override void Define(IDefinition definition)
         {
             IEnumerable<FactType1> collection1 = null;
-            
+
             definition.When()
                 .Collect<FactType1>(() => collection1, f => f.TestProperty.StartsWith("Valid"));
             definition.Then()

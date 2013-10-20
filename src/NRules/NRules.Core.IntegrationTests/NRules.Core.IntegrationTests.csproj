@@ -55,8 +55,6 @@
     <Compile Include="TestRules\TwoFactOneExistsCheckRule.cs" />
     <Compile Include="TestRules\PriorityHighRule.cs" />
     <Compile Include="TestRules\PriorityLowRule.cs" />
-    <Compile Include="TwoFactTwoCollectionRuleTest.cs" />
-    <Compile Include="TestRules\TwoFactTwoCollectionRule.cs" />
     <Compile Include="TwoFactOneCollectionRuleTest.cs" />
     <Compile Include="NodeSharingTest.cs" />
     <Compile Include="ForwardChainingTest.cs" />

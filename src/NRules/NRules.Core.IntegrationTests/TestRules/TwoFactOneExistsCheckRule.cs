@@ -7,11 +7,11 @@ namespace NRules.Core.IntegrationTests.TestRules
     {
         public override void Define(IDefinition definition)
         {
-            FactType2 fact2 = null;
+            FactType1 fact1 = null;
 
             definition.When()
-                .Exists<FactType1>(f => f.TestProperty.StartsWith("Valid"))
-                .If<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
+                .If<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                .Exists<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinReference == fact1);
             definition.Then()
                 .Do(() => Notifier.RuleActivated());
         }

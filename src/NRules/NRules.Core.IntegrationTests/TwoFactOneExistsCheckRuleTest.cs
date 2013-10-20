@@ -12,7 +12,7 @@ namespace NRules.Core.IntegrationTests
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType2() {TestProperty = "Valid Value"};
+            var fact2 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact1};
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -25,12 +25,12 @@ namespace NRules.Core.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneExistsCheckRule_TwoFactsExistMatchingFactTwo_FiresOnce()
+        public void OneFactOneExistsCheckRule_MatchingFactsMultipleOfTypeTwo_FiresOnce()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType1() {TestProperty = "Valid Value"};
-            var fact3 = new FactType2() {TestProperty = "Valid Value"};
+            var fact2 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact1};
+            var fact3 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact1};
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -44,18 +44,20 @@ namespace NRules.Core.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneExistsCheckRule_TwoFactsOfEachKind_FiresTwice()
+        public void OneFactOneExistsCheckRule_MatchingFactsTwoOfTypeOneMultipleOfTypeTwo_FiresTwice()
         {
             //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType1() {TestProperty = "Valid Value"};
-            var fact3 = new FactType2() {TestProperty = "Valid Value"};
-            var fact4 = new FactType2() {TestProperty = "Valid Value"};
+            var fact1 = new FactType1() {TestProperty = "Valid Value One"};
+            var fact2 = new FactType1() {TestProperty = "Valid Value Two"};
+            var fact3 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact1};
+            var fact4 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact2};
+            var fact5 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact2};
 
             Session.Insert(fact1);
             Session.Insert(fact2);
             Session.Insert(fact3);
             Session.Insert(fact4);
+            Session.Insert(fact5);
 
             //Act
             Session.Fire();
@@ -65,15 +67,15 @@ namespace NRules.Core.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneExistsCheckRule_FactOneAssertedAndRetractedFactTwoValid_DoesNotFire()
+        public void OneFactOneExistsCheckRule_FactOneValidFactTwoAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType2() {TestProperty = "Valid Value"};
+            var fact2 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact1};
 
             Session.Insert(fact1);
             Session.Insert(fact2);
-            Session.Retract(fact1);
+            Session.Retract(fact2);
 
             //Act
             Session.Fire();
@@ -83,7 +85,7 @@ namespace NRules.Core.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneExistsCheckRule_FactOneAssertedAndUpdatedToInvalidFactTwoValid_DoesNotFire()
+        public void OneFactOneExistsCheckRule_FactOneValidFactTwoAssertedAndUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -92,8 +94,8 @@ namespace NRules.Core.IntegrationTests
             Session.Insert(fact1);
             Session.Insert(fact2);
 
-            fact1.TestProperty = "Invalid Value";
-            Session.Update(fact1);
+            fact2.TestProperty = "Invalid Value";
+            Session.Update(fact2);
 
             //Act
             Session.Fire();
@@ -103,12 +105,12 @@ namespace NRules.Core.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneExistsCheckRule_OneFactDoesNotExist_DoesNotFire()
+        public void OneFactOneExistsCheckRule_FactTwoDoesNotExist_DoesNotFire()
         {
             //Arrange
-            var fact2 = new FactType2() {TestProperty = "Valid Value"};
+            var fact1 = new FactType1() {TestProperty = "Valid Value"};
 
-            Session.Insert(fact2);
+            Session.Insert(fact1);
 
             //Act
             Session.Fire();
