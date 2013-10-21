@@ -50,6 +50,9 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="TwoFactSameTypeRuleTest.cs" />
+    <Compile Include="TestAssets\FactType3.cs" />
+    <Compile Include="TestRules\TwoFactSameTypeRule.cs" />
     <Compile Include="TwoFactOneExistsCheckRuleTest.cs" />
     <Compile Include="PriorityTest.cs" />
     <Compile Include="TestRules\TwoFactOneExistsCheckRule.cs" />
