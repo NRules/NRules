@@ -16,6 +16,9 @@ namespace NRules.Core.Rete
             _leftSource = leftSource;
             _rightSource = rightSource;
 
+            _leftSource.Attach(this);
+            _rightSource.Attach(this);
+
             Conditions = new List<BetaCondition>();
         }
 

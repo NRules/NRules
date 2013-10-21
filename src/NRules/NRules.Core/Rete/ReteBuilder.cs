@@ -90,7 +90,7 @@ namespace NRules.Core.Rete
             }
 
             context.Declarations.Add(element.Declaration);
-            context.AlphaSource = BuildAlphaMemoryNode(element.ValueType, currentNode);
+            context.AlphaSource = BuildAlphaMemoryNode(currentNode);
 
             if (context.BetaConditions.Count > 0)
             {
@@ -129,12 +129,6 @@ namespace NRules.Core.Rete
 
         private IBetaMemoryNode BuildBetaNodeAssembly(ReteBuilderContext context, BetaNode betaNode)
         {
-            ITupleSource left = context.BetaSource;
-            IObjectSource right = context.AlphaSource;
-        
-            left.Attach(betaNode);
-            right.Attach(betaNode);
-
             List<ConditionElement> matchingConditions =
                 context.BetaConditions.Where(
                     bc => bc.Declarations.All(context.Declarations.Contains)).ToList();
@@ -184,13 +178,13 @@ namespace NRules.Core.Rete
             return selectionNode;
         }
 
-        private AlphaMemoryNode BuildAlphaMemoryNode(Type declarationType, AlphaNode parent)
+        private AlphaMemoryNode BuildAlphaMemoryNode(AlphaNode parent)
         {
             AlphaMemoryNode memoryNode = parent.MemoryNode;
 
             if (memoryNode == null)
             {
-                memoryNode = new AlphaMemoryNode(declarationType);
+                memoryNode = new AlphaMemoryNode();
                 parent.MemoryNode = memoryNode;
             }
 

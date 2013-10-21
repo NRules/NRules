@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace NRules.Core.Rete
 {
@@ -10,13 +9,6 @@ namespace NRules.Core.Rete
     internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
     {
         private readonly List<IObjectSink> _sinks = new List<IObjectSink>();
-
-        public Type FactType { get; private set; }
-
-        public AlphaMemoryNode(Type factType)
-        {
-            FactType = factType;
-        }
 
         public void PropagateAssert(IWorkingMemory workingMemory, Fact fact)
         {

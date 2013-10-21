@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace NRules.Rule.Builders
@@ -11,9 +12,10 @@ namespace NRules.Rule.Builders
         {
         }
 
-        public void Action(LambdaExpression action)
+        public void Action(LambdaExpression expression)
         {
-            var actionElement = new ActionElement(action);
+            IEnumerable<Declaration> declarations = expression.Parameters.Skip(1).Select(p => Scope.Lookup(p.Name, p.Type));
+            var actionElement = new ActionElement(declarations, expression);
             _actions.Add(actionElement);
         }
 
