@@ -45,7 +45,7 @@ namespace NRules.Core
         {
             try
             {
-                var arg = _tuple.Where(f => f.FactType == objectType).Select(f => f.Object).First();
+                var arg = _tuple.Where(f => objectType.IsAssignableFrom(f.FactType)).Select(f => f.Object).First();
                 return arg;
             }
             catch (Exception e)

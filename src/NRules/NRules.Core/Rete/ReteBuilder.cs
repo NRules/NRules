@@ -47,9 +47,8 @@ namespace NRules.Core.Rete
                 BuildNode(context, childElement);
                 if (context.AlphaSource != null)
                 {
-                    var betaNode = new JoinNode(context.BetaSource, context.AlphaSource);
-                    context.BetaSource = BuildBetaNodeAssembly(context, betaNode);
-                    context.AlphaSource = null;
+                    var betaNode = BuildJoinNode(context);
+                    context.BetaSource = BuildBetaMemoryNode(context, betaNode);
                 }
             }
         }
@@ -68,7 +67,7 @@ namespace NRules.Core.Rete
         {
             BuildSubNode(context, element.ChildElements.Single());
             var betaNode = new ExistsNode(context.BetaSource, context.AlphaSource);
-            context.BetaSource = BuildBetaNodeAssembly(context, betaNode);
+            context.BetaSource = BuildBetaMemoryNode(context, betaNode);
             context.AlphaSource = null;
         }
 
@@ -76,11 +75,12 @@ namespace NRules.Core.Rete
         {
             AlphaNode currentNode = BuildTypeNode(element.ValueType, _root);
 
+            var betaConditions = new List<ConditionElement>();
             foreach (var conditionElement in element.Conditions)
             {
                 if (conditionElement.Declarations.Count() > 1)
                 {
-                    context.BetaConditions.Add(conditionElement);
+                    betaConditions.Add(conditionElement);
                     continue;
                 }
 
@@ -92,11 +92,10 @@ namespace NRules.Core.Rete
             context.Declarations.Add(element.Declaration);
             context.AlphaSource = BuildAlphaMemoryNode(currentNode);
 
-            if (context.BetaConditions.Count > 0)
+            if (betaConditions.Count > 0)
             {
-                var betaNode = new JoinNode(context.BetaSource, context.AlphaSource);
-                context.BetaSource = BuildBetaNodeAssembly(context, betaNode);
-                context.AlphaSource = null;
+                var joinNode = BuildJoinNode(context, betaConditions);
+                context.BetaSource = BuildBetaMemoryNode(context, joinNode);
             }
         }
 
@@ -104,7 +103,7 @@ namespace NRules.Core.Rete
         {
             BuildSubNode(context, element.Source);
             var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
-            context.BetaSource = BuildBetaNodeAssembly(context, betaNode);
+            context.BetaSource = BuildBetaMemoryNode(context, betaNode);
             context.AlphaSource = null;
         }
 
@@ -127,26 +126,35 @@ namespace NRules.Core.Rete
             context.AlphaSource = subnetContext.AlphaSource;
         }
 
-        private IBetaMemoryNode BuildBetaNodeAssembly(ReteBuilderContext context, BetaNode betaNode)
+        private JoinNode BuildJoinNode(ReteBuilderContext context, IEnumerable<ConditionElement> conditions = null)
         {
-            List<ConditionElement> matchingConditions =
-                context.BetaConditions.Where(
-                    bc => bc.Declarations.All(context.Declarations.Contains)).ToList();
+            var betaNode = new JoinNode(context.BetaSource, context.AlphaSource);
+            context.AlphaSource = null;
 
-            foreach (var condition in matchingConditions)
+            if (conditions != null)
             {
-                context.BetaConditions.Remove(condition);
-                var selectionTable = new List<int>();
-                foreach (var declaration in condition.Declarations)
+                foreach (var condition in conditions)
                 {
-                    int selectionIndex = context.Declarations.FindIndex(0, d => Equals(declaration, d));
-                    selectionTable.Add(selectionIndex);
+                    var mask = BuildTupleMask(context, condition.Declarations);
+                    var betaCondition = new BetaCondition(condition.Expression, mask.ToArray());
+                    betaNode.Conditions.Add(betaCondition);
                 }
-
-                var betaCondition = new BetaCondition(condition.Expression, selectionTable.ToArray());
-                betaNode.Conditions.Add(betaCondition);
             }
+            
+            return betaNode;
+        }
 
+        private static IEnumerable<int> BuildTupleMask(ReteBuilderContext context, IEnumerable<Declaration> declarations)
+        {
+            foreach (var declaration in declarations)
+            {
+                int selectionIndex = context.Declarations.FindIndex(0, d => Equals(declaration, d));
+                yield return selectionIndex;
+            }
+        }
+
+        private IBetaMemoryNode BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
+        {
             var memoryNode = new BetaMemoryNode();
             betaNode.MemoryNode = memoryNode;
             return memoryNode;
@@ -178,7 +186,7 @@ namespace NRules.Core.Rete
             return selectionNode;
         }
 
-        private AlphaMemoryNode BuildAlphaMemoryNode(AlphaNode parent)
+        private IAlphaMemoryNode BuildAlphaMemoryNode(AlphaNode parent)
         {
             AlphaMemoryNode memoryNode = parent.MemoryNode;
 

@@ -6,22 +6,22 @@ namespace NRules.Core.Rete
 {
     internal class BetaCondition : Condition
     {
-        private readonly int[] _factSelectionTable;
+        private readonly int[] _tupleMask;
 
-        public BetaCondition(LambdaExpression expression, int[] factSelectionTable)
+        public BetaCondition(LambdaExpression expression, int[] tupleMask)
             : base(expression)
         {
-            _factSelectionTable = factSelectionTable;
+            _tupleMask = tupleMask;
         }
 
         public bool IsSatisfiedBy(Tuple leftTuple, Fact rightFact)
         {
             //todo: optimize
             IEnumerable<Fact> facts =
-                _factSelectionTable.Select(
+                _tupleMask.Select(
                     idx => leftTuple.ElementAtOrDefault(idx) ?? rightFact);
 
-            var factObjects = facts.Select(f => f.Object).ToArray();
+            object[] factObjects = facts.Select(f => f.Object).ToArray();
             return IsSatisfiedBy(factObjects);
         }
     }

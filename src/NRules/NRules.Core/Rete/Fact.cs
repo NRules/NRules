@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.Core.Rete
 {
@@ -9,25 +8,8 @@ namespace NRules.Core.Rete
         public Fact(object @object)
         {
             Object = @object;
-            FactType = GetFactType(@object);
+            FactType = @object.GetType();
             ChildTuples = new List<Tuple>();
-        }
-
-        private Type GetFactType(object @object)
-        {
-            Type result = @object.GetType();
-
-            Type genericCollectionType = result.GetInterfaces()
-                .FirstOrDefault(x =>
-                                x.IsGenericType &&
-                                x.GetGenericTypeDefinition() ==
-                                typeof (IEnumerable<>));
-            if (genericCollectionType != null)
-            {
-                result = typeof (IEnumerable<>).MakeGenericType(genericCollectionType.GetGenericArguments());
-            }
-
-            return result;
         }
 
         public Type FactType { get; private set; }
@@ -38,7 +20,7 @@ namespace NRules.Core.Rete
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.FactType, FactType) && Equals(other.Object, Object);
+            return Equals(other.Object, Object);
         }
 
         public override bool Equals(object obj)
