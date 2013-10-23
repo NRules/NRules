@@ -16,9 +16,9 @@ namespace NRules.Rule.Builders
         public AggregateBuilder Aggregate(Type type, string name = null)
         {
             SymbolTable scope = Scope.New();
-            scope.Declare(name, type);
+            var declaration = scope.Declare(name, type);
 
-            var builder = new AggregateBuilder(type, scope);
+            var builder = new AggregateBuilder(declaration, scope);
             _nestedBuilders.Add(builder);
 
             return builder;

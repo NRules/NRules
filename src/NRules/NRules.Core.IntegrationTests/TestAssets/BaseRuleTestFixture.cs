@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using NRules.Config;
-using NRules.Core.Rete;
 using NRules.Dsl;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -15,7 +14,6 @@ namespace NRules.Core.IntegrationTests.TestAssets
 
         private IContainer _container;
         private RuleRepository _repository;
-        private IReteBuilder _builder;
         private Dictionary<Type, INotifier> _notifiers;
         private List<BaseRule> _rules;
         private IRuleCompiler _compiler;
@@ -25,7 +23,6 @@ namespace NRules.Core.IntegrationTests.TestAssets
         {
             _container = MockRepository.GenerateStub<IContainer>();
             _container.Stub(x => x.CreateChildContainer()).Return(_container);
-            _builder = new ReteBuilder();
             _compiler = new RuleCompiler();
             _repository = new RuleRepository();
             _repository.Container = _container;
@@ -37,7 +34,7 @@ namespace NRules.Core.IntegrationTests.TestAssets
 
             _repository.AddRuleSet(_rules.Select(r => r.GetType()).ToArray());
 
-            var factory = new SessionFactory(_repository, _compiler, _builder);
+            ISessionFactory factory = _compiler.Compile(_repository.Rules);
             Session = factory.CreateSession();
         }
 

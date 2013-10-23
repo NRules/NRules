@@ -52,7 +52,7 @@ namespace NRules.Core
 
                 foreach (IRuleAction action in rule.Actions)
                 {
-                    action.Invoke(context);
+                    action.Invoke(context, activation.Tuple);
                 }
             }
         }

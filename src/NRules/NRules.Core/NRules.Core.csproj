@@ -60,6 +60,7 @@
     <Compile Include="Rete\IObjectSource.cs" />
     <Compile Include="Rete\ITupleSource.cs" />
     <Compile Include="Rete\ObjectInputAdapter.cs" />
+    <Compile Include="Rete\TerminalNode.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleCompiler.cs" />
     <Compile Include="Rete\AlphaMemory.cs" />

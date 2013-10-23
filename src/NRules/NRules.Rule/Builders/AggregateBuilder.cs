@@ -4,13 +4,13 @@ namespace NRules.Rule.Builders
 {
     public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
     {
-        private readonly Type _resultType;
+        private readonly Declaration _declaration;
         private Type _aggregateType;
         private PatternBuilder _sourceBuilder;
 
-        internal AggregateBuilder(Type resultType, SymbolTable scope) : base(scope)
+        internal AggregateBuilder(Declaration declaration, SymbolTable scope) : base(scope)
         {
-            _resultType = resultType;
+            _declaration = declaration;
         }
 
         public void AggregateType(Type aggregateType)
@@ -44,7 +44,7 @@ namespace NRules.Rule.Builders
             Validate();
             IBuilder<PatternElement> sourceBuilder = _sourceBuilder;
             PatternElement sourceElement = sourceBuilder.Build();
-            var aggregateElement = new AggregateElement(_resultType, _aggregateType, sourceElement);
+            var aggregateElement = new AggregateElement(_declaration, _aggregateType, sourceElement);
             return aggregateElement;
         }
 

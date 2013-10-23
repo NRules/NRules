@@ -19,5 +19,14 @@ namespace NRules.Core.Rete
         public List<Declaration> Declarations { get; private set; } 
         public IObjectSource AlphaSource { get; set; }
         public ITupleSource BetaSource { get; set; }
+
+        public IEnumerable<int> GetTupleMask(IEnumerable<Declaration> declarations)
+        {
+            foreach (var declaration in declarations)
+            {
+                int selectionIndex = Declarations.FindIndex(0, d => Equals(declaration, d));
+                yield return selectionIndex;
+            }
+        }
     }
 }

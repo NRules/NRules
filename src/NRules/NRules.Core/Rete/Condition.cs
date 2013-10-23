@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace NRules.Core.Rete
@@ -13,11 +11,8 @@ namespace NRules.Core.Rete
         protected Condition(LambdaExpression expression)
         {
             _key = expression.ToString();
-            FactTypes = expression.Parameters.Select(p => p.Type).ToList();
             _compiledExpression = expression.Compile();
         }
-
-        public IEnumerable<Type> FactTypes { get; private set; }
 
         protected bool IsSatisfiedBy(params object[] factObjects)
         {

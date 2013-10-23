@@ -20,23 +20,20 @@ namespace NRules.Core.Rete
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.Object, Object);
+            return Object.Equals(other.Object);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (Fact)) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Fact) obj);
         }
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return (FactType.GetHashCode()*397) ^ Object.GetHashCode();
-            }
+            return Object.GetHashCode();
         }
     }
 }

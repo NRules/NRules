@@ -1,30 +1,35 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NRules.Core.Rete;
+using Tuple = NRules.Core.Rete.Tuple;
 
 namespace NRules.Core
 {
     internal interface IRuleAction
     {
-        void Invoke(IActionContext context);
+        void Invoke(IActionContext context, Tuple tuple);
     }
 
     internal class RuleAction : IRuleAction
     {
-        private readonly LambdaExpression _expression;
-        private readonly Type[] _argumentTypes;
+        private readonly int[] _tupleMask;
         private readonly Delegate _compiledAction;
 
-        public RuleAction(LambdaExpression expression)
+        public RuleAction(LambdaExpression expression, int[] tupleMask)
         {
-            _expression = expression;
-            _argumentTypes = _expression.Parameters.Skip(1).Select(p => p.Type).ToArray();
+            _tupleMask = tupleMask;
             _compiledAction = expression.Compile();
         }
 
-        public void Invoke(IActionContext context)
+        public void Invoke(IActionContext context, Tuple tuple)
         {
-            var args = Enumerable.Repeat(context, 1).Union(_argumentTypes.Select(context.Get)).ToArray();
+            //todo: optimize
+            IEnumerable<Fact> facts =
+                _tupleMask.Select(
+                    idx => tuple.ElementAtOrDefault(idx));
+            object[] args = Enumerable.Repeat(context, 1).Union(facts.Select(f => f.Object)).ToArray();
             _compiledAction.DynamicInvoke(args);
         }
     }

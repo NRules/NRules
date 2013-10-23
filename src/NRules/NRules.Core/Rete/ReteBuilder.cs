@@ -7,7 +7,7 @@ namespace NRules.Core.Rete
 {
     internal interface IReteBuilder
     {
-        void AddRule(ICompiledRule rule);
+        ITerminalNode AddRule(ReteBuilderContext context, IRuleDefinition rule);
         INetwork GetNetwork();
     }
 
@@ -15,11 +15,11 @@ namespace NRules.Core.Rete
     {
         private readonly RootNode _root = new RootNode();
 
-        public void AddRule(ICompiledRule rule)
+        public ITerminalNode AddRule(ReteBuilderContext context, IRuleDefinition rule)
         {
-            var context = new ReteBuilderContext();
-            BuildNode(context, rule.Definition.LeftHandSide);
-            BuildRuleNode(context, rule);
+            BuildNode(context, rule.LeftHandSide);
+            var terminalNode = new TerminalNode(context.BetaSource);
+            return terminalNode;
         }
 
         private void BuildNode(ReteBuilderContext context, RuleElement element)
@@ -103,14 +103,9 @@ namespace NRules.Core.Rete
         {
             BuildSubNode(context, element.Source);
             var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
+            context.Declarations.Add(element.Declaration);
             context.BetaSource = BuildBetaMemoryNode(context, betaNode);
             context.AlphaSource = null;
-        }
-
-        private static void BuildRuleNode(ReteBuilderContext context, ICompiledRule rule)
-        {
-            var ruleNode = new RuleNode(rule.Handle, rule.Definition.Priority);
-            context.BetaSource.Attach(ruleNode);
         }
 
         private void BuildSubNode(ReteBuilderContext context, RuleElement element)
@@ -135,22 +130,13 @@ namespace NRules.Core.Rete
             {
                 foreach (var condition in conditions)
                 {
-                    var mask = BuildTupleMask(context, condition.Declarations);
+                    var mask = context.GetTupleMask(condition.Declarations);
                     var betaCondition = new BetaCondition(condition.Expression, mask.ToArray());
                     betaNode.Conditions.Add(betaCondition);
                 }
             }
             
             return betaNode;
-        }
-
-        private static IEnumerable<int> BuildTupleMask(ReteBuilderContext context, IEnumerable<Declaration> declarations)
-        {
-            foreach (var declaration in declarations)
-            {
-                int selectionIndex = context.Declarations.FindIndex(0, d => Equals(declaration, d));
-                yield return selectionIndex;
-            }
         }
 
         private IBetaMemoryNode BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)

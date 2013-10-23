@@ -1,6 +1,12 @@
 ﻿namespace NRules.Core.Rete
 {
-    internal class RuleNode : ITupleSink
+    internal interface IRuleNode
+    {
+        void Activate(IWorkingMemory workingMemory, Tuple tuple);
+        void Deactivate(IWorkingMemory workingMemory, Tuple tuple);
+    }
+
+    internal class RuleNode : IRuleNode
     {
         private readonly string _ruleHandle;
         private readonly int _rulePriority;
@@ -11,22 +17,16 @@
             _rulePriority = rulePriority;
         }
 
-        public void PropagateAssert(IWorkingMemory workingMemory, Tuple tuple)
+        public void Activate(IWorkingMemory workingMemory, Tuple tuple)
         {
             var activation = new Activation(_ruleHandle, _rulePriority, tuple);
             workingMemory.EventAggregator.Activate(activation);
         }
 
-        public void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
-        {
-            //Do nothing
-        }
-
-        public void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
+        public void Deactivate(IWorkingMemory workingMemory, Tuple tuple)
         {
             var activation = new Activation(_ruleHandle, _rulePriority, tuple);
             workingMemory.EventAggregator.Deactivate(activation);
-            tuple.Clear();
         }
     }
 }
