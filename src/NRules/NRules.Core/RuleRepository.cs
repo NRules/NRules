@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NRules.Config;
-using NRules.Fluent.Dsl;
+using NRules.Dsl;
 using NRules.Rule;
 using NRules.Rule.Builders;
 

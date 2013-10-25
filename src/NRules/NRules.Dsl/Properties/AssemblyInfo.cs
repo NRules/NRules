@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("NRules.Fluent.Dsl")]
+[assembly: AssemblyTitle("NRules.Dsl")]
 [assembly: AssemblyDescription("")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]

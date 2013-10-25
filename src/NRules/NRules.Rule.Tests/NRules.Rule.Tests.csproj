@@ -53,9 +53,9 @@
     <Compile Include="RuleBuilderTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NRules.Fluent.Dsl\NRules.Fluent.Dsl.csproj">
+    <ProjectReference Include="..\NRules.Dsl\NRules.Dsl.csproj">
       <Project>{F87E8784-7496-478C-B9A1-8B7504D9964B}</Project>
-      <Name>NRules.Fluent.Dsl</Name>
+      <Name>NRules.Dsl</Name>
     </ProjectReference>
     <ProjectReference Include="..\NRules.Rule\NRules.Rule.csproj">
       <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>

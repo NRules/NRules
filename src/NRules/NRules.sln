@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Core", "NRules.Core\NRules.Core.csproj", "{D60C7588-09B6-47DA-9459-4C88363E3EAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Fluent.Dsl", "NRules.Fluent.Dsl\NRules.Fluent.Dsl.csproj", "{F87E8784-7496-478C-B9A1-8B7504D9964B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Dsl", "NRules.Dsl\NRules.Dsl.csproj", "{F87E8784-7496-478C-B9A1-8B7504D9964B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Core.Tests", "NRules.Core.Tests\NRules.Core.Tests.csproj", "{B13BAC49-AF13-47E2-95F0-0C2CAF9A0257}"
 EndProject

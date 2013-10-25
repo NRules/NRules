@@ -1,4 +1,4 @@
-﻿using NRules.Fluent.Dsl;
+﻿using NRules.Dsl;
 
 namespace NRules.Core.IntegrationTests.TestAssets
 {
