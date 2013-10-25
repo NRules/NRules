@@ -5,19 +5,20 @@ namespace SimpleRulesTest
 {
     public class MatchPolicyRule : IRule
     {
-        public void Define(IRuleDefinition definition)
+        public void Define(IDefinition definition)
         {
+            Policy policy = null;
+            Dwelling dwelling = null;
+            Customer customer = null;
+
             definition.When()
-                .If<Policy>(policy => policy.PolicyType == PolicyTypes.Home)
-                .If<Dwelling>(dwelling => dwelling.Type == DwellingTypes.SingleHouse)
-                .If<Customer>(customer => customer.Age > 20)
-                .If<Customer, Policy>((customer, policy) => customer.Policy == policy)
-                .If<Dwelling, Policy>((dwelling, policy) => policy.Dwelling == dwelling);
+                .If<Policy>(() => policy, x => x.PolicyType == PolicyTypes.Home)
+                .If<Customer>(() => customer, x => x.Age > 20, x => x.Policy == policy)
+                .If<Dwelling>(() => dwelling, x => x.Type == DwellingTypes.SingleHouse, x => policy.Dwelling == x);
 
             definition.Then()
-                .Do(ctx => Console.WriteLine("Policy={0}, Customer={1} from {2}",
-                                             ctx.Arg<Policy>().Name, ctx.Arg<Customer>().Name,
-                                             ctx.Arg<Dwelling>().Address));
+                .Do(() => Console.WriteLine("Policy={0}, Customer={1} from {2}",
+                                             policy.Name, customer.Name, dwelling.Address));
         }
     }
 }
