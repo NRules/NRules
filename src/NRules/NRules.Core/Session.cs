@@ -44,11 +44,12 @@ namespace NRules.Core
 
         public void Fire()
         {
+            var context = new ActionContext(_network, _workingMemory);
+
             while (_agenda.HasActiveRules())
             {
                 Activation activation = _agenda.NextActivation();
                 ICompiledRule rule = _ruleMap[activation.RuleHandle];
-                var context = new ActionContext(_network, _workingMemory, activation.Tuple);
 
                 foreach (IRuleAction action in rule.Actions)
                 {

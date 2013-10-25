@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using NRules.Dsl;
 
-namespace NRules.Core
+namespace NRules.Inline
 {
     internal class RuleMetadata
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NRules.Config;
 using NRules.Dsl;
+using NRules.Inline;
 using NUnit.Framework;
 using Rhino.Mocks;
 
@@ -12,26 +12,26 @@ namespace NRules.Core.IntegrationTests.TestAssets
     {
         protected ISession Session;
 
-        private IContainer _container;
-        private RuleRepository _repository;
+        private InlineRepository _repository;
         private Dictionary<Type, INotifier> _notifiers;
         private List<BaseRule> _rules;
         private IRuleCompiler _compiler;
+        private IRuleActivator _activator;
 
         [SetUp]
         public void SetUp()
         {
-            _container = MockRepository.GenerateStub<IContainer>();
-            _container.Stub(x => x.CreateChildContainer()).Return(_container);
+            _activator = MockRepository.GenerateStub<IRuleActivator>();
             _compiler = new RuleCompiler();
-            _repository = new RuleRepository();
-            _repository.Container = _container;
+            _repository = new InlineRepository();
+            _repository.Activator = _activator;
             _notifiers = new Dictionary<Type, INotifier>();
             _rules = new List<BaseRule>();
 
             SetUpRules();
-            _container.Stub(x => x.BuildAll(typeof (IRule))).Return(_rules);
 
+            Func<Type, IRule> action = t => _rules.First(r => r.GetType() == t);
+            _activator.Stub(x => x.Activate(Arg<Type>.Is.Anything)).Do(action);
             _repository.AddRuleSet(_rules.Select(r => r.GetType()).ToArray());
 
             ISessionFactory factory = _compiler.Compile(_repository.Rules);

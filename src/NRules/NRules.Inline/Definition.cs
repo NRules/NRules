@@ -1,13 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using NRules.Core.Expressions;
 using NRules.Dsl;
+using NRules.Inline.Expressions;
 using NRules.Rule;
 using NRules.Rule.Builders;
 
-namespace NRules.Core
+namespace NRules.Inline
 {
     internal class Definition : IDefinition, ILeftHandSide, IRightHandSide
     {

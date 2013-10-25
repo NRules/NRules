@@ -3,7 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using NRules.Rule;
 
-namespace NRules.Core.Expressions
+namespace NRules.Inline.Expressions
 {
     internal class ConditionRewriter : ExpressionVisitor
     {

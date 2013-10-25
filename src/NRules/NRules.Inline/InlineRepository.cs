@@ -1,30 +1,31 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NRules.Config;
+using NRules.Core;
 using NRules.Dsl;
 using NRules.Rule;
 using NRules.Rule.Builders;
 
-namespace NRules.Core
+namespace NRules.Inline
 {
-    public interface IRuleBase
+    public interface IInlineRepository : IRuleRepository
     {
-        IEnumerable<IRuleDefinition> Rules { get; }
-    }
-
-    public interface IRuleRepository : IRuleBase
-    {
+        IRuleActivator Activator { get; set; }
         IRuleSet AddRuleSet(Assembly assembly);
         IRuleSet AddRuleSet(params Type[] ruleTypes);
-        ISessionFactory CreateSessionFactory();
     }
 
-    internal class RuleRepository : IRuleRepository
+    public class InlineRepository : RuleRepository, IInlineRepository
     {
         private readonly IList<IRuleSet> _ruleSets = new List<IRuleSet>();
-        public IContainer Container { get; set; }
+
+        public InlineRepository()
+        {
+            Activator = new RuleActivator();
+        }
+
+        public IRuleActivator Activator { get; set; }
 
         public IRuleSet AddRuleSet(Assembly assembly)
         {
@@ -39,11 +40,6 @@ namespace NRules.Core
 
             var ruleSet = AddRuleSet(ruleTypes);
             return ruleSet;
-        }
-
-        public ISessionFactory CreateSessionFactory()
-        {
-            return Container.Build<ISessionFactory>();
         }
 
         public IRuleSet AddRuleSet(params Type[] types)
@@ -68,20 +64,14 @@ namespace NRules.Core
 
         private void AddRulesToRuleSet(Type[] types, IRuleSet ruleSet)
         {
-            IEnumerable<IRule> ruleInstances;
-            using (var container = Container.CreateChildContainer())
+            foreach (var type in types)
             {
-                Array.ForEach(types, t => Container.Configure(t, DependencyLifecycle.InstancePerCall));
-                ruleInstances = container.BuildAll<IRule>();
-            }
-
-            foreach (var ruleInstance in ruleInstances)
-            {
-                var metadata = new RuleMetadata(ruleInstance);
+                var instance = Activator.Activate(type);
+                var metadata = new RuleMetadata(instance);
                 var builder = new RuleBuilder();
-                builder.Name(ruleInstance.GetType().FullName);
+                builder.Name(instance.GetType().FullName);
                 var definition = new Definition(builder, metadata);
-                ruleInstance.Define(definition);
+                instance.Define(definition);
                 var rule = builder.Build();
                 ruleSet.AddRule(rule);
             }
@@ -110,7 +100,7 @@ namespace NRules.Core
             return true;
         }
 
-        public IEnumerable<IRuleDefinition> Rules
+        public override IEnumerable<IRuleDefinition> Rules
         {
             get { return _ruleSets.SelectMany(rs => rs.Rules, (rs, r) => r); }
         }

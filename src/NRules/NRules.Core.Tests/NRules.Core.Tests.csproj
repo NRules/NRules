@@ -49,22 +49,16 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ActionContextTest.cs" />
     <Compile Include="AgendaTest.cs" />
     <Compile Include="Collections\OrderedPriorityQueueTest.cs" />
     <Compile Include="Rete\FactTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rete\TupleTest.cs" />
     <Compile Include="Rete\TypeNodeTest.cs" />
-    <Compile Include="RuleRepositoryTest.cs" />
     <Compile Include="SessionTest.cs" />
     <Compile Include="TestAssets\TestRules.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NRules.Config\NRules.Config.csproj">
-      <Project>{402FD881-5AEE-4B5D-9248-1AC237D991BA}</Project>
-      <Name>NRules.Config</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NRules.Core\NRules.Core.csproj">
       <Project>{D60C7588-09B6-47DA-9459-4C88363E3EAE}</Project>
       <Name>NRules.Core</Name>

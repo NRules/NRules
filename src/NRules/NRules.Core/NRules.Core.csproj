@@ -50,12 +50,7 @@
     <Compile Include="ActivationQueue.cs" />
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
     <Compile Include="CompiledRule.cs" />
-    <Compile Include="Config\ConfigurationExtensions.cs" />
-    <Compile Include="Config\EngineConfiguration.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
-    <Compile Include="Expressions\ActionRewriter.cs" />
-    <Compile Include="Expressions\ExpressionUtils.cs" />
-    <Compile Include="Expressions\ConditionRewriter.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\IObjectSource.cs" />
     <Compile Include="Rete\ITupleSource.cs" />
@@ -73,7 +68,6 @@
     <Compile Include="Rete\ReteBuilderContext.cs" />
     <Compile Include="Rete\RootNode.cs" />
     <Compile Include="Rete\SelectionNode.cs" />
-    <Compile Include="RuleMetadata.cs" />
     <Compile Include="Rete\Activation.cs" />
     <Compile Include="Rete\EventAggregator.cs" />
     <Compile Include="Rete\BetaCondition.cs" />
@@ -91,22 +85,13 @@
     <Compile Include="Rete\RuleNode.cs" />
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />
-    <Compile Include="Definition.cs" />
-    <Compile Include="RuleRepository.cs" />
+    <Compile Include="IRuleRepository.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionFactory.cs" />
     <Compile Include="WorkingMemory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NRules.Config\NRules.Config.csproj">
-      <Project>{402FD881-5AEE-4B5D-9248-1AC237D991BA}</Project>
-      <Name>NRules.Config</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NRules.Dsl\NRules.Dsl.csproj">
-      <Project>{F87E8784-7496-478C-B9A1-8B7504D9964B}</Project>
-      <Name>NRules.Dsl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NRules.Rule\NRules.Rule.csproj">
       <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
       <Name>NRules.Rule</Name>

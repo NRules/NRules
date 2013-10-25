@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 
-namespace NRules.Core.Expressions
+namespace NRules.Inline.Expressions
 {
     internal static class ExpressionUtils
     {

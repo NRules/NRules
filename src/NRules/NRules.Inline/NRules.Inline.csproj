@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{402FD881-5AEE-4B5D-9248-1AC237D991BA}</ProjectGuid>
+    <ProjectGuid>{B68D0662-BB3B-4183-85F0-E00875A95BB4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NRules.Config</RootNamespace>
-    <AssemblyName>NRules.Config</AssemblyName>
+    <RootNamespace>NRules.Inline</RootNamespace>
+    <AssemblyName>NRules.Inline</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -43,13 +43,28 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ComponentConfig.cs" />
-    <Compile Include="Configuration.cs" />
-    <Compile Include="Configure.cs" />
-    <Compile Include="ContainerExtensions.cs" />
-    <Compile Include="DependencyLifecycle.cs" />
-    <Compile Include="IContainer.cs" />
+    <Compile Include="Definition.cs" />
+    <Compile Include="Expressions\ActionRewriter.cs" />
+    <Compile Include="Expressions\ConditionRewriter.cs" />
+    <Compile Include="Expressions\ExpressionUtils.cs" />
+    <Compile Include="InlineRepository.cs" />
+    <Compile Include="IRuleActivator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RuleMetadata.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NRules.Core\NRules.Core.csproj">
+      <Project>{D60C7588-09B6-47DA-9459-4C88363E3EAE}</Project>
+      <Name>NRules.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NRules.Dsl\NRules.Dsl.csproj">
+      <Project>{F87E8784-7496-478C-B9A1-8B7504D9964B}</Project>
+      <Name>NRules.Dsl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NRules.Rule\NRules.Rule.csproj">
+      <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
+      <Name>NRules.Rule</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -81,10 +81,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\NRules.Config\NRules.Config.csproj">
-      <Project>{402FD881-5AEE-4B5D-9248-1AC237D991BA}</Project>
-      <Name>NRules.Config</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NRules.Core\NRules.Core.csproj">
       <Project>{D60C7588-09B6-47DA-9459-4C88363E3EAE}</Project>
       <Name>NRules.Core</Name>
@@ -92,6 +88,10 @@
     <ProjectReference Include="..\NRules.Dsl\NRules.Dsl.csproj">
       <Project>{F87E8784-7496-478C-B9A1-8B7504D9964B}</Project>
       <Name>NRules.Dsl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NRules.Inline\NRules.Inline.csproj">
+      <Project>{B68D0662-BB3B-4183-85F0-E00875A95BB4}</Project>
+      <Name>NRules.Inline</Name>
     </ProjectReference>
     <ProjectReference Include="..\NRules.Rule\NRules.Rule.csproj">
       <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
