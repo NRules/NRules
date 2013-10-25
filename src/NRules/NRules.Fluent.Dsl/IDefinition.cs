@@ -1,4 +1,4 @@
-﻿namespace NRules.Dsl
+﻿namespace NRules.Fluent.Dsl
 {
     public interface IDefinition
     {

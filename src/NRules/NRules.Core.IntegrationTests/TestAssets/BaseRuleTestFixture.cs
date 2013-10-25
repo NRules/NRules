@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NRules.Config;
-using NRules.Dsl;
+using NRules.Fluent.Dsl;
 using NUnit.Framework;
 using Rhino.Mocks;
 

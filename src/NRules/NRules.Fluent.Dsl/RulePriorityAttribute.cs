@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NRules.Dsl
+namespace NRules.Fluent.Dsl
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class RulePriorityAttribute : Attribute

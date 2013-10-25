@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace NRules.Dsl
+namespace NRules.Fluent.Dsl
 {
     public interface ILeftHandSide
     {
