@@ -43,7 +43,9 @@ namespace NRules.Core
             var collectionSymbol = alias.ExtractSymbol();
             var leftHandSide = _builder.LeftHandSide();
 
-            var aggregateBuilder = leftHandSide.Aggregate(collectionSymbol.Type, collectionSymbol.Name);
+            var outerPatternBuilder = leftHandSide.Pattern(collectionSymbol.Type, collectionSymbol.Name);
+
+            var aggregateBuilder = outerPatternBuilder.SourceAggregate();
             aggregateBuilder.CollectionOf(typeof(T));
 
             var patternBuilder = aggregateBuilder.SourcePattern(typeof(T));

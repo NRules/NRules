@@ -73,29 +73,37 @@ namespace NRules.Core.Rete
 
         private void BuildPatternNode(ReteBuilderContext context, PatternElement element)
         {
-            AlphaNode currentNode = BuildTypeNode(element.ValueType, _root);
-
-            var betaConditions = new List<ConditionElement>();
-            foreach (var conditionElement in element.Conditions)
+            context.RegisterDeclaration(element.Declaration);
+            if (element.Source == null)
             {
-                if (conditionElement.Declarations.Count() > 1)
+                AlphaNode currentNode = BuildTypeNode(element.ValueType, _root);
+
+                var betaConditions = new List<ConditionElement>();
+                foreach (var conditionElement in element.Conditions)
                 {
-                    betaConditions.Add(conditionElement);
-                    continue;
+                    if (conditionElement.Declarations.Count() > 1)
+                    {
+                        betaConditions.Add(conditionElement);
+                        continue;
+                    }
+
+                    var alphaCondition = new AlphaCondition(conditionElement.Expression);
+                    SelectionNode selectionNode = BuildSelectionNode(alphaCondition, currentNode);
+                    currentNode = selectionNode;
                 }
 
-                var alphaCondition = new AlphaCondition(conditionElement.Expression);
-                SelectionNode selectionNode = BuildSelectionNode(alphaCondition, currentNode);
-                currentNode = selectionNode;
+                context.AlphaSource = BuildAlphaMemoryNode(currentNode);
+
+                if (betaConditions.Count > 0)
+                {
+                    var joinNode = BuildJoinNode(context, betaConditions);
+                    context.BetaSource = BuildBetaMemoryNode(context, joinNode);
+                }
             }
-
-            context.AlphaSource = BuildAlphaMemoryNode(currentNode);
-            context.RegisterDeclaration(element.Declaration);
-
-            if (betaConditions.Count > 0)
+            else
             {
-                var joinNode = BuildJoinNode(context, betaConditions);
-                context.BetaSource = BuildBetaMemoryNode(context, joinNode);
+                BuildNode(context, element.Source);
+                //TODO: Handle a more generic case, when pattern adds its own conditions
             }
         }
 
@@ -104,7 +112,7 @@ namespace NRules.Core.Rete
             BuildSubNode(context, element.Source);
             var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
             context.BetaSource = BuildBetaMemoryNode(context, betaNode);
-            context.RegisterDeclaration(element.Declaration);
+            //context.RegisterDeclaration(element.Declaration);
             context.AlphaSource = null;
         }
 

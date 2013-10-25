@@ -13,17 +13,6 @@ namespace NRules.Rule.Builders
             _groupType = groupType;
         }
 
-        public AggregateBuilder Aggregate(Type type, string name = null)
-        {
-            SymbolTable scope = Scope.New();
-            var declaration = scope.Declare(name, type);
-
-            var builder = new AggregateBuilder(declaration, scope);
-            _nestedBuilders.Add(builder);
-
-            return builder;
-        }
-
         public PatternBuilder Pattern(Type type, string name = null)
         {
             SymbolTable scope = Scope.New();
