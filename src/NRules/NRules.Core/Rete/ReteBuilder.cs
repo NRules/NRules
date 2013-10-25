@@ -89,8 +89,8 @@ namespace NRules.Core.Rete
                 currentNode = selectionNode;
             }
 
-            context.Declarations.Add(element.Declaration);
             context.AlphaSource = BuildAlphaMemoryNode(currentNode);
+            context.RegisterDeclaration(element.Declaration);
 
             if (betaConditions.Count > 0)
             {
@@ -103,8 +103,8 @@ namespace NRules.Core.Rete
         {
             BuildSubNode(context, element.Source);
             var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
-            context.Declarations.Add(element.Declaration);
             context.BetaSource = BuildBetaMemoryNode(context, betaNode);
+            context.RegisterDeclaration(element.Declaration);
             context.AlphaSource = null;
         }
 

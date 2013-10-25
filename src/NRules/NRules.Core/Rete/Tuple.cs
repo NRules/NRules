@@ -13,10 +13,12 @@ namespace NRules.Core.Rete
 
         public Tuple()
         {
+            Count = 0;
         }
 
         public Tuple(Tuple left, Fact right)
         {
+            Count = left.Count + 1;
             RightFact = right;
             RightFact.ChildTuples.Add(this);
             _leftTuples.AddRange(left._leftTuples);
@@ -27,6 +29,7 @@ namespace NRules.Core.Rete
 
         public Fact RightFact { get; private set; }
         public Tuple LeftTuple { get; private set; }
+        public int Count { get; private set; }
 
         public T GetStateObject<T>()
         {
