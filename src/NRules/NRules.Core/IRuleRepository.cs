@@ -3,9 +3,20 @@ using NRules.Rule;
 
 namespace NRules.Core
 {
+    /// <summary>
+    /// In-memory database of production rules.
+    /// </summary>
     public interface IRuleRepository
     {
+        /// <summary>
+        /// Collection of rules in the repository.
+        /// </summary>
         IEnumerable<IRuleDefinition> Rules { get; }
+
+        /// <summary>
+        /// Creates a compiled representation of the rules in the repository.
+        /// </summary>
+        /// <returns>New rules session factory.</returns>
         ISessionFactory CreateSessionFactory();
     }
 

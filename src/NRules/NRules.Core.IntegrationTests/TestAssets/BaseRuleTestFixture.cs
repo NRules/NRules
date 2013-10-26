@@ -32,7 +32,7 @@ namespace NRules.Core.IntegrationTests.TestAssets
 
             Func<Type, IRule> action = t => _rules.First(r => r.GetType() == t);
             _activator.Stub(x => x.Activate(Arg<Type>.Is.Anything)).Do(action);
-            _repository.AddRuleSet(_rules.Select(r => r.GetType()).ToArray());
+            _repository.AddFromTypes(_rules.Select(r => r.GetType()).ToArray());
 
             ISessionFactory factory = _compiler.Compile(_repository.Rules);
             Session = factory.CreateSession();

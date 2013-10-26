@@ -1,10 +1,28 @@
 ﻿namespace NRules.Rule
 {
+    /// <summary>
+    /// Production rule definition.
+    /// </summary>
     public interface IRuleDefinition
     {
+        /// <summary>
+        /// Rule name.
+        /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Rule priority.
+        /// </summary>
         int Priority { get; }
+
+        /// <summary>
+        /// Rule left hand side (conditions).
+        /// </summary>
         GroupElement LeftHandSide { get; }
+
+        /// <summary>
+        /// Rule right hand side (actions).
+        /// </summary>
         ActionGroupElement RightHandSide { get; }
     }
 

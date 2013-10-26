@@ -2,24 +2,36 @@
 
 namespace NRules.Rule
 {
+    /// <summary>
+    /// Pattern declaration.
+    /// </summary>
     public class Declaration : IEquatable<Declaration>
     {
-        internal Declaration(string name, Type type) : this(name, type, false)
-        {
-        }
-        
-        internal Declaration(string name, Type type, bool isLocal)
+        internal Declaration(Type type, string name, bool isLocal)
         {
             Name = name;
             Type = type;
             IsLocal = isLocal;
         }
 
+        /// <summary>
+        /// Symbol name.
+        /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// Symbol type.
+        /// </summary>
         public Type Type { get; private set; }
 
+        /// <summary>
+        /// Indicates whether the symbol is local or exposed in an outer scope.
+        /// </summary>
         public bool IsLocal { get; private set; }
 
+        /// <summary>
+        /// Target the declaration is referencing.
+        /// </summary>
         public PatternElement Target { get; internal set; }
 
         public bool Equals(Declaration other)

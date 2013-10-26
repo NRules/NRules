@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace NRules.Rule.Builders
 {
+    /// <summary>
+    /// Builder to compose a group element.
+    /// </summary>
     public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
     {
         private readonly GroupType _groupType;
@@ -13,10 +16,16 @@ namespace NRules.Rule.Builders
             _groupType = groupType;
         }
 
+        /// <summary>
+        /// Creates a pattern builder that builds a pattern as a part of the current group.
+        /// </summary>
+        /// <param name="type">Pattern type.</param>
+        /// <param name="name">Pattern name (optional).</param>
+        /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
             SymbolTable scope = Scope.New();
-            Declaration declaration = scope.Declare(name, type);
+            Declaration declaration = scope.Declare(type, name);
 
             var builder = new PatternBuilder(scope, declaration);
             _nestedBuilders.Add(builder);
@@ -24,6 +33,11 @@ namespace NRules.Rule.Builders
             return builder;
         }
 
+        /// <summary>
+        /// Creates a group builder that builds a group as a part of the current group.
+        /// </summary>
+        /// <param name="groupType">Group type.</param>
+        /// <returns>Group builder.</returns>
         public GroupBuilder Group(GroupType groupType)
         {
             SymbolTable scope = Scope;

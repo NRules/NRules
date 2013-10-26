@@ -37,11 +37,11 @@ namespace NRules.Rule
            _symbolTable.Add(declaration);
         }
 
-        public Declaration Declare(string name, Type type)
+        public Declaration Declare(Type type, string name)
         {
             string declarationName = name ?? "$local$";
             bool isLocal = (name == null);
-            var declaration = new Declaration(declarationName, type, isLocal);
+            var declaration = new Declaration(type, declarationName, isLocal);
             Add(declaration);
 
             if (!declaration.IsLocal && ParentScope != null) ParentScope.Add(declaration);

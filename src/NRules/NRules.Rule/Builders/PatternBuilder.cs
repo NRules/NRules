@@ -5,6 +5,9 @@ using System.Linq.Expressions;
 
 namespace NRules.Rule.Builders
 {
+    /// <summary>
+    /// Builder to compose a rule pattern.
+    /// </summary>
     public class PatternBuilder : RuleElementBuilder, IBuilder<PatternElement>
     {
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
@@ -15,6 +18,10 @@ namespace NRules.Rule.Builders
             Declaration = declaration;
         }
 
+        /// <summary>
+        /// Adds a condition expression to the pattern.
+        /// </summary>
+        /// <param name="expression">Condition expression.</param>
         public void Condition(LambdaExpression expression)
         {
             IEnumerable<Declaration> declarations = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
@@ -22,8 +29,15 @@ namespace NRules.Rule.Builders
             _conditions.Add(condition);
         }
 
+        /// <summary>
+        /// Pattern declaration.
+        /// </summary>
         public Declaration Declaration { get; private set; }
 
+        /// <summary>
+        /// Creates an aggregate builder that builds the source of the pattern.
+        /// </summary>
+        /// <returns>Aggregate builder.</returns>
         public AggregateBuilder SourceAggregate()
         {
             if (_sourceBuilder != null)

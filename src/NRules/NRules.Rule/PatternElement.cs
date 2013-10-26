@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace NRules.Rule
 {
+    /// <summary>
+    /// Rule element that represents a pattern that matches facts.
+    /// </summary>
     public class PatternElement : RuleElement
     {
         private readonly List<ConditionElement> _conditions;
@@ -20,10 +23,24 @@ namespace NRules.Rule
             Source = source;
         }
 
+        /// <summary>
+        /// Declaration that references the pattern.
+        /// </summary>
         public Declaration Declaration { get; private set; }
+
+        /// <summary>
+        /// Optional pattern source element.
+        /// </summary>
         public PatternSourceElement Source { get; private set; }
+
+        /// <summary>
+        /// Type of the values that the pattern matches.
+        /// </summary>
         public Type ValueType { get; private set; }
 
+        /// <summary>
+        /// List of conditions the pattern checks.
+        /// </summary>
         public IEnumerable<ConditionElement> Conditions
         {
             get { return _conditions; }

@@ -9,13 +9,38 @@ using NRules.Rule.Builders;
 
 namespace NRules.Inline
 {
+    /// <summary>
+    /// Rules repository based on the rules defined inline in a .NET assembly using internal DSL.
+    /// </summary>
     public interface IInlineRepository : IRuleRepository
     {
+        /// <summary>
+        /// Rules activator that instantiates rules based on a .NET type.
+        /// </summary>
         IRuleActivator Activator { get; set; }
-        IRuleSet AddRuleSet(Assembly assembly);
-        IRuleSet AddRuleSet(params Type[] ruleTypes);
+
+        /// <summary>
+        /// Finds rules internal DSL rules in a .NET assembly and loads them into the repository.
+        /// </summary>
+        /// <param name="assembly">Assembly to load rules from.</param>
+        void AddFromAssembly(Assembly assembly);
+
+        /// <summary>
+        /// Loads internal DSL rules from .NET types into the repository.
+        /// </summary>
+        /// <param name="ruleTypes">List of rule types.</param>
+        void AddFromTypes(params Type[] ruleTypes);
+
+        /// <summary>
+        /// Adds an existing ruleset to the repository.
+        /// </summary>
+        /// <param name="ruleSet">Ruleset to add.</param>
+        void AddRuleSet(IRuleSet ruleSet);
     }
 
+    /// <summary>
+    /// Rules repository based on the rules defined inline in a .NET assembly using internal DSL.
+    /// </summary>
     public class InlineRepository : RuleRepository, IInlineRepository
     {
         private readonly IList<IRuleSet> _ruleSets = new List<IRuleSet>();
@@ -27,9 +52,9 @@ namespace NRules.Inline
 
         public IRuleActivator Activator { get; set; }
 
-        public IRuleSet AddRuleSet(Assembly assembly)
+        public void AddFromAssembly(Assembly assembly)
         {
-            var ruleTypes = assembly.GetTypes().Where(IsRule).ToArray();
+            Type[] ruleTypes = assembly.GetTypes().Where(IsRule).ToArray();
 
             if (!ruleTypes.Any())
             {
@@ -38,41 +63,44 @@ namespace NRules.Inline
                     assembly.FullName));
             }
 
-            var ruleSet = AddRuleSet(ruleTypes);
-            return ruleSet;
+            AddFromTypes(ruleTypes);
         }
 
-        public IRuleSet AddRuleSet(params Type[] types)
+        public void AddFromTypes(params Type[] types)
         {
-            var invalidTypes = types.Where(IsNotRule).ToArray();
+            Type[] invalidTypes = types.Where(IsNotRule).ToArray();
 
             if (invalidTypes.Any())
             {
-                var invalidTypesString = String.Join(", ", (string[]) invalidTypes.Select(t => t.FullName));
+                string invalidTypesString = String.Join(", ", (string[]) invalidTypes.Select(t => t.FullName));
                 throw new ArgumentException(string.Format(
                     "The supplied types are not recognized as valid rules. Types={0}",
                     invalidTypesString));
             }
 
             var ruleSet = new RuleSet();
-            _ruleSets.Add(ruleSet);
-
             AddRulesToRuleSet(types, ruleSet);
 
-            return ruleSet;
+            AddRuleSet(ruleSet);
+        }
+
+        public void AddRuleSet(IRuleSet ruleSet)
+        {
+            _ruleSets.Add(ruleSet);
         }
 
         private void AddRulesToRuleSet(Type[] types, IRuleSet ruleSet)
         {
-            foreach (var type in types)
+            foreach (Type type in types)
             {
-                var instance = Activator.Activate(type);
-                var metadata = new RuleMetadata(instance);
+                IRule instance = Activator.Activate(type);
                 var builder = new RuleBuilder();
+                var definition = new Definition(builder, instance);
+
                 builder.Name(instance.GetType().FullName);
-                var definition = new Definition(builder, metadata);
                 instance.Define(definition);
-                var rule = builder.Build();
+
+                IRuleDefinition rule = builder.Build();
                 ruleSet.AddRule(rule);
             }
         }

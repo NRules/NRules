@@ -2,6 +2,10 @@
 
 namespace NRules.Rule
 {
+    /// <summary>
+    /// Aggregate that folds matching facts into a collection.
+    /// </summary>
+    /// <typeparam name="T">Type of facts to collect.</typeparam>
     internal class CollectionAggregate<T> : IAggregate
     {
         private readonly List<T> _items = new List<T>();

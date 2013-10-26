@@ -12,14 +12,11 @@ namespace NRules.Inline
     {
         private readonly RuleBuilder _builder;
 
-        public Definition(RuleBuilder builder, RuleMetadata metadata)
+        public Definition(RuleBuilder builder, IRule instance)
         {
             _builder = builder;
 
-            if (metadata.Priority.HasValue)
-            {
-                _builder.Priority(metadata.Priority.Value);
-            }
+            instance.ApplyAttribute<RulePriorityAttribute>(a => _builder.Priority(a.Priority));
         }
 
         public ILeftHandSide If<T>(Expression<Func<T>> alias, params Expression<Func<T, bool>>[] conditions)

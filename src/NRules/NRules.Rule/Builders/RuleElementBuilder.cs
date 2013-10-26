@@ -7,6 +7,9 @@ namespace NRules.Rule.Builders
         T Build();
     }
 
+    /// <summary>
+    /// Base class for rule element builders.
+    /// </summary>
     public abstract class RuleElementBuilder
     {
         internal SymbolTable Scope { get; private set; }
@@ -16,6 +19,9 @@ namespace NRules.Rule.Builders
             Scope = scope;
         }
 
+        /// <summary>
+        /// Pattern declarations visible by the element being built.
+        /// </summary>
         public IEnumerable<Declaration> Declarations
         {
             get { return Scope.Declarations; }
