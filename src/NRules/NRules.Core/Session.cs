@@ -70,7 +70,7 @@ namespace NRules.Core
         {
             var context = new ActionContext(_network, _workingMemory);
 
-            while (_agenda.HasActiveRules())
+            while (_agenda.HasActiveRules() && !context.IsHalted)
             {
                 Activation activation = _agenda.NextActivation();
                 ICompiledRule rule = _ruleMap[activation.RuleHandle];

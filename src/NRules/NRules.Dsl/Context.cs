@@ -6,6 +6,14 @@
     public static class Context
     {
         /// <summary>
+        /// Halts rules execution. The engine continues execution of the current rule and exists the execution cycle.
+        /// </summary>
+        public static void Halt()
+        {
+            //This is a marker method to use in expressions; it does not do anything
+        }
+
+        /// <summary>
         /// Inserts a new fact into the rules engine's memory.
         /// </summary>
         /// <param name="fact">New fact to insert.</param>

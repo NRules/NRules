@@ -7,6 +7,7 @@ namespace NRules.Core
         void Insert(object fact);
         void Update(object fact);
         void Retract(object fact);
+        void Halt();
     }
 
     internal class ActionContext : IActionContext
@@ -18,7 +19,10 @@ namespace NRules.Core
         {
             _network = network;
             _workingMemory = workingMemory;
+            IsHalted = false;
         }
+
+        public bool IsHalted { get; set; }
 
         public void Insert(object fact)
         {
@@ -33,6 +37,11 @@ namespace NRules.Core
         public void Retract(object fact)
         {
             _network.PropagateRetract(_workingMemory, fact);
+        }
+
+        public void Halt()
+        {
+            IsHalted = true;
         }
     }
 }
