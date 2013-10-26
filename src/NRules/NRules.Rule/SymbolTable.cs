@@ -34,7 +34,7 @@ namespace NRules.Rule
 
         public void Add(Declaration declaration)
         {
-           _symbolTable.Add(declaration);
+            _symbolTable.Add(declaration);
         }
 
         public Declaration Declare(Type type, string name)
@@ -56,9 +56,9 @@ namespace NRules.Rule
 
         private Declaration Lookup(string name, Type type, bool includeLocal)
         {
-            Declaration declaration = includeLocal 
-                ? _symbolTable.FirstOrDefault(d => d.Name == name) 
-                : _symbolTable.FirstOrDefault(d => d.Name == name && !d.IsLocal);
+            Declaration declaration = includeLocal
+                                          ? _symbolTable.FirstOrDefault(d => d.Name == name)
+                                          : _symbolTable.FirstOrDefault(d => d.Name == name && !d.IsLocal);
 
             if (declaration != null)
             {

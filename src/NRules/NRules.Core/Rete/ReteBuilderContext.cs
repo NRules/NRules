@@ -7,7 +7,7 @@ namespace NRules.Core.Rete
     internal class ReteBuilderContext
     {
         private int _factOffset = 0;
-        private readonly Dictionary<Declaration, int> _offsetMap; 
+        private readonly Dictionary<Declaration, int> _offsetMap;
 
         public ReteBuilderContext()
         {

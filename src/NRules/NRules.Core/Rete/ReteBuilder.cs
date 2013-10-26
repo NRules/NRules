@@ -143,7 +143,7 @@ namespace NRules.Core.Rete
                     betaNode.Conditions.Add(betaCondition);
                 }
             }
-            
+
             return betaNode;
         }
 

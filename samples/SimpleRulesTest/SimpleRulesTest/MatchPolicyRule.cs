@@ -17,7 +17,7 @@ namespace SimpleRulesTest
                 .If<Dwelling>(() => dwelling, x => x.Type == DwellingTypes.SingleHouse, x => policy.Dwelling == x);
 
             definition.Then()
-                .Do(() => Console.WriteLine("Policy={0}, Customer={1} from {2}",
+                .Do(ctx => Console.WriteLine("Policy={0}, Customer={1} from {2}",
                                              policy.Name, customer.Name, dwelling.Address));
         }
     }

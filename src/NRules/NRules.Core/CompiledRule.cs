@@ -8,7 +8,7 @@ namespace NRules.Core
     {
         string Handle { get; }
         IRuleDefinition Definition { get; }
-        IEnumerable<IRuleAction> Actions { get; } 
+        IEnumerable<IRuleAction> Actions { get; }
     }
 
     internal class CompiledRule : ICompiledRule

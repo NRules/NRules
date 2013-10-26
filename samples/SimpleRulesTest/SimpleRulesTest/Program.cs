@@ -14,7 +14,7 @@ namespace SimpleRulesTest
             var customer2 = new Customer() {Name = "Emily Brown", Age = 32, Sex = SexTypes.Female, Policy = policy2};
 
             IInlineRepository repository = new InlineRepository();
-            repository.AddRuleSet(typeof (Program).Assembly);
+            repository.AddFromAssembly(typeof (Program).Assembly);
 
             var factory = repository.CreateSessionFactory();
             var session = factory.CreateSession();

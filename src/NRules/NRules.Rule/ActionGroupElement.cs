@@ -17,6 +17,9 @@ namespace NRules.Rule
         /// <summary>
         /// List of actions the group element contains.
         /// </summary>
-        public IEnumerable<ActionElement> Actions { get { return _actions; } }
+        public IEnumerable<ActionElement> Actions
+        {
+            get { return _actions; }
+        }
     }
 }

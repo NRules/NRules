@@ -16,7 +16,7 @@ namespace NRules.Core.Rete
 
         protected bool IsSatisfiedBy(params object[] factObjects)
         {
-            return (bool)_compiledExpression.DynamicInvoke(factObjects);
+            return (bool) _compiledExpression.DynamicInvoke(factObjects);
         }
 
         public bool Equals(Condition other)

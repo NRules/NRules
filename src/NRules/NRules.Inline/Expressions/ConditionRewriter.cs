@@ -19,7 +19,7 @@ namespace NRules.Inline.Expressions
         public LambdaExpression Rewrite(Declaration declaration, LambdaExpression expression)
         {
             _oldParameter = expression.Parameters.Single();
-            _parameters = new List<ParameterExpression>{Expression.Parameter(declaration.Type, declaration.Name)};
+            _parameters = new List<ParameterExpression> {Expression.Parameter(declaration.Type, declaration.Name)};
             Expression body = Visit(expression.Body);
             return Expression.Lambda(body, expression.TailCall, _parameters);
         }

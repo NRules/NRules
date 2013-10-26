@@ -21,14 +21,14 @@ namespace NRules.Inline.Expressions
         public LambdaExpression Rewrite(LambdaExpression expression)
         {
             _context = Expression.Parameter(typeof (IActionContext), "context");
-            _parameters = new List<ParameterExpression>{_context};
+            _parameters = new List<ParameterExpression> {_context};
             Expression body = Visit(expression.Body);
             return Expression.Lambda(body, expression.TailCall, _parameters);
         }
 
         protected override Expression VisitMethodCall(MethodCallExpression m)
         {
-            if (m.Method.DeclaringType == typeof(IContext))
+            if (m.Method.DeclaringType == typeof (IContext))
             {
                 var method = typeof (IActionContext).GetMethod(m.Method.Name);
                 var args = m.Arguments.Select(Visit);

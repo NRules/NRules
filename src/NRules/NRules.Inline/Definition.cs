@@ -23,7 +23,7 @@ namespace NRules.Inline
         {
             var patternSymbol = alias.ExtractSymbol();
             var leftHandSide = _builder.LeftHandSide();
-            
+
             var patternBuilder = leftHandSide.Pattern(patternSymbol.Type, patternSymbol.Name);
             foreach (var condition in conditions)
             {
@@ -42,9 +42,9 @@ namespace NRules.Inline
             var outerPatternBuilder = leftHandSide.Pattern(collectionSymbol.Type, collectionSymbol.Name);
 
             var aggregateBuilder = outerPatternBuilder.SourceAggregate();
-            aggregateBuilder.CollectionOf(typeof(T));
+            aggregateBuilder.CollectionOf(typeof (T));
 
-            var patternBuilder = aggregateBuilder.SourcePattern(typeof(T));
+            var patternBuilder = aggregateBuilder.SourcePattern(typeof (T));
             foreach (var condition in itemConditions)
             {
                 var rewriter = new ConditionRewriter(leftHandSide.Declarations);
@@ -60,7 +60,7 @@ namespace NRules.Inline
 
             var existsBuilder = leftHandSide.Group(GroupType.Exists);
 
-            var patternBuilder = existsBuilder.Pattern(typeof(T));
+            var patternBuilder = existsBuilder.Pattern(typeof (T));
             foreach (var condition in conditions)
             {
                 var rewriter = new ConditionRewriter(leftHandSide.Declarations);

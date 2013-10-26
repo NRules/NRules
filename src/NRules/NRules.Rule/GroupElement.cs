@@ -33,8 +33,8 @@ namespace NRules.Rule
     /// </summary>
     public class GroupElement : RuleElement
     {
-        private readonly List<RuleElement> _childElements; 
-        
+        private readonly List<RuleElement> _childElements;
+
         internal GroupElement(GroupType groupType, IEnumerable<RuleElement> childElements)
         {
             GroupType = groupType;
