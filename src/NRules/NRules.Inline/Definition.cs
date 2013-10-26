@@ -70,7 +70,7 @@ namespace NRules.Inline
             return this;
         }
 
-        public IRightHandSide Do(Expression<Action> action)
+        public IRightHandSide Do(Expression<Action<IContext>> action)
         {
             var rightHandSide = _builder.RightHandSide();
 

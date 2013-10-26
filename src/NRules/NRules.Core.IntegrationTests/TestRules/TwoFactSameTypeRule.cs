@@ -15,7 +15,7 @@ namespace NRules.Core.IntegrationTests.TestRules
                 .If<FactType3>(() => fact2, f => f.TestProperty == "Valid Value", f => f.Parent == fact1);
 
             definition.Then()
-                .Do(() => Notifier.RuleActivated());
+                .Do(ctx => Notifier.RuleActivated());
         }
     }
 }

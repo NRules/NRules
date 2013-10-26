@@ -16,8 +16,8 @@ namespace NRules.Core.IntegrationTests.TestRules
             definition.When()
                 .Collect<FactType1>(() => collection1, f => f.TestProperty.StartsWith("Valid"));
             definition.Then()
-                .Do(() => Notifier.RuleActivated())
-                .Do(() => SetCount(collection1.Count()));
+                .Do(ctx => Notifier.RuleActivated())
+                .Do(ctx => SetCount(collection1.Count()));
         }
 
         private void SetCount(int count)

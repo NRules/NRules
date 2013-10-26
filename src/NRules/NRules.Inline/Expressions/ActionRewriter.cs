@@ -28,7 +28,7 @@ namespace NRules.Inline.Expressions
 
         protected override Expression VisitMethodCall(MethodCallExpression m)
         {
-            if (m.Method.DeclaringType == typeof(Context))
+            if (m.Method.DeclaringType == typeof(IContext))
             {
                 var method = typeof (IActionContext).GetMethod(m.Method.Name);
                 var args = m.Arguments.Select(Visit);

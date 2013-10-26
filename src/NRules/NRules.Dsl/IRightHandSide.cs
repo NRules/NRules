@@ -13,6 +13,6 @@ namespace NRules.Dsl
         /// </summary>
         /// <param name="action">Action expression.</param>
         /// <returns>Right hand side expression builder.</returns>
-        IRightHandSide Do(Expression<Action> action);
+        IRightHandSide Do(Expression<Action<IContext>> action);
     }
 }

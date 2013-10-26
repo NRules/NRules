@@ -16,9 +16,9 @@ namespace NRules.Core.IntegrationTests.TestRules
             definition.When()
                 .If<FactType1>(() => fact1, f => f.TestProperty == "Valid Value");
             definition.Then()
-                .Do(() => Notifier.RuleActivated())
-                .Do(() => InvocationHandler.Invoke(this))
-                .Do(() => Context.Insert(new FactType2()
+                .Do(ctx => Notifier.RuleActivated())
+                .Do(ctx => InvocationHandler.Invoke(this))
+                .Do(ctx => ctx.Insert(new FactType2()
                     {
                         TestProperty = "Valid Value",
                         JoinReference = fact1
