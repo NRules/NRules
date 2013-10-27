@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>NRules.dll</id>
+    <id>NRules</id>
     <version>1.0.0</version>
     <authors>Sergiy Nikolayev</authors>
     <owners>Sergiy Nikolayev</owners>
