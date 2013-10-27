@@ -34,7 +34,7 @@ namespace NRules.IntegrationTests.TestAssets
             _activator.Stub(x => x.Activate(Arg<Type>.Is.Anything)).Do(action);
             _repository.AddFromTypes(_rules.Select(r => r.GetType()).ToArray());
 
-            ISessionFactory factory = _compiler.Compile(_repository.Rules);
+            ISessionFactory factory = _compiler.Compile(_repository.GetRules());
             Session = factory.CreateSession();
         }
 

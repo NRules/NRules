@@ -40,7 +40,7 @@ namespace NRules.Inline
     /// <summary>
     /// Rules repository based on the rules defined inline in a .NET assembly using internal DSL.
     /// </summary>
-    public class InlineRepository : RuleRepository, IInlineRepository
+    public class InlineRepository : IInlineRepository
     {
         private readonly IList<IRuleSet> _ruleSets = new List<IRuleSet>();
 
@@ -50,6 +50,11 @@ namespace NRules.Inline
         }
 
         public IRuleActivator Activator { get; set; }
+
+        public IEnumerable<IRuleDefinition> GetRules()
+        {
+            return _ruleSets.SelectMany(rs => rs.Rules, (rs, r) => r);
+        }
 
         public void AddFromAssembly(Assembly assembly)
         {
@@ -125,11 +130,6 @@ namespace NRules.Inline
             if (type.IsGenericTypeDefinition) return false;
 
             return true;
-        }
-
-        public override IEnumerable<IRuleDefinition> Rules
-        {
-            get { return _ruleSets.SelectMany(rs => rs.Rules, (rs, r) => r); }
         }
     }
 }

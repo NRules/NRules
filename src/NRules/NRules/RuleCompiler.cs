@@ -5,12 +5,20 @@ using NRules.Rule;
 
 namespace NRules
 {
+    /// <summary>
+    /// Compiles declarative rules into an executable representation.
+    /// </summary>
     public interface IRuleCompiler
     {
+        /// <summary>
+        /// Compiles a set of rules into a session factory.
+        /// </summary>
+        /// <param name="ruleDefinitions">Set of rules.</param>
+        /// <returns>Session factory.</returns>
         ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions);
     }
 
-    internal class RuleCompiler : IRuleCompiler
+    public class RuleCompiler : IRuleCompiler
     {
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
         {

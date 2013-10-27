@@ -1,4 +1,5 @@
-﻿using NRules.Inline;
+﻿using NRules;
+using NRules.Inline;
 
 namespace SimpleRulesTest
 {
@@ -16,7 +17,7 @@ namespace SimpleRulesTest
             IInlineRepository repository = new InlineRepository();
             repository.AddFromAssembly(typeof (Program).Assembly);
 
-            var factory = repository.CreateSessionFactory();
+            var factory = repository.Compile();
             var session = factory.CreateSession();
 
             session.Insert(policy1);
