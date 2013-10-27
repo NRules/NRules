@@ -1,16 +1,9 @@
 ﻿using NRules.Rete;
+using NRules.Rule;
 
 namespace NRules
 {
-    public interface IActionContext
-    {
-        void Insert(object fact);
-        void Update(object fact);
-        void Retract(object fact);
-        void Halt();
-    }
-
-    internal class ActionContext : IActionContext
+    internal class ActionContext : IContext
     {
         private readonly INetwork _network;
         private readonly IWorkingMemory _workingMemory;

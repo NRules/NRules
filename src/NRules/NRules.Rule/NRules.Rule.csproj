@@ -58,6 +58,7 @@
     <Compile Include="Builders\RuleBuilder.cs" />
     <Compile Include="Builders\RuleElementBuilder.cs" />
     <Compile Include="CollectionAggregate.cs" />
+    <Compile Include="IContext.cs" />
     <Compile Include="RuleDefinition.cs" />
     <Compile Include="ConditionElement.cs" />
     <Compile Include="RuleElementExtensions.cs" />

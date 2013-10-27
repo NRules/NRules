@@ -49,7 +49,6 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="IContext.cs" />
     <Compile Include="IDefinition.cs" />
     <Compile Include="ILeftHandSide.cs" />
     <Compile Include="IRightHandSide.cs" />
@@ -57,7 +56,12 @@
     <Compile Include="IRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\NRules.Rule\NRules.Rule.csproj">
+      <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
+      <Name>NRules.Rule</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

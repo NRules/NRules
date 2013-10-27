@@ -1,7 +1,7 @@
 NRules
 ======
 
-NRules is a production rules engine for .NET based on the Rete matching algorithm.
+NRules is a production rules engine for .NET, based on the Rete matching algorithm.
 
 Installing NRules
 --------------------------------
