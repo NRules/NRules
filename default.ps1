@@ -141,7 +141,7 @@ task Package -depends Build -description "Generates NuGet package" {
 
 		# Push to nuget repository
 		$packages | ForEach-Object {
-			&"$nugetExec" push "$($_.BaseName).$nugetVersion.nupkg" $accessKey
+			&"$nugetExec" push "$nugetDir\$($_.BaseName).$nugetVersion.nupkg" $accessKey
 		}
 	}
 	else {
