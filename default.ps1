@@ -117,7 +117,7 @@ task Package -depends Build -description "Generates NuGet package" {
 	Copy-Item $pkgDir\NRules.dll.nuspec $nugetDir\NRules\NRules.nuspec
 	@("NRules.???") |% { Copy-Item "$binariesDir\$_" $nugetDir\NRules\lib\net40 }
 
-	$nugetVersion = "$ProductVersion"
+	$nugetVersion = "$ProductVersion.$BuildNumber"
 
 	# Sets the package version in all the nuspec
 	$packages = Get-ChildItem $nugetDir *.nuspec -recurse
