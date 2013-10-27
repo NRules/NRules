@@ -1,10 +1,10 @@
 ﻿using System;
-using NRules.Core.IntegrationTests.TestAssets;
-using NRules.Core.IntegrationTests.TestRules;
+using NRules.IntegrationTests.TestAssets;
+using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace NRules.Core.IntegrationTests
+namespace NRules.IntegrationTests
 {
     [TestFixture]
     public class PriorityTest : BaseRuleTestFixture

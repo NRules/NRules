@@ -1,7 +1,7 @@
 ﻿using NRules.Collections;
 using NUnit.Framework;
 
-namespace NRules.Core.Tests.Collections
+namespace NRules.Tests.Collections
 {
     [TestFixture]
     public class OrderedPriorityQueueTest

@@ -1,4 +1,4 @@
-﻿namespace NRules.Core.IntegrationTests.TestAssets
+﻿namespace NRules.IntegrationTests.TestAssets
 {
     public interface INotifier
     {

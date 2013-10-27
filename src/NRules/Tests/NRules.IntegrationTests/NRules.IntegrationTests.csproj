@@ -51,6 +51,8 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="HaltRuleTest.cs" />
+    <Compile Include="TestRules\HaltRule.cs" />
     <Compile Include="TwoFactSameTypeRuleTest.cs" />
     <Compile Include="TestAssets\FactType3.cs" />
     <Compile Include="TestRules\TwoFactSameTypeRule.cs" />

@@ -1,8 +1,8 @@
-﻿using NRules.Core.IntegrationTests.TestAssets;
-using NRules.Core.IntegrationTests.TestRules;
+﻿using NRules.IntegrationTests.TestAssets;
+using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
-namespace NRules.Core.IntegrationTests
+namespace NRules.IntegrationTests
 {
     [TestFixture]
     public class TwoFactOneCollectionRuleTest : BaseRuleTestFixture

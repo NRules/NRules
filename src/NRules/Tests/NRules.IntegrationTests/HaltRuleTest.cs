@@ -5,30 +5,14 @@ using NUnit.Framework;
 namespace NRules.IntegrationTests
 {
     [TestFixture]
-    public class ForwardChainingTest : BaseRuleTestFixture
+    public class HaltRuleTest : BaseRuleTestFixture
     {
         [Test]
-        public void ForwardChaining_OneMatchingFact_FiresFirstRuleAndChainsSecond()
+        public void HaltRule_TwoMatchingFacts_FiresOnceAndHalts()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            Session.Insert(fact1);
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            AssertFiredOnce<ForwardChainingFirstRule>();
-            AssertFiredOnce<ForwardChainingSecondRule>();
-        }
-
-        [Test]
-        public void ForwardChaining_OneMatchingFactOfOneKindAndOneOfAnotherKind_FiresSecondRuleDirectlyAndChained()
-        {
-            //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType2() {TestProperty = "Valid Value"};
-
+            var fact2 = new FactType1() {TestProperty = "Valid Value"};
             Session.Insert(fact1);
             Session.Insert(fact2);
 
@@ -36,14 +20,29 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce<ForwardChainingFirstRule>();
-            AssertFiredTwice<ForwardChainingSecondRule>();
+            AssertFiredOnce();
+        }
+        
+        [Test]
+        public void HaltRule_TwoMatchingFactsFireCalledTwice_FiresOnceThenHaltsThenResumesAndFiresAgain()
+        {
+            //Arrange
+            var fact1 = new FactType1() {TestProperty = "Valid Value"};
+            var fact2 = new FactType1() {TestProperty = "Valid Value"};
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            //Act
+            Session.Fire();
+            Session.Fire();
+
+            //Assert
+            AssertFiredTwice();
         }
 
         protected override void SetUpRules()
         {
-            SetUpRule<ForwardChainingFirstRule>();
-            SetUpRule<ForwardChainingSecondRule>();
+            SetUpRule<HaltRule>();
         }
     }
 }

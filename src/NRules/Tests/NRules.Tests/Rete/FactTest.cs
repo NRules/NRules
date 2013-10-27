@@ -2,7 +2,7 @@
 using NRules.Rete;
 using NUnit.Framework;
 
-namespace NRules.Core.Tests.Rete
+namespace NRules.Tests.Rete
 {
     [TestFixture]
     public class FactTest

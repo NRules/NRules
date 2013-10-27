@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NRules.Core.IntegrationTests.TestAssets;
 using NRules.Dsl;
+using NRules.IntegrationTests.TestAssets;
 
-namespace NRules.Core.IntegrationTests.TestRules
+namespace NRules.IntegrationTests.TestRules
 {
     public class TwoFactOneCollectionRule : BaseRule
     {

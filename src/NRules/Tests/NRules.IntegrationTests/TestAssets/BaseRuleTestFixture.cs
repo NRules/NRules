@@ -6,7 +6,7 @@ using NRules.Inline;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace NRules.Core.IntegrationTests.TestAssets
+namespace NRules.IntegrationTests.TestAssets
 {
     public abstract class BaseRuleTestFixture
     {

@@ -3,7 +3,7 @@ using NRules.Rete;
 using NUnit.Framework;
 using Rhino.Mocks;
 
-namespace NRules.Core.Tests
+namespace NRules.Tests
 {
     [TestFixture]
     public class SessionTest

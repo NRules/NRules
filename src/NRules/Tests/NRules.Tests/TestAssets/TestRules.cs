@@ -1,6 +1,6 @@
 ﻿using NRules.Dsl;
 
-namespace NRules.Core.Tests.TestAssets
+namespace NRules.Tests.TestAssets
 {
     public class TestRule1 : IRule
     {

@@ -1,7 +1,7 @@
 using NRules.Rete;
 using NUnit.Framework;
 
-namespace NRules.Core.Tests
+namespace NRules.Tests
 {
     [TestFixture]
     public class AgendaTest

@@ -1,6 +1,6 @@
 ﻿using NRules.Dsl;
 
-namespace NRules.Core.IntegrationTests.TestAssets
+namespace NRules.IntegrationTests.TestAssets
 {
     public abstract class BaseRule : IRule
     {

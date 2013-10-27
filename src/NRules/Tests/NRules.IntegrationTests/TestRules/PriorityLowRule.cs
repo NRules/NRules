@@ -1,8 +1,8 @@
 ﻿using System;
-using NRules.Core.IntegrationTests.TestAssets;
 using NRules.Dsl;
+using NRules.IntegrationTests.TestAssets;
 
-namespace NRules.Core.IntegrationTests.TestRules
+namespace NRules.IntegrationTests.TestRules
 {
     [RulePriority(10)]
     public class PriorityLowRule : BaseRule
