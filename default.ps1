@@ -1,6 +1,6 @@
 properties {
 	$ProductVersion = "0.1"
-	$BuildNumber = "0";
+	$BuildNumber = "1";
 	$PackageNameSuffix = ""
 	$TargetFramework = "net-4.0"
 	$buildConfiguration = "Release"
@@ -84,9 +84,9 @@ task Compile -depends InitEnvironment, Version -description "Compiles source cod
 
 task Merge -depends Compile -description "Merges compiled assemblies into coarse-grained components" {
 	$assemblies = @()
-	$assemblies += Get-ChildItem $outDir\NRules.*.dll -Exclude **Tests.dll
+	$assemblies += Get-ChildItem $outDir\NRules*.dll -Exclude **Tests.dll
 	
-	$attributeFile = "$outDir\NRules.Core.dll"
+	$attributeFile = "$outDir\NRules.dll"
 	
 	$logFileName = "$buildDir\NRulesMergeLog.txt"
 	Create-Directory $mergeDir

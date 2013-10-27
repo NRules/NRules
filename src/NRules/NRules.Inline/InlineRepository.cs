@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NRules.Core;
 using NRules.Dsl;
 using NRules.Rule;
 using NRules.Rule.Builders;

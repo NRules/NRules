@@ -1,0 +1,21 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace NRules.Rete
+{
+    internal class SelectionNode : AlphaNode
+    {
+        public IList<AlphaCondition> Conditions { get; private set; }
+
+        public SelectionNode(AlphaCondition condition)
+        {
+            Conditions = new List<AlphaCondition>();
+            Conditions.Add(condition);
+        }
+
+        public override bool IsSatisfiedBy(Fact fact)
+        {
+            return Conditions.All(c => c.IsSatisfiedBy(fact));
+        }
+    }
+}

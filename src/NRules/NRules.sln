@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Core", "NRules.Core\NRules.Core.csproj", "{D60C7588-09B6-47DA-9459-4C88363E3EAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules", "NRules\NRules.csproj", "{D60C7588-09B6-47DA-9459-4C88363E3EAE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Dsl", "NRules.Dsl\NRules.Dsl.csproj", "{F87E8784-7496-478C-B9A1-8B7504D9964B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Core.Tests", "NRules.Core.Tests\NRules.Core.Tests.csproj", "{B13BAC49-AF13-47E2-95F0-0C2CAF9A0257}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Tests", "Tests\NRules.Tests\NRules.Tests.csproj", "{B13BAC49-AF13-47E2-95F0-0C2CAF9A0257}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Core.IntegrationTests", "NRules.Core.IntegrationTests\NRules.Core.IntegrationTests.csproj", "{08DB9D89-412B-405A-813A-E19261039881}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.IntegrationTests", "Tests\NRules.IntegrationTests\NRules.IntegrationTests.csproj", "{08DB9D89-412B-405A-813A-E19261039881}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Rule", "NRules.Rule\NRules.Rule.csproj", "{898356F3-1B5A-4D70-A20A-544997E30AB7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5FD32CBA-26E2-46D3-B10A-E6C4133EE341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Rule.Tests", "NRules.Rule.Tests\NRules.Rule.Tests.csproj", "{6A168332-B40F-4DC8-9899-33AE10DDAC4F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Rule.Tests", "Tests\NRules.Rule.Tests\NRules.Rule.Tests.csproj", "{6A168332-B40F-4DC8-9899-33AE10DDAC4F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Inline", "NRules.Inline\NRules.Inline.csproj", "{B68D0662-BB3B-4183-85F0-E00875A95BB4}"
 EndProject

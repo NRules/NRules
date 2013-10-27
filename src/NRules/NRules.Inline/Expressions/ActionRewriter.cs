@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NRules.Core;
 using NRules.Dsl;
 using NRules.Rule;
 

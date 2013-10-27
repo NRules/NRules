@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B68D0662-BB3B-4183-85F0-E00875A95BB4}</ProjectGuid>
+    <ProjectGuid>{D60C7588-09B6-47DA-9459-4C88363E3EAE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NRules.Inline</RootNamespace>
-    <AssemblyName>NRules.Inline</AssemblyName>
+    <RootNamespace>NRules</RootNamespace>
+    <AssemblyName>NRules</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,9 +21,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\NRules.Inline.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <DocumentationFile>bin\Debug\NRules.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,12 +31,15 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\NRules.Inline.xml</DocumentationFile>
+    <WarningLevel>1</WarningLevel>
+    <DocumentationFile>bin\Release\NRules.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging">
+      <HintPath>..\..\..\lib\CommonLogging\Common.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,29 +52,58 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Definition.cs" />
-    <Compile Include="Expressions\ActionRewriter.cs" />
-    <Compile Include="Expressions\ConditionRewriter.cs" />
-    <Compile Include="Expressions\ExpressionUtils.cs" />
-    <Compile Include="InlineRepository.cs" />
-    <Compile Include="RuleActivator.cs" />
+    <Compile Include="ActionContext.cs" />
+    <Compile Include="ActivationQueue.cs" />
+    <Compile Include="Collections\OrderedPriorityQueue.cs" />
+    <Compile Include="CompiledRule.cs" />
+    <Compile Include="Collections\PriorityQueue.cs" />
+    <Compile Include="Rete\AlphaCondition.cs" />
+    <Compile Include="Rete\IObjectSource.cs" />
+    <Compile Include="Rete\ITupleSource.cs" />
+    <Compile Include="Rete\ObjectInputAdapter.cs" />
+    <Compile Include="Rete\TerminalNode.cs" />
+    <Compile Include="RuleAction.cs" />
+    <Compile Include="RuleCompiler.cs" />
+    <Compile Include="Rete\AlphaMemory.cs" />
+    <Compile Include="Rete\BetaMemory.cs" />
+    <Compile Include="Rete\AggregateNode.cs" />
+    <Compile Include="Rete\BetaNode.cs" />
+    <Compile Include="Rete\Condition.cs" />
+    <Compile Include="Rete\DummyNode.cs" />
+    <Compile Include="Rete\ExistsNode.cs" />
+    <Compile Include="Rete\ReteBuilderContext.cs" />
+    <Compile Include="Rete\RootNode.cs" />
+    <Compile Include="Rete\SelectionNode.cs" />
+    <Compile Include="Rete\Activation.cs" />
+    <Compile Include="Rete\EventAggregator.cs" />
+    <Compile Include="Rete\BetaCondition.cs" />
+    <Compile Include="Agenda.cs" />
+    <Compile Include="Rete\AlphaMemoryNode.cs" />
+    <Compile Include="Rete\BetaMemoryNode.cs" />
+    <Compile Include="Rete\Fact.cs" />
+    <Compile Include="Rete\IObjectSink.cs" />
+    <Compile Include="Rete\ITupleSink.cs" />
+    <Compile Include="Rete\JoinNode.cs" />
+    <Compile Include="Rete\Network.cs" />
+    <Compile Include="Rete\ReteBuilder.cs" />
+    <Compile Include="Rete\AlphaNode.cs" />
+    <Compile Include="Rete\ActivationEventArgs.cs" />
+    <Compile Include="Rete\RuleNode.cs" />
+    <Compile Include="Rete\Tuple.cs" />
+    <Compile Include="Rete\TypeNode.cs" />
+    <Compile Include="IRuleRepository.cs" />
+    <Compile Include="Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RuleExtensions.cs" />
+    <Compile Include="SessionFactory.cs" />
+    <Compile Include="WorkingMemory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NRules\NRules.csproj">
-      <Project>{D60C7588-09B6-47DA-9459-4C88363E3EAE}</Project>
-      <Name>NRules</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NRules.Dsl\NRules.Dsl.csproj">
-      <Project>{F87E8784-7496-478C-B9A1-8B7504D9964B}</Project>
-      <Name>NRules.Dsl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NRules.Rule\NRules.Rule.csproj">
       <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
       <Name>NRules.Rule</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
