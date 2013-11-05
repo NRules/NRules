@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NRules.Dsl;
 using NRules.IntegrationTests.TestAssets;
 
 namespace NRules.IntegrationTests.TestRules
@@ -9,13 +8,13 @@ namespace NRules.IntegrationTests.TestRules
     {
         public int FactCount { get; set; }
 
-        public override void Define(IDefinition definition)
+        public override void Define()
         {
             IEnumerable<FactType1> collection1 = null;
 
-            definition.When()
+            When()
                 .Collect<FactType1>(() => collection1, f => f.TestProperty.StartsWith("Valid"));
-            definition.Then()
+            Then()
                 .Do(ctx => Notifier.RuleActivated())
                 .Do(ctx => SetCount(collection1.Count()));
         }

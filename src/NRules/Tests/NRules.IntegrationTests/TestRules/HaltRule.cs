@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NRules.Dsl;
-using NRules.IntegrationTests.TestAssets;
+﻿using NRules.IntegrationTests.TestAssets;
 
 namespace NRules.IntegrationTests.TestRules
 {
     public class HaltRule : BaseRule
     {
-        public override void Define(IDefinition definition)
+        public override void Define()
         {
             FactType1 fact1 = null;
 
-            definition.When()
+            When()
                 .If<FactType1>(() => fact1, f => f.TestProperty == "Valid Value");
-            definition.Then()
+            Then()
                 .Do(ctx => Notifier.RuleActivated())
                 .Do(ctx => ctx.Halt());
         }

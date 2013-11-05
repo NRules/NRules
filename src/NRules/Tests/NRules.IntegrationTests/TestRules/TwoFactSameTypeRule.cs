@@ -1,20 +1,19 @@
-﻿using NRules.Dsl;
-using NRules.IntegrationTests.TestAssets;
+﻿using NRules.IntegrationTests.TestAssets;
 
 namespace NRules.IntegrationTests.TestRules
 {
     public class TwoFactSameTypeRule : BaseRule
     {
-        public override void Define(IDefinition definition)
+        public override void Define()
         {
             FactType3 fact1 = null;
             FactType3 fact2 = null;
 
-            definition.When()
+            When()
                 .If<FactType3>(() => fact1, f => f.TestProperty == "Valid Value")
                 .If<FactType3>(() => fact2, f => f.TestProperty == "Valid Value", f => f.Parent == fact1);
 
-            definition.Then()
+            Then()
                 .Do(ctx => Notifier.RuleActivated());
         }
     }

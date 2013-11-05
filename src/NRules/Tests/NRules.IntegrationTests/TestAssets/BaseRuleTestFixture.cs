@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NRules.Dsl;
-using NRules.Inline;
+using NRules.Fluent;
+using NRules.Fluent.Dsl;
 using NUnit.Framework;
 using Rhino.Mocks;
 
@@ -12,7 +12,7 @@ namespace NRules.IntegrationTests.TestAssets
     {
         protected ISession Session;
 
-        private InlineRepository _repository;
+        private RuleRepository _repository;
         private Dictionary<Type, INotifier> _notifiers;
         private List<BaseRule> _rules;
         private IRuleCompiler _compiler;
@@ -23,14 +23,14 @@ namespace NRules.IntegrationTests.TestAssets
         {
             _activator = MockRepository.GenerateStub<IRuleActivator>();
             _compiler = new RuleCompiler();
-            _repository = new InlineRepository();
+            _repository = new RuleRepository();
             _repository.Activator = _activator;
             _notifiers = new Dictionary<Type, INotifier>();
             _rules = new List<BaseRule>();
 
             SetUpRules();
 
-            Func<Type, IRule> action = t => _rules.First(r => r.GetType() == t);
+            Func<Type, Rule> action = t => _rules.First(r => r.GetType() == t);
             _activator.Stub(x => x.Activate(Arg<Type>.Is.Anything)).Do(action);
             _repository.AddFromTypes(_rules.Select(r => r.GetType()).ToArray());
 
@@ -45,7 +45,7 @@ namespace NRules.IntegrationTests.TestAssets
             var notifier = MockRepository.GenerateStub<INotifier>();
             _notifiers.Add(typeof (T), notifier);
 
-            var ruleInstance = new T() {Notifier = notifier};
+            var ruleInstance = new T {Notifier = notifier};
             _rules.Add(ruleInstance);
         }
 

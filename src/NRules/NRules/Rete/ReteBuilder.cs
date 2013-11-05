@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NRules.Rule;
+using NRules.RuleModel;
 
 namespace NRules.Rete
 {

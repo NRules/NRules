@@ -88,17 +88,13 @@
       <Project>{D60C7588-09B6-47DA-9459-4C88363E3EAE}</Project>
       <Name>NRules</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\NRules.Dsl\NRules.Dsl.csproj">
-      <Project>{F87E8784-7496-478C-B9A1-8B7504D9964B}</Project>
-      <Name>NRules.Dsl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\NRules.Inline\NRules.Inline.csproj">
+    <ProjectReference Include="..\..\NRules.Fluent\NRules.Fluent.csproj">
       <Project>{B68D0662-BB3B-4183-85F0-E00875A95BB4}</Project>
-      <Name>NRules.Inline</Name>
+      <Name>NRules.Fluent</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\NRules.Rule\NRules.Rule.csproj">
+    <ProjectReference Include="..\..\NRules.RuleModel\NRules.RuleModel.csproj">
       <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
-      <Name>NRules.Rule</Name>
+      <Name>NRules.RuleModel</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

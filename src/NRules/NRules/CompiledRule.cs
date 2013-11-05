@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using NRules.Rule;
+using NRules.RuleModel;
 
 namespace NRules
 {

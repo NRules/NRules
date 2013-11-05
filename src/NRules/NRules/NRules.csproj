@@ -99,9 +99,9 @@
     <Compile Include="WorkingMemory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NRules.Rule\NRules.Rule.csproj">
+    <ProjectReference Include="..\NRules.RuleModel\NRules.RuleModel.csproj">
       <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
-      <Name>NRules.Rule</Name>
+      <Name>NRules.RuleModel</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

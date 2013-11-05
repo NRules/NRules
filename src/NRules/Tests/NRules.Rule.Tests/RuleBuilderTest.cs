@@ -1,5 +1,5 @@
 ﻿using System;
-using NRules.Rule.Builders;
+using NRules.RuleModel.Builders;
 using NUnit.Framework;
 
 namespace NRules.Rule.Tests

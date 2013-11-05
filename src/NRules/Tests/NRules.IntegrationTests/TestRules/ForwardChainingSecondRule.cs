@@ -1,17 +1,16 @@
-﻿using NRules.Dsl;
-using NRules.IntegrationTests.TestAssets;
+﻿using NRules.IntegrationTests.TestAssets;
 
 namespace NRules.IntegrationTests.TestRules
 {
     public class ForwardChainingSecondRule : BaseRule
     {
-        public override void Define(IDefinition definition)
+        public override void Define()
         {
             FactType2 fact2 = null;
 
-            definition.When()
+            When()
                 .If<FactType2>(() => fact2, f => f.TestProperty == "Valid Value");
-            definition.Then()
+            Then()
                 .Do(ctx => Notifier.RuleActivated());
         }
     }

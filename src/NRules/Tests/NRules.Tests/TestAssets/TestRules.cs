@@ -1,8 +1,8 @@
-﻿using NRules.Dsl;
+﻿using NRules.Fluent.Dsl;
 
 namespace NRules.Tests.TestAssets
 {
-    public class TestRule1 : IRule
+    public class TestRule1 : Rule
     {
         private readonly string _a;
         private readonly string _b;
@@ -22,16 +22,16 @@ namespace NRules.Tests.TestAssets
             Results = string.Empty;
         }
 
-        public void Define(IDefinition definition)
+        public override void Define()
         {
             TestFact1 fact1 = null;
             TestFact2 fact2 = null;
 
-            definition.When()
+            When()
                 .If<TestFact1>(() => fact1, f => f.Name == "Hello")
                 .If<TestFact2>(() => fact2, f => f.Fact1 == fact1);
 
-            definition.Then()
+            Then()
                 .Do(ctx => SaveResult(_a))
                 .Do(ctx => SaveResult(_b));
         }
