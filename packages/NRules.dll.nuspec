@@ -7,13 +7,13 @@
     <owners>Sergiy Nikolayev</owners>
     <licenseUrl>https://github.com/snikolayev/NRules/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/snikolayev/NRules</projectUrl>
-	<iconUrl>http://sergiynikolayev.com/content/images/NRules_Logo.png</iconUrl>
+    <iconUrl>http://sergiynikolayev.com/content/images/NRules_Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Business rules engine for .NET</description>
     <copyright>Copyright 2012-2013 Sergiy Nikolayev. All rights reserved.</copyright>
     <dependencies>
-      <dependency id="Common.Logging" version="2.1.1" />
+        <dependency id="Common.Logging" version="2.1.1" />
     </dependencies>
-	<tags>rules engine dsl inference rete</tags>
+    <tags>rules engine dsl inference rete</tags>
   </metadata>
 </package>

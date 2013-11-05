@@ -9,5 +9,5 @@ First, [install NuGet](http://docs.nuget.org/docs/start-here/installing-nuget). 
 ## Getting Started
 See [Getting Started](https://github.com/snikolayev/NRules/wiki/Getting-Started) guide on NRules [wiki](https://github.com/snikolayev/NRules/wiki).	
 
---	
+--
 Copyright &copy; 2012-2013 [Sergiy Nikolayev](http://sergiynikolayev.com) under the [MIT license](LICENSE.txt).
