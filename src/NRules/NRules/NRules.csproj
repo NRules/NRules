@@ -91,7 +91,6 @@
     <Compile Include="Rete\RuleNode.cs" />
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />
-    <Compile Include="IRuleRepository.cs" />
     <Compile Include="RuleRepositoryExtensions.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

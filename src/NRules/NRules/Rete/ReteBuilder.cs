@@ -26,17 +26,12 @@ namespace NRules.Rete
         {
             element.Match(
                 pattern => BuildPatternNode(context, pattern),
-                group => BuildGroupNode(context, group),
-                aggregate => BuildAggregateNode(context, aggregate));
-        }
-
-        private void BuildGroupNode(ReteBuilderContext context, GroupElement element)
-        {
-            element.Match(
-                and => BuildAndGroupNode(context, element),
-                or => BuildOrGroupNode(context, element),
-                not => BuildNotGroupNode(context, element),
-                exists => BuildExistsGroupNode(context, element));
+                aggregate => BuildAggregateNode(context, aggregate),
+                group => group.Match(
+                    and => BuildAndGroupNode(context, and),
+                    or => BuildOrGroupNode(context, or),
+                    not => BuildNotGroupNode(context, not),
+                    exists => BuildExistsGroupNode(context, exists)));
         }
 
         private void BuildAndGroupNode(ReteBuilderContext context, GroupElement element)
@@ -112,7 +107,6 @@ namespace NRules.Rete
             BuildSubNode(context, element.Source);
             var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
             context.BetaSource = BuildBetaMemoryNode(context, betaNode);
-            //context.RegisterDeclaration(element.Declaration);
             context.AlphaSource = null;
         }
 

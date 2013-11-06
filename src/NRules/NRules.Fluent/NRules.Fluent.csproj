@@ -60,10 +60,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NRules\NRules.csproj">
-      <Project>{D60C7588-09B6-47DA-9459-4C88363E3EAE}</Project>
-      <Name>NRules</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NRules.RuleModel\NRules.RuleModel.csproj">
       <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
       <Name>NRules.RuleModel</Name>

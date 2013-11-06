@@ -5,7 +5,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Rule element that groups actions that execute when the rule fires.
     /// </summary>
-    public class ActionGroupElement
+    public class ActionGroupElement : RuleRightElement
     {
         private readonly List<ActionElement> _actions;
 
@@ -20,6 +20,11 @@ namespace NRules.RuleModel
         public IEnumerable<ActionElement> Actions
         {
             get { return _actions; }
+        }
+
+        internal override void Accept(RuleElementVisitor visitor)
+        {
+            visitor.VisitActionGroup(this);
         }
     }
 }

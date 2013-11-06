@@ -6,7 +6,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Pattern condition element.
     /// </summary>
-    public class ConditionElement
+    public class ConditionElement : RuleElement
     {
         private readonly List<Declaration> _declarations;
 
@@ -27,6 +27,11 @@ namespace NRules.RuleModel
         {
             _declarations = new List<Declaration>(declarations);
             Expression = expression;
+        }
+
+        internal override void Accept(RuleElementVisitor visitor)
+        {
+            visitor.VisitCondition(this);
         }
     }
 }

@@ -1,3 +1,5 @@
+using NRules.RuleModel;
+
 namespace NRules
 {
     public static class RuleRepositoryExtensions

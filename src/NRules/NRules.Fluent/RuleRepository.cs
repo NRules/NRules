@@ -39,7 +39,7 @@ namespace NRules.Fluent
             if (!ruleTypes.Any())
             {
                 throw new ArgumentException(string.Format(
-                    "The supplied assembly does not contain any concrete IRule implementations. Assembly={0}",
+                    "The supplied assembly does not contain any concrete fluent rule definitions. Assembly={0}",
                     assembly.FullName));
             }
 

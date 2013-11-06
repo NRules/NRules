@@ -51,6 +51,7 @@
     </Compile>
     <Compile Include="ActionGroupElement.cs" />
     <Compile Include="AggregateElement.cs" />
+    <Compile Include="AndElement.cs" />
     <Compile Include="Builders\ActionGroupBuilder.cs" />
     <Compile Include="Builders\AggregateBuilder.cs" />
     <Compile Include="Builders\GroupBuilder.cs" />
@@ -58,9 +59,16 @@
     <Compile Include="Builders\RuleBuilder.cs" />
     <Compile Include="Builders\RuleElementBuilder.cs" />
     <Compile Include="CollectionAggregate.cs" />
+    <Compile Include="ExistsElement.cs" />
     <Compile Include="IContext.cs" />
+    <Compile Include="IRuleRepository.cs" />
+    <Compile Include="NotElement.cs" />
+    <Compile Include="OrElement.cs" />
+    <Compile Include="RuleLeftElement.cs" />
+    <Compile Include="RuleRightElement.cs" />
     <Compile Include="RuleDefinition.cs" />
     <Compile Include="ConditionElement.cs" />
+    <Compile Include="RuleElementVisitor.cs" />
     <Compile Include="RuleElementExtensions.cs" />
     <Compile Include="PatternElement.cs" />
     <Compile Include="Declaration.cs" />

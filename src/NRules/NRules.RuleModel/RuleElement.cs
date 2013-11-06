@@ -5,5 +5,6 @@
     /// </summary>
     public abstract class RuleElement
     {
+        internal abstract void Accept(RuleElementVisitor visitor);
     }
 }

@@ -22,5 +22,10 @@ namespace NRules.RuleModel
             AggregateType = aggregateType;
             Source = source;
         }
+
+        internal override void Accept(RuleElementVisitor visitor)
+        {
+            visitor.VisitAggregate(this);
+        }
     }
 }

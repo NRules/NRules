@@ -4,12 +4,38 @@ using System.Collections.Generic;
 namespace NRules.RuleModel.Builders
 {
     /// <summary>
+    /// Type of group element.
+    /// </summary>
+    public enum GroupType
+    {
+        /// <summary>
+        /// Logical AND.
+        /// </summary>
+        And = 0,
+
+        /// <summary>
+        /// Logical OR.
+        /// </summary>
+        Or = 1,
+
+        /// <summary>
+        /// Logical NOT.
+        /// </summary>
+        Not = 2,
+
+        /// <summary>
+        /// Existential quantifier.
+        /// </summary>
+        Exists = 3,
+    }
+
+    /// <summary>
     /// Builder to compose a group element.
     /// </summary>
     public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
     {
         private readonly GroupType _groupType;
-        private readonly List<IBuilder<RuleElement>> _nestedBuilders = new List<IBuilder<RuleElement>>();
+        private readonly List<IBuilder<RuleLeftElement>> _nestedBuilders = new List<IBuilder<RuleLeftElement>>();
 
         internal GroupBuilder(SymbolTable scope, GroupType groupType) : base(scope)
         {
@@ -57,13 +83,30 @@ namespace NRules.RuleModel.Builders
         GroupElement IBuilder<GroupElement>.Build()
         {
             Validate();
-            var childElements = new List<RuleElement>();
+            var childElements = new List<RuleLeftElement>();
             foreach (var nestedBuilder in _nestedBuilders)
             {
-                RuleElement childElement = nestedBuilder.Build();
+                RuleLeftElement childElement = nestedBuilder.Build();
                 childElements.Add(childElement);
             }
-            var groupElement = new GroupElement(_groupType, childElements);
+            GroupElement groupElement;
+            switch (_groupType)
+            {
+                case GroupType.And:
+                    groupElement = new AndElement(childElements);
+                    break;
+                case GroupType.Or:
+                    groupElement = new OrElement(childElements);
+                    break;
+                case GroupType.Not:
+                    groupElement = new ExistsElement(childElements);
+                    break;
+                case GroupType.Exists:
+                    groupElement = new ExistsElement(childElements);
+                    break;
+                default:
+                    throw new InvalidOperationException(string.Format("Unrecognized group type. GroupType={0}", _groupType));
+            }
             return groupElement;
         }
 

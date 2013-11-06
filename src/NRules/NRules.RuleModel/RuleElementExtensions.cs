@@ -6,7 +6,7 @@ namespace NRules.RuleModel
     public static class RuleElementExtensions
     {
         [DebuggerStepThrough]
-        public static void Match(this RuleElement element, Action<PatternElement> pattern, Action<GroupElement> group, Action<AggregateElement> aggregate)
+        public static void Match(this RuleElement element, Action<PatternElement> pattern, Action<AggregateElement> aggregate, Action<GroupElement> group)
         {
             if (element == null)
             {
@@ -31,31 +31,31 @@ namespace NRules.RuleModel
         }
 
         [DebuggerStepThrough]
-        public static void Match(this GroupElement group, Action<GroupElement> and, Action<GroupElement> or, Action<GroupElement> not, Action<GroupElement> exists)
+        public static void Match(this GroupElement element, Action<AndElement> and, Action<OrElement> or, Action<NotElement> not, Action<ExistsElement> exists)
         {
-            if (group == null)
+            if (element == null)
             {
-                throw new ArgumentNullException("group", "Group element cannot be null");
+                throw new ArgumentNullException("element", "Rule element cannot be null");
             }
-            else if (group.GroupType == GroupType.And)
+            else if (element is AndElement)
             {
-                and.Invoke(group);
+                and.Invoke((AndElement)element);
             }
-            else if (group.GroupType == GroupType.Or)
+            else if (element is OrElement)
             {
-                or.Invoke(group);
+                or.Invoke((OrElement)element);
             }
-            else if (group.GroupType == GroupType.Not)
+            else if (element is NotElement)
             {
-                not.Invoke(group);
+                not.Invoke((NotElement)element);
             }
-            else if (group.GroupType == GroupType.Exists)
+            else if (element is ExistsElement)
             {
-                exists.Invoke(group);
+                exists.Invoke((ExistsElement)element);
             }
             else
             {
-                throw new ArgumentOutOfRangeException("group", string.Format("Unsupported group type. GroupType={0}", group.GroupType));
+                throw new ArgumentOutOfRangeException("element", string.Format("Unsupported rule group element. ElementType={0}", element.GetType()));
             }
         }
     }

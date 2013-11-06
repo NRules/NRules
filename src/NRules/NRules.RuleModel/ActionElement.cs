@@ -6,7 +6,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Action that executes when the rule fires.
     /// </summary>
-    public class ActionElement
+    public class ActionElement : RuleRightElement
     {
         private readonly List<Declaration> _declarations;
 
@@ -27,6 +27,11 @@ namespace NRules.RuleModel
         {
             _declarations = new List<Declaration>(declarations);
             Expression = expression;
+        }
+
+        internal override void Accept(RuleElementVisitor visitor)
+        {
+            visitor.VisitAction(this);
         }
     }
 }

@@ -3,53 +3,21 @@
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Type of group element.
-    /// </summary>
-    public enum GroupType
-    {
-        /// <summary>
-        /// Logical AND.
-        /// </summary>
-        And = 0,
-
-        /// <summary>
-        /// Logical OR.
-        /// </summary>
-        Or = 1,
-
-        /// <summary>
-        /// Logical NOT.
-        /// </summary>
-        Not = 2,
-
-        /// <summary>
-        /// Existential quantifier.
-        /// </summary>
-        Exists = 3,
-    }
-
-    /// <summary>
     /// Grouping element that logically combines the patterns.
     /// </summary>
-    public class GroupElement : RuleElement
+    public abstract class GroupElement : RuleLeftElement
     {
-        private readonly List<RuleElement> _childElements;
+        private readonly List<RuleLeftElement> _childElements;
 
-        internal GroupElement(GroupType groupType, IEnumerable<RuleElement> childElements)
+        internal GroupElement(IEnumerable<RuleLeftElement> childElements)
         {
-            GroupType = groupType;
-            _childElements = new List<RuleElement>(childElements);
+            _childElements = new List<RuleLeftElement>(childElements);
         }
-
-        /// <summary>
-        /// Type of grouping.
-        /// </summary>
-        public GroupType GroupType { get; private set; }
 
         /// <summary>
         /// List of child elements in the grouping.
         /// </summary>
-        public IEnumerable<RuleElement> ChildElements
+        public IEnumerable<RuleLeftElement> ChildElements
         {
             get { return _childElements; }
         }

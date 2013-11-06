@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using NRules.RuleModel;
+using System.Collections.Generic;
 
-namespace NRules
+namespace NRules.RuleModel
 {
     /// <summary>
     /// In-memory database of production rules.

@@ -6,7 +6,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Rule element that represents a pattern that matches facts.
     /// </summary>
-    public class PatternElement : RuleElement
+    public class PatternElement : RuleLeftElement
     {
         private readonly List<ConditionElement> _conditions;
 
@@ -44,6 +44,11 @@ namespace NRules.RuleModel
         public IEnumerable<ConditionElement> Conditions
         {
             get { return _conditions; }
+        }
+
+        internal override void Accept(RuleElementVisitor visitor)
+        {
+            visitor.VisitPattern(this);
         }
     }
 }
