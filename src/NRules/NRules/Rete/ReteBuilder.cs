@@ -11,35 +11,23 @@ namespace NRules.Rete
         INetwork GetNetwork();
     }
 
-    internal class ReteBuilder : IReteBuilder
+    internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilder
     {
         private readonly RootNode _root = new RootNode();
 
         public ITerminalNode AddRule(ReteBuilderContext context, IRuleDefinition rule)
         {
-            BuildNode(context, rule.LeftHandSide);
+            Visit(context, rule.LeftHandSide);
             var terminalNode = new TerminalNode(context.BetaSource);
             return terminalNode;
         }
 
-        private void BuildNode(ReteBuilderContext context, RuleElement element)
-        {
-            element.Match(
-                pattern => BuildPatternNode(context, pattern),
-                aggregate => BuildAggregateNode(context, aggregate),
-                group => group.Match(
-                    and => BuildAndGroupNode(context, and),
-                    or => BuildOrGroupNode(context, or),
-                    not => BuildNotGroupNode(context, not),
-                    exists => BuildExistsGroupNode(context, exists)));
-        }
-
-        private void BuildAndGroupNode(ReteBuilderContext context, GroupElement element)
+        protected override void VisitAnd(ReteBuilderContext context, AndElement element)
         {
             context.BetaSource = new DummyNode();
             foreach (var childElement in element.ChildElements)
             {
-                BuildNode(context, childElement);
+                Visit(context, childElement);
                 if (context.AlphaSource != null)
                 {
                     var betaNode = BuildJoinNode(context);
@@ -48,17 +36,17 @@ namespace NRules.Rete
             }
         }
 
-        private void BuildOrGroupNode(ReteBuilderContext context, GroupElement element)
+        protected override void VisitOr(ReteBuilderContext context, OrElement element)
         {
             throw new NotSupportedException("Group Or conditions are not supported");
         }
 
-        private void BuildNotGroupNode(ReteBuilderContext context, GroupElement element)
+        protected override void VisitNot(ReteBuilderContext context, NotElement element)
         {
             throw new NotSupportedException("Group Not conditions are not supported");
         }
 
-        private void BuildExistsGroupNode(ReteBuilderContext context, GroupElement element)
+        protected override void VisitExists(ReteBuilderContext context, ExistsElement element)
         {
             BuildSubNode(context, element.ChildElements.Single());
             var betaNode = new ExistsNode(context.BetaSource, context.AlphaSource);
@@ -66,7 +54,7 @@ namespace NRules.Rete
             context.AlphaSource = null;
         }
 
-        private void BuildPatternNode(ReteBuilderContext context, PatternElement element)
+        protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
         {
             context.RegisterDeclaration(element.Declaration);
             if (element.Source == null)
@@ -97,12 +85,12 @@ namespace NRules.Rete
             }
             else
             {
-                BuildNode(context, element.Source);
+                Visit(context, element.Source);
                 //TODO: Handle a more generic case, when pattern adds its own conditions
             }
         }
 
-        private void BuildAggregateNode(ReteBuilderContext context, AggregateElement element)
+        protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
         {
             BuildSubNode(context, element.Source);
             var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
@@ -113,7 +101,7 @@ namespace NRules.Rete
         private void BuildSubNode(ReteBuilderContext context, RuleElement element)
         {
             var subnetContext = new ReteBuilderContext(context);
-            BuildNode(subnetContext, element);
+            Visit(subnetContext, element);
 
             if (subnetContext.AlphaSource == null)
             {

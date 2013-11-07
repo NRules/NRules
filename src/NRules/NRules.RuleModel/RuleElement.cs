@@ -5,6 +5,6 @@
     /// </summary>
     public abstract class RuleElement
     {
-        internal abstract void Accept(RuleElementVisitor visitor);
+        internal abstract void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor);
     }
 }

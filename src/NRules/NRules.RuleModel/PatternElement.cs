@@ -46,9 +46,9 @@ namespace NRules.RuleModel
             get { return _conditions; }
         }
 
-        internal override void Accept(RuleElementVisitor visitor)
+        internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
         {
-            visitor.VisitPattern(this);
+            visitor.VisitPattern(context, this);
         }
     }
 }

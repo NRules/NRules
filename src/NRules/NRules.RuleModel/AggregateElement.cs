@@ -23,9 +23,9 @@ namespace NRules.RuleModel
             Source = source;
         }
 
-        internal override void Accept(RuleElementVisitor visitor)
+        internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
         {
-            visitor.VisitAggregate(this);
+            visitor.VisitAggregate(context, this);
         }
     }
 }

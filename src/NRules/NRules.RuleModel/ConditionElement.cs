@@ -29,9 +29,9 @@ namespace NRules.RuleModel
             Expression = expression;
         }
 
-        internal override void Accept(RuleElementVisitor visitor)
+        internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
         {
-            visitor.VisitCondition(this);
+            visitor.VisitCondition(context, this);
         }
     }
 }

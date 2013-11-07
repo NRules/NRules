@@ -11,9 +11,9 @@ namespace NRules.RuleModel
         {
         }
 
-        internal override void Accept(RuleElementVisitor visitor)
+        internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
         {
-            visitor.VisitExists(this);
+            visitor.VisitExists(context, this);
         }
     }
 }

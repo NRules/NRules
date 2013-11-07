@@ -1,73 +1,73 @@
 ﻿namespace NRules.RuleModel
 {
-    public class RuleElementVisitor
+    public class RuleElementVisitor<TContext>
     {
-        public void Visit(RuleElement element)
+        public void Visit(TContext context, RuleElement element)
         {
-            element.Accept(this);
+            element.Accept(context, this);
         }
 
-        protected internal virtual void VisitPattern(PatternElement element)
+        protected internal virtual void VisitPattern(TContext context, PatternElement element)
         {
             foreach (ConditionElement condition in element.Conditions)
             {
-                condition.Accept(this);
+                condition.Accept(context, this);
             }
             if (element.Source != null)
             {
-                element.Source.Accept(this);
+                element.Source.Accept(context, this);
             }
         }
 
-        protected internal virtual void VisitAggregate(AggregateElement element)
+        protected internal virtual void VisitAggregate(TContext context, AggregateElement element)
         {
             if (element.Source != null)
             {
-                element.Source.Accept(this);
+                element.Source.Accept(context, this);
             }
         }
 
-        protected internal virtual void VisitActionGroup(ActionGroupElement element)
+        protected internal virtual void VisitActionGroup(TContext context, ActionGroupElement element)
         {
             foreach (ActionElement action in element.Actions)
             {
-                action.Accept(this);
+                action.Accept(context, this);
             }
         }
 
-        protected internal virtual void VisitCondition(ConditionElement element)
+        protected internal virtual void VisitCondition(TContext context, ConditionElement element)
         {
         }
 
-        protected internal virtual void VisitAction(ActionElement element)
+        protected internal virtual void VisitAction(TContext context, ActionElement element)
         {
         }
 
-        protected internal void VisitAnd(AndElement element)
+        protected internal virtual void VisitAnd(TContext context, AndElement element)
         {
-            VisitGroup(element);
-        }
-        
-        protected internal void VisitOr(OrElement element)
-        {
-            VisitGroup(element);
-        }
-        
-        protected internal void VisitNot(NotElement element)
-        {
-            VisitGroup(element);
-        }
-        
-        protected internal void VisitExists(ExistsElement element)
-        {
-            VisitGroup(element);
+            VisitGroup(context, element);
         }
 
-        private void VisitGroup(GroupElement element)
+        protected internal virtual void VisitOr(TContext context, OrElement element)
+        {
+            VisitGroup(context, element);
+        }
+
+        protected internal virtual void VisitNot(TContext context, NotElement element)
+        {
+            VisitGroup(context, element);
+        }
+
+        protected internal virtual void VisitExists(TContext context, ExistsElement element)
+        {
+            VisitGroup(context, element);
+        }
+
+        private void VisitGroup(TContext context, GroupElement element)
         {
             foreach (RuleLeftElement childElement in element.ChildElements)
             {
-                childElement.Accept(this);
+                childElement.Accept(context, this);
             }
         }
     }
