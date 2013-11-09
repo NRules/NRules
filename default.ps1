@@ -74,7 +74,12 @@ task Version -description "Sets version in the source files" {
 	Update-AssemblyVersion $script:version
 }
 
-task Compile -depends InitEnvironment, Version -description "Compiles source code into assemblies" { 
+task Restore -depends InitEnvironment -description "Restores solution dependencies via Nuget" { 
+	$solutionDir = "$srcDir\NRules"
+	&$nugetExec restore $solutionDir -NonInteractive
+}
+
+task Compile -depends InitEnvironment, Version, Restore -description "Compiles source code into assemblies" { 
 	$solutions = Get-ChildItem $srcDir\NRules\*.sln
 	$solutions | % {
 		$solutionFile = $_.FullName
@@ -130,7 +135,7 @@ task Package -depends Build -description "Generates NuGet package" {
 			}
 		}
 		$nuspec.Save($_.FullName);
-		&"$nugetExec" pack $_.FullName -OutputDirectory $nugetDir
+		&$nugetExec pack $_.FullName -OutputDirectory $nugetDir
 	}
 
 	# Upload packages
@@ -141,7 +146,7 @@ task Package -depends Build -description "Generates NuGet package" {
 
 		# Push to nuget repository
 		$packages | ForEach-Object {
-			&"$nugetExec" push "$nugetDir\$($_.BaseName).$nugetVersion.nupkg" $accessKey
+			&$nugetExec push "$nugetDir\$($_.BaseName).$nugetVersion.nupkg" $accessKey
 		}
 	}
 	else {
