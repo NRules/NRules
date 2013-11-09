@@ -18,10 +18,13 @@ param(
     [Parameter(Position=5, Mandatory=0)]
     [System.Collections.Hashtable]$properties = @{},
     [Parameter(Position=6, Mandatory=0)]
-    [switch]$nologo = $false,
+    [alias("init")]
+    [scriptblock]$initialization = {},
     [Parameter(Position=7, Mandatory=0)]
-    [switch]$help = $false,
+    [switch]$nologo = $false,
     [Parameter(Position=8, Mandatory=0)]
+    [switch]$help = $false,
+    [Parameter(Position=9, Mandatory=0)]
     [string]$scriptPath = $(Split-Path -parent $MyInvocation.MyCommand.path)
 )
 
@@ -35,9 +38,9 @@ if ($help) {
 
 if (-not(test-path $buildFile)) {
     $absoluteBuildFile = (join-path $scriptPath $buildFile)
-    if (test-path $absoluteBuildFile)	{
+    if (test-path $absoluteBuildFile) {
         $buildFile = $absoluteBuildFile
     }
 } 
 
-invoke-psake $buildFile $taskList $framework $docs $parameters $properties $nologo
+invoke-psake $buildFile $taskList $framework $docs $parameters $properties $initialization $nologo
