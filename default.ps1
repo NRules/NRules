@@ -96,7 +96,14 @@ task Merge -depends Compile -description "Merges compiled assemblies into coarse
 	$logFileName = "$buildDir\NRulesMergeLog.txt"
 	Create-Directory $mergeDir
 	
-	&$ilMergeExec /out:"$mergeDir\NRules.dll" /log:$logFileName /internalize:$ilMergeExclude $script:ilmergeTargetFramework $assemblies /xmldocs /attr:$attributeFile
+	$keyfile = "$baseDir\..\SigningKey.snk"
+	$keyfileOption = "/keyfile:$keyfile"
+	if (-not (Test-Path $keyfile) ) {
+		$keyfileOption = ""
+		Write-Host "Key file for assembly signing does not exist. Cannot strongly name assembly." -ForegroundColor Yellow
+	}
+	
+	&$ilMergeExec /out:"$mergeDir\NRules.dll" /log:$logFileName $keyfileOption /internalize:$ilMergeExclude $script:ilmergeTargetFramework $assemblies /xmldocs /attr:$attributeFile
 	$mergeLogContent = Get-Content "$logFileName"
 	echo $mergeLogContent
 }
@@ -150,6 +157,6 @@ task Package -depends Build -description "Generates NuGet package" {
 		}
 	}
 	else {
-		Write-Host "Nuget-Access-Key.txt does not exit. Cannot publish the nuget package." -ForegroundColor Yellow
+		Write-Host "Nuget-Access-Key.txt does not exist. Cannot publish the nuget package." -ForegroundColor Yellow
 	}
 }
