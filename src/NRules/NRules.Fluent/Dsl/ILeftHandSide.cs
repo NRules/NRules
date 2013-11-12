@@ -35,5 +35,13 @@ namespace NRules.Fluent.Dsl
         /// <param name="conditions">Set of conditions the facts must satisfy to be considered.</param>
         /// <returns>Left hand side expression builder.</returns>
         ILeftHandSide Exists<T>(params Expression<Func<T, bool>>[] conditions);
+
+        /// <summary>
+        /// Defines a pattern that triggers the rule only if there are no matching facts.
+        /// </summary>
+        /// <typeparam name="T">Type of fact to match.</typeparam>
+        /// <param name="conditions">Set of conditions the facts must satisfy to be considered.</param>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSide Not<T>(params Expression<Func<T, bool>>[] conditions);
     }
 }

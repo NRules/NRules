@@ -68,6 +68,22 @@ namespace NRules.Fluent
             return this;
         }
 
+        public ILeftHandSide Not<T>(params Expression<Func<T, bool>>[] conditions)
+        {
+            var leftHandSide = _builder.LeftHandSide();
+
+            var notBuilder = leftHandSide.Group(GroupType.Not);
+
+            var patternBuilder = notBuilder.Pattern(typeof(T));
+            foreach (var condition in conditions)
+            {
+                var rewriter = new ConditionRewriter(leftHandSide.Declarations);
+                var rewrittenCondition = rewriter.Rewrite(patternBuilder.Declaration, condition);
+                patternBuilder.Condition(rewrittenCondition);
+            }
+            return this;
+        }
+
         public IRightHandSide Do(Expression<Action<IContext>> action)
         {
             var rightHandSide = _builder.RightHandSide();

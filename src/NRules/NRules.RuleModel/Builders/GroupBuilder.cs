@@ -70,6 +70,7 @@ namespace NRules.RuleModel.Builders
             switch (groupType)
             {
                 case GroupType.Exists:
+                case GroupType.Not:
                     scope = Scope.New();
                     break;
             }
@@ -99,7 +100,7 @@ namespace NRules.RuleModel.Builders
                     groupElement = new OrElement(childElements);
                     break;
                 case GroupType.Not:
-                    groupElement = new ExistsElement(childElements);
+                    groupElement = new NotElement(childElements);
                     break;
                 case GroupType.Exists:
                     groupElement = new ExistsElement(childElements);
@@ -123,7 +124,11 @@ namespace NRules.RuleModel.Builders
                 case GroupType.Or:
                     throw new NotSupportedException("Group condition OR is not supported");
                 case GroupType.Not:
-                    throw new NotSupportedException("Group condition NOT is not supported");
+                    if (_nestedBuilders.Count != 1)
+                    {
+                        throw new NotSupportedException("Group condition NOT requires exactly one child element");
+                    }
+                    break;
                 case GroupType.Exists:
                     if (_nestedBuilders.Count != 1)
                     {
