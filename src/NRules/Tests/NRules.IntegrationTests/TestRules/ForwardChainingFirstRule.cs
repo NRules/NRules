@@ -9,7 +9,7 @@ namespace NRules.IntegrationTests.TestRules
             FactType1 fact1 = null;
 
             When()
-                .If<FactType1>(() => fact1, f => f.TestProperty == "Valid Value");
+                .Match<FactType1>(() => fact1, f => f.TestProperty == "Valid Value");
             Then()
                 .Do(ctx => Notifier.RuleActivated())
                 .Do(ctx => ctx.Insert(new FactType2()

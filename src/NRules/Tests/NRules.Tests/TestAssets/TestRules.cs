@@ -28,8 +28,8 @@ namespace NRules.Tests.TestAssets
             TestFact2 fact2 = null;
 
             When()
-                .If<TestFact1>(() => fact1, f => f.Name == "Hello")
-                .If<TestFact2>(() => fact2, f => f.Fact1 == fact1);
+                .Match<TestFact1>(() => fact1, f => f.Name == "Hello")
+                .Match<TestFact2>(() => fact2, f => f.Fact1 == fact1);
 
             Then()
                 .Do(ctx => SaveResult(_a))

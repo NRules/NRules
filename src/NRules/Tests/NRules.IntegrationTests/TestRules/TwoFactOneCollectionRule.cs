@@ -14,7 +14,7 @@ namespace NRules.IntegrationTests.TestRules
             IEnumerable<FactType2> collection2 = null;
 
             When()
-                .If<FactType1>(() => fact1, f => f.TestProperty == "Valid Value")
+                .Match<FactType1>(() => fact1, f => f.TestProperty == "Valid Value")
                 .Collect<FactType2>(() => collection2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinReference == fact1);
             Then()
                 .Do(ctx => Notifier.RuleActivated())

@@ -16,7 +16,7 @@ namespace NRules.Fluent.Dsl
         /// <param name="alias">Alias for the matching fact.</param>
         /// <param name="conditions">Set of conditions the fact must satisfy, for the rule to fire.</param>
         /// <returns>Left hand side expression builder.</returns>
-        ILeftHandSide If<T>(Expression<Func<T>> alias, params Expression<Func<T, bool>>[] conditions);
+        ILeftHandSide Match<T>(Expression<Func<T>> alias, params Expression<Func<T, bool>>[] conditions);
 
         /// <summary>
         /// Defines a pattern that aggregates matching facts into a collection.

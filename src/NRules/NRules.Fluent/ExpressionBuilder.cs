@@ -17,7 +17,7 @@ namespace NRules.Fluent
             _builder = builder;
         }
 
-        public ILeftHandSide If<T>(Expression<Func<T>> alias, params Expression<Func<T, bool>>[] conditions)
+        public ILeftHandSide Match<T>(Expression<Func<T>> alias, params Expression<Func<T, bool>>[] conditions)
         {
             var patternSymbol = ExtractSymbol(alias);
             var leftHandSide = _builder.LeftHandSide();
