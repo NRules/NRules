@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,7 +8,6 @@ namespace NRules.Rete
     {
         private readonly List<Tuple> _leftTuples = new List<Tuple>();
         private readonly List<Tuple> _childTuples = new List<Tuple>();
-        private readonly Dictionary<Type, object> _objects = new Dictionary<Type, object>();
 
         public Tuple()
         {
@@ -30,21 +28,6 @@ namespace NRules.Rete
         public Fact RightFact { get; private set; }
         public Tuple LeftTuple { get; private set; }
         public int Count { get; private set; }
-
-        public T GetStateObject<T>()
-        {
-            object obj;
-            if (!_objects.TryGetValue(typeof (T), out obj))
-            {
-                return default(T);
-            }
-            return (T) obj;
-        }
-
-        public void SetStateObject<T>(T obj)
-        {
-            _objects[typeof (T)] = obj;
-        }
 
         public IList<Tuple> ChildTuples
         {

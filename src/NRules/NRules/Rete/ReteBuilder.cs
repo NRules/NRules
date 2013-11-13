@@ -43,7 +43,10 @@ namespace NRules.Rete
 
         protected override void VisitNot(ReteBuilderContext context, NotElement element)
         {
-            throw new NotSupportedException("Group Not conditions are not supported");
+            BuildSubNode(context, element.ChildElements.Single());
+            var notNode = new NotNode(context.BetaSource, context.AlphaSource);
+            context.BetaSource = BuildBetaMemoryNode(context, notNode);
+            context.AlphaSource = null;
         }
 
         protected override void VisitExists(ReteBuilderContext context, ExistsElement element)
@@ -132,7 +135,7 @@ namespace NRules.Rete
         private IBetaMemoryNode BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
         {
             var memoryNode = new BetaMemoryNode();
-            betaNode.MemoryNode = memoryNode;
+            betaNode.Sink = memoryNode;
             return memoryNode;
         }
 

@@ -14,82 +14,134 @@ namespace NRules.Rete
             _aggregateFactory = () => (IAggregate) Activator.CreateInstance(aggregateType);
         }
 
-        protected override void PropagateMatchedAssert(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
+        public override void PropagateAssert(IWorkingMemory workingMemory, Tuple tuple)
         {
-            IAggregate aggregate = GetAggregate(leftTuple);
-            var result = aggregate.Add(rightFact.Object);
-            HandleAggregateResult(workingMemory, result, leftTuple, aggregate);
+            IAggregate aggregate = GetAggregate(workingMemory);
+            Fact aggregateFact = workingMemory.GetFact(aggregate.Result);
+            PropagateAggregateAssert(workingMemory, tuple, aggregateFact);
         }
 
-        protected override void PropagateMatchedUpdate(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
+        public override void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
         {
-            IAggregate aggregate = GetAggregate(leftTuple);
-            var result = aggregate.Modify(rightFact.Object);
-            HandleAggregateResult(workingMemory, result, leftTuple, aggregate);
+            IAggregate aggregate = GetAggregate(workingMemory);
+            Fact aggregateFact = workingMemory.GetFact(aggregate.Result);
+            PropagateAggregateUpdate(workingMemory, tuple, aggregateFact);
         }
 
-        protected override void PropagateMatchedRetract(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
+        public override void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
         {
-            IAggregate aggregate = GetAggregate(leftTuple);
-            var result = aggregate.Remove(rightFact.Object);
-            HandleAggregateResult(workingMemory, result, leftTuple, aggregate);
+            IAggregate aggregate = GetAggregate(workingMemory);
+            Fact aggregateFact = workingMemory.GetFact(aggregate.Result);
+            PropagateAggregateRetract(workingMemory, tuple, aggregateFact);
         }
 
-        private void HandleAggregateResult(IWorkingMemory workingMemory, AggregationResults result, Tuple leftTuple,
-                                           IAggregate aggregate)
+        public override void PropagateAssert(IWorkingMemory workingMemory, Fact fact)
         {
+            IAggregate aggregate = GetAggregate(workingMemory);
+            var result = aggregate.Add(fact.Object);
+
+            var tuples = LeftSource.GetTuples(workingMemory);
+            foreach (var tuple in tuples)
+            {
+                HandleAggregateResult(workingMemory, result, tuple, aggregate);
+            }
+        }
+
+        public override void PropagateUpdate(IWorkingMemory workingMemory, Fact fact)
+        {
+            IAggregate aggregate = GetAggregate(workingMemory);
+            var result = aggregate.Modify(fact.Object);
+
+            var tuples = LeftSource.GetTuples(workingMemory);
+            foreach (var tuple in tuples)
+            {
+                HandleAggregateResult(workingMemory, result, tuple, aggregate);
+            }
+        }
+
+        public override void PropagateRetract(IWorkingMemory workingMemory, Fact fact)
+        {
+            IAggregate aggregate = GetAggregate(workingMemory);
+            var result = aggregate.Remove(fact.Object);
+
+            var tuples = LeftSource.GetTuples(workingMemory);
+            foreach (var tuple in tuples)
+            {
+                HandleAggregateResult(workingMemory, result, tuple, aggregate);
+            }
+        }
+
+        private void HandleAggregateResult(IWorkingMemory workingMemory, AggregationResults result, Tuple leftTuple, IAggregate aggregate)
+        {
+            Fact aggregateFact = GetAggregateFact(workingMemory, aggregate);
             switch (result)
             {
                 case AggregationResults.Added:
-                    PropagateAggregateAssert(workingMemory, leftTuple, aggregate);
+                    PropagateAggregateAssert(workingMemory, leftTuple, aggregateFact);
                     break;
                 case AggregationResults.Modified:
-                    PropagateAggregateUpdate(workingMemory, leftTuple, aggregate);
+                    PropagateAggregateUpdate(workingMemory, leftTuple, aggregateFact);
                     break;
                 case AggregationResults.Removed:
-                    PropagateAggregateRetract(workingMemory, leftTuple, aggregate);
+                    PropagateAggregateRetract(workingMemory, leftTuple, aggregateFact);
                     break;
             }
         }
 
-        private void PropagateAggregateAssert(IWorkingMemory workingMemory, Tuple leftTuple, IAggregate aggregate)
+        private void PropagateAggregateAssert(IWorkingMemory workingMemory, Tuple tuple, Fact aggregateFact)
         {
-            var fact = new Fact(aggregate.Result);
-            workingMemory.SetFact(fact);
-            var newTuple = CreateTuple(leftTuple, fact);
-            MemoryNode.PropagateAssert(workingMemory, newTuple);
-        }
-
-        private void PropagateAggregateUpdate(IWorkingMemory workingMemory, Tuple leftTuple, IAggregate aggregate)
-        {
-            Fact fact = workingMemory.GetFact(aggregate.Result);
-            var childTuples = leftTuple.ChildTuples.Where(t => t.RightFact == fact).ToList();
-            foreach (var childTuple in childTuples)
+            if (aggregateFact != null)
             {
-                MemoryNode.PropagateUpdate(workingMemory, childTuple);
+                var newTuple = new Tuple(tuple, aggregateFact);
+                Sink.PropagateAssert(workingMemory, newTuple);
             }
         }
 
-        private void PropagateAggregateRetract(IWorkingMemory workingMemory, Tuple leftTuple, IAggregate aggregate)
+        private void PropagateAggregateUpdate(IWorkingMemory workingMemory, Tuple tuple, Fact aggregateFact)
         {
-            Fact fact = workingMemory.GetFact(aggregate.Result);
-            workingMemory.RemoveFact(fact);
-            var childTuples = leftTuple.ChildTuples.Where(t => t.RightFact == fact).ToList();
-            foreach (var childTuple in childTuples)
+            if (aggregateFact != null)
             {
-                MemoryNode.PropagateRetract(workingMemory, childTuple);
+                Tuple childTuple = tuple.ChildTuples.FirstOrDefault(t => t.RightFact == aggregateFact);
+                if (childTuple != null)
+                {
+                    Sink.PropagateUpdate(workingMemory, childTuple);
+                }
             }
         }
 
-        private IAggregate GetAggregate(Tuple tuple)
+        private void PropagateAggregateRetract(IWorkingMemory workingMemory, Tuple tuple, Fact aggregateFact)
         {
-            var aggregate = tuple.GetStateObject<IAggregate>();
+            if (aggregateFact != null)
+            {
+                Tuple childTuple = tuple.ChildTuples.FirstOrDefault(t => t.RightFact == aggregateFact);
+                if (childTuple != null)
+                {
+                    Sink.PropagateRetract(workingMemory, childTuple);
+                }
+            }
+        }
+        
+        private IAggregate GetAggregate(IWorkingMemory workingMemory)
+        {
+            var aggregate = (IAggregate) workingMemory.GetNodeState(this);
             if (aggregate == null)
             {
                 aggregate = _aggregateFactory();
-                tuple.SetStateObject(aggregate);
+                workingMemory.SetNodeState(this, aggregate);
             }
             return aggregate;
+        }
+
+        private Fact GetAggregateFact(IWorkingMemory workingMemory, IAggregate aggregate)
+        {
+            if (aggregate.Result == null) return null;
+            Fact fact = workingMemory.GetFact(aggregate.Result);
+            if (fact == null)
+            {
+                fact = new Fact(aggregate.Result);
+                workingMemory.SetFact(fact);
+            }
+            return fact;
         }
     }
 }
