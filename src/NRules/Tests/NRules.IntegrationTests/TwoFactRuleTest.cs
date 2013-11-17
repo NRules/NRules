@@ -8,7 +8,7 @@ namespace NRules.IntegrationTests
     public class TwoFactRuleTest : BaseRuleTestFixture
     {
         [Test]
-        public void TwoFactRule_MatchingFacts_FiresOnce()
+        public void Fire_MatchingFacts_FiresOnce()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -25,7 +25,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactRule_MatchingFactsReverseOrder_FiresOnce()
+        public void Fire_MatchingFactsReverseOrder_FiresOnce()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -42,7 +42,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactRule_TwoMatchingPairsOfFacts_FiresTwice()
+        public void Fire_TwoMatchingPairsOfFacts_FiresTwice()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -64,7 +64,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactRule_TwoMatchingFactsOfOneKindOneMatchingFactOfAnotherKind_FiresTwice()
+        public void Fire_TwoMatchingFactsOfOneKindOneMatchingFactOfAnotherKind_FiresTwice()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -83,7 +83,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactRule_FirstMatchingFactSecondInvalidFact_DoesNotFire()
+        public void Fire_FirstMatchingFactSecondInvalidFact_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Invalid Value"};
@@ -100,7 +100,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactRule_FirstInvalidFactSecondMatchingFact_DoesNotFire()
+        public void Fire_FirstInvalidFactSecondMatchingFact_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -117,7 +117,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactRule_TwoMatchingFactsUnsatisfiedJoin_DoesNotFire()
+        public void Fire_TwoMatchingFactsUnsatisfiedJoin_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -134,7 +134,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactRule_TwoMatchingFactsFirstRetracted_DoesNotFire()
+        public void Fire_TwoMatchingFactsFirstRetracted_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -152,7 +152,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactRule_TwoMatchingFactsSecondRetracted_DoesNotFire()
+        public void Fire_TwoMatchingFactsSecondRetracted_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -170,7 +170,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactRule_TwoMatchingFactsFirstUpdatedToInvalid_DoesNotFire()
+        public void Fire_TwoMatchingFactsFirstUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -190,7 +190,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactRule_TwoMatchingFactsSecondUpdatedToInvalid_DoesNotFire()
+        public void Fire_TwoMatchingFactsSecondUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};

@@ -8,7 +8,7 @@ namespace NRules.IntegrationTests
     public class NodeSharingTest : BaseRuleTestFixture
     {
         [Test]
-        public void NodeSharing_TwoMatchingFacts_BothRulesFireOnceEach()
+        public void Fire_TwoMatchingFacts_BothRulesFireOnceEach()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};

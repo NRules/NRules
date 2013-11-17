@@ -8,7 +8,7 @@ namespace NRules.IntegrationTests
     public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
     {
         [Test]
-        public void OneFactOneCollectionRule_TwoMatchingFactsAndOneInvalid_FiresOnceWithTwoFactsInCollection()
+        public void Fire_TwoMatchingFactsAndOneInvalid_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -28,7 +28,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneCollectionRule_TwoMatchingFactsInsertedOneRetracted_FiresOnceWithOneFactInCollection()
+        public void Fire_TwoMatchingFactsInsertedOneRetracted_FiresOnceWithOneFactInCollection()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -47,7 +47,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneCollectionRule_TwoMatchingFactsInsertedTwoRetracted_DoesNotFire()
+        public void Fire_TwoMatchingFactsInsertedTwoRetracted_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};

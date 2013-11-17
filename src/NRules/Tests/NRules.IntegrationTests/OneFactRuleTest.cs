@@ -9,7 +9,7 @@ namespace NRules.IntegrationTests
     public class OneFactRuleTest : BaseRuleTestFixture
     {
         [Test]
-        public void OneFactRule_OneMatchingFact_FiresOnce()
+        public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
             var fact = new FactType1() {TestProperty = "Valid Value"};
@@ -23,7 +23,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactRule_TwoMatchingFacts_FiresTwice()
+        public void Fire_TwoMatchingFacts_FiresTwice()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -39,7 +39,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactRule_ConditionDoesNotMatch_DoesNotFire()
+        public void Fire_ConditionDoesNotMatch_DoesNotFire()
         {
             //Arrange
             var fact = new FactType1() {TestProperty = "Invalid Value"};
@@ -53,7 +53,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactRule_OneMatchingFactAssertedAndRetracted_DoesNotFire()
+        public void Fire_OneMatchingFactAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
             var fact = new FactType1() {TestProperty = "Valid Value"};
@@ -68,7 +68,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactRule_OneFactUpdatedFromInvalidToMatching_FiresOnce()
+        public void Fire_OneFactUpdatedFromInvalidToMatching_FiresOnce()
         {
             //Arrange
             var fact = new FactType1() {TestProperty = "Invalid Value"};
@@ -85,7 +85,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactRule_OneMatchingFactAssertedAndRetractedAndAssertedAgain_FiresOnce()
+        public void Fire_OneMatchingFactAssertedAndRetractedAndAssertedAgain_FiresOnce()
         {
             //Arrange
             var fact = new FactType1() {TestProperty = "Valid Value"};
@@ -101,7 +101,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactRule_OneMatchingFactAssertedAndUpdatedToInvalid_DoesNotFire()
+        public void Fire_OneMatchingFactAssertedAndUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
             var fact = new FactType1() {TestProperty = "Valid Value"};
@@ -118,7 +118,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactRule_DuplicateInsert_Throws()
+        public void Fire_DuplicateInsert_Throws()
         {
             //Arrange
             var fact = new FactType1() {TestProperty = "Valid Value"};
@@ -129,7 +129,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactRule_UpdateWithoutInsert_Throws()
+        public void Fire_UpdateWithoutInsert_Throws()
         {
             //Arrange
             var fact = new FactType1() {TestProperty = "Valid Value"};
@@ -139,7 +139,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactRule_RetractWithoutInsert_Throws()
+        public void Fire_RetractWithoutInsert_Throws()
         {
             //Arrange
             var fact = new FactType1() {TestProperty = "Valid Value"};

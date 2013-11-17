@@ -8,7 +8,7 @@ namespace NRules.IntegrationTests
     public class TwoFactOneNotRuleTest : BaseRuleTestFixture
     {
         [Test]
-        public void TwoFactOneNotRule_MatchingNotPatternFacts_DoesNotFire()
+        public void Fire_MatchingNotPatternFacts_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -25,7 +25,7 @@ namespace NRules.IntegrationTests
         }
         
         [Test]
-        public void TwoFactOneNotRule_MatchingNotPatternFactAssertedThenRetracted_FiresOnce()
+        public void Fire_MatchingNotPatternFactAssertedThenRetracted_FiresOnce()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -43,7 +43,7 @@ namespace NRules.IntegrationTests
         }
         
         [Test]
-        public void TwoFactOneNotRule_MatchingNotPatternFactAssertedThenUpdatedToInvalid_FiresOnce()
+        public void Fire_MatchingNotPatternFactAssertedThenUpdatedToInvalid_FiresOnce()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -63,7 +63,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactOneNotRule_MatchingFactAndNoFactsMatchingNotPattern_FiresOnce()
+        public void Fire_MatchingFactAndNoFactsMatchingNotPattern_FiresOnce()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -78,7 +78,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactOneNotRule_TwoMatchingFactsAndNoFactsMatchingNotPattern_FiresTwice()
+        public void Fire_TwoMatchingFactsAndNoFactsMatchingNotPattern_FiresTwice()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};

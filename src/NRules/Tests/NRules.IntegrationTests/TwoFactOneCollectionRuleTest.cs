@@ -8,7 +8,7 @@ namespace NRules.IntegrationTests
     public class TwoFactOneCollectionRuleTest : BaseRuleTestFixture
     {
         [Test]
-        public void TwoFactOneCollectionRule_OneMatchingFactOfOneKindAndTwoOfAnother_FiresOnceWithTwoFactsInCollection()
+        public void Fire_OneMatchingFactOfOneKindAndTwoOfAnother_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -32,7 +32,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactOneCollectionRule_FactOfOneKindIsValidAndTwoOfAnotherKindAreAssertedThenOneRetracted_FiresOnceWithOneFactInCollection()
+        public void Fire_FactOfOneKindIsValidAndTwoOfAnotherKindAreAssertedThenOneRetracted_FiresOnceWithOneFactInCollection()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -54,7 +54,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactOneCollectionRule_FactOfOneKindIsValidAndTwoOfAnotherKindAreAssertedThenRetracted_DoesNotFire()
+        public void Fire_FactOfOneKindIsValidAndTwoOfAnotherKindAreAssertedThenRetracted_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -76,7 +76,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactOneCollectionRule_FactOfOneKindIsInvalidAndTwoOfAnotherKindAreValid_DoesNotFire()
+        public void Fire_FactOfOneKindIsInvalidAndTwoOfAnotherKindAreValid_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Invalid Value"};
@@ -97,7 +97,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactOneCollectionRule_FactOfOneKindIsAssertedThenRetractedAndTwoOfAnotherKindAreValid_DoesNotFire()
+        public void Fire_FactOfOneKindIsAssertedThenRetractedAndTwoOfAnotherKindAreValid_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -120,7 +120,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void TwoFactOneCollectionRule_FactOfOneKindIsAssertedThenUpdatedToInvalidAndTwoOfAnotherKindAreValid_DoesNotFire()
+        public void Fire_FactOfOneKindIsAssertedThenUpdatedToInvalidAndTwoOfAnotherKindAreValid_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};

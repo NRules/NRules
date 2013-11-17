@@ -8,7 +8,7 @@ namespace NRules.IntegrationTests
     public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
     {
         [Test]
-        public void OneFactOneExistsCheckRule_MatchingFacts_FiresOnce()
+        public void Fire_MatchingFacts_FiresOnce()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -25,7 +25,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneExistsCheckRule_MatchingFactsMultipleOfTypeTwo_FiresOnce()
+        public void Fire_MatchingFactsMultipleOfTypeTwo_FiresOnce()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -44,7 +44,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneExistsCheckRule_MatchingFactsTwoOfTypeOneMultipleOfTypeTwo_FiresTwice()
+        public void Fire_MatchingFactsTwoOfTypeOneMultipleOfTypeTwo_FiresTwice()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value One"};
@@ -67,7 +67,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneExistsCheckRule_FactOneValidFactTwoAssertedAndRetracted_DoesNotFire()
+        public void Fire_FactOneValidFactTwoAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -85,7 +85,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneExistsCheckRule_FactOneValidFactTwoAssertedAndUpdatedToInvalid_DoesNotFire()
+        public void Fire_FactOneValidFactTwoAssertedAndUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};
@@ -105,7 +105,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void OneFactOneExistsCheckRule_FactTwoDoesNotExist_DoesNotFire()
+        public void Fire_FactTwoDoesNotExist_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};

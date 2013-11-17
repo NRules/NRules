@@ -10,7 +10,7 @@ namespace NRules.IntegrationTests
     public class PriorityTest : BaseRuleTestFixture
     {
         [Test]
-        public void Priority_LowPriorityActivatesTwiceTriggersHighPriority_HighPriorityPreemptsLowPriority()
+        public void Fire_LowPriorityActivatesTwiceTriggersHighPriority_HighPriorityPreemptsLowPriority()
         {
             //Arrange
             var fact1 = new FactType1() {TestProperty = "Valid Value"};

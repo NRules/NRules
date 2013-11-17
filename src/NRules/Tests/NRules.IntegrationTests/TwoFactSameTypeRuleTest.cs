@@ -8,7 +8,7 @@ namespace NRules.IntegrationTests
     public class TwoFactSameTypeRuleTest : BaseRuleTestFixture
     {
         [Test]
-        public void TwoFactSameTypeRule_MatchingFacts_FiresOnce()
+        public void Fire_MatchingFacts_FiresOnce()
         {
             //Arrange
             var fact1 = new FactType3() {TestProperty = "Valid Value"};
@@ -29,7 +29,7 @@ namespace NRules.IntegrationTests
         }
         
         [Test]
-        public void TwoFactSameTypeRuleFirstMatchingFactSecondInvalid_DoesNotFire()
+        public void Fire_FirstMatchingFactSecondInvalid_DoesNotFire()
         {
             //Arrange
             var fact1 = new FactType3() {TestProperty = "Valid Value"};
