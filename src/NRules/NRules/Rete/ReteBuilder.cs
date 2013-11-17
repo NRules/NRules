@@ -44,8 +44,8 @@ namespace NRules.Rete
         protected override void VisitNot(ReteBuilderContext context, NotElement element)
         {
             BuildSubNode(context, element.ChildElements.Single());
-            var notNode = new NotNode(context.BetaSource, context.AlphaSource);
-            context.BetaSource = BuildBetaMemoryNode(context, notNode);
+            var betaNode = new NotNode(context.BetaSource, context.AlphaSource);
+            context.BetaSource = BuildBetaMemoryNode(context, betaNode);
             context.AlphaSource = null;
         }
 

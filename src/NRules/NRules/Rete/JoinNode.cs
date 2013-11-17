@@ -48,7 +48,6 @@ namespace NRules.Rete
             {
                 PropagateMatchedRetract(workingMemory, tuple, rightFact);
             }
-            tuple.Clear();
         }
 
         public override void PropagateAssert(IWorkingMemory workingMemory, Fact rightFact)
@@ -113,6 +112,7 @@ namespace NRules.Rete
             if (tuple != null)
             {
                 Sink.PropagateRetract(workingMemory, tuple);
+                tuple.Clear();
             }
         }
 

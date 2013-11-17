@@ -27,7 +27,6 @@
         public void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
         {
             _ruleNode.Deactivate(workingMemory, tuple);
-            tuple.Clear();
         }
 
         public void Attach(IRuleNode ruleNode)

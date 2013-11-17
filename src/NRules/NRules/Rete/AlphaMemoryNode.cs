@@ -34,7 +34,10 @@ namespace NRules.Rete
         {
             IAlphaMemory memory = workingMemory.GetNodeMemory(this);
             memory.Facts.Remove(fact);
-            _sinks.ForEach(s => s.PropagateRetract(workingMemory, fact));
+            foreach (var sink in _sinks)
+            {
+                sink.PropagateRetract(workingMemory, fact);
+            }
         }
 
         public IEnumerable<Fact> GetFacts(IWorkingMemory workingMemory)
