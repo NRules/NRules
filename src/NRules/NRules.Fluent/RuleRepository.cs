@@ -63,28 +63,38 @@ namespace NRules.Fluent
             }
 
             var ruleSet = new RuleSet();
-            AddRulesToRuleSet(ruleTypes, ruleSet);
+            var rules = ruleTypes.Select(Activator.Activate);
+            AddRulesToRuleSet(rules, ruleSet);
+            Add(ruleSet);
+        }
 
-            AddRuleSet(ruleSet);
+        /// <summary>
+        /// Loads internal DSL rules into the repository.
+        /// </summary>
+        /// <param name="rules">List of rules.</param>
+        public void Add(IEnumerable<Dsl.Rule> rules)
+        {
+            var ruleSet = new RuleSet();
+            AddRulesToRuleSet(rules, ruleSet);
+            Add(ruleSet);
         }
 
         /// <summary>
         /// Adds an existing ruleset to the repository.
         /// </summary>
         /// <param name="ruleSet">Ruleset to add.</param>
-        public void AddRuleSet(IRuleSet ruleSet)
+        public void Add(IRuleSet ruleSet)
         {
             _ruleSets.Add(ruleSet);
         }
 
-        private void AddRulesToRuleSet(Type[] types, IRuleSet ruleSet)
+        private void AddRulesToRuleSet(IEnumerable<Dsl.Rule> rules, IRuleSet ruleSet)
         {
-            foreach (Type type in types)
+            foreach (var rule in rules)
             {
-                Dsl.Rule instance = Activator.Activate(type);
-                instance.Define();
-                IRuleDefinition rule = instance.Builder.Build();
-                ruleSet.AddRule(rule);
+                rule.Define();
+                IRuleDefinition ruleDefinition = rule.Builder.Build();
+                ruleSet.AddRule(ruleDefinition);
             }
         }
 

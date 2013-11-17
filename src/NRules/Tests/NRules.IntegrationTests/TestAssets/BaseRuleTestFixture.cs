@@ -12,29 +12,20 @@ namespace NRules.IntegrationTests.TestAssets
     {
         protected ISession Session;
 
-        private RuleRepository _repository;
         private Dictionary<Type, INotifier> _notifiers;
         private List<BaseRule> _rules;
-        private IRuleCompiler _compiler;
-        private IRuleActivator _activator;
 
         [SetUp]
         public void SetUp()
         {
-            _activator = MockRepository.GenerateStub<IRuleActivator>();
-            _compiler = new RuleCompiler();
-            _repository = new RuleRepository();
-            _repository.Activator = _activator;
             _notifiers = new Dictionary<Type, INotifier>();
             _rules = new List<BaseRule>();
-
             SetUpRules();
 
-            Func<Type, Rule> action = t => _rules.First(r => r.GetType() == t);
-            _activator.Stub(x => x.Activate(Arg<Type>.Is.Anything)).Do(action);
-            _repository.AddFromTypes(_rules.Select(r => r.GetType()).ToArray());
+            var repository = new RuleRepository {Activator = new InstanceActivator(_rules)};
+            repository.Add(_rules);
 
-            ISessionFactory factory = _compiler.Compile(_repository.GetRules());
+            ISessionFactory factory = repository.Compile();
             Session = factory.CreateSession();
         }
 
@@ -92,6 +83,21 @@ namespace NRules.IntegrationTests.TestAssets
         protected void AssertDidNotFire<T>()
         {
             GetNotifier<T>().AssertWasNotCalled(x => x.RuleActivated());
+        }
+
+        private class InstanceActivator : IRuleActivator
+        {
+            private readonly Dictionary<Type, Rule> _rules;
+
+            public InstanceActivator(IEnumerable<Rule> rules)
+            {
+                _rules = rules.ToDictionary(r => r.GetType());
+            }
+
+            public Rule Activate(Type type)
+            {
+                return _rules[type];
+            }
         }
     }
 }
