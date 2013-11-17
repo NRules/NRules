@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Moq;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
 using NUnit.Framework;
-using Rhino.Mocks;
 
 namespace NRules.IntegrationTests.TestAssets
 {
@@ -12,13 +12,13 @@ namespace NRules.IntegrationTests.TestAssets
     {
         protected ISession Session;
 
-        private Dictionary<Type, INotifier> _notifiers;
+        private Dictionary<Type, Mock<INotifier>> _notifiers;
         private List<BaseRule> _rules;
 
         [SetUp]
         public void SetUp()
         {
-            _notifiers = new Dictionary<Type, INotifier>();
+            _notifiers = new Dictionary<Type, Mock<INotifier>>();
             _rules = new List<BaseRule>();
             SetUpRules();
 
@@ -33,10 +33,10 @@ namespace NRules.IntegrationTests.TestAssets
 
         protected void SetUpRule<T>() where T : BaseRule, new()
         {
-            var notifier = MockRepository.GenerateStub<INotifier>();
+            var notifier = new Mock<INotifier>();
             _notifiers.Add(typeof (T), notifier);
 
-            var ruleInstance = new T {Notifier = notifier};
+            var ruleInstance = new T {Notifier = notifier.Object};
             _rules.Add(ruleInstance);
         }
 
@@ -45,44 +45,44 @@ namespace NRules.IntegrationTests.TestAssets
             return _rules.OfType<T>().First();
         }
 
-        private INotifier GetNotifier<T>()
+        private Mock<INotifier> GetNotifier<T>()
         {
             return _notifiers.First(n => n.Key == typeof (T)).Value;
         }
 
-        private INotifier GetNotifier()
+        private Mock<INotifier> GetNotifier()
         {
             return _notifiers.First().Value;
         }
 
         protected void AssertFiredOnce()
         {
-            GetNotifier().AssertWasCalled(x => x.RuleActivated(), c => c.Repeat.Once());
+            GetNotifier().Verify(x => x.RuleActivated(), Times.Once);
         }
 
         protected void AssertFiredTwice()
         {
-            GetNotifier().AssertWasCalled(x => x.RuleActivated(), c => c.Repeat.Twice());
+            GetNotifier().Verify(x => x.RuleActivated(), Times.Exactly(2));
         }
 
         protected void AssertDidNotFire()
         {
-            GetNotifier().AssertWasNotCalled(x => x.RuleActivated());
+            GetNotifier().Verify(x => x.RuleActivated(), Times.Never);
         }
 
         protected void AssertFiredOnce<T>()
         {
-            GetNotifier<T>().AssertWasCalled(x => x.RuleActivated(), c => c.Repeat.Once());
+            GetNotifier<T>().Verify(x => x.RuleActivated(), Times.Once);
         }
 
         protected void AssertFiredTwice<T>()
         {
-            GetNotifier<T>().AssertWasCalled(x => x.RuleActivated(), c => c.Repeat.Twice());
+            GetNotifier<T>().Verify(x => x.RuleActivated(), Times.Exactly(2));
         }
 
         protected void AssertDidNotFire<T>()
         {
-            GetNotifier<T>().AssertWasNotCalled(x => x.RuleActivated());
+            GetNotifier<T>().Verify(x => x.RuleActivated(), Times.Never);
         }
 
         private class InstanceActivator : IRuleActivator

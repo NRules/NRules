@@ -1,45 +1,44 @@
 using System.Collections.Generic;
+using Moq;
 using NRules.Rete;
 using NUnit.Framework;
-using Rhino.Mocks;
 
 namespace NRules.Tests
 {
     [TestFixture]
     public class SessionTest
     {
-        private IAgenda _agenda;
-        private INetwork _network;
-        private IWorkingMemory _workingMemory;
+        private Mock<IAgenda> _agenda;
+        private Mock<INetwork> _network;
+        private Mock<IWorkingMemory> _workingMemory;
         private IList<ICompiledRule> _rules;
 
         [SetUp]
         public void Setup()
         {
             _rules = new List<ICompiledRule>();
-            _agenda = MockRepository.GenerateStub<IAgenda>();
-            _network = MockRepository.GenerateStub<INetwork>();
-            _workingMemory = MockRepository.GenerateStub<IWorkingMemory>();
-        }
-
-        internal Session CreateTarget()
-        {
-            return new Session(_rules, _network, _agenda, _workingMemory);
+            _agenda = new Mock<IAgenda>();
+            _network = new Mock<INetwork>();
+            _workingMemory = new Mock<IWorkingMemory>();
         }
 
         [Test]
         public void Insert_Always_PropagatesAssert()
         {
             // Arrange
-            _network = MockRepository.GenerateMock<INetwork>();
-            var myFact = new object();
+            var fact = new object();
             var target = CreateTarget();
 
             // Act
-            target.Insert(myFact);
+            target.Insert(fact);
 
             // Assert
-            _network.AssertWasCalled(x => x.PropagateAssert(_workingMemory, myFact));
+            _network.Verify(x => x.PropagateAssert(_workingMemory.Object, fact), Times.Exactly(1));
+        }
+
+        private Session CreateTarget()
+        {
+            return new Session(_rules, _network.Object, _agenda.Object, _workingMemory.Object);
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using Moq;
 using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
-using Rhino.Mocks;
 
 namespace NRules.IntegrationTests
 {
@@ -13,33 +14,31 @@ namespace NRules.IntegrationTests
         public void Fire_LowPriorityActivatesTwiceTriggersHighPriority_HighPriorityPreemptsLowPriority()
         {
             //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType1() {TestProperty = "Valid Value"};
+            var invokedRules = new List<BaseRule>();
+
+            var mock = new Mock<Action<BaseRule>>();
+            mock.Setup(x => x(It.IsAny<BaseRule>())).Callback<BaseRule>(invokedRules.Add);
+
+            GetRuleInstance<PriorityLowRule>().InvocationHandler = mock.Object;
+            GetRuleInstance<PriorityHighRule>().InvocationHandler = mock.Object;
+
+            var fact1 = new FactType1() { TestProperty = "Valid Value" };
+            var fact2 = new FactType1() { TestProperty = "Valid Value" };
             Session.Insert(fact1);
             Session.Insert(fact2);
-
-            var lowRule = GetRuleInstance<PriorityLowRule>();
-            var highRule = GetRuleInstance<PriorityHighRule>();
-
-            var invocationHandler = MockRepository.GenerateMock<Action<BaseRule>>();
-            invocationHandler.GetMockRepository().Ordered();
-
-            lowRule.InvocationHandler = invocationHandler;
-            highRule.InvocationHandler = invocationHandler;
-
-            //low priority activates twice
-            //it runs once, activates high priority rule, which preempts low priority and fires once
-            //low priority fires second time, which activates high priority which also fires second time
-            invocationHandler.Expect(x => x.Invoke(lowRule)).Repeat.Once();
-            invocationHandler.Expect(x => x.Invoke(highRule)).Repeat.Once();
-            invocationHandler.Expect(x => x.Invoke(lowRule)).Repeat.Once();
-            invocationHandler.Expect(x => x.Invoke(highRule)).Repeat.Once();
 
             //Act
             Session.Fire();
 
             //Assert
-            invocationHandler.VerifyAllExpectations();
+                //low priority activates twice
+                //it runs once, activates high priority rule, which preempts low priority and fires once
+                //low priority fires second time, which activates high priority which also fires second time
+            Assert.AreEqual(4, invokedRules.Count);
+            Assert.IsInstanceOf<PriorityLowRule>(invokedRules[0]);
+            Assert.IsInstanceOf<PriorityHighRule>(invokedRules[1]);
+            Assert.IsInstanceOf<PriorityLowRule>(invokedRules[2]);
+            Assert.IsInstanceOf<PriorityHighRule>(invokedRules[3]);
         }
 
         protected override void SetUpRules()
