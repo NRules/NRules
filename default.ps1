@@ -1,6 +1,6 @@
 properties {
 	$ProductVersion = "0.1"
-	$BuildNumber = "5";
+	$BuildNumber = "6";
 	$PackageNameSuffix = ""
 	$TargetFramework = "net-4.0"
 	$buildConfiguration = "Release"
@@ -114,7 +114,7 @@ task ResetVersion -description "Resets version in source files to default" {
 
 task Build -depends Merge, ResetVersion -description "Builds final binaries" {
 	Get-ChildItem "$mergeDir\**" -Include *.dll, *.pdb, *.xml | Copy-Item -Destination $binariesDir -Force	
-	Get-ChildItem "$outDir\**" -Include *.dll, *.pdb, *.xml -Exclude NRules**, nunit**, Rhino.Mocks** | Copy-Item -Destination $binariesDir -Force
+	Get-ChildItem "$outDir\**" -Include *.dll, *.pdb, *.xml -Exclude NRules**, nunit**, Moq** | Copy-Item -Destination $binariesDir -Force
 }
 
 task Package -depends Build -description "Generates NuGet package" {
