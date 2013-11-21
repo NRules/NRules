@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NRules.RuleModel;
 
 namespace NRules
 {
     internal interface ICompiledRule
     {
-        string Handle { get; }
+        int Priority { get; }
         IRuleDefinition Definition { get; }
         IEnumerable<IRuleAction> Actions { get; }
     }
@@ -15,12 +14,12 @@ namespace NRules
     {
         public CompiledRule(IRuleDefinition definition, IEnumerable<IRuleAction> actions)
         {
-            Handle = Guid.NewGuid().ToString();
+            Priority = definition.Priority;
             Definition = definition;
             Actions = new List<IRuleAction>(actions);
         }
 
-        public string Handle { get; private set; }
+        public int Priority { get; private set; }
         public IRuleDefinition Definition { get; private set; }
         public IEnumerable<IRuleAction> Actions { get; private set; }
     }

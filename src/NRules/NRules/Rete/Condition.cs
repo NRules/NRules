@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace NRules.Rete
 {
+    [DebuggerDisplay("{_expressionString}")]
     internal abstract class Condition : IEquatable<Condition>
     {
-        private readonly string _key;
+        private readonly string _expressionString;
         private readonly Delegate _compiledExpression;
 
         protected Condition(LambdaExpression expression)
         {
-            _key = expression.ToString();
+            _expressionString = expression.ToString();
             _compiledExpression = expression.Compile();
         }
 
@@ -23,7 +25,7 @@ namespace NRules.Rete
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(_key, other._key);
+            return string.Equals(_expressionString, other._expressionString);
         }
 
         public override bool Equals(object obj)
@@ -36,7 +38,7 @@ namespace NRules.Rete
 
         public override int GetHashCode()
         {
-            return _key.GetHashCode();
+            return _expressionString.GetHashCode();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace NRules.Rete
 {
@@ -10,6 +11,8 @@ namespace NRules.Rete
         }
 
         public AlphaMemoryNode MemoryNode { get; set; }
+
+        [DebuggerDisplay("Count = {ChildNodes.Count}")]
         public IList<AlphaNode> ChildNodes { get; private set; }
 
         public abstract bool IsSatisfiedBy(Fact fact);

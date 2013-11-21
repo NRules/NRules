@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace NRules.Rete
@@ -11,6 +12,7 @@ namespace NRules.Rete
             Conditions = new List<BetaCondition>();
         }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public IList<BetaCondition> Conditions { get; private set; }
 
         public override void PropagateAssert(IWorkingMemory workingMemory, Tuple leftTuple)

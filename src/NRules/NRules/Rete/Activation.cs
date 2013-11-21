@@ -4,22 +4,20 @@ namespace NRules.Rete
 {
     internal class Activation : IEquatable<Activation>
     {
-        public Activation(string ruleHandle, int rulePriority, Tuple tuple)
+        public Activation(ICompiledRule rule, Tuple tuple)
         {
-            RuleHandle = ruleHandle;
-            RulePriority = rulePriority;
+            Rule = rule;
             Tuple = tuple;
         }
 
-        public string RuleHandle { get; private set; }
-        public int RulePriority { get; private set; }
+        public ICompiledRule Rule { get; private set; }
         public Tuple Tuple { get; private set; }
 
         public bool Equals(Activation other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.RuleHandle, RuleHandle) && Equals(other.Tuple, Tuple);
+            return Equals(other.Rule, Rule) && Equals(other.Tuple, Tuple);
         }
 
         public override bool Equals(object obj)
@@ -34,7 +32,7 @@ namespace NRules.Rete
         {
             unchecked
             {
-                return (RuleHandle.GetHashCode()*397) ^ Tuple.GetHashCode();
+                return (Rule.GetHashCode()*397) ^ Tuple.GetHashCode();
             }
         }
     }

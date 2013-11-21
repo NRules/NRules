@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using NRules.Rete;
 
 namespace NRules
@@ -38,14 +36,12 @@ namespace NRules
 
     internal class Session : ISession
     {
-        private readonly IDictionary<string, ICompiledRule> _ruleMap;
         private readonly IAgenda _agenda;
         private readonly INetwork _network;
         private readonly IWorkingMemory _workingMemory;
 
-        public Session(IEnumerable<ICompiledRule> rules, INetwork network, IAgenda agenda, IWorkingMemory workingMemory)
+        public Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory)
         {
-            _ruleMap = rules.ToDictionary(rule => rule.Handle);
             _network = network;
             _agenda = agenda;
             _workingMemory = workingMemory;
@@ -73,7 +69,7 @@ namespace NRules
             while (_agenda.HasActiveRules() && !context.IsHalted)
             {
                 Activation activation = _agenda.NextActivation();
-                ICompiledRule rule = _ruleMap[activation.RuleHandle];
+                ICompiledRule rule = activation.Rule;
 
                 foreach (IRuleAction action in rule.Actions)
                 {

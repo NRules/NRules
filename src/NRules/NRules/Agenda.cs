@@ -37,7 +37,7 @@ namespace NRules
 
         private void OnRuleActivated(object sender, ActivationEventArgs e)
         {
-            _activationQueue.Enqueue(e.Activation.RulePriority, e.Activation);
+            _activationQueue.Enqueue(e.Activation.Rule.Priority, e.Activation);
         }
 
         private void OnRuleDeactivated(object sender, ActivationEventArgs e)

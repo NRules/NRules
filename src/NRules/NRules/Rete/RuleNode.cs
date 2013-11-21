@@ -8,24 +8,22 @@
 
     internal class RuleNode : IRuleNode
     {
-        private readonly string _ruleHandle;
-        private readonly int _rulePriority;
+        private readonly ICompiledRule _rule;
 
-        public RuleNode(string ruleHandle, int rulePriority)
+        public RuleNode(ICompiledRule rule)
         {
-            _ruleHandle = ruleHandle;
-            _rulePriority = rulePriority;
+            _rule = rule;
         }
 
         public void Activate(IWorkingMemory workingMemory, Tuple tuple)
         {
-            var activation = new Activation(_ruleHandle, _rulePriority, tuple);
+            var activation = new Activation(_rule, tuple);
             workingMemory.EventAggregator.Activate(activation);
         }
 
         public void Deactivate(IWorkingMemory workingMemory, Tuple tuple)
         {
-            var activation = new Activation(_ruleHandle, _rulePriority, tuple);
+            var activation = new Activation(_rule, tuple);
             workingMemory.EventAggregator.Deactivate(activation);
         }
     }

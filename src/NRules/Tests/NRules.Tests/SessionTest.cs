@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Moq;
 using NRules.Rete;
 using NUnit.Framework;
@@ -11,12 +10,10 @@ namespace NRules.Tests
         private Mock<IAgenda> _agenda;
         private Mock<INetwork> _network;
         private Mock<IWorkingMemory> _workingMemory;
-        private IList<ICompiledRule> _rules;
 
         [SetUp]
         public void Setup()
         {
-            _rules = new List<ICompiledRule>();
             _agenda = new Mock<IAgenda>();
             _network = new Mock<INetwork>();
             _workingMemory = new Mock<IWorkingMemory>();
@@ -38,7 +35,7 @@ namespace NRules.Tests
 
         private Session CreateTarget()
         {
-            return new Session(_rules, _network.Object, _agenda.Object, _workingMemory.Object);
+            return new Session(_network.Object, _agenda.Object, _workingMemory.Object);
         }
     }
 }

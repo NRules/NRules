@@ -1,3 +1,4 @@
+using Moq;
 using NRules.Rete;
 using NUnit.Framework;
 
@@ -29,7 +30,8 @@ namespace NRules.Tests
         public void Activate_Called_ActivationEndsUpInQueue()
         {
             // Arrange
-            var activation = new Activation("rule1", 0, new Tuple());
+            var ruleMock1 = new Mock<ICompiledRule>();
+            var activation = new Activation(ruleMock1.Object, new Tuple());
             var target = CreateTarget();
 
             // Act
@@ -37,15 +39,17 @@ namespace NRules.Tests
 
             // Assert
             Assert.True(target.HasActiveRules());
-            Assert.AreEqual("rule1", target.NextActivation().RuleHandle);
+            Assert.AreEqual(ruleMock1.Object, target.NextActivation().Rule);
         }
 
         [Test]
         public void Activate_CalledWithMultipleRules_RulesAreQueuedInOrder()
         {
             // Arrange
-            var activation1 = new Activation("rule1", 0, new Tuple());
-            var activation2 = new Activation("rule2", 0, new Tuple());
+            var ruleMock1 = new Mock<ICompiledRule>();
+            var ruleMock2 = new Mock<ICompiledRule>();
+            var activation1 = new Activation(ruleMock1.Object, new Tuple());
+            var activation2 = new Activation(ruleMock2.Object, new Tuple());
             var target = CreateTarget();
 
             // Act
@@ -54,9 +58,9 @@ namespace NRules.Tests
 
             // Assert
             Assert.True(target.HasActiveRules());
-            Assert.AreEqual("rule1", target.NextActivation().RuleHandle);
+            Assert.AreEqual(ruleMock1.Object, target.NextActivation().Rule);
             Assert.True(target.HasActiveRules());
-            Assert.AreEqual("rule2", target.NextActivation().RuleHandle);
+            Assert.AreEqual(ruleMock2.Object, target.NextActivation().Rule);
         }
 
         private Agenda CreateTarget()

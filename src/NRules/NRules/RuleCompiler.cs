@@ -34,13 +34,13 @@ namespace NRules
             }
 
             INetwork network = reteBuilder.GetNetwork();
-            var factory = new SessionFactory(rules, network);
+            var factory = new SessionFactory(network);
             return factory;
         }
 
         private void BuildRuleNode(ICompiledRule rule, ITerminalNode terminalNode)
         {
-            var ruleNode = new RuleNode(rule.Handle, rule.Definition.Priority);
+            var ruleNode = new RuleNode(rule);
             terminalNode.Attach(ruleNode);
         }
 

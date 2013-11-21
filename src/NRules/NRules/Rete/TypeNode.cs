@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace NRules.Rete
 {
+    [DebuggerDisplay("Type {FilterType.FullName,nq}")]
     internal class TypeNode : AlphaNode
     {
         public TypeNode(Type filterType)
