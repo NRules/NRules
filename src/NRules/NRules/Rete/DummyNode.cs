@@ -2,11 +2,18 @@
 
 namespace NRules.Rete
 {
-    internal class DummyNode : IBetaMemoryNode
+    internal class DummyNode : IBetaMemoryNode, IActivatable
     {
-        public void InitializeMemory(IBetaMemory memory)
+        private ITupleSink _sink;
+
+        public void Activate(IWorkingMemory workingMemory)
         {
-            memory.Tuples.Add(new Tuple());
+            var tuple = new Tuple();
+
+            IBetaMemory memory = workingMemory.GetNodeMemory(this);
+            memory.Tuples.Add(tuple);
+
+            _sink.PropagateAssert(workingMemory, tuple);
         }
 
         public IEnumerable<Tuple> GetTuples(IWorkingMemory workingMemory)
@@ -17,7 +24,7 @@ namespace NRules.Rete
 
         public void Attach(ITupleSink sink)
         {
-            //Do nothing
+            _sink = sink;
         }
     }
 }

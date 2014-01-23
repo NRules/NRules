@@ -4,7 +4,6 @@ namespace NRules.Rete
 {
     internal interface IBetaMemoryNode : ITupleSource
     {
-        void InitializeMemory(IBetaMemory memory);
     }
 
     internal class BetaMemoryNode : ITupleSink, IBetaMemoryNode
@@ -37,11 +36,6 @@ namespace NRules.Rete
             {
                 sink.PropagateRetract(workingMemory, tuple);
             }
-        }
-
-        public void InitializeMemory(IBetaMemory memory)
-        {
-            //Do nothing
         }
 
         public IEnumerable<Tuple> GetTuples(IWorkingMemory workingMemory)

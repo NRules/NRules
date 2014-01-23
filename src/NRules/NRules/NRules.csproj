@@ -53,6 +53,7 @@
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
+    <Compile Include="Rete\IActivatable.cs" />
     <Compile Include="Rete\NotNode.cs" />
     <Compile Include="Rete\IObjectSource.cs" />
     <Compile Include="Rete\ITupleSource.cs" />

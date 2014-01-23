@@ -68,7 +68,6 @@ namespace NRules
             {
                 memory = new BetaMemory();
                 _betaMap[node] = memory;
-                node.InitializeMemory(memory);
             }
             return memory;
         }

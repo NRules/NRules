@@ -26,8 +26,9 @@ namespace NRules
         public ISession CreateSession()
         {
             var eventAggregator = new EventAggregator();
-            var workingMemory = new WorkingMemory(eventAggregator);
             var agenda = new Agenda(eventAggregator);
+            var workingMemory = new WorkingMemory(eventAggregator);
+            _network.Activate(workingMemory);
             var session = new Session(_network, agenda, workingMemory);
             return session;
         }

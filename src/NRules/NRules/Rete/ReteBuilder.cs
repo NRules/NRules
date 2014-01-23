@@ -14,6 +14,7 @@ namespace NRules.Rete
     internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilder
     {
         private readonly RootNode _root = new RootNode();
+        private readonly List<IActivatable> _activatableNodes = new List<IActivatable>(); 
 
         public ITerminalNode AddRule(ReteBuilderContext context, IRuleDefinition rule)
         {
@@ -24,7 +25,7 @@ namespace NRules.Rete
 
         protected override void VisitAnd(ReteBuilderContext context, AndElement element)
         {
-            context.BetaSource = new DummyNode();
+            context.BetaSource = BuildDummyNode();
             foreach (var childElement in element.ChildElements)
             {
                 Visit(context, childElement);
@@ -177,10 +178,17 @@ namespace NRules.Rete
 
             return memoryNode;
         }
+        
+        private DummyNode BuildDummyNode()
+        {
+            var dummyNode = new DummyNode();
+            _activatableNodes.Add(dummyNode);
+            return dummyNode;
+        }
 
         public INetwork GetNetwork()
         {
-            INetwork network = new Network(_root);
+            INetwork network = new Network(_root, _activatableNodes);
             return network;
         }
     }
