@@ -93,7 +93,6 @@ task Merge -depends Compile -description "Merges compiled assemblies into coarse
 	
 	$attributeFile = "$outDir\NRules.dll"
 	
-	$logFileName = "$buildDir\NRulesMergeLog.txt"
 	Create-Directory $mergeDir
 	
 	$keyfile = "$baseDir\..\SigningKey.snk"
@@ -103,9 +102,7 @@ task Merge -depends Compile -description "Merges compiled assemblies into coarse
 		Write-Host "Key file for assembly signing does not exist. Cannot strongly name assembly." -ForegroundColor Yellow
 	}
 	
-	&$ilMergeExec /out:"$mergeDir\NRules.dll" /log:$logFileName $keyfileOption /internalize:$ilMergeExclude $script:ilmergeTargetFramework $assemblies /xmldocs /attr:$attributeFile
-	$mergeLogContent = Get-Content "$logFileName"
-	echo $mergeLogContent
+	&$ilMergeExec /out:"$mergeDir\NRules.dll" /log $keyfileOption /internalize:$ilMergeExclude $script:ilmergeTargetFramework $assemblies /xmldocs /attr:$attributeFile
 }
 
 task ResetVersion -description "Resets version in source files to default" {
