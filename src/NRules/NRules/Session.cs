@@ -86,11 +86,6 @@ namespace NRules
             }
         }
 
-        public IQueryable Query()
-        {
-            return Query<object>();
-        }
-
         public IQueryable<TFact> Query<TFact>()
         {
             return _workingMemory.Facts.Select(x => x.Object).OfType<TFact>().AsQueryable();
