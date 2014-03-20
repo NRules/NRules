@@ -1,3 +1,4 @@
+using System.Linq;
 using NRules.Rete;
 
 namespace NRules
@@ -32,6 +33,13 @@ namespace NRules
         /// rules to fire.
         /// </summary>
         void Fire();
+
+        /// <summary>
+        /// Creates a LINQ query to retrieve facts of a given type from the rules engine's memory.
+        /// </summary>
+        /// <typeparam name="TFact">Type of facts to query.</typeparam>
+        /// <returns>Queryable engine's memory.</returns>
+        IQueryable<TFact> Query<TFact>();
     }
 
     internal class Session : ISession
@@ -76,6 +84,16 @@ namespace NRules
                     action.Invoke(context, activation.Tuple);
                 }
             }
+        }
+
+        public IQueryable Query()
+        {
+            return Query<object>();
+        }
+
+        public IQueryable<TFact> Query<TFact>()
+        {
+            return _workingMemory.Facts.Select(x => x.Object).OfType<TFact>().AsQueryable();
         }
     }
 }

@@ -46,6 +46,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="OneFactOneNotRuleTest.cs" />
+    <Compile Include="SessionQueryTest.cs" />
     <Compile Include="TestRules\OneFactOneNotRule.cs" />
     <Compile Include="TwoFactOneNotRuleTest.cs" />
     <Compile Include="HaltRuleTest.cs" />
