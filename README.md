@@ -11,4 +11,4 @@ See [Getting Started](https://github.com/snikolayev/NRules/wiki/Getting-Started)
 Or check out the [discussion group](http://groups.google.com/group/nrules-users).
 
 --
-Copyright &copy; 2012-2013 [Sergiy Nikolayev](http://sergiynikolayev.com) under the [MIT license](LICENSE.txt).
+Copyright &copy; 2012-2014 [Sergiy Nikolayev](http://sergiynikolayev.com) under the [MIT license](LICENSE.txt).
