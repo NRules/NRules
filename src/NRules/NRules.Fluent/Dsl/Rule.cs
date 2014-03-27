@@ -10,7 +10,10 @@ namespace NRules.Fluent.Dsl
         protected Rule()
         {
             Builder = new RuleBuilder();
-            Builder.Name(GetType().FullName);
+            var metadataReader = new RuleMetadataReader(GetType());
+            Builder.Name(metadataReader.Name);
+            Builder.Description(metadataReader.Description);
+            Builder.Tags(metadataReader.Tags);
         }
 
         internal RuleBuilder Builder { get; private set; }

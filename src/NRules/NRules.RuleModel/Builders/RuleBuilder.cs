@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NRules.RuleModel.Builders
 {
@@ -7,7 +9,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class RuleBuilder
     {
-        private string _name;
+        private readonly RuleMetadata _metadata = new RuleMetadata();
         private int _priority = RuleDefinition.DefaultPriority;
         private readonly GroupBuilder _groupBuilder;
         private readonly ActionGroupBuilder _actionGroupBuilder;
@@ -28,7 +30,25 @@ namespace NRules.RuleModel.Builders
         /// <param name="name">Rule name value.</param>
         public void Name(string name)
         {
-            _name = name;
+            _metadata.Name = name;
+        }
+
+        /// <summary>
+        /// Sets rule's description.
+        /// </summary>
+        /// <param name="description">Rule description value.</param>
+        public void Description(string description)
+        {
+            _metadata.Description = description;
+        }
+
+        /// <summary>
+        /// Sets rule's tags.
+        /// </summary>
+        /// <param name="tags">Rule tag values.</param>
+        public void Tags(IEnumerable<string> tags)
+        {
+            _metadata.Tags = tags.ToList();
         }
 
         /// <summary>
@@ -72,13 +92,13 @@ namespace NRules.RuleModel.Builders
             IBuilder<ActionGroupElement> actionBuilder = _actionGroupBuilder;
             ActionGroupElement actions = actionBuilder.Build();
 
-            var ruleDefinition = new RuleDefinition(_name, _priority, conditions, actions);
+            var ruleDefinition = new RuleDefinition(_metadata, _priority, conditions, actions);
             return ruleDefinition;
         }
 
         private void Validate()
         {
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(_metadata.Name))
             {
                 throw new InvalidOperationException("Rule name not specified");
             }

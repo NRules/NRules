@@ -44,12 +44,16 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Dsl\DescriptionAttribute.cs" />
+    <Compile Include="Dsl\NameAttribute.cs" />
+    <Compile Include="Dsl\TagAttribute.cs" />
     <Compile Include="ExpressionBuilder.cs" />
     <Compile Include="Dsl\ILeftHandSide.cs" />
     <Compile Include="Dsl\IRightHandSide.cs" />
     <Compile Include="Dsl\Rule.cs" />
     <Compile Include="Expressions\ActionRewriter.cs" />
     <Compile Include="Expressions\ConditionRewriter.cs" />
+    <Compile Include="RuleMetadataReader.cs" />
     <Compile Include="RuleRepository.cs" />
     <Compile Include="RuleActivator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

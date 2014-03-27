@@ -60,6 +60,7 @@
     <Compile Include="NotElement.cs" />
     <Compile Include="OrElement.cs" />
     <Compile Include="RuleLeftElement.cs" />
+    <Compile Include="RuleMetadata.cs" />
     <Compile Include="RuleRightElement.cs" />
     <Compile Include="RuleDefinition.cs" />
     <Compile Include="ConditionElement.cs" />
