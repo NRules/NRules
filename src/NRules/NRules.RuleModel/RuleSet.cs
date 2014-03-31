@@ -26,6 +26,17 @@ namespace NRules.RuleModel
     {
         private readonly List<IRuleDefinition> _rules = new List<IRuleDefinition>();
 
+        public RuleSet()
+        {
+        }
+
+        public RuleSet(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; private set; }
+
         public void AddRule(IRuleDefinition ruleDefinition)
         {
             _rules.Add(ruleDefinition);

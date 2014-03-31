@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using NRules.Fluent.Dsl;
 using NRules.RuleModel;
 
 namespace NRules.Fluent
@@ -26,6 +27,11 @@ namespace NRules.Fluent
         public IEnumerable<IRuleDefinition> GetRules()
         {
             return _ruleSets.SelectMany(rs => rs.Rules, (rs, r) => r);
+        }
+
+        public IEnumerable<IRuleSet> GetRuleSets()
+        {
+            return _ruleSets;
         }
 
         /// <summary>
@@ -72,7 +78,7 @@ namespace NRules.Fluent
         /// Loads internal DSL rules into the repository.
         /// </summary>
         /// <param name="rules">List of rules.</param>
-        public void Add(IEnumerable<Dsl.Rule> rules)
+        public void Add(IEnumerable<Rule> rules)
         {
             var ruleSet = new RuleSet();
             AddRulesToRuleSet(rules, ruleSet);
@@ -88,12 +94,11 @@ namespace NRules.Fluent
             _ruleSets.Add(ruleSet);
         }
 
-        private void AddRulesToRuleSet(IEnumerable<Dsl.Rule> rules, IRuleSet ruleSet)
+        private void AddRulesToRuleSet(IEnumerable<Rule> rules, IRuleSet ruleSet)
         {
             foreach (var rule in rules)
             {
-                rule.Define();
-                IRuleDefinition ruleDefinition = rule.Builder.Build();
+                IRuleDefinition ruleDefinition = rule.GetDefinition();
                 ruleSet.AddRule(ruleDefinition);
             }
         }
@@ -106,7 +111,7 @@ namespace NRules.Fluent
         private static bool IsRule(Type type)
         {
             if (IsPublicConcrete(type) &&
-                typeof(Dsl.Rule).IsAssignableFrom(type)) return true;
+                typeof(Rule).IsAssignableFrom(type)) return true;
 
             return false;
         }

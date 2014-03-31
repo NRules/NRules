@@ -1,3 +1,5 @@
+using System;
+using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Dsl
@@ -7,16 +9,14 @@ namespace NRules.Fluent.Dsl
     /// </summary>
     public abstract class Rule
     {
+        private readonly Lazy<IRuleDefinition> _definition;
+        private readonly RuleBuilder _builder;
+
         protected Rule()
         {
-            Builder = new RuleBuilder();
-            var metadataReader = new RuleMetadataReader(GetType());
-            Builder.Name(metadataReader.Name);
-            Builder.Description(metadataReader.Description);
-            Builder.Tags(metadataReader.Tags);
+            _builder = new RuleBuilder();
+            _definition = new Lazy<IRuleDefinition>(BuildDefinition);
         }
-
-        internal RuleBuilder Builder { get; private set; }
 
         /// <summary>
         /// Sets rule priority.
@@ -24,7 +24,7 @@ namespace NRules.Fluent.Dsl
         /// <param name="priority">Priority value.</param>
         protected void Priority(int priority)
         {
-            Builder.Priority(priority);
+            _builder.Priority(priority);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace NRules.Fluent.Dsl
         /// <returns>Left hand side expression builder.</returns>
         protected ILeftHandSide When()
         {
-            return new ExpressionBuilder(Builder);
+            return new ExpressionBuilder(_builder);
         }
 
         /// <summary>
@@ -42,12 +42,29 @@ namespace NRules.Fluent.Dsl
         /// <returns>Right hand side expression builder.</returns>
         protected IRightHandSide Then()
         {
-            return new ExpressionBuilder(Builder);
+            return new ExpressionBuilder(_builder);
         }
 
         /// <summary>
         /// Method called by the rules engine to define the rule.
         /// </summary>
         public abstract void Define();
+
+        internal IRuleDefinition GetDefinition()
+        {
+            return _definition.Value;
+        }
+
+        private IRuleDefinition BuildDefinition()
+        {
+            var metadataReader = new RuleMetadataReader(GetType());
+            _builder.Name(metadataReader.Name);
+            _builder.Description(metadataReader.Description);
+            _builder.Tags(metadataReader.Tags);
+
+            Define();
+
+            return _builder.Build();
+        }
     }
 }

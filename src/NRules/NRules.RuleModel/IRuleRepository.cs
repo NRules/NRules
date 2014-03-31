@@ -12,5 +12,11 @@ namespace NRules.RuleModel
         /// </summary>
         /// <returns></returns>
         IEnumerable<IRuleDefinition> GetRules();
+
+        /// <summary>
+        /// Retrieves all rule sets contained in the repository.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<IRuleSet> GetRuleSets();
     }
 }

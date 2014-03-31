@@ -1,4 +1,5 @@
 ﻿using System;
+using NRules.Fluent.Dsl;
 
 namespace NRules.Fluent
 {
@@ -13,14 +14,14 @@ namespace NRules.Fluent
         /// </summary>
         /// <param name="type">Rule type.</param>
         /// <returns>Rule instance.</returns>
-        Dsl.Rule Activate(Type type);
+        Rule Activate(Type type);
     }
 
     internal class RuleActivator : IRuleActivator
     {
-        public Dsl.Rule Activate(Type type)
+        public Rule Activate(Type type)
         {
-            return (Dsl.Rule) Activator.CreateInstance(type);
+            return (Rule) Activator.CreateInstance(type);
         }
     }
 }
