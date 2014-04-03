@@ -15,9 +15,11 @@ namespace SimpleRulesTest
             var customer2 = new Customer {Name = "Emily Brown", Age = 32, Sex = SexTypes.Female, Policy = policy2};
 
             var repository = new RuleRepository();
-            repository.AddFromAssembly(typeof (Program).Assembly);
+            repository.Load("Test", x => x.From(typeof (Program).Assembly));
+            var ruleSets = repository.GetRuleSets();
 
-            ISessionFactory factory = repository.Compile();
+            IRuleCompiler compiler = new RuleCompiler();
+            ISessionFactory factory = compiler.Compile(ruleSets);
             ISession session = factory.CreateSession();
 
             session.Insert(policy1);
