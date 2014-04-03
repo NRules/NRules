@@ -23,7 +23,7 @@ namespace NRules.IntegrationTests.TestAssets
             SetUpRules();
 
             var repository = new RuleRepository {Activator = new InstanceActivator(_rules)};
-            repository.Add(_rules);
+            repository.Load("Test", x => x.From(_rules.Select(r => r.GetType()).ToArray()));
 
             ISessionFactory factory = repository.Compile();
             Session = factory.CreateSession();

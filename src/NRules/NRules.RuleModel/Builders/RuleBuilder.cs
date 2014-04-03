@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.RuleModel.Builders
 {
@@ -9,7 +8,9 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class RuleBuilder
     {
-        private readonly RuleMetadata _metadata = new RuleMetadata();
+        private string _name;
+        private string _description = string.Empty;
+        private IList<string> _tags; 
         private int _priority = RuleDefinition.DefaultPriority;
         private readonly GroupBuilder _groupBuilder;
         private readonly ActionGroupBuilder _actionGroupBuilder;
@@ -30,7 +31,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="name">Rule name value.</param>
         public void Name(string name)
         {
-            _metadata.Name = name;
+            _name = name;
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="description">Rule description value.</param>
         public void Description(string description)
         {
-            _metadata.Description = description;
+            _description = description;
         }
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="tags">Rule tag values.</param>
         public void Tags(IEnumerable<string> tags)
         {
-            _metadata.Tags = tags.ToList();
+            _tags = new List<string>(tags);
         }
 
         /// <summary>
@@ -92,13 +93,13 @@ namespace NRules.RuleModel.Builders
             IBuilder<ActionGroupElement> actionBuilder = _actionGroupBuilder;
             ActionGroupElement actions = actionBuilder.Build();
 
-            var ruleDefinition = new RuleDefinition(_metadata, _priority, conditions, actions);
+            var ruleDefinition = new RuleDefinition(_name, _description, _tags, _priority, conditions, actions);
             return ruleDefinition;
         }
 
         private void Validate()
         {
-            if (string.IsNullOrEmpty(_metadata.Name))
+            if (string.IsNullOrEmpty(_name))
             {
                 throw new InvalidOperationException("Rule name not specified");
             }

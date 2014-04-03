@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using NRules.Fluent.Dsl;
 using NRules.RuleModel;
 
 namespace NRules.Fluent
@@ -24,106 +22,29 @@ namespace NRules.Fluent
         /// </summary>
         public IRuleActivator Activator { get; set; }
 
-        public IEnumerable<IRuleDefinition> GetRules()
-        {
-            return _ruleSets.SelectMany(rs => rs.Rules, (rs, r) => r);
-        }
-
         public IEnumerable<IRuleSet> GetRuleSets()
         {
             return _ruleSets;
         }
 
         /// <summary>
-        /// Finds rules internal DSL rules in a .NET assembly and loads them into the repository.
+        /// Loads rules into a rule set using provided loader specification.
         /// </summary>
-        /// <param name="assembly">Assembly to load rules from.</param>
-        public void AddFromAssembly(Assembly assembly)
+        /// <param name="ruleSetName">Name of the rule set.</param>
+        /// <param name="specAction">Rule loader specification.</param>
+        public void Load(string ruleSetName, Action<IRuleLoadSpec> specAction)
         {
-            Type[] ruleTypes = assembly.GetTypes().Where(IsRule).ToArray();
+            var spec = new RuleLoadSpec();
+            specAction(spec);
 
-            if (!ruleTypes.Any())
-            {
-                throw new ArgumentException(string.Format(
-                    "The supplied assembly does not contain any concrete fluent rule definitions. Assembly={0}",
-                    assembly.FullName));
-            }
+            var rules = spec.Load()
+                .Select(t => Activator.Activate(t))
+                .Select(r => r.GetDefinition());
 
-            AddFromTypes(ruleTypes);
-        }
+            var ruleSet = new RuleSet(ruleSetName);
+            ruleSet.Add(rules);
 
-        /// <summary>
-        /// Loads internal DSL rules from .NET types into the repository.
-        /// </summary>
-        /// <param name="ruleTypes">List of rule types.</param>
-        public void AddFromTypes(params Type[] ruleTypes)
-        {
-            Type[] invalidTypes = ruleTypes.Where(IsNotRule).ToArray();
-
-            if (invalidTypes.Any())
-            {
-                string invalidTypesString = String.Join(", ", (string[]) invalidTypes.Select(t => t.FullName));
-                throw new ArgumentException(string.Format(
-                    "The supplied types are not recognized as valid rules. Types={0}",
-                    invalidTypesString));
-            }
-
-            var ruleSet = new RuleSet();
-            var rules = ruleTypes.Select(Activator.Activate);
-            AddRulesToRuleSet(rules, ruleSet);
-            Add(ruleSet);
-        }
-
-        /// <summary>
-        /// Loads internal DSL rules into the repository.
-        /// </summary>
-        /// <param name="rules">List of rules.</param>
-        public void Add(IEnumerable<Rule> rules)
-        {
-            var ruleSet = new RuleSet();
-            AddRulesToRuleSet(rules, ruleSet);
-            Add(ruleSet);
-        }
-
-        /// <summary>
-        /// Adds an existing ruleset to the repository.
-        /// </summary>
-        /// <param name="ruleSet">Ruleset to add.</param>
-        public void Add(IRuleSet ruleSet)
-        {
             _ruleSets.Add(ruleSet);
-        }
-
-        private void AddRulesToRuleSet(IEnumerable<Rule> rules, IRuleSet ruleSet)
-        {
-            foreach (var rule in rules)
-            {
-                IRuleDefinition ruleDefinition = rule.GetDefinition();
-                ruleSet.AddRule(ruleDefinition);
-            }
-        }
-
-        private static bool IsNotRule(Type type)
-        {
-            return !IsRule(type);
-        }
-
-        private static bool IsRule(Type type)
-        {
-            if (IsPublicConcrete(type) &&
-                typeof(Rule).IsAssignableFrom(type)) return true;
-
-            return false;
-        }
-
-        private static bool IsPublicConcrete(Type type)
-        {
-            if (!type.IsPublic) return false;
-            if (type.IsAbstract) return false;
-            if (type.IsInterface) return false;
-            if (type.IsGenericTypeDefinition) return false;
-
-            return true;
         }
     }
 }

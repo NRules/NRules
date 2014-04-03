@@ -47,6 +47,7 @@
     </Compile>
     <Compile Include="OneFactOneNotRuleTest.cs" />
     <Compile Include="RuleMetadataTest.cs" />
+    <Compile Include="RulesLoadTest.cs" />
     <Compile Include="SessionQueryTest.cs" />
     <Compile Include="TestRules\OneFactOneNotRule.cs" />
     <Compile Include="TestRules\RuleWithMetadata.cs" />

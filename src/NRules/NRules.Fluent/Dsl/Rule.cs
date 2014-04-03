@@ -57,10 +57,10 @@ namespace NRules.Fluent.Dsl
 
         private IRuleDefinition BuildDefinition()
         {
-            var metadataReader = new RuleMetadataReader(GetType());
-            _builder.Name(metadataReader.Name);
-            _builder.Description(metadataReader.Description);
-            _builder.Tags(metadataReader.Tags);
+            var metadata = new RuleMetadata(GetType());
+            _builder.Name(metadata.Name);
+            _builder.Description(metadata.Description);
+            _builder.Tags(metadata.Tags);
 
             Define();
 

@@ -47,16 +47,17 @@ namespace NRules.RuleModel
             get { return 0; }
         }
 
-        public RuleDefinition(RuleMetadata ruleMetadata, int priority, GroupElement leftHandSide, ActionGroupElement rightHandSide)
+        public RuleDefinition(string name, string description, IEnumerable<string> tags, int priority, 
+            GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
-            Name = ruleMetadata.Name;
+            Name = name;
+            Description = description;
             Priority = priority;
 
             LeftHandSide = leftHandSide;
             RightHandSide = rightHandSide;
 
-            Description = ruleMetadata.Description;
-            if (ruleMetadata.Tags != null) _tags.AddRange(ruleMetadata.Tags);
+            if (tags != null) _tags.AddRange(tags);
         }
 
         public string Name { get; private set; }

@@ -21,7 +21,7 @@ namespace NRules.IntegrationTests
         public void Name_NameAttributePresent_CustomValue()
         {
             //Arrange
-            _repository.AddFromTypes(typeof (RuleWithMetadata));
+            _repository.Load("Test", x => x.From(typeof(RuleWithMetadata)));
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act
@@ -35,7 +35,7 @@ namespace NRules.IntegrationTests
         public void Description_DescriptionAttributePresent_CustomValue()
         {
             //Arrange
-            _repository.AddFromTypes(typeof (RuleWithMetadata));
+            _repository.Load("Test", x => x.From(typeof(RuleWithMetadata)));
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act
@@ -49,7 +49,7 @@ namespace NRules.IntegrationTests
         public void Tags_TagAttributesPresent_CustomValues()
         {
             //Arrange
-            _repository.AddFromTypes(typeof (RuleWithMetadata));
+            _repository.Load("Test", x => x.From(typeof(RuleWithMetadata)));
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act
@@ -65,21 +65,21 @@ namespace NRules.IntegrationTests
         public void Name_NoAttributes_TypeName()
         {
             //Arrange
-            _repository.AddFromTypes(typeof (RuleWithoutMetadata));
+            _repository.Load("Test", x => x.From(typeof(RuleWithoutMetadata)));
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act
             string actual = rule.Name;
 
             //Assert
-            Assert.AreEqual(typeof (RuleWithoutMetadata).FullName, actual);
+            Assert.AreEqual(typeof(RuleWithoutMetadata).FullName, actual);
         }
 
         [Test]
         public void Description_NoAttributes_Empty()
         {
             //Arrange
-            _repository.AddFromTypes(typeof (RuleWithoutMetadata));
+            _repository.Load("Test", x => x.From(typeof(RuleWithoutMetadata)));
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act
@@ -93,7 +93,7 @@ namespace NRules.IntegrationTests
         public void Tags_NoAttributes_Empty()
         {
             //Arrange
-            _repository.AddFromTypes(typeof (RuleWithoutMetadata));
+            _repository.Load("Test", x => x.From(typeof(RuleWithoutMetadata)));
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act

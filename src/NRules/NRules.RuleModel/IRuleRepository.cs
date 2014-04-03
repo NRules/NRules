@@ -8,12 +8,6 @@ namespace NRules.RuleModel
     public interface IRuleRepository
     {
         /// <summary>
-        /// Retrieves all rules contained in the repository.
-        /// </summary>
-        /// <returns></returns>
-        IEnumerable<IRuleDefinition> GetRules();
-
-        /// <summary>
         /// Retrieves all rule sets contained in the repository.
         /// </summary>
         /// <returns></returns>

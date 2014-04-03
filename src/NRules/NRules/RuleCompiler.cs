@@ -11,15 +11,28 @@ namespace NRules
     public interface IRuleCompiler
     {
         /// <summary>
-        /// Compiles a set of rules into a session factory.
+        /// Compiles a collection of rules into a session factory.
         /// </summary>
-        /// <param name="ruleDefinitions">Set of rules.</param>
+        /// <param name="ruleDefinitions">Rules to compile.</param>
         /// <returns>Session factory.</returns>
         ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions);
+
+        /// <summary>
+        /// Compiles rules from rule sets into a session factory.
+        /// </summary>
+        /// <param name="ruleSets">Rule sets to compile.</param>
+        /// <returns>Session factory.</returns>
+        ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets);
     }
 
     public class RuleCompiler : IRuleCompiler
     {
+        public ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets)
+        {
+            var rules = ruleSets.SelectMany(x => x.Rules);
+            return Compile(rules);
+        }
+
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
         {
             var rules = new List<ICompiledRule>();
