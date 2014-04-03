@@ -1,6 +1,6 @@
 properties {
 	$ProductVersion = "0.1"
-	$BuildNumber = "8";
+	$BuildNumber = "9";
 	$PackageNameSuffix = ""
 	$TargetFramework = "net-4.0"
 	$buildConfiguration = "Release"
