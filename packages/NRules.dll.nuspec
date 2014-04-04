@@ -7,7 +7,7 @@
     <owners>Sergiy Nikolayev</owners>
     <licenseUrl>https://github.com/snikolayev/NRules/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/snikolayev/NRules</projectUrl>
-    <iconUrl>http://sergiynikolayev.com/content/images/NRules_Logo.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/snikolayev/NRules/master/content/NRules_Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Business rules engine for .NET, based on the Rete matching algorithm.</description>
     <copyright>Copyright 2012-2014 Sergiy Nikolayev. All rights reserved.</copyright>
