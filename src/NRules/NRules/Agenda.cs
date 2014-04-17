@@ -6,17 +6,13 @@ namespace NRules
     {
         bool HasActiveRules();
         Activation NextActivation();
+        void Activate(Activation activation);
+        void Deactivate(Activation activation);
     }
 
     internal class Agenda : IAgenda
     {
-        private readonly ActivationQueue _activationQueue;
-
-        public Agenda(IEventAggregator eventAggregator)
-        {
-            _activationQueue = new ActivationQueue();
-            Subscribe(eventAggregator);
-        }
+        private readonly ActivationQueue _activationQueue = new ActivationQueue();
 
         public bool HasActiveRules()
         {
@@ -29,20 +25,14 @@ namespace NRules
             return activation;
         }
 
-        private void Subscribe(IEventAggregator eventAggregator)
+        public void Activate(Activation activation)
         {
-            eventAggregator.RuleActivatedEvent += OnRuleActivated;
-            eventAggregator.RuleDeactivatedEvent += OnRuleDeactivated;
+            _activationQueue.Enqueue(activation.Rule.Priority, activation);
         }
 
-        private void OnRuleActivated(object sender, ActivationEventArgs e)
+        public void Deactivate(Activation activation)
         {
-            _activationQueue.Enqueue(e.Activation.Rule.Priority, e.Activation);
-        }
-
-        private void OnRuleDeactivated(object sender, ActivationEventArgs e)
-        {
-            _activationQueue.Remove(e.Activation);
+            _activationQueue.Remove(activation);
         }
     }
 }

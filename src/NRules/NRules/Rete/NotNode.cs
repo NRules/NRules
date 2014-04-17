@@ -8,55 +8,55 @@ namespace NRules.Rete
         {
         }
 
-        public override void PropagateAssert(IWorkingMemory workingMemory, Tuple tuple)
+        public override void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            if (!RightSource.GetFacts(workingMemory).Any())
+            if (!RightSource.GetFacts(context).Any())
             {
-                Sink.PropagateAssert(workingMemory, tuple);
+                Sink.PropagateAssert(context, tuple);
             }
         }
 
-        public override void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
+        public override void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            if (!RightSource.GetFacts(workingMemory).Any())
+            if (!RightSource.GetFacts(context).Any())
             {
-                Sink.PropagateUpdate(workingMemory, tuple);
+                Sink.PropagateUpdate(context, tuple);
             }
         }
 
-        public override void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
+        public override void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            if (!RightSource.GetFacts(workingMemory).Any())
+            if (!RightSource.GetFacts(context).Any())
             {
-                Sink.PropagateRetract(workingMemory, tuple);
+                Sink.PropagateRetract(context, tuple);
             }
         }
 
-        public override void PropagateAssert(IWorkingMemory workingMemory, Fact fact)
+        public override void PropagateAssert(IExecutionContext context, Fact fact)
         {
-            if (RightSource.GetFacts(workingMemory).Count() == 1)
+            if (RightSource.GetFacts(context).Count() == 1)
             {
-                var tuples = LeftSource.GetTuples(workingMemory);
+                var tuples = LeftSource.GetTuples(context);
                 foreach (var tuple in tuples)
                 {
-                    Sink.PropagateRetract(workingMemory, tuple);
+                    Sink.PropagateRetract(context, tuple);
                 }
             }
         }
 
-        public override void PropagateUpdate(IWorkingMemory workingMemory, Fact fact)
+        public override void PropagateUpdate(IExecutionContext context, Fact fact)
         {
             //Do nothing
         }
 
-        public override void PropagateRetract(IWorkingMemory workingMemory, Fact fact)
+        public override void PropagateRetract(IExecutionContext context, Fact fact)
         {
-            if (!RightSource.GetFacts(workingMemory).Any())
+            if (!RightSource.GetFacts(context).Any())
             {
-                var tuples = LeftSource.GetTuples(workingMemory);
+                var tuples = LeftSource.GetTuples(context);
                 foreach (var tuple in tuples)
                 {
-                    Sink.PropagateAssert(workingMemory, tuple);
+                    Sink.PropagateAssert(context, tuple);
                 }
             }
         }

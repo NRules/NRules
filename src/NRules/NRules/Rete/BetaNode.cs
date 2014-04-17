@@ -15,11 +15,11 @@
             RightSource.Attach(this);
         }
 
-        public abstract void PropagateAssert(IWorkingMemory workingMemory, Tuple tuple);
-        public abstract void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple);
-        public abstract void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple);
-        public abstract void PropagateAssert(IWorkingMemory workingMemory, Fact fact);
-        public abstract void PropagateUpdate(IWorkingMemory workingMemory, Fact fact);
-        public abstract void PropagateRetract(IWorkingMemory workingMemory, Fact fact);
+        public abstract void PropagateAssert(IExecutionContext context, Tuple tuple);
+        public abstract void PropagateUpdate(IExecutionContext context, Tuple tuple);
+        public abstract void PropagateRetract(IExecutionContext context, Tuple tuple);
+        public abstract void PropagateAssert(IExecutionContext context, Fact fact);
+        public abstract void PropagateUpdate(IExecutionContext context, Fact fact);
+        public abstract void PropagateRetract(IExecutionContext context, Fact fact);
     }
 }

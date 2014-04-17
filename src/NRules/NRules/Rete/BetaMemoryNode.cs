@@ -10,37 +10,37 @@ namespace NRules.Rete
     {
         private readonly List<ITupleSink> _sinks = new List<ITupleSink>();
 
-        public void PropagateAssert(IWorkingMemory workingMemory, Tuple tuple)
+        public void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            IBetaMemory memory = workingMemory.GetNodeMemory(this);
+            IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             memory.Tuples.Add(tuple);
             foreach (var sink in _sinks)
             {
-                sink.PropagateAssert(workingMemory, tuple);
+                sink.PropagateAssert(context, tuple);
             }
         }
 
-        public void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
+        public void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
             foreach (var sink in _sinks)
             {
-                sink.PropagateUpdate(workingMemory, tuple);
+                sink.PropagateUpdate(context, tuple);
             }
         }
 
-        public void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
+        public void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            IBetaMemory memory = workingMemory.GetNodeMemory(this);
+            IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             memory.Tuples.Remove(tuple);
             foreach (var sink in _sinks)
             {
-                sink.PropagateRetract(workingMemory, tuple);
+                sink.PropagateRetract(context, tuple);
             }
         }
 
-        public IEnumerable<Tuple> GetTuples(IWorkingMemory workingMemory)
+        public IEnumerable<Tuple> GetTuples(IExecutionContext context)
         {
-            IBetaMemory memory = workingMemory.GetNodeMemory(this);
+            IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             return memory.Tuples;
         }
 

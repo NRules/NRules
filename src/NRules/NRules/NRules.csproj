@@ -52,6 +52,10 @@
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
+    <Compile Include="Events\AgendaEventArgs.cs" />
+    <Compile Include="Events\EventAggregator.cs" />
+    <Compile Include="Events\WorkingMemoryEventArgs.cs" />
+    <Compile Include="ExecutionContext.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\IActivatable.cs" />
     <Compile Include="Rete\NotNode.cs" />
@@ -72,7 +76,6 @@
     <Compile Include="Rete\RootNode.cs" />
     <Compile Include="Rete\SelectionNode.cs" />
     <Compile Include="Rete\Activation.cs" />
-    <Compile Include="Rete\EventAggregator.cs" />
     <Compile Include="Rete\BetaCondition.cs" />
     <Compile Include="Agenda.cs" />
     <Compile Include="Rete\AlphaMemoryNode.cs" />
@@ -84,7 +87,6 @@
     <Compile Include="Rete\Network.cs" />
     <Compile Include="Rete\ReteBuilder.cs" />
     <Compile Include="Rete\AlphaNode.cs" />
-    <Compile Include="Rete\ActivationEventArgs.cs" />
     <Compile Include="Rete\RuleNode.cs" />
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />

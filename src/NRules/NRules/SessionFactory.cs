@@ -1,4 +1,5 @@
-﻿using NRules.Rete;
+﻿using NRules.Events;
+using NRules.Rete;
 
 namespace NRules
 {
@@ -25,11 +26,10 @@ namespace NRules
 
         public ISession CreateSession()
         {
+            var agenda = new Agenda();
+            var workingMemory = new WorkingMemory();
             var eventAggregator = new EventAggregator();
-            var agenda = new Agenda(eventAggregator);
-            var workingMemory = new WorkingMemory(eventAggregator);
-            _network.Activate(workingMemory);
-            var session = new Session(_network, agenda, workingMemory);
+            var session = new Session(_network, agenda, workingMemory, eventAggregator);
             return session;
         }
     }

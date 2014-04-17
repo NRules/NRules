@@ -15,105 +15,105 @@ namespace NRules.Rete
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public IList<BetaCondition> Conditions { get; private set; }
 
-        public override void PropagateAssert(IWorkingMemory workingMemory, Tuple leftTuple)
+        public override void PropagateAssert(IExecutionContext context, Tuple leftTuple)
         {
-            IEnumerable<Fact> rightFacts = RightSource.GetFacts(workingMemory);
+            IEnumerable<Fact> rightFacts = RightSource.GetFacts(context);
             foreach (Fact rightFact in rightFacts)
             {
                 if (MatchesConditions(leftTuple, rightFact))
                 {
-                    PropagateMatchedAssert(workingMemory, leftTuple, rightFact);
+                    PropagateMatchedAssert(context, leftTuple, rightFact);
                 }
             }
         }
 
-        public override void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
+        public override void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            IEnumerable<Fact> rightFacts = RightSource.GetFacts(workingMemory);
+            IEnumerable<Fact> rightFacts = RightSource.GetFacts(context);
             foreach (Fact rightFact in rightFacts)
             {
                 if (MatchesConditions(tuple, rightFact))
                 {
-                    PropagateMatchedUpdate(workingMemory, tuple, rightFact);
+                    PropagateMatchedUpdate(context, tuple, rightFact);
                 }
                 else
                 {
-                    PropagateMatchedRetract(workingMemory, tuple, rightFact);
+                    PropagateMatchedRetract(context, tuple, rightFact);
                 }
             }
         }
 
-        public override void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
+        public override void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            IEnumerable<Fact> rightFacts = RightSource.GetFacts(workingMemory);
+            IEnumerable<Fact> rightFacts = RightSource.GetFacts(context);
             foreach (Fact rightFact in rightFacts)
             {
-                PropagateMatchedRetract(workingMemory, tuple, rightFact);
+                PropagateMatchedRetract(context, tuple, rightFact);
             }
         }
 
-        public override void PropagateAssert(IWorkingMemory workingMemory, Fact rightFact)
+        public override void PropagateAssert(IExecutionContext context, Fact rightFact)
         {
-            IEnumerable<Tuple> leftTuples = LeftSource.GetTuples(workingMemory);
+            IEnumerable<Tuple> leftTuples = LeftSource.GetTuples(context);
             foreach (Tuple leftTuple in leftTuples)
             {
                 if (MatchesConditions(leftTuple, rightFact))
                 {
-                    PropagateMatchedAssert(workingMemory, leftTuple, rightFact);
+                    PropagateMatchedAssert(context, leftTuple, rightFact);
                 }
             }
         }
 
-        public override void PropagateUpdate(IWorkingMemory workingMemory, Fact fact)
+        public override void PropagateUpdate(IExecutionContext context, Fact fact)
         {
-            IEnumerable<Tuple> leftTuples = LeftSource.GetTuples(workingMemory);
+            IEnumerable<Tuple> leftTuples = LeftSource.GetTuples(context);
             foreach (Tuple leftTuple in leftTuples)
             {
                 if (MatchesConditions(leftTuple, fact))
                 {
-                    PropagateMatchedUpdate(workingMemory, leftTuple, fact);
+                    PropagateMatchedUpdate(context, leftTuple, fact);
                 }
                 else
                 {
-                    PropagateMatchedRetract(workingMemory, leftTuple, fact);
+                    PropagateMatchedRetract(context, leftTuple, fact);
                 }
             }
         }
 
-        public override void PropagateRetract(IWorkingMemory workingMemory, Fact fact)
+        public override void PropagateRetract(IExecutionContext context, Fact fact)
         {
-            IEnumerable<Tuple> leftTuples = LeftSource.GetTuples(workingMemory);
+            IEnumerable<Tuple> leftTuples = LeftSource.GetTuples(context);
             foreach (Tuple leftTuple in leftTuples)
             {
-                PropagateMatchedRetract(workingMemory, leftTuple, fact);
+                PropagateMatchedRetract(context, leftTuple, fact);
             }
         }
 
-        private void PropagateMatchedAssert(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
+        private void PropagateMatchedAssert(IExecutionContext context, Tuple leftTuple, Fact rightFact)
         {
             var newTuple = new Tuple(leftTuple, rightFact);
-            Sink.PropagateAssert(workingMemory, newTuple);
+            Sink.PropagateAssert(context, newTuple);
         }
 
-        private void PropagateMatchedUpdate(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
+        private void PropagateMatchedUpdate(IExecutionContext context, Tuple leftTuple, Fact rightFact)
         {
             Tuple tuple = leftTuple.ChildTuples.FirstOrDefault(t => t.RightFact == rightFact);
             if (tuple == null)
             {
-                PropagateMatchedAssert(workingMemory, leftTuple, rightFact);
+                PropagateMatchedAssert(context, leftTuple, rightFact);
             }
             else
             {
-                Sink.PropagateUpdate(workingMemory, tuple);
+                Sink.PropagateUpdate(context, tuple);
             }
         }
 
-        private void PropagateMatchedRetract(IWorkingMemory workingMemory, Tuple leftTuple, Fact rightFact)
+        private void PropagateMatchedRetract(IExecutionContext context, Tuple leftTuple, Fact rightFact)
         {
             Tuple tuple = leftTuple.ChildTuples.FirstOrDefault(t => t.RightFact == rightFact);
             if (tuple != null)
             {
-                Sink.PropagateRetract(workingMemory, tuple);
+                Sink.PropagateRetract(context, tuple);
                 tuple.Clear();
             }
         }

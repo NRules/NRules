@@ -5,10 +5,10 @@ namespace NRules.Rete
 {
     internal interface INetwork
     {
-        void PropagateAssert(IWorkingMemory workingMemory, object factObject);
-        void PropagateUpdate(IWorkingMemory workingMemory, object factObject);
-        void PropagateRetract(IWorkingMemory workingMemory, object factObject);
-        void Activate(IWorkingMemory workingMemory);
+        void PropagateAssert(IExecutionContext context, object factObject);
+        void PropagateUpdate(IExecutionContext context, object factObject);
+        void PropagateRetract(IExecutionContext context, object factObject);
+        void Activate(IExecutionContext context);
     }
 
     internal class Network : INetwork
@@ -22,56 +22,59 @@ namespace NRules.Rete
             _activatableNodes = new List<IActivatable>(activatableNodes);
         }
 
-        public void PropagateAssert(IWorkingMemory workingMemory, object factObject)
+        public void PropagateAssert(IExecutionContext context, object factObject)
         {
             if (factObject == null)
             {
                 throw new ArgumentNullException("factObject");
             }
-            Fact fact = workingMemory.GetFact(factObject);
+            Fact fact = context.WorkingMemory.GetFact(factObject);
             if (fact != null)
             {
                 throw new ArgumentException("Fact for insert already exists", "factObject");
             }
             fact = new Fact(factObject);
-            workingMemory.SetFact(fact);
-            _root.PropagateAssert(workingMemory, fact);
+            context.WorkingMemory.SetFact(fact);
+            context.EventAggregator.FactInserted(fact);
+            _root.PropagateAssert(context, fact);
         }
 
-        public void PropagateUpdate(IWorkingMemory workingMemory, object factObject)
+        public void PropagateUpdate(IExecutionContext context, object factObject)
         {
             if (factObject == null)
             {
                 throw new ArgumentNullException("factObject");
             }
-            Fact fact = workingMemory.GetFact(factObject);
+            Fact fact = context.WorkingMemory.GetFact(factObject);
             if (fact == null)
             {
                 throw new ArgumentException("Fact for update does not exist", "factObject");
             }
-            _root.PropagateUpdate(workingMemory, fact);
+            context.EventAggregator.FactUpdated(fact);
+            _root.PropagateUpdate(context, fact);
         }
 
-        public void PropagateRetract(IWorkingMemory workingMemory, object factObject)
+        public void PropagateRetract(IExecutionContext context, object factObject)
         {
             if (factObject == null)
             {
                 throw new ArgumentNullException("factObject");
             }
-            Fact fact = workingMemory.GetFact(factObject);
+            Fact fact = context.WorkingMemory.GetFact(factObject);
             if (fact == null)
             {
                 throw new ArgumentException("Fact for retract does not exist", "factObject");
             }
-            _root.PropagateRetract(workingMemory, fact);
-            workingMemory.RemoveFact(fact);
+            context.EventAggregator.FactRetracted(fact);
+            _root.PropagateRetract(context, fact);
+            context.WorkingMemory.RemoveFact(fact);
         }
 
-        public void Activate(IWorkingMemory workingMemory)
+        public void Activate(IExecutionContext context)
         {
-            foreach (var activatedNode in _activatableNodes)
+            foreach (var activatableNode in _activatableNodes)
             {
-                activatedNode.Activate(workingMemory);
+                activatableNode.Activate(context);
             }
         }
     }

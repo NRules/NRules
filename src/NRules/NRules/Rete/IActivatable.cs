@@ -2,6 +2,6 @@ namespace NRules.Rete
 {
     internal interface IActivatable
     {
-        void Activate(IWorkingMemory workingMemory);
+        void Activate(IExecutionContext context);
     }
 }

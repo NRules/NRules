@@ -19,7 +19,7 @@ namespace NRules.Rete
             return isMatchingType;
         }
 
-        protected override void UnsatisfiedFactUpdate(IWorkingMemory workingMemory, Fact fact)
+        protected override void UnsatisfiedFactUpdate(IExecutionContext context, Fact fact)
         {
             //Do nothing, since fact type will never change
         }

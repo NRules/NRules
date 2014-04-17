@@ -2,8 +2,8 @@
 {
     internal interface IRuleNode
     {
-        void Activate(IWorkingMemory workingMemory, Tuple tuple);
-        void Deactivate(IWorkingMemory workingMemory, Tuple tuple);
+        void Activate(IExecutionContext context, Tuple tuple);
+        void Deactivate(IExecutionContext context, Tuple tuple);
     }
 
     internal class RuleNode : IRuleNode
@@ -15,16 +15,18 @@
             _rule = rule;
         }
 
-        public void Activate(IWorkingMemory workingMemory, Tuple tuple)
+        public void Activate(IExecutionContext context, Tuple tuple)
         {
             var activation = new Activation(_rule, tuple);
-            workingMemory.EventAggregator.Activate(activation);
+            context.Agenda.Activate(activation);
+            context.EventAggregator.ActivationCreated(activation);
         }
 
-        public void Deactivate(IWorkingMemory workingMemory, Tuple tuple)
+        public void Deactivate(IExecutionContext context, Tuple tuple)
         {
             var activation = new Activation(_rule, tuple);
-            workingMemory.EventAggregator.Deactivate(activation);
+            context.Agenda.Deactivate(activation);
+            context.EventAggregator.ActivationDeleted(activation);
         }
     }
 }

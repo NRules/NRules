@@ -5,7 +5,6 @@ namespace NRules
 {
     internal interface IWorkingMemory
     {
-        IEventAggregator EventAggregator { get; }
         IEnumerable<Fact> Facts { get; }
         Fact GetFact(object factObject);
         void SetFact(Fact fact);
@@ -27,13 +26,7 @@ namespace NRules
         private readonly Dictionary<IBetaMemoryNode, IBetaMemory> _betaMap =
             new Dictionary<IBetaMemoryNode, IBetaMemory>();
 
-        public IEventAggregator EventAggregator { get; private set; }
         public IEnumerable<Fact> Facts { get { return _factMap.Values; } }
-
-        public WorkingMemory(IEventAggregator aggregator)
-        {
-            EventAggregator = aggregator;
-        }
 
         public Fact GetFact(object factObject)
         {

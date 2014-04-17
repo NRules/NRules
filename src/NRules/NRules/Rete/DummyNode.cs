@@ -6,19 +6,19 @@ namespace NRules.Rete
     {
         private ITupleSink _sink;
 
-        public void Activate(IWorkingMemory workingMemory)
+        public void Activate(IExecutionContext context)
         {
             var tuple = new Tuple();
 
-            IBetaMemory memory = workingMemory.GetNodeMemory(this);
+            IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             memory.Tuples.Add(tuple);
 
-            _sink.PropagateAssert(workingMemory, tuple);
+            _sink.PropagateAssert(context, tuple);
         }
 
-        public IEnumerable<Tuple> GetTuples(IWorkingMemory workingMemory)
+        public IEnumerable<Tuple> GetTuples(IExecutionContext context)
         {
-            IBetaMemory memory = workingMemory.GetNodeMemory(this);
+            IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             return memory.Tuples;
         }
 

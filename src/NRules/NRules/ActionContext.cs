@@ -1,17 +1,14 @@
-﻿using NRules.Rete;
-using NRules.RuleModel;
+﻿using NRules.RuleModel;
 
 namespace NRules
 {
     internal class ActionContext : IContext
     {
-        private readonly INetwork _network;
-        private readonly IWorkingMemory _workingMemory;
+        private readonly ISession _session;
 
-        public ActionContext(INetwork network, IWorkingMemory workingMemory)
+        public ActionContext(ISession session)
         {
-            _network = network;
-            _workingMemory = workingMemory;
+            _session = session;
             IsHalted = false;
         }
 
@@ -19,17 +16,17 @@ namespace NRules
 
         public void Insert(object fact)
         {
-            _network.PropagateAssert(_workingMemory, fact);
+            _session.Insert(fact);
         }
 
         public void Update(object fact)
         {
-            _network.PropagateUpdate(_workingMemory, fact);
+            _session.Update(fact);
         }
 
         public void Retract(object fact)
         {
-            _network.PropagateRetract(_workingMemory, fact);
+            _session.Retract(fact);
         }
 
         public void Halt()

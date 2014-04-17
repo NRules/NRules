@@ -10,39 +10,39 @@ namespace NRules.Rete
     {
         private readonly List<IObjectSink> _sinks = new List<IObjectSink>();
 
-        public void PropagateAssert(IWorkingMemory workingMemory, Fact fact)
+        public void PropagateAssert(IExecutionContext context, Fact fact)
         {
-            IAlphaMemory memory = workingMemory.GetNodeMemory(this);
+            IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             memory.Facts.Add(fact);
-            _sinks.ForEach(s => s.PropagateAssert(workingMemory, fact));
+            _sinks.ForEach(s => s.PropagateAssert(context, fact));
         }
 
-        public void PropagateUpdate(IWorkingMemory workingMemory, Fact fact)
+        public void PropagateUpdate(IExecutionContext context, Fact fact)
         {
-            IAlphaMemory memory = workingMemory.GetNodeMemory(this);
+            IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             if (memory.Facts.Contains(fact))
             {
-                _sinks.ForEach(s => s.PropagateUpdate(workingMemory, fact));
+                _sinks.ForEach(s => s.PropagateUpdate(context, fact));
             }
             else
             {
-                PropagateAssert(workingMemory, fact);
+                PropagateAssert(context, fact);
             }
         }
 
-        public void PropagateRetract(IWorkingMemory workingMemory, Fact fact)
+        public void PropagateRetract(IExecutionContext context, Fact fact)
         {
-            IAlphaMemory memory = workingMemory.GetNodeMemory(this);
+            IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             memory.Facts.Remove(fact);
             foreach (var sink in _sinks)
             {
-                sink.PropagateRetract(workingMemory, fact);
+                sink.PropagateRetract(context, fact);
             }
         }
 
-        public IEnumerable<Fact> GetFacts(IWorkingMemory workingMemory)
+        public IEnumerable<Fact> GetFacts(IExecutionContext context)
         {
-            IAlphaMemory memory = workingMemory.GetNodeMemory(this);
+            IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             return memory.Facts;
         }
 

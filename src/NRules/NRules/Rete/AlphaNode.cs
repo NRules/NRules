@@ -17,69 +17,69 @@ namespace NRules.Rete
 
         public abstract bool IsSatisfiedBy(Fact fact);
 
-        public void PropagateAssert(IWorkingMemory workingMemory, Fact fact)
+        public void PropagateAssert(IExecutionContext context, Fact fact)
         {
             if (IsSatisfiedBy(fact))
             {
                 foreach (var childNode in ChildNodes)
                 {
-                    childNode.PropagateAssert(workingMemory, fact);
+                    childNode.PropagateAssert(context, fact);
                 }
                 if (MemoryNode != null)
                 {
-                    MemoryNode.PropagateAssert(workingMemory, fact);
+                    MemoryNode.PropagateAssert(context, fact);
                 }
             }
         }
 
-        public void PropagateUpdate(IWorkingMemory workingMemory, Fact fact)
+        public void PropagateUpdate(IExecutionContext context, Fact fact)
         {
             if (IsSatisfiedBy(fact))
             {
                 foreach (var childNode in ChildNodes)
                 {
-                    childNode.PropagateUpdate(workingMemory, fact);
+                    childNode.PropagateUpdate(context, fact);
                 }
                 if (MemoryNode != null)
                 {
-                    MemoryNode.PropagateUpdate(workingMemory, fact);
+                    MemoryNode.PropagateUpdate(context, fact);
                 }
             }
             else
             {
-                UnsatisfiedFactUpdate(workingMemory, fact);
+                UnsatisfiedFactUpdate(context, fact);
             }
         }
 
-        protected virtual void UnsatisfiedFactUpdate(IWorkingMemory workingMemory, Fact fact)
+        protected virtual void UnsatisfiedFactUpdate(IExecutionContext context, Fact fact)
         {
-            ForceRetract(workingMemory, fact);
+            ForceRetract(context, fact);
         }
 
-        public void PropagateRetract(IWorkingMemory workingMemory, Fact fact)
+        public void PropagateRetract(IExecutionContext context, Fact fact)
         {
             if (IsSatisfiedBy(fact))
             {
                 foreach (var childNode in ChildNodes)
                 {
-                    childNode.PropagateRetract(workingMemory, fact);
+                    childNode.PropagateRetract(context, fact);
                 }
                 if (MemoryNode != null)
                 {
-                    MemoryNode.PropagateRetract(workingMemory, fact);
+                    MemoryNode.PropagateRetract(context, fact);
                 }
             }
         }
 
-        public void ForceRetract(IWorkingMemory workingMemory, Fact fact)
+        public void ForceRetract(IExecutionContext context, Fact fact)
         {
             foreach (var childNode in ChildNodes)
             {
-                childNode.ForceRetract(workingMemory, fact);
+                childNode.ForceRetract(context, fact);
             }
             if (MemoryNode != null)
             {
-                MemoryNode.PropagateRetract(workingMemory, fact);
+                MemoryNode.PropagateRetract(context, fact);
             }
         }
     }

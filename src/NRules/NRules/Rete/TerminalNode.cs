@@ -14,19 +14,19 @@
             source.Attach(this);
         }
 
-        public void PropagateAssert(IWorkingMemory workingMemory, Tuple tuple)
+        public void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            _ruleNode.Activate(workingMemory, tuple);
+            _ruleNode.Activate(context, tuple);
         }
 
-        public void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
+        public void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
             //Do nothing
         }
 
-        public void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
+        public void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            _ruleNode.Deactivate(workingMemory, tuple);
+            _ruleNode.Deactivate(context, tuple);
         }
 
         public void Attach(IRuleNode ruleNode)

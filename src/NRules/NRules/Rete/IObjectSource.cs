@@ -4,7 +4,7 @@ namespace NRules.Rete
 {
     internal interface IObjectSource
     {
-        IEnumerable<Fact> GetFacts(IWorkingMemory workingMemory);
+        IEnumerable<Fact> GetFacts(IExecutionContext context);
         void Attach(IObjectSink sink);
     }
 }

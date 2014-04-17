@@ -1,4 +1,5 @@
 using System.Linq;
+using NRules.Events;
 using NRules.Rete;
 
 namespace NRules
@@ -10,6 +11,11 @@ namespace NRules
     /// </summary>
     public interface ISession
     {
+        /// <summary>
+        /// Hub for rule session events.
+        /// </summary>
+        IEventProvider EventProvider { get; }
+
         /// <summary>
         /// Adds a new fact to the rules engine memory.
         /// </summary>
@@ -47,42 +53,51 @@ namespace NRules
         private readonly IAgenda _agenda;
         private readonly INetwork _network;
         private readonly IWorkingMemory _workingMemory;
+        private readonly IEventAggregator _eventAggregator;
+        private readonly IExecutionContext _executionContext;
 
-        public Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory)
+        public Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator)
         {
             _network = network;
             _agenda = agenda;
             _workingMemory = workingMemory;
+            _eventAggregator = eventAggregator;
+            _executionContext = new ExecutionContext(_workingMemory, _agenda, _eventAggregator);
+            _network.Activate(_executionContext);
         }
+
+        public IEventProvider EventProvider { get { return _eventAggregator; } }
 
         public void Insert(object fact)
         {
-            _network.PropagateAssert(_workingMemory, fact);
+            _network.PropagateAssert(_executionContext, fact);
         }
 
         public void Update(object fact)
         {
-            _network.PropagateUpdate(_workingMemory, fact);
+            _network.PropagateUpdate(_executionContext, fact);
         }
 
         public void Retract(object fact)
         {
-            _network.PropagateRetract(_workingMemory, fact);
+            _network.PropagateRetract(_executionContext, fact);
         }
 
         public void Fire()
         {
-            var context = new ActionContext(_network, _workingMemory);
+            var actionContext = new ActionContext(this);
 
-            while (_agenda.HasActiveRules() && !context.IsHalted)
+            while (_agenda.HasActiveRules() && !actionContext.IsHalted)
             {
                 Activation activation = _agenda.NextActivation();
                 ICompiledRule rule = activation.Rule;
 
+                _eventAggregator.BeforeRuleFired(activation);
                 foreach (IRuleAction action in rule.Actions)
                 {
-                    action.Invoke(context, activation.Tuple);
+                    action.Invoke(actionContext, activation.Tuple);
                 }
+                _eventAggregator.AfterRuleFired(activation);
             }
         }
 

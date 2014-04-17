@@ -3,13 +3,14 @@
   <metadata>
     <id>NRules</id>
     <version>1.0.0</version>
+    <title>NRules, Business Rules Engine for .NET</title>
     <authors>Sergiy Nikolayev</authors>
     <owners>Sergiy Nikolayev</owners>
     <licenseUrl>https://github.com/snikolayev/NRules/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/snikolayev/NRules</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/snikolayev/NRules/master/content/NRules_Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Business rules engine for .NET, based on the Rete matching algorithm.</description>
+    <description>NRules is a business rules engine for .NET that is based on the Rete matching algorithm. Among other features it supports forward chaining, negative and existential assertions. Rules are authored in C# using internal DSL.</description>
     <copyright>Copyright 2012-2014 Sergiy Nikolayev. All rights reserved.</copyright>
     <dependencies>
         <dependency id="Common.Logging" version="2.1.1" />

@@ -2,8 +2,8 @@
 {
     internal interface IObjectSink
     {
-        void PropagateAssert(IWorkingMemory workingMemory, Fact fact);
-        void PropagateUpdate(IWorkingMemory workingMemory, Fact fact);
-        void PropagateRetract(IWorkingMemory workingMemory, Fact fact);
+        void PropagateAssert(IExecutionContext context, Fact fact);
+        void PropagateUpdate(IExecutionContext context, Fact fact);
+        void PropagateRetract(IExecutionContext context, Fact fact);
     }
 }

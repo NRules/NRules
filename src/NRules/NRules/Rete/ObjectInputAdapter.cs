@@ -14,24 +14,24 @@ namespace NRules.Rete
             source.Attach(this);
         }
 
-        public void PropagateAssert(IWorkingMemory workingMemory, Tuple tuple)
+        public void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            _sink.PropagateAssert(workingMemory, tuple.RightFact);
+            _sink.PropagateAssert(context, tuple.RightFact);
         }
 
-        public void PropagateUpdate(IWorkingMemory workingMemory, Tuple tuple)
+        public void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            _sink.PropagateUpdate(workingMemory, tuple.RightFact);
+            _sink.PropagateUpdate(context, tuple.RightFact);
         }
 
-        public void PropagateRetract(IWorkingMemory workingMemory, Tuple tuple)
+        public void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            _sink.PropagateRetract(workingMemory, tuple.RightFact);
+            _sink.PropagateRetract(context, tuple.RightFact);
         }
 
-        public IEnumerable<Fact> GetFacts(IWorkingMemory workingMemory)
+        public IEnumerable<Fact> GetFacts(IExecutionContext context)
         {
-            return _source.GetTuples(workingMemory).Select(t => t.RightFact);
+            return _source.GetTuples(context).Select(t => t.RightFact);
         }
 
         public void Attach(IObjectSink sink)
