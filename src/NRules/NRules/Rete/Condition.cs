@@ -16,6 +16,8 @@ namespace NRules.Rete
             _compiledExpression = expression.Compile();
         }
 
+        public string ExpressionString { get { return _expressionString; } }
+
         protected bool IsSatisfiedBy(params object[] factObjects)
         {
             return (bool) _compiledExpression.DynamicInvoke(factObjects);

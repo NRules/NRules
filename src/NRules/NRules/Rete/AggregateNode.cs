@@ -71,6 +71,11 @@ namespace NRules.Rete
             }
         }
 
+        public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.VisitAggregateNode(context, this);
+        }
+
         private void HandleAggregateResult(IExecutionContext context, AggregationResults result, Tuple leftTuple, IAggregate aggregate)
         {
             Fact aggregateFact = GetAggregateFact(context, aggregate);

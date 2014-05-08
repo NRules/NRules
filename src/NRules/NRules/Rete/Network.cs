@@ -9,6 +9,7 @@ namespace NRules.Rete
         void PropagateUpdate(IExecutionContext context, object factObject);
         void PropagateRetract(IExecutionContext context, object factObject);
         void Activate(IExecutionContext context);
+        void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);
     }
 
     internal class Network : INetwork
@@ -76,6 +77,11 @@ namespace NRules.Rete
             {
                 activatableNode.Activate(context);
             }
+        }
+
+        public void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.Visit(context, _root);
         }
     }
 }

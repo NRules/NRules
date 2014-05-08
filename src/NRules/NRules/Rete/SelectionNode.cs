@@ -19,5 +19,10 @@ namespace NRules.Rete
         {
             return Conditions.All(c => c.IsSatisfiedBy(fact));
         }
+
+        public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.VisitSelectionNode(context, this);
+        }
     }
 }

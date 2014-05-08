@@ -1,4 +1,5 @@
-﻿using NRules.RuleModel;
+﻿using System;
+using NRules.RuleModel;
 
 namespace NRules
 {
@@ -21,6 +22,12 @@ namespace NRules
 
         public void Update(object fact)
         {
+            _session.Update(fact);
+        }
+
+        public void Update<T>(T fact, Action<T> updateAction)
+        {
+            updateAction(fact);
             _session.Update(fact);
         }
 

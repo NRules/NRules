@@ -1,0 +1,50 @@
+﻿<Window x:Class="NRules.Debug.Visualizer.VisualizerWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:local="clr-namespace:NRules.Debug.Visualizer"
+             xmlns:Controls="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
+             xmlns:WPFExtensions_Controls="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type local:Model.ReteNode}">
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <TextBlock Text="{Binding Path=Value, Mode=OneWay}" Foreground="Black" />
+            </StackPanel>
+        </DataTemplate>
+        <Style TargetType="{x:Type Controls:VertexControl}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Controls:VertexControl}">
+                        <Border BorderBrush="Black" 
+                                BorderThickness="2" CornerRadius="10,10,10,10" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter Content="{TemplateBinding Vertex}" />
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="5" Color="LightGray" Opacity="0.3" Direction="315"/>
+                            </Border.Effect>
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" >
+                                    <GradientStop Color="White" Offset="0.0" />
+                                    <GradientStop Color="CadetBlue" Offset="0.2" />
+                                    <GradientStop Color="CadetBlue" Offset="0.8" />
+                                    <GradientStop Color="White" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type Controls:EdgeControl}">
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <WPFExtensions_Controls:ZoomControl>
+            <local:ReteGraphLayout x:Name="graphLayout" Graph="{Binding Path=Graph}"
+                                   LayoutAlgorithmType="EfficientSugiyama" OverlapRemovalAlgorithmType="FSA" HighlightAlgorithmType="None" />
+        </WPFExtensions_Controls:ZoomControl>
+    </Grid>
+</Window>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 
 namespace NRules.Rete
 {
@@ -82,5 +83,15 @@ namespace NRules.Rete
                 MemoryNode.PropagateRetract(context, fact);
             }
         }
+
+        public virtual void Dump(StringBuilder dumpBuilder)
+        {
+            foreach (var alphaNode in ChildNodes)
+            {
+                alphaNode.Dump(dumpBuilder);
+            }
+        }
+
+        public abstract void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);
     }
 }

@@ -42,6 +42,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
@@ -52,16 +54,22 @@
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
+    <Compile Include="Diagnostics\DgmlSerializer.cs" />
+    <Compile Include="Diagnostics\ReteNodeInfo.cs" />
+    <Compile Include="Diagnostics\SessionSnapshot.cs" />
+    <Compile Include="Diagnostics\SessionSnapshotVisitor.cs" />
     <Compile Include="Events\AgendaEventArgs.cs" />
     <Compile Include="Events\EventAggregator.cs" />
     <Compile Include="Events\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\IActivatable.cs" />
+    <Compile Include="Rete\INode.cs" />
     <Compile Include="Rete\NotNode.cs" />
     <Compile Include="Rete\IObjectSource.cs" />
     <Compile Include="Rete\ITupleSource.cs" />
     <Compile Include="Rete\ObjectInputAdapter.cs" />
+    <Compile Include="Rete\ReteNodeVisitor.cs" />
     <Compile Include="Rete\TerminalNode.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleCompiler.cs" />

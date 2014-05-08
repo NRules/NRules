@@ -60,5 +60,10 @@ namespace NRules.Rete
                 }
             }
         }
+
+        public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.VisitNotNode(context, this);
+        }
     }
 }

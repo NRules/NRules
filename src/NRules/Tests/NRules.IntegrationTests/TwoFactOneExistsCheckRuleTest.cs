@@ -119,6 +119,25 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
+        [Test]
+        public void Fire_TwoMatchingFactsAndOneFactExists_FiresOnce()
+        {
+            //Arrange
+            var fact11 = new FactType1() { TestProperty = "Valid Value" };
+            var fact12 = new FactType1() { TestProperty = "Valid Value" };
+            var fact21 = new FactType2() { TestProperty = "Valid Value", JoinReference = fact11};
+
+            Session.Insert(fact11);
+            Session.Insert(fact12);
+            Session.Insert(fact21);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+        }
+
         protected override void SetUpRules()
         {
             SetUpRule<TwoFactOneExistsCheckRule>();

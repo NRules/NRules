@@ -136,7 +136,7 @@ namespace NRules.Rete
         private IBetaMemoryNode BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
         {
             var memoryNode = new BetaMemoryNode();
-            betaNode.Sink = memoryNode;
+            betaNode.Attach(memoryNode);
             return memoryNode;
         }
 

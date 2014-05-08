@@ -6,5 +6,10 @@
         {
             return true;
         }
+
+        public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.VisitRootNode(context, this);
+        }
     }
 }

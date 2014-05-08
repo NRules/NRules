@@ -1,4 +1,5 @@
 using System.Linq;
+using NRules.Diagnostics;
 using NRules.Events;
 using NRules.Rete;
 
@@ -46,6 +47,12 @@ namespace NRules
         /// <typeparam name="TFact">Type of facts to query.</typeparam>
         /// <returns>Queryable engine's memory.</returns>
         IQueryable<TFact> Query<TFact>();
+
+        /// <summary>
+        /// Returns a snapshot of session state for diagnostics.
+        /// </summary>
+        /// <returns>Session snapshot.</returns>
+        SessionSnapshot GetSnapshot();
     }
 
     internal class Session : ISession
@@ -59,8 +66,8 @@ namespace NRules
         public Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator)
         {
             _network = network;
-            _agenda = agenda;
             _workingMemory = workingMemory;
+            _agenda = agenda;
             _eventAggregator = eventAggregator;
             _executionContext = new ExecutionContext(_workingMemory, _agenda, _eventAggregator);
             _network.Activate(_executionContext);
@@ -104,6 +111,15 @@ namespace NRules
         public IQueryable<TFact> Query<TFact>()
         {
             return _workingMemory.Facts.Select(x => x.Object).OfType<TFact>().AsQueryable();
+        }
+
+        public SessionSnapshot GetSnapshot()
+        {
+            var snapshot = new SessionSnapshot();
+            var visitor = new SessionSnapshotVisitor(_workingMemory);
+            _network.Visit(snapshot, visitor);
+
+            return snapshot;
         }
     }
 }

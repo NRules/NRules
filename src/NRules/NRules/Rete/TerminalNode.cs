@@ -7,7 +7,7 @@
 
     internal class TerminalNode : ITerminalNode, ITupleSink
     {
-        private IRuleNode _ruleNode;
+        public IRuleNode RuleNode { get; private set; }
 
         public TerminalNode(ITupleSource source)
         {
@@ -16,7 +16,7 @@
 
         public void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            _ruleNode.Activate(context, tuple);
+            RuleNode.Activate(context, tuple);
         }
 
         public void PropagateUpdate(IExecutionContext context, Tuple tuple)
@@ -26,12 +26,17 @@
 
         public void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            _ruleNode.Deactivate(context, tuple);
+            RuleNode.Deactivate(context, tuple);
         }
 
         public void Attach(IRuleNode ruleNode)
         {
-            _ruleNode = ruleNode;
+            RuleNode = ruleNode;
+        }
+
+        public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.VisitTerminalNode(context, this);
         }
     }
 }

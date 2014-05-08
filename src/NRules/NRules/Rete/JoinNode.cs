@@ -89,6 +89,11 @@ namespace NRules.Rete
             }
         }
 
+        public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.VisitJoinNode(context, this);
+        }
+
         private void PropagateMatchedAssert(IExecutionContext context, Tuple leftTuple, Fact rightFact)
         {
             var newTuple = new Tuple(leftTuple, rightFact);

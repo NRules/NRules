@@ -10,6 +10,8 @@ namespace NRules.Rete
     {
         private readonly List<IObjectSink> _sinks = new List<IObjectSink>();
 
+        public IEnumerable<IObjectSink> Sinks { get { return _sinks; } } 
+
         public void PropagateAssert(IExecutionContext context, Fact fact)
         {
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
@@ -49,6 +51,11 @@ namespace NRules.Rete
         public void Attach(IObjectSink sink)
         {
             _sinks.Add(sink);
+        }
+
+        public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.VisitAlphaMemoryNode(context, this);
         }
     }
 }

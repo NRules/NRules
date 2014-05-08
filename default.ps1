@@ -89,7 +89,7 @@ task Compile -depends InitEnvironment, Version, Restore -description "Compiles s
 
 task Merge -depends Compile -description "Merges compiled assemblies into coarse-grained components" {
 	$assemblies = @()
-	$assemblies += Get-ChildItem $outDir\NRules*.dll -Exclude **Tests.dll
+	$assemblies += Get-ChildItem $outDir\NRules*.dll -Exclude **Tests.dll,**Debug**.dll
 	
 	$attributeFile = "$outDir\NRules.dll"
 	

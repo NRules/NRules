@@ -10,6 +10,8 @@ namespace NRules.Rete
     {
         private readonly List<ITupleSink> _sinks = new List<ITupleSink>();
 
+        public IEnumerable<ITupleSink> Sinks { get { return _sinks; } } 
+
         public void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
@@ -47,6 +49,11 @@ namespace NRules.Rete
         public void Attach(ITupleSink sink)
         {
             _sinks.Add(sink);
+        }
+
+        public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.VisitBetaMemoryNode(context, this);
         }
     }
 }

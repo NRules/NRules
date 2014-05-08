@@ -1,6 +1,6 @@
 ﻿namespace NRules.Rete
 {
-    internal interface ITupleSink
+    internal interface ITupleSink: INode
     {
         void PropagateAssert(IExecutionContext context, Tuple tuple);
         void PropagateUpdate(IExecutionContext context, Tuple tuple);

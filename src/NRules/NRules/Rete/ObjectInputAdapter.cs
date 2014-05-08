@@ -6,7 +6,8 @@ namespace NRules.Rete
     internal class ObjectInputAdapter : ITupleSink, IObjectSource
     {
         private readonly ITupleSource _source;
-        private IObjectSink _sink;
+
+        public IObjectSink Sink { get; private set; }
 
         public ObjectInputAdapter(ITupleSource source)
         {
@@ -16,17 +17,17 @@ namespace NRules.Rete
 
         public void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            _sink.PropagateAssert(context, tuple.RightFact);
+            Sink.PropagateAssert(context, tuple.RightFact);
         }
 
         public void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            _sink.PropagateUpdate(context, tuple.RightFact);
+            Sink.PropagateUpdate(context, tuple.RightFact);
         }
 
         public void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            _sink.PropagateRetract(context, tuple.RightFact);
+            Sink.PropagateRetract(context, tuple.RightFact);
         }
 
         public IEnumerable<Fact> GetFacts(IExecutionContext context)
@@ -36,7 +37,12 @@ namespace NRules.Rete
 
         public void Attach(IObjectSink sink)
         {
-            _sink = sink;
+            Sink = sink;
+        }
+
+        public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.VisitObjectInputAdapter(context, this);
         }
     }
 }
