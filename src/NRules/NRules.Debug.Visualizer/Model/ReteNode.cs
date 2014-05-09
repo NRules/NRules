@@ -4,12 +4,13 @@ namespace NRules.Debug.Visualizer.Model
 {
     public class ReteNode
     {
-        private readonly ReteNodeInfo _nodeInfo;
+        private readonly NodeInfo _nodeInfo;
 
-        public int Id { get { return _nodeInfo.Id; } }
+        public string NodeType { get { return _nodeInfo.NodeType.ToString(); } }
         public string Value { get { return string.Format("{0} {1}", _nodeInfo.NodeType, _nodeInfo.Details); } }
+        public string[] Items { get { return _nodeInfo.Items; } }
 
-        internal ReteNode(ReteNodeInfo nodeInfo)
+        internal ReteNode(NodeInfo nodeInfo)
         {
             _nodeInfo = nodeInfo;
         }

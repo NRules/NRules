@@ -55,9 +55,11 @@
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
     <Compile Include="Diagnostics\DgmlSerializer.cs" />
-    <Compile Include="Diagnostics\ReteNodeInfo.cs" />
+    <Compile Include="Diagnostics\LinkInfo.cs" />
+    <Compile Include="Diagnostics\NodeInfo.cs" />
     <Compile Include="Diagnostics\SessionSnapshot.cs" />
     <Compile Include="Diagnostics\SessionSnapshotVisitor.cs" />
+    <Compile Include="Diagnostics\SnapshotBuilder.cs" />
     <Compile Include="Events\AgendaEventArgs.cs" />
     <Compile Include="Events\EventAggregator.cs" />
     <Compile Include="Events\WorkingMemoryEventArgs.cs" />

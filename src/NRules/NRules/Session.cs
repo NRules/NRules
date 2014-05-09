@@ -115,11 +115,10 @@ namespace NRules
 
         public SessionSnapshot GetSnapshot()
         {
-            var snapshot = new SessionSnapshot();
+            var builder = new SnapshotBuilder();
             var visitor = new SessionSnapshotVisitor(_workingMemory);
-            _network.Visit(snapshot, visitor);
-
-            return snapshot;
+            _network.Visit(builder, visitor);
+            return builder.Build();
         }
     }
 }

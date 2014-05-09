@@ -10,17 +10,17 @@ namespace NRules.Debug.Visualizer.Model
         {
             var graph = new ReteGraph();
 
-            var nodes = new Dictionary<int, ReteNode>();
+            var nodes = new Dictionary<NodeInfo, ReteNode>();
             foreach (var nodeInfo in snapshot.Nodes)
             {
                 var node = new ReteNode(nodeInfo);
-                nodes[node.Id] = node;
+                nodes[nodeInfo] = node;
                 graph.AddVertex(node);
             }
 
             foreach (var link in snapshot.Links)
             {
-                graph.AddEdge(new ReteEdge(nodes[link.Item1.Id], nodes[link.Item2.Id]));
+                graph.AddEdge(new ReteEdge(nodes[link.Source], nodes[link.Target]));
             }
 
             return graph;

@@ -10,32 +10,79 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Window.Resources>
         <DataTemplate DataType="{x:Type local:Model.ReteNode}">
-            <StackPanel Orientation="Horizontal" Margin="5">
-                <TextBlock Text="{Binding Path=Value, Mode=OneWay}" Foreground="Black" />
+            <StackPanel Orientation="Vertical" Margin="5">
+                <TextBlock Text="{Binding Path=Value, Mode=OneWay}" Foreground="White" FontWeight="Bold" HorizontalAlignment="Center" />
+                <ListBox ItemsSource="{Binding Path=Items}" Background="Transparent" BorderBrush="Transparent">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Foreground="White" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </StackPanel>
         </DataTemplate>
         <Style TargetType="{x:Type Controls:VertexControl}">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Controls:VertexControl}">
-                        <Border BorderBrush="Black" 
-                                BorderThickness="2" CornerRadius="10,10,10,10" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter Content="{TemplateBinding Vertex}" />
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="10" ShadowDepth="5" Color="LightGray" Opacity="0.3" Direction="315"/>
-                            </Border.Effect>
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" >
-                                    <GradientStop Color="White" Offset="0.0" />
-                                    <GradientStop Color="CadetBlue" Offset="0.2" />
-                                    <GradientStop Color="CadetBlue" Offset="0.8" />
-                                    <GradientStop Color="White" Offset="1.0" />
-                                </LinearGradientBrush>
-                            </Border.Background>
+                        <Border BorderBrush="Transparent" CornerRadius="20,20,20,20" Background="{TemplateBinding Background}">
+                            <Border BorderBrush="Black" MinWidth="75"
+                                    BorderThickness="2" CornerRadius="20,20,20,20" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter Content="{TemplateBinding Vertex}" />
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" ShadowDepth="5" Color="LightGray" Opacity="0.3" Direction="315"/>
+                                </Border.Effect>
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" >
+                                        <GradientStop Color="White" Offset="0.0" />
+                                        <GradientStop Color="Transparent" Offset="0.2" />
+                                        <GradientStop Color="Transparent" Offset="0.8" />
+                                        <GradientStop Color="White" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="Root">
+                    <Setter Property="Background" Value="Gray"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="Type">
+                    <Setter Property="Background" Value="Orange"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="Selection">
+                    <Setter Property="Background" Value="Blue"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="AlphaMemory">
+                    <Setter Property="Background" Value="Red"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="BetaMemory">
+                    <Setter Property="Background" Value="Green"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="Join">
+                    <Setter Property="Background" Value="Blue"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="Exists">
+                    <Setter Property="Background" Value="Brown"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="Not">
+                    <Setter Property="Background" Value="Brown"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="Aggregate">
+                    <Setter Property="Background" Value="Brown"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="Adapter">
+                    <Setter Property="Background" Value="Gray"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="Terminal">
+                    <Setter Property="Background" Value="Gray"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Vertex.NodeType}" Value="Rule">
+                    <Setter Property="Background" Value="Purple"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
         <Style TargetType="{x:Type Controls:EdgeControl}">
             <Setter Property="Foreground" Value="Black"/>

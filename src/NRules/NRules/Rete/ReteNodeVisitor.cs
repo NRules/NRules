@@ -2,90 +2,90 @@ namespace NRules.Rete
 {
     internal class ReteNodeVisitor<TContext>
     {
-        public void Visit(TContext context, INode node)
+        public virtual void Visit(TContext context, INode node)
         {
             node.Accept(context, this);
         }
 
-        protected internal virtual void VisitRootNode(TContext context, RootNode node)
+        protected internal virtual void VisitRootNode(TContext builder, RootNode node)
         {
-            VisitAlphaNode(context, node);
+            VisitAlphaNode(builder, node);
         }
 
-        protected internal virtual void VisitTypeNode(TContext context, TypeNode node)
+        protected internal virtual void VisitTypeNode(TContext builder, TypeNode node)
         {
-            VisitAlphaNode(context, node);
+            VisitAlphaNode(builder, node);
         }
 
-        protected internal virtual void VisitSelectionNode(TContext context, SelectionNode node)
+        protected internal virtual void VisitSelectionNode(TContext builder, SelectionNode node)
         {
-            VisitAlphaNode(context, node);
+            VisitAlphaNode(builder, node);
         }
 
-        protected internal virtual void VisitAlphaMemoryNode(TContext context, AlphaMemoryNode node)
+        protected internal virtual void VisitAlphaMemoryNode(TContext builder, AlphaMemoryNode node)
         {
             foreach (var objectSink in node.Sinks)
             {
-                Visit(context, objectSink);
+                Visit(builder, objectSink);
             }
         }
 
-        protected virtual void VisitAlphaNode(TContext context, AlphaNode node)
+        protected virtual void VisitAlphaNode(TContext builder, AlphaNode node)
         {
             foreach (var childNode in node.ChildNodes)
             {
-                Visit(context, childNode);
+                Visit(builder, childNode);
             }
             if (node.MemoryNode != null)
             {
-                Visit(context, node.MemoryNode);
+                Visit(builder, node.MemoryNode);
             }
         }
 
-        protected internal virtual void VisitAggregateNode(TContext context, AggregateNode node)
+        protected internal virtual void VisitAggregateNode(TContext builder, AggregateNode node)
         {
-            VisitBetaNode(context, node);
+            VisitBetaNode(builder, node);
         }
 
-        protected internal virtual void VisitNotNode(TContext context, NotNode node)
+        protected internal virtual void VisitNotNode(TContext builder, NotNode node)
         {
-            VisitBetaNode(context, node);
+            VisitBetaNode(builder, node);
         }
 
-        protected internal virtual void VisitJoinNode(TContext context, JoinNode node)
+        protected internal virtual void VisitJoinNode(TContext builder, JoinNode node)
         {
-            VisitBetaNode(context, node);
+            VisitBetaNode(builder, node);
         }
 
-        protected internal virtual void VisitExistsNode(TContext context, ExistsNode node)
+        protected internal virtual void VisitExistsNode(TContext builder, ExistsNode node)
         {
-            VisitBetaNode(context, node);
+            VisitBetaNode(builder, node);
         }
 
-        protected internal virtual void VisitTerminalNode(TContext context, TerminalNode node)
+        protected internal virtual void VisitTerminalNode(TContext builder, TerminalNode node)
         {
-            Visit(context, node.RuleNode);
+            Visit(builder, node.RuleNode);
         }
 
-        protected internal virtual void VisitObjectInputAdapter(TContext context, ObjectInputAdapter node)
+        protected internal virtual void VisitObjectInputAdapter(TContext builder, ObjectInputAdapter node)
         {
-            Visit(context, node.Sink);
+            Visit(builder, node.Sink);
         }
 
-        protected internal virtual void VisitBetaMemoryNode(TContext context, BetaMemoryNode node)
+        protected internal virtual void VisitBetaMemoryNode(TContext builder, BetaMemoryNode node)
         {
             foreach (var tupleSink in node.Sinks)
             {
-                Visit(context, tupleSink);
+                Visit(builder, tupleSink);
             }
         }
 
-        protected virtual void VisitBetaNode(TContext context, BetaNode node)
+        protected virtual void VisitBetaNode(TContext builder, BetaNode node)
         {
-            Visit(context, node.Sink);
+            Visit(builder, node.Sink);
         }
 
-        protected internal virtual void VisitRuleNode(TContext context, RuleNode node)
+        protected internal virtual void VisitRuleNode(TContext builder, RuleNode node)
         {
         }
     }
