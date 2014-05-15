@@ -37,7 +37,7 @@ namespace NRules.Diagnostics
         
         internal static NodeInfo Create(SelectionNode node)
         {
-            return new NodeInfo(NodeType.Selection, string.Empty, node.Conditions.Select(c => c.ExpressionString));
+            return new NodeInfo(NodeType.Selection, string.Empty, node.Conditions.Select(c => c.ToString()));
         }
 
         internal static NodeInfo Create(AlphaMemoryNode node, IAlphaMemory memory)
@@ -47,7 +47,7 @@ namespace NRules.Diagnostics
 
         internal static NodeInfo Create(JoinNode node)
         {
-            return new NodeInfo(NodeType.Join, string.Empty, node.Conditions.Select(c => c.ExpressionString));
+            return new NodeInfo(NodeType.Join, string.Empty, node.Conditions.Select(c => c.ToString()));
         }
 
         internal static NodeInfo Create(NotNode node)

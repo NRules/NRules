@@ -44,18 +44,29 @@ namespace NRules.Rete
 
         protected override void VisitNot(ReteBuilderContext context, NotElement element)
         {
-            BuildSubNode(context, element.ChildElements.Single());
+            BuildSubnet(context, element.ChildElements.Single());
             var betaNode = new NotNode(context.BetaSource, context.AlphaSource);
+            if (context.HasSubnet) betaNode.Conditions.Add(new SubnetCondition());
             context.BetaSource = BuildBetaMemoryNode(context, betaNode);
-            context.AlphaSource = null;
+            context.ResetAlphaSource();
         }
 
         protected override void VisitExists(ReteBuilderContext context, ExistsElement element)
         {
-            BuildSubNode(context, element.ChildElements.Single());
+            BuildSubnet(context, element.ChildElements.Single());
             var betaNode = new ExistsNode(context.BetaSource, context.AlphaSource);
+            if (context.HasSubnet) betaNode.Conditions.Add(new SubnetCondition());
             context.BetaSource = BuildBetaMemoryNode(context, betaNode);
-            context.AlphaSource = null;
+            context.ResetAlphaSource();
+        }
+
+        protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
+        {
+            BuildSubnet(context, element.Source);
+            var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
+            if (context.HasSubnet) betaNode.Conditions.Add(new SubnetCondition());
+            context.BetaSource = BuildBetaMemoryNode(context, betaNode);
+            context.ResetAlphaSource();
         }
 
         protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
@@ -94,15 +105,7 @@ namespace NRules.Rete
             }
         }
 
-        protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
-        {
-            BuildSubNode(context, element.Source);
-            var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
-            context.BetaSource = BuildBetaMemoryNode(context, betaNode);
-            context.AlphaSource = null;
-        }
-
-        private void BuildSubNode(ReteBuilderContext context, RuleElement element)
+        private void BuildSubnet(ReteBuilderContext context, RuleElement element)
         {
             var subnetContext = new ReteBuilderContext(context);
             Visit(subnetContext, element);
@@ -111,6 +114,7 @@ namespace NRules.Rete
             {
                 var adapter = new ObjectInputAdapter(subnetContext.BetaSource);
                 subnetContext.AlphaSource = adapter;
+                context.HasSubnet = true;
             }
             context.AlphaSource = subnetContext.AlphaSource;
         }

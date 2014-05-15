@@ -28,7 +28,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetRuleInstance<TwoFactOneCollectionRule>().FactCount);
+            Assert.AreEqual(2, GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact1]);
         }
 
         [Test]
@@ -50,7 +50,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(1, GetRuleInstance<TwoFactOneCollectionRule>().FactCount);
+            Assert.AreEqual(1, GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact1]);
         }
 
         [Test]
@@ -141,6 +141,52 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertDidNotFire();
+        }
+
+        [Test]
+        public void Fire_TwoFactsOfOneKindAndAggregatedFactsMatchingOneOfTheFacts_FiresOnce()
+        {
+            //Arrange
+            var fact11 = new FactType1() {TestProperty = "Valid Value"};
+            var fact12 = new FactType1() {TestProperty = "Valid Value"};
+            var fact21 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact11};
+            var fact22 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact11};
+
+            Session.Insert(fact11);
+            Session.Insert(fact12);
+            Session.Insert(fact21);
+            Session.Insert(fact22);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+        }
+
+        [Test]
+        public void Fire_TwoFactsOfOneKindAndAggregatedFactsMatchingBothOfTheFacts_FiresTwiceWithCorrectCounts()
+        {
+            //Arrange
+            var fact11 = new FactType1() {TestProperty = "Valid Value"};
+            var fact12 = new FactType1() {TestProperty = "Valid Value"};
+            var fact21 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact11};
+            var fact22 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact11};
+            var fact23 = new FactType2() {TestProperty = "Valid Value", JoinReference = fact12};
+
+            Session.Insert(fact11);
+            Session.Insert(fact12);
+            Session.Insert(fact21);
+            Session.Insert(fact22);
+            Session.Insert(fact23);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredTwice();
+            Assert.AreEqual(2, GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact11]);
+            Assert.AreEqual(1, GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact12]);
         }
 
         protected override void SetUpRules()

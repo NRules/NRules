@@ -23,6 +23,7 @@ namespace NRules.Rete
 
         public IObjectSource AlphaSource { get; set; }
         public ITupleSource BetaSource { get; set; }
+        public bool HasSubnet { get; set; }
 
         public void RegisterDeclaration(Declaration declaration)
         {
@@ -33,6 +34,12 @@ namespace NRules.Rete
         public IEnumerable<int> GetTupleMask(IEnumerable<Declaration> declarations)
         {
             return declarations.Select(d => _offsetMap[d]);
+        }
+
+        public void ResetAlphaSource()
+        {
+            AlphaSource = null;
+            HasSubnet = false;
         }
     }
 }

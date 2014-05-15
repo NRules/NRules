@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace NRules.Rete
@@ -9,83 +8,79 @@ namespace NRules.Rete
         public JoinNode(ITupleSource leftSource, IObjectSource rightSource)
             : base(leftSource, rightSource)
         {
-            Conditions = new List<BetaCondition>();
         }
 
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public IList<BetaCondition> Conditions { get; private set; }
-
-        public override void PropagateAssert(IExecutionContext context, Tuple leftTuple)
+        public override void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            IEnumerable<Fact> rightFacts = RightSource.GetFacts(context);
-            foreach (Fact rightFact in rightFacts)
+            IEnumerable<Fact> facts = RightSource.GetFacts(context);
+            foreach (Fact fact in facts)
             {
-                if (MatchesConditions(leftTuple, rightFact))
+                if (MatchesConditions(tuple, fact))
                 {
-                    PropagateMatchedAssert(context, leftTuple, rightFact);
+                    PropagateMatchedAssert(context, tuple, fact);
                 }
             }
         }
 
         public override void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            IEnumerable<Fact> rightFacts = RightSource.GetFacts(context);
-            foreach (Fact rightFact in rightFacts)
+            IEnumerable<Fact> facts = RightSource.GetFacts(context);
+            foreach (Fact fact in facts)
             {
-                if (MatchesConditions(tuple, rightFact))
+                if (MatchesConditions(tuple, fact))
                 {
-                    PropagateMatchedUpdate(context, tuple, rightFact);
+                    PropagateMatchedUpdate(context, tuple, fact);
                 }
                 else
                 {
-                    PropagateMatchedRetract(context, tuple, rightFact);
+                    PropagateMatchedRetract(context, tuple, fact);
                 }
             }
         }
 
         public override void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            IEnumerable<Fact> rightFacts = RightSource.GetFacts(context);
-            foreach (Fact rightFact in rightFacts)
+            IEnumerable<Fact> facts = RightSource.GetFacts(context);
+            foreach (Fact fact in facts)
             {
-                PropagateMatchedRetract(context, tuple, rightFact);
+                PropagateMatchedRetract(context, tuple, fact);
             }
         }
 
-        public override void PropagateAssert(IExecutionContext context, Fact rightFact)
+        public override void PropagateAssert(IExecutionContext context, Fact fact)
         {
-            IEnumerable<Tuple> leftTuples = LeftSource.GetTuples(context);
-            foreach (Tuple leftTuple in leftTuples)
+            IEnumerable<Tuple> tuples = LeftSource.GetTuples(context);
+            foreach (Tuple tuple in tuples)
             {
-                if (MatchesConditions(leftTuple, rightFact))
+                if (MatchesConditions(tuple, fact))
                 {
-                    PropagateMatchedAssert(context, leftTuple, rightFact);
+                    PropagateMatchedAssert(context, tuple, fact);
                 }
             }
         }
 
         public override void PropagateUpdate(IExecutionContext context, Fact fact)
         {
-            IEnumerable<Tuple> leftTuples = LeftSource.GetTuples(context);
-            foreach (Tuple leftTuple in leftTuples)
+            IEnumerable<Tuple> tuples = LeftSource.GetTuples(context);
+            foreach (Tuple tuple in tuples)
             {
-                if (MatchesConditions(leftTuple, fact))
+                if (MatchesConditions(tuple, fact))
                 {
-                    PropagateMatchedUpdate(context, leftTuple, fact);
+                    PropagateMatchedUpdate(context, tuple, fact);
                 }
                 else
                 {
-                    PropagateMatchedRetract(context, leftTuple, fact);
+                    PropagateMatchedRetract(context, tuple, fact);
                 }
             }
         }
 
         public override void PropagateRetract(IExecutionContext context, Fact fact)
         {
-            IEnumerable<Tuple> leftTuples = LeftSource.GetTuples(context);
-            foreach (Tuple leftTuple in leftTuples)
+            IEnumerable<Tuple> tuples = LeftSource.GetTuples(context);
+            foreach (Tuple tuple in tuples)
             {
-                PropagateMatchedRetract(context, leftTuple, fact);
+                PropagateMatchedRetract(context, tuple, fact);
             }
         }
 
@@ -94,40 +89,33 @@ namespace NRules.Rete
             visitor.VisitJoinNode(context, this);
         }
 
-        private void PropagateMatchedAssert(IExecutionContext context, Tuple leftTuple, Fact rightFact)
+        private void PropagateMatchedAssert(IExecutionContext context, Tuple tuple, Fact fact)
         {
-            var newTuple = new Tuple(leftTuple, rightFact);
-            Sink.PropagateAssert(context, newTuple);
+            var childTuple = new Tuple(tuple, fact);
+            Sink.PropagateAssert(context, childTuple);
         }
 
-        private void PropagateMatchedUpdate(IExecutionContext context, Tuple leftTuple, Fact rightFact)
+        private void PropagateMatchedUpdate(IExecutionContext context, Tuple tuple, Fact fact)
         {
-            Tuple tuple = leftTuple.ChildTuples.FirstOrDefault(t => t.RightFact == rightFact);
-            if (tuple == null)
+            Tuple childTuple = tuple.ChildTuples.FirstOrDefault(t => t.RightFact == fact);
+            if (childTuple == null)
             {
-                PropagateMatchedAssert(context, leftTuple, rightFact);
+                PropagateMatchedAssert(context, tuple, fact);
             }
             else
             {
-                Sink.PropagateUpdate(context, tuple);
+                Sink.PropagateUpdate(context, childTuple);
             }
         }
 
-        private void PropagateMatchedRetract(IExecutionContext context, Tuple leftTuple, Fact rightFact)
+        private void PropagateMatchedRetract(IExecutionContext context, Tuple tuple, Fact fact)
         {
-            Tuple tuple = leftTuple.ChildTuples.FirstOrDefault(t => t.RightFact == rightFact);
-            if (tuple != null)
+            Tuple childTuple = tuple.ChildTuples.FirstOrDefault(t => t.RightFact == fact);
+            if (childTuple != null)
             {
-                Sink.PropagateRetract(context, tuple);
-                tuple.Clear();
+                Sink.PropagateRetract(context, childTuple);
+                childTuple.Clear();
             }
-        }
-
-        private bool MatchesConditions(Tuple left, Fact right)
-        {
-            if (left == null) return true;
-
-            return Conditions.All(joinCondition => joinCondition.IsSatisfiedBy(left, right));
         }
     }
 }

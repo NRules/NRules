@@ -6,7 +6,8 @@ namespace NRules.IntegrationTests.TestRules
 {
     public class TwoFactOneCollectionRule : BaseRule
     {
-        public int FactCount { get; set; }
+        private readonly Dictionary<FactType1, int> _factCount = new Dictionary<FactType1, int>();
+        public IDictionary<FactType1, int> FactCount { get { return _factCount; } }
 
         public override void Define()
         {
@@ -18,12 +19,7 @@ namespace NRules.IntegrationTests.TestRules
                 .Collect<FactType2>(() => collection2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinReference == fact1);
             Then()
                 .Do(ctx => Notifier.RuleActivated())
-                .Do(ctx => SetCount(collection2.Count()));
-        }
-
-        private void SetCount(int count)
-        {
-            FactCount = count;
+                .Do(ctx => FactCount.Add(fact1, collection2.Count()));
         }
     }
 }

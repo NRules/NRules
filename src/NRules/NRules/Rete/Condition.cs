@@ -42,5 +42,10 @@ namespace NRules.Rete
         {
             return _expressionString.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return ExpressionString;
+        }
     }
 }

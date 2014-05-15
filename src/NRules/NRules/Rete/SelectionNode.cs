@@ -7,11 +7,11 @@ namespace NRules.Rete
     internal class SelectionNode : AlphaNode
     {
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public IList<AlphaCondition> Conditions { get; private set; }
+        public IList<IAlphaCondition> Conditions { get; private set; }
 
-        public SelectionNode(AlphaCondition condition)
+        public SelectionNode(IAlphaCondition condition)
         {
-            Conditions = new List<AlphaCondition>();
+            Conditions = new List<IAlphaCondition>();
             Conditions.Add(condition);
         }
 

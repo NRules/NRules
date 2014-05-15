@@ -16,57 +16,58 @@ namespace NRules.Rete
 
         public override void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            IAggregate aggregate = GetAggregate(context);
-            Fact aggregateFact = context.WorkingMemory.GetFact(aggregate.Result);
-            PropagateAggregateAssert(context, tuple, aggregateFact);
+            IAggregate aggregate = GetAggregate(tuple);
+            var matchingFacts = MatchingFacts(context, tuple);
+            foreach (var matchingFact in matchingFacts)
+            {
+                var result = aggregate.Add(UnwrapFact(matchingFact).Object);
+                HandleAggregateResult(context, result, tuple, aggregate);
+            }
         }
 
         public override void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            IAggregate aggregate = GetAggregate(context);
+            IAggregate aggregate = GetAggregate(tuple);
             Fact aggregateFact = context.WorkingMemory.GetFact(aggregate.Result);
             PropagateAggregateUpdate(context, tuple, aggregateFact);
         }
 
         public override void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            IAggregate aggregate = GetAggregate(context);
+            IAggregate aggregate = GetAggregate(tuple);
             Fact aggregateFact = context.WorkingMemory.GetFact(aggregate.Result);
             PropagateAggregateRetract(context, tuple, aggregateFact);
         }
 
         public override void PropagateAssert(IExecutionContext context, Fact fact)
         {
-            IAggregate aggregate = GetAggregate(context);
-            var result = aggregate.Add(fact.Object);
-
-            var tuples = LeftSource.GetTuples(context);
+            var tuples = MatchingTuples(context, fact);
             foreach (var tuple in tuples)
             {
+                IAggregate aggregate = GetAggregate(tuple);
+                var result = aggregate.Add(UnwrapFact(fact).Object);
                 HandleAggregateResult(context, result, tuple, aggregate);
             }
         }
 
         public override void PropagateUpdate(IExecutionContext context, Fact fact)
         {
-            IAggregate aggregate = GetAggregate(context);
-            var result = aggregate.Modify(fact.Object);
-
-            var tuples = LeftSource.GetTuples(context);
+            var tuples = MatchingTuples(context, fact);
             foreach (var tuple in tuples)
             {
+                IAggregate aggregate = GetAggregate(tuple);
+                var result = aggregate.Modify(UnwrapFact(fact).Object);
                 HandleAggregateResult(context, result, tuple, aggregate);
             }
         }
 
         public override void PropagateRetract(IExecutionContext context, Fact fact)
         {
-            IAggregate aggregate = GetAggregate(context);
-            var result = aggregate.Remove(fact.Object);
-
-            var tuples = LeftSource.GetTuples(context);
+            var tuples = MatchingTuples(context, fact);
             foreach (var tuple in tuples)
             {
+                IAggregate aggregate = GetAggregate(tuple);
+                var result = aggregate.Remove(UnwrapFact(fact).Object);
                 HandleAggregateResult(context, result, tuple, aggregate);
             }
         }
@@ -126,13 +127,13 @@ namespace NRules.Rete
             }
         }
         
-        private IAggregate GetAggregate(IExecutionContext context)
+        private IAggregate GetAggregate(Tuple tuple)
         {
-            var aggregate = (IAggregate) context.WorkingMemory.GetNodeState(this);
+            var aggregate = tuple.GetState<IAggregate>();
             if (aggregate == null)
             {
                 aggregate = _aggregateFactory();
-                context.WorkingMemory.SetNodeState(this, aggregate);
+                tuple.SetState(aggregate);
             }
             return aggregate;
         }
@@ -145,6 +146,16 @@ namespace NRules.Rete
             {
                 fact = new Fact(aggregate.Result);
                 context.WorkingMemory.SetFact(fact);
+            }
+            return fact;
+        }
+
+        private Fact UnwrapFact(Fact fact)
+        {
+            var wrapperFact = fact as WrapperFact;
+            if (wrapperFact != null)
+            {
+                return wrapperFact.WrappedTuple.RightFact;
             }
             return fact;
         }

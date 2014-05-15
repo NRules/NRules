@@ -4,7 +4,12 @@ using System.Linq.Expressions;
 
 namespace NRules.Rete
 {
-    internal class BetaCondition : Condition
+    internal interface IBetaCondition
+    {
+        bool IsSatisfiedBy(Tuple leftTuple, Fact rightFact);
+    }
+
+    internal class BetaCondition : Condition, IBetaCondition
     {
         private readonly int[] _tupleMask;
 

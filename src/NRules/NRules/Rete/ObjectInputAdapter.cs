@@ -17,22 +17,27 @@ namespace NRules.Rete
 
         public void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            Sink.PropagateAssert(context, tuple.RightFact);
+            var wrapperFact = new WrapperFact(tuple);
+            context.WorkingMemory.SetFact(wrapperFact);
+            Sink.PropagateAssert(context, wrapperFact);
         }
 
         public void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            Sink.PropagateUpdate(context, tuple.RightFact);
+            var wrapperFact = context.WorkingMemory.GetFact(tuple);
+            Sink.PropagateUpdate(context, wrapperFact);
         }
 
         public void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            Sink.PropagateRetract(context, tuple.RightFact);
+            var wrapperFact = context.WorkingMemory.GetFact(tuple);
+            Sink.PropagateRetract(context, wrapperFact);
+            context.WorkingMemory.RemoveFact(wrapperFact);
         }
 
         public IEnumerable<Fact> GetFacts(IExecutionContext context)
         {
-            return _source.GetTuples(context).Select(t => t.RightFact);
+            return _source.GetTuples(context).Select(t => context.WorkingMemory.GetFact(t));
         }
 
         public void Attach(IObjectSink sink)

@@ -2,7 +2,12 @@ using System.Linq.Expressions;
 
 namespace NRules.Rete
 {
-    internal class AlphaCondition : Condition
+    internal interface IAlphaCondition
+    {
+        bool IsSatisfiedBy(Fact fact);
+    }
+
+    internal class AlphaCondition : Condition, IAlphaCondition
     {
         public AlphaCondition(LambdaExpression expression) : base(expression)
         {

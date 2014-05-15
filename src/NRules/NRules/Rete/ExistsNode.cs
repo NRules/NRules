@@ -10,7 +10,9 @@ namespace NRules.Rete
 
         public override void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            if (RightSource.GetFacts(context).Any())
+            var matchingFacts = MatchingFacts(context, tuple);
+            tuple.Quantifier().Value = matchingFacts.Count();
+            if (tuple.Quantifier().Value > 0)
             {
                 Sink.PropagateAssert(context, tuple);
             }
@@ -18,7 +20,7 @@ namespace NRules.Rete
 
         public override void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            if (RightSource.GetFacts(context).Any())
+            if (tuple.Quantifier().Value > 0)
             {
                 Sink.PropagateUpdate(context, tuple);
             }
@@ -26,7 +28,7 @@ namespace NRules.Rete
 
         public override void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            if (RightSource.GetFacts(context).Any())
+            if (tuple.Quantifier().Value > 0)
             {
                 Sink.PropagateRetract(context, tuple);
             }
@@ -34,10 +36,11 @@ namespace NRules.Rete
 
         public override void PropagateAssert(IExecutionContext context, Fact fact)
         {
-            if (RightSource.GetFacts(context).Count() == 1)
+            var matchingTuples = MatchingTuples(context, fact);
+            foreach (var tuple in matchingTuples)
             {
-                var tuples = LeftSource.GetTuples(context);
-                foreach (var tuple in tuples)
+                tuple.Quantifier().Value++;
+                if (tuple.Quantifier().Value == 1)
                 {
                     Sink.PropagateAssert(context, tuple);
                 }
@@ -51,10 +54,11 @@ namespace NRules.Rete
 
         public override void PropagateRetract(IExecutionContext context, Fact fact)
         {
-            if (!RightSource.GetFacts(context).Any())
+            var matchingTuples = MatchingTuples(context, fact);
+            foreach (var tuple in matchingTuples)
             {
-                var tuples = LeftSource.GetTuples(context);
-                foreach (var tuple in tuples)
+                tuple.Quantifier().Value--;
+                if (tuple.Quantifier().Value == 0)
                 {
                     Sink.PropagateRetract(context, tuple);
                 }

@@ -8,6 +8,7 @@ namespace NRules.Rete
     {
         private readonly List<Tuple> _leftTuples = new List<Tuple>();
         private readonly List<Tuple> _childTuples = new List<Tuple>();
+        private object _state;
 
         public Tuple()
         {
@@ -28,6 +29,17 @@ namespace NRules.Rete
         public Fact RightFact { get; private set; }
         public Tuple LeftTuple { get; private set; }
         public int Count { get; private set; }
+
+        public T GetState<T>()
+        {
+            if (_state == null) _state = default(T);
+            return (T) _state;
+        }
+
+        public void SetState(object value)
+        {
+            _state = value;
+        }
 
         public IList<Tuple> ChildTuples
         {

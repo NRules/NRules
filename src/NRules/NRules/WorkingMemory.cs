@@ -11,14 +11,11 @@ namespace NRules
         void RemoveFact(Fact fact);
         IAlphaMemory GetNodeMemory(IAlphaMemoryNode node);
         IBetaMemory GetNodeMemory(IBetaMemoryNode node);
-        object GetNodeState(BetaNode node);
-        void SetNodeState(BetaNode node, object state);
     }
 
     internal class WorkingMemory : IWorkingMemory
     {
         private readonly Dictionary<object, Fact> _factMap = new Dictionary<object, Fact>();
-        private readonly Dictionary<BetaNode, object> _betaNodeStates = new Dictionary<BetaNode, object>();
 
         private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap =
             new Dictionary<IAlphaMemoryNode, IAlphaMemory>();
@@ -65,18 +62,6 @@ namespace NRules
                 _betaMap[node] = memory;
             }
             return memory;
-        }
-
-        public object GetNodeState(BetaNode node)
-        {
-            object state;
-            _betaNodeStates.TryGetValue(node, out state);
-            return state;
-        }
-
-        public void SetNodeState(BetaNode node, object state)
-        {
-            _betaNodeStates[node] = state;
         }
     }
 }

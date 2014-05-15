@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NRules.Rete
 {
-    internal class Fact : IEquatable<Fact>
+    internal class Fact
     {
         public Fact(object @object)
         {
@@ -15,25 +15,15 @@ namespace NRules.Rete
         public Type FactType { get; private set; }
         public object Object { get; private set; }
         public IList<Tuple> ChildTuples { get; private set; }
+    }
 
-        public bool Equals(Fact other)
+    internal class WrapperFact : Fact
+    {
+        public WrapperFact(Tuple tuple)
+            : base(tuple)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Object.Equals(other.Object);
         }
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Fact) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Object.GetHashCode();
-        }
+        public Tuple WrappedTuple { get { return (Tuple) Object; } }
     }
 }
