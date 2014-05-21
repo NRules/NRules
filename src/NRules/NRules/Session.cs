@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NRules.Diagnostics;
 using NRules.Events;
@@ -92,7 +93,7 @@ namespace NRules
 
         public void Fire()
         {
-            var actionContext = new ActionContext(this);
+            var actionContext = new ActionContext();
 
             while (_agenda.HasActiveRules() && !actionContext.IsHalted)
             {
@@ -103,8 +104,29 @@ namespace NRules
                 foreach (IRuleAction action in rule.Actions)
                 {
                     action.Invoke(actionContext, activation.Tuple);
+                    ApplyActionOperations(actionContext);
                 }
                 _eventAggregator.AfterRuleFired(activation);
+            }
+        }
+
+        private void ApplyActionOperations(ActionContext actionContext)
+        {
+            while (actionContext.Operations.Count > 0)
+            {
+                var operation = actionContext.Operations.Dequeue();
+                switch (operation.OperationType)
+                {
+                    case ActionOperationType.Insert:
+                        Insert(operation.Fact);
+                        break;
+                    case ActionOperationType.Update:
+                        Update(operation.Fact);
+                        break;
+                    case ActionOperationType.Retract:
+                        Retract(operation.Fact);
+                        break;
+                }
             }
         }
 
