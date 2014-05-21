@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace NRules.Rete
 {
+    [DebuggerDisplay("Tuple ({Count})")]
+    [DebuggerTypeProxy(typeof(TupleDebugView))]
     internal class Tuple : IEnumerable<Fact>
     {
         private readonly List<Tuple> _leftTuples = new List<Tuple>();
@@ -114,6 +117,16 @@ namespace NRules.Rete
             object IEnumerator.Current
             {
                 get { return Current; }
+            }
+        }
+
+        internal class TupleDebugView
+        {
+            public readonly string Facts;
+
+            public TupleDebugView(Tuple tuple)
+            {
+                Facts = string.Format("[{0}]", string.Join(" || ", tuple.Select(f => f.Object).ToArray()));
             }
         }
     }

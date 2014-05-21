@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace NRules.Rete
 {
+    [DebuggerDisplay("Fact {Object}")]
     internal class Fact
     {
         public Fact(object @object)
