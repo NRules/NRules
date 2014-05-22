@@ -24,7 +24,7 @@ namespace NRules.IntegrationTests
         public void Query_OneFact_RetrievesFactFromQuery()
         {
             //Arrange
-            var fact1 = new FactType1() { TestProperty = "Valid Value" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
             Session.Insert(fact1);
 
             //Act
@@ -40,7 +40,7 @@ namespace NRules.IntegrationTests
         public void Query_RuleInsertsSecondFact_TwoFactsInMemory()
         {
             //Arrange
-            var fact1 = new FactType1() { TestProperty = "Valid Value" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
             Session.Insert(fact1);
             Session.Fire();
 
@@ -56,7 +56,7 @@ namespace NRules.IntegrationTests
         public void Query_QueryFactsByType_OnlyReturnsFactsOfThatType()
         {
             //Arrange
-            var fact1 = new FactType1() { TestProperty = "Valid Value" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
             Session.Insert(fact1);
             Session.Fire();
 
@@ -66,7 +66,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             Assert.AreEqual(1, facts.Count);
-            Assert.AreSame(fact1, facts[0].JoinReference);
+            Assert.AreEqual(fact1.TestProperty, facts[0].JoinProperty);
         }
 
         protected override void SetUpRules()

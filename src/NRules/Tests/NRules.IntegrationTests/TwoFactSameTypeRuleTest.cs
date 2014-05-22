@@ -11,10 +11,10 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingFacts_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType3() {TestProperty = "Valid Value"};
-            var fact2 = new FactType3() {TestProperty = "Valid Value", Parent = fact1};
-            var fact3 = new FactType3() {TestProperty = "Invalid Value", Parent = fact1};
-            var fact4 = new FactType3() {TestProperty = "Valid Value", Parent = null};
+            var fact1 = new FactType4 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType4 {TestProperty = "Valid Value 2", Parent = fact1};
+            var fact3 = new FactType4 {TestProperty = "Invalid Value 3", Parent = fact1};
+            var fact4 = new FactType4 {TestProperty = "Valid Value 4", Parent = null};
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -32,8 +32,8 @@ namespace NRules.IntegrationTests
         public void Fire_FirstMatchingFactSecondInvalid_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType3() {TestProperty = "Valid Value"};
-            var fact2 = new FactType3() {TestProperty = "Valid Value"};
+            var fact1 = new FactType4 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType4 {TestProperty = "Valid Value 2"};
 
             Session.Insert(fact1);
             Session.Insert(fact2);

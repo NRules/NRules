@@ -1,8 +1,8 @@
 namespace NRules.IntegrationTests.TestAssets
 {
-    public class FactType3
+    public class FactType4
     {
         public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        public FactType4 Parent { get; set; }
     }
 }

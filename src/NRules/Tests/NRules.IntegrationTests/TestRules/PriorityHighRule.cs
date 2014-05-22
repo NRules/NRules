@@ -14,7 +14,7 @@ namespace NRules.IntegrationTests.TestRules
             FactType2 fact2 = null;
 
             When()
-                .Match<FactType2>(() => fact2, f => f.TestProperty == "Valid Value");
+                .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => Notifier.RuleActivated())
                 .Do(ctx => InvocationHandler.Invoke(this));

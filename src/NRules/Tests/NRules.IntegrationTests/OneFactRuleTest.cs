@@ -12,7 +12,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1() {TestProperty = "Valid Value"};
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             //Act
@@ -26,8 +26,8 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFacts_FiresTwice()
         {
             //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType1() {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
             Session.Insert(fact1);
             Session.Insert(fact2);
 
@@ -42,7 +42,7 @@ namespace NRules.IntegrationTests
         public void Fire_ConditionDoesNotMatch_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType1() {TestProperty = "Invalid Value"};
+            var fact = new FactType1 {TestProperty = "Invalid Value 1"};
             Session.Insert(fact);
 
             //Act
@@ -56,7 +56,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType1() {TestProperty = "Valid Value"};
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
             Session.Retract(fact);
 
@@ -71,10 +71,10 @@ namespace NRules.IntegrationTests
         public void Fire_OneFactUpdatedFromInvalidToMatching_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1() {TestProperty = "Invalid Value"};
+            var fact = new FactType1 {TestProperty = "Invalid Value 1"};
             Session.Insert(fact);
 
-            fact.TestProperty = "Valid Value";
+            fact.TestProperty = "Valid Value 1";
             Session.Update(fact);
 
             //Act
@@ -88,7 +88,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactAssertedAndRetractedAndAssertedAgain_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1() {TestProperty = "Valid Value"};
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
             Session.Retract(fact);
             Session.Insert(fact);
@@ -104,10 +104,10 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactAssertedAndUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType1() {TestProperty = "Valid Value"};
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
-            fact.TestProperty = "Invalid Value";
+            fact.TestProperty = "Invalid Value 1";
             Session.Update(fact);
 
             //Act
@@ -121,7 +121,7 @@ namespace NRules.IntegrationTests
         public void Fire_DuplicateInsert_Throws()
         {
             //Arrange
-            var fact = new FactType1() {TestProperty = "Valid Value"};
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
 
             //Act - Assert
             Session.Insert(fact);
@@ -132,7 +132,7 @@ namespace NRules.IntegrationTests
         public void Fire_UpdateWithoutInsert_Throws()
         {
             //Arrange
-            var fact = new FactType1() {TestProperty = "Valid Value"};
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
 
             //Act - Assert
             Assert.Throws<ArgumentException>(() => Session.Update(fact));
@@ -142,7 +142,7 @@ namespace NRules.IntegrationTests
         public void Fire_RetractWithoutInsert_Throws()
         {
             //Arrange
-            var fact = new FactType1() {TestProperty = "Valid Value"};
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
 
             //Act - Assert
             Assert.Throws<ArgumentException>(() => Session.Retract(fact));

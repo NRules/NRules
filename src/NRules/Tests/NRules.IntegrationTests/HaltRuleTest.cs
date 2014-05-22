@@ -11,8 +11,8 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFacts_FiresOnceAndHalts()
         {
             //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType1() {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
             Session.Insert(fact1);
             Session.Insert(fact2);
 
@@ -27,8 +27,8 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsFireCalledTwice_FiresOnceThenHaltsThenResumesAndFiresAgain()
         {
             //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType1() {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
             Session.Insert(fact1);
             Session.Insert(fact2);
 

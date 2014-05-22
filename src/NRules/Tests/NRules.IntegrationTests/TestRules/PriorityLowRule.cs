@@ -14,14 +14,14 @@ namespace NRules.IntegrationTests.TestRules
             FactType1 fact1 = null;
 
             When()
-                .Match<FactType1>(() => fact1, f => f.TestProperty == "Valid Value");
+                .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => Notifier.RuleActivated())
                 .Do(ctx => InvocationHandler.Invoke(this))
                 .Do(ctx => ctx.Insert(new FactType2()
                     {
                         TestProperty = "Valid Value",
-                        JoinReference = fact1
+                        JoinProperty = fact1.TestProperty
                     }));
         }
     }

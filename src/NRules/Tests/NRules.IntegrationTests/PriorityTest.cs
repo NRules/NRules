@@ -22,8 +22,8 @@ namespace NRules.IntegrationTests
             GetRuleInstance<PriorityLowRule>().InvocationHandler = mock.Object;
             GetRuleInstance<PriorityHighRule>().InvocationHandler = mock.Object;
 
-            var fact1 = new FactType1() { TestProperty = "Valid Value" };
-            var fact2 = new FactType1() { TestProperty = "Valid Value" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
             Session.Insert(fact1);
             Session.Insert(fact2);
 

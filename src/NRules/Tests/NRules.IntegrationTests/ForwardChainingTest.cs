@@ -11,7 +11,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresFirstRuleAndChainsSecond()
         {
             //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
             Session.Insert(fact1);
 
             //Act
@@ -26,8 +26,8 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactOfOneKindAndOneOfAnotherKind_FiresSecondRuleDirectlyAndChained()
         {
             //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
-            var fact2 = new FactType2() {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2"};
 
             Session.Insert(fact1);
             Session.Insert(fact2);

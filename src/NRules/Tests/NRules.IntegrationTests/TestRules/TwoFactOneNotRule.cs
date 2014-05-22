@@ -10,7 +10,7 @@ namespace NRules.IntegrationTests.TestRules
 
             When()
                 .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                .Not<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinReference == fact1);
+                .Not<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty);
             Then()
                 .Do(ctx => Notifier.RuleActivated());
         }

@@ -11,7 +11,7 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingNotPatternFact_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
 
             Session.Insert(fact1);
 
@@ -26,7 +26,7 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingNotPatternFactAssertedThenRetracted_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
 
             Session.Insert(fact1);
             Session.Retract(fact1);
@@ -42,11 +42,11 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingNotPatternFactAssertedThenUpdatedToInvalid_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1() {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
 
             Session.Insert(fact1);
 
-            fact1.TestProperty = "Invalid Value";
+            fact1.TestProperty = "Invalid Value 1";
             Session.Update(fact1);
 
             //Act
