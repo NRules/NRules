@@ -45,6 +45,8 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ThreeFactTwoExistsRuleTest.cs" />
+    <Compile Include="TestRules\ThreeFactTwoExistsRule.cs" />
     <Compile Include="ThreeFactTwoNotRuleTest.cs" />
     <Compile Include="OneFactOneNotRuleTest.cs" />
     <Compile Include="RuleMetadataTest.cs" />

@@ -14,7 +14,7 @@ namespace NRules.Rete
             tuple.Quantifier().Value = matchingFacts.Count();
             if (tuple.Quantifier().Value > 0)
             {
-                Sink.PropagateAssert(context, tuple);
+                AssertTuple(context, tuple);
             }
         }
 
@@ -22,7 +22,7 @@ namespace NRules.Rete
         {
             if (tuple.Quantifier().Value > 0)
             {
-                Sink.PropagateUpdate(context, tuple);
+                UpdateTuple(context, tuple);
             }
         }
 
@@ -30,7 +30,7 @@ namespace NRules.Rete
         {
             if (tuple.Quantifier().Value > 0)
             {
-                Sink.PropagateRetract(context, tuple);
+                RetractTuple(context, tuple);
             }
         }
 
@@ -42,7 +42,7 @@ namespace NRules.Rete
                 tuple.Quantifier().Value++;
                 if (tuple.Quantifier().Value == 1)
                 {
-                    Sink.PropagateAssert(context, tuple);
+                    AssertTuple(context, tuple);
                 }
             }
         }
@@ -60,7 +60,7 @@ namespace NRules.Rete
                 tuple.Quantifier().Value--;
                 if (tuple.Quantifier().Value == 0)
                 {
-                    Sink.PropagateRetract(context, tuple);
+                    RetractTuple(context, tuple);
                 }
             }
         }
@@ -68,6 +68,30 @@ namespace NRules.Rete
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.VisitExistsNode(context, this);
+        }
+
+        private void AssertTuple(IExecutionContext context, Tuple tuple)
+        {
+            Sink.PropagateAssert(context, new WrapperTuple(tuple, this));
+        }
+
+        private void UpdateTuple(IExecutionContext context, Tuple tuple)
+        {
+            var childTuple = tuple.ChildTuples.SingleOrDefault(x => x.Node == this);
+            if (childTuple != null)
+            {
+                Sink.PropagateUpdate(context, childTuple);
+            }
+        }
+
+        private void RetractTuple(IExecutionContext context, Tuple tuple)
+        {
+            var childTuple = tuple.ChildTuples.SingleOrDefault(x => x.Node == this);
+            if (childTuple != null)
+            {
+                Sink.PropagateRetract(context, childTuple);
+                childTuple.Clear();
+            }
         }
     }
 }

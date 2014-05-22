@@ -91,13 +91,13 @@ namespace NRules.Rete
 
         private void PropagateMatchedAssert(IExecutionContext context, Tuple tuple, Fact fact)
         {
-            var childTuple = new Tuple(tuple, fact);
+            var childTuple = new Tuple(tuple, fact, this);
             Sink.PropagateAssert(context, childTuple);
         }
 
         private void PropagateMatchedUpdate(IExecutionContext context, Tuple tuple, Fact fact)
         {
-            Tuple childTuple = tuple.ChildTuples.FirstOrDefault(t => t.RightFact == fact);
+            Tuple childTuple = tuple.ChildTuples.SingleOrDefault(t => t.Node == this && t.RightFact == fact);
             if (childTuple == null)
             {
                 PropagateMatchedAssert(context, tuple, fact);
@@ -110,7 +110,7 @@ namespace NRules.Rete
 
         private void PropagateMatchedRetract(IExecutionContext context, Tuple tuple, Fact fact)
         {
-            Tuple childTuple = tuple.ChildTuples.FirstOrDefault(t => t.RightFact == fact);
+            Tuple childTuple = tuple.ChildTuples.SingleOrDefault(t => t.Node == this && t.RightFact == fact);
             if (childTuple != null)
             {
                 Sink.PropagateRetract(context, childTuple);

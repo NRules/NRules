@@ -13,25 +13,26 @@ namespace NRules.Rete
         private readonly List<Tuple> _childTuples = new List<Tuple>();
         private object _state;
 
-        public Tuple()
+        public Tuple(INode node)
         {
-            Count = 0;
+            Node = node;
         }
 
-        public Tuple(Tuple left, Fact right)
+        public Tuple(Tuple left, Fact right, INode node) : this(node)
         {
             Count = left.Count + 1;
+            right.ChildTuples.Add(this);
             RightFact = right;
-            RightFact.ChildTuples.Add(this);
-            _leftTuples.AddRange(left._leftTuples);
+            _leftTuples.AddRange(left.LeftTuples);
             _leftTuples.Add(left);
+            left.ChildTuples.Add(this);
             LeftTuple = left;
-            LeftTuple.ChildTuples.Add(this);
         }
 
-        public Fact RightFact { get; private set; }
-        public Tuple LeftTuple { get; private set; }
-        public int Count { get; private set; }
+        public INode Node { get; private set; }
+        public virtual Fact RightFact { get; private set; }
+        public virtual Tuple LeftTuple { get; private set; }
+        public virtual int Count { get; private set; }
 
         public T GetState<T>()
         {
@@ -49,12 +50,17 @@ namespace NRules.Rete
             get { return _childTuples; }
         }
 
+        public virtual IList<Tuple> LeftTuples
+        {
+            get { return _leftTuples; }
+        }
+
         public object[] GetFactObjects()
         {
             return this.Select(f => f.Object).ToArray();
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             if (RightFact != null) RightFact.ChildTuples.Remove(this);
             RightFact = null;
@@ -95,10 +101,10 @@ namespace NRules.Rete
 
             public bool MoveNext()
             {
-                if (_index > _rootTuple._leftTuples.Count) return false;
-                _currentTuple = (_index == _rootTuple._leftTuples.Count)
+                if (_index > _rootTuple.LeftTuples.Count) return false;
+                _currentTuple = (_index == _rootTuple.LeftTuples.Count)
                                     ? _rootTuple
-                                    : _rootTuple._leftTuples[_index];
+                                    : _rootTuple.LeftTuples[_index];
                 _index++;
                 return true;
             }
@@ -129,5 +135,43 @@ namespace NRules.Rete
                 Facts = string.Format("[{0}]", string.Join(" || ", tuple.Select(f => f.Object).ToArray()));
             }
         }
+    }
+
+    internal class WrapperTuple : Tuple
+    {
+        public WrapperTuple(Tuple tuple, INode node) : base(node)
+        {
+            WrappedTuple = tuple;
+            WrappedTuple.ChildTuples.Add(this);
+        }
+
+        public override Fact RightFact
+        {
+            get { return WrappedTuple.RightFact; }
+        }
+
+        public override Tuple LeftTuple
+        {
+            get { return WrappedTuple.LeftTuple; }
+        }
+
+        public override int Count
+        {
+            get { return WrappedTuple.Count; }
+        }
+
+        public override IList<Tuple> LeftTuples
+        {
+            get { return WrappedTuple.LeftTuples; }
+        }
+
+        public override void Clear()
+        {
+            WrappedTuple.ChildTuples.Remove(this);
+
+            ChildTuples.Clear();
+        }
+
+        public Tuple WrappedTuple { get; private set; }
     }
 }

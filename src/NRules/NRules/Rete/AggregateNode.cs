@@ -98,7 +98,7 @@ namespace NRules.Rete
         {
             if (aggregateFact != null)
             {
-                var newTuple = new Tuple(tuple, aggregateFact);
+                var newTuple = new Tuple(tuple, aggregateFact, this);
                 Sink.PropagateAssert(context, newTuple);
             }
         }

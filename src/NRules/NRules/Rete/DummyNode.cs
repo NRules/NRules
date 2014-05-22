@@ -2,13 +2,13 @@
 
 namespace NRules.Rete
 {
-    internal class DummyNode : IBetaMemoryNode, IActivatable
+    internal class DummyNode : IBetaMemoryNode, IActivatable, INode
     {
         private ITupleSink _sink;
 
         public void Activate(IExecutionContext context)
         {
-            var tuple = new Tuple();
+            var tuple = new Tuple(this);
 
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             memory.Tuples.Add(tuple);
@@ -25,6 +25,11 @@ namespace NRules.Rete
         public void Attach(ITupleSink sink)
         {
             _sink = sink;
+        }
+
+        public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        {
+            visitor.VisitDummyNode(context, this);
         }
     }
 }

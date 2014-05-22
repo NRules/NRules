@@ -14,7 +14,7 @@ namespace NRules.Tests.Rete
             var fact = new Fact(1);
 
             //Act
-            var target = new Tuple(new Tuple(), fact);
+            var target = new Tuple(new Tuple(null), fact, null);
 
             //Assert
             Assert.AreEqual(fact, target.RightFact);
@@ -25,10 +25,10 @@ namespace NRules.Tests.Rete
         public void Ctor_WhenTuplePassed_ExposedAsLeftTupleAndChained()
         {
             //Arrange
-            var tuple1 = new Tuple(new Tuple(), new Fact(1));
+            var tuple1 = new Tuple(new Tuple(null), new Fact(1), null);
 
             //Act
-            var tuple2 = new Tuple(tuple1, new Fact(2));
+            var tuple2 = new Tuple(tuple1, new Fact(2), null);
 
             //Assert
             Assert.AreEqual(tuple1, tuple2.LeftTuple);
@@ -39,10 +39,10 @@ namespace NRules.Tests.Rete
         public void Enumerator_WhenEnumeratesNTuple_WalksTuplesInOrder()
         {
             //Arrange
-            var tuple0 = new Tuple();
-            var tuple1 = new Tuple(tuple0, new Fact(1));
-            var tuple2 = new Tuple(tuple1, new Fact(2));
-            var tuple3 = new Tuple(tuple2, new Fact(3));
+            var tuple0 = new Tuple(null);
+            var tuple1 = new Tuple(tuple0, new Fact(1), null);
+            var tuple2 = new Tuple(tuple1, new Fact(2), null);
+            var tuple3 = new Tuple(tuple2, new Fact(3), null);
 
             //Act
             var target = tuple3.ToArray();
@@ -58,10 +58,10 @@ namespace NRules.Tests.Rete
         public void Enumerator_WhenGetFactObjects_ReturnsUnderlyingFactObjectsInOrder()
         {
             //Arrange
-            var tuple0 = new Tuple();
-            var tuple1 = new Tuple(tuple0, new Fact(1));
-            var tuple2 = new Tuple(tuple1, new Fact(2));
-            var tuple3 = new Tuple(tuple2, new Fact(3));
+            var tuple0 = new Tuple(null);
+            var tuple1 = new Tuple(tuple0, new Fact(1), null);
+            var tuple2 = new Tuple(tuple1, new Fact(2), null);
+            var tuple3 = new Tuple(tuple2, new Fact(3), null);
 
             //Act
             var target = tuple3.GetFactObjects();
@@ -77,7 +77,7 @@ namespace NRules.Tests.Rete
         public void Enumerator_WhenEnumerates1Tuple_ReturnsSelf()
         {
             //Arrange
-            var tuple = new Tuple(new Tuple(), new Fact(1));
+            var tuple = new Tuple(new Tuple(null), new Fact(1), null);
 
             //Act
             var target = tuple.ToArray();
@@ -92,7 +92,7 @@ namespace NRules.Tests.Rete
         {
             //Arrange
             var fact = new Fact(1);
-            var target = new Tuple(new Tuple(), fact);
+            var target = new Tuple(new Tuple(null), fact, null);
 
             //Act
             target.Clear();
@@ -106,9 +106,9 @@ namespace NRules.Tests.Rete
         public void Clear_WhenCalledOn2Tuple_ClearsItselfAndUnchainsFactAndUnchainsTuple()
         {
             //Arrange
-            var tuple = new Tuple(new Tuple(), new Fact(1));
+            var tuple = new Tuple(new Tuple(null), new Fact(1), null);
             var fact = new Fact(2);
-            var target = new Tuple(tuple, fact);
+            var target = new Tuple(tuple, fact, null);
 
             //Act
             target.Clear();

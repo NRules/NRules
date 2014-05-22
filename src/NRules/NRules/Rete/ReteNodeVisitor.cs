@@ -88,5 +88,10 @@ namespace NRules.Rete
         protected internal virtual void VisitRuleNode(TContext builder, RuleNode node)
         {
         }
+
+        protected internal virtual void VisitDummyNode(TContext context, DummyNode node)
+        {
+            
+        }
     }
 }
