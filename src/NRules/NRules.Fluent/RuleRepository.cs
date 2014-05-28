@@ -6,11 +6,11 @@ using NRules.RuleModel;
 namespace NRules.Fluent
 {
     /// <summary>
-    /// Rules repository based on the rules defined inline in a .NET assembly using internal DSL.
+    /// Rules repository based on the rules defined inline using internal DSL.
     /// </summary>
     public class RuleRepository : IRuleRepository
     {
-        private readonly IList<IRuleSet> _ruleSets = new List<IRuleSet>();
+        private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
 
         public RuleRepository()
         {
@@ -41,10 +41,20 @@ namespace NRules.Fluent
                 .Select(t => Activator.Activate(t))
                 .Select(r => r.GetDefinition());
 
-            var ruleSet = new RuleSet(ruleSetName);
+            var ruleSet = GetRuleSet(ruleSetName);
             ruleSet.Add(rules);
 
-            _ruleSets.Add(ruleSet);
+        }
+
+        private RuleSet GetRuleSet(string ruleSetName)
+        {
+            RuleSet ruleSet = _ruleSets.SingleOrDefault(rs => rs.Name == ruleSetName);
+            if (ruleSet == null)
+            {
+                ruleSet = new RuleSet(ruleSetName);
+                _ruleSets.Add(ruleSet);
+            }
+            return ruleSet;
         }
     }
 }

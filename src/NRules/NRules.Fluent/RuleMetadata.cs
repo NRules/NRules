@@ -4,12 +4,36 @@ using NRules.Fluent.Dsl;
 
 namespace NRules.Fluent
 {
+    /// <summary>
+    /// Rule metadata.
+    /// </summary>
     public interface IRuleMetadata
     {
+        /// <summary>
+        /// Rule's .NET type.
+        /// </summary>
         Type RuleType { get; }
+
+        /// <summary>
+        /// Rule's name.
+        /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Rule's description.
+        /// </summary>
         string Description { get; }
+
+        /// <summary>
+        /// Tags applied to the rule.
+        /// </summary>
         string[] Tags { get; }
+
+        /// <summary>
+        /// Tests if the rule is tagged with a given tag.
+        /// </summary>
+        /// <param name="tag">Tag to test.</param>
+        /// <returns><code>true</code> if the rule is tagged, <code>false</code> otherwise.</returns>
         bool IsTagged(string tag);
     }
 

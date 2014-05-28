@@ -1,5 +1,9 @@
 ﻿namespace NRules.RuleModel
 {
+    /// <summary>
+    /// Visitor to traverse rule definition (or its part).
+    /// </summary>
+    /// <typeparam name="TContext">Traversal context.</typeparam>
     public class RuleElementVisitor<TContext>
     {
         public void Visit(TContext context, RuleElement element)

@@ -2,6 +2,9 @@ using System;
 
 namespace NRules.Fluent.Dsl
 {
+    /// <summary>
+    /// Tags the rule.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public class TagAttribute : Attribute
     {

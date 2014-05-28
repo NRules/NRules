@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Action that executes when the rule fires.
+    /// Action executed by the engine when the rule fires.
     /// </summary>
     public class ActionElement : RuleRightElement
     {

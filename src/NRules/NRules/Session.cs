@@ -9,12 +9,12 @@ namespace NRules
     /// <summary>
     /// Represents a rules engine session.
     /// Each session has its own working memory, and exposes operations that 
-    /// manipulate facts in it, as well as run the rules.
+    /// manipulate facts in it, as well as fire matching rules.
     /// </summary>
     public interface ISession
     {
         /// <summary>
-        /// Hub for rule session events.
+        /// Aggregator for rule session events.
         /// </summary>
         IEventProvider EventProvider { get; }
 
@@ -25,13 +25,13 @@ namespace NRules
         void Insert(object fact);
 
         /// <summary>
-        /// Updates an existing fact in the rules engine memory.
+        /// Updates existing fact in the rules engine memory.
         /// </summary>
         /// <param name="fact">Fact to update.</param>
         void Update(object fact);
 
         /// <summary>
-        /// Removes an existing fact from the rules engine memory.
+        /// Removes existing fact from the rules engine memory.
         /// </summary>
         /// <param name="fact">Fact to remove.</param>
         void Retract(object fact);

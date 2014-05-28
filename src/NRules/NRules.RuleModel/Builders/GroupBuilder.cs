@@ -43,7 +43,7 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Creates a pattern builder that builds a pattern as a part of the current group.
+        /// Creates a pattern builder that builds a pattern as part of the current group.
         /// </summary>
         /// <param name="type">Pattern type.</param>
         /// <param name="name">Pattern name (optional).</param>

@@ -30,7 +30,7 @@ namespace NRules.RuleModel
         public bool IsLocal { get; private set; }
 
         /// <summary>
-        /// Target the declaration is referencing.
+        /// Rule element this declaration is referencing.
         /// </summary>
         public PatternElement Target { get; internal set; }
 

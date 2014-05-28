@@ -1,7 +1,7 @@
 ﻿namespace NRules.RuleModel
 {
     /// <summary>
-    /// Result of the aggregation, based on a fact change.
+    /// Result of an aggregation, based on added/modified/removed facts.
     /// </summary>
     public enum AggregationResults
     {
@@ -32,24 +32,24 @@
     public interface IAggregate
     {
         /// <summary>
-        /// Add is called by the rules engine when a new fact enters an aggregation node.
+        /// Add is called by the rules engine when a new fact enters corresponding aggregation node.
         /// </summary>
         /// <param name="fact">New fact to add to the aggregate.</param>
-        /// <returns>Result on the aggregate, based on the added fact.</returns>
+        /// <returns>Result of the aggregation, based on the added fact.</returns>
         AggregationResults Add(object fact);
 
         /// <summary>
-        /// Modify is called by the rules engine when an existing updated fact enters an aggregation node.
+        /// Modify is called by the rules engine when an existing updated fact enters corresponding aggregation node.
         /// </summary>
         /// <param name="fact">Existing fact to update in the aggregate.</param>
-        /// <returns>Result on the aggregate, based on the modified fact.</returns>
+        /// <returns>Result of the aggregation, based on the modified fact.</returns>
         AggregationResults Modify(object fact);
 
         /// <summary>
-        /// Remove is called by the rules engine when an existing retracted fact enters an aggregation node.
+        /// Remove is called by the rules engine when an existing retracted fact enters corresponding aggregation node.
         /// </summary>
         /// <param name="fact">Existing fact to remove from the aggregate.</param>
-        /// <returns>Result on the aggregate, based on the removed fact.</returns>
+        /// <returns>Result of the aggregation, based on the removed fact.</returns>
         AggregationResults Remove(object fact);
 
         /// <summary>

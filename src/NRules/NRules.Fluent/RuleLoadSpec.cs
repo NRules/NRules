@@ -26,9 +26,9 @@ namespace NRules.Fluent
         IRuleLoadSpec From(params Type[] types);
 
         /// <summary>
-        /// Filter on which rules to load.
+        /// Filter which rules to load.
         /// </summary>
-        /// <param name="filter">Filter condition on rule's metadata.</param>
+        /// <param name="filter">Filter condition based on rule's metadata.</param>
         /// <returns>Spec to continue fluent configuration.</returns>
         IRuleLoadSpec Where(Func<IRuleMetadata, bool> filter);
     }

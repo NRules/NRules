@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Rule element that groups actions that execute when the rule fires.
+    /// Rule element that groups actions that run when the rule fires.
     /// </summary>
     public class ActionGroupElement : RuleRightElement
     {

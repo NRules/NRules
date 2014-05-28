@@ -39,7 +39,7 @@ namespace NRules.RuleModel
 
         public Declaration Declare(Type type, string name)
         {
-            string declarationName = name ?? "$local$";
+            string declarationName = name ?? "$this$";
             bool isLocal = (name == null);
             var declaration = new Declaration(type, declarationName, isLocal);
             Add(declaration);

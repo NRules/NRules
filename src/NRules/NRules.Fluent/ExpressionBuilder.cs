@@ -20,9 +20,20 @@ namespace NRules.Fluent
         public ILeftHandSide Match<T>(Expression<Func<T>> alias, params Expression<Func<T, bool>>[] conditions)
         {
             var patternSymbol = ExtractSymbol(alias);
+            return Match(patternSymbol, conditions);
+        }
+
+        public ILeftHandSide Match<T>(params Expression<Func<T, bool>>[] conditions)
+        {
+            var patternSymbol = Expression.Parameter(typeof (T));
+            return Match(patternSymbol, conditions);
+        }
+
+        private ILeftHandSide Match<T>(ParameterExpression symbol, IEnumerable<Expression<Func<T, bool>>> conditions)
+        {
             var leftHandSide = _builder.LeftHandSide();
 
-            var patternBuilder = leftHandSide.Pattern(patternSymbol.Type, patternSymbol.Name);
+            var patternBuilder = leftHandSide.Pattern(symbol.Type, symbol.Name);
             foreach (var condition in conditions)
             {
                 var rewriter = new ConditionRewriter(leftHandSide.Declarations);
