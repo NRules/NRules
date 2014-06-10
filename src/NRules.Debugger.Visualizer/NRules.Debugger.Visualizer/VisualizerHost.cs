@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.DebuggerVisualizers;
 
-namespace NRules.Debug.Visualizer
+namespace NRules.Debugger.Visualizer
 {
     public class VisualizerHost : VisualizerDevelopmentHost
     {

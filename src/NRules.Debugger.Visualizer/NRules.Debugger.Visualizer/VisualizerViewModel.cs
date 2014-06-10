@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
-using NRules.Debug.Visualizer.Model;
+using NRules.Debugger.Visualizer.Model;
 
-namespace NRules.Debug.Visualizer
+namespace NRules.Debugger.Visualizer
 {
     internal class VisualizerViewModel : INotifyPropertyChanged
     {

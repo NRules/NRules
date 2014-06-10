@@ -12,5 +12,4 @@ using System.Security;
 
 [assembly: InternalsVisibleTo("NRules.Tests")]
 [assembly: InternalsVisibleTo("NRules.IntegrationTests")]
-[assembly: InternalsVisibleTo("NRules.Debug.Visualizer")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

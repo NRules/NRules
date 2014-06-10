@@ -1,7 +1,7 @@
 ﻿using GraphSharp.Controls;
-using NRules.Debug.Visualizer.Model;
+using NRules.Debugger.Visualizer.Model;
 
-namespace NRules.Debug.Visualizer
+namespace NRules.Debugger.Visualizer
 {
     public class ReteGraphLayout : GraphLayout<ReteNode, ReteEdge, ReteGraph>
     {

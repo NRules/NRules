@@ -2,7 +2,7 @@
 using System.Reflection;
 using NRules.Fluent;
 
-namespace NRules.Debug.Visualizer.Tests
+namespace NRules.Debugger.Visualizer.Tests
 {
     public class Program
     {

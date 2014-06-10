@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using Microsoft.VisualStudio.DebuggerVisualizers;
-using NRules.Debug.Visualizer.Model;
+using NRules.Debugger.Visualizer.Model;
 using NRules.Diagnostics;
 
-namespace NRules.Debug.Visualizer
+namespace NRules.Debugger.Visualizer
 {
     public class SessionVisualizer : DialogDebuggerVisualizer
     {

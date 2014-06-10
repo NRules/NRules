@@ -48,15 +48,9 @@ namespace NRules
         /// <typeparam name="TFact">Type of facts to query.</typeparam>
         /// <returns>Queryable engine's memory.</returns>
         IQueryable<TFact> Query<TFact>();
-
-        /// <summary>
-        /// Returns a snapshot of session state for diagnostics.
-        /// </summary>
-        /// <returns>Session snapshot.</returns>
-        SessionSnapshot GetSnapshot();
     }
 
-    internal class Session : ISession
+    public class Session : ISession, ISessionSnapshotProvider
     {
         private readonly IAgenda _agenda;
         private readonly INetwork _network;
@@ -64,7 +58,7 @@ namespace NRules
         private readonly IEventAggregator _eventAggregator;
         private readonly IExecutionContext _executionContext;
 
-        public Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator)
+        internal Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator)
         {
             _network = network;
             _workingMemory = workingMemory;
@@ -135,7 +129,7 @@ namespace NRules
             return _workingMemory.Facts.Select(x => x.Object).OfType<TFact>().AsQueryable();
         }
 
-        public SessionSnapshot GetSnapshot()
+        SessionSnapshot ISessionSnapshotProvider.GetSnapshot()
         {
             var builder = new SnapshotBuilder();
             var visitor = new SessionSnapshotVisitor(_workingMemory);

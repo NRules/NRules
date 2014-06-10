@@ -8,14 +8,14 @@
     <ProjectGuid>{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NRules.Debug.Visualizer.Tests</RootNamespace>
-    <AssemblyName>NRules.Debug.Visualizer.Tests</AssemblyName>
+    <RootNamespace>NRules.Debugger.Visualizer.Tests</RootNamespace>
+    <AssemblyName>NRules.Debugger.Visualizer.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,7 +25,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -44,6 +44,9 @@
       <HintPath>..\packages\GraphSharp.1.1.0.0\lib\net40\GraphSharp.Controls.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="NRules">
+      <HintPath>..\..\..\binaries\NRules.dll</HintPath>
+    </Reference>
     <Reference Include="QuickGraph, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
       <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.dll</HintPath>
     </Reference>
@@ -69,21 +72,9 @@
     <Compile Include="TestAssets\Rule1.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NRules.Debug.Visualizer\NRules.Debug.Visualizer.csproj">
+    <ProjectReference Include="..\NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.csproj">
       <Project>{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}</Project>
       <Name>NRules.Debug.Visualizer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NRules.Fluent\NRules.Fluent.csproj">
-      <Project>{B68D0662-BB3B-4183-85F0-E00875A95BB4}</Project>
-      <Name>NRules.Fluent</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NRules.RuleModel\NRules.RuleModel.csproj">
-      <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
-      <Name>NRules.RuleModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NRules\NRules.csproj">
-      <Project>{D60C7588-09B6-47DA-9459-4C88363E3EAE}</Project>
-      <Name>NRules</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
 using NRules.Diagnostics;
 using QuickGraph;
 
-namespace NRules.Debug.Visualizer.Model
+namespace NRules.Debugger.Visualizer.Model
 {
     public class ReteGraph : BidirectionalGraph<ReteNode, ReteEdge>
     {

@@ -1,6 +1,6 @@
 ﻿using NRules.Diagnostics;
 
-namespace NRules.Debug.Visualizer.Model
+namespace NRules.Debugger.Visualizer.Model
 {
     public class ReteNode
     {

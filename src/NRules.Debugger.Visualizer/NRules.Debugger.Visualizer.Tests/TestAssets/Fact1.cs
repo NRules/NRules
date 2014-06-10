@@ -1,4 +1,4 @@
-﻿namespace NRules.Debug.Visualizer.Tests.TestAssets
+﻿namespace NRules.Debugger.Visualizer.Tests.TestAssets
 {
     public class Fact1
     {

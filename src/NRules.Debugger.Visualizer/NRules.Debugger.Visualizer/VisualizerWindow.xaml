@@ -1,15 +1,14 @@
-﻿<Window x:Class="NRules.Debug.Visualizer.VisualizerWindow"
+﻿<Window x:Class="NRules.Debugger.Visualizer.VisualizerWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
-             xmlns:local="clr-namespace:NRules.Debug.Visualizer"
-             xmlns:Controls="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
+             mc:Ignorable="d" xmlns:Controls="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
              xmlns:WPFExtensions_Controls="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
-             d:DesignHeight="300" d:DesignWidth="300">
+        xmlns:Model="clr-namespace:NRules.Debugger.Visualizer.Model"
+        xmlns:local="clr-namespace:NRules.Debugger.Visualizer" d:DesignHeight="300" d:DesignWidth="300">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type local:Model.ReteNode}">
+        <DataTemplate DataType="{x:Type Model:ReteNode}">
             <StackPanel Orientation="Vertical" Margin="5">
                 <TextBlock Text="{Binding Path=Value, Mode=OneWay}" Foreground="White" FontWeight="Bold" HorizontalAlignment="Center" />
                 <ListBox ItemsSource="{Binding Path=Items}" Background="Transparent" BorderBrush="Transparent">

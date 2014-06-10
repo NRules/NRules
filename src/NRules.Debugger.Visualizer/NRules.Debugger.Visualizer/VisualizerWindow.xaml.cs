@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace NRules.Debug.Visualizer
+namespace NRules.Debugger.Visualizer
 {
     public partial class VisualizerWindow : Window
     {
