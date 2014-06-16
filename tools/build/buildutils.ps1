@@ -1,17 +1,23 @@
 ﻿function Delete-Directory($directoryName) {
 	Remove-Item -Force -Recurse $directoryName -ErrorAction SilentlyContinue
 }
+
+function Delete-File($fileName) {
+	if($fileName) {
+		Remove-Item $fileName -Force -ErrorAction SilentlyContinue | Out-Null
+	} 
+}
  
 function Create-Directory($directoryName) {
-	New-Item $directoryName -ItemType Directory | Out-Null
+	New-Item $directoryName -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
 }
 
 function Get-RegistryValues($key) {
-  (Get-Item $key -ErrorAction SilentlyContinue).GetValueNames()
+	(Get-Item $key -ErrorAction SilentlyContinue).GetValueNames()
 }
 
 function Get-RegistryValue($key, $value) {
-    (Get-ItemProperty $key $value -ErrorAction SilentlyContinue).$value
+	(Get-ItemProperty $key $value -ErrorAction SilentlyContinue).$value
 }
 
 function Update-AssemblyInfoFiles ([string] $version, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
@@ -27,14 +33,14 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $assemblyInfoFile
 	Get-ChildItem -r -filter $assemblyInfoFileName | % {
 		$filename = $_.fullname
 
-		$tmp = ($file + ".tmp")
-		if (Test-Path ($tmp)) { Remove-Item $tmp }
+		$tmp = ($filename + ".tmp")
+		Delete-File $tmp
 
 		(Get-Content $filename) | % {$_ -replace $versionFilePattern, $versionAssemblyFile } | % {$_ -replace $versionPattern, $versionAssembly }  > $tmp
 		Write-Host Updating file AssemblyInfo and AssemblyFileInfo: $filename --> $versionAssembly / $versionAssemblyFile
 
-		if (Test-Path ($filename)) { Remove-Item $filename }
-		Move-Item $tmp $filename -Force	
+		Delete-File $filename
+		Move-Item $tmp $filename -Force
 	}
 }
 

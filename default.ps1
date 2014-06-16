@@ -1,159 +1,152 @@
+param (
+	[hashtable] $component
+)
+
 properties {
-	$ProductVersion = "0.1"
-	$BuildNumber = "9";
-	$PackageNameSuffix = ""
-	$TargetFramework = "net-4.0"
-	$buildConfiguration = "Release"
+	$version = $null
+	$target_framework = "net-4.0"
+	$configuration = "Release"
 }
 
-$baseDir  = resolve-path .
-$binariesDir = "$baseDir\binaries"
-$srcDir = "$baseDir\src"
-$buildDir = "$baseDir\build"
-$outDir =  "$buildDir\output"
-$mergeDir = "$buildDir\merge"
-$pkgDir = "$baseDir\packages"
-$libDir = "$baseDir\lib" 
-$toolsDir = "$baseDir\tools"
-$nugetExec = "$toolsDir\NuGet\nuget.exe"
-$ilMergeExec = "$toolsDir\IlMerge\ilmerge.exe"
-$ilMergeExclude = "$toolsDir\IlMerge\ilmerge.exclude"
+$base_dir  = resolve-path .
+$tools_dir = "$base_dir\tools"
 
-$script:version = ""
-$script:msBuild = ""
-$script:msBuildTargetFramework = ""
-$script:ilmergeTargetFramework = ""
-$script:isEnvironmentInitialized = $false
+include $tools_dir\build\buildutils.ps1
 
-include $toolsDir\build\buildutils.ps1
+task default -depends Build
 
-task default -depends Build -description "Invokes Build task"
- 
-task Clean -description "Cleans the environment for the build" {
-	if (Test-Path $buildDir) {
-		Delete-Directory $buildDir
-	}
+task Init {
+	Assert ($version -ne $null) 'Version should not be null'
+	Assert ($component -ne $null) 'Component should not be null'
 	
-	if (Test-Path $binariesDir) {
-		Delete-Directory $binariesDir
-	}
-}
-
-task Init -depends Clean -description "Initializes the build" {
-	Write-Host "Creating build directory at the following path $buildDir"
-	Create-Directory $buildDir
+	Write-Host "Building $($component.name) version $version" -ForegroundColor Green
 	
-	Write-Host "Creating binaries directory at the following path $binariesDir"
-	Create-Directory $binariesDir
+	$comp_name = $component.name
+	$script:binaries_dir = "$base_dir\binaries\$comp_name"
+	$script:src_dir = "$base_dir\src\$comp_name"
+	$script:build_dir = "$base_dir\build"
+	$script:out_dir =  "$build_dir\output\$comp_name"
+	$script:merge_dir = "$build_dir\merge\$comp_name"
+	$script:nuget_dir = "$build_dir\NuGet\$comp_name"
+	$script:packages_dir = "$base_dir\packages"
 	
-	$currentDirectory = Resolve-Path .
-	Write-Host "Current Directory: $currentDirectory" 
-}
-
-task InitEnvironment -depends Init -description "Initializes the environment for build" {
-	if ($script:isEnvironmentInitialized -ne $true) {
-		if ($TargetFramework -eq "net-4.0") {
-			$netfxInstallroot = "" 
-			$netfxInstallroot =	Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
-			$netfxCurrent = $netfxInstallroot + "v4.0.30319"
-			$script:msBuild = $netfxCurrent + "\msbuild.exe"
-			
-			Write-Host ".NET 4.0 build requested - $script:msBuild" 
-			
-			$script:ilmergeTargetFramework  = "/targetplatform:v4," + $netfxCurrent
-			$script:msBuildTargetFramework ="/p:TargetFrameworkVersion=v4.0 /ToolsVersion:4.0"
-			$script:isEnvironmentInitialized = $true
-		}
+	$script:nuget_exec = "$tools_dir\NuGet\nuget.exe"
+	$script:zip_exec = "$tools_dir\7-zip\7za.exe"
+	$script:ilmerge_exec = "$tools_dir\IlMerge\ilmerge.exe"
+	
+	if ($target_framework -eq "net-4.0") {
+		$framework_root = Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
+		$framework_root = $framework_root + "v4.0.30319"
+		$script:msbuild_exec = $framework_root + "\msbuild.exe"
+		$script:ilmerge_target_framework  = "/targetplatform:v4," + $framework_root
 	}
 }
 
-task Version -description "Sets version in the source files" {
-	$script:version = "$ProductVersion.$BuildNumber"
-	Write-Host Build Version: $script:version
+task Clean -depends Init {
+	Delete-Directory $out_dir
+	Delete-Directory $merge_dir
+	Delete-Directory $nuget_dir
+	Delete-Directory $binaries_dir
+}
+
+task SetVersion {
+	Write-Host Build Version: $version
+	Update-AssemblyVersion $version
+}
+
+task ResetVersion {
+	Reset-AssemblyVersion
+}
+
+task RestoreDependencies { 
+	exec { &$script:nuget_exec restore $src_dir -NonInteractive }
+}
+
+task Compile -depends Init, Clean, SetVersion, RestoreDependencies {
+	Create-Directory $build_dir
+	Create-Directory $out_dir
 	
-	Update-AssemblyVersion $script:version
+	$solution_file = "$src_dir\$($component.name).sln"
+	$output = "$out_dir\"
+	exec { &$script:msbuild_exec $solution_file /p:OutDir=$output /p:Configuration=$configuration /v:m /nologo }
 }
 
-task Restore -depends InitEnvironment -description "Restores solution dependencies via Nuget" { 
-	$solutionDir = "$srcDir\NRules"
-	&$nugetExec restore $solutionDir -NonInteractive
-}
-
-task Compile -depends InitEnvironment, Version, Restore -description "Compiles source code into assemblies" { 
-	$solutions = Get-ChildItem $srcDir\NRules\*.sln
-	$solutions | % {
-		$solutionFile = $_.FullName
-		exec { &$script:msBuild $solutionFile /p:OutDir="$outDir\" /p:Configuration=$buildConfiguration }
-	}
-}
-
-task Merge -depends Compile -description "Merges compiled assemblies into coarse-grained components" {
+task Merge -depends Compile -precondition { return $component.ContainsKey('merge') } {
+	Create-Directory $merge_dir
+	
 	$assemblies = @()
-	$assemblies += Get-ChildItem $outDir\NRules*.dll -Exclude **Tests.dll,**Debug**.dll
+	$assemblies += Get-ChildItem "$out_dir\*.*" -Include $component.merge.include -Exclude $component.merge.exclude
 	
-	$attributeFile = "$outDir\NRules.dll"
+	$attribute_file = "$out_dir\$($component.merge.attr_file)"
 	
-	Create-Directory $mergeDir
-	
-	$keyfile = "$baseDir\..\SigningKey.snk"
+	$keyfile = "$base_dir\..\SigningKey.snk"
 	$keyfileOption = "/keyfile:$keyfile"
 	if (-not (Test-Path $keyfile) ) {
 		$keyfileOption = ""
 		Write-Host "Key file for assembly signing does not exist. Cannot strongly name assembly." -ForegroundColor Yellow
 	}
 	
-	&$ilMergeExec /out:"$mergeDir\NRules.dll" /log $keyfileOption /internalize:$ilMergeExclude $script:ilmergeTargetFramework $assemblies /xmldocs /attr:$attributeFile
+	$output = "$merge_dir\$($component.merge.out_file)"
+	exec { &$script:ilmerge_exec /out:$output /log $keyfileOption $script:ilmerge_target_framework $assemblies /xmldocs /attr:$attribute_file }
 }
 
-task ResetVersion -description "Resets version in source files to default" {
-	Reset-AssemblyVersion
-}
-
-task Build -depends Merge, ResetVersion -description "Builds final binaries" {
-	Get-ChildItem "$mergeDir\**" -Include *.dll, *.pdb, *.xml | Copy-Item -Destination $binariesDir -Force	
-	Get-ChildItem "$outDir\**" -Include *.dll, *.pdb, *.xml -Exclude NRules**, nunit**, Moq** | Copy-Item -Destination $binariesDir -Force
-}
-
-task Package -depends Build -description "Generates NuGet package" {
-	Remove-Item $pkgDir\NRules*.nupkg
-
-	$nugetDir = "$buildDir\NuGet"
-	Remove-Item $nugetDir -Force -Recurse -ErrorAction SilentlyContinue
-	New-Item $nugetDir -Type directory | Out-Null
-
-	New-Item $nugetDir\NRules\lib\net40 -Type directory | Out-Null
+task Build -depends Compile, Merge, ResetVersion {
+	Create-Directory $binaries_dir
 	
-	Copy-Item $pkgDir\NRules.dll.nuspec $nugetDir\NRules\NRules.nuspec
-	@("NRules.???") |% { Copy-Item "$binariesDir\$_" $nugetDir\NRules\lib\net40 }
-
-	$nugetVersion = "$ProductVersion.$BuildNumber"
-
-	# Sets the package version in all the nuspec
-	$packages = Get-ChildItem $nugetDir *.nuspec -recurse
-	$packages |% { 
-		$nuspec = [xml](Get-Content $_.FullName)
-		$nuspec.package.metadata.version = $nugetVersion
-		$nuspec | Select-Xml '//dependency' |% {
-			if($_.Node.Id.StartsWith('NRules')){
-				$_.Node.Version = "[$nugetVersion]"
-			}
-		}
-		$nuspec.Save($_.FullName);
-		&$nugetExec pack $_.FullName -OutputDirectory $nugetDir
+	if ($component.ContainsKey('merge')) {
+		Get-ChildItem "$merge_dir\**" -Include $component.bin.merge_include -Exclude $component.bin.merge_exclude | Copy-Item -Destination $binaries_dir -Force
 	}
+	if ($component.ContainsKey('bin')) {
+		Get-ChildItem "$out_dir\**" -Include $component.bin.out_include -Exclude $component.bin.out_exclude | Copy-Item -Destination $binaries_dir -Force
+	}
+}
 
+task PackageNuGet -depends Build -precondition { return $component.package.ContainsKey('nuget') } {
+	$nuget = $component.package.nuget
+	
+	Create-Directory $nuget_dir
+	Create-Directory $nuget_dir\$($nuget.id)\lib\net40
+	
+	Copy-Item $packages_dir\$($nuget.id).dll.nuspec $nuget_dir\$($nuget.id)\$($nuget.id).nuspec -Force
+	Get-ChildItem "$binaries_dir\**" -Include $nuget.include -Exclude $nuget.exclude | Copy-Item -Destination $nuget_dir\$($nuget.id)\lib\net40 -Force
+
+	# Set the package version
+	$package = "$nuget_dir\$($nuget.id)\$($nuget.id).nuspec"
+	$nuspec = [xml](Get-Content $package)
+	$nuspec.package.metadata.version = $version
+	$nuspec | Select-Xml '//dependency' |% {
+		if($_.Node.Id.StartsWith($nuget.id)) {
+			$_.Node.Version = "[$version]"
+		}
+	}
+	$nuspec.Save($package);
+	exec { &$script:nuget_exec pack $package -OutputDirectory $nuget_dir }
+}
+
+task PackageZip -depends Build -precondition { $component.package.ContainsKey('zip') } {
+	$zip = $component.package.zip
+	$file = "$script:packages_dir\$($zip.name)"
+	Delete-File $file
+	exec { &$script:zip_exec a -tzip $file $binaries_dir }
+}
+
+task Package -depends Build, PackageNuGet, PackageZip {
+}
+
+task PublishNuGet -precondition { return $component.package.ContainsKey('nuget') } {
+	$nuget = $component.package.nuget
 	# Upload packages
-	$accessPath = "$baseDir\..\Nuget-Access-Key.txt"
-	if ( (Test-Path $accessPath) ) {
-		$accessKey = Get-Content $accessPath
+	$accessKeyFile = "$base_dir\..\Nuget-Access-Key.txt"
+	if ( (Test-Path $accessKeyFile) ) {
+		$accessKey = Get-Content $accessKeyFile
 		$accessKey = $accessKey.Trim()
-
+		
 		# Push to nuget repository
-		$packages | ForEach-Object {
-			&$nugetExec push "$nugetDir\$($_.BaseName).$nugetVersion.nupkg" $accessKey
-		}
-	}
-	else {
+		exec { &$script:nuget_exec push "$nuget_dir\$($nuget.id).$version.nupkg" $accessKey }
+	} else {
 		Write-Host "Nuget-Access-Key.txt does not exist. Cannot publish the nuget package." -ForegroundColor Yellow
 	}
+}
+
+task Publish -depends Package, PublishNuGet {
 }
