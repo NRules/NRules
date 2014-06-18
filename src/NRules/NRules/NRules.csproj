@@ -55,7 +55,6 @@
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
-    <Compile Include="Diagnostics\DgmlSerializer.cs" />
     <Compile Include="Diagnostics\ISessionSnapshotProvider.cs" />
     <Compile Include="Diagnostics\LinkInfo.cs" />
     <Compile Include="Diagnostics\NodeInfo.cs" />

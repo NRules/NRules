@@ -25,6 +25,8 @@ namespace NRules.Diagnostics
     [Serializable]
     public class NodeInfo
     {
+        private static readonly string[] Empty = new string[]{};
+
         internal static NodeInfo Create(RootNode node)
         {
             return new NodeInfo(NodeType.Root, string.Empty);
@@ -37,17 +39,17 @@ namespace NRules.Diagnostics
         
         internal static NodeInfo Create(SelectionNode node)
         {
-            return new NodeInfo(NodeType.Selection, string.Empty, node.Conditions.Select(c => c.ToString()));
+            return new NodeInfo(NodeType.Selection, string.Empty, node.Conditions.Select(c => c.ToString()), Empty);
         }
 
         internal static NodeInfo Create(AlphaMemoryNode node, IAlphaMemory memory)
         {
-            return new NodeInfo(NodeType.AlphaMemory, string.Empty, memory.Facts.Select(f => f.Object.ToString()));
+            return new NodeInfo(NodeType.AlphaMemory, string.Empty, Empty, memory.Facts.Select(f => f.Object.ToString()));
         }
 
         internal static NodeInfo Create(JoinNode node)
         {
-            return new NodeInfo(NodeType.Join, string.Empty, node.Conditions.Select(c => c.ToString()));
+            return new NodeInfo(NodeType.Join, string.Empty, node.Conditions.Select(c => c.ToString()), Empty);
         }
 
         internal static NodeInfo Create(NotNode node)
@@ -74,7 +76,7 @@ namespace NRules.Diagnostics
         {
             var tuples = memory.Tuples.Select(
                 t => string.Join(" || ", t.Select(f =>  f.Object).ToArray()));
-            return new NodeInfo(NodeType.BetaMemory, string.Empty, tuples);
+            return new NodeInfo(NodeType.BetaMemory, string.Empty, Empty, tuples);
         }
 
         internal static NodeInfo Create(TerminalNode node)
@@ -88,19 +90,21 @@ namespace NRules.Diagnostics
         }
 
         internal NodeInfo(NodeType nodeType, string details)
-            : this(nodeType, details, new string[] { })
+            : this(nodeType, details, Empty, Empty)
         {
         }
 
-        internal NodeInfo(NodeType nodeType, string details, IEnumerable<string> items)
+        internal NodeInfo(NodeType nodeType, string details, IEnumerable<string> conditions, IEnumerable<string> items)
         {
             NodeType = nodeType;
             Details = details;
+            Conditions = conditions.ToArray();
             Items = items.ToArray();
         }
 
         public NodeType NodeType { get; private set; }
         public string Details { get; private set; }
+        public string[] Conditions { get; private set; }
         public string[] Items { get; private set; }
     }
 }

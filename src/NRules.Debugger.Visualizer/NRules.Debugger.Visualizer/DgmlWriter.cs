@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
+using NRules.Diagnostics;
 
-namespace NRules.Diagnostics
+namespace NRules.Debugger.Visualizer
 {
-    public class DgmlSerializer
+    public class DgmlWriter
     {
         private readonly Dictionary<NodeInfo, int> _idMap;
         private readonly SessionSnapshot _snapshot;
         private readonly XNamespace _namespace = XNamespace.Get("http://schemas.microsoft.com/vs/2009/dgml");
 
-        public DgmlSerializer(SessionSnapshot snapshot)
+        public DgmlWriter(SessionSnapshot snapshot)
         {
             _snapshot = snapshot;
 
@@ -19,7 +21,7 @@ namespace NRules.Diagnostics
                 .ToDictionary(x => x.Node, x => x.Index);
         }
 
-        public string Serialize()
+        public void WriteTo(XmlWriter writer)
         {
             var document = new XDocument(new XDeclaration("1.0", "utf-8", null));
             var root = new XElement(Name("DirectedGraph"), new XAttribute("Title", "ReteNetwork"));
@@ -34,18 +36,35 @@ namespace NRules.Diagnostics
             root.Add(nodes, links, categories);
             document.Add(root);
 
-            return document.ToString();
+            document.WriteTo(writer);
         }
 
         private void WriteNodes(XElement nodes)
         {
             foreach (NodeInfo nodeInfo in _snapshot.Nodes)
             {
+                var labelComponents = new[] {nodeInfo.NodeType.ToString(), nodeInfo.Details}
+                    .Union(nodeInfo.Conditions)
+                    .Where(x => !string.IsNullOrEmpty(x));
+                string label = string.Join("\n", labelComponents);
                 var node = new XElement(Name("Node"),
                                         new XAttribute("Id", Id(nodeInfo)),
                                         new XAttribute("Category", nodeInfo.NodeType),
-                                        new XAttribute("Label", string.Format("{0}\n{1}", nodeInfo.NodeType, nodeInfo.Details)));
+                                        new XAttribute("Label", label));
+                if (nodeInfo.Items.Length > 0)
+                {
+                    node.Add(new XAttribute("Group", "Collapsed"));
+                }
                 nodes.Add(node);
+
+                for (int i = 0; i < nodeInfo.Items.Length; i++)
+                {
+                    var itemNode = new XElement(Name("Node"),
+                        new XAttribute("Id", SubNodeId(nodeInfo, i)),
+                        new XAttribute("Label", nodeInfo.Items[i]),
+                        new XAttribute("Style", "Plain"));
+                    nodes.Add(itemNode);
+                }
             }
         }
 
@@ -58,12 +77,23 @@ namespace NRules.Diagnostics
                                         new XAttribute("Target", Id(linkInfo.Target)));
                 links.Add(link);
             }
+            foreach (var nodeInfo in _snapshot.Nodes)
+            {
+                for (int i = 0; i < nodeInfo.Items.Length; i++)
+                {
+                    var link = new XElement(Name("Link"),
+                                            new XAttribute("Source", Id(nodeInfo)),
+                                            new XAttribute("Target", SubNodeId(nodeInfo, i)),
+                                            new XAttribute("Category", "Contains"));
+                    links.Add(link);
+                }
+            }
         }
 
         private void WriteCategories(XElement categories)
         {
             categories.Add(Category(NodeType.Root, "Black"));
-            categories.Add(Category(NodeType.Type, "Yellow"));
+            categories.Add(Category(NodeType.Type, "Orange"));
             categories.Add(Category(NodeType.Selection, "Blue"));
             categories.Add(Category(NodeType.AlphaMemory, "Red"));
             categories.Add(Category(NodeType.Dummy, "Grey"));
@@ -93,6 +123,11 @@ namespace NRules.Diagnostics
         private int Id(NodeInfo nodeInfo)
         {
             return _idMap[nodeInfo];
+        }
+
+        private string SubNodeId(NodeInfo nodeInfo, int itemIndex)
+        {
+            return string.Format("{0}_{1}", Id(nodeInfo), itemIndex);
         }
     }
 }
