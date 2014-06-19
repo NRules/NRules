@@ -12,9 +12,6 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>NRules is a business rules engine for .NET that is based on the Rete matching algorithm. Among other features it supports forward chaining, negative and existential assertions. Rules are authored in C# using internal DSL.</description>
     <copyright>Copyright 2012-2014 Sergiy Nikolayev. All rights reserved.</copyright>
-    <dependencies>
-        <dependency id="Common.Logging" version="2.1.1" />
-    </dependencies>
     <tags>business rules engine dsl inference rete</tags>
   </metadata>
 </package>

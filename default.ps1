@@ -93,10 +93,10 @@ task Merge -depends Compile -precondition { return $component.ContainsKey('merge
 task Build -depends Compile, Merge, ResetVersion {
 	Create-Directory $binaries_dir
 	
-	if ($component.ContainsKey('merge')) {
+	if ($component.ContainsKey('merge') -and $component.bin.merge_include) {
 		Get-ChildItem "$merge_dir\**" -Include $component.bin.merge_include -Exclude $component.bin.merge_exclude | Copy-Item -Destination $binaries_dir -Force
 	}
-	if ($component.ContainsKey('bin')) {
+	if ($component.ContainsKey('bin') -and $component.bin.out_include) {
 		Get-ChildItem "$out_dir\**" -Include $component.bin.out_include -Exclude $component.bin.out_exclude | Copy-Item -Destination $binaries_dir -Force
 	}
 }

@@ -21,7 +21,6 @@ $components = @{
 		}
 		bin = @{
 			merge_include = @('NRules.*')
-			out_include = @('Common.Logging.*')
 		}
 		package = @{
 			nuget = @{
