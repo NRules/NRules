@@ -3,14 +3,49 @@ using NRules.Rete;
 
 namespace NRules.Events
 {
+    /// <summary>
+    /// Aggregator of rules session events.
+    /// </summary>
     public interface IEventProvider
     {
+        /// <summary>
+        /// Raised when a new rule activation is created.
+        /// A new activation is created when a new set of facts (tuple) matches a rule.
+        /// The activation is placed on the agenda and becomes a candidate for firing.
+        /// </summary>
         event EventHandler<AgendaEventArgs> ActivationCreatedEvent;
+
+        /// <summary>
+        /// Raised when an existing activation is deleted.
+        /// An activation is deleted when a previously matching set of facts (tuple) no longer 
+        /// matches the rule due to updated or retracted facts.
+        /// The activation is removed from the agenda and is no longer a candidate for firing.
+        /// </summary>
         event EventHandler<AgendaEventArgs> ActivationDeletedEvent;
-        event EventHandler<AgendaEventArgs> BeforeRuleFiredEvent;
-        event EventHandler<AgendaEventArgs> AfterRuleFiredEvent;
+
+        /// <summary>
+        /// Raised before a rule is about to fire.
+        /// </summary>
+        event EventHandler<AgendaEventArgs> RuleFiringEvent;
+
+        /// <summary>
+        /// Raised after a rule has fired and all its actions executed.
+        /// </summary>
+        event EventHandler<AgendaEventArgs> RuleFiredEvent;
+
+        /// <summary>
+        /// Raised when a new fact is inserted into working memory.
+        /// </summary>
         event EventHandler<WorkingMemoryEventArgs> FactInsertedEvent;
+
+        /// <summary>
+        /// Raised when an existing fact is updated in the working memory.
+        /// </summary>
         event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
+
+        /// <summary>
+        /// Raised when an existing fact is retracted from the working memory.
+        /// </summary>
         event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
     }
 
@@ -18,8 +53,8 @@ namespace NRules.Events
     {
         void ActivationCreated(Activation activation);
         void ActivationDeleted(Activation activation);
-        void BeforeRuleFired(Activation activation);
-        void AfterRuleFired(Activation activation);
+        void RuleFiring(Activation activation);
+        void RuleFired(Activation activation);
         void FactInserted(Fact fact);
         void FactUpdated(Fact fact);
         void FactRetracted(Fact fact);
@@ -29,8 +64,8 @@ namespace NRules.Events
     {
         public event EventHandler<AgendaEventArgs> ActivationCreatedEvent;
         public event EventHandler<AgendaEventArgs> ActivationDeletedEvent;
-        public event EventHandler<AgendaEventArgs> BeforeRuleFiredEvent;
-        public event EventHandler<AgendaEventArgs> AfterRuleFiredEvent;
+        public event EventHandler<AgendaEventArgs> RuleFiringEvent;
+        public event EventHandler<AgendaEventArgs> RuleFiredEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactInsertedEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
@@ -55,9 +90,9 @@ namespace NRules.Events
             }
         }
 
-        public void BeforeRuleFired(Activation activation)
+        public void RuleFiring(Activation activation)
         {
-            var handler = BeforeRuleFiredEvent;
+            var handler = RuleFiringEvent;
             if (handler != null)
             {
                 var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
@@ -65,9 +100,9 @@ namespace NRules.Events
             }
         }
 
-        public void AfterRuleFired(Activation activation)
+        public void RuleFired(Activation activation)
         {
-            var handler = AfterRuleFiredEvent;
+            var handler = RuleFiredEvent;
             if (handler != null)
             {
                 var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);

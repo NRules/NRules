@@ -5,6 +5,9 @@ using NRules.Rete;
 
 namespace NRules.Diagnostics
 {
+    /// <summary>
+    /// Types of nodes in the rete network.
+    /// </summary>
     public enum NodeType
     {
         Root,
@@ -22,6 +25,9 @@ namespace NRules.Diagnostics
         Rule,
     }
 
+    /// <summary>
+    /// Node in the rete network graph.
+    /// </summary>
     [Serializable]
     public class NodeInfo
     {
@@ -102,9 +108,24 @@ namespace NRules.Diagnostics
             Items = items.ToArray();
         }
 
+        /// <summary>
+        /// Type of the node in the rete network.
+        /// </summary>
         public NodeType NodeType { get; private set; }
+
+        /// <summary>
+        /// Additional node details.
+        /// </summary>
         public string Details { get; private set; }
+
+        /// <summary>
+        /// Match conditions.
+        /// </summary>
         public string[] Conditions { get; private set; }
+
+        /// <summary>
+        /// Facts/tuples currently associated with the node.
+        /// </summary>
         public string[] Items { get; private set; }
     }
 }

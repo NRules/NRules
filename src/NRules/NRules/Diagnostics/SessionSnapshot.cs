@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace NRules.Diagnostics
 {
+    /// <summary>
+    /// Snapshot of rules session state.
+    /// </summary>
     [Serializable]
     public class SessionSnapshot
     {
@@ -15,11 +18,17 @@ namespace NRules.Diagnostics
             _links = new List<LinkInfo>(links);
         }
 
+        /// <summary>
+        /// Nodes of the rete network graph.
+        /// </summary>
         public IEnumerable<NodeInfo> Nodes
         {
             get { return _nodes; }
         }
 
+        /// <summary>
+        /// Links between nodes of the rete network graph.
+        /// </summary>
         public IEnumerable<LinkInfo> Links
         {
             get { return _links; }

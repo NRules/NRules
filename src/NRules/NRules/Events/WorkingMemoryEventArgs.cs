@@ -12,6 +12,6 @@ namespace NRules.Events
             _fact = fact;
         }
 
-        public object Fact { get { return _fact.Object; } }
+        public FactInfo Fact { get { return new FactInfo(_fact); } }
     }
 }

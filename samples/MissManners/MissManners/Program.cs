@@ -17,12 +17,12 @@ namespace MissManners
 
             var factory = repository.Compile();
             var session = factory.CreateSession();
-            session.EventProvider.FactInsertedEvent += EventProviderOnFactInsertedEvent;
-            session.EventProvider.FactUpdatedEvent += EventProviderOnFactUpdatedEvent;
-            session.EventProvider.FactRetractedEvent += EventProviderOnFactRetractedEvent;
-            session.EventProvider.ActivationCreatedEvent += EventProviderOnActivationCreatedEvent;
-            session.EventProvider.ActivationDeletedEvent += EventProviderOnActivationDeletedEvent;
-            session.EventProvider.BeforeRuleFiredEvent += EventProviderOnBeforeRuleFiredEvent;
+            session.Events.FactInsertedEvent += EventProviderOnFactInsertedEvent;
+            session.Events.FactUpdatedEvent += EventProviderOnFactUpdatedEvent;
+            session.Events.FactRetractedEvent += EventProviderOnFactRetractedEvent;
+            session.Events.ActivationCreatedEvent += EventProviderOnActivationCreatedEvent;
+            session.Events.ActivationDeletedEvent += EventProviderOnActivationDeletedEvent;
+            session.Events.RuleFiringEvent += EventProviderOnRuleFiringEvent;
 
             session.Insert(new Guest("N1", Gender.Male, new Hobby("H1")));
             session.Insert(new Guest("N2", Gender.Female, new Hobby("H1")));
@@ -44,32 +44,32 @@ namespace MissManners
 
         private static void EventProviderOnFactInsertedEvent(object sender, WorkingMemoryEventArgs e)
         {
-            Console.WriteLine("Insert: {0}", e.Fact);
+            Console.WriteLine("Insert: {0}", e.Fact.Value);
         }
 
         private static void EventProviderOnFactUpdatedEvent(object sender, WorkingMemoryEventArgs e)
         {
-            Console.WriteLine("Update: {0}", e.Fact);
+            Console.WriteLine("Update: {0}", e.Fact.Value);
         }
 
         private static void EventProviderOnFactRetractedEvent(object sender, WorkingMemoryEventArgs e)
         {
-            Console.WriteLine("Retract: {0}", e.Fact);
+            Console.WriteLine("Retract: {0}", e.Fact.Value);
         }
 
-        private static void EventProviderOnBeforeRuleFiredEvent(object sender, AgendaEventArgs e)
+        private static void EventProviderOnRuleFiringEvent(object sender, AgendaEventArgs e)
         {
-            Console.WriteLine("Fire({0}): {1}", e.Rule.Name, string.Join(",", e.Facts.ToArray()));
+            Console.WriteLine("Fire({0}): {1}", e.Rule.Name, string.Join(",", e.Facts.Select(f => f.Value).ToArray()));
         }
 
         private static void EventProviderOnActivationDeletedEvent(object sender, AgendaEventArgs e)
         {
-            Console.WriteLine("-A({0}): {1}", e.Rule.Name, string.Join(",", e.Facts.ToArray()));
+            Console.WriteLine("-A({0}): {1}", e.Rule.Name, string.Join(",", e.Facts.Select(f => f.Value).ToArray()));
         }
 
         private static void EventProviderOnActivationCreatedEvent(object sender, AgendaEventArgs e)
         {
-            Console.WriteLine("+A({0}): {1}", e.Rule.Name, string.Join(",", e.Facts.ToArray()));
+            Console.WriteLine("+A({0}): {1}", e.Rule.Name, string.Join(",", e.Facts.Select(f => f.Value).ToArray()));
         }
     }
 }

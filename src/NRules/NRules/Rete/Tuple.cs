@@ -54,12 +54,7 @@ namespace NRules.Rete
         {
             get { return _leftTuples; }
         }
-
-        public object[] GetFactObjects()
-        {
-            return this.Select(f => f.Object).ToArray();
-        }
-
+        
         public virtual void Clear()
         {
             if (RightFact != null) RightFact.ChildTuples.Remove(this);

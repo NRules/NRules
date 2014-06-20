@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using NRules.Diagnostics;
 using NRules.Events;
@@ -16,7 +15,7 @@ namespace NRules
         /// <summary>
         /// Aggregator for rule session events.
         /// </summary>
-        IEventProvider EventProvider { get; }
+        IEventProvider Events { get; }
 
         /// <summary>
         /// Adds a new fact to the rules engine memory.
@@ -68,7 +67,7 @@ namespace NRules
             _network.Activate(_executionContext);
         }
 
-        public IEventProvider EventProvider { get { return _eventAggregator; } }
+        public IEventProvider Events { get { return _eventAggregator; } }
 
         public void Insert(object fact)
         {
@@ -94,13 +93,13 @@ namespace NRules
                 Activation activation = _agenda.NextActivation();
                 ICompiledRule rule = activation.Rule;
 
-                _eventAggregator.BeforeRuleFired(activation);
+                _eventAggregator.RuleFiring(activation);
                 foreach (IRuleAction action in rule.Actions)
                 {
                     action.Invoke(actionContext, activation.Tuple);
                     ApplyActionOperations(actionContext);
                 }
-                _eventAggregator.AfterRuleFired(activation);
+                _eventAggregator.RuleFired(activation);
             }
         }
 

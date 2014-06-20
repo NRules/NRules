@@ -55,7 +55,7 @@ namespace NRules.Tests.Rete
         }
 
         [Test]
-        public void Enumerator_WhenGetFactObjects_ReturnsUnderlyingFactObjectsInOrder()
+        public void Enumerator_WhenEnumerated_ReturnsUnderlyingFactObjectsInOrder()
         {
             //Arrange
             var tuple0 = new Tuple(null);
@@ -64,7 +64,7 @@ namespace NRules.Tests.Rete
             var tuple3 = new Tuple(tuple2, new Fact(3), null);
 
             //Act
-            var target = tuple3.GetFactObjects();
+            var target = tuple3.Select(f => f.Object).ToArray();
 
             //Assert
             Assert.AreEqual(3, target.Length);

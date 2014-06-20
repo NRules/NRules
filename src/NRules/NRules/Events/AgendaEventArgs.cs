@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NRules.RuleModel;
 using Tuple = NRules.Rete.Tuple;
 
@@ -17,6 +18,6 @@ namespace NRules.Events
         }
 
         public IRuleDefinition Rule { get { return _rule.Definition; } }
-        public IEnumerable<object> Facts { get { return _tuple.GetFactObjects(); } }
+        public IEnumerable<FactInfo> Facts { get { return _tuple.Select(t => new FactInfo(t)).ToArray(); } }
     }
 }
