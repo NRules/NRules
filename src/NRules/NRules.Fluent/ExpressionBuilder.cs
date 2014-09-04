@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
 using NRules.Fluent.Expressions;
@@ -23,10 +24,10 @@ namespace NRules.Fluent
             return Match(patternSymbol, conditions);
         }
 
-        public ILeftHandSide Match<T>(params Expression<Func<T, bool>>[] conditions)
+        public ILeftHandSide Match<T>(Expression<Func<T, bool>> condition, params Expression<Func<T, bool>>[] conditions)
         {
             var patternSymbol = Expression.Parameter(typeof (T));
-            return Match(patternSymbol, conditions);
+            return Match(patternSymbol, Enumerable.Repeat(condition, 1).Union(conditions));
         }
 
         private ILeftHandSide Match<T>(ParameterExpression symbol, IEnumerable<Expression<Func<T, bool>>> conditions)
