@@ -8,19 +8,19 @@ namespace NRules.Rete
     internal abstract class Condition : IEquatable<Condition>
     {
         private readonly string _expressionString;
-        private readonly Delegate _compiledExpression;
+        private readonly Func<object[], bool> _compiledExpression;
 
         protected Condition(LambdaExpression expression)
         {
             _expressionString = expression.ToString();
-            _compiledExpression = expression.Compile();
+            _compiledExpression = FastDelegate.Create<Func<object[], bool>>(expression);
         }
 
         public string ExpressionString { get { return _expressionString; } }
 
         protected bool IsSatisfiedBy(params object[] factObjects)
         {
-            return (bool) _compiledExpression.DynamicInvoke(factObjects);
+            return _compiledExpression(factObjects);
         }
 
         public bool Equals(Condition other)

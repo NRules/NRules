@@ -62,6 +62,7 @@
     <Compile Include="Events\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
+    <Compile Include="Rete\FastDelegate.cs" />
     <Compile Include="Rete\IActivatable.cs" />
     <Compile Include="Rete\INode.cs" />
     <Compile Include="Rete\NotNode.cs" />

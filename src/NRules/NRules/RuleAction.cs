@@ -16,12 +16,12 @@ namespace NRules
     internal class RuleAction : IRuleAction
     {
         private readonly int[] _tupleMask;
-        private readonly Delegate _compiledAction;
+        private readonly Action<object[]> _compiledAction;
 
         public RuleAction(LambdaExpression expression, int[] tupleMask)
         {
             _tupleMask = tupleMask;
-            _compiledAction = expression.Compile();
+            _compiledAction = FastDelegate.Create<Action<object[]>>(expression);
         }
 
         public void Invoke(IContext context, Tuple tuple)
@@ -31,7 +31,7 @@ namespace NRules
                 _tupleMask.Select(
                     idx => tuple.ElementAtOrDefault(idx));
             object[] args = Enumerable.Repeat(context, 1).Union(facts.Select(f => f.Object)).ToArray();
-            _compiledAction.DynamicInvoke(args);
+            _compiledAction.Invoke(args);
         }
     }
 }
