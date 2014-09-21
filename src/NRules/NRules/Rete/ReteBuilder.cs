@@ -71,9 +71,10 @@ namespace NRules.Rete
 
         protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
         {
-            context.RegisterDeclaration(element.Declaration);
             if (element.Source == null)
             {
+                context.RegisterDeclaration(element.Declaration);
+
                 AlphaNode currentNode = BuildTypeNode(element.ValueType, _root);
 
                 var betaConditions = new List<ConditionElement>();
@@ -102,6 +103,8 @@ namespace NRules.Rete
             {
                 Visit(context, element.Source);
                 //TODO: Handle a more generic case, when pattern adds its own conditions
+
+                context.RegisterDeclaration(element.Declaration);
             }
         }
 
@@ -129,7 +132,7 @@ namespace NRules.Rete
                 foreach (var condition in conditions)
                 {
                     var mask = context.GetTupleMask(condition.Declarations);
-                    var betaCondition = new BetaCondition(condition.Expression, mask.ToArray());
+                    var betaCondition = new BetaCondition(condition.Expression, mask);
                     betaNode.Conditions.Add(betaCondition);
                 }
             }

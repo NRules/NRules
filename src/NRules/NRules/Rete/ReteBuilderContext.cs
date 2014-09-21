@@ -1,24 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NRules.RuleModel;
+using NRules.Utilities;
 
 namespace NRules.Rete
 {
     internal class ReteBuilderContext
     {
-        private int _factOffset = 0;
-        private readonly Dictionary<Declaration, int> _offsetMap;
+        private readonly List<Declaration> _declarationOrder;
 
         public ReteBuilderContext()
         {
-            _offsetMap = new Dictionary<Declaration, int>();
+            _declarationOrder = new List<Declaration>();
         }
 
         public ReteBuilderContext(ReteBuilderContext context)
         {
             BetaSource = context.BetaSource;
-            _factOffset = context._factOffset;
-            _offsetMap = new Dictionary<Declaration, int>(context._offsetMap);
+            _declarationOrder = new List<Declaration>(context._declarationOrder);
         }
 
         public IObjectSource AlphaSource { get; set; }
@@ -27,13 +26,15 @@ namespace NRules.Rete
 
         public void RegisterDeclaration(Declaration declaration)
         {
-            _offsetMap[declaration] = _factOffset;
-            _factOffset++;
+            _declarationOrder.Add(declaration);
         }
 
-        public IEnumerable<int> GetTupleMask(IEnumerable<Declaration> declarations)
+        public TupleMask GetTupleMask(IEnumerable<Declaration> declarations)
         {
-            return declarations.Select(d => _offsetMap[d]);
+            var positionMap = declarations.ToIndexMap();
+            var mask = _declarationOrder
+                .Select(x => positionMap.IndexOrDefault(x, -1)).ToArray();
+            return new TupleMask(mask);
         }
 
         public void ResetAlphaSource()

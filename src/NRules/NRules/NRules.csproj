@@ -62,7 +62,6 @@
     <Compile Include="Events\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
-    <Compile Include="Rete\FastDelegate.cs" />
     <Compile Include="Rete\IActivatable.cs" />
     <Compile Include="Rete\INode.cs" />
     <Compile Include="Rete\NotNode.cs" />
@@ -74,6 +73,7 @@
     <Compile Include="Rete\SubnetCondition.cs" />
     <Compile Include="Rete\TerminalNode.cs" />
     <Compile Include="Rete\TupleExtensions.cs" />
+    <Compile Include="Rete\TupleMask.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleCompiler.cs" />
     <Compile Include="Rete\AlphaMemory.cs" />
@@ -105,6 +105,8 @@
     <Compile Include="Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionFactory.cs" />
+    <Compile Include="Utilities\FastDelegate.cs" />
+    <Compile Include="Utilities\IndexMapExtensions.cs" />
     <Compile Include="WorkingMemory.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace NRules.Rete
 {
@@ -11,9 +9,9 @@ namespace NRules.Rete
 
     internal class BetaCondition : Condition, IBetaCondition
     {
-        private readonly int[] _tupleMask;
+        private readonly TupleMask _tupleMask;
 
-        public BetaCondition(LambdaExpression expression, int[] tupleMask)
+        public BetaCondition(LambdaExpression expression, TupleMask tupleMask)
             : base(expression)
         {
             _tupleMask = tupleMask;
@@ -21,13 +19,16 @@ namespace NRules.Rete
 
         public bool IsSatisfiedBy(Tuple leftTuple, Fact rightFact)
         {
-            //todo: optimize
-            IEnumerable<Fact> facts =
-                _tupleMask.Select(
-                    idx => leftTuple.ElementAtOrDefault(idx) ?? rightFact);
+            var args = new object[leftTuple.Count + 1];
+            int index = leftTuple.Count - 1;
+            foreach (var fact in leftTuple.Facts)
+            {
+                _tupleMask.SetAtIndex(ref args, index, fact.Object);
+                index--;
+            }
+            _tupleMask.SetAtIndex(ref args, leftTuple.Count, rightFact.Object);
 
-            object[] factObjects = facts.Select(f => f.Object).ToArray();
-            return IsSatisfiedBy(factObjects);
+            return IsSatisfiedBy(args);
         }
     }
 }

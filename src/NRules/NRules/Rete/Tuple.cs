@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -7,9 +6,8 @@ namespace NRules.Rete
 {
     [DebuggerDisplay("Tuple ({Count})")]
     [DebuggerTypeProxy(typeof(TupleDebugView))]
-    internal class Tuple : IEnumerable<Fact>
+    internal class Tuple
     {
-        private readonly List<Tuple> _leftTuples = new List<Tuple>();
         private readonly List<Tuple> _childTuples = new List<Tuple>();
         private object _state;
 
@@ -23,8 +21,6 @@ namespace NRules.Rete
             Count = left.Count + 1;
             right.ChildTuples.Add(this);
             RightFact = right;
-            _leftTuples.AddRange(left.LeftTuples);
-            _leftTuples.Add(left);
             left.ChildTuples.Add(this);
             LeftTuple = left;
         }
@@ -50,11 +46,6 @@ namespace NRules.Rete
             get { return _childTuples; }
         }
 
-        public virtual IList<Tuple> LeftTuples
-        {
-            get { return _leftTuples; }
-        }
-        
         public virtual void Clear()
         {
             if (RightFact != null) RightFact.ChildTuples.Remove(this);
@@ -62,62 +53,21 @@ namespace NRules.Rete
 
             if (LeftTuple != null) LeftTuple.ChildTuples.Remove(this);
             LeftTuple = null;
-            _leftTuples.Clear();
 
             ChildTuples.Clear();
         }
 
-        public IEnumerator<Fact> GetEnumerator()
+        public IEnumerable<Fact> Facts
         {
-            var enumerator = new FactEnumerator(this);
-            return enumerator;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        private class FactEnumerator : IEnumerator<Fact>
-        {
-            private int _index;
-            private Tuple _currentTuple;
-            private readonly Tuple _rootTuple;
-
-            public FactEnumerator(Tuple tuple)
+            get
             {
-                _rootTuple = tuple;
-                _index = 1;
-            }
+                if (RightFact == null) yield break;
 
-            public void Dispose()
-            {
-            }
-
-            public bool MoveNext()
-            {
-                if (_index > _rootTuple.LeftTuples.Count) return false;
-                _currentTuple = (_index == _rootTuple.LeftTuples.Count)
-                                    ? _rootTuple
-                                    : _rootTuple.LeftTuples[_index];
-                _index++;
-                return true;
-            }
-
-            public void Reset()
-            {
-                _currentTuple = null;
-                _index = 1;
-            }
-
-            public Fact Current
-            {
-                get { return _currentTuple.RightFact; }
-            }
-
-            object IEnumerator.Current
-            {
-                get { return Current; }
+                yield return RightFact;
+                foreach (var leftFact in LeftTuple.Facts)
+                {
+                    yield return leftFact;
+                }
             }
         }
 
@@ -127,7 +77,7 @@ namespace NRules.Rete
 
             public TupleDebugView(Tuple tuple)
             {
-                Facts = string.Format("[{0}]", string.Join(" || ", tuple.Select(f => f.Object).ToArray()));
+                Facts = string.Format("[{0}]", string.Join(" || ", tuple.Facts.Reverse().Select(f => f.Object).ToArray()));
             }
         }
     }
@@ -153,11 +103,6 @@ namespace NRules.Rete
         public override int Count
         {
             get { return WrappedTuple.Count; }
-        }
-
-        public override IList<Tuple> LeftTuples
-        {
-            get { return WrappedTuple.LeftTuples; }
         }
 
         public override void Clear()

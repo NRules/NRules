@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace NRules.Rete
+namespace NRules.Utilities
 {
     internal static class FastDelegate
     {

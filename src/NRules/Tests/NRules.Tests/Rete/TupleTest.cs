@@ -36,7 +36,7 @@ namespace NRules.Tests.Rete
         }
 
         [Test]
-        public void Enumerator_WhenEnumeratesNTuple_WalksTuplesInOrder()
+        public void Enumerator_WhenEnumeratesNTuple_WalksTuplesInReverseOrder()
         {
             //Arrange
             var tuple0 = new Tuple(null);
@@ -45,17 +45,17 @@ namespace NRules.Tests.Rete
             var tuple3 = new Tuple(tuple2, new Fact(3), null);
 
             //Act
-            var target = tuple3.ToArray();
+            var target = tuple3.Facts.ToArray();
 
             //Assert
             Assert.AreEqual(3, target.Length);
-            Assert.AreEqual(tuple1.RightFact, target[0]);
+            Assert.AreEqual(tuple1.RightFact, target[2]);
             Assert.AreEqual(tuple2.RightFact, target[1]);
-            Assert.AreEqual(tuple3.RightFact, target[2]);
+            Assert.AreEqual(tuple3.RightFact, target[0]);
         }
 
         [Test]
-        public void Enumerator_WhenEnumerated_ReturnsUnderlyingFactObjectsInOrder()
+        public void Enumerator_WhenEnumerated_ReturnsUnderlyingFactObjectsInReverseOrder()
         {
             //Arrange
             var tuple0 = new Tuple(null);
@@ -64,13 +64,13 @@ namespace NRules.Tests.Rete
             var tuple3 = new Tuple(tuple2, new Fact(3), null);
 
             //Act
-            var target = tuple3.Select(f => f.Object).ToArray();
+            var target = tuple3.Facts.Select(f => f.Object).ToArray();
 
             //Assert
             Assert.AreEqual(3, target.Length);
-            Assert.AreEqual(1, target[0]);
+            Assert.AreEqual(1, target[2]);
             Assert.AreEqual(2, target[1]);
-            Assert.AreEqual(3, target[2]);
+            Assert.AreEqual(3, target[0]);
         }
 
         [Test]
@@ -80,11 +80,24 @@ namespace NRules.Tests.Rete
             var tuple = new Tuple(new Tuple(null), new Fact(1), null);
 
             //Act
-            var target = tuple.ToArray();
+            var target = tuple.Facts.ToArray();
 
             //Assert
             Assert.AreEqual(1, target.Length);
             Assert.AreEqual(tuple.RightFact, target[0]);
+        }
+
+        [Test]
+        public void Enumerator_WhenEnumerates0Tuple_ReturnsEmpty()
+        {
+            //Arrange
+            var tuple = new Tuple(null);
+
+            //Act
+            var target = tuple.Facts.ToArray();
+
+            //Assert
+            Assert.AreEqual(0, target.Length);
         }
 
         [Test]

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NRules.Rete
 {
@@ -7,15 +8,28 @@ namespace NRules.Rete
         public bool IsSatisfiedBy(Tuple leftTuple, Fact rightFact)
         {
             var rightTuple = ((WrapperFact)rightFact).WrappedTuple;
-            using (IEnumerator<Fact> enumerator1 = leftTuple.GetEnumerator())
-            using (IEnumerator<Fact> enumerator2 = rightTuple.GetEnumerator())
+            using (IEnumerator<Fact> leftEnumerator = leftTuple.Facts.GetEnumerator())
+            using (IEnumerator<Fact> rightEnumerator = rightTuple.Facts.GetEnumerator())
             {
-                while (enumerator1.MoveNext() && enumerator2.MoveNext())
+                AlignEnumerators(leftEnumerator, rightEnumerator, leftTuple.Count, rightTuple.Count);
+
+                while (leftEnumerator.MoveNext() && rightEnumerator.MoveNext())
                 {
-                    if (enumerator1.Current != enumerator2.Current) return false;
+                    if (leftEnumerator.Current != rightEnumerator.Current) return false;
                 }
             }
             return true;
+        }
+
+        private void AlignEnumerators(IEnumerator<Fact> first, IEnumerator<Fact> second, int firstCount, int secondCount)
+        {
+            IEnumerator<Fact> biggerEnumerator = firstCount > secondCount ? first : second;
+            int diff = Math.Abs(firstCount - secondCount);
+            while (diff > 0)
+            {
+                biggerEnumerator.MoveNext();
+                diff--;
+            }
         }
     }
 }

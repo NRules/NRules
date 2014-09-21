@@ -64,7 +64,7 @@ namespace NRules
             foreach (var action in rightHandSide.Actions)
             {
                 var mask = context.GetTupleMask(action.Declarations);
-                var ruleAction = new RuleAction(action.Expression, mask.ToArray());
+                var ruleAction = new RuleAction(action.Expression, mask);
                 actions.Add(ruleAction);
             }
             var rule = new CompiledRule(ruleDefinition, actions);

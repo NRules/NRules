@@ -18,6 +18,6 @@ namespace NRules.Events
         }
 
         public IRuleDefinition Rule { get { return _rule.Definition; } }
-        public IEnumerable<FactInfo> Facts { get { return _tuple.Select(t => new FactInfo(t)).ToArray(); } }
+        public IEnumerable<FactInfo> Facts { get { return _tuple.Facts.Reverse().Select(t => new FactInfo(t)).ToArray(); } }
     }
 }

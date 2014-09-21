@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NRules.Rete;
 using NRules.RuleModel;
+using NRules.Utilities;
 using Tuple = NRules.Rete.Tuple;
 
 namespace NRules
@@ -15,10 +14,10 @@ namespace NRules
 
     internal class RuleAction : IRuleAction
     {
-        private readonly int[] _tupleMask;
+        private readonly TupleMask _tupleMask;
         private readonly Action<object[]> _compiledAction;
 
-        public RuleAction(LambdaExpression expression, int[] tupleMask)
+        public RuleAction(LambdaExpression expression, TupleMask tupleMask)
         {
             _tupleMask = tupleMask;
             _compiledAction = FastDelegate.Create<Action<object[]>>(expression);
@@ -26,11 +25,15 @@ namespace NRules
 
         public void Invoke(IContext context, Tuple tuple)
         {
-            //todo: optimize
-            IEnumerable<Fact> facts =
-                _tupleMask.Select(
-                    idx => tuple.ElementAtOrDefault(idx));
-            object[] args = Enumerable.Repeat(context, 1).Union(facts.Select(f => f.Object)).ToArray();
+            var args = new object[tuple.Count + 1];
+            args[0] = context;
+            int index = tuple.Count - 1;
+            foreach (var fact in tuple.Facts)
+            {
+                _tupleMask.SetAtIndex(ref args, index, 1, fact.Object);
+                index--;
+            }
+
             _compiledAction.Invoke(args);
         }
     }
