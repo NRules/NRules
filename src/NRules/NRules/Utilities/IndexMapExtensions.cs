@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace NRules.Utilities
 {
     internal static class IndexMapExtensions
     {
-                /// <summary>
+        /// <summary>
         /// Converts sequence to an index lookup map.
         /// </summary>
         /// <typeparam name="TElement">Type of element in the sequence.</typeparam>

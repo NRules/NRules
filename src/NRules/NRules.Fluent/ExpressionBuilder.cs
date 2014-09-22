@@ -30,6 +30,12 @@ namespace NRules.Fluent
             return Match(patternSymbol, Enumerable.Repeat(condition, 1).Union(conditions));
         }
 
+        public ILeftHandSide Match<T>()
+        {
+            var patternSymbol = Expression.Parameter(typeof(T));
+            return Match(patternSymbol, new Expression<Func<T, bool>>[] {});
+        }
+
         private ILeftHandSide Match<T>(ParameterExpression symbol, IEnumerable<Expression<Func<T, bool>>> conditions)
         {
             var leftHandSide = _builder.LeftHandSide();

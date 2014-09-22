@@ -29,6 +29,14 @@ namespace NRules.Fluent.Dsl
         ILeftHandSide Match<T>(Expression<Func<T, bool>> condition, params Expression<Func<T, bool>>[] conditions);
 
         /// <summary>
+        /// Defines a pattern matching all facts of a given type.
+        /// Does not bind matching fact to a variable.
+        /// </summary>
+        /// <typeparam name="T">Type of fact to match.</typeparam>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSide Match<T>();
+
+        /// <summary>
         /// Defines a pattern that aggregates matching facts into a collection.
         /// The rule only fires if the collection contains elements.
         /// </summary>
