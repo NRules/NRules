@@ -7,25 +7,34 @@ namespace NRules.Utilities
     {
         public static TDelegate Create<TDelegate>(LambdaExpression expression)
         {
-            var wrapper = Wrap<TDelegate>(expression);
-            var fastDelegate = wrapper.Compile();
+            var optimizer = new ExpressionOptimizer<TDelegate>();
+            var optimizedExpression = optimizer.CompactParameters(expression);
+            var fastDelegate = optimizedExpression.Compile();
             return fastDelegate;
         }
 
-        private static Expression<TDelegate> Wrap<TDelegate>(LambdaExpression expression)
+        private class ExpressionOptimizer<TDelegate> : ExpressionVisitor
         {
-            var parameter = Expression.Parameter(typeof(object[]));
-            var arguments = new List<Expression>();
-            for (int i = 0; i < expression.Parameters.Count; i++)
+            private ParameterExpression _arrayParameter;
+            private Dictionary<ParameterExpression, int> _indexMap; 
+
+            public Expression<TDelegate> CompactParameters(LambdaExpression expression)
             {
-                var parameterValue = Expression.ArrayIndex(parameter, Expression.Constant(i));
-                var argument = Expression.Convert(parameterValue, expression.Parameters[i].Type);
-                arguments.Add(argument);
+                _arrayParameter = Expression.Parameter(typeof(object[]));
+                _indexMap = expression.Parameters.ToIndexMap();
+
+                var body = Visit(expression.Body);
+                var optimizedLambda = Expression.Lambda<TDelegate>(body, _arrayParameter);
+                return optimizedLambda;
             }
-            var body = Expression.Invoke(expression, arguments);
-            var wrapper = Expression.Lambda<TDelegate>(body, parameter);
-            
-            return wrapper;
+
+            protected override Expression VisitParameter(ParameterExpression node)
+            {
+                int index = _indexMap[node];
+                var arrayLookup = Expression.ArrayIndex(_arrayParameter, Expression.Constant(index));
+                var parameterValue = Expression.Convert(arrayLookup, node.Type);
+                return parameterValue;
+            }
         }
     }
 }
