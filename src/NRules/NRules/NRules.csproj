@@ -56,10 +56,16 @@
     <Compile Include="Diagnostics\SessionSnapshot.cs" />
     <Compile Include="Diagnostics\SessionSnapshotVisitor.cs" />
     <Compile Include="Diagnostics\SnapshotBuilder.cs" />
+    <Compile Include="Events\ActionErrorEventArgs.cs" />
     <Compile Include="Events\AgendaEventArgs.cs" />
+    <Compile Include="Events\ErrorEventArgs.cs" />
     <Compile Include="Events\EventAggregator.cs" />
     <Compile Include="Events\FactInfo.cs" />
     <Compile Include="Events\WorkingMemoryEventArgs.cs" />
+    <Compile Include="Exceptions\ActionEvaluationException.cs" />
+    <Compile Include="Exceptions\ConditionEvaluationException.cs" />
+    <Compile Include="Exceptions\ExecutionException.cs" />
+    <Compile Include="Exceptions\ExpressionEvaluationException.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\IActivatable.cs" />

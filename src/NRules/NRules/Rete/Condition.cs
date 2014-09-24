@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using NRules.Exceptions;
 using NRules.Utilities;
 
 namespace NRules.Rete
@@ -8,11 +9,13 @@ namespace NRules.Rete
     [DebuggerDisplay("{_expressionString}")]
     internal abstract class Condition : IEquatable<Condition>
     {
+        private readonly LambdaExpression _expression;
         private readonly string _expressionString;
         private readonly Func<object[], bool> _compiledExpression;
 
         protected Condition(LambdaExpression expression)
         {
+            _expression = expression;
             _expressionString = expression.ToString();
             _compiledExpression = FastDelegate.Create<Func<object[], bool>>(expression);
         }
@@ -21,7 +24,14 @@ namespace NRules.Rete
 
         protected bool IsSatisfiedBy(params object[] factObjects)
         {
-            return _compiledExpression(factObjects);
+            try
+            {
+                return _compiledExpression(factObjects);
+            }
+            catch (Exception e)
+            {
+                throw new ConditionEvaluationException("Failed to evaluate condition", _expression, e);
+            }
         }
 
         public bool Equals(Condition other)

@@ -1,4 +1,5 @@
 using System;
+using NRules.Exceptions;
 using NRules.Rete;
 
 namespace NRules.Events
@@ -47,6 +48,12 @@ namespace NRules.Events
         /// Raised when an existing fact is retracted from the working memory.
         /// </summary>
         event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
+
+        /// <summary>
+        /// Raised when action threw an exception.
+        /// Gives observer of the event control over handling of the exception.
+        /// </summary>
+        event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
     }
 
     internal interface IEventAggregator : IEventProvider
@@ -58,6 +65,7 @@ namespace NRules.Events
         void FactInserted(Fact fact);
         void FactUpdated(Fact fact);
         void FactRetracted(Fact fact);
+        void ActionFailed(ActionEvaluationException exception, out bool isHandled);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -69,6 +77,7 @@ namespace NRules.Events
         public event EventHandler<WorkingMemoryEventArgs> FactInsertedEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
+        public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
 
         public void ActivationCreated(Activation activation)
         {
@@ -138,6 +147,18 @@ namespace NRules.Events
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(this, @event);
             }
+        }
+
+        public void ActionFailed(ActionEvaluationException exception, out bool isHandled)
+        {
+            isHandled = false;
+            var handler = ActionFailedEvent;
+            if (handler != null)
+            {
+                var @event = new ActionErrorEventArgs(exception);
+                handler(this, @event);
+                isHandled = @event.IsHandled;
+            }            
         }
     }
 }

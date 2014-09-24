@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using NRules.Exceptions;
 using NRules.Rete;
 using NRules.RuleModel;
 using NRules.Utilities;
@@ -14,11 +15,13 @@ namespace NRules
 
     internal class RuleAction : IRuleAction
     {
+        private readonly LambdaExpression _expression;
         private readonly TupleMask _tupleMask;
         private readonly Action<object[]> _compiledAction;
 
         public RuleAction(LambdaExpression expression, TupleMask tupleMask)
         {
+            _expression = expression;
             _tupleMask = tupleMask;
             _compiledAction = FastDelegate.Create<Action<object[]>>(expression);
         }
@@ -34,7 +37,14 @@ namespace NRules
                 index--;
             }
 
-            _compiledAction.Invoke(args);
+            try
+            {
+                _compiledAction.Invoke(args);
+            }
+            catch (Exception e)
+            {
+                throw new ActionEvaluationException("Failed to evaluate rule action", _expression, e);
+            }
         }
     }
 }

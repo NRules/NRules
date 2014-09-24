@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using NRules.Diagnostics;
 using NRules.Events;
+using NRules.Exceptions;
 using NRules.Rete;
 
 namespace NRules
@@ -96,7 +98,16 @@ namespace NRules
                 _eventAggregator.RuleFiring(activation);
                 foreach (IRuleAction action in rule.Actions)
                 {
-                    action.Invoke(actionContext, activation.Tuple);
+                    try
+                    {
+                        action.Invoke(actionContext, activation.Tuple);
+                    }
+                    catch (ActionEvaluationException e)
+                    {
+                        bool isHandled;
+                        _eventAggregator.ActionFailed(e, out isHandled);
+                        if (!isHandled) throw;
+                    }
                     ApplyActionOperations(actionContext);
                 }
                 _eventAggregator.RuleFired(activation);
