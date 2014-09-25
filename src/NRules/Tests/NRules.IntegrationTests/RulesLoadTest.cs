@@ -19,7 +19,7 @@ namespace NRules.IntegrationTests
 
             //Act
             //Assert
-            Assert.Throws<ArgumentException>(() => target.Load("Test", x => x.From(typeof (string).Assembly)));
+            Assert.Throws<ArgumentException>(() => target.Load(x => x.From(typeof (string).Assembly)));
         }
 
         [Test]
@@ -30,21 +30,35 @@ namespace NRules.IntegrationTests
 
             //Act
             //Assert
-            Assert.Throws<ArgumentException>(() => target.Load("Test", x => x.From(typeof (string))));
+            Assert.Throws<ArgumentException>(() => target.Load(x => x.From(typeof (string))));
         }
 
         [Test]
-        public void Load_AssemblyWithRules_NamedRuleSet()
+        public void Load_AssemblyWithRulesToNamedRuleSet_RuleSetNameMatches()
         {
             //Arrange
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load("Test", x => x.From(ThisAssembly));
+            target.Load(x => x.From(ThisAssembly).To("Test"));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
             Assert.AreEqual("Test", ruleSet.Name);
+        }
+
+        [Test]
+        public void Load_AssemblyWithRulesToDefaultRuleSet_DefaultRuleSetName()
+        {
+            //Arrange
+            RuleRepository target = CreateTarget();
+
+            //Act
+            target.Load(x => x.From(ThisAssembly));
+            IRuleSet ruleSet = target.GetRuleSets().First();
+
+            //Assert
+            Assert.AreEqual("default", ruleSet.Name);
         }
 
         [Test]
@@ -54,7 +68,7 @@ namespace NRules.IntegrationTests
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load("Test", x => x.From(ThisAssembly).Where(r => r.Name.Contains("PriorityLowRule")));
+            target.Load(x => x.From(ThisAssembly).Where(r => r.Name.Contains("PriorityLowRule")));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
@@ -69,7 +83,7 @@ namespace NRules.IntegrationTests
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load("Test", x => x.From(ThisAssembly).Where(r => r.IsTagged("Test")));
+            target.Load(x => x.From(ThisAssembly).Where(r => r.IsTagged("Test")));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert

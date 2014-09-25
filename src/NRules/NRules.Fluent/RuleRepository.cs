@@ -10,6 +10,7 @@ namespace NRules.Fluent
     /// </summary>
     public class RuleRepository : IRuleRepository
     {
+        private const string DefaultRuleSetName = "default";
         private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
 
         public RuleRepository()
@@ -30,9 +31,8 @@ namespace NRules.Fluent
         /// <summary>
         /// Loads rules into a rule set using provided loader specification.
         /// </summary>
-        /// <param name="ruleSetName">Name of the rule set.</param>
         /// <param name="specAction">Rule loader specification.</param>
-        public void Load(string ruleSetName, Action<IRuleLoadSpec> specAction)
+        public void Load(Action<IRuleLoadSpec> specAction)
         {
             var spec = new RuleLoadSpec();
             specAction(spec);
@@ -41,6 +41,7 @@ namespace NRules.Fluent
                 .Select(t => Activator.Activate(t))
                 .Select(r => r.GetDefinition());
 
+            var ruleSetName = spec.RuleSetName ?? DefaultRuleSetName;
             var ruleSet = GetRuleSet(ruleSetName);
             ruleSet.Add(rules);
 

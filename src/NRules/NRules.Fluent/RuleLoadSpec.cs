@@ -31,12 +31,22 @@ namespace NRules.Fluent
         /// <param name="filter">Filter condition based on rule's metadata.</param>
         /// <returns>Spec to continue fluent configuration.</returns>
         IRuleLoadSpec Where(Func<IRuleMetadata, bool> filter);
+
+        /// <summary>
+        /// Loads rules into the specified rule set.
+        /// If not provided, loads rules into default rule set.
+        /// </summary>
+        /// <param name="ruleSetName">Name of the rule set to load rules to.</param>
+        /// <returns>Spec to continue fluent configuration.</returns>
+        IRuleLoadSpec To(string ruleSetName);
     }
 
     internal class RuleLoadSpec : IRuleLoadSpec
     {
         private readonly List<Type> _ruleTypes = new List<Type>();
         private Func<IRuleMetadata, bool> _filter;
+
+        public string RuleSetName { get; set; }
 
         public IRuleLoadSpec From(params Assembly[] assemblies)
         {
@@ -75,6 +85,16 @@ namespace NRules.Fluent
                 throw new InvalidOperationException("Rule load specification can only have a single 'Where' clause");
             }
             _filter = filter;
+            return this;
+        }
+
+        public IRuleLoadSpec To(string ruleSetName)
+        {
+            if (RuleSetName != null)
+            {
+                throw new InvalidOperationException("Rule load specification can only have a single 'To' clause");
+            }
+            RuleSetName = ruleSetName;
             return this;
         }
 
