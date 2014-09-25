@@ -11,7 +11,7 @@ namespace NRules.Debugger.Visualizer.Tests
         private static void Main(string[] args)
         {
             var repository = new RuleRepository();
-            repository.Load("Test", x => x.From(Assembly.GetExecutingAssembly()));
+            repository.Load(x => x.From(Assembly.GetExecutingAssembly()));
 
             ISessionFactory factory = repository.Compile();
             ISession session = factory.CreateSession();

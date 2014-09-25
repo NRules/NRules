@@ -15,7 +15,7 @@ namespace SimpleRulesTest
             var customer2 = new Customer {Name = "Emily Brown", Age = 32, Sex = SexTypes.Female, Policy = policy2};
 
             var repository = new RuleRepository();
-            repository.Load("Test", x => x.From(typeof (Program).Assembly));
+            repository.Load(x => x.From(typeof (Program).Assembly));
             var ruleSets = repository.GetRuleSets();
 
             IRuleCompiler compiler = new RuleCompiler();

@@ -13,7 +13,7 @@ namespace MissManners
         static void Main(string[] args)
         {
             var repository = new RuleRepository();
-            repository.Load("Test", x => x.From(typeof(AssignFirstSeat).Assembly));
+            repository.Load(x => x.From(typeof(AssignFirstSeat).Assembly));
 
             var factory = repository.Compile();
             var session = factory.CreateSession();
