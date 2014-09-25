@@ -113,12 +113,16 @@ namespace NRules.Fluent
             return this;
         }
 
-        private static ParameterExpression ExtractSymbol<T>(Expression<Func<T>> @alias)
+        private static ParameterExpression ExtractSymbol<T>(Expression<Func<T>> alias)
         {
-            var fieldMember = @alias.Body as MemberExpression;
+            if (alias == null)
+            {
+                throw new ArgumentNullException("alias", "Pattern alias is null");
+            }
+            var fieldMember = alias.Body as MemberExpression;
             if (fieldMember == null)
             {
-                throw new InvalidOperationException("Pattern alias must be a variable");
+                throw new ArgumentException("Pattern alias must be a variable");
             }
             return Expression.Parameter(fieldMember.Type, fieldMember.Member.Name);
         }
