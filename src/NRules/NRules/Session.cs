@@ -1,8 +1,6 @@
-using System;
 using System.Linq;
 using NRules.Diagnostics;
 using NRules.Events;
-using NRules.Exceptions;
 using NRules.Rete;
 
 namespace NRules
@@ -102,7 +100,7 @@ namespace NRules
                     {
                         action.Invoke(actionContext, activation.Tuple);
                     }
-                    catch (ActionEvaluationException e)
+                    catch (RuleActionEvaluationException e)
                     {
                         bool isHandled;
                         _eventAggregator.ActionFailed(e, out isHandled);

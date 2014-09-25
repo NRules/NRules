@@ -1,5 +1,4 @@
 using System;
-using NRules.Exceptions;
 using NRules.Rete;
 
 namespace NRules.Events
@@ -65,7 +64,7 @@ namespace NRules.Events
         void FactInserted(Fact fact);
         void FactUpdated(Fact fact);
         void FactRetracted(Fact fact);
-        void ActionFailed(ActionEvaluationException exception, out bool isHandled);
+        void ActionFailed(RuleActionEvaluationException exception, out bool isHandled);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -149,7 +148,7 @@ namespace NRules.Events
             }
         }
 
-        public void ActionFailed(ActionEvaluationException exception, out bool isHandled)
+        public void ActionFailed(RuleActionEvaluationException exception, out bool isHandled)
         {
             isHandled = false;
             var handler = ActionFailedEvent;

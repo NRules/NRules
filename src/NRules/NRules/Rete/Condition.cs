@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
-using NRules.Exceptions;
 using NRules.Utilities;
 
 namespace NRules.Rete
@@ -30,7 +29,7 @@ namespace NRules.Rete
             }
             catch (Exception e)
             {
-                throw new ConditionEvaluationException("Failed to evaluate condition", _expression, e);
+                throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression, e);
             }
         }
 

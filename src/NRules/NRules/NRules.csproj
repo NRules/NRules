@@ -62,10 +62,6 @@
     <Compile Include="Events\EventAggregator.cs" />
     <Compile Include="Events\FactInfo.cs" />
     <Compile Include="Events\WorkingMemoryEventArgs.cs" />
-    <Compile Include="Exceptions\ActionEvaluationException.cs" />
-    <Compile Include="Exceptions\ConditionEvaluationException.cs" />
-    <Compile Include="Exceptions\ExecutionException.cs" />
-    <Compile Include="Exceptions\ExpressionEvaluationException.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\IActivatable.cs" />
@@ -108,6 +104,10 @@
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />
     <Compile Include="RuleRepositoryExtensions.cs" />
+    <Compile Include="RuleActionEvaluationException.cs" />
+    <Compile Include="RuleConditionEvaluationException.cs" />
+    <Compile Include="RuleExecutionException.cs" />
+    <Compile Include="RuleExpressionEvaluationException.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionFactory.cs" />
@@ -121,6 +121,7 @@
       <Name>NRules.RuleModel</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

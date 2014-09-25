@@ -1,5 +1,4 @@
 ﻿using System;
-using NRules.Exceptions;
 using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
@@ -16,7 +15,7 @@ namespace NRules.IntegrationTests
             var fact = new FactType1 {TestProperty = null};
 
             //Act - Assert
-            var ex = Assert.Throws<ConditionEvaluationException>(() => Session.Insert(fact));
+            var ex = Assert.Throws<RuleConditionEvaluationException>(() => Session.Insert(fact));
             Assert.IsNotNull(ex.Condition);
             Assert.IsInstanceOf<NullReferenceException>(ex.InnerException);
         }
@@ -31,7 +30,7 @@ namespace NRules.IntegrationTests
             GetRuleInstance<OneFactRule>().Notifier = null;
 
             //Act - Assert
-            var ex = Assert.Throws<ActionEvaluationException>(() => Session.Fire());
+            var ex = Assert.Throws<RuleActionEvaluationException>(() => Session.Fire());
             Assert.IsNotNull(ex.Action);
             Assert.IsInstanceOf<NullReferenceException>(ex.InnerException);
         }

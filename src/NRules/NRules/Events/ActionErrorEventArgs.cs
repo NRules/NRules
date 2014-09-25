@@ -1,10 +1,11 @@
-using NRules.Exceptions;
-
 namespace NRules.Events
 {
-    public class ActionErrorEventArgs : ErrorEventArgs<ActionEvaluationException>
+    /// <summary>
+    /// Information related to error events raised during action execution.
+    /// </summary>
+    public class ActionErrorEventArgs : ErrorEventArgs<RuleActionEvaluationException>
     {
-        internal ActionErrorEventArgs(ActionEvaluationException exception) : base(exception)
+        internal ActionErrorEventArgs(RuleActionEvaluationException exception) : base(exception)
         {
         }
     }

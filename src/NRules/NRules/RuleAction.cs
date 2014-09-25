@@ -1,6 +1,5 @@
 using System;
 using System.Linq.Expressions;
-using NRules.Exceptions;
 using NRules.Rete;
 using NRules.RuleModel;
 using NRules.Utilities;
@@ -43,7 +42,7 @@ namespace NRules
             }
             catch (Exception e)
             {
-                throw new ActionEvaluationException("Failed to evaluate rule action", _expression, e);
+                throw new RuleActionEvaluationException("Failed to evaluate rule action", _expression, e);
             }
         }
     }

@@ -57,6 +57,10 @@ namespace NRules.Rete
             ChildTuples.Clear();
         }
 
+        /// <summary>
+        /// Facts contained in the tuple in reverse order (fast iteration over linked list).
+        /// Reverse collection to get facts in their actual order.
+        /// </summary>
         public IEnumerable<Fact> Facts
         {
             get
