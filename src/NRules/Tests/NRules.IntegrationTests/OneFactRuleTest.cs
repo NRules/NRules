@@ -117,6 +117,23 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
+        [Test, Ignore("TODO: Rework retract logic to not re-evaluate conditions")]
+        public void Fire_OneMatchingFactAssertedAndModifiedAndRetracted_DoesNotFire()
+        {
+            //Arrange
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            Session.Insert(fact);
+
+            fact.TestProperty = "Invalid Value 1";
+            Session.Retract(fact);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+
         [Test]
         public void Fire_DuplicateInsert_Throws()
         {
