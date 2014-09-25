@@ -46,6 +46,8 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="EvaluationExceptionRuleTest.cs" />
+    <Compile Include="IdentityMatchRuleTest.cs" />
+    <Compile Include="TestRules\IdentityMatchRule.cs" />
     <Compile Include="ThreeFactTwoExistsRuleTest.cs" />
     <Compile Include="TestRules\ThreeFactTwoExistsRule.cs" />
     <Compile Include="ThreeFactTwoNotRuleTest.cs" />

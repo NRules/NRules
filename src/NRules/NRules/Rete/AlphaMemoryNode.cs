@@ -15,8 +15,8 @@ namespace NRules.Rete
         public void PropagateAssert(IExecutionContext context, Fact fact)
         {
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
-            memory.Facts.Add(fact);
             _sinks.ForEach(s => s.PropagateAssert(context, fact));
+            memory.Facts.Add(fact);
         }
 
         public void PropagateUpdate(IExecutionContext context, Fact fact)
@@ -35,11 +35,11 @@ namespace NRules.Rete
         public void PropagateRetract(IExecutionContext context, Fact fact)
         {
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
-            memory.Facts.Remove(fact);
             foreach (var sink in _sinks)
             {
                 sink.PropagateRetract(context, fact);
             }
+            memory.Facts.Remove(fact);
         }
 
         public IEnumerable<Fact> GetFacts(IExecutionContext context)

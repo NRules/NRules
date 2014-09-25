@@ -15,11 +15,11 @@ namespace NRules.Rete
         public void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
-            memory.Tuples.Add(tuple);
             foreach (var sink in _sinks)
             {
                 sink.PropagateAssert(context, tuple);
             }
+            memory.Tuples.Add(tuple);
         }
 
         public void PropagateUpdate(IExecutionContext context, Tuple tuple)
@@ -33,11 +33,11 @@ namespace NRules.Rete
         public void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
-            memory.Tuples.Remove(tuple);
             foreach (var sink in _sinks)
             {
                 sink.PropagateRetract(context, tuple);
             }
+            memory.Tuples.Remove(tuple);
         }
 
         public IEnumerable<Tuple> GetTuples(IExecutionContext context)
