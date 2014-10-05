@@ -14,7 +14,7 @@ namespace NRules.Rete
     internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilder
     {
         private readonly RootNode _root = new RootNode();
-        private readonly List<IActivatable> _activatableNodes = new List<IActivatable>(); 
+        private readonly DummyNode _dummyNode = new DummyNode();
 
         public ITerminalNode AddRule(ReteBuilderContext context, IRuleDefinition rule)
         {
@@ -25,7 +25,7 @@ namespace NRules.Rete
 
         protected override void VisitAnd(ReteBuilderContext context, AndElement element)
         {
-            context.BetaSource = BuildDummyNode();
+            context.BetaSource = _dummyNode;
             foreach (var childElement in element.ChildElements)
             {
                 Visit(context, childElement);
@@ -46,7 +46,7 @@ namespace NRules.Rete
         {
             BuildSubnet(context, element.ChildElements.Single());
             var betaNode = new NotNode(context.BetaSource, context.AlphaSource);
-            if (context.HasSubnet) betaNode.Conditions.Add(new SubnetCondition());
+            if (context.HasSubnet) betaNode.Conditions.Insert(0, new SubnetCondition());
             context.BetaSource = BuildBetaMemoryNode(context, betaNode);
             context.ResetAlphaSource();
         }
@@ -55,7 +55,7 @@ namespace NRules.Rete
         {
             BuildSubnet(context, element.ChildElements.Single());
             var betaNode = new ExistsNode(context.BetaSource, context.AlphaSource);
-            if (context.HasSubnet) betaNode.Conditions.Add(new SubnetCondition());
+            if (context.HasSubnet) betaNode.Conditions.Insert(0, new SubnetCondition());
             context.BetaSource = BuildBetaMemoryNode(context, betaNode);
             context.ResetAlphaSource();
         }
@@ -64,7 +64,7 @@ namespace NRules.Rete
         {
             BuildSubnet(context, element.Source);
             var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
-            if (context.HasSubnet) betaNode.Conditions.Add(new SubnetCondition());
+            if (context.HasSubnet) betaNode.Conditions.Insert(0, new SubnetCondition());
             context.BetaSource = BuildBetaMemoryNode(context, betaNode);
             context.ResetAlphaSource();
         }
@@ -77,16 +77,11 @@ namespace NRules.Rete
 
                 AlphaNode currentNode = BuildTypeNode(element.ValueType, _root);
 
-                var betaConditions = new List<ConditionElement>();
-                foreach (var conditionElement in element.Conditions)
-                {
-                    if (conditionElement.Declarations.Count() > 1)
-                    {
-                        betaConditions.Add(conditionElement);
-                        continue;
-                    }
+                var alphaConditions = element.Conditions.Where(x => x.Declarations.Count() == 1).ToList();
+                var betaConditions = element.Conditions.Where(x => x.Declarations.Count() > 1).ToList();
 
-                    var alphaCondition = new AlphaCondition(conditionElement.Expression);
+                foreach (var alphaCondition in alphaConditions)
+                {
                     SelectionNode selectionNode = BuildSelectionNode(alphaCondition, currentNode);
                     currentNode = selectionNode;
                 }
@@ -124,27 +119,44 @@ namespace NRules.Rete
 
         private JoinNode BuildJoinNode(ReteBuilderContext context, IEnumerable<ConditionElement> conditions = null)
         {
-            var betaNode = new JoinNode(context.BetaSource, context.AlphaSource);
-            context.AlphaSource = null;
-
+            var betaConditions = new List<BetaCondition>();
             if (conditions != null)
             {
                 foreach (var condition in conditions)
                 {
                     var mask = context.GetTupleMask(condition.Declarations);
                     var betaCondition = new BetaCondition(condition.Expression, mask);
+                    betaConditions.Add(betaCondition);
+                }
+            }
+
+            var betaNode = context.BetaSource
+                .Sinks.OfType<JoinNode>()
+                .FirstOrDefault(jn => 
+                    jn.RightSource == context.AlphaSource &&
+                    jn.LeftSource == context.BetaSource &&
+                    ConditionComparer.AreEqual(jn.Conditions, betaConditions));
+
+            if (betaNode == null)
+            {
+                betaNode = new JoinNode(context.BetaSource, context.AlphaSource);
+                foreach (var betaCondition in betaConditions)
+                {
                     betaNode.Conditions.Add(betaCondition);
                 }
             }
+            context.AlphaSource = null;
 
             return betaNode;
         }
 
         private IBetaMemoryNode BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
         {
-            var memoryNode = new BetaMemoryNode();
-            betaNode.Attach(memoryNode);
-            return memoryNode;
+            if (betaNode.MemoryNode == null)
+            {
+                betaNode.MemoryNode = new BetaMemoryNode();
+            }
+            return betaNode.MemoryNode;
         }
 
         private TypeNode BuildTypeNode(Type declarationType, AlphaNode parent)
@@ -160,14 +172,16 @@ namespace NRules.Rete
             return typeNode;
         }
 
-        private SelectionNode BuildSelectionNode(AlphaCondition condition, AlphaNode parent)
+        private SelectionNode BuildSelectionNode(ConditionElement condition, AlphaNode parent)
         {
-            SelectionNode selectionNode = parent.ChildNodes
-                .OfType<SelectionNode>().FirstOrDefault(sn => sn.Conditions.First().Equals(condition));
+            var alphaCondition = new AlphaCondition(condition.Expression);
+            SelectionNode selectionNode = parent
+                .ChildNodes.OfType<SelectionNode>()
+                .FirstOrDefault(sn => sn.Conditions.First().Equals(alphaCondition));
 
             if (selectionNode == null)
             {
-                selectionNode = new SelectionNode(condition);
+                selectionNode = new SelectionNode(alphaCondition);
                 parent.ChildNodes.Add(selectionNode);
             }
             return selectionNode;
@@ -186,16 +200,9 @@ namespace NRules.Rete
             return memoryNode;
         }
         
-        private DummyNode BuildDummyNode()
-        {
-            var dummyNode = new DummyNode();
-            _activatableNodes.Add(dummyNode);
-            return dummyNode;
-        }
-
         public INetwork GetNetwork()
         {
-            INetwork network = new Network(_root, _activatableNodes);
+            INetwork network = new Network(_root, _dummyNode);
             return network;
         }
     }

@@ -20,8 +20,8 @@ namespace NRules.Rete
             _declarationOrder = new List<Declaration>(context._declarationOrder);
         }
 
-        public IObjectSource AlphaSource { get; set; }
-        public ITupleSource BetaSource { get; set; }
+        public IAlphaMemoryNode AlphaSource { get; set; }
+        public IBetaMemoryNode BetaSource { get; set; }
         public bool HasSubnet { get; set; }
 
         public void RegisterDeclaration(Declaration declaration)

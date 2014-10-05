@@ -8,7 +8,7 @@ namespace NRules.Rete
     {
         public ITupleSource LeftSource { get; private set; }
         public IObjectSource RightSource { get; private set; }
-        public ITupleSink Sink { get; private set; }
+        public IBetaMemoryNode MemoryNode { get; set; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public IList<IBetaCondition> Conditions { get; private set; }
@@ -22,11 +22,6 @@ namespace NRules.Rete
             RightSource.Attach(this);
 
             Conditions = new List<IBetaCondition>();
-        }
-
-        public void Attach(ITupleSink sink)
-        {
-            Sink = sink;
         }
 
         public abstract void PropagateAssert(IExecutionContext context, Tuple tuple);

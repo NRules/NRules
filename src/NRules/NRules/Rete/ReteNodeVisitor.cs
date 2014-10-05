@@ -82,7 +82,7 @@ namespace NRules.Rete
 
         protected virtual void VisitBetaNode(TContext builder, BetaNode node)
         {
-            Visit(builder, node.Sink);
+            Visit(builder, node.MemoryNode);
         }
 
         protected internal virtual void VisitRuleNode(TContext builder, RuleNode node)

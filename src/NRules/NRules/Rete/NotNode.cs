@@ -72,7 +72,7 @@ namespace NRules.Rete
 
         private void AssertTuple(IExecutionContext context, Tuple tuple)
         {
-            Sink.PropagateAssert(context, new WrapperTuple(tuple, this));
+            MemoryNode.PropagateAssert(context, new WrapperTuple(tuple, this));
         }
 
         private void UpdateTuple(IExecutionContext context, Tuple tuple)
@@ -80,7 +80,7 @@ namespace NRules.Rete
             var childTuple = tuple.ChildTuples.SingleOrDefault(x => x.Node == this);
             if (childTuple != null)
             {
-                Sink.PropagateUpdate(context, childTuple);
+                MemoryNode.PropagateUpdate(context, childTuple);
             }
         }
 
@@ -89,7 +89,7 @@ namespace NRules.Rete
             var childTuple = tuple.ChildTuples.SingleOrDefault(x => x.Node == this);
             if (childTuple != null)
             {
-                Sink.PropagateRetract(context, childTuple);
+                MemoryNode.PropagateRetract(context, childTuple);
                 childTuple.Clear();
             }
         }

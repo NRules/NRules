@@ -92,7 +92,7 @@ namespace NRules.Rete
         private void PropagateMatchedAssert(IExecutionContext context, Tuple tuple, Fact fact)
         {
             var childTuple = new Tuple(tuple, fact, this);
-            Sink.PropagateAssert(context, childTuple);
+            MemoryNode.PropagateAssert(context, childTuple);
         }
 
         private void PropagateMatchedUpdate(IExecutionContext context, Tuple tuple, Fact fact)
@@ -104,7 +104,7 @@ namespace NRules.Rete
             }
             else
             {
-                Sink.PropagateUpdate(context, childTuple);
+                MemoryNode.PropagateUpdate(context, childTuple);
             }
         }
 
@@ -113,7 +113,7 @@ namespace NRules.Rete
             Tuple childTuple = tuple.ChildTuples.SingleOrDefault(t => t.Node == this && t.RightFact == fact);
             if (childTuple != null)
             {
-                Sink.PropagateRetract(context, childTuple);
+                MemoryNode.PropagateRetract(context, childTuple);
                 childTuple.Clear();
             }
         }

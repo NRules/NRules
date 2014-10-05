@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace NRules.Rete
 {
-    internal class ObjectInputAdapter : ITupleSink, IObjectSource
+    internal class ObjectInputAdapter : ITupleSink, IAlphaMemoryNode
     {
         private readonly ITupleSource _source;
 

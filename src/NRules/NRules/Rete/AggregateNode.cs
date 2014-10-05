@@ -99,7 +99,7 @@ namespace NRules.Rete
             if (aggregateFact != null)
             {
                 var newTuple = new Tuple(tuple, aggregateFact, this);
-                Sink.PropagateAssert(context, newTuple);
+                MemoryNode.PropagateAssert(context, newTuple);
             }
         }
 
@@ -110,7 +110,7 @@ namespace NRules.Rete
                 Tuple childTuple = tuple.ChildTuples.FirstOrDefault(t => t.RightFact == aggregateFact);
                 if (childTuple != null)
                 {
-                    Sink.PropagateUpdate(context, childTuple);
+                    MemoryNode.PropagateUpdate(context, childTuple);
                 }
             }
         }
@@ -122,7 +122,7 @@ namespace NRules.Rete
                 Tuple childTuple = tuple.ChildTuples.FirstOrDefault(t => t.RightFact == aggregateFact);
                 if (childTuple != null)
                 {
-                    Sink.PropagateRetract(context, childTuple);
+                    MemoryNode.PropagateRetract(context, childTuple);
                 }
             }
         }

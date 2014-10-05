@@ -5,23 +5,19 @@ using NRules.Utilities;
 
 namespace NRules.Rete
 {
-    [DebuggerDisplay("{_expressionString}")]
+    [DebuggerDisplay("{_expression.ToString()}")]
     internal abstract class Condition : IEquatable<Condition>
     {
         private readonly LambdaExpression _expression;
-        private readonly string _expressionString;
         private readonly Func<object[], bool> _compiledExpression;
 
         protected Condition(LambdaExpression expression)
         {
             _expression = expression;
-            _expressionString = expression.ToString();
             _compiledExpression = FastDelegate.Create<Func<object[], bool>>(expression);
         }
 
-        public string ExpressionString { get { return _expressionString; } }
-
-        protected bool IsSatisfiedBy(params object[] factObjects)
+        public bool IsSatisfiedBy(params object[] factObjects)
         {
             try
             {
@@ -37,7 +33,7 @@ namespace NRules.Rete
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(_expressionString, other._expressionString);
+            return ExpressionComparer.AreEqual(_expression, other._expression);
         }
 
         public override bool Equals(object obj)
@@ -45,17 +41,17 @@ namespace NRules.Rete
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Condition) obj);
+            return Equals((Condition)obj);
         }
 
         public override int GetHashCode()
         {
-            return _expressionString.GetHashCode();
+            return _expression.GetHashCode();
         }
 
         public override string ToString()
         {
-            return ExpressionString;
+            return _expression.ToString();
         }
     }
 }

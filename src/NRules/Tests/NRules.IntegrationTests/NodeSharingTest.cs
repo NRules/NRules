@@ -1,4 +1,6 @@
-﻿using NRules.IntegrationTests.TestAssets;
+﻿using System.Linq;
+using NRules.Diagnostics;
+using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
@@ -8,21 +10,31 @@ namespace NRules.IntegrationTests
     public class NodeSharingTest : BaseRuleTestFixture
     {
         [Test]
-        public void Fire_TwoMatchingFacts_BothRulesFireOnceEach()
+        public void Fire_AlphaSelectionNodes_OnePerIntaCondition()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
-
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var snapshotProvider = (ISessionSnapshotProvider) Session;
+            var snapshot = snapshotProvider.GetSnapshot();
 
             //Act
-            Session.Fire();
+            var alphaNodesCount = snapshot.Nodes.Count(x => x.NodeType == NodeType.Selection);
 
             //Assert
-            AssertFiredOnce<TwinRuleOne>();
-            AssertFiredOnce<TwinRuleTwo>();
+            Assert.AreEqual(2, alphaNodesCount);
+        }
+
+        [Test]
+        public void Fire_BetaJoinNodes_OnePerPattern()
+        {
+            //Arrange
+            var snapshotProvider = (ISessionSnapshotProvider) Session;
+            var snapshot = snapshotProvider.GetSnapshot();
+
+            //Act
+            var betaJoinNodesCount = snapshot.Nodes.Count(x => x.NodeType == NodeType.Join);
+
+            //Assert
+            Assert.AreEqual(2, betaJoinNodesCount);
         }
 
         protected override void SetUpRules()

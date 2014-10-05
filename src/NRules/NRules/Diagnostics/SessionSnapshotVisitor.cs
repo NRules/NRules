@@ -96,7 +96,7 @@ namespace NRules.Diagnostics
 
         protected override void VisitBetaNode(SnapshotBuilder builder, BetaNode node)
         {
-            builder.AddLink(node, node.Sink);
+            builder.AddLink(node, node.MemoryNode);
             base.VisitBetaNode(builder, node);
         }
 

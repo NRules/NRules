@@ -2,18 +2,25 @@
 
 namespace NRules.Rete
 {
-    internal class DummyNode : IBetaMemoryNode, IActivatable, INode
+    internal class DummyNode : IBetaMemoryNode
     {
-        private ITupleSink _sink;
+        private readonly List<ITupleSink> _sinks = new List<ITupleSink>();
+
+        public IEnumerable<ITupleSink> Sinks
+        {
+            get { return _sinks; }
+        }
 
         public void Activate(IExecutionContext context)
         {
             var tuple = new Tuple(this);
 
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
+            foreach (ITupleSink sink in _sinks)
+            {
+                sink.PropagateAssert(context, tuple);
+            }
             memory.Tuples.Add(tuple);
-
-            _sink.PropagateAssert(context, tuple);
         }
 
         public IEnumerable<Tuple> GetTuples(IExecutionContext context)
@@ -24,12 +31,27 @@ namespace NRules.Rete
 
         public void Attach(ITupleSink sink)
         {
-            _sink = sink;
+            _sinks.Add(sink);
         }
 
         public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.VisitDummyNode(context, this);
+        }
+
+        public void PropagateAssert(IExecutionContext context, Tuple tuple)
+        {
+            //Do nothing
+        }
+
+        public void PropagateUpdate(IExecutionContext context, Tuple tuple)
+        {
+            //Do nothing
+        }
+
+        public void PropagateRetract(IExecutionContext context, Tuple tuple)
+        {
+            //Do nothing
         }
     }
 }

@@ -2,11 +2,12 @@
 
 namespace NRules.Rete
 {
-    internal interface IBetaMemoryNode : ITupleSource
+    internal interface IBetaMemoryNode : ITupleSource, ITupleSink
     {
+        IEnumerable<ITupleSink> Sinks { get; }
     }
 
-    internal class BetaMemoryNode : ITupleSink, IBetaMemoryNode
+    internal class BetaMemoryNode : IBetaMemoryNode
     {
         private readonly List<ITupleSink> _sinks = new List<ITupleSink>();
 

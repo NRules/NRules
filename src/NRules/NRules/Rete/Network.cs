@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace NRules.Rete
 {
@@ -15,12 +14,12 @@ namespace NRules.Rete
     internal class Network : INetwork
     {
         private readonly RootNode _root;
-        private readonly List<IActivatable> _activatableNodes;
+        private readonly DummyNode _dummyNode;
 
-        public Network(RootNode root, IEnumerable<IActivatable> activatableNodes)
+        public Network(RootNode root, DummyNode dummyNode)
         {
             _root = root;
-            _activatableNodes = new List<IActivatable>(activatableNodes);
+            _dummyNode = dummyNode;
         }
 
         public void PropagateAssert(IExecutionContext context, object factObject)
@@ -73,10 +72,7 @@ namespace NRules.Rete
 
         public void Activate(IExecutionContext context)
         {
-            foreach (var activatableNode in _activatableNodes)
-            {
-                activatableNode.Activate(context);
-            }
+            _dummyNode.Activate(context);
         }
 
         public void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
