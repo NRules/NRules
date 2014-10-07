@@ -8,7 +8,7 @@ namespace NRules.Rete
     internal interface IReteBuilder
     {
         ITerminalNode AddRule(ReteBuilderContext context, IRuleDefinition rule);
-        INetwork GetNetwork();
+        INetwork Build();
     }
 
     internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilder
@@ -31,8 +31,7 @@ namespace NRules.Rete
                 Visit(context, childElement);
                 if (context.AlphaSource != null)
                 {
-                    var betaNode = BuildJoinNode(context);
-                    context.BetaSource = BuildBetaMemoryNode(context, betaNode);
+                    BuildJoinNode(context);
                 }
             }
         }
@@ -47,7 +46,7 @@ namespace NRules.Rete
             BuildSubnet(context, element.ChildElements.Single());
             var betaNode = new NotNode(context.BetaSource, context.AlphaSource);
             if (context.HasSubnet) betaNode.Conditions.Insert(0, new SubnetCondition());
-            context.BetaSource = BuildBetaMemoryNode(context, betaNode);
+            BuildBetaMemoryNode(context, betaNode);
             context.ResetAlphaSource();
         }
 
@@ -56,7 +55,7 @@ namespace NRules.Rete
             BuildSubnet(context, element.ChildElements.Single());
             var betaNode = new ExistsNode(context.BetaSource, context.AlphaSource);
             if (context.HasSubnet) betaNode.Conditions.Insert(0, new SubnetCondition());
-            context.BetaSource = BuildBetaMemoryNode(context, betaNode);
+            BuildBetaMemoryNode(context, betaNode);
             context.ResetAlphaSource();
         }
 
@@ -65,7 +64,7 @@ namespace NRules.Rete
             BuildSubnet(context, element.Source);
             var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
             if (context.HasSubnet) betaNode.Conditions.Insert(0, new SubnetCondition());
-            context.BetaSource = BuildBetaMemoryNode(context, betaNode);
+            BuildBetaMemoryNode(context, betaNode);
             context.ResetAlphaSource();
         }
 
@@ -73,25 +72,21 @@ namespace NRules.Rete
         {
             if (element.Source == null)
             {
+                context.CurrentAlphaNode = _root;
                 context.RegisterDeclaration(element.Declaration);
 
-                AlphaNode currentNode = BuildTypeNode(element.ValueType, _root);
-
+                BuildTypeNode(context, element.ValueType);
                 var alphaConditions = element.Conditions.Where(x => x.Declarations.Count() == 1).ToList();
-                var betaConditions = element.Conditions.Where(x => x.Declarations.Count() > 1).ToList();
-
                 foreach (var alphaCondition in alphaConditions)
                 {
-                    SelectionNode selectionNode = BuildSelectionNode(alphaCondition, currentNode);
-                    currentNode = selectionNode;
+                    BuildSelectionNode(context, alphaCondition);
                 }
+                BuildAlphaMemoryNode(context);
 
-                context.AlphaSource = BuildAlphaMemoryNode(currentNode);
-
+                var betaConditions = element.Conditions.Where(x => x.Declarations.Count() > 1).ToList();
                 if (betaConditions.Count > 0)
                 {
-                    var joinNode = BuildJoinNode(context, betaConditions);
-                    context.BetaSource = BuildBetaMemoryNode(context, joinNode);
+                    BuildJoinNode(context, betaConditions);
                 }
             }
             else
@@ -110,14 +105,13 @@ namespace NRules.Rete
 
             if (subnetContext.AlphaSource == null)
             {
-                var adapter = new ObjectInputAdapter(subnetContext.BetaSource);
-                subnetContext.AlphaSource = adapter;
+                subnetContext.AlphaSource = new ObjectInputAdapter(subnetContext.BetaSource);
                 context.HasSubnet = true;
             }
             context.AlphaSource = subnetContext.AlphaSource;
         }
 
-        private JoinNode BuildJoinNode(ReteBuilderContext context, IEnumerable<ConditionElement> conditions = null)
+        private void BuildJoinNode(ReteBuilderContext context, IEnumerable<ConditionElement> conditions = null)
         {
             var betaConditions = new List<BetaCondition>();
             if (conditions != null)
@@ -130,77 +124,77 @@ namespace NRules.Rete
                 }
             }
 
-            var betaNode = context.BetaSource
+            var joinNode = context.BetaSource
                 .Sinks.OfType<JoinNode>()
                 .FirstOrDefault(jn => 
                     jn.RightSource == context.AlphaSource &&
                     jn.LeftSource == context.BetaSource &&
                     ConditionComparer.AreEqual(jn.Conditions, betaConditions));
 
-            if (betaNode == null)
+            if (joinNode == null)
             {
-                betaNode = new JoinNode(context.BetaSource, context.AlphaSource);
+                joinNode = new JoinNode(context.BetaSource, context.AlphaSource);
                 foreach (var betaCondition in betaConditions)
                 {
-                    betaNode.Conditions.Add(betaCondition);
+                    joinNode.Conditions.Add(betaCondition);
                 }
             }
-            context.AlphaSource = null;
-
-            return betaNode;
+            BuildBetaMemoryNode(context, joinNode);
+            context.ResetAlphaSource();
         }
 
-        private IBetaMemoryNode BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
+        private void BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
         {
             if (betaNode.MemoryNode == null)
             {
                 betaNode.MemoryNode = new BetaMemoryNode();
             }
-            return betaNode.MemoryNode;
+            context.BetaSource = betaNode.MemoryNode;
         }
 
-        private TypeNode BuildTypeNode(Type declarationType, AlphaNode parent)
+        private void BuildTypeNode(ReteBuilderContext context, Type declarationType)
         {
-            TypeNode typeNode = parent.ChildNodes
-                .Cast<TypeNode>().FirstOrDefault(tn => tn.FilterType == declarationType);
+            TypeNode typeNode = context.CurrentAlphaNode
+                .ChildNodes.OfType<TypeNode>()
+                .FirstOrDefault(tn => tn.FilterType == declarationType);
 
             if (typeNode == null)
             {
                 typeNode = new TypeNode(declarationType);
-                parent.ChildNodes.Add(typeNode);
+                context.CurrentAlphaNode.ChildNodes.Add(typeNode);
             }
-            return typeNode;
+            context.CurrentAlphaNode = typeNode;
         }
 
-        private SelectionNode BuildSelectionNode(ConditionElement condition, AlphaNode parent)
+        private void BuildSelectionNode(ReteBuilderContext context, ConditionElement condition)
         {
             var alphaCondition = new AlphaCondition(condition.Expression);
-            SelectionNode selectionNode = parent
+            SelectionNode selectionNode = context.CurrentAlphaNode
                 .ChildNodes.OfType<SelectionNode>()
-                .FirstOrDefault(sn => sn.Conditions.First().Equals(alphaCondition));
+                .FirstOrDefault(sn => sn.Conditions.Single().Equals(alphaCondition));
 
             if (selectionNode == null)
             {
                 selectionNode = new SelectionNode(alphaCondition);
-                parent.ChildNodes.Add(selectionNode);
+                context.CurrentAlphaNode.ChildNodes.Add(selectionNode);
             }
-            return selectionNode;
+            context.CurrentAlphaNode = selectionNode;
         }
 
-        private IAlphaMemoryNode BuildAlphaMemoryNode(AlphaNode parent)
+        private void BuildAlphaMemoryNode(ReteBuilderContext context)
         {
-            AlphaMemoryNode memoryNode = parent.MemoryNode;
+            AlphaMemoryNode memoryNode = context.CurrentAlphaNode.MemoryNode;
 
             if (memoryNode == null)
             {
                 memoryNode = new AlphaMemoryNode();
-                parent.MemoryNode = memoryNode;
+                context.CurrentAlphaNode.MemoryNode = memoryNode;
             }
 
-            return memoryNode;
+            context.AlphaSource = memoryNode;
         }
         
-        public INetwork GetNetwork()
+        public INetwork Build()
         {
             INetwork network = new Network(_root, _dummyNode);
             return network;

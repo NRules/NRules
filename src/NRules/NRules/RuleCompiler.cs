@@ -46,7 +46,7 @@ namespace NRules
                 rules.Add(compiledRule);
             }
 
-            INetwork network = reteBuilder.GetNetwork();
+            INetwork network = reteBuilder.Build();
             var factory = new SessionFactory(network);
             return factory;
         }
