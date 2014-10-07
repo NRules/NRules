@@ -47,6 +47,7 @@
     <Compile Include="ActionContext.cs" />
     <Compile Include="ActionOperation.cs" />
     <Compile Include="ActivationQueue.cs" />
+    <Compile Include="Collections\OrderedHashSet.cs" />
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />

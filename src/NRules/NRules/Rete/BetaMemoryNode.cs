@@ -20,7 +20,7 @@ namespace NRules.Rete
             {
                 sink.PropagateAssert(context, tuple);
             }
-            memory.Tuples.Add(tuple);
+            memory.Add(tuple);
         }
 
         public void PropagateUpdate(IExecutionContext context, Tuple tuple)
@@ -38,7 +38,7 @@ namespace NRules.Rete
             {
                 sink.PropagateRetract(context, tuple);
             }
-            memory.Tuples.Remove(tuple);
+            memory.Remove(tuple);
         }
 
         public IEnumerable<Tuple> GetTuples(IExecutionContext context)

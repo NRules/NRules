@@ -16,13 +16,13 @@ namespace NRules.Rete
         {
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             _sinks.ForEach(s => s.PropagateAssert(context, fact));
-            memory.Facts.Add(fact);
+            memory.Add(fact);
         }
 
         public void PropagateUpdate(IExecutionContext context, Fact fact)
         {
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
-            if (memory.Facts.Contains(fact))
+            if (memory.Contains(fact))
             {
                 _sinks.ForEach(s => s.PropagateUpdate(context, fact));
             }
@@ -39,7 +39,7 @@ namespace NRules.Rete
             {
                 sink.PropagateRetract(context, fact);
             }
-            memory.Facts.Remove(fact);
+            memory.Remove(fact);
         }
 
         public IEnumerable<Fact> GetFacts(IExecutionContext context)

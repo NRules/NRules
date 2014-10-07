@@ -1,19 +1,38 @@
 ﻿using System.Collections.Generic;
+using NRules.Collections;
 
 namespace NRules.Rete
 {
     internal interface IBetaMemory
     {
-        IList<Tuple> Tuples { get; }
+        IEnumerable<Tuple> Tuples { get; }
+        bool Contains(Tuple tuple);
+        void Add(Tuple tuple);
+        void Remove(Tuple tuple);
     }
 
     internal class BetaMemory : IBetaMemory
     {
-        private readonly List<Tuple> _tuples = new List<Tuple>();
+        private readonly OrderedHashSet<Tuple> _tuples = new OrderedHashSet<Tuple>();
 
-        public IList<Tuple> Tuples
+        public IEnumerable<Tuple> Tuples
         {
             get { return _tuples; }
+        }
+
+        public bool Contains(Tuple tuple)
+        {
+            return _tuples.Contains(tuple);
+        }
+
+        public void Add(Tuple tuple)
+        {
+            _tuples.Add(tuple);
+        }
+
+        public void Remove(Tuple tuple)
+        {
+            _tuples.Remove(tuple);
         }
     }
 }
