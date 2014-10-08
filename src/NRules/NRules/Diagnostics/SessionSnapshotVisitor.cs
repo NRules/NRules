@@ -82,7 +82,7 @@ namespace NRules.Diagnostics
         {
             if (builder.IsVisited(node)) return;
             builder.AddNode(node, NodeInfo.Create);
-            builder.AddLink(node, node.Sink);
+            builder.AddLinks(node, node.Sinks);
             base.VisitObjectInputAdapter(builder, node);
         }
 

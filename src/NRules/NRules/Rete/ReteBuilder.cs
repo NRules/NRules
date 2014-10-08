@@ -44,28 +44,19 @@ namespace NRules.Rete
         protected override void VisitNot(ReteBuilderContext context, NotElement element)
         {
             BuildSubnet(context, element.ChildElements.Single());
-            var betaNode = new NotNode(context.BetaSource, context.AlphaSource);
-            if (context.HasSubnet) betaNode.Conditions.Insert(0, new SubnetCondition());
-            BuildBetaMemoryNode(context, betaNode);
-            context.ResetAlphaSource();
+            BuildNotNode(context);
         }
 
         protected override void VisitExists(ReteBuilderContext context, ExistsElement element)
         {
             BuildSubnet(context, element.ChildElements.Single());
-            var betaNode = new ExistsNode(context.BetaSource, context.AlphaSource);
-            if (context.HasSubnet) betaNode.Conditions.Insert(0, new SubnetCondition());
-            BuildBetaMemoryNode(context, betaNode);
-            context.ResetAlphaSource();
+            BuildExistsNode(context);
         }
 
         protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
         {
             BuildSubnet(context, element.Source);
-            var betaNode = new AggregateNode(context.BetaSource, context.AlphaSource, element.AggregateType);
-            if (context.HasSubnet) betaNode.Conditions.Insert(0, new SubnetCondition());
-            BuildBetaMemoryNode(context, betaNode);
-            context.ResetAlphaSource();
+            BuildAggregateNode(context, element.AggregateType);
         }
 
         protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
@@ -92,9 +83,9 @@ namespace NRules.Rete
             else
             {
                 Visit(context, element.Source);
-                //TODO: Handle a more generic case, when pattern adds its own conditions
 
                 context.RegisterDeclaration(element.Declaration);
+                //TODO: Handle a more generic case, when pattern adds its own conditions
             }
         }
 
@@ -105,7 +96,14 @@ namespace NRules.Rete
 
             if (subnetContext.AlphaSource == null)
             {
-                subnetContext.AlphaSource = new ObjectInputAdapter(subnetContext.BetaSource);
+                var adapter = subnetContext.BetaSource
+                    .Sinks.OfType<ObjectInputAdapter>()
+                    .SingleOrDefault();
+                if (adapter == null)
+                {
+                    adapter = new ObjectInputAdapter(subnetContext.BetaSource);
+                }
+                subnetContext.AlphaSource = adapter;
                 context.HasSubnet = true;
             }
             context.AlphaSource = subnetContext.AlphaSource;
@@ -124,22 +122,70 @@ namespace NRules.Rete
                 }
             }
 
-            var joinNode = context.BetaSource
+            var node = context.BetaSource
                 .Sinks.OfType<JoinNode>()
-                .FirstOrDefault(jn => 
-                    jn.RightSource == context.AlphaSource &&
-                    jn.LeftSource == context.BetaSource &&
-                    ConditionComparer.AreEqual(jn.Conditions, betaConditions));
-
-            if (joinNode == null)
+                .FirstOrDefault(x => 
+                    x.RightSource == context.AlphaSource &&
+                    x.LeftSource == context.BetaSource &&
+                    ConditionComparer.AreEqual(x.Conditions, betaConditions));
+            if (node == null)
             {
-                joinNode = new JoinNode(context.BetaSource, context.AlphaSource);
+                node = new JoinNode(context.BetaSource, context.AlphaSource);
                 foreach (var betaCondition in betaConditions)
                 {
-                    joinNode.Conditions.Add(betaCondition);
+                    node.Conditions.Add(betaCondition);
                 }
             }
-            BuildBetaMemoryNode(context, joinNode);
+            BuildBetaMemoryNode(context, node);
+            context.ResetAlphaSource();
+        }
+
+        private void BuildNotNode(ReteBuilderContext context)
+        {
+            var node = context.AlphaSource
+                .Sinks.OfType<NotNode>()
+                .FirstOrDefault(x =>
+                    x.RightSource == context.AlphaSource &&
+                    x.LeftSource == context.BetaSource);
+            if (node == null)
+            {
+                node = new NotNode(context.BetaSource, context.AlphaSource);
+                if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
+            }
+            BuildBetaMemoryNode(context, node);
+            context.ResetAlphaSource();
+        }
+
+        private void BuildExistsNode(ReteBuilderContext context)
+        {
+            var node = context.AlphaSource
+                .Sinks.OfType<ExistsNode>()
+                .FirstOrDefault(x =>
+                    x.RightSource == context.AlphaSource &&
+                    x.LeftSource == context.BetaSource);
+            if (node == null)
+            {
+                node = new ExistsNode(context.BetaSource, context.AlphaSource);
+                if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
+            }
+            BuildBetaMemoryNode(context, node);
+            context.ResetAlphaSource();
+        }
+
+        private void BuildAggregateNode(ReteBuilderContext context, Type aggregateType)
+        {
+            var node = context.AlphaSource
+                .Sinks.OfType<AggregateNode>()
+                .FirstOrDefault(x =>
+                    x.RightSource == context.AlphaSource &&
+                    x.LeftSource == context.BetaSource &&
+                    x.AggregateType == aggregateType);
+            if (node == null)
+            {
+                node = new AggregateNode(context.BetaSource, context.AlphaSource, aggregateType);
+                if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
+            }
+            BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
         }
 

@@ -6,10 +6,11 @@ namespace NRules.Rete
     internal class ObjectInputAdapter : ITupleSink, IAlphaMemoryNode
     {
         private readonly ITupleSource _source;
+        private readonly List<IObjectSink> _sinks = new List<IObjectSink>();
 
-        public IObjectSink Sink { get; private set; }
+        public IEnumerable<IObjectSink> Sinks { get { return _sinks; } } 
 
-        public ObjectInputAdapter(ITupleSource source)
+        public ObjectInputAdapter(IBetaMemoryNode source)
         {
             _source = source;
             source.Attach(this);
@@ -19,19 +20,28 @@ namespace NRules.Rete
         {
             var wrapperFact = new WrapperFact(tuple);
             context.WorkingMemory.SetFact(wrapperFact);
-            Sink.PropagateAssert(context, wrapperFact);
+            foreach (var sink in _sinks)
+            {
+                sink.PropagateAssert(context, wrapperFact);
+            }
         }
 
         public void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
             var wrapperFact = context.WorkingMemory.GetFact(tuple);
-            Sink.PropagateUpdate(context, wrapperFact);
+            foreach (var sink in _sinks)
+            {
+                sink.PropagateUpdate(context, wrapperFact);
+            }
         }
 
         public void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
             var wrapperFact = context.WorkingMemory.GetFact(tuple);
-            Sink.PropagateRetract(context, wrapperFact);
+            foreach (var sink in _sinks)
+            {
+                sink.PropagateRetract(context, wrapperFact);
+            }
             context.WorkingMemory.RemoveFact(wrapperFact);
         }
 
@@ -42,7 +52,7 @@ namespace NRules.Rete
 
         public void Attach(IObjectSink sink)
         {
-            Sink = sink;
+            _sinks.Add(sink);
         }
 
         public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)

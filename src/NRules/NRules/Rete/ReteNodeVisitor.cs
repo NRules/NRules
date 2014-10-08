@@ -69,7 +69,10 @@ namespace NRules.Rete
 
         protected internal virtual void VisitObjectInputAdapter(TContext builder, ObjectInputAdapter node)
         {
-            Visit(builder, node.Sink);
+            foreach (var objectSink in node.Sinks)
+            {
+                Visit(builder, objectSink);
+            }
         }
 
         protected internal virtual void VisitBetaMemoryNode(TContext builder, BetaMemoryNode node)

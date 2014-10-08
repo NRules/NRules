@@ -4,6 +4,7 @@ namespace NRules.Rete
 {
     internal interface IAlphaMemoryNode : IObjectSource
     {
+        IEnumerable<IObjectSink> Sinks { get; }
     }
 
     internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
@@ -15,7 +16,10 @@ namespace NRules.Rete
         public void PropagateAssert(IExecutionContext context, Fact fact)
         {
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
-            _sinks.ForEach(s => s.PropagateAssert(context, fact));
+            foreach (var sink in _sinks)
+            {
+                sink.PropagateAssert(context, fact);
+            }
             memory.Add(fact);
         }
 
@@ -24,7 +28,10 @@ namespace NRules.Rete
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             if (memory.Contains(fact))
             {
-                _sinks.ForEach(s => s.PropagateUpdate(context, fact));
+                foreach (var sink in _sinks)
+                {
+                    sink.PropagateUpdate(context, fact);
+                }
             }
             else
             {
