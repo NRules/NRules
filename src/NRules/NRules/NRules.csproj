@@ -83,7 +83,6 @@
     <Compile Include="Rete\BetaMemory.cs" />
     <Compile Include="Rete\AggregateNode.cs" />
     <Compile Include="Rete\BetaNode.cs" />
-    <Compile Include="Rete\Condition.cs" />
     <Compile Include="Rete\DummyNode.cs" />
     <Compile Include="Rete\ExistsNode.cs" />
     <Compile Include="Rete\ReteBuilderContext.cs" />

@@ -42,7 +42,7 @@ namespace NRules
             }
             catch (Exception e)
             {
-                throw new RuleActionEvaluationException("Failed to evaluate rule action", _expression, e);
+                throw new RuleActionEvaluationException("Failed to evaluate rule action", _expression, tuple, e);
             }
         }
     }

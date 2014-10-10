@@ -1,4 +1,7 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Diagnostics;
+using System.Linq.Expressions;
+using NRules.Utilities;
 
 namespace NRules.Rete
 {
@@ -7,14 +10,18 @@ namespace NRules.Rete
         bool IsSatisfiedBy(Tuple leftTuple, Fact rightFact);
     }
 
-    internal class BetaCondition : Condition, IBetaCondition
+    [DebuggerDisplay("{_expression.ToString()}")]
+    internal class BetaCondition : IBetaCondition, IEquatable<BetaCondition>
     {
+        private readonly LambdaExpression _expression;
         private readonly TupleMask _tupleMask;
+        private readonly Func<object[], bool> _compiledExpression;
 
         public BetaCondition(LambdaExpression expression, TupleMask tupleMask)
-            : base(expression)
         {
+            _expression = expression;
             _tupleMask = tupleMask;
+            _compiledExpression = FastDelegate.Create<Func<object[], bool>>(expression);
         }
 
         public bool IsSatisfiedBy(Tuple leftTuple, Fact rightFact)
@@ -28,7 +35,34 @@ namespace NRules.Rete
             }
             _tupleMask.SetAtIndex(ref args, leftTuple.Count, rightFact.Object);
 
-            return IsSatisfiedBy(args);
+            try
+            {
+                return _compiledExpression(args);
+            }
+            catch (Exception e)
+            {
+                throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression, leftTuple, rightFact, e);
+            }
+        }
+
+        public bool Equals(BetaCondition other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return ExpressionComparer.AreEqual(_expression, other._expression);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((BetaCondition)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (_expression != null ? _expression.GetHashCode() : 0);
         }
     }
 }

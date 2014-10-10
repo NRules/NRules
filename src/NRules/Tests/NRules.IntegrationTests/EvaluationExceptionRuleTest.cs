@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
@@ -17,6 +18,8 @@ namespace NRules.IntegrationTests
             //Act - Assert
             var ex = Assert.Throws<RuleConditionEvaluationException>(() => Session.Insert(fact));
             Assert.IsNotNull(ex.Condition);
+            Assert.AreEqual(1, ex.Facts.Count());
+            Assert.AreSame(fact, ex.Facts.First().Value);
             Assert.IsInstanceOf<NullReferenceException>(ex.InnerException);
         }
         
@@ -32,6 +35,8 @@ namespace NRules.IntegrationTests
             //Act - Assert
             var ex = Assert.Throws<RuleActionEvaluationException>(() => Session.Fire());
             Assert.IsNotNull(ex.Action);
+            Assert.AreEqual(1, ex.Facts.Count());
+            Assert.AreSame(fact, ex.Facts.First().Value);
             Assert.IsInstanceOf<NullReferenceException>(ex.InnerException);
         }
         
