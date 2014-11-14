@@ -36,10 +36,14 @@ namespace NRules.Utilities
 
             protected override Expression VisitParameter(ParameterExpression node)
             {
-                int index = _indexMap[node];
-                BinaryExpression arrayLookup = Expression.ArrayIndex(_arrayParameter, Expression.Constant(index));
-                UnaryExpression parameterValue = Expression.Convert(arrayLookup, node.Type);
-                return parameterValue;
+                int index;
+                if (_indexMap.TryGetValue(node, out index))
+                {
+                    BinaryExpression arrayLookup = Expression.ArrayIndex(_arrayParameter, Expression.Constant(index));
+                    UnaryExpression parameterValue = Expression.Convert(arrayLookup, node.Type);
+                    return parameterValue;
+                }
+                return node;
             }
         }
     }
