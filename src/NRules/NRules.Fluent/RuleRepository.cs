@@ -11,7 +11,7 @@ namespace NRules.Fluent
     public class RuleRepository : IRuleRepository
     {
         private const string DefaultRuleSetName = "default";
-        private readonly IList<RuleSet> _ruleSets = new List<RuleSet>();
+        private readonly IList<IRuleSet> _ruleSets = new List<IRuleSet>();
 
         public RuleRepository()
         {
@@ -47,9 +47,9 @@ namespace NRules.Fluent
 
         }
 
-        private RuleSet GetRuleSet(string ruleSetName)
+        private IRuleSet GetRuleSet(string ruleSetName)
         {
-            RuleSet ruleSet = _ruleSets.SingleOrDefault(rs => rs.Name == ruleSetName);
+            IRuleSet ruleSet = _ruleSets.SingleOrDefault(rs => rs.Name == ruleSetName);
             if (ruleSet == null)
             {
                 ruleSet = new RuleSet(ruleSetName);

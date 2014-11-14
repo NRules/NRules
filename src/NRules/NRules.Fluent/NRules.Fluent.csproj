@@ -58,7 +58,6 @@
     <Compile Include="RuleActivator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RuleLoadSpec.cs" />
-    <Compile Include="RuleSet.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NRules.RuleModel\NRules.RuleModel.csproj">
