@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using NRules.RuleModel;
 
 namespace NRules.Rete
@@ -101,8 +100,7 @@ namespace NRules.Rete
         {
             if (aggregateFact != null)
             {
-                var newTuple = new Tuple(tuple, aggregateFact, this);
-                MemoryNode.PropagateAssert(context, newTuple);
+                MemoryNode.PropagateAssert(context, tuple, aggregateFact);
             }
         }
 
@@ -110,11 +108,7 @@ namespace NRules.Rete
         {
             if (aggregateFact != null)
             {
-                Tuple childTuple = tuple.ChildTuples.FirstOrDefault(t => t.RightFact == aggregateFact);
-                if (childTuple != null)
-                {
-                    MemoryNode.PropagateUpdate(context, childTuple);
-                }
+                MemoryNode.PropagateUpdate(context, tuple, aggregateFact);
             }
         }
 
@@ -122,11 +116,7 @@ namespace NRules.Rete
         {
             if (aggregateFact != null)
             {
-                Tuple childTuple = tuple.ChildTuples.FirstOrDefault(t => t.RightFact == aggregateFact);
-                if (childTuple != null)
-                {
-                    MemoryNode.PropagateRetract(context, childTuple);
-                }
+                MemoryNode.PropagateRetract(context, tuple, aggregateFact);
             }
         }
         

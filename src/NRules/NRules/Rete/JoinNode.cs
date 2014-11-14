@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.Rete
 {
@@ -17,7 +16,7 @@ namespace NRules.Rete
             {
                 if (MatchesConditions(tuple, fact))
                 {
-                    PropagateMatchedAssert(context, tuple, fact);
+                    MemoryNode.PropagateAssert(context, tuple, fact);
                 }
             }
         }
@@ -29,11 +28,11 @@ namespace NRules.Rete
             {
                 if (MatchesConditions(tuple, fact))
                 {
-                    PropagateMatchedUpdate(context, tuple, fact);
+                    MemoryNode.PropagateUpdate(context, tuple, fact);
                 }
                 else
                 {
-                    PropagateMatchedRetract(context, tuple, fact);
+                    MemoryNode.PropagateRetract(context, tuple, fact);
                 }
             }
         }
@@ -43,7 +42,7 @@ namespace NRules.Rete
             IEnumerable<Fact> facts = RightSource.GetFacts(context);
             foreach (Fact fact in facts)
             {
-                PropagateMatchedRetract(context, tuple, fact);
+                MemoryNode.PropagateRetract(context, tuple, fact);
             }
         }
 
@@ -54,7 +53,7 @@ namespace NRules.Rete
             {
                 if (MatchesConditions(tuple, fact))
                 {
-                    PropagateMatchedAssert(context, tuple, fact);
+                    MemoryNode.PropagateAssert(context, tuple, fact);
                 }
             }
         }
@@ -66,11 +65,11 @@ namespace NRules.Rete
             {
                 if (MatchesConditions(tuple, fact))
                 {
-                    PropagateMatchedUpdate(context, tuple, fact);
+                    MemoryNode.PropagateUpdate(context, tuple, fact);
                 }
                 else
                 {
-                    PropagateMatchedRetract(context, tuple, fact);
+                    MemoryNode.PropagateRetract(context, tuple, fact);
                 }
             }
         }
@@ -80,42 +79,13 @@ namespace NRules.Rete
             IEnumerable<Tuple> tuples = LeftSource.GetTuples(context);
             foreach (Tuple tuple in tuples)
             {
-                PropagateMatchedRetract(context, tuple, fact);
+                MemoryNode.PropagateRetract(context, tuple, fact);
             }
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.VisitJoinNode(context, this);
-        }
-
-        private void PropagateMatchedAssert(IExecutionContext context, Tuple tuple, Fact fact)
-        {
-            var childTuple = new Tuple(tuple, fact, this);
-            MemoryNode.PropagateAssert(context, childTuple);
-        }
-
-        private void PropagateMatchedUpdate(IExecutionContext context, Tuple tuple, Fact fact)
-        {
-            Tuple childTuple = tuple.ChildTuples.SingleOrDefault(t => t.Node == this && t.RightFact == fact);
-            if (childTuple == null)
-            {
-                PropagateMatchedAssert(context, tuple, fact);
-            }
-            else
-            {
-                MemoryNode.PropagateUpdate(context, childTuple);
-            }
-        }
-
-        private void PropagateMatchedRetract(IExecutionContext context, Tuple tuple, Fact fact)
-        {
-            Tuple childTuple = tuple.ChildTuples.SingleOrDefault(t => t.Node == this && t.RightFact == fact);
-            if (childTuple != null)
-            {
-                MemoryNode.PropagateRetract(context, childTuple);
-                childTuple.Clear();
-            }
         }
     }
 }
