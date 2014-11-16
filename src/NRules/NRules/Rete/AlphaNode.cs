@@ -84,14 +84,6 @@ namespace NRules.Rete
             }
         }
 
-        public virtual void Dump(StringBuilder dumpBuilder)
-        {
-            foreach (var alphaNode in ChildNodes)
-            {
-                alphaNode.Dump(dumpBuilder);
-            }
-        }
-
         public abstract void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);
     }
 }
