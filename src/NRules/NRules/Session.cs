@@ -49,7 +49,7 @@ namespace NRules
         IQueryable<TFact> Query<TFact>();
     }
 
-    public class Session : ISession, ISessionSnapshotProvider
+    public sealed class Session : ISession, ISessionSnapshotProvider
     {
         private readonly IAgenda _agenda;
         private readonly INetwork _network;
