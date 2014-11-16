@@ -24,11 +24,6 @@ namespace NRules.Rete
             //Do nothing, since fact type will never change
         }
 
-        public override void Dump(System.Text.StringBuilder dumpBuilder)
-        {
-            dumpBuilder.AppendFormat("Type[{0}]\n", FilterType.Name);
-        }
-
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.VisitTypeNode(context, this);
