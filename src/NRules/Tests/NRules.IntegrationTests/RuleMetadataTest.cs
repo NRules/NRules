@@ -62,6 +62,25 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Tags_TagAttributesAndParentAttributesPresent_CustomValues()
+        {
+            //Arrange
+            _repository.Load(x => x.From(typeof(RuleWithMetadataAndParentMetadata)));
+            IRuleDefinition rule = _repository.GetRules().Single();
+
+            //Act
+            string[] actual = rule.Tags.ToArray();
+
+            //Assert
+            Assert.AreEqual(4, actual.Length);
+            Assert.Contains("ChildTag", actual);
+            Assert.Contains("ChildMetadata", actual);
+            Assert.Contains("ParentTag", actual);
+            Assert.Contains("ParentMetadata", actual);
+
+        }
+
+        [Test]
         public void Name_NoAttributes_TypeName()
         {
             //Arrange
