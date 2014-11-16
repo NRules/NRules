@@ -8,27 +8,24 @@ namespace NRules.Rete
     [DebuggerTypeProxy(typeof(TupleDebugView))]
     internal class Tuple
     {
-        private readonly List<Tuple> _childTuples = new List<Tuple>();
         private object _state;
 
-        public Tuple(INode node)
+        public Tuple()
         {
-            Node = node;
+            Count = 0;
         }
 
-        public Tuple(Tuple left, Fact right, INode node) : this(node)
+        public Tuple(Tuple left, Fact right)
         {
-            Count = left.Count + 1;
-            right.ChildTuples.Add(this);
             RightFact = right;
-            left.ChildTuples.Add(this);
             LeftTuple = left;
+            Count = left.Count;
+            if (right != null) Count++;
         }
 
-        public INode Node { get; private set; }
-        public virtual Fact RightFact { get; private set; }
-        public virtual Tuple LeftTuple { get; private set; }
-        public virtual int Count { get; private set; }
+        public Fact RightFact { get; private set; }
+        public Tuple LeftTuple { get; private set; }
+        public int Count { get; private set; }
 
         public T GetState<T>()
         {
@@ -41,20 +38,10 @@ namespace NRules.Rete
             _state = value;
         }
 
-        public IList<Tuple> ChildTuples
+        public void Clear()
         {
-            get { return _childTuples; }
-        }
-
-        public virtual void Clear()
-        {
-            if (RightFact != null) RightFact.ChildTuples.Remove(this);
             RightFact = null;
-
-            if (LeftTuple != null) LeftTuple.ChildTuples.Remove(this);
             LeftTuple = null;
-
-            ChildTuples.Clear();
         }
 
         /// <summary>
@@ -65,9 +52,8 @@ namespace NRules.Rete
         {
             get
             {
-                if (RightFact == null) yield break;
-
-                yield return RightFact;
+                if (RightFact != null) yield return RightFact;
+                if (LeftTuple == null) yield break;
                 foreach (var leftFact in LeftTuple.Facts)
                 {
                     yield return leftFact;
@@ -84,38 +70,5 @@ namespace NRules.Rete
                 Facts = string.Format("[{0}]", string.Join(" || ", tuple.Facts.Reverse().Select(f => f.Object).ToArray()));
             }
         }
-    }
-
-    internal class WrapperTuple : Tuple
-    {
-        public WrapperTuple(Tuple tuple, INode node) : base(node)
-        {
-            WrappedTuple = tuple;
-            WrappedTuple.ChildTuples.Add(this);
-        }
-
-        public override Fact RightFact
-        {
-            get { return WrappedTuple.RightFact; }
-        }
-
-        public override Tuple LeftTuple
-        {
-            get { return WrappedTuple.LeftTuple; }
-        }
-
-        public override int Count
-        {
-            get { return WrappedTuple.Count; }
-        }
-
-        public override void Clear()
-        {
-            WrappedTuple.ChildTuples.Remove(this);
-
-            ChildTuples.Clear();
-        }
-
-        public Tuple WrappedTuple { get; private set; }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NRules.Rete;
@@ -39,11 +40,17 @@ namespace NRules
             var reteBuilder = new ReteBuilder();
             foreach (var ruleDefinition in ruleDefinitions)
             {
-                var context = new ReteBuilderContext();
-                ITerminalNode terminalNode = reteBuilder.AddRule(context, ruleDefinition);
-                ICompiledRule compiledRule = CompileRule(context, ruleDefinition);
-                BuildRuleNode(compiledRule, terminalNode);
-                rules.Add(compiledRule);
+                try
+                {
+                    ICompiledRule compiledRule = CompileRule(reteBuilder, ruleDefinition);
+                    rules.Add(compiledRule);
+                }
+                catch (Exception e)
+                {
+                    throw new RuleCompilationException(
+                        string.Format("Failed to compile rule. Rule={0}",
+                            ruleDefinition.Name), ruleDefinition, e);
+                }
             }
 
             INetwork network = reteBuilder.Build();
@@ -51,14 +58,11 @@ namespace NRules
             return factory;
         }
 
-        private void BuildRuleNode(ICompiledRule rule, ITerminalNode terminalNode)
+        private ICompiledRule CompileRule(ReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
         {
-            var ruleNode = new RuleNode(rule);
-            terminalNode.Attach(ruleNode);
-        }
+            var context = new ReteBuilderContext();
+            ITerminalNode terminalNode = reteBuilder.AddRule(context, ruleDefinition);
 
-        private ICompiledRule CompileRule(ReteBuilderContext context, IRuleDefinition ruleDefinition)
-        {
             var rightHandSide = ruleDefinition.RightHandSide;
             var actions = new List<IRuleAction>();
             foreach (var action in rightHandSide.Actions)
@@ -67,8 +71,16 @@ namespace NRules
                 var ruleAction = new RuleAction(action.Expression, mask);
                 actions.Add(ruleAction);
             }
+
             var rule = new CompiledRule(ruleDefinition, actions);
+            BuildRuleNode(rule, terminalNode);
             return rule;
+        }
+
+        private void BuildRuleNode(ICompiledRule rule, ITerminalNode terminalNode)
+        {
+            var ruleNode = new RuleNode(rule);
+            terminalNode.Attach(ruleNode);
         }
     }
 }

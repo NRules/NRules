@@ -78,6 +78,7 @@
     <Compile Include="Rete\TupleExtensions.cs" />
     <Compile Include="Rete\TupleMask.cs" />
     <Compile Include="RuleAction.cs" />
+    <Compile Include="RuleCompilationException.cs" />
     <Compile Include="RuleCompiler.cs" />
     <Compile Include="Rete\AlphaMemory.cs" />
     <Compile Include="Rete\BetaMemory.cs" />

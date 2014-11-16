@@ -8,41 +8,39 @@ namespace NRules.Tests.Rete
     public class TupleTest
     {
         [Test]
-        public void Ctor_WhenFactPassed_ExposedAsRightFactAndChained()
+        public void Ctor_WhenFactPassed_ExposedAsRightFact()
         {
             //Arrange
             var fact = new Fact(1);
 
             //Act
-            var target = new Tuple(new Tuple(null), fact, null);
+            var target = new Tuple(new Tuple(), fact);
 
             //Assert
             Assert.AreEqual(fact, target.RightFact);
-            Assert.Contains(target, fact.ChildTuples.ToArray());
         }
 
         [Test]
-        public void Ctor_WhenTuplePassed_ExposedAsLeftTupleAndChained()
+        public void Ctor_WhenTuplePassed_ExposedAsLeftTuple()
         {
             //Arrange
-            var tuple1 = new Tuple(new Tuple(null), new Fact(1), null);
+            var tuple1 = new Tuple(new Tuple(), new Fact(1));
 
             //Act
-            var tuple2 = new Tuple(tuple1, new Fact(2), null);
+            var tuple2 = new Tuple(tuple1, new Fact(2));
 
             //Assert
             Assert.AreEqual(tuple1, tuple2.LeftTuple);
-            Assert.Contains(tuple2, tuple1.ChildTuples.ToArray());
         }
 
         [Test]
         public void Enumerator_WhenEnumeratesNTuple_WalksTuplesInReverseOrder()
         {
             //Arrange
-            var tuple0 = new Tuple(null);
-            var tuple1 = new Tuple(tuple0, new Fact(1), null);
-            var tuple2 = new Tuple(tuple1, new Fact(2), null);
-            var tuple3 = new Tuple(tuple2, new Fact(3), null);
+            var tuple0 = new Tuple();
+            var tuple1 = new Tuple(tuple0, new Fact(1));
+            var tuple2 = new Tuple(tuple1, new Fact(2));
+            var tuple3 = new Tuple(tuple2, new Fact(3));
 
             //Act
             var target = tuple3.Facts.ToArray();
@@ -58,10 +56,10 @@ namespace NRules.Tests.Rete
         public void Enumerator_WhenEnumerated_ReturnsUnderlyingFactObjectsInReverseOrder()
         {
             //Arrange
-            var tuple0 = new Tuple(null);
-            var tuple1 = new Tuple(tuple0, new Fact(1), null);
-            var tuple2 = new Tuple(tuple1, new Fact(2), null);
-            var tuple3 = new Tuple(tuple2, new Fact(3), null);
+            var tuple0 = new Tuple();
+            var tuple1 = new Tuple(tuple0, new Fact(1));
+            var tuple2 = new Tuple(tuple1, new Fact(2));
+            var tuple3 = new Tuple(tuple2, new Fact(3));
 
             //Act
             var target = tuple3.Facts.Select(f => f.Object).ToArray();
@@ -77,7 +75,7 @@ namespace NRules.Tests.Rete
         public void Enumerator_WhenEnumerates1Tuple_ReturnsSelf()
         {
             //Arrange
-            var tuple = new Tuple(new Tuple(null), new Fact(1), null);
+            var tuple = new Tuple(new Tuple(), new Fact(1));
 
             //Act
             var target = tuple.Facts.ToArray();
@@ -91,7 +89,7 @@ namespace NRules.Tests.Rete
         public void Enumerator_WhenEnumerates0Tuple_ReturnsEmpty()
         {
             //Arrange
-            var tuple = new Tuple(null);
+            var tuple = new Tuple();
 
             //Act
             var target = tuple.Facts.ToArray();
@@ -101,27 +99,11 @@ namespace NRules.Tests.Rete
         }
 
         [Test]
-        public void Clear_WhenCalledOn1Tuple_ClearsItselfAndUnchainsFact()
+        public void Clear_WhenCalled_ClearsItself()
         {
             //Arrange
             var fact = new Fact(1);
-            var target = new Tuple(new Tuple(null), fact, null);
-
-            //Act
-            target.Clear();
-
-            //Assert
-            Assert.IsNull(target.RightFact);
-            Assert.AreEqual(0, fact.ChildTuples.Count);
-        }
-
-        [Test]
-        public void Clear_WhenCalledOn2Tuple_ClearsItselfAndUnchainsFactAndUnchainsTuple()
-        {
-            //Arrange
-            var tuple = new Tuple(new Tuple(null), new Fact(1), null);
-            var fact = new Fact(2);
-            var target = new Tuple(tuple, fact, null);
+            var target = new Tuple(new Tuple(), fact);
 
             //Act
             target.Clear();
@@ -129,8 +111,6 @@ namespace NRules.Tests.Rete
             //Assert
             Assert.IsNull(target.RightFact);
             Assert.IsNull(target.LeftTuple);
-            Assert.AreEqual(0, fact.ChildTuples.Count);
-            Assert.AreEqual(0, tuple.ChildTuples.Count);
         }
     }
 }
