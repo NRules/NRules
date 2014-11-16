@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent.Dsl;
 
@@ -59,7 +60,20 @@ namespace NRules.Fluent
 
         private T[] GetAttributes<T>() where T : Attribute
         {
-            return RuleType.GetCustomAttributes(true).OfType<T>().ToArray();
+            return GetAttributes<T>(RuleType, true).ToArray();
         }
+        
+        private IEnumerable<T> GetAttributes<T>(Type systemType, bool recursively = false) where T : Attribute
+        {
+            var attributes = new List<T>();
+
+            attributes.AddRange(systemType.GetCustomAttributes(!recursively).OfType<T>());
+
+            if (recursively && systemType.BaseType!=null && systemType.BaseType !=typeof(object))            
+                attributes.AddRange(GetAttributes<T>(systemType.BaseType, recursively));            
+
+            return attributes.Distinct();
+        }
+
     }
 }
