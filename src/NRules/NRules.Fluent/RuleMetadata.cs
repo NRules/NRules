@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent.Dsl;
 
@@ -60,6 +61,6 @@ namespace NRules.Fluent
         private T[] GetAttributes<T>() where T : Attribute
         {
             return RuleType.GetCustomAttributes(true).OfType<T>().ToArray();
-        }
+        }       
     }
 }

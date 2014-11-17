@@ -47,7 +47,9 @@
     </Compile>
     <Compile Include="EvaluationExceptionRuleTest.cs" />
     <Compile Include="IdentityMatchRuleTest.cs" />
+    <Compile Include="TestAssets\BaseRuleWithTags.cs" />
     <Compile Include="TestRules\IdentityMatchRule.cs" />
+    <Compile Include="TestRules\RuleWithMetadataAndParentMetadata.cs" />
     <Compile Include="ThreeFactTwoExistsRuleTest.cs" />
     <Compile Include="TestRules\ThreeFactTwoExistsRule.cs" />
     <Compile Include="ThreeFactTwoNotRuleTest.cs" />
@@ -109,6 +111,9 @@
       <Project>{898356F3-1B5A-4D70-A20A-544997E30AB7}</Project>
       <Name>NRules.RuleModel</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
