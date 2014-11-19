@@ -35,17 +35,17 @@ namespace NRules.Rete
 
         protected IEnumerable<Fact> MatchingFacts(IExecutionContext context, Tuple tuple)
         {
-            return RightSource.GetFacts(context).Where(fact => MatchesConditions(tuple, fact));
+            return RightSource.GetFacts(context).Where(fact => MatchesConditions(context, tuple, fact));
         }
 
         protected IEnumerable<Tuple> MatchingTuples(IExecutionContext context, Fact fact)
         {
-            return LeftSource.GetTuples(context).Where(tuple => MatchesConditions(tuple, fact));
+            return LeftSource.GetTuples(context).Where(tuple => MatchesConditions(context, tuple, fact));
         }
 
-        protected bool MatchesConditions(Tuple left, Fact right)
+        protected bool MatchesConditions(IExecutionContext context, Tuple left, Fact right)
         {
-            return Conditions.All(joinCondition => joinCondition.IsSatisfiedBy(left, right));
+            return Conditions.All(joinCondition => joinCondition.IsSatisfiedBy(context, left, right));
         }
     }
 }

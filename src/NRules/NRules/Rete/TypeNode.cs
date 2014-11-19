@@ -13,7 +13,7 @@ namespace NRules.Rete
 
         public Type FilterType { get; private set; }
 
-        public override bool IsSatisfiedBy(Fact fact)
+        public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
             bool isMatchingType = FilterType.IsAssignableFrom(fact.FactType);
             return isMatchingType;

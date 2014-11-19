@@ -1,5 +1,7 @@
 using System;
+using System.Linq.Expressions;
 using NRules.Rete;
+using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Events
 {
@@ -49,22 +51,28 @@ namespace NRules.Events
         event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
 
         /// <summary>
-        /// Raised when action threw an exception.
+        /// Raised when action execution threw an exception.
         /// Gives observer of the event control over handling of the exception.
         /// </summary>
         event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
+
+        /// <summary>
+        /// Raised when condition evaluation threw an exception.
+        /// </summary>
+        event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
     }
 
     internal interface IEventAggregator : IEventProvider
     {
-        void ActivationCreated(Activation activation);
-        void ActivationDeleted(Activation activation);
-        void RuleFiring(Activation activation);
-        void RuleFired(Activation activation);
-        void FactInserted(Fact fact);
-        void FactUpdated(Fact fact);
-        void FactRetracted(Fact fact);
-        void ActionFailed(RuleActionEvaluationException exception, out bool isHandled);
+        void RaiseActivationCreated(Activation activation);
+        void RaiseActivationDeleted(Activation activation);
+        void RaiseRuleFiring(Activation activation);
+        void RaiseRuleFired(Activation activation);
+        void RaiseFactInserted(Fact fact);
+        void RaiseFactUpdated(Fact fact);
+        void RaiseFactRetracted(Fact fact);
+        void RaiseActionFailed(Exception exception, Expression expression, Rete.Tuple tuple, out bool isHandled);
+        void RaiseConditionFailed(Exception exception, Expression expression, Rete.Tuple tuple, Fact fact);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -77,8 +85,9 @@ namespace NRules.Events
         public event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
         public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
+        public event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
 
-        public void ActivationCreated(Activation activation)
+        public void RaiseActivationCreated(Activation activation)
         {
             var handler = ActivationCreatedEvent;
             if (handler != null)
@@ -88,7 +97,7 @@ namespace NRules.Events
             }
         }
 
-        public void ActivationDeleted(Activation activation)
+        public void RaiseActivationDeleted(Activation activation)
         {
             var handler = ActivationDeletedEvent;
             if (handler != null)
@@ -98,7 +107,7 @@ namespace NRules.Events
             }
         }
 
-        public void RuleFiring(Activation activation)
+        public void RaiseRuleFiring(Activation activation)
         {
             var handler = RuleFiringEvent;
             if (handler != null)
@@ -108,7 +117,7 @@ namespace NRules.Events
             }
         }
 
-        public void RuleFired(Activation activation)
+        public void RaiseRuleFired(Activation activation)
         {
             var handler = RuleFiredEvent;
             if (handler != null)
@@ -118,7 +127,7 @@ namespace NRules.Events
             }
         }
 
-        public void FactInserted(Fact fact)
+        public void RaiseFactInserted(Fact fact)
         {
             var handler = FactInsertedEvent;
             if (handler != null)
@@ -128,7 +137,7 @@ namespace NRules.Events
             }
         }
 
-        public void FactUpdated(Fact fact)
+        public void RaiseFactUpdated(Fact fact)
         {
             var handler = FactUpdatedEvent;
             if (handler != null)
@@ -138,7 +147,7 @@ namespace NRules.Events
             }
         }
 
-        public void FactRetracted(Fact fact)
+        public void RaiseFactRetracted(Fact fact)
         {
             var handler = FactRetractedEvent;
             if (handler != null)
@@ -148,16 +157,26 @@ namespace NRules.Events
             }
         }
 
-        public void ActionFailed(RuleActionEvaluationException exception, out bool isHandled)
+        public void RaiseActionFailed(Exception exception, Expression expression, Rete.Tuple tuple, out bool isHandled)
         {
             isHandled = false;
             var handler = ActionFailedEvent;
             if (handler != null)
             {
-                var @event = new ActionErrorEventArgs(exception);
+                var @event = new ActionErrorEventArgs(exception, expression, tuple);
                 handler(this, @event);
                 isHandled = @event.IsHandled;
             }            
+        }
+
+        public void RaiseConditionFailed(Exception exception, Expression expression, Tuple tuple, Fact fact)
+        {
+            var hanlder = ConditionFailedEvent;
+            if (hanlder != null)
+            {
+                var @event = new ConditionErrorEventArgs(exception, expression, tuple, fact);
+                hanlder(this, @event);
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace NRules.Rete
 {
@@ -16,11 +15,11 @@ namespace NRules.Rete
         [DebuggerDisplay("Count = {ChildNodes.Count}")]
         public IList<AlphaNode> ChildNodes { get; private set; }
 
-        public abstract bool IsSatisfiedBy(Fact fact);
+        public abstract bool IsSatisfiedBy(IExecutionContext context, Fact fact);
 
         public void PropagateAssert(IExecutionContext context, Fact fact)
         {
-            if (IsSatisfiedBy(fact))
+            if (IsSatisfiedBy(context, fact))
             {
                 foreach (var childNode in ChildNodes)
                 {
@@ -35,7 +34,7 @@ namespace NRules.Rete
 
         public void PropagateUpdate(IExecutionContext context, Fact fact)
         {
-            if (IsSatisfiedBy(fact))
+            if (IsSatisfiedBy(context, fact))
             {
                 foreach (var childNode in ChildNodes)
                 {
@@ -59,7 +58,7 @@ namespace NRules.Rete
 
         public void PropagateRetract(IExecutionContext context, Fact fact)
         {
-            if (IsSatisfiedBy(fact))
+            if (IsSatisfiedBy(context, fact))
             {
                 foreach (var childNode in ChildNodes)
                 {

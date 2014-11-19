@@ -7,7 +7,7 @@ namespace NRules.Rete
 {
     internal interface IBetaCondition
     {
-        bool IsSatisfiedBy(Tuple leftTuple, Fact rightFact);
+        bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact);
     }
 
     [DebuggerDisplay("{_expression.ToString()}")]
@@ -24,7 +24,7 @@ namespace NRules.Rete
             _compiledExpression = FastDelegate.Create<Func<object[], bool>>(expression);
         }
 
-        public bool IsSatisfiedBy(Tuple leftTuple, Fact rightFact)
+        public bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact)
         {
             var args = new object[leftTuple.Count + 1];
             int index = leftTuple.Count - 1;
@@ -41,7 +41,8 @@ namespace NRules.Rete
             }
             catch (Exception e)
             {
-                throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression, leftTuple, rightFact, e);
+                context.EventAggregator.RaiseConditionFailed(e, _expression, leftTuple, rightFact);
+                throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
             }
         }
 

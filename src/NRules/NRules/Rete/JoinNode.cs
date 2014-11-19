@@ -14,7 +14,7 @@ namespace NRules.Rete
             IEnumerable<Fact> facts = RightSource.GetFacts(context);
             foreach (Fact fact in facts)
             {
-                if (MatchesConditions(tuple, fact))
+                if (MatchesConditions(context, tuple, fact))
                 {
                     MemoryNode.PropagateAssert(context, tuple, fact);
                 }
@@ -26,7 +26,7 @@ namespace NRules.Rete
             IEnumerable<Fact> facts = RightSource.GetFacts(context);
             foreach (Fact fact in facts)
             {
-                if (MatchesConditions(tuple, fact))
+                if (MatchesConditions(context, tuple, fact))
                 {
                     MemoryNode.PropagateUpdate(context, tuple, fact);
                 }
@@ -51,7 +51,7 @@ namespace NRules.Rete
             IEnumerable<Tuple> tuples = LeftSource.GetTuples(context);
             foreach (Tuple tuple in tuples)
             {
-                if (MatchesConditions(tuple, fact))
+                if (MatchesConditions(context, tuple, fact))
                 {
                     MemoryNode.PropagateAssert(context, tuple, fact);
                 }
@@ -63,7 +63,7 @@ namespace NRules.Rete
             IEnumerable<Tuple> tuples = LeftSource.GetTuples(context);
             foreach (Tuple tuple in tuples)
             {
-                if (MatchesConditions(tuple, fact))
+                if (MatchesConditions(context, tuple, fact))
                 {
                     MemoryNode.PropagateUpdate(context, tuple, fact);
                 }
