@@ -126,13 +126,13 @@ namespace NRules.RuleModel.Builders
                 case GroupType.Not:
                     if (_nestedBuilders.Count != 1)
                     {
-                        throw new NotSupportedException("Group condition NOT requires exactly one child element");
+                        throw new InvalidOperationException("Group condition NOT requires exactly one child element");
                     }
                     break;
                 case GroupType.Exists:
                     if (_nestedBuilders.Count != 1)
                     {
-                        throw new NotSupportedException("Group condition EXISTS requires exactly one child element");
+                        throw new InvalidOperationException("Group condition EXISTS requires exactly one child element");
                     }
                     break;
             }

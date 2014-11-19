@@ -2,6 +2,9 @@ using System;
 
 namespace NRules.Events
 {
+    /// <summary>
+    /// Information related to failure events that allows observer to mark error as handled.
+    /// </summary>
     public class RecoverableErrorEventArgs : ErrorEventArgs
     {
         internal RecoverableErrorEventArgs(Exception exception) : base(exception)
