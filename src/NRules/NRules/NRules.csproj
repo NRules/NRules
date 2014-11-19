@@ -59,9 +59,11 @@
     <Compile Include="Diagnostics\SnapshotBuilder.cs" />
     <Compile Include="Events\ActionErrorEventArgs.cs" />
     <Compile Include="Events\AgendaEventArgs.cs" />
+    <Compile Include="Events\ConditionErrorEventArgs.cs" />
     <Compile Include="Events\ErrorEventArgs.cs" />
     <Compile Include="Events\EventAggregator.cs" />
     <Compile Include="Events\FactInfo.cs" />
+    <Compile Include="Events\RecoverableErrorEventArgs.cs" />
     <Compile Include="Events\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
@@ -104,11 +106,11 @@
     <Compile Include="Rete\RuleNode.cs" />
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />
+    <Compile Include="RuleExpressionEvaluationException.cs" />
     <Compile Include="RuleRepositoryExtensions.cs" />
     <Compile Include="RuleActionEvaluationException.cs" />
     <Compile Include="RuleConditionEvaluationException.cs" />
     <Compile Include="RuleExecutionException.cs" />
-    <Compile Include="RuleExpressionEvaluationException.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionFactory.cs" />

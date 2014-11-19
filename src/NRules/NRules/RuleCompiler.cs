@@ -47,9 +47,7 @@ namespace NRules
                 }
                 catch (Exception e)
                 {
-                    throw new RuleCompilationException(
-                        string.Format("Failed to compile rule. Rule={0}",
-                            ruleDefinition.Name), ruleDefinition, e);
+                    throw new RuleCompilationException("Failed to compile rule", ruleDefinition.Name, e);
                 }
             }
 

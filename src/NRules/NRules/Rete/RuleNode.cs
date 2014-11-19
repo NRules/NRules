@@ -19,14 +19,14 @@
         {
             var activation = new Activation(Rule, tuple);
             context.Agenda.Activate(activation);
-            context.EventAggregator.ActivationCreated(activation);
+            context.EventAggregator.RaiseActivationCreated(activation);
         }
 
         public void Deactivate(IExecutionContext context, Tuple tuple)
         {
             var activation = new Activation(Rule, tuple);
             context.Agenda.Deactivate(activation);
-            context.EventAggregator.ActivationDeleted(activation);
+            context.EventAggregator.RaiseActivationDeleted(activation);
         }
 
         public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)

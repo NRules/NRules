@@ -7,7 +7,7 @@ namespace NRules.Rete
 {
     internal interface IAlphaCondition
     {
-        bool IsSatisfiedBy(Fact fact);
+        bool IsSatisfiedBy(IExecutionContext context, Fact fact);
     }
 
     [DebuggerDisplay("{_expression.ToString()}")]
@@ -22,7 +22,7 @@ namespace NRules.Rete
             _compiledExpression = FastDelegate.Create<Func<object[], bool>>(expression);
         }
 
-        public bool IsSatisfiedBy(Fact fact)
+        public bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
             try
             {
@@ -30,7 +30,8 @@ namespace NRules.Rete
             }
             catch (Exception e)
             {
-                throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression, fact, e);
+                context.EventAggregator.RaiseConditionFailed(e, _expression, null, fact);
+                throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
             }
         }
 

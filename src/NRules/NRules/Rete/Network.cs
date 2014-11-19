@@ -35,7 +35,7 @@ namespace NRules.Rete
             }
             fact = new Fact(factObject);
             context.WorkingMemory.SetFact(fact);
-            context.EventAggregator.FactInserted(fact);
+            context.EventAggregator.RaiseFactInserted(fact);
             _root.PropagateAssert(context, fact);
         }
 
@@ -50,7 +50,7 @@ namespace NRules.Rete
             {
                 throw new ArgumentException("Fact for update does not exist", "factObject");
             }
-            context.EventAggregator.FactUpdated(fact);
+            context.EventAggregator.RaiseFactUpdated(fact);
             _root.PropagateUpdate(context, fact);
         }
 
@@ -65,7 +65,7 @@ namespace NRules.Rete
             {
                 throw new ArgumentException("Fact for retract does not exist", "factObject");
             }
-            context.EventAggregator.FactRetracted(fact);
+            context.EventAggregator.RaiseFactRetracted(fact);
             _root.PropagateRetract(context, fact);
             context.WorkingMemory.RemoveFact(fact);
         }

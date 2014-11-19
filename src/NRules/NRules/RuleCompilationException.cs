@@ -1,22 +1,55 @@
 using System;
-using NRules.RuleModel;
+using System.Runtime.Serialization;
+using System.Security;
 
 namespace NRules
 {
     /// <summary>
     /// Represents errors that occur while compiling rule.
     /// </summary>
+    [Serializable]
     public class RuleCompilationException : Exception
     {
-        internal RuleCompilationException(string message, IRuleDefinition rule, Exception innerException)
+        internal RuleCompilationException(string message, string ruleName, Exception innerException)
             : base(message, innerException)
         {
-            Rule = rule;
+            RuleName = ruleName;
+        }
+
+        [SecuritySafeCritical]
+        protected RuleCompilationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            RuleName = info.GetString("RuleName");
+        }
+
+        [SecurityCritical]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException("info");
+            }
+            base.GetObjectData(info, context);
+            info.AddValue("RuleName", RuleName, typeof(String));
         }
 
         /// <summary>
         /// Rule that caused exception.
         /// </summary>
-        public IRuleDefinition Rule { get; private set; }
+        public string RuleName { get; private set; }
+
+        public override string Message
+        {
+            get
+            {
+                string message = base.Message;
+                if (!string.IsNullOrEmpty(RuleName))
+                {
+                    return message + Environment.NewLine + RuleName;
+                }
+                return message;
+            }
+        } 
     }
 }

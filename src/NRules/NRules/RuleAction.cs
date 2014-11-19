@@ -9,7 +9,7 @@ namespace NRules
 {
     internal interface IRuleAction
     {
-        void Invoke(IContext context, Tuple tuple);
+        void Invoke(IExecutionContext executionContext, IContext actionContext, Tuple tuple);
     }
 
     internal class RuleAction : IRuleAction
@@ -25,10 +25,10 @@ namespace NRules
             _compiledAction = FastDelegate.Create<Action<object[]>>(expression);
         }
 
-        public void Invoke(IContext context, Tuple tuple)
+        public void Invoke(IExecutionContext context, IContext actionContext, Tuple tuple)
         {
             var args = new object[tuple.Count + 1];
-            args[0] = context;
+            args[0] = actionContext;
             int index = tuple.Count - 1;
             foreach (var fact in tuple.Facts)
             {
@@ -42,7 +42,12 @@ namespace NRules
             }
             catch (Exception e)
             {
-                throw new RuleActionEvaluationException("Failed to evaluate rule action", _expression, tuple, e);
+                bool isHandled;
+                context.EventAggregator.RaiseActionFailed(e, _expression, tuple, out isHandled);
+                if (!isHandled)
+                {
+                    throw new RuleActionEvaluationException("Failed to evaluate rule action", _expression.ToString(), e);
+                }
             }
         }
     }

@@ -15,9 +15,9 @@ namespace NRules.Rete
             Conditions.Add(condition);
         }
 
-        public override bool IsSatisfiedBy(Fact fact)
+        public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
-            return Conditions.All(c => c.IsSatisfiedBy(fact));
+            return Conditions.All(c => c.IsSatisfiedBy(context, fact));
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)

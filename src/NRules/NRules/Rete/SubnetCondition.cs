@@ -5,7 +5,7 @@ namespace NRules.Rete
 {
     internal class SubnetCondition : IBetaCondition
     {
-        public bool IsSatisfiedBy(Tuple leftTuple, Fact rightFact)
+        public bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact)
         {
             var rightTuple = ((WrapperFact)rightFact).WrappedTuple;
             using (IEnumerator<Fact> leftEnumerator = leftTuple.Facts.GetEnumerator())

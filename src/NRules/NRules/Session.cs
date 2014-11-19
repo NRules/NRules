@@ -93,22 +93,13 @@ namespace NRules
                 Activation activation = _agenda.NextActivation();
                 ICompiledRule rule = activation.Rule;
 
-                _eventAggregator.RuleFiring(activation);
+                _eventAggregator.RaiseRuleFiring(activation);
                 foreach (IRuleAction action in rule.Actions)
                 {
-                    try
-                    {
-                        action.Invoke(actionContext, activation.Tuple);
-                    }
-                    catch (RuleActionEvaluationException e)
-                    {
-                        bool isHandled;
-                        _eventAggregator.ActionFailed(e, out isHandled);
-                        if (!isHandled) throw;
-                    }
+                    action.Invoke(_executionContext, actionContext, activation.Tuple);
                     ApplyActionOperations(actionContext);
                 }
-                _eventAggregator.RuleFired(activation);
+                _eventAggregator.RaiseRuleFired(activation);
             }
         }
 

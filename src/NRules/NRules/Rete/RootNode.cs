@@ -2,7 +2,7 @@
 {
     internal class RootNode : AlphaNode
     {
-        public override bool IsSatisfiedBy(Fact fact)
+        public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
             return true;
         }
