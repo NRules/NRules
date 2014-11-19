@@ -6,7 +6,7 @@ namespace NRules.Fluent.Dsl
     /// Adds description to the rule.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class DescriptionAttribute : Attribute
+    public sealed class DescriptionAttribute : Attribute
     {
         public DescriptionAttribute(string value)
         {

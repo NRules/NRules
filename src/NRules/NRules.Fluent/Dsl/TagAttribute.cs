@@ -6,7 +6,7 @@ namespace NRules.Fluent.Dsl
     /// Tags the rule.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-    public class TagAttribute : Attribute
+    public sealed class TagAttribute : Attribute
     {
         public TagAttribute(string value)
         {

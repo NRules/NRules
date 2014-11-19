@@ -6,7 +6,7 @@ namespace NRules.Fluent.Dsl
     /// Adds name to the rule.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class NameAttribute : Attribute
+    public sealed class NameAttribute : Attribute
     {
         public NameAttribute(string value)
         {
