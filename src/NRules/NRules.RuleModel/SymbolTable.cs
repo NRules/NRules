@@ -64,8 +64,8 @@ namespace NRules.RuleModel
             {
                 if (declaration.Type != type)
                 {
-                    throw new InvalidOperationException(
-                        string.Format("Type mismatch. IdentifierName={0}, ExpectedType={1}, FoundType={2}",
+                    throw new ArgumentException(
+                        string.Format("Declaration type mismatch. Name={0}, ExpectedType={1}, FoundType={2}",
                                       name, declaration.Type, type));
                 }
                 return declaration;
