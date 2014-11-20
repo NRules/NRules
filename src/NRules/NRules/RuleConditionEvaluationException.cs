@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 
 namespace NRules
 {
@@ -10,6 +12,12 @@ namespace NRules
     {
         internal RuleConditionEvaluationException(string message, string expression, Exception innerException)
             : base(message, expression, innerException)
+        {
+        }
+
+        [SecuritySafeCritical]
+        protected RuleConditionEvaluationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }
