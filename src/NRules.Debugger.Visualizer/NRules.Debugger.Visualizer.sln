@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5FD32CBA-26E2-46D3-B10A-E6C4133EE341}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Debugger.Visualizer", "NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.csproj", "{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}"
