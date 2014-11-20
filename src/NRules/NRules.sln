@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules", "NRules\NRules.csproj", "{D60C7588-09B6-47DA-9459-4C88363E3EAE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Tests", "Tests\NRules.Tests\NRules.Tests.csproj", "{B13BAC49-AF13-47E2-95F0-0C2CAF9A0257}"

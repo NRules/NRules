@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissManners", "MissManners\MissManners.csproj", "{B9773763-742F-4C86-A5CB-FF82285FD249}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissManners.Domain", "MissManners.Domain\MissManners.Domain.csproj", "{A13627E3-64E8-4C60-AC9A-F4413C717503}"
