@@ -7,8 +7,11 @@ First, [install NuGet](http://docs.nuget.org/docs/start-here/installing-nuget). 
     PM> Install-Package NRules
 
 ## Getting Started
-See [Getting Started](https://github.com/NRules/NRules/wiki/Getting-Started) guide on NRules [wiki](https://github.com/NRules/NRules/wiki).
-Or check out the [discussion group](http://groups.google.com/group/nrules-users).
+Use the following resources to get up and running with NRules.
+
+- [Getting Started Guide](https://github.com/NRules/NRules/wiki/Getting-Started)
+- [Wiki Documentation](https://github.com/NRules/NRules/wiki) 
+- [Discussion Group](http://groups.google.com/group/nrules-users)
 
 --
 Copyright &copy; 2012-2014 [Sergiy Nikolayev](http://sergiynikolayev.com) under the [MIT license](LICENSE.txt).
