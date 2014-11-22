@@ -14,7 +14,7 @@
     <Name>Documentation</Name>
     <!-- SHFB properties -->
     <FrameworkVersion>.NET Framework 4.0</FrameworkVersion>
-    <OutputPath>output\</OutputPath>
+    <OutputPath>..\build\help\</OutputPath>
     <HtmlHelpName>NRules</HtmlHelpName>
     <Language>en-US</Language>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
@@ -26,7 +26,8 @@
     <CleanIntermediates>True</CleanIntermediates>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\binaries\NRules\NRules.dll" />
-<DocumentationSource sourceFile="..\binaries\NRules\NRules.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\binaries\NRules\NRules.xml" />
+    </DocumentationSources>
     <MaximumGroupParts>20</MaximumGroupParts>
     <NamespaceGrouping>True</NamespaceGrouping>
     <SyntaxFilters>C#</SyntaxFilters>
