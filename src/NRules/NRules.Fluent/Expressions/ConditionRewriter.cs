@@ -5,49 +5,32 @@ using NRules.RuleModel;
 
 namespace NRules.Fluent.Expressions
 {
-    internal class ConditionRewriter : ExpressionVisitor
+    internal class ConditionRewriter : ExpressionRewriter
     {
-        private readonly IDictionary<string, Declaration> _declarations;
-        private List<ParameterExpression> _parameters;
-        private ParameterExpression _oldParameter;
+        private readonly Declaration _patternDeclaration;
+        private ParameterExpression _originalParameter;
+        private ParameterExpression _normalizedParameter;
 
-        public ConditionRewriter(IEnumerable<Declaration> declarations)
+        public ConditionRewriter(Declaration patternDeclaration, IEnumerable<Declaration> declarations)
+            : base(declarations)
         {
-            _declarations = declarations.ToDictionary(d => d.Name);
+            _patternDeclaration = patternDeclaration;
         }
 
-        public LambdaExpression Rewrite(Declaration declaration, LambdaExpression expression)
+        protected override void InitParameters(LambdaExpression expression)
         {
-            _oldParameter = expression.Parameters.Single();
-            _parameters = new List<ParameterExpression> {Expression.Parameter(declaration.Type, declaration.Name)};
-            Expression body = Visit(expression.Body);
-            return Expression.Lambda(body, expression.TailCall, _parameters);
+            _originalParameter = expression.Parameters.Single();
+            _normalizedParameter = Expression.Parameter(_patternDeclaration.Type, _patternDeclaration.Name);
+            Parameters.Add(_normalizedParameter);
         }
 
-        protected override Expression VisitMember(MemberExpression m)
+        protected override Expression VisitParameter(ParameterExpression parameter)
         {
-            Declaration declaration;
-            if (_declarations.TryGetValue(m.Member.Name, out declaration))
+            if (parameter == _originalParameter)
             {
-                ParameterExpression parameter = _parameters.FirstOrDefault(p => p.Name == m.Member.Name);
-                if (parameter == null)
-                {
-                    parameter = Expression.Parameter(declaration.Type, m.Member.Name);
-                    _parameters.Add(parameter);
-                }
-                return parameter;
+                return Parameters.First();
             }
-
-            return base.VisitMember(m);
-        }
-
-        protected override Expression VisitParameter(ParameterExpression p)
-        {
-            if (p.Name == _oldParameter.Name)
-            {
-                return _parameters.First();
-            }
-            return base.VisitParameter(p);
+            return base.VisitParameter(parameter);
         }
     }
 }
