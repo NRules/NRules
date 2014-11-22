@@ -7,33 +7,33 @@ using NRules.Fluent.Dsl;
 namespace NRules.Fluent
 {
     /// <summary>
-    /// Loads fluent rule definitions via reflection.
+    /// Fluent specification to load rule definitions via reflection.
     /// </summary>
     public interface IRuleLoadSpec
     {
         /// <summary>
-        /// Loads all rule definitions from given assemblies.
+        /// Specify to load all rule definitions from a given collection of assemblies.
         /// </summary>
         /// <param name="assemblies">Assemblies to load from.</param>
         /// <returns>Spec to continue fluent configuration.</returns>
         IRuleLoadSpec From(params Assembly[] assemblies);
 
         /// <summary>
-        /// Loads rule definitions from given types.
+        /// Specify to load rule definitions from a given collection of types.
         /// </summary>
         /// <param name="types">Types that represent rule definitions.</param>
         /// <returns>Spec to continue fluent configuration.</returns>
         IRuleLoadSpec From(params Type[] types);
 
         /// <summary>
-        /// Filter which rules to load.
+        /// Specify which rules to load by filtering on rule's metadata.
         /// </summary>
         /// <param name="filter">Filter condition based on rule's metadata.</param>
         /// <returns>Spec to continue fluent configuration.</returns>
         IRuleLoadSpec Where(Func<IRuleMetadata, bool> filter);
 
         /// <summary>
-        /// Loads rules into the specified rule set.
+        /// Specify the name of the rule set where to load the rules to.
         /// If not provided, loads rules into default rule set.
         /// </summary>
         /// <param name="ruleSetName">Name of the rule set to load rules to.</param>

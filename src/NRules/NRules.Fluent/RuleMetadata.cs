@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent.Dsl;
 
 namespace NRules.Fluent
 {
     /// <summary>
-    /// Rule metadata.
+    /// Metadata associated with a rule defined using internal DSL.
     /// </summary>
     public interface IRuleMetadata
     {
@@ -34,7 +33,7 @@ namespace NRules.Fluent
         /// Tests if the rule is tagged with a given tag.
         /// </summary>
         /// <param name="tag">Tag to test.</param>
-        /// <returns><code>true</code> if the rule is tagged, <code>false</code> otherwise.</returns>
+        /// <returns><c>true</c> if the rule is tagged, <c>false</c> otherwise.</returns>
         bool IsTagged(string tag);
     }
 

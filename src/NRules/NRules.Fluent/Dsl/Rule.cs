@@ -6,6 +6,9 @@ namespace NRules.Fluent.Dsl
 {
     /// <summary>
     /// Base class for inline rule definitions.
+    /// To create a rule using internal DSL, create a class that inherits from <c>NRules.Fluent.Dsl.Rule</c>
+    /// and override <c>Define</c> method.
+    /// Use <c>When</c> and <c>Then</c> methods to define rule's conditions and actions correspondingly.
     /// </summary>
     public abstract class Rule
     {
@@ -19,7 +22,10 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
-        /// Sets rule priority.
+        /// Sets rule's priority.
+        /// If multiple rules get activated at the same time, rules with higher priority get executed first.
+        /// Priority value can be positive, negative or zero.
+        /// Default priority is zero.
         /// </summary>
         /// <param name="priority">Priority value.</param>
         protected void Priority(int priority)
