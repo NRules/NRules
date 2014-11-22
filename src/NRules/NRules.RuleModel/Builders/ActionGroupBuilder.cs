@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -21,7 +22,14 @@ namespace NRules.RuleModel.Builders
         /// <param name="expression">Rule action expression.</param>
         public void Action(LambdaExpression expression)
         {
-            IEnumerable<Declaration> declarations = expression.Parameters.Skip(1).Select(p => Scope.Lookup(p.Name, p.Type));
+            if (expression.Parameters.Count == 0 ||
+                expression.Parameters.First().Type != typeof(IContext))
+            {
+                throw new ArgumentException(
+                    string.Format("Action expression must have {0} as its first parameter", typeof(IContext)));
+            }
+            IEnumerable<ParameterExpression> parameters = expression.Parameters.Skip(1);
+            IEnumerable<Declaration> declarations = parameters.Select(p => Scope.Lookup(p.Name, p.Type));
             var actionElement = new ActionElement(declarations, expression);
             _actions.Add(actionElement);
         }
