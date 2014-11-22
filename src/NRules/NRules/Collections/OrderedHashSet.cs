@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NRules.Collections
 {
-    public class OrderedHashSet<TValue> : ICollection<TValue>
+    internal class OrderedHashSet<TValue> : ICollection<TValue>
     {
         private readonly IDictionary<TValue, LinkedListNode<TValue>> _dictionary;
         private readonly LinkedList<TValue> _linkedList;

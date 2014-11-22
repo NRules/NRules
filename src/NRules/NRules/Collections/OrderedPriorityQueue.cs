@@ -2,7 +2,7 @@
 
 namespace NRules.Collections
 {
-    public class OrderedPriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TValue>
+    internal class OrderedPriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TValue>
     {
         private readonly PriorityQueue<OrderedKey<TPriority>, TValue> _priorityQueue;
         private int _insertionOrderCounter = 0;

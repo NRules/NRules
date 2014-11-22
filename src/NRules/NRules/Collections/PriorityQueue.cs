@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NRules.Collections
 {
-    public interface IPriorityQueue<TPriority, TValue>
+    internal interface IPriorityQueue<in TPriority, TValue>
     {
         void Enqueue(TPriority priority, TValue value);
         TValue Dequeue();
@@ -11,7 +11,7 @@ namespace NRules.Collections
         bool IsEmpty { get; }
     }
 
-    public class PriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TValue>
+    internal class PriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TValue>
     {
         private readonly List<KeyValuePair<TPriority, TValue>> _baseHeap;
         private readonly IComparer<TPriority> _comparer;
