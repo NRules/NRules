@@ -10,6 +10,7 @@ namespace NRules
     /// Each session has its own working memory, and exposes operations that 
     /// manipulate facts in it, as well as fire matching rules.
     /// </summary>
+    /// <remarks>Session can only be used by a single thread.</remarks>
     public interface ISession
     {
         /// <summary>

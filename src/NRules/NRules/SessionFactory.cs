@@ -5,7 +5,13 @@ namespace NRules
 {
     /// <summary>
     /// Represents compiled production rules that can be used to create rules sessions.
+    /// Session factory is expensive to create (because rules need to be compiled into an executable form).
+    /// Therefore there needs to be only a single instance of session factory for a given set of rules for the lifetime of the application.
+    /// If repeatedly running rules for different sets of facts, don't create a new session factory for each rules run.
+    /// Instead, have a single session factory and create a new rules session for each independent universe of facts.
+    /// <seealso cref="ISession"/>
     /// </summary>
+    /// <remarks>Session factory is safe to use from multiple threads.</remarks>
     public interface ISessionFactory
     {
         /// <summary>
