@@ -25,12 +25,8 @@
     <CppCommentsFixup>False</CppCommentsFixup>
     <CleanIntermediates>True</CleanIntermediates>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\build\output\NRules\NRules.dll" />
-<DocumentationSource sourceFile="..\build\output\NRules\NRules.Fluent.dll" />
-<DocumentationSource sourceFile="..\build\output\NRules\NRules.Fluent.xml" />
-<DocumentationSource sourceFile="..\build\output\NRules\NRules.RuleModel.dll" />
-<DocumentationSource sourceFile="..\build\output\NRules\NRules.RuleModel.xml" />
-<DocumentationSource sourceFile="..\build\output\NRules\NRules.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\binaries\NRules\NRules.dll" />
+<DocumentationSource sourceFile="..\binaries\NRules\NRules.xml" /></DocumentationSources>
     <MaximumGroupParts>20</MaximumGroupParts>
     <NamespaceGrouping>True</NamespaceGrouping>
     <SyntaxFilters>C#</SyntaxFilters>
@@ -42,13 +38,16 @@
     <HelpTitle>NRules, Business Rules Engine for .NET</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <VisibleItems>ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected</VisibleItems>
-    <HeaderText>&amp;lt%3ba href=&amp;quot%3bhttps://github.com/NRules/NRules&amp;quot%3b&amp;gt%3bView NRules on GitHub&amp;lt%3b/a&amp;gt%3b</HeaderText>
+    <HeaderText>
+    </HeaderText>
     <CopyrightHref>https://raw.githubusercontent.com/NRules/NRules/master/LICENSE.txt</CopyrightHref>
     <CopyrightText>License and Copyright Information</CopyrightText>
     <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
     <HtmlSdkLinkType>Msdn</HtmlSdkLinkType>
     <IncludeFavorites>False</IncludeFavorites>
     <BinaryTOC>False</BinaryTOC>
+    <FooterText>&amp;lt%3ba href=&amp;quot%3bhttps://github.com/NRules/NRules&amp;quot%3b&amp;gt%3bView NRules on GitHub&amp;lt%3b/a&amp;gt%3b</FooterText>
+    <MissingTags>AutoDocumentCtors, AutoDocumentDispose</MissingTags>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->
