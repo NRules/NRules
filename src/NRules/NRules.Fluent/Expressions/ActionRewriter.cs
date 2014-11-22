@@ -5,38 +5,16 @@ using NRules.RuleModel;
 
 namespace NRules.Fluent.Expressions
 {
-    internal class ActionRewriter : ExpressionVisitor
+    internal class ActionRewriter : ExpressionRewriter
     {
-        private readonly IDictionary<string, Declaration> _declarations;
-        private List<ParameterExpression> _parameters;
-
         public ActionRewriter(IEnumerable<Declaration> declarations)
+            : base(declarations)
         {
-            _declarations = declarations.ToDictionary(d => d.Name);
         }
 
-        public LambdaExpression Rewrite(LambdaExpression expression)
+        protected override void InitParameters(LambdaExpression expression)
         {
-            _parameters = new List<ParameterExpression> {expression.Parameters.First()};
-            Expression body = Visit(expression.Body);
-            return Expression.Lambda(body, expression.TailCall, _parameters);
-        }
-
-        protected override Expression VisitMember(MemberExpression m)
-        {
-            Declaration declaration;
-            if (_declarations.TryGetValue(m.Member.Name, out declaration))
-            {
-                ParameterExpression parameter = _parameters.FirstOrDefault(p => p.Name == m.Member.Name);
-                if (parameter == null)
-                {
-                    parameter = Expression.Parameter(declaration.Type, m.Member.Name);
-                    _parameters.Add(parameter);
-                }
-                return parameter;
-            }
-
-            return base.VisitMember(m);
+            Parameters.Add(expression.Parameters.First());
         }
     }
 }

@@ -53,6 +53,7 @@
     <Compile Include="Dsl\Rule.cs" />
     <Compile Include="Expressions\ActionRewriter.cs" />
     <Compile Include="Expressions\ConditionRewriter.cs" />
+    <Compile Include="Expressions\ExpressionRewriter.cs" />
     <Compile Include="RuleMetadata.cs" />
     <Compile Include="RuleRepository.cs" />
     <Compile Include="RuleActivator.cs" />

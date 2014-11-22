@@ -43,8 +43,8 @@ namespace NRules.Fluent
             var patternBuilder = leftHandSide.Pattern(symbol.Type, symbol.Name);
             foreach (var condition in conditions)
             {
-                var rewriter = new ConditionRewriter(leftHandSide.Declarations);
-                var rewrittenCondition = rewriter.Rewrite(patternBuilder.Declaration, condition);
+                var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
+                var rewrittenCondition = rewriter.Rewrite(condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
             return this;
@@ -63,8 +63,8 @@ namespace NRules.Fluent
             var patternBuilder = aggregateBuilder.SourcePattern(typeof (T));
             foreach (var condition in itemConditions)
             {
-                var rewriter = new ConditionRewriter(leftHandSide.Declarations);
-                var rewrittenCondition = rewriter.Rewrite(patternBuilder.Declaration, condition);
+                var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
+                var rewrittenCondition = rewriter.Rewrite(condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
             return this;
@@ -79,8 +79,8 @@ namespace NRules.Fluent
             var patternBuilder = existsBuilder.Pattern(typeof (T));
             foreach (var condition in conditions)
             {
-                var rewriter = new ConditionRewriter(leftHandSide.Declarations);
-                var rewrittenCondition = rewriter.Rewrite(patternBuilder.Declaration, condition);
+                var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
+                var rewrittenCondition = rewriter.Rewrite(condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
             return this;
@@ -95,8 +95,8 @@ namespace NRules.Fluent
             var patternBuilder = notBuilder.Pattern(typeof(T));
             foreach (var condition in conditions)
             {
-                var rewriter = new ConditionRewriter(leftHandSide.Declarations);
-                var rewrittenCondition = rewriter.Rewrite(patternBuilder.Declaration, condition);
+                var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
+                var rewrittenCondition = rewriter.Rewrite(condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
             return this;
@@ -122,7 +122,9 @@ namespace NRules.Fluent
             var fieldMember = alias.Body as MemberExpression;
             if (fieldMember == null)
             {
-                throw new ArgumentException("Pattern alias must be a variable");
+                throw new ArgumentException(
+                    string.Format("Invalid pattern alias expression. Expected={0}, Actual={1}",
+                        typeof(MemberExpression), alias.Body.GetType()));
             }
             return Expression.Parameter(fieldMember.Type, fieldMember.Member.Name);
         }
