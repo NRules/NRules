@@ -18,7 +18,7 @@ namespace NRules.IntegrationTests
             //Arrange
             Expression expression = null;
             IList<FactInfo> facts = null; 
-            Session.Events.ConditionFailedEvent += (sender, args) => expression = args.ConditionExpression;
+            Session.Events.ConditionFailedEvent += (sender, args) => expression = args.Condition;
             Session.Events.ConditionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
             var fact = new FactType1 {TestProperty = null};
@@ -37,7 +37,7 @@ namespace NRules.IntegrationTests
             //Arrange
             Expression expression = null;
             IList<FactInfo> facts = null;
-            Session.Events.ActionFailedEvent += (sender, args) => expression = args.ActionExpression;
+            Session.Events.ActionFailedEvent += (sender, args) => expression = args.Action;
             Session.Events.ActionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
             var fact = new FactType1 {TestProperty = "Valid value"};

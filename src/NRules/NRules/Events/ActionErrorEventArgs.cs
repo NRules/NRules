@@ -16,13 +16,13 @@ namespace NRules.Events
         internal ActionErrorEventArgs(Exception exception, Expression expression, Tuple tuple) : base(exception)
         {
             _tuple = tuple;
-            ActionExpression = expression;
+            Action = expression;
         }
 
         /// <summary>
         /// Action that caused exception.
         /// </summary>
-        public Expression ActionExpression { get; private set; }
+        public Expression Action { get; private set; }
 
         /// <summary>
         /// Facts that caused exception.

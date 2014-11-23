@@ -20,13 +20,13 @@ namespace NRules.Events
         {
             _tuple = tuple;
             _fact = fact;
-            ConditionExpression = expression;
+            Condition = expression;
         }
 
         /// <summary>
-        /// Action that caused exception.
+        /// Condition that caused exception.
         /// </summary>
-        public Expression ConditionExpression { get; private set; }
+        public Expression Condition { get; private set; }
 
         /// <summary>
         /// Facts that caused exception.
