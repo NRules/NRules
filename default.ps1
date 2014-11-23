@@ -29,6 +29,7 @@ task Init {
 	$script:merge_dir = "$build_dir\merge\$comp_name"
 	$script:nuget_dir = "$build_dir\NuGet\$comp_name"
 	$script:packages_dir = "$base_dir\packages"
+	$script:help_dir = "$base_dir\help"
 	
 	$script:nuget_exec = "$tools_dir\NuGet\nuget.exe"
 	$script:zip_exec = "$tools_dir\7-zip\7za.exe"
@@ -149,4 +150,14 @@ task PublishNuGet -precondition { return $component.package.ContainsKey('nuget')
 }
 
 task Publish -depends Package, PublishNuGet {
+}
+
+task Help -depends Build -precondition { return $component.ContainsKey('help') } {
+	Assert (Test-Path Env:\SHFBROOT) 'Sandcastle root environment variable SHFBROOT is not set'
+	
+	Create-Directory $build_dir
+	
+	$help_proj = $component.help
+	$help_proj_file = "$help_dir\$($component.help)"
+	exec { &$script:msbuild_exec $help_proj_file /v:m /nologo }
 }

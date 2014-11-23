@@ -28,6 +28,7 @@ $components = @{
 				include = @('NRules.*')
 			}
 		}
+		help = 'NRules.shfbproj'
 	};
 	'NRules.Debugger.Visualizer' = @{
 		name = 'NRules.Debugger.Visualizer'
