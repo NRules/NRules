@@ -71,8 +71,8 @@ namespace NRules.Events
         void RaiseFactInserted(Fact fact);
         void RaiseFactUpdated(Fact fact);
         void RaiseFactRetracted(Fact fact);
-        void RaiseActionFailed(Exception exception, Expression expression, Rete.Tuple tuple, out bool isHandled);
-        void RaiseConditionFailed(Exception exception, Expression expression, Rete.Tuple tuple, Fact fact);
+        void RaiseActionFailed(Exception exception, Expression expression, Tuple tuple, out bool isHandled);
+        void RaiseConditionFailed(Exception exception, Expression expression, Tuple tuple, Fact fact);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -157,7 +157,7 @@ namespace NRules.Events
             }
         }
 
-        public void RaiseActionFailed(Exception exception, Expression expression, Rete.Tuple tuple, out bool isHandled)
+        public void RaiseActionFailed(Exception exception, Expression expression, Tuple tuple, out bool isHandled)
         {
             isHandled = false;
             var handler = ActionFailedEvent;
