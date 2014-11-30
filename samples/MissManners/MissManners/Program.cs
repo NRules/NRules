@@ -17,9 +17,9 @@ namespace MissManners
 
             var factory = repository.Compile();
             var session = factory.CreateSession();
-            session.Events.FactInsertedEvent += EventProviderOnFactInsertedEvent;
-            session.Events.FactUpdatedEvent += EventProviderOnFactUpdatedEvent;
-            session.Events.FactRetractedEvent += EventProviderOnFactRetractedEvent;
+            session.Events.FactInsertingEvent += EventProviderOnFactInsertingEvent;
+            session.Events.FactUpdatingEvent += EventProviderOnFactUpdatingEvent;
+            session.Events.FactRetractingEvent += EventProviderOnFactRetractingEvent;
             session.Events.ActivationCreatedEvent += EventProviderOnActivationCreatedEvent;
             session.Events.ActivationDeletedEvent += EventProviderOnActivationDeletedEvent;
             session.Events.RuleFiringEvent += EventProviderOnRuleFiringEvent;
@@ -42,17 +42,17 @@ namespace MissManners
             session.Fire();
         }
 
-        private static void EventProviderOnFactInsertedEvent(object sender, WorkingMemoryEventArgs e)
+        private static void EventProviderOnFactInsertingEvent(object sender, WorkingMemoryEventArgs e)
         {
             Console.WriteLine("Insert: {0}", e.Fact.Value);
         }
 
-        private static void EventProviderOnFactUpdatedEvent(object sender, WorkingMemoryEventArgs e)
+        private static void EventProviderOnFactUpdatingEvent(object sender, WorkingMemoryEventArgs e)
         {
             Console.WriteLine("Update: {0}", e.Fact.Value);
         }
 
-        private static void EventProviderOnFactRetractedEvent(object sender, WorkingMemoryEventArgs e)
+        private static void EventProviderOnFactRetractingEvent(object sender, WorkingMemoryEventArgs e)
         {
             Console.WriteLine("Retract: {0}", e.Fact.Value);
         }

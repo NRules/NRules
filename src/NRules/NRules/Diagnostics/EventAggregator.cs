@@ -36,17 +36,32 @@ namespace NRules.Diagnostics
         event EventHandler<AgendaEventArgs> RuleFiredEvent;
 
         /// <summary>
-        /// Raised when a new fact is inserted into working memory.
+        /// Raised before a new fact is inserted into working memory.
+        /// </summary>
+        event EventHandler<WorkingMemoryEventArgs> FactInsertingEvent;
+
+        /// <summary>
+        /// Raised after a new fact is inserted into working memory.
         /// </summary>
         event EventHandler<WorkingMemoryEventArgs> FactInsertedEvent;
 
         /// <summary>
-        /// Raised when an existing fact is updated in the working memory.
+        /// Raised before an existing fact is updated in the working memory.
+        /// </summary>
+        event EventHandler<WorkingMemoryEventArgs> FactUpdatingEvent;
+
+        /// <summary>
+        /// Raised after an existing fact is updated in the working memory.
         /// </summary>
         event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
 
         /// <summary>
-        /// Raised when an existing fact is retracted from the working memory.
+        /// Raised before an existing fact is retracted from the working memory.
+        /// </summary>
+        event EventHandler<WorkingMemoryEventArgs> FactRetractingEvent;
+
+        /// <summary>
+        /// Raised after an existing fact is retracted from the working memory.
         /// </summary>
         event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
 
@@ -68,8 +83,11 @@ namespace NRules.Diagnostics
         void RaiseActivationDeleted(ISession session, Activation activation);
         void RaiseRuleFiring(ISession session, Activation activation);
         void RaiseRuleFired(ISession session, Activation activation);
+        void RaiseFactInserting(ISession session, Fact fact);
         void RaiseFactInserted(ISession session, Fact fact);
+        void RaiseFactUpdating(ISession session, Fact fact);
         void RaiseFactUpdated(ISession session, Fact fact);
+        void RaiseFactRetracting(ISession session, Fact fact);
         void RaiseFactRetracted(ISession session, Fact fact);
         void RaiseActionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, out bool isHandled);
         void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact);
@@ -81,8 +99,11 @@ namespace NRules.Diagnostics
         public event EventHandler<AgendaEventArgs> ActivationDeletedEvent;
         public event EventHandler<AgendaEventArgs> RuleFiringEvent;
         public event EventHandler<AgendaEventArgs> RuleFiredEvent;
+        public event EventHandler<WorkingMemoryEventArgs> FactInsertingEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactInsertedEvent;
+        public event EventHandler<WorkingMemoryEventArgs> FactUpdatingEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
+        public event EventHandler<WorkingMemoryEventArgs> FactRetractingEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
         public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
         public event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
@@ -127,6 +148,16 @@ namespace NRules.Diagnostics
             }
         }
 
+        public void RaiseFactInserting(ISession session, Fact fact)
+        {
+            var handler = FactInsertingEvent;
+            if (handler != null)
+            {
+                var @event = new WorkingMemoryEventArgs(fact);
+                handler(session, @event);
+            }
+        }
+
         public void RaiseFactInserted(ISession session, Fact fact)
         {
             var handler = FactInsertedEvent;
@@ -137,9 +168,29 @@ namespace NRules.Diagnostics
             }
         }
 
+        public void RaiseFactUpdating(ISession session, Fact fact)
+        {
+            var handler = FactUpdatingEvent;
+            if (handler != null)
+            {
+                var @event = new WorkingMemoryEventArgs(fact);
+                handler(session, @event);
+            }
+        }
+
         public void RaiseFactUpdated(ISession session, Fact fact)
         {
             var handler = FactUpdatedEvent;
+            if (handler != null)
+            {
+                var @event = new WorkingMemoryEventArgs(fact);
+                handler(session, @event);
+            }
+        }
+
+        public void RaiseFactRetracting(ISession session, Fact fact)
+        {
+            var handler = FactRetractingEvent;
             if (handler != null)
             {
                 var @event = new WorkingMemoryEventArgs(fact);

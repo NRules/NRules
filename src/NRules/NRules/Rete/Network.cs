@@ -34,9 +34,10 @@ namespace NRules.Rete
                 throw new ArgumentException("Fact for insert already exists", "factObject");
             }
             fact = new Fact(factObject);
+            context.EventAggregator.RaiseFactInserting(context.Session, fact);
             context.WorkingMemory.SetFact(fact);
-            context.EventAggregator.RaiseFactInserted(context.Session, fact);
             _root.PropagateAssert(context, fact);
+            context.EventAggregator.RaiseFactInserted(context.Session, fact);
         }
 
         public void PropagateUpdate(IExecutionContext context, object factObject)
@@ -50,8 +51,9 @@ namespace NRules.Rete
             {
                 throw new ArgumentException("Fact for update does not exist", "factObject");
             }
-            context.EventAggregator.RaiseFactUpdated(context.Session, fact);
+            context.EventAggregator.RaiseFactUpdating(context.Session, fact);
             _root.PropagateUpdate(context, fact);
+            context.EventAggregator.RaiseFactUpdated(context.Session, fact);
         }
 
         public void PropagateRetract(IExecutionContext context, object factObject)
@@ -65,9 +67,10 @@ namespace NRules.Rete
             {
                 throw new ArgumentException("Fact for retract does not exist", "factObject");
             }
-            context.EventAggregator.RaiseFactRetracted(context.Session, fact);
+            context.EventAggregator.RaiseFactRetracting(context.Session, fact);
             _root.PropagateRetract(context, fact);
             context.WorkingMemory.RemoveFact(fact);
+            context.EventAggregator.RaiseFactRetracted(context.Session, fact);
         }
 
         public void Activate(IExecutionContext context)
