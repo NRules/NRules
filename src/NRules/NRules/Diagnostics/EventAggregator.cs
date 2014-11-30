@@ -64,15 +64,15 @@ namespace NRules.Diagnostics
 
     internal interface IEventAggregator : IEventProvider
     {
-        void RaiseActivationCreated(Activation activation);
-        void RaiseActivationDeleted(Activation activation);
-        void RaiseRuleFiring(Activation activation);
-        void RaiseRuleFired(Activation activation);
-        void RaiseFactInserted(Fact fact);
-        void RaiseFactUpdated(Fact fact);
-        void RaiseFactRetracted(Fact fact);
-        void RaiseActionFailed(Exception exception, Expression expression, Tuple tuple, out bool isHandled);
-        void RaiseConditionFailed(Exception exception, Expression expression, Tuple tuple, Fact fact);
+        void RaiseActivationCreated(ISession session, Activation activation);
+        void RaiseActivationDeleted(ISession session, Activation activation);
+        void RaiseRuleFiring(ISession session, Activation activation);
+        void RaiseRuleFired(ISession session, Activation activation);
+        void RaiseFactInserted(ISession session, Fact fact);
+        void RaiseFactUpdated(ISession session, Fact fact);
+        void RaiseFactRetracted(ISession session, Fact fact);
+        void RaiseActionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, out bool isHandled);
+        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -87,95 +87,95 @@ namespace NRules.Diagnostics
         public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
         public event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
 
-        public void RaiseActivationCreated(Activation activation)
+        public void RaiseActivationCreated(ISession session, Activation activation)
         {
             var handler = ActivationCreatedEvent;
             if (handler != null)
             {
                 var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
-                handler(this, @event);
+                handler(session, @event);
             }
         }
 
-        public void RaiseActivationDeleted(Activation activation)
+        public void RaiseActivationDeleted(ISession session, Activation activation)
         {
             var handler = ActivationDeletedEvent;
             if (handler != null)
             {
                 var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
-                handler(this, @event);
+                handler(session, @event);
             }
         }
 
-        public void RaiseRuleFiring(Activation activation)
+        public void RaiseRuleFiring(ISession session, Activation activation)
         {
             var handler = RuleFiringEvent;
             if (handler != null)
             {
                 var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
-                handler(this, @event);
+                handler(session, @event);
             }
         }
 
-        public void RaiseRuleFired(Activation activation)
+        public void RaiseRuleFired(ISession session, Activation activation)
         {
             var handler = RuleFiredEvent;
             if (handler != null)
             {
                 var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
-                handler(this, @event);
+                handler(session, @event);
             }
         }
 
-        public void RaiseFactInserted(Fact fact)
+        public void RaiseFactInserted(ISession session, Fact fact)
         {
             var handler = FactInsertedEvent;
             if (handler != null)
             {
                 var @event = new WorkingMemoryEventArgs(fact);
-                handler(this, @event);
+                handler(session, @event);
             }
         }
 
-        public void RaiseFactUpdated(Fact fact)
+        public void RaiseFactUpdated(ISession session, Fact fact)
         {
             var handler = FactUpdatedEvent;
             if (handler != null)
             {
                 var @event = new WorkingMemoryEventArgs(fact);
-                handler(this, @event);
+                handler(session, @event);
             }
         }
 
-        public void RaiseFactRetracted(Fact fact)
+        public void RaiseFactRetracted(ISession session, Fact fact)
         {
             var handler = FactRetractedEvent;
             if (handler != null)
             {
                 var @event = new WorkingMemoryEventArgs(fact);
-                handler(this, @event);
+                handler(session, @event);
             }
         }
 
-        public void RaiseActionFailed(Exception exception, Expression expression, Tuple tuple, out bool isHandled)
+        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, out bool isHandled)
         {
             isHandled = false;
             var handler = ActionFailedEvent;
             if (handler != null)
             {
                 var @event = new ActionErrorEventArgs(exception, expression, tuple);
-                handler(this, @event);
+                handler(session, @event);
                 isHandled = @event.IsHandled;
             }            
         }
 
-        public void RaiseConditionFailed(Exception exception, Expression expression, Tuple tuple, Fact fact)
+        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact)
         {
             var hanlder = ConditionFailedEvent;
             if (hanlder != null)
             {
                 var @event = new ConditionErrorEventArgs(exception, expression, tuple, fact);
-                hanlder(this, @event);
+                hanlder(session, @event);
             }
         }
     }
