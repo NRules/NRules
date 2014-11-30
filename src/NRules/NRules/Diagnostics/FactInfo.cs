@@ -1,7 +1,7 @@
 ﻿using System;
 using NRules.Rete;
 
-namespace NRules.Events
+namespace NRules.Diagnostics
 {
     /// <summary>
     /// Fact in the working memory.

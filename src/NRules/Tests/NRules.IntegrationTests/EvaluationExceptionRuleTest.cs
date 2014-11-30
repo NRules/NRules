@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NRules.Events;
+using NRules.Diagnostics;
 using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;

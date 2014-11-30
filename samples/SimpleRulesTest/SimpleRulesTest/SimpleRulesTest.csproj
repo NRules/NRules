@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NRules, Version=0.1.9.0, Culture=neutral, PublicKeyToken=8ad544355a4a2176, processorArchitecture=MSIL">
+    <Reference Include="NRules">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\binaries\NRules\NRules.dll</HintPath>
     </Reference>

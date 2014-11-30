@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using NRules.Rete;
 using Tuple = NRules.Rete.Tuple;
 
-namespace NRules.Events
+namespace NRules.Diagnostics
 {
     /// <summary>
     /// Aggregator of rules session events.

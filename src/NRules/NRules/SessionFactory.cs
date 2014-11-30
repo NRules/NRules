@@ -1,4 +1,4 @@
-﻿using NRules.Events;
+﻿using NRules.Diagnostics;
 using NRules.Rete;
 
 namespace NRules

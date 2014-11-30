@@ -1,5 +1,5 @@
 using Moq;
-using NRules.Events;
+using NRules.Diagnostics;
 using NRules.Rete;
 using NUnit.Framework;
 

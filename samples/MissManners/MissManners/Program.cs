@@ -3,7 +3,7 @@ using System.Linq;
 using MissManners.Domain;
 using MissManners.Rules;
 using NRules;
-using NRules.Events;
+using NRules.Diagnostics;
 using NRules.Fluent;
 
 namespace MissManners

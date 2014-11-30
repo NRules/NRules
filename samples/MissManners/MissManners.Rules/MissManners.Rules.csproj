@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NRules">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\binaries\NRules\NRules.dll</HintPath>
     </Reference>
     <Reference Include="System" />

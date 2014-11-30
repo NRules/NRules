@@ -1,7 +1,7 @@
 using System;
 using NRules.Rete;
 
-namespace NRules.Events
+namespace NRules.Diagnostics
 {
     /// <summary>
     /// Information related to working memory events.
