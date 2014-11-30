@@ -41,7 +41,7 @@ namespace NRules.Rete
             }
             catch (Exception e)
             {
-                context.EventAggregator.RaiseConditionFailed(e, _expression, leftTuple, rightFact);
+                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, leftTuple, rightFact);
                 throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
             }
         }

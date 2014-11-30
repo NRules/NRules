@@ -43,7 +43,7 @@ namespace NRules
             catch (Exception e)
             {
                 bool isHandled;
-                context.EventAggregator.RaiseActionFailed(e, _expression, tuple, out isHandled);
+                context.EventAggregator.RaiseActionFailed(context.Session, e, _expression, tuple, out isHandled);
                 if (!isHandled)
                 {
                     throw new RuleActionEvaluationException("Failed to evaluate rule action", _expression.ToString(), e);

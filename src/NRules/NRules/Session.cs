@@ -63,7 +63,7 @@ namespace NRules
             _workingMemory = workingMemory;
             _agenda = agenda;
             _eventAggregator = eventAggregator;
-            _executionContext = new ExecutionContext(_workingMemory, _agenda, _eventAggregator);
+            _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator);
             _network.Activate(_executionContext);
         }
 
@@ -93,13 +93,13 @@ namespace NRules
                 Activation activation = _agenda.NextActivation();
                 ICompiledRule rule = activation.Rule;
 
-                _eventAggregator.RaiseRuleFiring(activation);
+                _eventAggregator.RaiseRuleFiring(this, activation);
                 foreach (IRuleAction action in rule.Actions)
                 {
                     action.Invoke(_executionContext, actionContext, activation.Tuple);
                     ApplyActionOperations(actionContext);
                 }
-                _eventAggregator.RaiseRuleFired(activation);
+                _eventAggregator.RaiseRuleFired(this, activation);
             }
         }
 
