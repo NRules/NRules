@@ -4,7 +4,7 @@ using System.Linq;
 using NRules.RuleModel;
 using Tuple = NRules.Rete.Tuple;
 
-namespace NRules.Events
+namespace NRules.Diagnostics
 {
     /// <summary>
     /// Information related to agenda events.

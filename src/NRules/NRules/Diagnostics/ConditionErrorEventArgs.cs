@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using NRules.Rete;
 using Tuple = NRules.Rete.Tuple;
 
-namespace NRules.Events
+namespace NRules.Diagnostics
 {
     /// <summary>
     /// Information related to error events raised during condition evaluation.

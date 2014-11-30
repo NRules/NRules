@@ -1,6 +1,5 @@
 using System.Linq;
 using NRules.Diagnostics;
-using NRules.Events;
 using NRules.Rete;
 
 namespace NRules
