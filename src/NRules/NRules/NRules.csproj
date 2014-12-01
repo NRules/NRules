@@ -106,6 +106,7 @@
     <Compile Include="Rete\RuleNode.cs" />
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />
+    <Compile Include="RuleCompilerExtensions.cs" />
     <Compile Include="RuleExpressionEvaluationException.cs" />
     <Compile Include="RuleRepositoryExtensions.cs" />
     <Compile Include="RuleActionEvaluationException.cs" />

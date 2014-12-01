@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NRules.Diagnostics;
 using NRules.Rete;
@@ -13,39 +14,52 @@ namespace NRules
     public interface ISession
     {
         /// <summary>
-        /// Aggregator for rule session events.
+        /// Aggregator for rule session events. Use it to subscribe to various rules engine lifecycle events.
         /// </summary>
         IEventProvider Events { get; }
 
         /// <summary>
         /// Adds a new fact to the rules engine memory.
+        /// Raises <see cref="IEventProvider.FactInsertingEvent"/> and <see cref="IEventProvider.FactInsertedEvent"/> events.
         /// </summary>
         /// <param name="fact">Fact to add.</param>
+        /// <exception cref="ArgumentException">If fact already exists in working memory.</exception>
         void Insert(object fact);
 
         /// <summary>
         /// Updates existing fact in the rules engine memory.
+        /// Raises <see cref="IEventProvider.FactUpdatingEvent"/> and <see cref="IEventProvider.FactUpdatedEvent"/> events.
         /// </summary>
         /// <param name="fact">Fact to update.</param>
+        /// <exception cref="ArgumentException">If fact does not exist in working memory.</exception>
         void Update(object fact);
 
         /// <summary>
         /// Removes existing fact from the rules engine memory.
+        /// Raises <see cref="IEventProvider.FactRetractingEvent"/> and <see cref="IEventProvider.FactRetractedEvent"/> events.
         /// </summary>
         /// <param name="fact">Fact to remove.</param>
+        /// <exception cref="ArgumentException">If fact does not exist in working memory.</exception>
         void Retract(object fact);
 
         /// <summary>
         /// Starts rules execution cycle. This method blocks until there are no more
         /// rules to fire.
+        /// Raises <see cref="IEventProvider.ActivationCreatedEvent"/> and <see cref="IEventProvider.ActivationDeletedEvent"/> events when activations are created or deleted.
+        /// Raises <see cref="IEventProvider.RuleFiringEvent"/> and <see cref="IEventProvider.RuleFiredEvent"/> events when rules are firing.
         /// </summary>
+        /// <exception cref="RuleExecutionException">Any fatal failure during rules execution.</exception>
+        /// <exception cref="RuleConditionEvaluationException">Failure while evaluating any of the rules' conditions.
+        /// This exception can also be observed as an event <see cref="IEventProvider.ConditionFailedEvent"/>.</exception>
+        /// <exception cref="RuleActionEvaluationException">Failure while evaluating any of the rules' actions.
+        /// This exception can also be observed as an event <see cref="IEventProvider.ActionFailedEvent"/>.</exception>
         void Fire();
 
         /// <summary>
         /// Creates a LINQ query to retrieve facts of a given type from the rules engine's memory.
         /// </summary>
         /// <typeparam name="TFact">Type of facts to query.</typeparam>
-        /// <returns>Queryable engine's memory.</returns>
+        /// <returns>Queryable working memory of the rules engine.</returns>
         IQueryable<TFact> Query<TFact>();
     }
 

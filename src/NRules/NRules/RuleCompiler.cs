@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using NRules.Rete;
 using NRules.RuleModel;
 
 namespace NRules
 {
     /// <summary>
-    /// Compiles declarative rules into an executable representation.
+    /// Compiles rules in a canonical rule model form into an executable representation.
     /// </summary>
+    /// <seealso cref="ISessionFactory"/>
     public interface IRuleCompiler
     {
         /// <summary>
@@ -16,24 +16,21 @@ namespace NRules
         /// </summary>
         /// <param name="ruleDefinitions">Rules to compile.</param>
         /// <returns>Session factory.</returns>
+        /// <exception cref="RuleCompilationException">If fails to compile rules.</exception>
         ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions);
-
-        /// <summary>
-        /// Compiles rules from rule sets into a session factory.
-        /// </summary>
-        /// <param name="ruleSets">Rule sets to compile.</param>
-        /// <returns>Session factory.</returns>
-        ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets);
     }
 
+    /// <summary>
+    /// Compiles rules in a canonical rule model form into an executable representation.
+    /// </summary>
     public class RuleCompiler : IRuleCompiler
     {
-        public ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets)
-        {
-            var rules = ruleSets.SelectMany(x => x.Rules);
-            return Compile(rules);
-        }
-
+        /// <summary>
+        /// Compiles a collection of rules into a session factory.
+        /// </summary>
+        /// <param name="ruleDefinitions">Rules to compile.</param>
+        /// <returns>Session factory.</returns>
+        /// <exception cref="RuleCompilationException">If fails to compile rules.</exception>
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
         {
             var rules = new List<ICompiledRule>();
