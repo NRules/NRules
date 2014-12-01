@@ -5,7 +5,7 @@ using System.Security;
 namespace NRules
 {
     /// <summary>
-    /// Represents errors that occur while compiling rule.
+    /// Represents errors that occur while compiling a rule.
     /// </summary>
     [Serializable]
     public class RuleCompilationException : Exception

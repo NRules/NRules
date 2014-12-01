@@ -7,8 +7,8 @@ namespace NRules.Fluent.Dsl
     /// <summary>
     /// Base class for inline rule definitions.
     /// To create a rule using internal DSL, create a class that inherits from <c>NRules.Fluent.Dsl.Rule</c>
-    /// and override <c>Define</c> method.
-    /// Use <c>When</c> and <c>Then</c> methods to define rule's conditions and actions correspondingly.
+    /// and override <see cref="Define"/> method.
+    /// Use <see cref="When"/> and <see cref="Then"/> methods to define rule's conditions and actions correspondingly.
     /// </summary>
     public abstract class Rule
     {

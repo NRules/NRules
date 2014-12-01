@@ -9,7 +9,7 @@ namespace NRules
         /// <summary>
         /// Retrieves all rules from all rule sets contained in the repository.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Collection of rules from the repository.</returns>
         public static IEnumerable<IRuleDefinition> GetRules(this IRuleRepository repository)
         {
             var ruleSets = repository.GetRuleSets();
@@ -18,9 +18,11 @@ namespace NRules
 
         /// <summary>
         /// Compiles all rules in the repository into a session factory.
+        /// Use <see cref="RuleCompiler"/> explicitly if only need to compile a subset of rules.
         /// </summary>
         /// <param name="repository">Rule repository.</param>
         /// <returns>Session factory.</returns>
+        /// <seealso cref="RuleCompiler"/>
         public static ISessionFactory Compile(this IRuleRepository repository)
         {
             IRuleCompiler compiler = new RuleCompiler();

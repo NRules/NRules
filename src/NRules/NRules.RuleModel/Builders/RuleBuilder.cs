@@ -5,6 +5,8 @@ namespace NRules.RuleModel.Builders
 {
     /// <summary>
     /// Builder to compose a rule definition.
+    /// Contains methods to specify rule's metadata, as well as create child builders for rule's left-hand side and right-hand side.
+    /// Creates <see cref="IRuleDefinition"/>.
     /// </summary>
     public class RuleBuilder
     {
@@ -80,7 +82,7 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Builds rule definition.
+        /// Creates rule definition using current state of the builder.
         /// </summary>
         /// <returns>Rule definition.</returns>
         public IRuleDefinition Build()
