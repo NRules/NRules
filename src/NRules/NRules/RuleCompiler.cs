@@ -16,7 +16,7 @@ namespace NRules
         /// </summary>
         /// <param name="ruleDefinitions">Rules to compile.</param>
         /// <returns>Session factory.</returns>
-        /// <exception cref="RuleCompilationException">If fails to compile rules.</exception>
+        /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
         ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions);
     }
 
@@ -30,7 +30,7 @@ namespace NRules
         /// </summary>
         /// <param name="ruleDefinitions">Rules to compile.</param>
         /// <returns>Session factory.</returns>
-        /// <exception cref="RuleCompilationException">If fails to compile rules.</exception>
+        /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
         {
             var rules = new List<ICompiledRule>();
