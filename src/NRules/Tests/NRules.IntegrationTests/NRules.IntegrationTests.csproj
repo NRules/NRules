@@ -47,8 +47,8 @@
     </Compile>
     <Compile Include="EvaluationExceptionRuleTest.cs" />
     <Compile Include="IdentityMatchRuleTest.cs" />
-    <Compile Include="TestAssets\BaseRuleWithTags.cs" />
     <Compile Include="TestRules\IdentityMatchRule.cs" />
+    <Compile Include="TestRules\ParentRuleWithMetadata.cs" />
     <Compile Include="TestRules\RuleWithMetadataAndParentMetadata.cs" />
     <Compile Include="ThreeFactTwoExistsRuleTest.cs" />
     <Compile Include="TestRules\ThreeFactTwoExistsRule.cs" />
