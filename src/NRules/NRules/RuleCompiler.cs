@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NRules.Rete;
 using NRules.RuleModel;
 
@@ -8,22 +9,7 @@ namespace NRules
     /// <summary>
     /// Compiles rules in a canonical rule model form into an executable representation.
     /// </summary>
-    /// <seealso cref="ISessionFactory"/>
-    public interface IRuleCompiler
-    {
-        /// <summary>
-        /// Compiles a collection of rules into a session factory.
-        /// </summary>
-        /// <param name="ruleDefinitions">Rules to compile.</param>
-        /// <returns>Session factory.</returns>
-        /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
-        ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions);
-    }
-
-    /// <summary>
-    /// Compiles rules in a canonical rule model form into an executable representation.
-    /// </summary>
-    public class RuleCompiler : IRuleCompiler
+    public class RuleCompiler
     {
         /// <summary>
         /// Compiles a collection of rules into a session factory.
@@ -51,6 +37,17 @@ namespace NRules
             INetwork network = reteBuilder.Build();
             var factory = new SessionFactory(network);
             return factory;
+        }
+
+        /// <summary>
+        /// Compiles rules from rule sets into a session factory.
+        /// </summary>
+        /// <param name="ruleSets">Rule sets to compile.</param>
+        /// <returns>Session factory.</returns>
+        public ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets)
+        {
+            var rules = ruleSets.SelectMany(x => x.Rules);
+            return Compile(rules);
         }
 
         private ICompiledRule CompileRule(ReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
