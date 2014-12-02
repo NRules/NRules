@@ -25,7 +25,7 @@ namespace NRules
         /// <seealso cref="RuleCompiler"/>
         public static ISessionFactory Compile(this IRuleRepository repository)
         {
-            IRuleCompiler compiler = new RuleCompiler();
+            var compiler = new RuleCompiler();
             ISessionFactory factory = compiler.Compile(repository.GetRules());
             return factory;
         }
