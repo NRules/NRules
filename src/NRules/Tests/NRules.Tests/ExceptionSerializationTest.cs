@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
 
@@ -9,22 +8,6 @@ namespace NRules.Tests
     [TestFixture]
     public class ExceptionSerializationTest
     {
-        private IFormatter _formatter;
-        private Stream _stream;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _formatter = new BinaryFormatter();
-            _stream = new MemoryStream();
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _stream.Close();
-        }
-
         [Test]
         public void RuleActionEvaluationException_SerializedDeserialized_Equals()
         {
@@ -78,10 +61,14 @@ namespace NRules.Tests
 
         private T SerializeDeserialize<T>(T originalObject)
         {
-            _formatter.Serialize(_stream, originalObject);
-            _stream.Seek(0, SeekOrigin.Begin);
-            var newObject = (T) _formatter.Deserialize(_stream);
-            return newObject;
+            var formatter = new BinaryFormatter();
+            using (var stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, originalObject);
+                stream.Seek(0, SeekOrigin.Begin);
+                var newObject = (T) formatter.Deserialize(stream);
+                return newObject;
+            }
         }
     }
 }
