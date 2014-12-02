@@ -5,7 +5,7 @@ namespace NRules.IntegrationTests.TestRules
 {
     [Name("Rule with metadata"), Description("Rule description")]
     [Tag("ChildTag"), Tag("ChildMetadata")]
-    public class RuleWithMetadataAndParentMetadata : BaseRuleWithMetadata
+    public class RuleWithMetadataAndParentMetadata : ParentRuleWithMetadata
     {
         public override void Define()
         {
