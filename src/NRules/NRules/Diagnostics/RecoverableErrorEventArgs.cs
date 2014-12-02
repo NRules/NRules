@@ -3,7 +3,7 @@ using System;
 namespace NRules.Diagnostics
 {
     /// <summary>
-    /// Information related to failure events that allows observer to mark error as handled.
+    /// Information related to failure events that allow observer to mark error as handled.
     /// </summary>
     public class RecoverableErrorEventArgs : ErrorEventArgs
     {

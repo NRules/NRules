@@ -8,6 +8,7 @@ namespace NRules.RuleModel.Builders
     /// Contains methods to specify rule's metadata, as well as create child builders for rule's left-hand side and right-hand side.
     /// Creates <see cref="IRuleDefinition"/>.
     /// </summary>
+    /// <threadsafety instance="false" />
     public class RuleBuilder
     {
         private string _name;

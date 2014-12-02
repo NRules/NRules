@@ -6,7 +6,7 @@ using Tuple = NRules.Rete.Tuple;
 namespace NRules.Diagnostics
 {
     /// <summary>
-    /// Aggregator of rules session events.
+    /// Provider of rules session events.
     /// </summary>
     public interface IEventProvider
     {
