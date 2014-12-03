@@ -18,7 +18,7 @@ namespace SimpleRulesTest
             repository.Load(x => x.From(typeof (Program).Assembly));
             var ruleSets = repository.GetRuleSets();
 
-            IRuleCompiler compiler = new RuleCompiler();
+            var compiler = new RuleCompiler();
             ISessionFactory factory = compiler.Compile(ruleSets);
             ISession session = factory.CreateSession();
 
