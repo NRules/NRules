@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Grouping element based on existential quantifier.
+    /// Grouping element based on the existential quantifier.
     /// </summary>
     public class ExistsElement : GroupElement
     {

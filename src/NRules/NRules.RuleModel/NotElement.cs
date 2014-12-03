@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Grouping element based on logical NOT condition.
+    /// Grouping element based on the logical NOT condition.
     /// </summary>
     public class NotElement : GroupElement
     {
