@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Grouping element based on logical AND condition.
+    /// Grouping element based on the logical AND condition.
     /// </summary>
     public class AndElement : GroupElement
     {

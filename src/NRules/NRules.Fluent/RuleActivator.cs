@@ -4,7 +4,7 @@ using NRules.Fluent.Dsl;
 namespace NRules.Fluent
 {
     /// <summary>
-    /// Rule activator that instantiates rules based on .NET types.
+    /// Rule activator that instantiates rules based on the .NET types.
     /// Default activator uses .NET reflection activator.
     /// </summary>
     public interface IRuleActivator

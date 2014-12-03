@@ -3,7 +3,7 @@
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Production rule definition.
+    /// Production rule definition in the canonical rule model.
     /// </summary>
     public interface IRuleDefinition
     {

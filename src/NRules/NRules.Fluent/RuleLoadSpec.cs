@@ -12,28 +12,28 @@ namespace NRules.Fluent
     public interface IRuleLoadSpec
     {
         /// <summary>
-        /// Specify to load all rule definitions from a given collection of assemblies.
+        /// Specifies to load all rule definitions from a given collection of assemblies.
         /// </summary>
         /// <param name="assemblies">Assemblies to load from.</param>
         /// <returns>Spec to continue fluent configuration.</returns>
         IRuleLoadSpec From(params Assembly[] assemblies);
 
         /// <summary>
-        /// Specify to load rule definitions from a given collection of types.
+        /// Specifies to load rule definitions from a given collection of types.
         /// </summary>
         /// <param name="types">Types that represent rule definitions.</param>
         /// <returns>Spec to continue fluent configuration.</returns>
         IRuleLoadSpec From(params Type[] types);
 
         /// <summary>
-        /// Specify which rules to load by filtering on rule's metadata.
+        /// Specifies which rules to load by filtering on rule's metadata.
         /// </summary>
         /// <param name="filter">Filter condition based on rule's metadata.</param>
         /// <returns>Spec to continue fluent configuration.</returns>
         IRuleLoadSpec Where(Func<IRuleMetadata, bool> filter);
 
         /// <summary>
-        /// Specify the name of the rule set where to load the rules to.
+        /// Specifies the name of the rule set where the rules are loaded to.
         /// If not provided, loads rules into default rule set.
         /// </summary>
         /// <param name="ruleSetName">Name of the rule set to load rules to.</param>

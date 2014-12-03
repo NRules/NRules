@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Grouping element based on logical OR condition.
+    /// Grouping element based on the logical OR condition.
     /// </summary>
     public class OrElement : GroupElement
     {

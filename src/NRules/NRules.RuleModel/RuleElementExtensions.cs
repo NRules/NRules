@@ -5,6 +5,14 @@ namespace NRules.RuleModel
 {
     public static class RuleElementExtensions
     {
+        /// <summary>
+        /// Matches a rule element to an appropriate action based on the concrete type of the rule element.
+        /// Type-safe implementation of discriminated union for rule elements.
+        /// </summary>
+        /// <param name="element">Rule element to match.</param>
+        /// <param name="pattern">Action to invoke on the element if the element is a <see cref="PatternElement"/>.</param>
+        /// <param name="aggregate">Action to invoke on the element if the element is an <see cref="AggregateElement"/>.</param>
+        /// <param name="group">Action to invoke on the element if the element is a <see cref="GroupElement"/>.</param>
         [DebuggerStepThrough]
         public static void Match(this RuleElement element, Action<PatternElement> pattern, Action<AggregateElement> aggregate, Action<GroupElement> group)
         {
@@ -30,6 +38,15 @@ namespace NRules.RuleModel
             }
         }
 
+        /// <summary>
+        /// Matches a group element to an appropriate action based on the concrete type of the group element.
+        /// Type-safe implementation of discriminated union for group elements.
+        /// </summary>
+        /// <param name="element">Group element to match.</param>
+        /// <param name="and">Action to invoke on the element if the element is a <see cref="AndElement"/>.</param>
+        /// <param name="or">Action to invoke on the element if the element is a <see cref="OrElement"/>.</param>
+        /// <param name="not">Action to invoke on the element if the element is a <see cref="NotElement"/>.</param>
+        /// <param name="exists">Action to invoke on the element if the element is a <see cref="ExistsElement"/>.</param>
         [DebuggerStepThrough]
         public static void Match(this GroupElement element, Action<AndElement> and, Action<OrElement> or, Action<NotElement> not, Action<ExistsElement> exists)
         {
