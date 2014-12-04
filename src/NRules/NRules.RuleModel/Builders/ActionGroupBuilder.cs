@@ -34,7 +34,7 @@ namespace NRules.RuleModel.Builders
             _actions.Add(actionElement);
         }
 
-        public ActionGroupElement Build()
+        ActionGroupElement IBuilder<ActionGroupElement>.Build()
         {
             var actionGroup = new ActionGroupElement(_actions);
             return actionGroup;
