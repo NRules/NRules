@@ -8,7 +8,7 @@ namespace NRules.RuleModel
     public class AggregateElement : PatternSourceElement
     {
         /// <summary>
-        /// Type of the aggregate. Must implement <c>IAggregate</c> interface.
+        /// Type of the aggregate. Must implement <see cref="IAggregate"/> interface.
         /// </summary>
         public Type AggregateType { get; private set; }
 
