@@ -1,13 +1,12 @@
-using System.Collections.Generic;
-
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Grouping element based on the logical NOT condition.
+    /// Negative existential quantifier.
     /// </summary>
-    public class NotElement : GroupElement
+    public class NotElement : QuantifierElement
     {
-        internal NotElement(IEnumerable<RuleLeftElement> childElements) : base(childElements)
+        internal NotElement(PatternElement source) 
+            : base(source)
         {
         }
 

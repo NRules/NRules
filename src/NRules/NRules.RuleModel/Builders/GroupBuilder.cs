@@ -17,21 +17,6 @@ namespace NRules.RuleModel.Builders
         /// Logical OR.
         /// </summary>
         Or = 1,
-
-        /// <summary>
-        /// Logical NOT.
-        /// </summary>
-        Not = 2,
-
-        /// <summary>
-        /// Existential quantifier.
-        /// </summary>
-        Exists = 3,
-
-        /// <summary>
-        /// Universal quantifier.
-        /// </summary>
-        ForAll = 4,
     }
 
     /// <summary>
@@ -71,17 +56,20 @@ namespace NRules.RuleModel.Builders
         /// <returns>Group builder.</returns>
         public GroupBuilder Group(GroupType groupType)
         {
-            SymbolTable scope = Scope;
-            switch (groupType)
-            {
-                case GroupType.Exists:
-                case GroupType.Not:
-                case GroupType.ForAll:
-                    scope = Scope.New();
-                    break;
-            }
+            var builder = new GroupBuilder(Scope, groupType);
+            _nestedBuilders.Add(builder);
 
-            var builder = new GroupBuilder(scope, groupType);
+            return builder;
+        }
+
+        /// <summary>
+        /// Creates a group builder that builds a group as a part of the current group.
+        /// </summary>
+        /// <param name="quantifierType">Group type.</param>
+        /// <returns>Quantifier builder.</returns>
+        public QuantifierBuilder Quantifier(QuantifierType quantifierType)
+        {
+            var builder = new QuantifierBuilder(Scope, quantifierType);
             _nestedBuilders.Add(builder);
 
             return builder;
@@ -105,15 +93,6 @@ namespace NRules.RuleModel.Builders
                 case GroupType.Or:
                     groupElement = new OrElement(childElements);
                     break;
-                case GroupType.Not:
-                    groupElement = new NotElement(childElements);
-                    break;
-                case GroupType.Exists:
-                    groupElement = new ExistsElement(childElements);
-                    break;
-                case GroupType.ForAll:
-                    groupElement = new ForAllElement(childElements);
-                    break;
                 default:
                     throw new InvalidOperationException(string.Format("Unrecognized group type. GroupType={0}", _groupType));
             }
@@ -132,24 +111,6 @@ namespace NRules.RuleModel.Builders
                     break;
                 case GroupType.Or:
                     throw new NotSupportedException("Group condition OR is not supported");
-                case GroupType.Not:
-                    if (_nestedBuilders.Count != 1)
-                    {
-                        throw new InvalidOperationException("Group condition NOT requires exactly one child element");
-                    }
-                    break;
-                case GroupType.Exists:
-                    if (_nestedBuilders.Count != 1)
-                    {
-                        throw new InvalidOperationException("Group condition EXISTS requires exactly one child element");
-                    }
-                    break;
-                case GroupType.ForAll:
-                    if (_nestedBuilders.Count != 1)
-                    {
-                        throw new InvalidOperationException("Group condition FORALL requires exactly one child element");
-                    }
-                    break;
             }
         }
     }

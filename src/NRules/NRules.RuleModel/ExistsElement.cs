@@ -1,13 +1,12 @@
-using System.Collections.Generic;
-
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Grouping element based on the existential quantifier.
+    /// Existential quantifier.
     /// </summary>
-    public class ExistsElement : GroupElement
+    public class ExistsElement : QuantifierElement
     {
-        internal ExistsElement(IEnumerable<RuleLeftElement> childElements) : base(childElements)
+        internal ExistsElement(PatternElement source)
+            : base(source)
         {
         }
 

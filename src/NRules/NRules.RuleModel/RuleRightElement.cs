@@ -5,5 +5,6 @@ namespace NRules.RuleModel
     /// </summary>
     public abstract class RuleRightElement : RuleElement
     {
+        internal RuleRightElement() { }
     }
 }

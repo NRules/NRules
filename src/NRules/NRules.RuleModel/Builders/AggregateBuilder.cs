@@ -76,7 +76,7 @@ namespace NRules.RuleModel.Builders
             }
             if (_sourceBuilder == null)
             {
-                throw new InvalidOperationException("Aggregate source builder is not provided");
+                throw new InvalidOperationException("Aggregate source is not provided");
             }
         }
     }

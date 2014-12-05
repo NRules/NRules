@@ -52,6 +52,7 @@
     <Compile Include="Builders\ElementTransform.cs" />
     <Compile Include="Builders\GroupBuilder.cs" />
     <Compile Include="Builders\PatternBuilder.cs" />
+    <Compile Include="Builders\QuantifierBuilder.cs" />
     <Compile Include="Builders\RuleBuilder.cs" />
     <Compile Include="Builders\RuleElementBuilder.cs" />
     <Compile Include="CollectionAggregate.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="IRuleSet.cs" />
     <Compile Include="NotElement.cs" />
     <Compile Include="OrElement.cs" />
+    <Compile Include="QuantifierElement.cs" />
     <Compile Include="RuleLeftElement.cs" />
     <Compile Include="RuleRightElement.cs" />
     <Compile Include="RuleDefinition.cs" />

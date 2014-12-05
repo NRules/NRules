@@ -45,13 +45,13 @@ namespace NRules.Rete
 
         protected override void VisitNot(ReteBuilderContext context, NotElement element)
         {
-            BuildSubnet(context, element.ChildElements.Single());
+            BuildSubnet(context, element.Source);
             BuildNotNode(context);
         }
 
         protected override void VisitExists(ReteBuilderContext context, ExistsElement element)
         {
-            BuildSubnet(context, element.ChildElements.Single());
+            BuildSubnet(context, element.Source);
             BuildExistsNode(context);
         }
 

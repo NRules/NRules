@@ -6,9 +6,19 @@ namespace NRules.RuleModel
 {
     internal class SymbolTable
     {
-        private readonly HashSet<Declaration> _symbolTable = new HashSet<Declaration>();
+        private readonly HashSet<Declaration> _symbolTable;
 
         public SymbolTable ParentScope { get; private set; }
+
+        internal SymbolTable()
+        {
+            _symbolTable = new HashSet<Declaration>();
+        }
+
+        internal SymbolTable(IEnumerable<Declaration> declarations)
+        {
+            _symbolTable = new HashSet<Declaration>(declarations);
+        }
 
         internal SymbolTable New()
         {

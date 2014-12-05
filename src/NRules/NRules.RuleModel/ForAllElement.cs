@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-
-namespace NRules.RuleModel
+﻿namespace NRules.RuleModel
 {
     /// <summary>
-    /// Grouping element based on the universal quantifier.
+    /// Universal quantifier.
     /// </summary>
-    public class ForAllElement : GroupElement
+    public class ForAllElement : QuantifierElement
     {
-        internal ForAllElement(IEnumerable<RuleLeftElement> childElements) : base(childElements)
+        internal ForAllElement(PatternElement source) 
+            : base(source)
         {
         }
 

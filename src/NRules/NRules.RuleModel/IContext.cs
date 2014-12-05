@@ -9,7 +9,7 @@ namespace NRules.RuleModel
     public interface IContext
     {
         /// <summary>
-        /// Halts rules execution. The engine continues execution of the current rule and exists the execution cycle.
+        /// Halts rules execution. The engine continues execution of the current rule and exits the execution cycle.
         /// </summary>
         void Halt();
 

@@ -74,9 +74,9 @@ namespace NRules.Fluent
         {
             var leftHandSide = _builder.LeftHandSide();
 
-            var existsBuilder = leftHandSide.Group(GroupType.Exists);
+            var existsBuilder = leftHandSide.Quantifier(QuantifierType.Exists);
 
-            var patternBuilder = existsBuilder.Pattern(typeof (T));
+            var patternBuilder = existsBuilder.SourcePattern(typeof (T));
             foreach (var condition in conditions)
             {
                 var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
@@ -90,9 +90,9 @@ namespace NRules.Fluent
         {
             var leftHandSide = _builder.LeftHandSide();
 
-            var notBuilder = leftHandSide.Group(GroupType.Not);
+            var notBuilder = leftHandSide.Quantifier(QuantifierType.Not);
 
-            var patternBuilder = notBuilder.Pattern(typeof(T));
+            var patternBuilder = notBuilder.SourcePattern(typeof(T));
             foreach (var condition in conditions)
             {
                 var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
@@ -104,7 +104,7 @@ namespace NRules.Fluent
 
         public ILeftHandSide All<T>(Expression<Func<T, bool>> condition, params Expression<Func<T, bool>>[] conditions)
         {
-            return All<T>(Enumerable.Repeat(condition, 1).Union(conditions));
+            return All(Enumerable.Repeat(condition, 1).Union(conditions));
         }
 
         public IRightHandSide Do(Expression<Action<IContext>> action)
@@ -122,9 +122,9 @@ namespace NRules.Fluent
         {
             var leftHandSide = _builder.LeftHandSide();
 
-            var forallBuilder = leftHandSide.Group(GroupType.ForAll);
+            var forallBuilder = leftHandSide.Quantifier(QuantifierType.ForAll);
 
-            var patternBuilder = forallBuilder.Pattern(typeof(T));
+            var patternBuilder = forallBuilder.SourcePattern(typeof(T));
             foreach (var condition in conditions)
             {
                 var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);

@@ -59,17 +59,17 @@
 
         protected internal virtual void VisitNot(TContext context, NotElement element)
         {
-            VisitGroup(context, element);
+            VisitQuantifier(context, element);
         }
 
         protected internal virtual void VisitExists(TContext context, ExistsElement element)
         {
-            VisitGroup(context, element);
+            VisitQuantifier(context, element);
         }
 
         protected internal virtual void VisitForAll(TContext context, ForAllElement element)
         {
-            VisitGroup(context, element);
+            VisitQuantifier(context, element);
         }
 
         private void VisitGroup(TContext context, GroupElement element)
@@ -78,6 +78,11 @@
             {
                 childElement.Accept(context, this);
             }
+        }
+
+        private void VisitQuantifier(TContext context, QuantifierElement element)
+        {
+            element.Source.Accept(context, this);
         }
     }
 }
