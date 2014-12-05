@@ -36,8 +36,8 @@ namespace NRules.Utilities
 
             protected override Expression VisitParameter(ParameterExpression node)
             {
-                int index;
-                if (_indexMap.TryGetValue(node, out index))
+                int index = _indexMap.IndexOrDefault(node, -1);
+                if (index >= 0)
                 {
                     BinaryExpression arrayLookup = Expression.ArrayIndex(_arrayParameter, Expression.Constant(index));
                     UnaryExpression parameterValue = Expression.Convert(arrayLookup, node.Type);
