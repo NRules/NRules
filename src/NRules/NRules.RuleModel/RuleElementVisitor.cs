@@ -67,6 +67,11 @@
             VisitGroup(context, element);
         }
 
+        protected internal virtual void VisitForAll(TContext context, ForAllElement element)
+        {
+            VisitGroup(context, element);
+        }
+
         private void VisitGroup(TContext context, GroupElement element)
         {
             foreach (RuleLeftElement childElement in element.ChildElements)

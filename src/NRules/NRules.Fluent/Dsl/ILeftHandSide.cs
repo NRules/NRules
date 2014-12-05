@@ -14,7 +14,7 @@ namespace NRules.Fluent.Dsl
         /// </summary>
         /// <typeparam name="T">Type of fact to match.</typeparam>
         /// <param name="alias">Alias for the matching fact.</param>
-        /// <param name="conditions">Set of conditions the fact must satisfy, for the rule to fire.</param>
+        /// <param name="conditions">Set of conditions the fact must satisfy to trigger the rule.</param>
         /// <returns>Left hand side expression builder.</returns>
         ILeftHandSide Match<T>(Expression<Func<T>> alias, params Expression<Func<T, bool>>[] conditions);
 
@@ -23,8 +23,8 @@ namespace NRules.Fluent.Dsl
         /// Does not bind matching fact to a variable.
         /// </summary>
         /// <typeparam name="T">Type of fact to match.</typeparam>
-        /// <param name="condition">Condition the fact must satisfy, for the rule to fire.</param>
-        /// <param name="conditions">Set of additional conditions the fact must satisfy, for the rule to fire.</param>
+        /// <param name="condition">Condition the fact must satisfy to trigger the rule.</param>
+        /// <param name="conditions">Set of additional conditions the fact must satisfy to trigger the rule.</param>
         /// <returns>Left hand side expression builder.</returns>
         ILeftHandSide Match<T>(Expression<Func<T, bool>> condition, params Expression<Func<T, bool>>[] conditions);
 
@@ -50,7 +50,7 @@ namespace NRules.Fluent.Dsl
         /// Defines a pattern that triggers the rule only if there is at least one matching fact (existential quantifier).
         /// </summary>
         /// <typeparam name="T">Type of fact to match.</typeparam>
-        /// <param name="conditions">Set of conditions the facts must satisfy to be trigger the rule.</param>
+        /// <param name="conditions">Set of conditions the facts must satisfy to trigger the rule.</param>
         /// <returns>Left hand side expression builder.</returns>
         ILeftHandSide Exists<T>(params Expression<Func<T, bool>>[] conditions);
 
@@ -61,5 +61,14 @@ namespace NRules.Fluent.Dsl
         /// <param name="conditions">Set of conditions the facts must not satisfy to trigger the rule.</param>
         /// <returns>Left hand side expression builder.</returns>
         ILeftHandSide Not<T>(params Expression<Func<T, bool>>[] conditions);
+
+        /// <summary>
+        /// Defines a pattern that triggers the rule only if all facts of a given type match all the conditions (universal quantifier).
+        /// </summary>
+        /// <typeparam name="T">Type of fact to match.</typeparam>
+        /// <param name="condition">Condition the facts must satisfy to trigger the rule.</param>
+        /// <param name="conditions">Set of additional conditions the facts must satisfy to trigger the rule.</param>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSide All<T>(Expression<Func<T, bool>> condition, params Expression<Func<T, bool>>[] conditions);
     }
 }

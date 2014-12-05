@@ -47,8 +47,9 @@ namespace NRules.RuleModel
         /// <param name="or">Action to invoke on the element if the element is a <see cref="OrElement"/>.</param>
         /// <param name="not">Action to invoke on the element if the element is a <see cref="NotElement"/>.</param>
         /// <param name="exists">Action to invoke on the element if the element is a <see cref="ExistsElement"/>.</param>
+        /// <param name="forall">Action to invoke on the element if the element is a <see cref="ForAllElement"/>.</param>
         [DebuggerStepThrough]
-        public static void Match(this GroupElement element, Action<AndElement> and, Action<OrElement> or, Action<NotElement> not, Action<ExistsElement> exists)
+        public static void Match(this GroupElement element, Action<AndElement> and, Action<OrElement> or, Action<NotElement> not, Action<ExistsElement> exists, Action<ForAllElement> forall)
         {
             if (element == null)
             {
@@ -69,6 +70,10 @@ namespace NRules.RuleModel
             else if (element is ExistsElement)
             {
                 exists.Invoke((ExistsElement)element);
+            }
+            else if (element is ForAllElement)
+            {
+                forall.Invoke((ForAllElement)element);
             }
             else
             {

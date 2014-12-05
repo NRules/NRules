@@ -102,6 +102,11 @@ namespace NRules.Fluent
             return this;
         }
 
+        public ILeftHandSide All<T>(Expression<Func<T, bool>> condition, params Expression<Func<T, bool>>[] conditions)
+        {
+            return All<T>(Enumerable.Repeat(condition, 1).Union(conditions));
+        }
+
         public IRightHandSide Do(Expression<Action<IContext>> action)
         {
             var rightHandSide = _builder.RightHandSide();
@@ -110,6 +115,22 @@ namespace NRules.Fluent
             var rewrittenAction = rewriter.Rewrite(action);
             rightHandSide.Action(rewrittenAction);
 
+            return this;
+        }
+
+        private ILeftHandSide All<T>(IEnumerable<Expression<Func<T, bool>>> conditions)
+        {
+            var leftHandSide = _builder.LeftHandSide();
+
+            var forallBuilder = leftHandSide.Group(GroupType.ForAll);
+
+            var patternBuilder = forallBuilder.Pattern(typeof(T));
+            foreach (var condition in conditions)
+            {
+                var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
+                var rewrittenCondition = rewriter.Rewrite(condition);
+                patternBuilder.Condition(rewrittenCondition);
+            }
             return this;
         }
 

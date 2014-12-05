@@ -50,6 +50,7 @@
     <Compile Include="TestRules\IdentityMatchRule.cs" />
     <Compile Include="TestRules\ParentRuleWithMetadata.cs" />
     <Compile Include="TestRules\RuleWithMetadataAndParentMetadata.cs" />
+    <Compile Include="TestRules\TwoFactOneForAllCheckRule.cs" />
     <Compile Include="ThreeFactTwoExistsRuleTest.cs" />
     <Compile Include="TestRules\ThreeFactTwoExistsRule.cs" />
     <Compile Include="ThreeFactTwoNotRuleTest.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="TestRules\OneFactOneNotRule.cs" />
     <Compile Include="TestRules\RuleWithMetadata.cs" />
     <Compile Include="TestRules\RuleWithoutMetadata.cs" />
+    <Compile Include="TwoFactOneForAllCheckRuleTest.cs" />
     <Compile Include="TwoFactOneNotRuleTest.cs" />
     <Compile Include="HaltRuleTest.cs" />
     <Compile Include="TestRules\TwoFactOneNotRule.cs" />

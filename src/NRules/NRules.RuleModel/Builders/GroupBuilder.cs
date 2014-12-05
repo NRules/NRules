@@ -27,6 +27,11 @@ namespace NRules.RuleModel.Builders
         /// Existential quantifier.
         /// </summary>
         Exists = 3,
+
+        /// <summary>
+        /// Universal quantifier.
+        /// </summary>
+        ForAll = 4,
     }
 
     /// <summary>
@@ -71,6 +76,7 @@ namespace NRules.RuleModel.Builders
             {
                 case GroupType.Exists:
                 case GroupType.Not:
+                case GroupType.ForAll:
                     scope = Scope.New();
                     break;
             }
@@ -105,6 +111,9 @@ namespace NRules.RuleModel.Builders
                 case GroupType.Exists:
                     groupElement = new ExistsElement(childElements);
                     break;
+                case GroupType.ForAll:
+                    groupElement = new ForAllElement(childElements);
+                    break;
                 default:
                     throw new InvalidOperationException(string.Format("Unrecognized group type. GroupType={0}", _groupType));
             }
@@ -133,6 +142,12 @@ namespace NRules.RuleModel.Builders
                     if (_nestedBuilders.Count != 1)
                     {
                         throw new InvalidOperationException("Group condition EXISTS requires exactly one child element");
+                    }
+                    break;
+                case GroupType.ForAll:
+                    if (_nestedBuilders.Count != 1)
+                    {
+                        throw new InvalidOperationException("Group condition FORALL requires exactly one child element");
                     }
                     break;
             }

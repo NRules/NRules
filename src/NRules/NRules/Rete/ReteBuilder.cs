@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NRules.RuleModel;
+using NRules.RuleModel.Builders;
 
 namespace NRules.Rete
 {
@@ -25,7 +26,8 @@ namespace NRules.Rete
 
         protected override void VisitAnd(ReteBuilderContext context, AndElement element)
         {
-            context.BetaSource = _dummyNode;
+            if (context.BetaSource == null)
+                context.BetaSource = _dummyNode;
             foreach (var childElement in element.ChildElements)
             {
                 Visit(context, childElement);
@@ -51,6 +53,12 @@ namespace NRules.Rete
         {
             BuildSubnet(context, element.ChildElements.Single());
             BuildExistsNode(context);
+        }
+
+        protected override void VisitForAll(ReteBuilderContext context, ForAllElement element)
+        {
+            var normalizedElement = ElementTransform.Normalize(element);
+            Visit(context, normalizedElement);
         }
 
         protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
