@@ -20,6 +20,9 @@ build/
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
+# NUnit test Results
+TestResult.xml
+
 *_i.c
 *_p.c
 *_i.h

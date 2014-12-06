@@ -13,6 +13,9 @@ $version = "$product_version.$build_number"
 $components = @{
 	'NRules' = @{
 		name = 'NRules'
+		test = @{
+			include = @('*Tests.dll')
+		}
 		merge = @{
 			include = @('NRules*.dll')
 			exclude = @('**Tests.dll')

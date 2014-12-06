@@ -78,6 +78,12 @@ task Compile -depends Init, Clean, SetVersion, RestoreTools, RestoreDependencies
 	exec { &$script:msbuild_exec $solution_file /p:OutDir=$output /p:Configuration=$configuration /v:m /nologo }
 }
 
+task Test -depends Compile -precondition { return $component.ContainsKey('test') } {
+	$test_files = @()
+	$test_files += Get-ChildItem "$out_dir\*.*" -Include $component.test.include -Exclude $component.test.exclude
+	exec { &$script:nunit_exec $test_files /nologo /framework:$target_framework /config:$configuration }
+}
+
 task Merge -depends Compile -precondition { return $component.ContainsKey('merge') } {
 	Create-Directory $merge_dir
 	
@@ -97,7 +103,7 @@ task Merge -depends Compile -precondition { return $component.ContainsKey('merge
 	exec { &$script:ilmerge_exec /out:$output /log $keyfileOption $script:ilmerge_target_framework $assemblies /xmldocs /attr:$attribute_file }
 }
 
-task Build -depends Compile, Merge, ResetVersion {
+task Build -depends Compile, Test, Merge, ResetVersion {
 	Create-Directory $binaries_dir
 	
 	if ($component.ContainsKey('merge') -and $component.bin.merge_include) {
