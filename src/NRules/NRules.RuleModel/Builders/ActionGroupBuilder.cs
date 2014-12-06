@@ -19,7 +19,9 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Adds a rule action to the group.
         /// </summary>
-        /// <param name="expression">Rule action expression.</param>
+        /// <param name="expression">Rule action expression.
+        /// The first parameter of the action expression must be <see cref="IContext"/>.
+        /// Names and types of the rest of the expression parameters must match the names and types defined in the pattern declarations.</param>
         public void Action(LambdaExpression expression)
         {
             if (expression.Parameters.Count == 0 ||

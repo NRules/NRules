@@ -21,7 +21,8 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Adds a condition expression to the pattern.
         /// </summary>
-        /// <param name="expression">Condition expression.</param>
+        /// <param name="expression">Condition expression.
+        /// Names and types of the expression parameters must match the names and types defined in the pattern declarations.</param>
         public void Condition(LambdaExpression expression)
         {
             IEnumerable<Declaration> declarations = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
