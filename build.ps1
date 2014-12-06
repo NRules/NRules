@@ -57,4 +57,7 @@ if ($component_name) {
 Import-Module .\tools\build\psake.psm1
 $component_list | % {
 	Invoke-psake .\default.ps1 $target -properties @{version=$version} -parameters @{component=$components[$_]}
+	if (-not $psake.build_success) {
+		break
+	}
 }
