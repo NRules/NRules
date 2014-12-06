@@ -30,10 +30,12 @@ task Init {
 	$script:nuget_dir = "$build_dir\NuGet\$comp_name"
 	$script:packages_dir = "$base_dir\packages"
 	$script:help_dir = "$base_dir\help"
+	$script:tools_restore_dir = "$tools_dir\packages"
 	
-	$script:nuget_exec = "$tools_dir\NuGet\nuget.exe"
-	$script:zip_exec = "$tools_dir\7-zip\7za.exe"
-	$script:ilmerge_exec = "$tools_dir\IlMerge\ilmerge.exe"
+	$script:nuget_exec = "$tools_dir\.nuget\nuget.exe"
+	$script:zip_exec = "$tools_restore_dir\7-Zip.CommandLine.9.20.0\tools\7za.exe"
+	$script:ilmerge_exec = "$tools_restore_dir\ilmerge.2.14.1203\content\ilmerge.exe"
+	$script:nunit_exec = "$tools_restore_dir\NUnit.Runners.2.6.3\tools\nunit-console.exe"
 	
 	if ($target_framework -eq "net-4.0") {
 		$framework_root = Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
@@ -59,11 +61,15 @@ task ResetVersion {
 	Reset-AssemblyVersion
 }
 
+task RestoreTools { 
+	exec { &$script:nuget_exec restore $tools_dir -NonInteractive }
+}
+
 task RestoreDependencies { 
 	exec { &$script:nuget_exec restore $src_dir -NonInteractive }
 }
 
-task Compile -depends Init, Clean, SetVersion, RestoreDependencies {
+task Compile -depends Init, Clean, SetVersion, RestoreTools, RestoreDependencies {
 	Create-Directory $build_dir
 	Create-Directory $out_dir
 	
