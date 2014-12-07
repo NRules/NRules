@@ -1,8 +1,8 @@
-﻿using MissManners.Domain;
-using NRules.Fluent.Dsl;
+﻿using NRules.Fluent.Dsl;
 using NRules.RuleModel;
+using NRules.Samples.MissManners.Domain;
 
-namespace MissManners.Rules
+namespace NRules.Samples.MissManners.Rules
 {
     [Name("AssignFirstSeat")]
     public class AssignFirstSeat : Rule

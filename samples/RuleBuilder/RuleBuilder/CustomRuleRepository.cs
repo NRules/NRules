@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
-namespace RuleBuilder
+namespace NRules.Samples.RuleBuilder
 {
     public class CustomRuleRepository : IRuleRepository
     {

@@ -1,6 +1,4 @@
-﻿using NRules;
-
-namespace RuleBuilder
+﻿namespace NRules.Samples.RuleBuilder
 {
     internal class Program
     {

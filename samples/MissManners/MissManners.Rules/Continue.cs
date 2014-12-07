@@ -1,7 +1,7 @@
-using MissManners.Domain;
 using NRules.Fluent.Dsl;
+using NRules.Samples.MissManners.Domain;
 
-namespace MissManners.Rules
+namespace NRules.Samples.MissManners.Rules
 {
     [Name("Continue")]
     public class Continue : Rule

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
-using MissManners.Domain;
-using MissManners.Rules;
-using NRules;
 using NRules.Diagnostics;
 using NRules.Fluent;
+using NRules.Samples.MissManners.Domain;
+using NRules.Samples.MissManners.Rules;
 
-namespace MissManners
+namespace NRules.Samples.MissManners
 {
     public class Program
     {

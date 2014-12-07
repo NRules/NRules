@@ -1,4 +1,4 @@
-﻿namespace SimpleRulesTest
+﻿namespace NRules.Samples.SimpleRules
 {
     public enum SexTypes
     {

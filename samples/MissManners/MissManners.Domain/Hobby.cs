@@ -1,6 +1,6 @@
 using System;
 
-namespace MissManners.Domain
+namespace NRules.Samples.MissManners.Domain
 {
     public class Hobby : IEquatable<Hobby>
     {

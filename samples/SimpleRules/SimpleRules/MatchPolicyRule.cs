@@ -1,7 +1,7 @@
 ﻿using System;
 using NRules.Fluent.Dsl;
 
-namespace SimpleRulesTest
+namespace NRules.Samples.SimpleRules
 {
     public class MatchPolicyRule : Rule
     {

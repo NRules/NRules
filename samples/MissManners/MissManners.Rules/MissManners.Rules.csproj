@@ -8,8 +8,8 @@
     <ProjectGuid>{705730F0-2CDA-453C-901D-C154AD4CB636}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MissManners.Rules</RootNamespace>
-    <AssemblyName>MissManners.Rules</AssemblyName>
+    <RootNamespace>NRules.Samples.MissManners.Rules</RootNamespace>
+    <AssemblyName>NRules.Samples.MissManners.Rules</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,7 +39,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
+    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AreWeDone.cs" />

@@ -8,8 +8,8 @@
     <ProjectGuid>{A13627E3-64E8-4C60-AC9A-F4413C717503}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MissManners.Domain</RootNamespace>
-    <AssemblyName>MissManners.Domain</AssemblyName>
+    <RootNamespace>NRules.Samples.MissManners.Domain</RootNamespace>
+    <AssemblyName>NRules.Samples.MissManners.Domain</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -35,7 +35,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
+    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Chosen.cs" />

@@ -1,4 +1,4 @@
-﻿namespace MissManners.Domain
+﻿namespace NRules.Samples.MissManners.Domain
 {
     public class Seating
     {

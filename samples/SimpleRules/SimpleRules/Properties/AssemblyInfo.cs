@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("SimpleRulesTest")]
+[assembly: AssemblyTitle("NRules.Samples.SimpleRules")]
 [assembly: AssemblyDescription("")]
 [assembly: ComVisible(false)]

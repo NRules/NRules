@@ -1,4 +1,4 @@
-﻿namespace RuleBuilder
+﻿namespace NRules.Samples.RuleBuilder
 {
     public class Customer
     {

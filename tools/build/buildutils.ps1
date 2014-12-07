@@ -45,10 +45,12 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $assemblyInfoFile
 }
 
 function Update-AssemblyVersion([string] $version){
+	Update-AssemblyInfoFiles $version "GlobalAssemblyInfo.cs"
 	Update-AssemblyInfoFiles $version "CommonAssemblyInfo.cs"
 }
 
 function Reset-AssemblyVersion(){
 	Update-AssemblyInfoFiles "1.0.0.0" "CommonAssemblyInfo.cs"
+	Update-AssemblyInfoFiles "1.0.0.0" "GlobalAssemblyInfo.cs"
 }
 

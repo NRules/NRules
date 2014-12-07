@@ -1,7 +1,6 @@
-﻿using NRules;
-using NRules.Fluent;
+﻿using NRules.Fluent;
 
-namespace SimpleRulesTest
+namespace NRules.Samples.SimpleRules
 {
     internal class Program
     {
