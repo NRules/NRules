@@ -20,7 +20,7 @@ namespace NRules.Fluent.Expressions
         protected override void InitParameters(LambdaExpression expression)
         {
             _originalParameter = expression.Parameters.Single();
-            _normalizedParameter = Expression.Parameter(_patternDeclaration.Type, _patternDeclaration.Name);
+            _normalizedParameter = _patternDeclaration.ToParameterExpression();
             Parameters.Add(_normalizedParameter);
         }
 

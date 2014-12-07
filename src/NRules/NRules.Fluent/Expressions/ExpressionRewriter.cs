@@ -35,7 +35,7 @@ namespace NRules.Fluent.Expressions
                 ParameterExpression parameter = Parameters.FirstOrDefault(p => p.Name == declaration.Name);
                 if (parameter == null)
                 {
-                    parameter = Expression.Parameter(declaration.Type, declaration.Name);
+                    parameter = declaration.ToParameterExpression();
                     Parameters.Add(parameter);
                 }
                 else if (parameter.Type != declaration.Type)
