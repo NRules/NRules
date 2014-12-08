@@ -1,6 +1,6 @@
 param (
 	[string]$target = 'Build',
-	[string]$component_name
+	[string]$component_name = 'Core'
 )
 
 $product_version = '0.2'
@@ -68,12 +68,19 @@ $components = @{
 	};
 }
 
+$core = @('NRules', 'NRules.Debugger.Visualizer')
+$samples = $components.keys | where { $_.StartsWith("Samples.") }
+
 $component_list = @()
-if ($component_name) {
-	$component_list += $component_name
+if ($component_name -eq "Core") {
+	$component_list += $core
+} elseif ($component_name -eq "Samples") {
+	$component_list += $samples
+} elseif ($component_name -eq "All") {
+	$component_list += $core
+	$component_list += $samples
 } else {
-	$component_list += @('NRules', 'NRules.Debugger.Visualizer')
-	$component_list += $components.keys | where { $_.StartsWith("Samples.") }
+	$component_list += $component_name
 }
 
 Import-Module .\tools\build\psake.psm1
