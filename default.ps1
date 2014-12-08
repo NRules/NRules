@@ -22,8 +22,10 @@ task Init {
 	Write-Host "Building $($component.name) version $version" -ForegroundColor Green
 	
 	$comp_name = $component.name
+	$src_root = if ($component.ContainsKey('src_root')) { $component.src_root } else { 'src' }
+	
 	$script:binaries_dir = "$base_dir\binaries\$comp_name"
-	$script:src_dir = "$base_dir\src\$comp_name"
+	$script:src_dir = "$base_dir\$src_root\$comp_name"
 	$script:build_dir = "$base_dir\build"
 	$script:out_dir =  "$build_dir\output\$comp_name"
 	$script:merge_dir = "$build_dir\merge\$comp_name"

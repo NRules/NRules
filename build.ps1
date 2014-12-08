@@ -44,7 +44,28 @@ $components = @{
 				name = "NRules.Debugger.Visualizer.$version.zip"
 			}
 		}
-	}
+	};
+	'Samples.SimpleRules' = @{
+		name = 'SimpleRules'
+		src_root = 'samples'
+		bin = @{
+			out_include = @('*.*')
+		}
+	};
+	'Samples.MissManners' = @{
+		name = 'MissManners'
+		src_root = 'samples'
+		bin = @{
+			out_include = @('*.*')
+		}
+	};
+	'Samples.RuleBuilder' = @{
+		name = 'RuleBuilder'
+		src_root = 'samples'
+		bin = @{
+			out_include = @('*.*')
+		}
+	};
 }
 
 $component_list = @()
@@ -52,6 +73,7 @@ if ($component_name) {
 	$component_list += $component_name
 } else {
 	$component_list += @('NRules', 'NRules.Debugger.Visualizer')
+	$component_list += $components.keys | where { $_.StartsWith("Samples.") }
 }
 
 Import-Module .\tools\build\psake.psm1
