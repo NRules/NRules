@@ -22,7 +22,7 @@ namespace NRules
     /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
     /// <event cref="IEventProvider.ConditionFailedEvent">When there is an error during condition evaluation,
     /// before throwing exception to the client.</event>
-    /// <event cref="IEventProvider.ActionFailedEvent">>When there is an error during action evaluation,
+    /// <event cref="IEventProvider.ActionFailedEvent">When there is an error during action evaluation,
     /// before throwing exception to the client.</event>
     /// <exception cref="RuleConditionEvaluationException">Error while evaluating any of the rules' conditions.
     /// This exception can also be observed as an event <see cref="IEventProvider.ConditionFailedEvent"/>.</exception>
