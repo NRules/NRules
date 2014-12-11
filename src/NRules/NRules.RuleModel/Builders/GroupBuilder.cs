@@ -50,7 +50,7 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Creates a group builder that builds a group as a part of the current group.
+        /// Creates a group builder that builds a group as part of the current group.
         /// </summary>
         /// <param name="groupType">Group type.</param>
         /// <returns>Group builder.</returns>
@@ -58,20 +58,39 @@ namespace NRules.RuleModel.Builders
         {
             var builder = new GroupBuilder(Scope, groupType);
             _nestedBuilders.Add(builder);
-
             return builder;
         }
 
         /// <summary>
-        /// Creates a group builder that builds a group as a part of the current group.
+        /// Creates a builder for an existential element as part of the current group.
         /// </summary>
-        /// <param name="quantifierType">Group type.</param>
-        /// <returns>Quantifier builder.</returns>
-        public QuantifierBuilder Quantifier(QuantifierType quantifierType)
+        /// <returns>Existential builder.</returns>
+        public ExistsBuilder Exists()
         {
-            var builder = new QuantifierBuilder(Scope, quantifierType);
+            var builder = new ExistsBuilder(Scope);
             _nestedBuilders.Add(builder);
+            return builder;
+        }
 
+        /// <summary>
+        /// Creates a builder for a negative existential element as part of the current group.
+        /// </summary>
+        /// <returns>Negative existential builder.</returns>
+        public NotBuilder Not()
+        {
+            var builder = new NotBuilder(Scope);
+            _nestedBuilders.Add(builder);
+            return builder;
+        }
+
+        /// <summary>
+        /// Creates a builder for a forall element as part of the current group.
+        /// </summary>
+        /// <returns>Forall builder.</returns>
+        public ForAllBuilder ForAll()
+        {
+            var builder = new ForAllBuilder(Scope);
+            _nestedBuilders.Add(builder);
             return builder;
         }
 
@@ -110,7 +129,11 @@ namespace NRules.RuleModel.Builders
                     }
                     break;
                 case GroupType.Or:
-                    throw new NotSupportedException("Group condition OR is not supported");
+                    if (_nestedBuilders.Count < 1)
+                    {
+                        throw new InvalidOperationException("Group condition OR requires at least one child element");
+                    }
+                    break;
             }
         }
     }

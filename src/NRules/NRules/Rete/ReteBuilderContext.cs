@@ -34,7 +34,7 @@ namespace NRules.Rete
         {
             var positionMap = declarations.ToIndexMap();
             var mask = _declarationOrder
-                .Select(x => positionMap.IndexOrDefault(x, -1)).ToArray();
+                .Select(positionMap.IndexOrDefault).ToArray();
             return new TupleMask(mask);
         }
 

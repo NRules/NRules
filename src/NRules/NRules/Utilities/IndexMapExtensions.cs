@@ -17,21 +17,20 @@ namespace NRules.Utilities
         }
 
         /// <summary>
-        /// Returns element's index or null.
+        /// Returns element's index or -1.
         /// </summary>
         /// <typeparam name="TElement">Type of element in the index map.</typeparam>
         /// <param name="indexMap">Index map.</param>
         /// <param name="element">Element to lookup.</param>
-        /// <param name="defaultValue">Default index if element not in the index map.</param>
         /// <returns></returns>
-        public static int IndexOrDefault<TElement>(this Dictionary<TElement, int> indexMap, TElement element, int defaultValue)
+        public static int IndexOrDefault<TElement>(this Dictionary<TElement, int> indexMap, TElement element)
         {
             int index;
             if (indexMap.TryGetValue(element, out index))
             {
                 return index;
             }
-            return defaultValue;
+            return -1;
         }
     }
 }

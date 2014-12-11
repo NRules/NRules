@@ -39,7 +39,7 @@ namespace NRules.RuleModel.Builders
         /// Creates an aggregate builder that builds the source of the pattern.
         /// </summary>
         /// <returns>Aggregate builder.</returns>
-        public AggregateBuilder SourceAggregate()
+        public AggregateBuilder Aggregate()
         {
             if (_sourceBuilder != null)
             {

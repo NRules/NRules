@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
+    [TestFixture, Explicit]
     public class TwoFactOneForAllCheckRuleTest : BaseRuleTestFixture
     {
         [Test]
@@ -62,10 +62,10 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingFactsOfTypeOneMultipleOfTypeTwo_FiresTwice()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
             var fact3 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
-            var fact4 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact1.TestProperty};
+            var fact4 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact2.TestProperty};
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -77,6 +77,31 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
+        }
+
+        [Test]
+        public void Fire_MatchingFactsOfTypeOneOnlyOneOfTypeTwo_FiresOnce()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact3 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
+            var fact4 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact1.TestProperty};
+            var fact5 = new FactType2 {TestProperty = "Valid Value 5", JoinProperty = fact2.TestProperty};
+            var fact6 = new FactType2 {TestProperty = "Invalid Value 6", JoinProperty = fact2.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+            Session.Insert(fact3);
+            Session.Insert(fact4);
+            Session.Insert(fact5);
+            Session.Insert(fact6);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
         }
 
         [Test]

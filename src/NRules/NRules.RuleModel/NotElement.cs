@@ -3,11 +3,16 @@ namespace NRules.RuleModel
     /// <summary>
     /// Negative existential quantifier.
     /// </summary>
-    public class NotElement : QuantifierElement
+    public class NotElement : RuleLeftElement
     {
-        internal NotElement(PatternElement source) 
-            : base(source)
+        /// <summary>
+        /// Fact source of the quantifier.
+        /// </summary>
+        public RuleLeftElement Source { get; private set; }
+
+        internal NotElement(RuleLeftElement source)
         {
+            Source = source;
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

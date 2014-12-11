@@ -7,21 +7,43 @@ namespace NRules.RuleModel.Builders
     {
         public static RuleElement Normalize(ForAllElement element)
         {
-            var declarations = element.Source.Conditions.SelectMany(x => x.Declarations);
+            //forall -> not(base and not(patterns))
+            var declarations = Enumerable.Repeat(element.BasePattern, 1).Union(element.Patterns)
+                .SelectMany(x => x.Conditions).SelectMany(x => x.Declarations);
             var symbolTable = new SymbolTable(declarations);
-            var groupBuilder = new GroupBuilder(symbolTable, GroupType.And);
 
-            foreach (var condition in element.Source.Conditions)
+            var notBuilder = new NotBuilder(symbolTable);
+            var groupBuilder = notBuilder.Group();
+
+            Declaration declaration = element.BasePattern.Declaration;
+            var basePatternBuilder = groupBuilder.Pattern(declaration.Type, declaration.Name);
+            foreach (var condition in element.BasePattern.Conditions)
             {
-                var expression = condition.Expression;
-                var negatedExpression = Expression.Lambda(Expression.Not(expression.Body), expression.Parameters);
-
-                groupBuilder.Quantifier(QuantifierType.Not)
-                    .SourcePattern(element.Source.ValueType)
-                    .Condition(negatedExpression);
+                basePatternBuilder.Condition(condition.Expression);
             }
 
-            IBuilder<GroupElement> builder = groupBuilder;
+            var baseParameter = basePatternBuilder.Declaration.ToParameterExpression();
+
+            foreach (var pattern in element.Patterns)
+            {
+                var patternBuilder = groupBuilder
+                    .Not()
+                    .Pattern(declaration.Type);
+                
+                var parameter = patternBuilder.Declaration.ToParameterExpression();
+                //Join is required to correlate negated patterns with the base pattern
+                patternBuilder.Condition(
+                    Expression.Lambda(
+                        Expression.ReferenceEqual(baseParameter, parameter), 
+                        baseParameter, parameter));
+                
+                foreach (var condition in pattern.Conditions)
+                {
+                    patternBuilder.Condition(condition.Expression);
+                }
+            }
+
+            IBuilder<NotElement> builder = notBuilder;
             return builder.Build();
         }
     }

@@ -57,10 +57,10 @@ namespace NRules.Fluent
 
             var outerPatternBuilder = leftHandSide.Pattern(collectionSymbol.Type, collectionSymbol.Name);
 
-            var aggregateBuilder = outerPatternBuilder.SourceAggregate();
+            var aggregateBuilder = outerPatternBuilder.Aggregate();
             aggregateBuilder.CollectionOf(typeof (T));
 
-            var patternBuilder = aggregateBuilder.SourcePattern(typeof (T));
+            var patternBuilder = aggregateBuilder.Pattern(typeof (T));
             foreach (var condition in itemConditions)
             {
                 var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
@@ -74,9 +74,9 @@ namespace NRules.Fluent
         {
             var leftHandSide = _builder.LeftHandSide();
 
-            var existsBuilder = leftHandSide.Quantifier(QuantifierType.Exists);
+            var existsBuilder = leftHandSide.Exists();
 
-            var patternBuilder = existsBuilder.SourcePattern(typeof (T));
+            var patternBuilder = existsBuilder.Pattern(typeof (T));
             foreach (var condition in conditions)
             {
                 var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
@@ -90,9 +90,9 @@ namespace NRules.Fluent
         {
             var leftHandSide = _builder.LeftHandSide();
 
-            var notBuilder = leftHandSide.Quantifier(QuantifierType.Not);
+            var notBuilder = leftHandSide.Not();
 
-            var patternBuilder = notBuilder.SourcePattern(typeof(T));
+            var patternBuilder = notBuilder.Pattern(typeof(T));
             foreach (var condition in conditions)
             {
                 var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
@@ -102,9 +102,14 @@ namespace NRules.Fluent
             return this;
         }
 
-        public ILeftHandSide All<T>(Expression<Func<T, bool>> condition, params Expression<Func<T, bool>>[] conditions)
+        public ILeftHandSide All<T>(Expression<Func<T, bool>> condition)
         {
-            return All(Enumerable.Repeat(condition, 1).Union(conditions));
+            return All(x => true, new [] {condition});
+        }
+
+        public ILeftHandSide All<T>(Expression<Func<T, bool>> baseCondition, params Expression<Func<T, bool>>[] conditions)
+        {
+            return ForAll(baseCondition, conditions);
         }
 
         public IRightHandSide Do(Expression<Action<IContext>> action)
@@ -118,13 +123,18 @@ namespace NRules.Fluent
             return this;
         }
 
-        private ILeftHandSide All<T>(IEnumerable<Expression<Func<T, bool>>> conditions)
+        private ILeftHandSide ForAll<T>(Expression<Func<T, bool>> baseCondition, IEnumerable<Expression<Func<T, bool>>> conditions)
         {
             var leftHandSide = _builder.LeftHandSide();
 
-            var forallBuilder = leftHandSide.Quantifier(QuantifierType.ForAll);
-
-            var patternBuilder = forallBuilder.SourcePattern(typeof(T));
+            var forallBuilder = leftHandSide.ForAll();
+            var basePatternBuilder = forallBuilder.BasePattern(typeof(T));
+            {
+                var rewriter = new ConditionRewriter(basePatternBuilder.Declaration, leftHandSide.Declarations);
+                var rewrittenCondition = rewriter.Rewrite(baseCondition);
+                basePatternBuilder.Condition(rewrittenCondition);
+            }
+            var patternBuilder = forallBuilder.Pattern(typeof(T));
             foreach (var condition in conditions)
             {
                 var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);

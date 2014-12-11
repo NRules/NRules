@@ -63,12 +63,21 @@ namespace NRules.Fluent.Dsl
         ILeftHandSide Not<T>(params Expression<Func<T, bool>>[] conditions);
 
         /// <summary>
-        /// Defines a pattern that triggers the rule only if all facts of a given type match all the conditions (universal quantifier).
+        /// Defines a pattern that triggers the rule only if all facts that match the base condition
+        /// also match all the remaining conditions (universal quantifier).
         /// </summary>
         /// <typeparam name="T">Type of fact to match.</typeparam>
-        /// <param name="condition">Condition the facts must satisfy to trigger the rule.</param>
-        /// <param name="conditions">Set of additional conditions the facts must satisfy to trigger the rule.</param>
+        /// <param name="baseCondition">Base condition that filters the facts to match the remaining conditions.</param>
+        /// <param name="conditions">Set of additional conditions that all matching facts must satisfy to trigger the rule.</param>
         /// <returns>Left hand side expression builder.</returns>
-        ILeftHandSide All<T>(Expression<Func<T, bool>> condition, params Expression<Func<T, bool>>[] conditions);
+        ILeftHandSide All<T>(Expression<Func<T, bool>> baseCondition, params Expression<Func<T, bool>>[] conditions);
+
+        /// <summary>
+        /// Defines a pattern that triggers the rule only if all facts of a given type match the condition.
+        /// </summary>
+        /// <typeparam name="T">Type of fact to match.</typeparam>
+        /// <param name="condition">Condition that all facts of a given type must satisfy to trigger the rule.</param>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSide All<T>(Expression<Func<T, bool>> condition);
     }
 }

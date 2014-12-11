@@ -40,7 +40,7 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="type">Type of the element the pattern matches.</param>
         /// <returns>Pattern builder.</returns>
-        public PatternBuilder SourcePattern(Type type)
+        public PatternBuilder Pattern(Type type)
         {
             if (_sourceBuilder != null)
             {

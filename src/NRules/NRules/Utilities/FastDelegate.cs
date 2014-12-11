@@ -28,7 +28,6 @@ namespace NRules.Utilities
             {
                 _arrayParameter = Expression.Parameter(typeof (object[]));
                 _indexMap = expression.Parameters.ToIndexMap();
-
                 Expression body = Visit(expression.Body);
                 Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(body, _arrayParameter);
                 return optimizedLambda;
@@ -36,7 +35,7 @@ namespace NRules.Utilities
 
             protected override Expression VisitParameter(ParameterExpression node)
             {
-                int index = _indexMap.IndexOrDefault(node, -1);
+                int index = _indexMap.IndexOrDefault(node);
                 if (index >= 0)
                 {
                     BinaryExpression arrayLookup = Expression.ArrayIndex(_arrayParameter, Expression.Constant(index));
