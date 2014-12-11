@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture, Explicit]
+    [TestFixture]
     public class TwoFactOneForAllCheckRuleTest : BaseRuleTestFixture
     {
         [Test]
