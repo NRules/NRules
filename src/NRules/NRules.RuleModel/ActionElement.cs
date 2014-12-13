@@ -6,7 +6,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Action executed by the engine when the rule fires.
     /// </summary>
-    public class ActionElement : RuleRightElement
+    public class ActionElement : RuleElement
     {
         private readonly List<Declaration> _declarations;
 
