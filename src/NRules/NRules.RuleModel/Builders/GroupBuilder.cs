@@ -40,13 +40,20 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
-            SymbolTable scope = Scope.New();
-            Declaration declaration = scope.Declare(type, name);
+            Declaration declaration = Scope.Declare(type, name);
+            return Pattern(declaration);
+        }
 
-            var builder = new PatternBuilder(scope, declaration);
+        /// <summary>
+        /// Creates a pattern builder that builds a pattern as part of the current group.
+        /// </summary>
+        /// <param name="declaration">Pattern declaration.</param>
+        /// <returns>Pattern builder.</returns>
+        public PatternBuilder Pattern(Declaration declaration)
+        {
+            var builder = new PatternBuilder(Scope, declaration);
             _nestedBuilders.Add(builder);
-
-            return builder;
+            return builder;            
         }
 
         /// <summary>

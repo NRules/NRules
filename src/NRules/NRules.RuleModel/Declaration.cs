@@ -7,12 +7,18 @@ namespace NRules.RuleModel
     /// </summary>
     public class Declaration : IEquatable<Declaration>
     {
-        internal Declaration(Type type, string name, bool isLocal)
+        internal Declaration(Type type, string name, string scopeName)
         {
-            Name = name;
             Type = type;
-            IsLocal = isLocal;
+            Name = name;
+            ScopeName = scopeName;
+            FullName = (scopeName == null) ? Name : ScopeName + SymbolTable.ScopeSeparator + Name;
         }
+
+        /// <summary>
+        /// Symbol name qualified with the scope name.
+        /// </summary>
+        public string FullName { get; private set; }
 
         /// <summary>
         /// Symbol name.
@@ -20,14 +26,14 @@ namespace NRules.RuleModel
         public string Name { get; private set; }
 
         /// <summary>
+        /// Name of the enclosing scope.
+        /// </summary>
+        public string ScopeName { get; set; }
+
+        /// <summary>
         /// Symbol type.
         /// </summary>
         public Type Type { get; private set; }
-
-        /// <summary>
-        /// Indicates whether the symbol is local or exposed in an outer scope.
-        /// </summary>
-        public bool IsLocal { get; private set; }
 
         /// <summary>
         /// Rule element that this declaration is referencing.
@@ -38,7 +44,7 @@ namespace NRules.RuleModel
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(Name, other.Name);
+            return string.Equals(FullName, other.FullName);
         }
 
         public override bool Equals(object obj)
@@ -51,7 +57,7 @@ namespace NRules.RuleModel
 
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            return FullName.GetHashCode();
         }
     }
 }

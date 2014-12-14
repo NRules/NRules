@@ -11,7 +11,8 @@ namespace NRules.RuleModel.Builders
         private Type _aggregateType;
         private PatternBuilder _sourceBuilder;
 
-        internal AggregateBuilder(Type resultType, SymbolTable scope) : base(scope)
+        internal AggregateBuilder(Type resultType, SymbolTable scope) 
+            : base(scope.New("Aggregate"))
         {
             _resultType = resultType;
         }
@@ -19,9 +20,13 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Sets aggregate type.
         /// </summary>
-        /// <param name="aggregateType"></param>
+        /// <param name="aggregateType">Type that implements <see cref="IAggregate"/> that aggregates facts.</param>
         public void AggregateType(Type aggregateType)
         {
+            if (!typeof(IAggregate).IsAssignableFrom(aggregateType))
+            {
+                throw new InvalidOperationException("Aggregate type must implement IAggregate interface");
+            }
             _aggregateType = aggregateType;
         }
 
@@ -42,17 +47,21 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type)
         {
-            if (_sourceBuilder != null)
-            {
-                throw new InvalidOperationException("Aggregate can only have a single source pattern");
-            }
+            Declaration declaration = Scope.Declare(type, null);
+            return Pattern(declaration);
+        }
 
-            SymbolTable scope = Scope.New();
-            Declaration declaration = scope.Declare(type, null);
-
-            _sourceBuilder = new PatternBuilder(scope, declaration);
-
-            return _sourceBuilder;
+        /// <summary>
+        /// Creates a pattern builder that builds the source of the aggregate.
+        /// </summary>
+        /// <param name="declaration">Pattern declaration.</param>
+        /// <returns>Pattern builder.</returns>
+        public PatternBuilder Pattern(Declaration declaration)
+        {
+            AssertSingleSource();
+            var sourceBuilder = new PatternBuilder(Scope, declaration);
+            _sourceBuilder = sourceBuilder;
+            return sourceBuilder;
         }
 
         AggregateElement IBuilder<AggregateElement>.Build()
@@ -70,13 +79,17 @@ namespace NRules.RuleModel.Builders
             {
                 throw new InvalidOperationException("Aggregate type not specified");
             }
-            if (!typeof (IAggregate).IsAssignableFrom(_aggregateType))
-            {
-                throw new InvalidOperationException("Aggregate type must implement IAggregate interface");
-            }
             if (_sourceBuilder == null)
             {
                 throw new InvalidOperationException("Aggregate source is not provided");
+            }
+        }
+
+        private void AssertSingleSource()
+        {
+            if (_sourceBuilder != null)
+            {
+                throw new InvalidOperationException("Aggregate element can only have a single source");
             }
         }
     }

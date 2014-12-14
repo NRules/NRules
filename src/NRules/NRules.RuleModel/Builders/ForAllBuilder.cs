@@ -12,7 +12,7 @@ namespace NRules.RuleModel.Builders
         private readonly List<PatternBuilder> _patternBuilders = new List<PatternBuilder>();
 
         internal ForAllBuilder(SymbolTable scope)
-            : base(scope)
+            : base(scope.New("ForAll"))
         {
         }
 
@@ -28,10 +28,8 @@ namespace NRules.RuleModel.Builders
                 throw new InvalidOperationException("FORALL element can only have a single source");
             }
 
-            SymbolTable scope = Scope.New();
-            Declaration declaration = scope.Declare(type, "$$base$$");
-
-            _basePatternBuilder = new PatternBuilder(scope, declaration);
+            Declaration declaration = Scope.Declare(type, null);
+            _basePatternBuilder = new PatternBuilder(Scope, declaration);
             return _basePatternBuilder;
         }
         
@@ -42,10 +40,8 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type)
         {
-            SymbolTable scope = Scope.New();
-            Declaration declaration = scope.Declare(type, null);
-
-            var patternBuilder = new PatternBuilder(scope, declaration);
+            Declaration declaration = Scope.Declare(type, null);
+            var patternBuilder = new PatternBuilder(Scope, declaration);
             _patternBuilders.Add(patternBuilder);
             return patternBuilder;
         }

@@ -6,7 +6,11 @@ namespace NRules.RuleModel
 {
     internal class SymbolTable
     {
+        public const string ScopeSeparator = ":";
+
         private readonly HashSet<Declaration> _symbolTable;
+        private readonly string _name;
+        private int _declarationCounter = 0;
 
         public SymbolTable ParentScope { get; private set; }
 
@@ -15,31 +19,32 @@ namespace NRules.RuleModel
             _symbolTable = new HashSet<Declaration>();
         }
 
+        internal SymbolTable(string name)
+        {
+            _name = name;
+            _symbolTable = new HashSet<Declaration>();
+        }
+
         internal SymbolTable(IEnumerable<Declaration> declarations)
         {
             _symbolTable = new HashSet<Declaration>(declarations);
         }
 
-        internal SymbolTable New()
+        internal SymbolTable New(string name)
         {
-            var childScope = new SymbolTable();
+            var childScope = new SymbolTable(name);
             childScope.ParentScope = this;
             return childScope;
         }
 
-        public IEnumerable<Declaration> LocalDeclarations
+        public string FullName
         {
-            get { return _symbolTable.Where(d => d.IsLocal); }
-        }
-
-        public IEnumerable<Declaration> PublicDeclarations
-        {
-            get { return _symbolTable.Where(d => !d.IsLocal); }
+            get { return (ParentScope == null || ParentScope.FullName == null) ? _name : ParentScope.FullName + ScopeSeparator + _name; }
         }
 
         public IEnumerable<Declaration> Declarations
         {
-            get { return (ParentScope != null) ? ParentScope.Declarations.Union(PublicDeclarations) : PublicDeclarations; }
+            get { return (ParentScope != null) ? ParentScope.Declarations.Union(_symbolTable) : _symbolTable; }
         }
 
         public void Add(Declaration declaration)
@@ -49,27 +54,16 @@ namespace NRules.RuleModel
 
         public Declaration Declare(Type type, string name)
         {
-            string declarationName = name ?? "$this$";
-            bool isLocal = (name == null);
-            var declaration = new Declaration(type, declarationName, isLocal);
+            _declarationCounter++;
+            string declarationName = name ?? string.Format("$var{0}$", _declarationCounter);
+            var declaration = new Declaration(type, declarationName, FullName);
             Add(declaration);
-
-            if (!declaration.IsLocal && ParentScope != null) ParentScope.Add(declaration);
-
             return declaration;
         }
 
         public Declaration Lookup(string name, Type type)
         {
-            return Lookup(name, type, includeLocal: true);
-        }
-
-        private Declaration Lookup(string name, Type type, bool includeLocal)
-        {
-            Declaration declaration = includeLocal
-                                          ? _symbolTable.FirstOrDefault(d => d.Name == name)
-                                          : _symbolTable.FirstOrDefault(d => d.Name == name && !d.IsLocal);
-
+            Declaration declaration = _symbolTable.FirstOrDefault(d => d.FullName == name);
             if (declaration != null)
             {
                 if (declaration.Type != type)
@@ -82,7 +76,7 @@ namespace NRules.RuleModel
             }
             if (ParentScope != null)
             {
-                return ParentScope.Lookup(name, type, includeLocal: false);
+                return ParentScope.Lookup(name, type);
             }
 
             throw new ArgumentException(string.Format("Declaration not found. Name={0}, Type={1}", name, type));

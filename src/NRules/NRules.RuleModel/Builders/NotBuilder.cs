@@ -10,7 +10,7 @@ namespace NRules.RuleModel.Builders
         private IBuilder<RuleLeftElement> _sourceBuilder;
 
         internal NotBuilder(SymbolTable scope)
-            : base(scope)
+            : base(scope.New("Not"))
         {
         }
 
@@ -21,13 +21,20 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type)
         {
+            Declaration declaration = Scope.Declare(type, null);
+            return Pattern(declaration);
+        }
+
+        /// <summary>
+        /// Creates a pattern builder that builds the source of the negative existential element.
+        /// </summary>
+        /// <param name="declaration">Pattern declaration.</param>
+        /// <returns>Pattern builder.</returns>
+        public PatternBuilder Pattern(Declaration declaration)
+        {
             AssertSingleSource();
-            SymbolTable scope = Scope.New();
-            Declaration declaration = scope.Declare(type, null);
-
-            var sourceBuilder = new PatternBuilder(scope, declaration);
+            var sourceBuilder = new PatternBuilder(Scope, declaration);
             _sourceBuilder = sourceBuilder;
-
             return sourceBuilder;
         }
 

@@ -41,16 +41,9 @@ namespace NRules.RuleModel.Builders
         /// <returns>Aggregate builder.</returns>
         public AggregateBuilder Aggregate()
         {
-            if (_sourceBuilder != null)
-            {
-                throw new InvalidOperationException("Pattern can only have a single source");
-            }
-
-            SymbolTable scope = Scope.New();
-
-            var builder = new AggregateBuilder(Declaration.Type, scope);
+            AssertSingleSource();
+            var builder = new AggregateBuilder(Declaration.Type, Scope);
             _sourceBuilder = builder;
-
             return builder;
         }
 
@@ -68,6 +61,14 @@ namespace NRules.RuleModel.Builders
             }
             Declaration.Target = patternElement;
             return patternElement;
+        }
+
+        private void AssertSingleSource()
+        {
+            if (_sourceBuilder != null)
+            {
+                throw new InvalidOperationException("Pattern element can only have a single source");
+            }
         }
     }
 }

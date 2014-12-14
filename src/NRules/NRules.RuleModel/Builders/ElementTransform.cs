@@ -16,7 +16,7 @@ namespace NRules.RuleModel.Builders
             var groupBuilder = notBuilder.Group();
 
             Declaration declaration = element.BasePattern.Declaration;
-            var basePatternBuilder = groupBuilder.Pattern(declaration.Type, declaration.Name);
+            var basePatternBuilder = groupBuilder.Pattern(declaration);
             foreach (var condition in element.BasePattern.Conditions)
             {
                 basePatternBuilder.Condition(condition.Expression);
@@ -28,7 +28,7 @@ namespace NRules.RuleModel.Builders
             {
                 var patternBuilder = groupBuilder
                     .Not()
-                    .Pattern(declaration.Type);
+                    .Pattern(pattern.Declaration);
                 
                 var parameter = patternBuilder.Declaration.ToParameterExpression();
                 //Join is required to correlate negated patterns with the base pattern
