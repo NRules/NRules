@@ -13,7 +13,7 @@ namespace NRules.RuleModel.Builders
     {
         private string _name;
         private string _description = string.Empty;
-        private IList<string> _tags; 
+        private List<string> _tags = new List<string>(); 
         private int _priority = RuleDefinition.DefaultPriority;
         private readonly GroupBuilder _groupBuilder;
         private readonly ActionGroupBuilder _actionGroupBuilder;
@@ -52,7 +52,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="tags">Rule tag values.</param>
         public void Tags(IEnumerable<string> tags)
         {
-            _tags = new List<string>(tags);
+            _tags.AddRange(tags);
         }
 
         /// <summary>

@@ -6,18 +6,28 @@ namespace NRules.Rete
     [DebuggerDisplay("Fact {Object}")]
     internal class Fact
     {
+        private readonly Type _factType;
+        private readonly object _object;
+
         public Fact()
         {
         }
 
         public Fact(object @object)
         {
-            Object = @object;
-            FactType = @object.GetType();
+            _object = @object;
+            _factType = @object.GetType();
         }
 
-        public Type FactType { get; private set; }
-        public object Object { get; private set; }
+        public Type FactType
+        {
+            get { return _factType; }
+        }
+
+        public object Object
+        {
+            get { return _object; }
+        }
     }
 
     internal class WrapperFact : Fact

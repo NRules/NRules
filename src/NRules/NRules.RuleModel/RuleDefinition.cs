@@ -40,7 +40,12 @@ namespace NRules.RuleModel
 
     internal class RuleDefinition : IRuleDefinition
     {
-        private readonly List<string> _tags = new List<string>();
+        private readonly List<string> _tags;
+        private readonly string _name;
+        private readonly int _priority;
+        private readonly string _description;
+        private readonly GroupElement _leftHandSide;
+        private readonly ActionGroupElement _rightHandSide;
 
         public static int DefaultPriority
         {
@@ -50,22 +55,43 @@ namespace NRules.RuleModel
         public RuleDefinition(string name, string description, IEnumerable<string> tags, int priority, 
             GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
-            Name = name;
-            Description = description;
-            Priority = priority;
+            _name = name;
+            _description = description;
+            _priority = priority;
+            _tags = new List<string>(tags);
 
-            LeftHandSide = leftHandSide;
-            RightHandSide = rightHandSide;
-
-            if (tags != null) _tags.AddRange(tags);
+            _leftHandSide = leftHandSide;
+            _rightHandSide = rightHandSide;
         }
 
-        public string Name { get; private set; }
-        public int Priority { get; private set; }
-        public string Description { get; private set; }
-        public IEnumerable<string> Tags { get { return _tags; } }
+        public string Name
+        {
+            get { return _name; }
+        }
 
-        public GroupElement LeftHandSide { get; private set; }
-        public ActionGroupElement RightHandSide { get; private set; }
+        public int Priority
+        {
+            get { return _priority; }
+        }
+
+        public string Description
+        {
+            get { return _description; }
+        }
+
+        public IEnumerable<string> Tags
+        {
+            get { return _tags; }
+        }
+
+        public GroupElement LeftHandSide
+        {
+            get { return _leftHandSide; }
+        }
+
+        public ActionGroupElement RightHandSide
+        {
+            get { return _rightHandSide; }
+        }
     }
 }

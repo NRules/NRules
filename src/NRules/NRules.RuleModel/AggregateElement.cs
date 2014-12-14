@@ -7,20 +7,29 @@ namespace NRules.RuleModel
     /// </summary>
     public class AggregateElement : PatternSourceElement
     {
+        private readonly Type _aggregateType;
+        private readonly PatternElement _source;
+
         /// <summary>
         /// Type of the aggregate. Must implement <see cref="IAggregate"/> interface.
         /// </summary>
-        public Type AggregateType { get; private set; }
+        public Type AggregateType
+        {
+            get { return _aggregateType; }
+        }
 
         /// <summary>
         /// Fact source of the aggregate.
         /// </summary>
-        public PatternElement Source { get; private set; }
+        public PatternElement Source
+        {
+            get { return _source; }
+        }
 
         internal AggregateElement(Type resultType, Type aggregateType, PatternElement source) : base(resultType)
         {
-            AggregateType = aggregateType;
-            Source = source;
+            _aggregateType = aggregateType;
+            _source = source;
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

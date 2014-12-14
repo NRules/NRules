@@ -45,8 +45,12 @@ namespace NRules.Fluent
     {
         private readonly List<Type> _ruleTypes = new List<Type>();
         private Func<IRuleMetadata, bool> _filter;
+        private string _ruleSetName;
 
-        public string RuleSetName { get; set; }
+        public string RuleSetName
+        {
+            get { return _ruleSetName; }
+        }
 
         public IRuleLoadSpec From(params Assembly[] assemblies)
         {
@@ -90,11 +94,11 @@ namespace NRules.Fluent
 
         public IRuleLoadSpec To(string ruleSetName)
         {
-            if (RuleSetName != null)
+            if (_ruleSetName != null)
             {
                 throw new InvalidOperationException("Rule load specification can only have a single 'To' clause");
             }
-            RuleSetName = ruleSetName;
+            _ruleSetName = ruleSetName;
             return this;
         }
 

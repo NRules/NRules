@@ -9,11 +9,15 @@ namespace NRules.RuleModel
     public class ConditionElement : RuleElement
     {
         private readonly List<Declaration> _declarations;
+        private readonly LambdaExpression _expression;
 
         /// <summary>
         /// Expression that represents a boolean condition.
         /// </summary>
-        public LambdaExpression Expression { get; set; }
+        public LambdaExpression Expression
+        {
+            get { return _expression; }
+        }
 
         /// <summary>
         /// List of declarations the condition expression references.
@@ -26,7 +30,7 @@ namespace NRules.RuleModel
         internal ConditionElement(IEnumerable<Declaration> declarations, LambdaExpression expression)
         {
             _declarations = new List<Declaration>(declarations);
-            Expression = expression;
+            _expression = expression;
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

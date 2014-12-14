@@ -9,34 +9,46 @@ namespace NRules.RuleModel
     public class PatternElement : RuleLeftElement
     {
         private readonly List<ConditionElement> _conditions;
+        private readonly Declaration _declaration;
+        private readonly PatternSourceElement _source;
+        private readonly Type _valueType;
 
         internal PatternElement(Declaration declaration, IEnumerable<ConditionElement> conditions)
         {
-            Declaration = declaration;
-            ValueType = declaration.Type;
+            _declaration = declaration;
+            _valueType = declaration.Type;
             _conditions = new List<ConditionElement>(conditions);
         }
 
         internal PatternElement(Declaration declaration, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
             : this(declaration, conditions)
         {
-            Source = source;
+            _source = source;
         }
 
         /// <summary>
         /// Declaration that references the pattern.
         /// </summary>
-        public Declaration Declaration { get; private set; }
+        public Declaration Declaration
+        {
+            get { return _declaration; }
+        }
 
         /// <summary>
         /// Optional pattern source element.
         /// </summary>
-        public PatternSourceElement Source { get; private set; }
+        public PatternSourceElement Source
+        {
+            get { return _source; }
+        }
 
         /// <summary>
         /// Type of the values that the pattern matches.
         /// </summary>
-        public Type ValueType { get; private set; }
+        public Type ValueType
+        {
+            get { return _valueType; }
+        }
 
         /// <summary>
         /// List of conditions the pattern checks.

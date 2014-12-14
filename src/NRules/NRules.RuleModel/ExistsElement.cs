@@ -5,14 +5,19 @@ namespace NRules.RuleModel
     /// </summary>
     public class ExistsElement : RuleLeftElement
     {
+        private readonly RuleLeftElement _source;
+
         /// <summary>
-        /// Fact source of the quantifier.
+        /// Fact source of the existential element.
         /// </summary>
-        public RuleLeftElement Source { get; private set; }
+        public RuleLeftElement Source
+        {
+            get { return _source; }
+        }
 
         internal ExistsElement(RuleLeftElement source)
         {
-            Source = source;
+            _source = source;
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
