@@ -13,7 +13,7 @@ namespace NRules.RuleModel.Builders
     {
         private string _name;
         private string _description = string.Empty;
-        private List<string> _tags = new List<string>(); 
+        private readonly List<string> _tags = new List<string>();
         private int _priority = RuleDefinition.DefaultPriority;
         private readonly GroupBuilder _groupBuilder;
         private readonly ActionGroupBuilder _actionGroupBuilder;
