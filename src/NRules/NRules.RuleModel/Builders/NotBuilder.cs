@@ -41,11 +41,12 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Creates a group builder that builds a group as part of the current element.
         /// </summary>
+        /// <param name="groupType">Group type.</param>
         /// <returns>Group builder.</returns>
-        public GroupBuilder Group()
+        public GroupBuilder Group(GroupType groupType)
         {
             AssertSingleSource();
-            var sourceBuilder = new GroupBuilder(Scope, GroupType.And);
+            var sourceBuilder = new GroupBuilder(Scope, groupType);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
