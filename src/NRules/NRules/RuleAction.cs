@@ -16,7 +16,7 @@ namespace NRules
     {
         private readonly LambdaExpression _expression;
         private readonly TupleMask _tupleMask;
-        private readonly Action<object[]> _compiledAction;
+        private readonly FastDelegate<Action<object[]>> _compiledAction;
 
         public RuleAction(LambdaExpression expression, TupleMask tupleMask)
         {
@@ -27,7 +27,7 @@ namespace NRules
 
         public void Invoke(IExecutionContext context, IContext actionContext, Tuple tuple)
         {
-            var args = new object[tuple.Count + 1];
+            var args = new object[_compiledAction.ParameterCount];
             args[0] = actionContext;
             int index = tuple.Count - 1;
             foreach (var fact in tuple.Facts)
@@ -38,7 +38,7 @@ namespace NRules
 
             try
             {
-                _compiledAction.Invoke(args);
+                _compiledAction.Delegate.Invoke(args);
             }
             catch (Exception e)
             {

@@ -15,7 +15,7 @@ namespace NRules.Rete
     {
         private readonly LambdaExpression _expression;
         private readonly TupleMask _tupleMask;
-        private readonly Func<object[], bool> _compiledExpression;
+        private readonly FastDelegate<Func<object[], bool>> _compiledExpression;
 
         public BetaCondition(LambdaExpression expression, TupleMask tupleMask)
         {
@@ -26,7 +26,7 @@ namespace NRules.Rete
 
         public bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact)
         {
-            var args = new object[leftTuple.Count + 1];
+            var args = new object[_compiledExpression.ParameterCount];
             int index = leftTuple.Count - 1;
             foreach (var fact in leftTuple.Facts)
             {
@@ -37,7 +37,7 @@ namespace NRules.Rete
 
             try
             {
-                return _compiledExpression(args);
+                return _compiledExpression.Delegate(args);
             }
             catch (Exception e)
             {

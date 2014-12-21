@@ -14,7 +14,7 @@ namespace NRules.Rete
     internal class AlphaCondition : IAlphaCondition, IEquatable<AlphaCondition>
     {
         private readonly LambdaExpression _expression;
-        private readonly Func<object[], bool> _compiledExpression;
+        private readonly FastDelegate<Func<object[], bool>> _compiledExpression;
 
         public AlphaCondition(LambdaExpression expression)
         {
@@ -26,7 +26,7 @@ namespace NRules.Rete
         {
             try
             {
-                return _compiledExpression(new[] {fact.Object});
+                return _compiledExpression.Delegate(new[] {fact.Object});
             }
             catch (Exception e)
             {
