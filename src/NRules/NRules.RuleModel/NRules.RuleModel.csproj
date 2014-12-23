@@ -53,7 +53,7 @@
     <Compile Include="AndElement.cs" />
     <Compile Include="Builders\ActionGroupBuilder.cs" />
     <Compile Include="Builders\AggregateBuilder.cs" />
-    <Compile Include="Builders\ElementTransform.cs" />
+    <Compile Include="Builders\RuleTransformation.cs" />
     <Compile Include="Builders\ForAllBuilder.cs" />
     <Compile Include="Builders\GroupBuilder.cs" />
     <Compile Include="Builders\NotBuilder.cs" />

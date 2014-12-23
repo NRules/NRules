@@ -2,13 +2,43 @@
 using System.Collections.Generic;
 using System.Linq;
 using NRules.RuleModel;
-using NRules.RuleModel.Builders;
+using NRules.Utilities;
 
 namespace NRules.Rete
 {
+    internal class RuleTerminal
+    {
+        private readonly ITerminalNode _terminalNode;
+        private readonly List<Declaration> _declarationOrder;
+
+        public ITerminalNode TerminalNode
+        {
+            get { return _terminalNode; }
+        }
+
+        public IEnumerable<Declaration> Declarations
+        {
+            get { return _declarationOrder; }
+        }
+
+        public TupleMask GetTupleMask(IEnumerable<Declaration> declarations)
+        {
+            var positionMap = declarations.ToIndexMap();
+            var mask = _declarationOrder
+                .Select(positionMap.IndexOrDefault).ToArray();
+            return new TupleMask(mask);
+        }
+
+        public RuleTerminal(ITerminalNode terminalNode, IEnumerable<Declaration> declarationOrder)
+        {
+            _terminalNode = terminalNode;
+            _declarationOrder = new List<Declaration>(declarationOrder);
+        }
+    }
+
     internal interface IReteBuilder
     {
-        ITerminalNode AddRule(ReteBuilderContext context, IRuleDefinition rule);
+        IEnumerable<RuleTerminal> AddRule(IRuleDefinition rule);
         INetwork Build();
     }
 
@@ -17,11 +47,28 @@ namespace NRules.Rete
         private readonly RootNode _root = new RootNode();
         private readonly DummyNode _dummyNode = new DummyNode();
 
-        public ITerminalNode AddRule(ReteBuilderContext context, IRuleDefinition rule)
+        public IEnumerable<RuleTerminal> AddRule(IRuleDefinition rule)
         {
-            Visit(context, rule.LeftHandSide);
-            var terminalNode = new TerminalNode(context.BetaSource);
-            return terminalNode;
+            var terminals = new List<RuleTerminal>();
+            rule.LeftHandSide.Match(
+                and =>
+                {
+                    var context = new ReteBuilderContext();
+                    Visit(context, and);
+                    var terminalNode = new TerminalNode(context.BetaSource);
+                    terminals.Add(new RuleTerminal(terminalNode, context.Declarations));
+                },
+                or =>
+                {
+                    foreach (var childElement in or.ChildElements)
+                    {
+                        var context = new ReteBuilderContext();
+                        Visit(context, childElement);
+                        var terminalNode = new TerminalNode(context.BetaSource);
+                        terminals.Add(new RuleTerminal(terminalNode, context.Declarations));
+                    }
+                });
+            return terminals;
         }
 
         protected override void VisitAnd(ReteBuilderContext context, AndElement element)
@@ -40,7 +87,12 @@ namespace NRules.Rete
 
         protected override void VisitOr(ReteBuilderContext context, OrElement element)
         {
-            throw new NotSupportedException("Group Or conditions are not supported");
+            throw new InvalidOperationException("Group Or element must be normalized");
+        }
+
+        protected override void VisitForAll(ReteBuilderContext context, ForAllElement element)
+        {
+            throw new InvalidOperationException("ForAll element must be normalized");
         }
 
         protected override void VisitNot(ReteBuilderContext context, NotElement element)
@@ -53,12 +105,6 @@ namespace NRules.Rete
         {
             BuildSubnet(context, element.Source);
             BuildExistsNode(context);
-        }
-
-        protected override void VisitForAll(ReteBuilderContext context, ForAllElement element)
-        {
-            var normalizedElement = ElementTransform.Normalize(element);
-            Visit(context, normalizedElement);
         }
 
         protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)

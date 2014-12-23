@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel
@@ -6,6 +7,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Pattern condition element.
     /// </summary>
+    [DebuggerDisplay("{Expression.ToString()}")]
     public class ConditionElement : RuleElement
     {
         private readonly List<Declaration> _declarations;

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace NRules.RuleModel
 {
     /// <summary>
     /// Pattern declaration.
     /// </summary>
+    [DebuggerDisplay("{FullName}: {Type}")]
     public class Declaration : IEquatable<Declaration>
     {
         private readonly string _fullName;

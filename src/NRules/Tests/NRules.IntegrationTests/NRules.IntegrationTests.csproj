@@ -54,6 +54,7 @@
     <Compile Include="TestRules\ParentRuleWithMetadata.cs" />
     <Compile Include="TestRules\RuleWithMetadataAndParentMetadata.cs" />
     <Compile Include="TestRules\TwoFactOneForAllCheckRule.cs" />
+    <Compile Include="TestRules\ThreeFactOrGroupRule.cs" />
     <Compile Include="ThreeFactTwoExistsRuleTest.cs" />
     <Compile Include="TestRules\ThreeFactTwoExistsRule.cs" />
     <Compile Include="ThreeFactTwoNotRuleTest.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="HaltRuleTest.cs" />
     <Compile Include="TestRules\TwoFactOneNotRule.cs" />
     <Compile Include="TestRules\HaltRule.cs" />
+    <Compile Include="ThreeFactOrGroupRuleTest.cs" />
     <Compile Include="TwoFactSameTypeRuleTest.cs" />
     <Compile Include="TestAssets\FactType4.cs" />
     <Compile Include="TestRules\TwoFactSameTypeRule.cs" />

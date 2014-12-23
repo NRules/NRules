@@ -12,10 +12,12 @@ namespace NRules.Fluent
     internal class ExpressionBuilder : ILeftHandSide, IRightHandSide
     {
         private readonly RuleBuilder _builder;
+        private readonly GroupBuilderChain _groupBuilders;
 
         public ExpressionBuilder(RuleBuilder builder)
         {
             _builder = builder;
+            _groupBuilders = new GroupBuilderChain(_builder.LeftHandSide());
         }
 
         public ILeftHandSide Match<T>(Expression<Func<T>> alias, params Expression<Func<T, bool>>[] conditions)
@@ -38,12 +40,11 @@ namespace NRules.Fluent
 
         private ILeftHandSide Match<T>(ParameterExpression symbol, IEnumerable<Expression<Func<T, bool>>> conditions)
         {
-            var leftHandSide = _builder.LeftHandSide();
-
-            var patternBuilder = leftHandSide.Pattern(symbol.Type, symbol.Name);
+            var groupBuilder = _groupBuilders.Current;
+            var patternBuilder = groupBuilder.Pattern(symbol.Type, symbol.Name);
             foreach (var condition in conditions)
             {
-                var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
+                var rewriter = new ConditionRewriter(patternBuilder.Declaration, groupBuilder.Declarations);
                 var rewrittenCondition = rewriter.Rewrite(condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
@@ -53,9 +54,9 @@ namespace NRules.Fluent
         public ILeftHandSide Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] itemConditions)
         {
             var collectionSymbol = ExtractSymbol(alias);
-            var leftHandSide = _builder.LeftHandSide();
+            var groupBuilder = _groupBuilders.Current;
 
-            var outerPatternBuilder = leftHandSide.Pattern(collectionSymbol.Type, collectionSymbol.Name);
+            var outerPatternBuilder = groupBuilder.Pattern(collectionSymbol.Type, collectionSymbol.Name);
 
             var aggregateBuilder = outerPatternBuilder.Aggregate();
             aggregateBuilder.CollectionOf(typeof (T));
@@ -63,7 +64,7 @@ namespace NRules.Fluent
             var patternBuilder = aggregateBuilder.Pattern(typeof (T));
             foreach (var condition in itemConditions)
             {
-                var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
+                var rewriter = new ConditionRewriter(patternBuilder.Declaration, groupBuilder.Declarations);
                 var rewrittenCondition = rewriter.Rewrite(condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
@@ -72,14 +73,13 @@ namespace NRules.Fluent
 
         public ILeftHandSide Exists<T>(params Expression<Func<T, bool>>[] conditions)
         {
-            var leftHandSide = _builder.LeftHandSide();
-
-            var existsBuilder = leftHandSide.Exists();
+            var groupBuilder = _groupBuilders.Current;
+            var existsBuilder = groupBuilder.Exists();
 
             var patternBuilder = existsBuilder.Pattern(typeof (T));
             foreach (var condition in conditions)
             {
-                var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
+                var rewriter = new ConditionRewriter(patternBuilder.Declaration, groupBuilder.Declarations);
                 var rewrittenCondition = rewriter.Rewrite(condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
@@ -88,14 +88,13 @@ namespace NRules.Fluent
 
         public ILeftHandSide Not<T>(params Expression<Func<T, bool>>[] conditions)
         {
-            var leftHandSide = _builder.LeftHandSide();
-
-            var notBuilder = leftHandSide.Not();
+            var groupBuilder = _groupBuilders.Current;
+            var notBuilder = groupBuilder.Not();
 
             var patternBuilder = notBuilder.Pattern(typeof(T));
             foreach (var condition in conditions)
             {
-                var rewriter = new ConditionRewriter(patternBuilder.Declaration, leftHandSide.Declarations);
+                var rewriter = new ConditionRewriter(patternBuilder.Declaration, groupBuilder.Declarations);
                 var rewrittenCondition = rewriter.Rewrite(condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
@@ -105,6 +104,24 @@ namespace NRules.Fluent
         public ILeftHandSide All<T>(Expression<Func<T, bool>> condition)
         {
             return All(x => true, new [] {condition});
+        }
+
+        public ILeftHandSide And(Action<ILeftHandSide> builder)
+        {
+            using (_groupBuilders.BeginGroup(GroupType.And))
+            {
+                builder(this);
+            }
+            return this;
+        }
+
+        public ILeftHandSide Or(Action<ILeftHandSide> builder)
+        {
+            using (_groupBuilders.BeginGroup(GroupType.Or))
+            {
+                builder(this);
+            }
+            return this;
         }
 
         public ILeftHandSide All<T>(Expression<Func<T, bool>> baseCondition, params Expression<Func<T, bool>>[] conditions)

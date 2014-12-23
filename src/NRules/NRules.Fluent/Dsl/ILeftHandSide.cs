@@ -79,5 +79,21 @@ namespace NRules.Fluent.Dsl
         /// <param name="condition">Condition that all facts of a given type must satisfy to trigger the rule.</param>
         /// <returns>Left hand side expression builder.</returns>
         ILeftHandSide All<T>(Expression<Func<T, bool>> condition);
+
+        /// <summary>
+        /// Defines a group of patterns joined by an AND operator.
+        /// If all of the patterns in the group match then the whole group matches.
+        /// </summary>
+        /// <param name="builder">Group expression builder.</param>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSide And(Action<ILeftHandSide> builder);
+
+        /// <summary>
+        /// Defines a group of patterns joined by an OR operator.
+        /// If either of the patterns in the group matches then the whole group matches.
+        /// </summary>
+        /// <param name="builder">Group expression builder.</param>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSide Or(Action<ILeftHandSide> builder);
     }
 }

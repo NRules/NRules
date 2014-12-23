@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq.Expressions;
 using NRules.Utilities;
 
@@ -10,7 +9,6 @@ namespace NRules.Rete
         bool IsSatisfiedBy(IExecutionContext context, Fact fact);
     }
 
-    [DebuggerDisplay("{_expression.ToString()}")]
     internal class AlphaCondition : IAlphaCondition, IEquatable<AlphaCondition>
     {
         private readonly LambdaExpression _expression;

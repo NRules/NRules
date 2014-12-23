@@ -20,6 +20,11 @@ namespace NRules.Rete
             _declarationOrder = new List<Declaration>(context._declarationOrder);
         }
 
+        public IEnumerable<Declaration> Declarations
+        {
+            get { return _declarationOrder; }
+        }
+ 
         public AlphaNode CurrentAlphaNode { get; set; }
         public IAlphaMemoryNode AlphaSource { get; set; }
         public IBetaMemoryNode BetaSource { get; set; }
