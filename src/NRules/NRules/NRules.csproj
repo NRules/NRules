@@ -82,7 +82,7 @@
     <Compile Include="Rete\SubnetCondition.cs" />
     <Compile Include="Rete\TerminalNode.cs" />
     <Compile Include="Rete\TupleExtensions.cs" />
-    <Compile Include="Rete\TupleMask.cs" />
+    <Compile Include="Rete\FactIndexMap.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleCompilationException.cs" />
     <Compile Include="RuleCompiler.cs" />

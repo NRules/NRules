@@ -55,7 +55,7 @@ namespace NRules.RuleModel.Builders
         {
             Validate();
             RuleLeftElement sourceElement = _sourceBuilder.Build();
-            var existsElement = new ExistsElement(sourceElement);
+            var existsElement = new ExistsElement(Scope.VisibleDeclarations, sourceElement);
             return existsElement;
         }
 

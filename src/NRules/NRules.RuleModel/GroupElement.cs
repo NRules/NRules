@@ -7,11 +7,18 @@ namespace NRules.RuleModel
     /// </summary>
     public abstract class GroupElement : RuleLeftElement
     {
+        private readonly List<Declaration> _declarations;
         private readonly List<RuleLeftElement> _childElements;
 
-        internal GroupElement(IEnumerable<RuleLeftElement> childElements)
+        internal GroupElement(IEnumerable<Declaration> declarations, IEnumerable<RuleLeftElement> childElements)
         {
+            _declarations = new List<Declaration>(declarations);
             _childElements = new List<RuleLeftElement>(childElements);
+        }
+
+        public override IEnumerable<Declaration> Declarations
+        {
+            get { return _declarations; }
         }
 
         /// <summary>

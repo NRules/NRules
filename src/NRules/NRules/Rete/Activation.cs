@@ -4,14 +4,31 @@ namespace NRules.Rete
 {
     internal class Activation : IEquatable<Activation>
     {
-        public Activation(ICompiledRule rule, Tuple tuple)
+        private readonly ICompiledRule _rule;
+        private readonly Tuple _tuple;
+        private readonly FactIndexMap _tupleFactMap;
+
+        public Activation(ICompiledRule rule, Tuple tuple, FactIndexMap tupleFactMap)
         {
-            Rule = rule;
-            Tuple = tuple;
+            _rule = rule;
+            _tuple = tuple;
+            _tupleFactMap = tupleFactMap;
         }
 
-        public ICompiledRule Rule { get; private set; }
-        public Tuple Tuple { get; private set; }
+        public ICompiledRule Rule
+        {
+            get { return _rule; }
+        }
+
+        public Tuple Tuple
+        {
+            get { return _tuple; }
+        }
+
+        public FactIndexMap TupleFactMap
+        {
+            get { return _tupleFactMap; }
+        }
 
         public bool Equals(Activation other)
         {

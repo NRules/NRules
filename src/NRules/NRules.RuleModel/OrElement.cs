@@ -7,7 +7,8 @@ namespace NRules.RuleModel
     /// </summary>
     public class OrElement : GroupElement
     {
-        internal OrElement(IEnumerable<RuleLeftElement> childElements) : base(childElements)
+        internal OrElement(IEnumerable<Declaration> declarations, IEnumerable<RuleLeftElement> childElements)
+            : base(declarations, childElements)
         {
         }
 

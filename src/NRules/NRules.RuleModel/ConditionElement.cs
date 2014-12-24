@@ -24,7 +24,7 @@ namespace NRules.RuleModel
         /// <summary>
         /// List of declarations the condition expression references.
         /// </summary>
-        public IEnumerable<Declaration> Declarations
+        public override IEnumerable<Declaration> Declarations
         {
             get { return _declarations; }
         }

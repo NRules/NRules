@@ -26,8 +26,8 @@ namespace NRules
             {
                 try
                 {
-                    var compiledRules = CompileRule(reteBuilder, ruleDefinition);
-                    rules.AddRange(compiledRules);
+                    var compiledRule = CompileRule(reteBuilder, ruleDefinition);
+                    rules.Add(compiledRule);
                 }
                 catch (Exception e)
                 {
@@ -51,36 +51,34 @@ namespace NRules
             return Compile(rules);
         }
 
-        private IEnumerable<ICompiledRule> CompileRule(ReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
+        private ICompiledRule CompileRule(ReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
         {
             var transformation = new RuleTransformation();
             var transformedRule = transformation.Transform(ruleDefinition);
+            var ruleDeclarations = transformedRule.LeftHandSide.Declarations.ToList();
 
-            var rules = new List<ICompiledRule>();
-            IEnumerable<RuleTerminal> terminals = reteBuilder.AddRule(transformedRule);
-            foreach (var terminal in terminals)
+            IEnumerable<ITerminalNode> terminals = reteBuilder.AddRule(transformedRule);
+            var rightHandSide = transformedRule.RightHandSide;
+            var actions = new List<IRuleAction>();
+            foreach (var action in rightHandSide.Actions)
             {
-                var rightHandSide = transformedRule.RightHandSide;
-                var actions = new List<IRuleAction>();
-                foreach (var action in rightHandSide.Actions)
-                {
-                    var mask = terminal.GetTupleMask(action.Declarations);
-                    var ruleAction = new RuleAction(action.Expression, mask);
-                    actions.Add(ruleAction);
-                }
-
-                var rule = new CompiledRule(ruleDefinition, actions);
-                rules.Add(rule);
-                BuildRuleNode(rule, terminal.TerminalNode);
+                var factIndexMap = FactIndexMap.CreateMap(action.Declarations, ruleDeclarations);
+                var ruleAction = new RuleAction(action.Expression, factIndexMap);
+                actions.Add(ruleAction);
             }
 
-            return rules;
+            var rule = new CompiledRule(ruleDefinition, actions);
+            BuildRuleNode(rule, terminals);
+            return rule;
         }
 
-        private void BuildRuleNode(ICompiledRule rule, ITerminalNode terminalNode)
+        private void BuildRuleNode(ICompiledRule rule, IEnumerable<ITerminalNode> terminalNodes)
         {
             var ruleNode = new RuleNode(rule);
-            terminalNode.Attach(ruleNode);
+            foreach (var terminalNode in terminalNodes)
+            {
+                terminalNode.Attach(ruleNode);
+            }
         }
     }
 }

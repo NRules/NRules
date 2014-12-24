@@ -67,7 +67,7 @@ namespace NRules.RuleModel.Builders
         {
             Validate();
             RuleLeftElement sourceElement = _sourceBuilder.Build();
-            var notElement = new NotElement(sourceElement);
+            var notElement = new NotElement(Scope.VisibleDeclarations, sourceElement);
             return notElement;
         }
 

@@ -114,10 +114,10 @@ namespace NRules.RuleModel.Builders
             switch (_groupType)
             {
                 case GroupType.And:
-                    groupElement = new AndElement(childElements);
+                    groupElement = new AndElement(Scope.VisibleDeclarations, childElements);
                     break;
                 case GroupType.Or:
-                    groupElement = new OrElement(childElements);
+                    groupElement = new OrElement(Scope.VisibleDeclarations, childElements);
                     break;
                 default:
                     throw new InvalidOperationException(string.Format("Unrecognized group type. GroupType={0}", _groupType));

@@ -2,43 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using NRules.RuleModel;
-using NRules.Utilities;
 
 namespace NRules.Rete
 {
-    internal class RuleTerminal
-    {
-        private readonly ITerminalNode _terminalNode;
-        private readonly List<Declaration> _declarationOrder;
-
-        public ITerminalNode TerminalNode
-        {
-            get { return _terminalNode; }
-        }
-
-        public IEnumerable<Declaration> Declarations
-        {
-            get { return _declarationOrder; }
-        }
-
-        public TupleMask GetTupleMask(IEnumerable<Declaration> declarations)
-        {
-            var positionMap = declarations.ToIndexMap();
-            var mask = _declarationOrder
-                .Select(positionMap.IndexOrDefault).ToArray();
-            return new TupleMask(mask);
-        }
-
-        public RuleTerminal(ITerminalNode terminalNode, IEnumerable<Declaration> declarationOrder)
-        {
-            _terminalNode = terminalNode;
-            _declarationOrder = new List<Declaration>(declarationOrder);
-        }
-    }
-
     internal interface IReteBuilder
     {
-        IEnumerable<RuleTerminal> AddRule(IRuleDefinition rule);
+        IEnumerable<ITerminalNode> AddRule(IRuleDefinition rule);
         INetwork Build();
     }
 
@@ -47,16 +16,18 @@ namespace NRules.Rete
         private readonly RootNode _root = new RootNode();
         private readonly DummyNode _dummyNode = new DummyNode();
 
-        public IEnumerable<RuleTerminal> AddRule(IRuleDefinition rule)
+        public IEnumerable<ITerminalNode> AddRule(IRuleDefinition rule)
         {
-            var terminals = new List<RuleTerminal>();
+            var ruleDeclarations = rule.LeftHandSide.Declarations.ToList();
+            var terminals = new List<ITerminalNode>();
             rule.LeftHandSide.Match(
                 and =>
                 {
                     var context = new ReteBuilderContext();
                     Visit(context, and);
-                    var terminalNode = new TerminalNode(context.BetaSource);
-                    terminals.Add(new RuleTerminal(terminalNode, context.Declarations));
+                    var factIndexMap = FactIndexMap.CreateMap(ruleDeclarations, context.Declarations);
+                    var terminalNode = new TerminalNode(context.BetaSource, factIndexMap);
+                    terminals.Add(terminalNode);
                 },
                 or =>
                 {
@@ -64,8 +35,9 @@ namespace NRules.Rete
                     {
                         var context = new ReteBuilderContext();
                         Visit(context, childElement);
-                        var terminalNode = new TerminalNode(context.BetaSource);
-                        terminals.Add(new RuleTerminal(terminalNode, context.Declarations));
+                        var factIndexMap = FactIndexMap.CreateMap(ruleDeclarations, context.Declarations);
+                        var terminalNode = new TerminalNode(context.BetaSource, factIndexMap);
+                        terminals.Add(terminalNode);
                     }
                 });
             return terminals;
@@ -170,8 +142,8 @@ namespace NRules.Rete
             {
                 foreach (var condition in conditions)
                 {
-                    var mask = context.GetTupleMask(condition.Declarations);
-                    var betaCondition = new BetaCondition(condition.Expression, mask);
+                    var factIndexMap = FactIndexMap.CreateMap(condition.Declarations, context.Declarations);
+                    var betaCondition = new BetaCondition(condition.Expression, factIndexMap);
                     betaConditions.Add(betaCondition);
                 }
             }

@@ -69,7 +69,7 @@ namespace NRules.RuleModel.Builders
             Validate();
             IBuilder<PatternElement> sourceBuilder = _sourceBuilder;
             PatternElement sourceElement = sourceBuilder.Build();
-            var aggregateElement = new AggregateElement(_resultType, _aggregateType, sourceElement);
+            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _aggregateType, sourceElement);
             return aggregateElement;
         }
 

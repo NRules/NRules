@@ -24,7 +24,7 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         public IEnumerable<Declaration> Declarations
         {
-            get { return Scope.Declarations; }
+            get { return Scope.VisibleDeclarations; }
         }
     }
 }

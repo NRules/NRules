@@ -7,7 +7,8 @@ namespace NRules.RuleModel
     /// </summary>
     public class AndElement : GroupElement
     {
-        internal AndElement(IEnumerable<RuleLeftElement> childElements) : base(childElements)
+        internal AndElement(IEnumerable<Declaration> declarations, IEnumerable<RuleLeftElement> childElements)
+            : base(declarations, childElements)
         {
         }
 

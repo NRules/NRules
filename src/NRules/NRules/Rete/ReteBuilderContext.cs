@@ -1,28 +1,26 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NRules.RuleModel;
-using NRules.Utilities;
 
 namespace NRules.Rete
 {
     internal class ReteBuilderContext
     {
-        private readonly List<Declaration> _declarationOrder;
+        private readonly List<Declaration> _declarations;
 
         public ReteBuilderContext()
         {
-            _declarationOrder = new List<Declaration>();
+            _declarations = new List<Declaration>();
         }
 
         public ReteBuilderContext(ReteBuilderContext context)
         {
             BetaSource = context.BetaSource;
-            _declarationOrder = new List<Declaration>(context._declarationOrder);
+            _declarations = new List<Declaration>(context._declarations);
         }
 
         public IEnumerable<Declaration> Declarations
         {
-            get { return _declarationOrder; }
+            get { return _declarations; }
         }
  
         public AlphaNode CurrentAlphaNode { get; set; }
@@ -32,15 +30,7 @@ namespace NRules.Rete
 
         public void RegisterDeclaration(Declaration declaration)
         {
-            _declarationOrder.Add(declaration);
-        }
-
-        public TupleMask GetTupleMask(IEnumerable<Declaration> declarations)
-        {
-            var positionMap = declarations.ToIndexMap();
-            var mask = _declarationOrder
-                .Select(positionMap.IndexOrDefault).ToArray();
-            return new TupleMask(mask);
+            _declarations.Add(declaration);
         }
 
         public void ResetAlphaSource()

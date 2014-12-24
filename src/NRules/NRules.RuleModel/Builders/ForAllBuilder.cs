@@ -58,8 +58,8 @@ namespace NRules.RuleModel.Builders
                 patternElements.Add(patternBuilder.Build());
             }
 
-            var existsElement = new ForAllElement(basePatternElement, patternElements);
-            return existsElement;
+            var forAllElement = new ForAllElement(Scope.VisibleDeclarations, basePatternElement, patternElements);
+            return forAllElement;
         }
 
         private void Validate()

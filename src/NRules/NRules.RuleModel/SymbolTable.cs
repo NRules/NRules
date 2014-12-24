@@ -44,7 +44,12 @@ namespace NRules.RuleModel
 
         public IEnumerable<Declaration> Declarations
         {
-            get { return (ParentScope != null) ? ParentScope.Declarations.Union(_symbolTable) : _symbolTable; }
+            get { return _symbolTable; }
+        }
+
+        public IEnumerable<Declaration> VisibleDeclarations
+        {
+            get { return (ParentScope != null) ? ParentScope.VisibleDeclarations.Union(Declarations) : Declarations; }
         }
 
         public void Add(Declaration declaration)

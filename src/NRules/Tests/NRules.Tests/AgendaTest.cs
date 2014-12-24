@@ -23,7 +23,7 @@ namespace NRules.Tests
         {
             // Arrange
             var ruleMock = new Mock<ICompiledRule>();
-            var activation = new Activation(ruleMock.Object, new Tuple());
+            var activation = new Activation(ruleMock.Object, new Tuple(), null);
             var target = CreateTarget();
 
             // Act
@@ -39,7 +39,7 @@ namespace NRules.Tests
         {
             // Arrange
             var ruleMock = new Mock<ICompiledRule>();
-            var activation = new Activation(ruleMock.Object, new Tuple());
+            var activation = new Activation(ruleMock.Object, new Tuple(), null);
             var target = CreateTarget();
             target.Activate(activation);
 
@@ -56,8 +56,8 @@ namespace NRules.Tests
             // Arrange
             var ruleMock1 = new Mock<ICompiledRule>();
             var ruleMock2 = new Mock<ICompiledRule>();
-            var activation1 = new Activation(ruleMock1.Object, new Tuple());
-            var activation2 = new Activation(ruleMock2.Object, new Tuple());
+            var activation1 = new Activation(ruleMock1.Object, new Tuple(), null);
+            var activation2 = new Activation(ruleMock2.Object, new Tuple(), null);
             var target = CreateTarget();
 
             // Act

@@ -38,7 +38,7 @@ namespace NRules.RuleModel.Builders
 
         ActionGroupElement IBuilder<ActionGroupElement>.Build()
         {
-            var actionGroup = new ActionGroupElement(_actions);
+            var actionGroup = new ActionGroupElement(Scope.VisibleDeclarations, _actions);
             return actionGroup;
         }
     }

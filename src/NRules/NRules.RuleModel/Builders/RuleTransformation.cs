@@ -65,7 +65,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<PatternSourceElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = new PatternElement(element.Declaration, conditions, source);
+                var newElement = new PatternElement(element.Declaration, element.Declarations, conditions, source);
                 Result(context, newElement);
             }
         }
@@ -75,7 +75,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<PatternElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = new AggregateElement(element.ResultType, element.AggregateType, source);
+                var newElement = new AggregateElement(element.Declarations, element.ResultType, element.AggregateType, source);
                 Result(context, newElement);
             }
         }
@@ -85,7 +85,7 @@ namespace NRules.RuleModel.Builders
             var actions = element.Actions.Select(x => Transform<ActionElement>(context, x)).ToList();
             if (context.IsModified)
             {
-                var newElement = new ActionGroupElement(actions);
+                var newElement = new ActionGroupElement(element.Declarations, actions);
                 Result(context, newElement);
             }
         }
@@ -102,10 +102,10 @@ namespace NRules.RuleModel.Builders
         {
             var childElements = element.ChildElements.Select(x => Transform<RuleLeftElement>(context, x)).ToList();
             if (CollapseSingleGroup(context, childElements)) return;
-            if (SplitOrGroup(context, childElements)) return;
+            if (SplitOrGroup(context, element, childElements)) return;
             if (context.IsModified)
             {
-                var newElement = new AndElement(childElements);
+                var newElement = new AndElement(element.Declarations, childElements);
                 Result(context, newElement);
             }
         }
@@ -116,7 +116,7 @@ namespace NRules.RuleModel.Builders
             if (CollapseSingleGroup(context, childElements)) return;
             if (context.IsModified)
             {
-                var newElement = new OrElement(childElements);
+                var newElement = new OrElement(element.Declarations, childElements);
                 Result(context, newElement);
             }
         }
@@ -126,7 +126,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<RuleLeftElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = new NotElement(source);
+                var newElement = new NotElement(element.Declarations, source);
                 Result(context, newElement);
             }
         }
@@ -136,7 +136,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<RuleLeftElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = new ExistsElement(source);
+                var newElement = new ExistsElement(element.Declarations, source);
                 Result(context, newElement);
             }
         }
@@ -147,9 +147,7 @@ namespace NRules.RuleModel.Builders
             var patterns = element.Patterns.Select(x => Transform<PatternElement>(context, x)).ToList();
 
             //forall -> not(base and not(patterns))
-            var declarations = Enumerable.Repeat(basePattern, 1).Union(patterns)
-                .SelectMany(x => x.Conditions).SelectMany(x => x.Declarations);
-            var symbolTable = new SymbolTable(declarations);
+            var symbolTable = new SymbolTable(element.Declarations);
 
             var notBuilder = new NotBuilder(symbolTable);
             var groupBuilder = notBuilder.Group(GroupType.And);
@@ -197,7 +195,7 @@ namespace NRules.RuleModel.Builders
             return false;
         }
 
-        private bool SplitOrGroup(Context context, IList<RuleLeftElement> childElements)
+        private bool SplitOrGroup(Context context, AndElement element, IList<RuleLeftElement> childElements)
         {
             if (!childElements.OfType<OrElement>().Any()) return false;
 
@@ -205,8 +203,8 @@ namespace NRules.RuleModel.Builders
             groups.Add(new List<RuleLeftElement>());
             ExpandOrElements(groups, childElements, 0);
 
-            var andElements = groups.Select(x => new AndElement(x)).ToList();
-            var orElement = new OrElement(andElements);
+            var andElements = groups.Select(x => new AndElement(element.Declarations, x)).ToList();
+            var orElement = new OrElement(element.Declarations, andElements);
             Result(context, orElement);
             return true;
         }

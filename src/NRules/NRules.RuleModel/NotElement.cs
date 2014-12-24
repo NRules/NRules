@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace NRules.RuleModel
 {
     /// <summary>
@@ -5,6 +7,7 @@ namespace NRules.RuleModel
     /// </summary>
     public class NotElement : RuleLeftElement
     {
+        private readonly List<Declaration> _declarations;
         private readonly RuleLeftElement _source;
 
         /// <summary>
@@ -15,9 +18,15 @@ namespace NRules.RuleModel
             get { return _source; }
         }
 
-        internal NotElement(RuleLeftElement source)
+        internal NotElement(IEnumerable<Declaration> declarations, RuleLeftElement source)
         {
+            _declarations = new List<Declaration>(declarations);
             _source = source;
+        }
+
+        public override IEnumerable<Declaration> Declarations
+        {
+            get { return _declarations; }
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

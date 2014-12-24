@@ -53,11 +53,11 @@ namespace NRules.RuleModel.Builders
             if (_sourceBuilder != null)
             {
                 var source = _sourceBuilder.Build();
-                patternElement = new PatternElement(Declaration, _conditions, source);
+                patternElement = new PatternElement(Declaration, Scope.VisibleDeclarations, _conditions, source);
             }
             else
             {
-                patternElement = new PatternElement(Declaration, _conditions);
+                patternElement = new PatternElement(Declaration, Scope.VisibleDeclarations, _conditions);
             }
             Declaration.Target = patternElement;
             return patternElement;

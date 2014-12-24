@@ -121,7 +121,7 @@ namespace NRules
                 _eventAggregator.RaiseRuleFiring(this, activation);
                 foreach (IRuleAction action in rule.Actions)
                 {
-                    action.Invoke(_executionContext, actionContext, activation.Tuple);
+                    action.Invoke(_executionContext, actionContext, activation.Tuple, activation.TupleFactMap);
                     ApplyActionOperations(actionContext);
                 }
                 _eventAggregator.RaiseRuleFired(this, activation);
