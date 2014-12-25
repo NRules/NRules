@@ -31,8 +31,8 @@ namespace NRules.RuleModel.Builders
                     string.Format("Action expression must have {0} as its first parameter", typeof(IContext)));
             }
             IEnumerable<ParameterExpression> parameters = expression.Parameters.Skip(1);
-            IEnumerable<Declaration> declarations = parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var actionElement = new ActionElement(declarations, expression);
+            IEnumerable<Declaration> references = parameters.Select(p => Scope.Lookup(p.Name, p.Type));
+            var actionElement = new ActionElement(Scope.Declarations, references, expression);
             _actions.Add(actionElement);
         }
 

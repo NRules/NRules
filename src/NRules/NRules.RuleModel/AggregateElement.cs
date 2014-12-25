@@ -8,7 +8,6 @@ namespace NRules.RuleModel
     /// </summary>
     public class AggregateElement : PatternSourceElement
     {
-        private readonly List<Declaration> _declarations;
         private readonly Type _aggregateType;
         private readonly PatternElement _source;
 
@@ -29,16 +28,10 @@ namespace NRules.RuleModel
         }
 
         internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, Type aggregateType, PatternElement source) 
-            : base(resultType)
+            : base(declarations, resultType)
         {
-            _declarations = new List<Declaration>(declarations);
             _aggregateType = aggregateType;
             _source = source;
-        }
-
-        public override IEnumerable<Declaration> Declarations
-        {
-            get { return _source.Declarations; }
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

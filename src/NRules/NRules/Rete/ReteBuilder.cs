@@ -93,14 +93,14 @@ namespace NRules.Rete
                 context.RegisterDeclaration(element.Declaration);
 
                 BuildTypeNode(context, element.ValueType);
-                var alphaConditions = element.Conditions.Where(x => x.Declarations.Count() == 1).ToList();
+                var alphaConditions = element.Conditions.Where(x => x.References.Count() == 1).ToList();
                 foreach (var alphaCondition in alphaConditions)
                 {
                     BuildSelectionNode(context, alphaCondition);
                 }
                 BuildAlphaMemoryNode(context);
 
-                var betaConditions = element.Conditions.Where(x => x.Declarations.Count() > 1).ToList();
+                var betaConditions = element.Conditions.Where(x => x.References.Count() > 1).ToList();
                 if (betaConditions.Count > 0)
                 {
                     BuildJoinNode(context, betaConditions);
@@ -142,7 +142,7 @@ namespace NRules.Rete
             {
                 foreach (var condition in conditions)
                 {
-                    var factIndexMap = FactIndexMap.CreateMap(condition.Declarations, context.Declarations);
+                    var factIndexMap = FactIndexMap.CreateMap(condition.References, context.Declarations);
                     var betaCondition = new BetaCondition(condition.Expression, factIndexMap);
                     betaConditions.Add(betaCondition);
                 }

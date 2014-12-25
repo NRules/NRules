@@ -7,12 +7,11 @@ namespace NRules.RuleModel
     /// </summary>
     public class ActionGroupElement : RuleRightElement
     {
-        private readonly List<Declaration> _declarations;
         private readonly List<ActionElement> _actions;
 
         internal ActionGroupElement(IEnumerable<Declaration> declarations, IEnumerable<ActionElement> actions)
+            : base(declarations)
         {
-            _declarations = new List<Declaration>(declarations);
             _actions = new List<ActionElement>(actions);
         }
 
@@ -22,11 +21,6 @@ namespace NRules.RuleModel
         public IEnumerable<ActionElement> Actions
         {
             get { return _actions; }
-        }
-
-        public override IEnumerable<Declaration> Declarations
-        {
-            get { return _declarations; }
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

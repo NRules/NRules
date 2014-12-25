@@ -7,8 +7,18 @@ namespace NRules.RuleModel
     /// </summary>
     public abstract class RuleElement
     {
-        public abstract IEnumerable<Declaration> Declarations { get; } 
-        internal RuleElement() { }
+        private readonly List<Declaration> _declarations;
+
+        /// <summary>
+        /// Declarations visible from this rule element.
+        /// </summary>
+        public IEnumerable<Declaration> Declarations { get { return _declarations; } }
+        
+        internal RuleElement(IEnumerable<Declaration> declarations)
+        {
+            _declarations = new List<Declaration>(declarations);
+        }
+
         internal abstract void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor);
     }
 }

@@ -7,13 +7,12 @@ namespace NRules.RuleModel
     /// </summary>
     public class ForAllElement : RuleLeftElement
     {
-        private readonly List<Declaration> _declarations;
         private readonly List<PatternElement> _patterns;
         private readonly PatternElement _basePattern;
 
-        internal ForAllElement(IEnumerable<Declaration> declarations, PatternElement source, IEnumerable<PatternElement> patterns) 
+        internal ForAllElement(IEnumerable<Declaration> declarations, PatternElement source, IEnumerable<PatternElement> patterns)
+            : base(declarations)
         {
-            _declarations = new List<Declaration>(declarations);
             _basePattern = source;
             _patterns = new List<PatternElement>(patterns);
         }
@@ -32,11 +31,6 @@ namespace NRules.RuleModel
         public IEnumerable<PatternElement> Patterns
         {
             get { return _patterns; }
-        }
-
-        public override IEnumerable<Declaration> Declarations
-        {
-            get { return _declarations; }
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

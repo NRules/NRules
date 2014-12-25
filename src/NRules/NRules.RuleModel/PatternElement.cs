@@ -10,15 +10,14 @@ namespace NRules.RuleModel
     {
         private readonly List<ConditionElement> _conditions;
         private readonly Declaration _declaration;
-        private readonly List<Declaration> _declarations;
         private readonly PatternSourceElement _source;
         private readonly Type _valueType;
 
         internal PatternElement(Declaration declaration, IEnumerable<Declaration> declarations, IEnumerable<ConditionElement> conditions)
+            : base(declarations)
         {
             _declaration = declaration;
             _valueType = declaration.Type;
-            _declarations = new List<Declaration>(declarations);
             _conditions = new List<ConditionElement>(conditions);
         }
 
@@ -58,11 +57,6 @@ namespace NRules.RuleModel
         public IEnumerable<ConditionElement> Conditions
         {
             get { return _conditions; }
-        }
-
-        public override IEnumerable<Declaration> Declarations
-        {
-            get { return _declarations; }
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

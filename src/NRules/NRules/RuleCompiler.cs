@@ -62,7 +62,7 @@ namespace NRules
             var actions = new List<IRuleAction>();
             foreach (var action in rightHandSide.Actions)
             {
-                var factIndexMap = FactIndexMap.CreateMap(action.Declarations, ruleDeclarations);
+                var factIndexMap = FactIndexMap.CreateMap(action.References, ruleDeclarations);
                 var ruleAction = new RuleAction(action.Expression, factIndexMap);
                 actions.Add(ruleAction);
             }

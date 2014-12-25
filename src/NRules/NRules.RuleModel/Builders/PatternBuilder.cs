@@ -25,8 +25,8 @@ namespace NRules.RuleModel.Builders
         /// Names and types of the expression parameters must match the names and types defined in the pattern declarations.</param>
         public void Condition(LambdaExpression expression)
         {
-            IEnumerable<Declaration> declarations = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var condition = new ConditionElement(declarations, expression);
+            IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
+            var condition = new ConditionElement(Scope.Declarations, references, expression);
             _conditions.Add(condition);
         }
 
