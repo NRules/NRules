@@ -19,8 +19,13 @@ namespace NRules.IntegrationTests.TestRules
                 .Collect<FactType2>(() => collection2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty);
             Then()
                 .Do(ctx => Notifier.RuleActivated())
-                .Do(ctx => FactCount.Add(fact1, collection2.Count()))
+                .Do(ctx => SetCount(fact1, collection2))
                 .Do(ctx => collection2.ToList().ForEach(x => x.TestProperty.Normalize()));
+        }
+
+        private void SetCount(FactType1 fact1, IEnumerable<FactType2> collection2)
+        {
+            FactCount[fact1] = collection2.Count();
         }
     }
 }

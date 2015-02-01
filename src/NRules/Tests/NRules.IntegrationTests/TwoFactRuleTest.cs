@@ -8,6 +8,43 @@ namespace NRules.IntegrationTests
     public class TwoFactRuleTest : BaseRuleTestFixture
     {
         [Test]
+        public void Fire_MatchingFactsInsertAndFireThenUpdateAndFire_FiresTwice()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            //Act
+            Session.Fire();
+            Session.Update(fact1);
+            Session.Fire();
+
+            //Assert
+            AssertFiredTwice();
+        }
+        
+        [Test]
+        public void Fire_MatchingFactsInsertThenUpdateThenFire_FiresOnce()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+            Session.Update(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+        }
+        
+        [Test]
         public void Fire_MatchingFacts_FiresOnce()
         {
             //Arrange

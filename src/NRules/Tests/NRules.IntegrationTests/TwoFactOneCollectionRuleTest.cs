@@ -32,6 +32,55 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_OneMatchingFactOfOneKindAndTwoOfAnotherThenFireThenAnotherMatchingFactThenFire_FiresOnceWithTwoFactsInCollectionThenFiresAgainWithThreeFacts()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact21 = new FactType2 {TestProperty = "Valid Value 21", JoinProperty = fact1.TestProperty};
+            var fact22 = new FactType2 {TestProperty = "Valid Value 22", JoinProperty = fact1.TestProperty};
+            var fact23 = new FactType2 {TestProperty = "Valid Value 23", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact21);
+            Session.Insert(fact22);
+
+            //Act
+            Session.Fire();
+            var actualCount1 = GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact1];
+            Session.Insert(fact23);
+            Session.Fire();
+            var actualCount2 = GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact1];
+
+            //Assert
+            AssertFiredTwice();
+            Assert.AreEqual(2, actualCount1);
+            Assert.AreEqual(3, actualCount2);
+        }
+
+        [Test]
+        public void Fire_OneMatchingFactOfOneKindAndTwoOfAnotherThenAnotherMatchingFactThenFire_FiresOnceWithThreeFactsInCollection()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact21 = new FactType2 {TestProperty = "Valid Value 21", JoinProperty = fact1.TestProperty};
+            var fact22 = new FactType2 {TestProperty = "Valid Value 22", JoinProperty = fact1.TestProperty};
+            var fact23 = new FactType2 {TestProperty = "Valid Value 23", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact21);
+            Session.Insert(fact22);
+            Session.Insert(fact23);
+
+            //Act
+            Session.Fire();
+            var actualCount = GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact1];
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreEqual(3, actualCount);
+        }
+
+        [Test]
         public void Fire_FactOfOneKindIsValidAndTwoOfAnotherKindAreAssertedThenOneRetracted_FiresOnceWithOneFactInCollection()
         {
             //Arrange
