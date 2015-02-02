@@ -15,4 +15,4 @@ Use the following resources to get up and running with NRules.
 - [Discussion Group](http://groups.google.com/group/nrules-users)
 
 --
-Copyright &copy; 2012-2014 [Sergiy Nikolayev](http://sergiynikolayev.com) under the [MIT license](LICENSE.txt).
+Copyright &copy; 2012-2015 [Sergiy Nikolayev](http://sergiynikolayev.com) under the [MIT license](LICENSE.txt).
