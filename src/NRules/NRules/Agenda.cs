@@ -12,7 +12,7 @@ namespace NRules
 
     internal class Agenda : IAgenda
     {
-        private readonly IActivationQueue _activationQueue = new ActivationQueue();
+        private readonly ActivationQueue _activationQueue = new ActivationQueue();
 
         public bool HasActiveRules()
         {

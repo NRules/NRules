@@ -24,7 +24,7 @@ namespace NRules.RuleModel
 
         public AggregationResults Modify(object fact)
         {
-            return AggregationResults.None;
+            return AggregationResults.Modified;
         }
 
         public AggregationResults Remove(object fact)
