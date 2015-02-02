@@ -11,14 +11,15 @@ namespace NRules
 
         public void Enqueue(int priority, Activation activation)
         {
-            _activations.Add(activation);
-            _queue.Enqueue(priority, activation);
+            if (_activations.Add(activation))
+            {
+                _queue.Enqueue(priority, activation);
+            }
         }
 
         public Activation Dequeue()
         {
             Activation activation = _queue.Dequeue();
-            Remove(activation);
             return activation;
         }
 
@@ -30,7 +31,9 @@ namespace NRules
         public bool HasActive()
         {
             PurgeQueue();
-            return QueueHasElements();
+            var hasActive = QueueHasElements();
+            if (!hasActive) _activations.Clear();
+            return hasActive;
         }
 
         private void PurgeQueue()
