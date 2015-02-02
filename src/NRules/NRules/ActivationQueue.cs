@@ -4,8 +4,18 @@ using NRules.Rete;
 
 namespace NRules
 {
-    internal class ActivationQueue
+    internal interface IActivationQueue
     {
+        void Enqueue(int priority, Activation activation);
+        Activation Dequeue();
+        bool HasActive();
+        void Remove(Activation activation);
+    }
+
+    internal class ActivationQueue : IActivationQueue
+    {
+        private readonly Dictionary<int, LinkedList<Activation>> _priorityBuckets = new Dictionary<int, LinkedList<Activation>>(); 
+
         private readonly IPriorityQueue<int, Activation> _queue = new OrderedPriorityQueue<int, Activation>();
         private readonly ISet<Activation> _activations = new HashSet<Activation>();
 
