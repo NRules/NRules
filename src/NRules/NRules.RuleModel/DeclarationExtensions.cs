@@ -11,7 +11,7 @@ namespace NRules.RuleModel
         /// <returns>Parameter expression.</returns>
         public static ParameterExpression ToParameterExpression(this Declaration declaration)
         {
-            return Expression.Parameter(declaration.Type, declaration.FullName);
+            return Expression.Parameter(declaration.Type, declaration.Name);
         }
     }
 }

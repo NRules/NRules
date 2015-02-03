@@ -68,7 +68,7 @@ namespace NRules.RuleModel
 
         public Declaration Lookup(string name, Type type)
         {
-            Declaration declaration = _symbolTable.FirstOrDefault(d => d.FullName == name);
+            Declaration declaration = _symbolTable.FirstOrDefault(d => d.Name == name);
             if (declaration != null)
             {
                 if (declaration.Type != type)
