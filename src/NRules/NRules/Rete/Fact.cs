@@ -24,7 +24,12 @@ namespace NRules.Rete
             get { return _factType; }
         }
 
-        public object Object
+        public object RawObject
+        {
+            get { return _object; }
+        }
+
+        public virtual object Object
         {
             get { return _object; }
         }
@@ -37,6 +42,14 @@ namespace NRules.Rete
         {
         }
 
-        public Tuple WrappedTuple { get { return (Tuple) Object; } }
+        public override object Object
+        {
+            get { return WrappedTuple.RightFact.Object; }
+        }
+
+        public Tuple WrappedTuple
+        {
+            get { return (Tuple) RawObject; }
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace NRules.Rete
             var matchingFacts = MatchingFacts(context, tuple);
             foreach (var matchingFact in matchingFacts)
             {
-                var result = aggregate.Add(UnwrapFact(matchingFact).Object);
+                var result = aggregate.Add(matchingFact.Object);
                 HandleAggregateResult(context, result, tuple, aggregate);
             }
         }
@@ -47,7 +47,7 @@ namespace NRules.Rete
             foreach (var tuple in tuples)
             {
                 IAggregate aggregate = GetAggregate(tuple);
-                var result = aggregate.Add(UnwrapFact(fact).Object);
+                var result = aggregate.Add(fact.Object);
                 HandleAggregateResult(context, result, tuple, aggregate);
             }
         }
@@ -58,7 +58,7 @@ namespace NRules.Rete
             foreach (var tuple in tuples)
             {
                 IAggregate aggregate = GetAggregate(tuple);
-                var result = aggregate.Modify(UnwrapFact(fact).Object);
+                var result = aggregate.Modify(fact.Object);
                 HandleAggregateResult(context, result, tuple, aggregate);
             }
         }
@@ -69,7 +69,7 @@ namespace NRules.Rete
             foreach (var tuple in tuples)
             {
                 IAggregate aggregate = GetAggregate(tuple);
-                var result = aggregate.Remove(UnwrapFact(fact).Object);
+                var result = aggregate.Remove(fact.Object);
                 HandleAggregateResult(context, result, tuple, aggregate);
             }
         }
@@ -139,16 +139,6 @@ namespace NRules.Rete
             {
                 fact = new Fact(aggregate.Result);
                 context.WorkingMemory.SetFact(fact);
-            }
-            return fact;
-        }
-
-        private Fact UnwrapFact(Fact fact)
-        {
-            var wrapperFact = fact as WrapperFact;
-            if (wrapperFact != null)
-            {
-                return wrapperFact.WrappedTuple.RightFact;
             }
             return fact;
         }

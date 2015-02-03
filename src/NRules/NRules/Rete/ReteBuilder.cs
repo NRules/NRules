@@ -108,10 +108,18 @@ namespace NRules.Rete
             }
             else
             {
-                Visit(context, element.Source);
+                if (element.Conditions.Any())
+                {
+                    BuildSubnet(context, element.Source);
+                    context.RegisterDeclaration(element.Declaration);
 
-                context.RegisterDeclaration(element.Declaration);
-                //TODO: Handle a more generic case, when pattern adds its own conditions
+                    BuildJoinNode(context, element.Conditions);
+                }
+                else
+                {
+                    Visit(context, element.Source);
+                    context.RegisterDeclaration(element.Declaration);
+                }
             }
         }
 

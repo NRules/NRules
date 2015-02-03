@@ -34,12 +34,12 @@ namespace NRules
 
         public void SetFact(Fact fact)
         {
-            _factMap[fact.Object] = fact;
+            _factMap[fact.RawObject] = fact;
         }
 
         public void RemoveFact(Fact fact)
         {
-            _factMap.Remove(fact.Object);
+            _factMap.Remove(fact.RawObject);
         }
 
         public IAlphaMemory GetNodeMemory(IAlphaMemoryNode node)
