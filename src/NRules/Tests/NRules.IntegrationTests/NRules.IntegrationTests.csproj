@@ -50,7 +50,9 @@
     </Compile>
     <Compile Include="EvaluationExceptionRuleTest.cs" />
     <Compile Include="IdentityMatchRuleTest.cs" />
+    <Compile Include="CollectionWithConditionsRuleTest.cs" />
     <Compile Include="TestRules\IdentityMatchRule.cs" />
+    <Compile Include="TestRules\CollectionWithConditionsRule.cs" />
     <Compile Include="TestRules\ParentRuleWithMetadata.cs" />
     <Compile Include="TestRules\RuleWithMetadataAndParentMetadata.cs" />
     <Compile Include="TestRules\TwoFactOneForAllCheckRule.cs" />

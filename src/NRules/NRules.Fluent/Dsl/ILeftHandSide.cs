@@ -43,8 +43,8 @@ namespace NRules.Fluent.Dsl
         /// <typeparam name="T">Type of facts to aggregate.</typeparam>
         /// <param name="alias">Alias for the collection of matching facts.</param>
         /// <param name="itemConditions">Set of conditions the facts must satisfy to get into the collection.</param>
-        /// <returns>Left hand side expression builder.</returns>
-        ILeftHandSide Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] itemConditions);
+        /// <returns>Expression builder for collection conditions.</returns>
+        ICollectPattern<IEnumerable<T>> Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] itemConditions);
 
         /// <summary>
         /// Defines a pattern that triggers the rule only if there is at least one matching fact (existential quantifier).

@@ -51,7 +51,7 @@ namespace NRules.Fluent
             return this;
         }
 
-        public ILeftHandSide Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] itemConditions)
+        public ICollectPattern<IEnumerable<T>> Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] itemConditions)
         {
             var collectionSymbol = ExtractSymbol(alias);
             var groupBuilder = _groupBuilders.Current;
@@ -68,7 +68,7 @@ namespace NRules.Fluent
                 var rewrittenCondition = rewriter.Rewrite(condition);
                 patternBuilder.Condition(rewrittenCondition);
             }
-            return this;
+            return new CollectExpressionBuilder<IEnumerable<T>>(this, outerPatternBuilder);
         }
 
         public ILeftHandSide Exists<T>(params Expression<Func<T, bool>>[] conditions)
