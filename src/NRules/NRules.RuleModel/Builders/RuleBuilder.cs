@@ -13,8 +13,9 @@ namespace NRules.RuleModel.Builders
     {
         private string _name;
         private string _description = string.Empty;
-        private readonly List<string> _tags = new List<string>();
         private int _priority = RuleDefinition.DefaultPriority;
+        private RuleRepeatability _repeatability = RuleDefinition.DefaultRepeatability;
+        private readonly List<string> _tags = new List<string>();
         private readonly GroupBuilder _groupBuilder;
         private readonly ActionGroupBuilder _actionGroupBuilder;
 
@@ -57,11 +58,21 @@ namespace NRules.RuleModel.Builders
 
         /// <summary>
         /// Sets rule's priority.
+        /// Default priority is 0.
         /// </summary>
         /// <param name="priority">Rule priority value.</param>
         public void Priority(int priority)
         {
             _priority = priority;
+        }
+
+        /// <summary>
+        /// Sets rule's repeatability.
+        /// Default repeatability is <see cref="RuleRepeatability.Repeatable"/>.
+        /// </summary>
+        public void Repeatability(RuleRepeatability repeatability)
+        {
+            _repeatability = repeatability;
         }
 
         /// <summary>
@@ -96,7 +107,7 @@ namespace NRules.RuleModel.Builders
             IBuilder<ActionGroupElement> actionBuilder = _actionGroupBuilder;
             ActionGroupElement actions = actionBuilder.Build();
 
-            var ruleDefinition = new RuleDefinition(_name, _description, _tags, _priority, conditions, actions);
+            var ruleDefinition = new RuleDefinition(_name, _description, _priority, _repeatability, _tags, conditions, actions);
             return ruleDefinition;
         }
 

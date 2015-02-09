@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NRules.Collections;
 using NRules.Rete;
+using NRules.RuleModel;
 
 namespace NRules
 {
@@ -8,10 +9,18 @@ namespace NRules
     {
         private readonly IPriorityQueue<int, Activation> _queue = new OrderedPriorityQueue<int, Activation>();
         private readonly ISet<Activation> _activations = new HashSet<Activation>();
+        private readonly ISet<Activation> _refractions = new HashSet<Activation>();
 
         public void Enqueue(int priority, Activation activation)
         {
-            if (_activations.Add(activation))
+            bool isRefracted = !_refractions.Add(activation);
+            if (isRefracted && activation.Rule.Repeatability == RuleRepeatability.NonRepeatable)
+            {
+                return;
+            }
+
+            bool isNewActivation = _activations.Add(activation);
+            if (isNewActivation)
             {
                 _queue.Enqueue(priority, activation);
             }
@@ -20,19 +29,20 @@ namespace NRules
         public Activation Dequeue()
         {
             Activation activation = _queue.Dequeue();
+            _activations.Remove(activation);
             return activation;
         }
 
         public void Remove(Activation activation)
         {
             _activations.Remove(activation);
+            _refractions.Remove(activation);
         }
 
         public bool HasActive()
         {
             PurgeQueue();
             var hasActive = QueueHasElements();
-            if (!hasActive) _activations.Clear();
             return hasActive;
         }
 

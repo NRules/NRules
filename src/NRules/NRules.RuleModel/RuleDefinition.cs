@@ -3,6 +3,22 @@
 namespace NRules.RuleModel
 {
     /// <summary>
+    /// Rule repeatability.
+    /// </summary>
+    public enum RuleRepeatability
+    {
+        /// <summary>
+        /// Rule will fire every time a matching set of facts is inserted or updated.
+        /// </summary>
+        Repeatable = 0,
+
+        /// <summary>
+        /// Rule will not fire with the same combination of facts, unless that combination was previously deactivated (i.e. through retraction).
+        /// </summary>
+        NonRepeatable = 1,
+    }
+
+    /// <summary>
     /// Production rule definition in the canonical rule model.
     /// </summary>
     public interface IRuleDefinition
@@ -11,16 +27,21 @@ namespace NRules.RuleModel
         /// Rule name.
         /// </summary>
         string Name { get; }
-
-        /// <summary>
-        /// Rule priority.
-        /// </summary>
-        int Priority { get; }
         
         /// <summary>
         /// Rule description.
         /// </summary>
         string Description { get; }
+
+        /// <summary>
+        /// Rule priority.
+        /// </summary>
+        int Priority { get; }
+
+        /// <summary>
+        /// Rule repeatability.
+        /// </summary>
+        RuleRepeatability Repeatability { get; }
 
         /// <summary>
         /// Tags applied to the rule.
@@ -42,8 +63,9 @@ namespace NRules.RuleModel
     {
         private readonly List<string> _tags;
         private readonly string _name;
-        private readonly int _priority;
         private readonly string _description;
+        private readonly int _priority;
+        private readonly RuleRepeatability _repeatability;
         private readonly GroupElement _leftHandSide;
         private readonly ActionGroupElement _rightHandSide;
 
@@ -52,11 +74,17 @@ namespace NRules.RuleModel
             get { return 0; }
         }
 
-        public RuleDefinition(string name, string description, IEnumerable<string> tags, int priority, 
+        public static RuleRepeatability DefaultRepeatability
+        {
+            get { return RuleRepeatability.Repeatable; }
+        }
+
+        public RuleDefinition(string name, string description, int priority, RuleRepeatability repeatability, IEnumerable<string> tags, 
             GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
             _name = name;
             _description = description;
+            _repeatability = repeatability;
             _priority = priority;
             _tags = new List<string>(tags);
 
@@ -77,6 +105,11 @@ namespace NRules.RuleModel
         public string Description
         {
             get { return _description; }
+        }
+
+        public RuleRepeatability Repeatability
+        {
+            get { return _repeatability; }
         }
 
         public IEnumerable<string> Tags
