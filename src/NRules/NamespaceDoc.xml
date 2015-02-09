@@ -6,32 +6,32 @@
   <members>
     <member name="N:NRules">
       <summary>
-        Contains classes and interfaces that implement executable part of the rules engine.
+        Contains types that implement executable part of the rules engine.
       </summary>
     </member>
     <member name="N:NRules.Diagnostics">
       <summary>
-        Contains classes and interfaces to troubleshoot and monitor rules engine execution.
+        Contains types that facilitate troubleshooting and monitoring rules engine execution.
       </summary>
     </member>
     <member name="N:NRules.RuleModel">
       <summary>
-        Contains classes and interfaces that represent rules in the canonical model form.
+        Contains types that represent rules in the canonical model form.
       </summary>
     </member>
     <member name="N:NRules.RuleModel.Builders">
       <summary>
-        Contains classes and interfaces that allow building rules at runtime in the canonical model form.
+        Contains types that allow building rules at runtime in the canonical model form.
       </summary>
     </member>
     <member name="N:NRules.Fluent">
       <summary>
-        Contains classes and interfaces to load internal DSL rules via reflection.
+        Contains types that allow loading internal DSL rules via reflection.
       </summary>
     </member>
     <member name="N:NRules.Fluent.Dsl">
       <summary>
-        Contains classes and interfaces that allow specifying rules using internal DSL in C#.
+        Contains types that allow specifying rules using internal DSL in C#.
       </summary>
     </member>
   </members>
