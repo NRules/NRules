@@ -11,23 +11,13 @@ namespace NRules.RuleModel
     {
         private readonly string _fullName;
         private readonly string _name;
-        private readonly string _scopeName;
         private readonly Type _type;
 
         internal Declaration(Type type, string name, string scopeName)
         {
             _type = type;
             _name = name;
-            _scopeName = scopeName;
-            _fullName = (scopeName == null) ? Name : ScopeName + SymbolTable.ScopeSeparator + Name;
-        }
-
-        /// <summary>
-        /// Symbol name qualified with the scope name.
-        /// </summary>
-        public string FullName
-        {
-            get { return _fullName; }
+            _fullName = (scopeName == null) ? _name : scopeName + SymbolTable.ScopeSeparator + _name;
         }
 
         /// <summary>
@@ -36,14 +26,6 @@ namespace NRules.RuleModel
         public string Name
         {
             get { return _name; }
-        }
-
-        /// <summary>
-        /// Name of the enclosing scope.
-        /// </summary>
-        public string ScopeName
-        {
-            get { return _scopeName; }
         }
 
         /// <summary>
