@@ -52,7 +52,10 @@
     <Compile Include="Dsl\DescriptionAttribute.cs" />
     <Compile Include="Dsl\ICollectPattern.cs" />
     <Compile Include="Dsl\NameAttribute.cs" />
+    <Compile Include="Dsl\PriorityAttribute.cs" />
+    <Compile Include="Dsl\RepeatabilityAttribute.cs" />
     <Compile Include="Dsl\TagAttribute.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="ExpressionBuilder.cs" />
     <Compile Include="Dsl\ILeftHandSide.cs" />
     <Compile Include="Dsl\IRightHandSide.cs" />

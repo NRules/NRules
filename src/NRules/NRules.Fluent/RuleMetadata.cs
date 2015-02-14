@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using NRules.Fluent.Dsl;
+using NRules.RuleModel;
 
 namespace NRules.Fluent
 {
@@ -43,6 +44,8 @@ namespace NRules.Fluent
         private readonly string _name;
         private readonly string _description;
         private readonly string[] _tags;
+        private readonly int? _priority;
+        private readonly RuleRepeatability? _repeatability;
 
         public RuleMetadata(Type ruleType)
         {
@@ -50,6 +53,8 @@ namespace NRules.Fluent
             _name = GetAttributes<NameAttribute>().Select(a => a.Value).SingleOrDefault() ?? RuleType.FullName;
             _description = GetAttributes<DescriptionAttribute>().Select(a => a.Value).SingleOrDefault() ?? string.Empty;
             _tags = GetAttributes<TagAttribute>().Select(a => a.Value).ToArray();
+            _priority = GetAttributes<PriorityAttribute>().SingleNullable(a => a.Value);
+            _repeatability = GetAttributes<RepeatabilityAttribute>().SingleNullable(a => a.Value);
         }
 
         public Type RuleType
@@ -72,6 +77,16 @@ namespace NRules.Fluent
             get { return _tags; }
         }
 
+        public int? Priority
+        {
+            get { return _priority; }
+        }
+
+        public RuleRepeatability? Repeatability
+        {
+            get { return _repeatability; }
+        }
+
         public bool IsTagged(string tag)
         {
             return _tags.Contains(tag);
@@ -80,6 +95,6 @@ namespace NRules.Fluent
         private T[] GetAttributes<T>() where T : Attribute
         {
             return _ruleType.GetCustomAttributes(true).OfType<T>().ToArray();
-        }       
+        }
     }
 }

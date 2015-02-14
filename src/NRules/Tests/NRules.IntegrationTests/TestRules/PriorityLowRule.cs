@@ -1,16 +1,16 @@
 ﻿using System;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 
 namespace NRules.IntegrationTests.TestRules
 {
+    [Priority(10)]
     public class PriorityLowRule : BaseRule
     {
         public Action<BaseRule> InvocationHandler { get; set; }
 
         public override void Define()
         {
-            Priority(10);
-
             FactType1 fact1 = null;
 
             When()
