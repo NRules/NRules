@@ -5,6 +5,7 @@ using NRules.Samples.MissManners.Domain;
 namespace NRules.Samples.MissManners.Rules
 {
     [Name("MakePath")]
+    [Priority(1)]
     public class MakePath : Rule
     {
         public override void Define()
@@ -12,8 +13,6 @@ namespace NRules.Samples.MissManners.Rules
             Context context = null;
             Seating seating = null;
             Path path = null;
-
-            Priority(1);
 
             When()
                 .Match<Context>(() => context, c => c.State == ContextState.MakePath)

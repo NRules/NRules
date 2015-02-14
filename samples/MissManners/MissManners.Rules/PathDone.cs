@@ -12,8 +12,6 @@ namespace NRules.Samples.MissManners.Rules
             Context context = null;
             Seating seating = null;
 
-            Priority(0);
-
             When()
                 .Match<Context>(() => context, c => c.State == ContextState.MakePath)
                 .Match<Seating>(() => seating, s => !s.PathDone);
