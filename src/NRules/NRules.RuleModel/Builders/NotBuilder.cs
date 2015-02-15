@@ -18,10 +18,11 @@ namespace NRules.RuleModel.Builders
         /// Creates a pattern builder that builds the source of the negative existential element.
         /// </summary>
         /// <param name="type">Type of the element the pattern matches.</param>
+        /// <param name="name">Pattern name (optional).</param>
         /// <returns>Pattern builder.</returns>
-        public PatternBuilder Pattern(Type type)
+        public PatternBuilder Pattern(Type type, string name = null)
         {
-            Declaration declaration = Scope.Declare(type, null);
+            Declaration declaration = Scope.Declare(type, name);
             return Pattern(declaration);
         }
 
