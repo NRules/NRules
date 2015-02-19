@@ -4,6 +4,8 @@
     {
         public string AccountNumber { get; private set; }
         public Customer Owner { get; private set; }
+        public bool IsActive { get; set; }
+        public bool IsDelinquent { get; set; }
 
         public Account(string accountNumber, Customer owner)
         {
@@ -12,8 +14,5 @@
             IsActive = true;
             IsDelinquent = false;
         }
-
-        public bool IsActive { get; set; }
-        public bool IsDelinquent { get; set; }
     }
 }

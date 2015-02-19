@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NRules.Samples.SimpleRules.Domain
+﻿namespace NRules.Samples.SimpleRules.Domain
 {
     public class Order
     {
@@ -17,8 +15,6 @@ namespace NRules.Samples.SimpleRules.Domain
             get { return UnitPrice*Quantity*(1.0 - PercentDiscount/100.0); }
         }
 
-        public bool Cancelled { get; set; }
-
         public Order(int id, Customer customer, int quantity, double unitPrice)
         {
             Id = id;
@@ -26,7 +22,6 @@ namespace NRules.Samples.SimpleRules.Domain
             Quantity = quantity;
             UnitPrice = unitPrice;
             IsOpen = true;
-            Cancelled = true;
         }
 
         public void ApplyDiscount(double percentDiscount)
