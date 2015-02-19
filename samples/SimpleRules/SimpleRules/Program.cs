@@ -1,4 +1,6 @@
-﻿using NRules.Fluent;
+﻿using System.Reflection;
+using NRules.Fluent;
+using NRules.Samples.SimpleRules.Domain;
 
 namespace NRules.Samples.SimpleRules
 {
@@ -6,42 +8,44 @@ namespace NRules.Samples.SimpleRules
     {
         private static void Main(string[] args)
         {
-            var dwelling = new Dwelling {Address = "1 Main Street, New York, NY", Type = DwellingTypes.SingleHouse};
-            var dwelling2 = new Dwelling {Address = "2 Main Street, New York, NY", Type = DwellingTypes.SingleHouse};
-            var policy1 = new Policy {Name = "Silver", PolicyType = PolicyTypes.Home, Price = 1200, Dwelling = dwelling};
-            var policy2 = new Policy {Name = "Gold", PolicyType = PolicyTypes.Home, Price = 2300, Dwelling = dwelling2};
-            var customer1 = new Customer {Name = "John Do", Age = 22, Sex = SexTypes.Male, Policy = policy1};
-            var customer2 = new Customer {Name = "Emily Brown", Age = 32, Sex = SexTypes.Female, Policy = policy2};
-
+            //Load rules
             var repository = new RuleRepository();
-            repository.Load(x => x.From(typeof (Program).Assembly));
-            var ruleSets = repository.GetRuleSets();
+            repository.Load(x => x.From(Assembly.GetExecutingAssembly()));
 
-            var compiler = new RuleCompiler();
-            ISessionFactory factory = compiler.Compile(ruleSets);
-            ISession session = factory.CreateSession();
+            //Compile rules
+            var factory = repository.Compile();
 
-            session.Insert(policy1);
-            session.Insert(policy2);
+            //Create a working session
+            var session = factory.CreateSession();
+
+            //Load domain model
+            var customer1 = new Customer("John Doe") { IsPreferred = true };
+            var account11 = new Account("12456789", customer1);
+            var account12 = new Account("12456790", customer1);
+            var account13 = new Account("12456791", customer1) {IsActive = false, IsDelinquent = true};
+            var order11 = new Order(123456, customer1, 2, 25.0);
+            var order12 = new Order(123457, customer1, 1, 100.0);
+            var order13 = new Order(123458, customer1, 1, 5.0);
+
+            var customer2 = new Customer("Sarah Jones");
+            var account21 = new Account("22456789", customer2);
+            var order21 = new Order(223456, customer2, 2, 2225.0);
+
+            //Insert facts into rules engine's memory
             session.Insert(customer1);
-            session.Insert(customer2);
-            session.Insert(dwelling);
-            session.Insert(dwelling2);
-
-            customer1.Age = 10;
-            session.Update(customer1);
-
-            session.Retract(customer2);
-
-            session.Fire();
+            session.Insert(account11);
+            session.Insert(account12);
+            session.Insert(account13);
+            session.Insert(order11);
+            session.Insert(order12);
+            session.Insert(order13);
 
             session.Insert(customer2);
+            session.Insert(account21);
+            session.Insert(order21);
 
-            session.Fire();
-
-            customer1.Age = 30;
+            //Start match/resolve/act cycle
             session.Update(customer1);
-
             session.Fire();
         }
     }
