@@ -6,7 +6,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Pattern declaration.
     /// </summary>
-    [DebuggerDisplay("{FullName}: {Type}")]
+    [DebuggerDisplay("{_fullName}: {_type}")]
     public class Declaration : IEquatable<Declaration>
     {
         private readonly string _fullName;
