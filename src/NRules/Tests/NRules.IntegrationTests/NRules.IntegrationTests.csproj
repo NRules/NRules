@@ -63,6 +63,8 @@
     <Compile Include="TestRules\RuleWithMetadataAndParentMetadata.cs" />
     <Compile Include="TestRules\TwoFactOneForAllCheckRule.cs" />
     <Compile Include="TestRules\ThreeFactOrGroupRule.cs" />
+    <Compile Include="TestRules\TwoFactOrGroupRule.cs" />
+    <Compile Include="TwoFactOrGroupRuleTest.cs" />
     <Compile Include="ThreeFactTwoExistsRuleTest.cs" />
     <Compile Include="TestRules\ThreeFactTwoExistsRule.cs" />
     <Compile Include="ThreeFactTwoNotRuleTest.cs" />

@@ -7,9 +7,10 @@ namespace NRules.Rete
     {
         private readonly List<Declaration> _declarations;
 
-        public ReteBuilderContext()
+        public ReteBuilderContext(DummyNode dummyNode)
         {
             _declarations = new List<Declaration>();
+            BetaSource = dummyNode;
         }
 
         public ReteBuilderContext(ReteBuilderContext context)

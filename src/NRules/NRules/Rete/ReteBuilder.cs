@@ -23,37 +23,44 @@ namespace NRules.Rete
             rule.LeftHandSide.Match(
                 and =>
                 {
-                    var context = new ReteBuilderContext();
+                    var context = new ReteBuilderContext(_dummyNode);
                     Visit(context, and);
-                    var factIndexMap = FactIndexMap.CreateMap(ruleDeclarations, context.Declarations);
-                    var terminalNode = new TerminalNode(context.BetaSource, factIndexMap);
+                    var terminalNode = BuildTerminalNode(context, ruleDeclarations);
                     terminals.Add(terminalNode);
                 },
                 or =>
                 {
                     foreach (var childElement in or.ChildElements)
                     {
-                        var context = new ReteBuilderContext();
+                        var context = new ReteBuilderContext(_dummyNode);
                         Visit(context, childElement);
-                        var factIndexMap = FactIndexMap.CreateMap(ruleDeclarations, context.Declarations);
-                        var terminalNode = new TerminalNode(context.BetaSource, factIndexMap);
+                        var terminalNode = BuildTerminalNode(context, ruleDeclarations);
                         terminals.Add(terminalNode);
                     }
                 });
             return terminals;
         }
 
+        private TerminalNode BuildTerminalNode(ReteBuilderContext context, IEnumerable<Declaration> ruleDeclarations)
+        {
+            if (context.AlphaSource != null)
+            {
+                BuildJoinNode(context);
+            }
+            var factIndexMap = FactIndexMap.CreateMap(ruleDeclarations, context.Declarations);
+            var terminalNode = new TerminalNode(context.BetaSource, factIndexMap);
+            return terminalNode;
+        }
+
         protected override void VisitAnd(ReteBuilderContext context, AndElement element)
         {
-            if (context.BetaSource == null)
-                context.BetaSource = _dummyNode;
             foreach (var childElement in element.ChildElements)
             {
-                Visit(context, childElement);
                 if (context.AlphaSource != null)
                 {
                     BuildJoinNode(context);
-                }
+                } 
+                Visit(context, childElement);
             }
         }
 
