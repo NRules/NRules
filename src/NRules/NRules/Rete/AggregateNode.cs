@@ -122,11 +122,11 @@ namespace NRules.Rete
         
         private IAggregate GetAggregate(Tuple tuple)
         {
-            var aggregate = tuple.GetState<IAggregate>();
+            var aggregate = tuple.GetState<IAggregate>(this);
             if (aggregate == null)
             {
                 aggregate = _aggregateFactory();
-                tuple.SetState(aggregate);
+                tuple.SetState(this, aggregate);
             }
             return aggregate;
         }
