@@ -12,14 +12,17 @@ namespace NRules.IntegrationTests
     public class RulesLoadTest
     {
         [Test]
-        public void Load_AssemblyWithoutRules_Throws()
+        public void Load_AssemblyWithoutRules_Empty()
         {
             //Arrange
             RuleRepository target = CreateTarget();
 
             //Act
+            target.Load(x => x.From(typeof (string).Assembly));
+            IRuleSet ruleSet = target.GetRuleSets().First();
+
             //Assert
-            Assert.Throws<ArgumentException>(() => target.Load(x => x.From(typeof (string).Assembly)));
+            Assert.AreEqual(0, ruleSet.Rules.Count());
         }
 
         [Test]

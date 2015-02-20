@@ -57,12 +57,6 @@ namespace NRules.Fluent
             foreach (var assembly in assemblies)
             {
                 var ruleTypes = assembly.GetTypes().Where(IsRule).ToArray();
-                if (!ruleTypes.Any())
-                {
-                    throw new ArgumentException(string.Format(
-                        "The supplied assembly does not contain any concrete fluent rule definitions. Assembly={0}",
-                        assembly.FullName));
-                }
                 _ruleTypes.AddRange(ruleTypes);
             }
             return this;
