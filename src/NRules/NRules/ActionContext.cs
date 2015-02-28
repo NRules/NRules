@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NRules.RuleModel;
 
 namespace NRules
@@ -22,12 +21,6 @@ namespace NRules
 
         public void Update(object fact)
         {
-            Operations.Enqueue(new ActionOperation(fact, ActionOperationType.Update));
-        }
-
-        public void Update<T>(T fact, Action<T> updateAction)
-        {
-            updateAction(fact);
             Operations.Enqueue(new ActionOperation(fact, ActionOperationType.Update));
         }
 

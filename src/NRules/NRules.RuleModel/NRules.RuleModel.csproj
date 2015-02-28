@@ -62,6 +62,7 @@
     <Compile Include="Builders\RuleBuilder.cs" />
     <Compile Include="Builders\RuleElementBuilder.cs" />
     <Compile Include="CollectionAggregate.cs" />
+    <Compile Include="ContextExtensions.cs" />
     <Compile Include="DeclarationExtensions.cs" />
     <Compile Include="ExistsElement.cs" />
     <Compile Include="ForAllElement.cs" />
