@@ -7,6 +7,11 @@ namespace NRules.RuleModel
     public interface IContext
     {
         /// <summary>
+        /// Current rule definition.
+        /// </summary>
+        IRuleDefinition Rule { get; }
+
+        /// <summary>
         /// Halts rules execution. The engine continues execution of the current rule and exits the execution cycle.
         /// </summary>
         void Halt();

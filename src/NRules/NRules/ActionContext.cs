@@ -5,13 +5,15 @@ namespace NRules
 {
     internal class ActionContext : IContext
     {
-        public ActionContext()
+        public ActionContext(IRuleDefinition rule)
         {
+            Rule = rule;
             IsHalted = false;
             Operations = new Queue<ActionOperation>();
         }
 
-        public bool IsHalted { get; set; }
+        public IRuleDefinition Rule { get; private set; }
+        public bool IsHalted { get; private set; }
         public Queue<ActionOperation> Operations { get; set; } 
 
         public void Insert(object fact)

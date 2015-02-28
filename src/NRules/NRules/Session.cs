@@ -111,12 +111,11 @@ namespace NRules
 
         public void Fire()
         {
-            var actionContext = new ActionContext();
-
-            while (_agenda.HasActiveRules() && !actionContext.IsHalted)
+            while (_agenda.HasActiveRules())
             {
                 Activation activation = _agenda.NextActivation();
                 ICompiledRule rule = activation.Rule;
+                var actionContext = new ActionContext(rule.Definition);
 
                 _eventAggregator.RaiseRuleFiring(this, activation);
                 foreach (IRuleAction action in rule.Actions)
@@ -125,6 +124,8 @@ namespace NRules
                     ApplyActionOperations(actionContext);
                 }
                 _eventAggregator.RaiseRuleFired(this, activation);
+
+                if (actionContext.IsHalted) break;
             }
         }
 
