@@ -1,6 +1,7 @@
 using System;
+using NRules.RuleModel;
 
-namespace NRules.RuleModel
+namespace NRules.Fluent.Dsl
 {
     public static class ContextExtensions
     {
