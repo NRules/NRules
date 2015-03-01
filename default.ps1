@@ -171,7 +171,6 @@ task Help -depends Build -precondition { return $component.ContainsKey('help') }
 	
 	Create-Directory $build_dir
 	
-	$help_proj = $component.help
 	$help_proj_file = "$help_dir\$($component.help)"
 	exec { &$script:msbuild_exec $help_proj_file /v:m /nologo }
 }
