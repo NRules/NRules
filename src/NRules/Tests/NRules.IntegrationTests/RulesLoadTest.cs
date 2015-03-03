@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using NRules.Fluent;
 using NRules.IntegrationTests.TestRules;
@@ -26,14 +25,17 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void Load_InvalidTypes_Throws()
+        public void Load_InvalidTypes_Empty()
         {
             //Arrange
             RuleRepository target = CreateTarget();
 
             //Act
+            target.Load(x => x.From(typeof (string)));
+            IRuleSet ruleSet = target.GetRuleSets().First();
+
             //Assert
-            Assert.Throws<ArgumentException>(() => target.Load(x => x.From(typeof (string))));
+            Assert.AreEqual(0, ruleSet.Rules.Count());
         }
 
         [Test]

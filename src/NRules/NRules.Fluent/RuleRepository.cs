@@ -43,17 +43,14 @@ namespace NRules.Fluent
         /// <param name="specAction">Rule loader specification.</param>
         public void Load(Action<IRuleLoadSpec> specAction)
         {
-            var spec = new RuleLoadSpec();
+            var spec = new RuleLoadSpec(Activator);
             specAction(spec);
-
-            var rules = spec.Load()
-                .Select(t => Activator.Activate(t))
-                .Select(r => r.GetDefinition());
 
             var ruleSetName = spec.RuleSetName ?? DefaultRuleSetName;
             var ruleSet = GetRuleSet(ruleSetName);
-            ruleSet.Add(rules);
 
+            var rules = spec.Load();
+            ruleSet.Add(rules);
         }
 
         private IRuleSet GetRuleSet(string ruleSetName)
