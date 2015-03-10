@@ -29,16 +29,12 @@ namespace NRules.Fluent
         /// Tags applied to the rule.
         /// </summary>
         string[] Tags { get; }
-
-        /// <summary>
-        /// Tests if the rule is tagged with a given tag.
-        /// </summary>
-        /// <param name="tag">Tag to test.</param>
-        /// <returns><c>true</c> if the rule is tagged, <c>false</c> otherwise.</returns>
-        bool IsTagged(string tag);
     }
 
-    internal class RuleMetadata : IRuleMetadata
+    /// <summary>
+    /// Metadata associated with a rule defined using internal DSL.
+    /// </summary>
+    public class RuleMetadata : IRuleMetadata
     {
         private readonly Type _ruleType;
         private readonly string _name;
@@ -57,39 +53,52 @@ namespace NRules.Fluent
             _repeatability = GetAttributes<RepeatabilityAttribute>().SingleNullable(a => a.Value);
         }
 
+        /// <summary>
+        /// Rule's .NET type.
+        /// </summary>
         public Type RuleType
         {
             get { return _ruleType; }
         }
 
+        /// <summary>
+        /// Rule's name.
+        /// </summary>
         public string Name
         {
             get { return _name; }
         }
 
+        /// <summary>
+        /// Rule's description.
+        /// </summary>
         public string Description
         {
             get { return _description; }
         }
 
+        /// <summary>
+        /// Tags applied to the rule.
+        /// </summary>
         public string[] Tags
         {
             get { return _tags; }
         }
 
+        /// <summary>
+        /// Rule's priority.
+        /// </summary>
         public int? Priority
         {
             get { return _priority; }
         }
 
+        /// <summary>
+        /// Rule's repeatability.
+        /// </summary>
         public RuleRepeatability? Repeatability
         {
             get { return _repeatability; }
-        }
-
-        public bool IsTagged(string tag)
-        {
-            return _tags.Contains(tag);
         }
 
         private T[] GetAttributes<T>() where T : Attribute
