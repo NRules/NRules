@@ -1,4 +1,6 @@
-﻿using NRules.IntegrationTests.TestAssets;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
@@ -28,7 +30,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact1]);
+            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType2>>().Count());
         }
 
         [Test]
@@ -46,10 +48,10 @@ namespace NRules.IntegrationTests
 
             //Act
             Session.Fire();
-            var actualCount1 = GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact1];
+            var actualCount1 = GetFiredFact<IEnumerable<FactType2>>().Count();
             Session.Insert(fact23);
             Session.Fire();
-            var actualCount2 = GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact1];
+            var actualCount2 = GetFiredFact<IEnumerable<FactType2>>().Count();
 
             //Assert
             AssertFiredTwice();
@@ -73,7 +75,7 @@ namespace NRules.IntegrationTests
 
             //Act
             Session.Fire();
-            var actualCount = GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact1];
+            var actualCount = GetFiredFact<IEnumerable<FactType2>>().Count();
 
             //Assert
             AssertFiredOnce();
@@ -99,7 +101,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(1, GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact1]);
+            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType2>>().Count());
         }
 
         [Test]
@@ -234,8 +236,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(2, GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact11]);
-            Assert.AreEqual(1, GetRuleInstance<TwoFactOneCollectionRule>().FactCount[fact12]);
+            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType2>>(0).Count());
+            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType2>>(1).Count());
         }
 
         protected override void SetUpRules()

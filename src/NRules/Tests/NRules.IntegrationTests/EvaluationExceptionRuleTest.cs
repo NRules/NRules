@@ -30,7 +30,7 @@ namespace NRules.IntegrationTests
             Assert.AreSame(fact, facts.First().Value);
             Assert.IsInstanceOf<NullReferenceException>(ex.InnerException);
         }
-        
+
         [Test]
         public void Fire_ErrorInActionNoErrorHandler_Throws()
         {
@@ -40,10 +40,10 @@ namespace NRules.IntegrationTests
             Session.Events.ActionFailedEvent += (sender, args) => expression = args.Action;
             Session.Events.ActionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
-            var fact = new FactType1 {TestProperty = "Valid value"};
+            var fact = new FactType1 { TestProperty = "Valid value" };
             Session.Insert(fact);
 
-            GetRuleInstance<OneFactRule>().Notifier = null;
+            GetRuleInstance<OneFactRule>().Action = null;
 
             //Act - Assert
             var ex = Assert.Throws<RuleActionEvaluationException>(() => Session.Fire());
@@ -52,17 +52,17 @@ namespace NRules.IntegrationTests
             Assert.AreSame(fact, facts.First().Value);
             Assert.IsInstanceOf<NullReferenceException>(ex.InnerException);
         }
-        
+
         [Test]
         public void Fire_ErrorInActionErrorHandler_DoesNotThrow()
         {
             //Arrange
             Session.Events.ActionFailedEvent += (sender, args) => args.IsHandled = true;
 
-            var fact = new FactType1 {TestProperty = "Valid value"};
+            var fact = new FactType1 { TestProperty = "Valid value" };
             Session.Insert(fact);
 
-            GetRuleInstance<OneFactRule>().Notifier = null;
+            GetRuleInstance<OneFactRule>().Action = null;
 
             //Act - Assert
             Assert.DoesNotThrow(() => Session.Fire());

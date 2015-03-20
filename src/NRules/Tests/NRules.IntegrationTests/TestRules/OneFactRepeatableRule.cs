@@ -16,7 +16,7 @@ namespace NRules.IntegrationTests.TestRules
             Then()
                 .Do(ctx => fact.IncrementCount())
                 .Do(ctx => ctx.Update(fact))
-                .Do(ctx => Notifier.RuleActivated());
+                .Do(ctx => Action());
         }
     }
 }

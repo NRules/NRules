@@ -13,7 +13,7 @@ namespace NRules.IntegrationTests.TestRules
                 .Not<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
                 .Not<FactType3>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty);
             Then()
-                .Do(ctx => Notifier.RuleActivated());
+                .Do(ctx => Action());
         }
     }
 }
