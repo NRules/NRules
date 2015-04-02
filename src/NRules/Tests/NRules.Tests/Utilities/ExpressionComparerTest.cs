@@ -32,7 +32,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<int, int, bool>> first = (i1, i2) => i1 == i2;
             Expression<Func<int, int, bool>> second = (ii1, ii2) => ii1 != ii2;
 
-            AssertEqual(first, second, false);
+            AssertNotEqual(first, second);
         }
         
         [Test]
@@ -66,7 +66,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_StaticField()
+        public void AreEqual_EquivalentMember_StaticField_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticField;
@@ -76,7 +76,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_StaticProperty()
+        public void AreEqual_EquivalentMember_StaticProperty_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticProperty;
@@ -86,7 +86,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_StaticMethod()
+        public void AreEqual_EquivalentMember_StaticMethod_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod();
@@ -96,7 +96,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_StaticMethodWithArguments()
+        public void AreEqual_EquivalentMember_StaticMethodWithArguments_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod("one");
@@ -112,11 +112,11 @@ namespace NRules.Tests.Utilities
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod("one");
             Expression<Func<SomeFact, bool>> second = f => f.Value == StaticMethod("two");
 
-            AssertEqual(first, second, false);
+            AssertNotEqual(first, second);
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_MemberAccessExtension()
+        public void AreEqual_EquivalentMember_MemberAccessExtension_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values.Contains("sdlkjf");
@@ -126,7 +126,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_MemberAccess()
+        public void AreEqual_EquivalentMember_MemberAccess_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values.GetLength(0) == 0;
@@ -136,7 +136,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_MemberAccessIndexer()
+        public void AreEqual_EquivalentMember_MemberAccessIndexer_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values[0] == "1";
@@ -152,16 +152,25 @@ namespace NRules.Tests.Utilities
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values[0] == "1";
             Expression<Func<SomeFact, bool>> second = f => f.Child.Values[1] == "1";
 
-            AssertEqual(first, second, false);
+            AssertNotEqual(first, second);
         }
 
-        private static void AssertEqual(Expression first, Expression second, bool expected = true)
+        private static void AssertEqual(Expression first, Expression second)
         {
             //Act
             bool result = ExpressionComparer.AreEqual(first, second);
 
             //Assert
-            Assert.That(result, Is.EqualTo(expected));
+            Assert.That(result, Is.True);
+        }
+
+        private static void AssertNotEqual(Expression first, Expression second)
+        {
+            //Act
+            bool result = ExpressionComparer.AreEqual(first, second);
+
+            //Assert
+            Assert.That(result, Is.False);
         }
 
         // A few fields and classes for some more advanced tests.
