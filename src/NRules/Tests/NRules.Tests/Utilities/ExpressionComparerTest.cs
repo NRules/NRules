@@ -66,7 +66,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_StaticField_True()
+        public void AreEqual_EquivalentStaticField_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticField;
@@ -76,7 +76,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_StaticProperty_True()
+        public void AreEqual_EquivalentStaticProperty_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticProperty;
@@ -86,7 +86,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_StaticMethod_True()
+        public void AreEqual_EquivalentStaticMethod_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod();
@@ -96,7 +96,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_StaticMethodWithArguments_True()
+        public void AreEqual_EquivalentMethodWithArguments_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod("one");
@@ -106,7 +106,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_StaticMethodWithArguments_False()
+        public void AreEqual_NonEquivalentMethodWithArguments_False()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod("one");
@@ -116,7 +116,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_MemberAccessExtension_True()
+        public void AreEqual_EquivalentMemberAccessExtension_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values.Contains("sdlkjf");
@@ -126,7 +126,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_MemberAccess_True()
+        public void AreEqual_EquivalentMemberAccess_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values.GetLength(0) == 0;
@@ -136,7 +136,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_MemberAccessIndexer_True()
+        public void AreEqual_EquivalentMemberAccessIndexer_True()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values[0] == "1";
@@ -146,7 +146,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
-        public void AreEqual_EquivalentMember_MemberAccessIndexer_False()
+        public void AreEqual_NonEquivalentMemberAccessIndexer_False()
         {
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values[0] == "1";
