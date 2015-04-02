@@ -81,6 +81,12 @@ namespace NRules.Utilities
 
         private static bool MemberExpressionsEqual(MemberExpression x, MemberExpression y, LambdaExpression rootX, LambdaExpression rootY)
         {
+            // Special case for static field and static property
+            if (x.Expression == null)
+            {
+                return Equals(x.Member, y.Member);
+            }
+
             if (x.Expression.NodeType != y.Expression.NodeType)
                 return false;
             switch (x.Expression.NodeType)
@@ -90,6 +96,7 @@ namespace NRules.Utilities
                     var consty = GetValueOfConstantExpression(y);
                     return Equals(constx, consty);
                 case ExpressionType.Parameter:
+                case ExpressionType.MemberAccess:
                     return Equals(x.Member, y.Member) && ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
                 default:
                     throw new NotImplementedException(x.ToString());
