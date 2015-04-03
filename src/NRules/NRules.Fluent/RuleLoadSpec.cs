@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NRules.Fluent.Dsl;
+using NRules.RuleModel;
 
 namespace NRules.Fluent
 {
@@ -43,9 +43,14 @@ namespace NRules.Fluent
 
     internal class RuleLoadSpec : IRuleLoadSpec
     {
-        private readonly List<Type> _ruleTypes = new List<Type>();
-        private Func<IRuleMetadata, bool> _filter;
+        private readonly IRuleActivator _activator;
+        private readonly RuleTypeScanner _typeScanner = new RuleTypeScanner();
         private string _ruleSetName;
+
+        public RuleLoadSpec(IRuleActivator activator)
+        {
+            _activator = activator;
+        }
 
         public string RuleSetName
         {
@@ -54,41 +59,23 @@ namespace NRules.Fluent
 
         public IRuleLoadSpec From(params Assembly[] assemblies)
         {
-            foreach (var assembly in assemblies)
-            {
-                var ruleTypes = assembly.GetTypes().Where(IsRule).ToArray();
-                if (!ruleTypes.Any())
-                {
-                    throw new ArgumentException(string.Format(
-                        "The supplied assembly does not contain any concrete fluent rule definitions. Assembly={0}",
-                        assembly.FullName));
-                }
-                _ruleTypes.AddRange(ruleTypes);
-            }
+            _typeScanner.Assembly(assemblies);
             return this;
         }
 
         public IRuleLoadSpec From(params Type[] types)
         {
-            var invalidTypes = types.Where(IsNotRule).ToArray();
-            if (invalidTypes.Any())
-            {
-                string invalidTypesString = string.Join(", ", invalidTypes.Select(t => t.FullName).ToArray());
-                throw new ArgumentException(string.Format(
-                    "The supplied types are not recognized as valid rule definitions. Types={0}",
-                    invalidTypesString));
-            }
-            _ruleTypes.AddRange(types);
+            _typeScanner.Type(types);
             return this;
         }
 
         public IRuleLoadSpec Where(Func<IRuleMetadata, bool> filter)
         {
-            if (_filter != null)
+            if (_typeScanner.IsFilterSet())
             {
                 throw new InvalidOperationException("Rule load specification can only have a single 'Where' clause");
             }
-            _filter = filter;
+            _typeScanner.Where(filter);
             return this;
         }
 
@@ -102,44 +89,13 @@ namespace NRules.Fluent
             return this;
         }
 
-        public IEnumerable<Type> Load()
+        public IEnumerable<IRuleDefinition> Load()
         {
-            var ruleTypes = _ruleTypes;
-            if (IsFilterSet())
-            {
-                var metadata = _ruleTypes.Select(ruleType => new RuleMetadata(ruleType));
-                var filteredTypes = metadata.Where(x => _filter(x)).Select(x => x.RuleType);
-                ruleTypes = filteredTypes.ToList();
-            }
-            return ruleTypes;
-        }
-
-        private bool IsFilterSet()
-        {
-            return _filter != null;
-        }
-
-        private static bool IsNotRule(Type type)
-        {
-            return !IsRule(type);
-        }
-
-        private static bool IsRule(Type type)
-        {
-            if (IsPublicConcrete(type) &&
-                typeof(Rule).IsAssignableFrom(type)) return true;
-
-            return false;
-        }
-
-        private static bool IsPublicConcrete(Type type)
-        {
-            if (!type.IsPublic) return false;
-            if (type.IsAbstract) return false;
-            if (type.IsInterface) return false;
-            if (type.IsGenericTypeDefinition) return false;
-
-            return true;
+            var ruleDefinitions = _typeScanner
+                .GetTypes()
+                .Select(t => _activator.Activate(t))
+                .Select(r => r.GetDefinition());
+            return ruleDefinitions;
         }
     }
 }

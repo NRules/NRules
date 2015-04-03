@@ -22,30 +22,6 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
-        /// Sets rule's priority.
-        /// If multiple rules get activated at the same time, rules with higher priority get executed first.
-        /// Priority value can be positive, negative or zero.
-        /// Default priority is zero.
-        /// </summary>
-        /// <param name="priority">Priority value.</param>
-        protected void Priority(int priority)
-        {
-            _builder.Priority(priority);
-        }
-
-        /// <summary>
-        /// Sets rule's repeatability, that is, how it behaves when it is activated with the same set of facts multiple times, 
-        /// which is important for recursion control. By default rules are <see cref="RuleRepeatability.Repeatable"/>, 
-        /// which means a rule will fire every time it is activated with the same set of facts.
-        /// If repeatability is set to <see cref="RuleRepeatability.NonRepeatable"/> then the rule will not fire with the same combination of facts, 
-        /// unless that combination was previously deactivated (i.e. through retraction).
-        /// </summary>
-        protected void Repeatability(RuleRepeatability repeatability)
-        {
-            _builder.Repeatability(repeatability);
-        }
-
-        /// <summary>
         /// Returns expression builder for rule's left hand side (conditions).
         /// </summary>
         /// <returns>Left hand side expression builder.</returns>
@@ -79,6 +55,15 @@ namespace NRules.Fluent.Dsl
             _builder.Name(metadata.Name);
             _builder.Description(metadata.Description);
             _builder.Tags(metadata.Tags);
+
+            if (metadata.Priority.HasValue)
+            {
+                _builder.Priority(metadata.Priority.Value);
+            }
+            if (metadata.Repeatability.HasValue)
+            {
+                _builder.Repeatability(metadata.Repeatability.Value);
+            }
 
             Define();
 

@@ -1,9 +1,15 @@
-﻿using NRules.Fluent.Dsl;
+﻿using System;
+using NRules.Fluent.Dsl;
 
 namespace NRules.IntegrationTests.TestAssets
 {
     public abstract class BaseRule : Rule
     {
-        public INotifier Notifier { get; set; }
+        protected BaseRule()
+        {
+            Action = () => { };
+        }
+
+        public Action Action { get; set; }
     }
 }

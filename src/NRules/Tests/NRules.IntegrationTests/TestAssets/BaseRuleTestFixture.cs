@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Moq;
+using NRules.Diagnostics;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
 using NUnit.Framework;
@@ -11,92 +11,103 @@ namespace NRules.IntegrationTests.TestAssets
     public abstract class BaseRuleTestFixture
     {
         protected ISession Session;
+        protected RuleRepository Repository;
 
-        private Dictionary<Type, Mock<INotifier>> _notifiers;
-        private List<BaseRule> _rules;
+        private Dictionary<string, List<AgendaEventArgs>> _firedRulesMap;
+        private Dictionary<Type, IRuleMetadata> _ruleMap;
 
         [SetUp]
         public void SetUp()
         {
-            _notifiers = new Dictionary<Type, Mock<INotifier>>();
-            _rules = new List<BaseRule>();
+            _firedRulesMap = new Dictionary<string, List<AgendaEventArgs>>();
+            _ruleMap = new Dictionary<Type, IRuleMetadata>();
+
+            Repository = new RuleRepository {Activator = new InstanceActivator()};
+
             SetUpRules();
 
-            var repository = new RuleRepository {Activator = new InstanceActivator(_rules)};
-            repository.Load(x => x.From(_rules.Select(r => r.GetType()).ToArray()));
-
-            ISessionFactory factory = repository.Compile();
+            ISessionFactory factory = Repository.Compile();
             Session = factory.CreateSession();
+            Session.Events.RuleFiredEvent += (sender, args) => _firedRulesMap[args.Rule.Name].Add(args);
         }
 
         protected abstract void SetUpRules();
 
         protected void SetUpRule<T>() where T : BaseRule, new()
         {
-            var notifier = new Mock<INotifier>();
-            _notifiers.Add(typeof (T), notifier);
-
-            var ruleInstance = new T {Notifier = notifier.Object};
-            _rules.Add(ruleInstance);
+            var metadata = new RuleMetadata(typeof (T));
+            _ruleMap[typeof (T)] = metadata;
+            _firedRulesMap[metadata.Name] = new List<AgendaEventArgs>();
+            Repository.Load(x => x.From(typeof(T)));
         }
 
         protected T GetRuleInstance<T>() where T : BaseRule
         {
-            return _rules.OfType<T>().First();
+            return (T)Repository.Activator.Activate(typeof(T));
         }
 
-        private Mock<INotifier> GetNotifier<T>()
+        protected T GetFiredFact<T>()
         {
-            return _notifiers.First(n => n.Key == typeof (T)).Value;
+            var rule = _ruleMap.Single().Value;
+            var firedRule = _firedRulesMap[rule.Name];
+            var x = firedRule.Last();
+            return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Type)).Value;
         }
 
-        private Mock<INotifier> GetNotifier()
+        protected T GetFiredFact<T>(int instanceNubmer)
         {
-            return _notifiers.First().Value;
+            var rule = _ruleMap.Single().Value;
+            var firedRule = _firedRulesMap[rule.Name];
+            var x = firedRule.ElementAt(instanceNubmer);
+            return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Type)).Value;
         }
 
         protected void AssertFiredOnce()
         {
-            GetNotifier().Verify(x => x.RuleActivated(), Times.Once);
+            Assert.AreEqual(1, _firedRulesMap.First().Value.Count);
         }
 
         protected void AssertFiredTwice()
         {
-            GetNotifier().Verify(x => x.RuleActivated(), Times.Exactly(2));
+            Assert.AreEqual(2, _firedRulesMap.First().Value.Count);
         }
 
         protected void AssertDidNotFire()
         {
-            GetNotifier().Verify(x => x.RuleActivated(), Times.Never);
+            Assert.AreEqual(0, _firedRulesMap.First().Value.Count);
         }
 
         protected void AssertFiredOnce<T>()
         {
-            GetNotifier<T>().Verify(x => x.RuleActivated(), Times.Once);
+            var rule = _ruleMap[typeof (T)];
+            Assert.AreEqual(1, _firedRulesMap[rule.Name].Count);
         }
 
         protected void AssertFiredTwice<T>()
         {
-            GetNotifier<T>().Verify(x => x.RuleActivated(), Times.Exactly(2));
+            var rule = _ruleMap[typeof(T)];
+            Assert.AreEqual(2, _firedRulesMap[rule.Name].Count);
         }
 
         protected void AssertDidNotFire<T>()
         {
-            GetNotifier<T>().Verify(x => x.RuleActivated(), Times.Never);
+            var rule = _ruleMap[typeof(T)];
+            Assert.AreEqual(0, _firedRulesMap[rule.Name].Count);
         }
 
         private class InstanceActivator : IRuleActivator
         {
-            private readonly Dictionary<Type, Rule> _rules;
-
-            public InstanceActivator(IEnumerable<Rule> rules)
-            {
-                _rules = rules.ToDictionary(r => r.GetType());
-            }
+            private readonly Dictionary<Type, Rule> _rules = new Dictionary<Type, Rule>();
 
             public Rule Activate(Type type)
             {
-                return _rules[type];
+                Rule rule;
+                if (!_rules.TryGetValue(type, out rule))
+                {
+                    rule = (Rule) Activator.CreateInstance(type);
+                    _rules[type] = rule;
+                }
+                return rule;
             }
         }
     }

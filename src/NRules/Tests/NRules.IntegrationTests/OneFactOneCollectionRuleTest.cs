@@ -1,4 +1,6 @@
-﻿using NRules.IntegrationTests.TestAssets;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
@@ -24,7 +26,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetRuleInstance<OneFactOneCollectionRule>().FactCount);
+            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType1>>().Count());
         }
 
         [Test]
@@ -43,7 +45,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(1, GetRuleInstance<OneFactOneCollectionRule>().FactCount);
+            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType1>>().Count());
         }
 
         [Test]

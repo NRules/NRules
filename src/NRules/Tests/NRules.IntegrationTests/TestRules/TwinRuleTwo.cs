@@ -14,7 +14,7 @@ namespace NRules.IntegrationTests.TestRules
                 .Match<FactType2>(() => fact21, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact11.TestProperty);
 
             Then()
-                .Do(ctx => Notifier.RuleActivated());
+                .Do(ctx => Action());
         }
     }
 }

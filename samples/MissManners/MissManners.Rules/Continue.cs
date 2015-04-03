@@ -10,8 +10,6 @@ namespace NRules.Samples.MissManners.Rules
         {
             Context context = null;
 
-            Priority(0);
-
             When()
                 .Match<Context>(() => context, c => c.State == ContextState.CheckDone);
 

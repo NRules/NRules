@@ -48,12 +48,19 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Customer.cs" />
-    <Compile Include="Dwelling.cs" />
-    <Compile Include="MatchPolicyRule.cs" />
-    <Compile Include="Policy.cs" />
+    <Compile Include="Domain\Account.cs" />
+    <Compile Include="Domain\Customer.cs" />
+    <Compile Include="Domain\Order.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rules\ActiveCustomerAccountRule.cs" />
+    <Compile Include="Rules\AllActiveAccountsRule.cs" />
+    <Compile Include="Rules\ActiveDelinquentAccountRule.cs" />
+    <Compile Include="Rules\ImportantCustomerRule.cs" />
+    <Compile Include="Rules\MultipleOrdersRule.cs" />
+    <Compile Include="Rules\NoActiveDelinquentAccountsRule.cs" />
+    <Compile Include="Rules\DiscountNotificationRule.cs" />
+    <Compile Include="Rules\PreferredCustomerDiscountRule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

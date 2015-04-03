@@ -4,6 +4,7 @@ using NRules.Samples.MissManners.Domain;
 namespace NRules.Samples.MissManners.Rules
 {
     [Name("AreWeDone")]
+    [Priority(1)]
     public class AreWeDone : Rule
     {
         public override void Define()
@@ -11,8 +12,6 @@ namespace NRules.Samples.MissManners.Rules
             Context context = null;
             LastSeat lastSeat = null;
             Seating seating = null;
-
-            Priority(1);
 
             When()
                 .Match<Context>(() => context, c => c.State == ContextState.CheckDone)

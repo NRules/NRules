@@ -1,5 +1,3 @@
-using System;
-
 namespace NRules.RuleModel
 {
     /// <summary>
@@ -8,6 +6,11 @@ namespace NRules.RuleModel
     /// </summary>
     public interface IContext
     {
+        /// <summary>
+        /// Current rule definition.
+        /// </summary>
+        IRuleDefinition Rule { get; }
+
         /// <summary>
         /// Halts rules execution. The engine continues execution of the current rule and exits the execution cycle.
         /// </summary>
@@ -24,14 +27,6 @@ namespace NRules.RuleModel
         /// </summary>
         /// <param name="fact">Existing fact to update.</param>
         void Update(object fact);
-
-        /// <summary>
-        /// Updates existing fact in the rules engine's memory.
-        /// First the update action is applied to the fact, then the fact is updated in the engine's memory.
-        /// </summary>
-        /// <param name="fact">Existing fact to update.</param>
-        /// <param name="updateAction">Action to apply to the fact.</param>
-        void Update<T>(T fact, Action<T> updateAction);
 
         /// <summary>
         /// Removes existing fact from the rules engine's memory.

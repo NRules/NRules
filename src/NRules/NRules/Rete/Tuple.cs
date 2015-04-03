@@ -8,7 +8,7 @@ namespace NRules.Rete
     [DebuggerTypeProxy(typeof(TupleDebugView))]
     internal class Tuple
     {
-        private object _state;
+        private Dictionary<INode, object> _stateMap;
 
         public Tuple()
         {
@@ -27,15 +27,20 @@ namespace NRules.Rete
         public Tuple LeftTuple { get; private set; }
         public int Count { get; private set; }
 
-        public T GetState<T>()
+        public T GetState<T>(INode node)
         {
-            if (_state == null) _state = default(T);
-            return (T) _state;
+            object value;
+            if (_stateMap != null && _stateMap.TryGetValue(node, out value))
+            {
+                return (T) value;
+            }
+            return default(T);
         }
 
-        public void SetState(object value)
+        public void SetState(INode node, object value)
         {
-            _state = value;
+            if (_stateMap == null) _stateMap = new Dictionary<INode, object>();
+            _stateMap[node] = value;
         }
 
         public void Clear()

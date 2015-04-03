@@ -19,7 +19,7 @@ namespace NRules.Rete
             _factType = @object.GetType();
         }
 
-        public Type FactType
+        public virtual Type FactType
         {
             get { return _factType; }
         }
@@ -40,6 +40,11 @@ namespace NRules.Rete
         public WrapperFact(Tuple tuple)
             : base(tuple)
         {
+        }
+
+        public override Type FactType
+        {
+            get { return WrappedTuple.RightFact.FactType; }
         }
 
         public override object Object
