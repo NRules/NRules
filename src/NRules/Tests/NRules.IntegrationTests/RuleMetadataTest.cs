@@ -62,6 +62,20 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Priority_PriorityAttributePresent_CustomValue()
+        {
+            //Arrange
+            _repository.Load(x => x.From(typeof(RuleWithMetadata)));
+            IRuleDefinition rule = _repository.GetRules().Single();
+
+            //Act
+            int actual = rule.Priority;
+
+            //Assert
+            Assert.AreEqual(100, actual);
+        }
+
+        [Test]
         public void Tags_TagAttributesAndParentAttributesPresent_CustomValues()
         {
             //Arrange
@@ -77,7 +91,34 @@ namespace NRules.IntegrationTests
             Assert.Contains("ChildMetadata", actual);
             Assert.Contains("ParentTag", actual);
             Assert.Contains("ParentMetadata", actual);
+        }
 
+        [Test]
+        public void Priority_PriorityParentAttributePresent_CustomValue()
+        {
+            //Arrange
+            _repository.Load(x => x.From(typeof(RuleWithMetadataAndParentMetadata)));
+            IRuleDefinition rule = _repository.GetRules().Single();
+
+            //Act
+            int actual = rule.Priority;
+
+            //Assert
+            Assert.AreEqual(200, actual);
+        }
+
+        [Test]
+        public void Priority_PriorityAttributeOverriden_CustomValue()
+        {
+            //Arrange
+            _repository.Load(x => x.From(typeof(RuleWithMetadataAndParentMetadataAndOverrides)));
+            IRuleDefinition rule = _repository.GetRules().Single();
+
+            //Act
+            int actual = rule.Priority;
+
+            //Assert
+            Assert.AreEqual(500, actual);
         }
 
         [Test]
@@ -120,6 +161,20 @@ namespace NRules.IntegrationTests
 
             //Assert
             Assert.AreEqual(0, actual.Length);
+        }
+
+        [Test]
+        public void Priority_NoAttribute_Default()
+        {
+            //Arrange
+            _repository.Load(x => x.From(typeof(RuleWithoutMetadata)));
+            IRuleDefinition rule = _repository.GetRules().Single();
+
+            //Act
+            int actual = rule.Priority;
+
+            //Assert
+            Assert.AreEqual(0, actual);
         }
     }
 }

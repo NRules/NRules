@@ -4,9 +4,9 @@ using NRules.IntegrationTests.TestAssets;
 namespace NRules.IntegrationTests.TestRules
 {
     [Name("Rule with metadata"), Description("Rule description")]
-    [Tag("Test"), Tag("Metadata")]
-    [Priority(100)]
-    public class RuleWithMetadata : BaseRule
+    [Tag("ChildTag"), Tag("ChildMetadata")]
+    [Priority(500)]
+    public class RuleWithMetadataAndParentMetadataAndOverrides : ParentRuleWithMetadata
     {
         public override void Define()
         {
