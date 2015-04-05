@@ -60,6 +60,13 @@ namespace NRules.Utilities
                        && ExpressionEqual(cx.Object, cy.Object, rootX, rootY)
                        && CollectionsEqual(cx.Arguments, cy.Arguments, rootX, rootY);
             }
+            if (x is InvocationExpression)
+            {
+                var cx = (InvocationExpression)x;
+                var cy = (InvocationExpression)y;
+                return ExpressionEqual(cx.Expression, cy.Expression, rootX, rootY)
+                       && CollectionsEqual(cx.Arguments, cy.Arguments, rootX, rootY);
+            }
             if (x is ConstantExpression)
             {
                 var cx = (ConstantExpression)x;
