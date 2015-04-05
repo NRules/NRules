@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NRules.Utilities;
 using NUnit.Framework;
 
@@ -23,6 +22,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<int, int, bool>> first = (i1, i2) => i1 == i2;
             Expression<Func<int, int, bool>> second = (ii1, ii2) => ii1 == ii2;
 
+            //Act - Assert
             AssertEqual(first, second);
         }
         
@@ -33,6 +33,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<int, int, bool>> first = (i1, i2) => i1 == i2;
             Expression<Func<int, int, bool>> second = (ii1, ii2) => ii1 != ii2;
 
+            //Act - Assert
             AssertNotEqual(first, second);
         }
         
@@ -43,6 +44,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<int, int>> first = i => -i;
             Expression<Func<int, int>> second = i => -i;
 
+            //Act - Assert
             AssertEqual(first, second);
         }
         
@@ -53,6 +55,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<DateTime, DayOfWeek>> first = d => d.DayOfWeek;
             Expression<Func<DateTime, DayOfWeek>> second = d => d.DayOfWeek;
 
+            //Act - Assert
             AssertEqual(first, second);
         }
 
@@ -63,6 +66,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<DateTime, DateTime>> first = d => d.ToLocalTime();
             Expression<Func<DateTime, DateTime>> second = d => d.ToLocalTime();
 
+            //Act - Assert
             AssertEqual(first, second);
         }
 
@@ -73,6 +77,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticField;
             Expression<Func<SomeFact, bool>> second = f => f.Value == StaticField;
 
+            //Act - Assert
             AssertEqual(first, second);
         }
 
@@ -83,6 +88,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticProperty;
             Expression<Func<SomeFact, bool>> second = f => f.Value == StaticProperty;
 
+            //Act - Assert
             AssertEqual(first, second);
         }
 
@@ -93,6 +99,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod();
             Expression<Func<SomeFact, bool>> second = f => f.Value == StaticMethod();
 
+            //Act - Assert
             AssertEqual(first, second);
         }
 
@@ -103,6 +110,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod("one");
             Expression<Func<SomeFact, bool>> second = f => f.Value == StaticMethod("one");
 
+            //Act - Assert
             AssertEqual(first, second);
         }
 
@@ -113,6 +121,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod("one");
             Expression<Func<SomeFact, bool>> second = f => f.Value == StaticMethod("two");
 
+            //Act - Assert
             AssertNotEqual(first, second);
         }
 
@@ -122,7 +131,8 @@ namespace NRules.Tests.Utilities
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values.Contains("sdlkjf");
             Expression<Func<SomeFact, bool>> second = f => f.Child.Values.Contains("sdlkjf");
-            
+
+            //Act - Assert
             AssertEqual(first, second);
         }
 
@@ -133,6 +143,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values.GetLength(0) == 0;
             Expression<Func<SomeFact, bool>> second = f => f.Child.Values.GetLength(0) == 0;
 
+            //Act - Assert
             AssertEqual(first, second);
         }
 
@@ -143,6 +154,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values[0] == "1";
             Expression<Func<SomeFact, bool>> second = f => f.Child.Values[0] == "1";
 
+            //Act - Assert
             AssertEqual(first, second);
         }
 
@@ -153,12 +165,14 @@ namespace NRules.Tests.Utilities
             Expression<Func<SomeFact, bool>> first = f => f.Child.Values[0] == "1";
             Expression<Func<SomeFact, bool>> second = f => f.Child.Values[1] == "1";
 
+            //Act - Assert
             AssertNotEqual(first, second);
         }
 
         [Test]
-        public void AreEqual_InvocationExpression_True()
+        public void AreEqual_EquivalentInvocationExpression_True()
         {
+            //Arrange
             var methodInfo = GetType().GetMethods()
                 .First(info => info.IsStatic && info.Name == "StaticMethod" 
                     && info.GetParameters().Length == 1);
@@ -168,12 +182,14 @@ namespace NRules.Tests.Utilities
             Expression<Func<string, int>> first = data => staticMethodDelegate(data);
             Expression<Func<string, int>> second = data => staticMethodDelegate(data);
 
+            //Act - Assert
             AssertEqual(first, second);
         }
 
         [Test]
-        public void AreEqual_InvocationExpression_False()
+        public void AreEqual_NonEquivalentInvocationExpression_False()
         {
+            //Arrange
             var methodInfos = GetType().GetMethods();
 
             var methodInfoWithArg = methodInfos
@@ -190,12 +206,14 @@ namespace NRules.Tests.Utilities
             Expression<Func<string, int>> first = data => staticMethodWithArgDelegate(data);
             Expression<Func<int>> second = () => staticMethodWithoutArgDelegate();
 
+            //Act - Assert
             AssertNotEqual(first, second);
         }
 
         [Test]
-        public void AreEqual_InvocationExpression_SimilarSignature_False()
+        public void AreEqual_NonEquivalentInvocationExpressionWithSimilarSignature_False()
         {
+            //Arrange
             var methodInfos = GetType().GetMethods();
 
             var methodInfoWithArg = methodInfos
@@ -212,6 +230,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<string, int>> first = data => staticMethodWithArgDelegate(data);
             Expression<Func<string, int>> second = data => otherStaticMethodWithArgDelegate(data);
 
+            //Act - Assert
             AssertNotEqual(first, second);
         }
 
@@ -233,7 +252,6 @@ namespace NRules.Tests.Utilities
             Assert.That(result, Is.False);
         }
 
-        // A few fields and classes for some more advanced tests.
         public static int StaticField = 1;
 
         public static int StaticProperty
