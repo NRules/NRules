@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NRules.Utilities;
 using NUnit.Framework;
 
@@ -155,6 +156,65 @@ namespace NRules.Tests.Utilities
             AssertNotEqual(first, second);
         }
 
+        [Test]
+        public void AreEqual_InvocationExpression_True()
+        {
+            var methodInfo = GetType().GetMethods()
+                .First(info => info.IsStatic && info.Name == "StaticMethod" 
+                    && info.GetParameters().Length == 1);
+
+            var staticMethodDelegate = (Func<string, int>)Delegate.CreateDelegate(typeof(Func<string, int>), methodInfo);
+
+            Expression<Func<string, int>> first = data => staticMethodDelegate(data);
+            Expression<Func<string, int>> second = data => staticMethodDelegate(data);
+
+            AssertEqual(first, second);
+        }
+
+        [Test]
+        public void AreEqual_InvocationExpression_False()
+        {
+            var methodInfos = GetType().GetMethods();
+
+            var methodInfoWithArg = methodInfos
+                .First(info => info.IsStatic && info.Name == "StaticMethod" 
+                    && info.GetParameters().Length == 1);
+
+            var methodInfoWithoutArg = methodInfos
+                .First(info => info.IsStatic && info.Name == "StaticMethod" 
+                    && !info.GetParameters().Any());
+
+            var staticMethodWithArgDelegate = (Func<string, int>)Delegate.CreateDelegate(typeof(Func<string, int>), methodInfoWithArg);
+            var staticMethodWithoutArgDelegate = (Func<int>)Delegate.CreateDelegate(typeof(Func<int>), methodInfoWithoutArg);
+
+            Expression<Func<string, int>> first = data => staticMethodWithArgDelegate(data);
+            Expression<Func<int>> second = () => staticMethodWithoutArgDelegate();
+
+            AssertNotEqual(first, second);
+        }
+
+        [Test]
+        public void AreEqual_InvocationExpression_SimilarSignature_False()
+        {
+            var methodInfos = GetType().GetMethods();
+
+            var methodInfoWithArg = methodInfos
+                .First(info => info.IsStatic && info.Name == "StaticMethod" 
+                    && info.GetParameters().Length == 1);
+
+            var otherMethodInfoWithArg = methodInfos
+                .First(info => info.IsStatic && info.Name == "OtherStaticMethod" 
+                    && info.GetParameters().Length == 1);
+
+            var staticMethodWithArgDelegate = (Func<string, int>)Delegate.CreateDelegate(typeof(Func<string, int>), methodInfoWithArg);
+            var otherStaticMethodWithArgDelegate = (Func<string, int>)Delegate.CreateDelegate(typeof(Func<string, int>), otherMethodInfoWithArg);
+
+            Expression<Func<string, int>> first = data => staticMethodWithArgDelegate(data);
+            Expression<Func<string, int>> second = data => otherStaticMethodWithArgDelegate(data);
+
+            AssertNotEqual(first, second);
+        }
+
         private static void AssertEqual(Expression first, Expression second)
         {
             //Act
@@ -187,6 +247,11 @@ namespace NRules.Tests.Utilities
         }
 
         public static int StaticMethod(string param1)
+        {
+            return param1.GetHashCode();
+        }
+
+        public static int OtherStaticMethod(string param1)
         {
             return param1.GetHashCode();
         }
