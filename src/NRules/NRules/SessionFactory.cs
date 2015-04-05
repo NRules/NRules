@@ -18,6 +18,11 @@ namespace NRules
     public interface ISessionFactory
     {
         /// <summary>
+        /// Provider of rule session events. Use it to subscribe to various rules engine lifecycle events.
+        /// </summary>
+        IEventProvider Events { get; }
+
+        /// <summary>
         /// Creates a new rules session.
         /// </summary>
         /// <returns>New rules session.</returns>
@@ -27,17 +32,20 @@ namespace NRules
     internal class SessionFactory : ISessionFactory
     {
         private readonly INetwork _network;
+        private readonly IEventAggregator _eventAggregator = new EventAggregator();
 
         public SessionFactory(INetwork network)
         {
             _network = network;
         }
 
+        public IEventProvider Events { get { return _eventAggregator; } }
+
         public ISession CreateSession()
         {
             var agenda = new Agenda();
             var workingMemory = new WorkingMemory();
-            var eventAggregator = new EventAggregator();
+            var eventAggregator = new EventAggregator(_eventAggregator);
             var session = new Session(_network, agenda, workingMemory, eventAggregator);
             return session;
         }

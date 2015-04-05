@@ -43,12 +43,6 @@ namespace NRules.Rete
             _stateMap[node] = value;
         }
 
-        public void Clear()
-        {
-            RightFact = null;
-            LeftTuple = null;
-        }
-
         /// <summary>
         /// Facts contained in the tuple in reverse order (fast iteration over linked list).
         /// Reverse collection to get facts in their actual order.

@@ -52,6 +52,7 @@
     <Compile Include="EvaluationExceptionRuleTest.cs" />
     <Compile Include="IdentityMatchRuleTest.cs" />
     <Compile Include="CollectionWithConditionsRuleTest.cs" />
+    <Compile Include="LifecycleEventTest.cs" />
     <Compile Include="OneFactNonRepeatableRuleTest.cs" />
     <Compile Include="OneFactRepeatableRuleTest.cs" />
     <Compile Include="TestAssets\FactType5.cs" />
