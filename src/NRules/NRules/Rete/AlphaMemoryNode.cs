@@ -42,11 +42,14 @@ namespace NRules.Rete
         public void PropagateRetract(IExecutionContext context, Fact fact)
         {
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
-            foreach (var sink in _sinks)
+            if (memory.Contains(fact))
             {
-                sink.PropagateRetract(context, fact);
+                foreach (var sink in _sinks)
+                {
+                    sink.PropagateRetract(context, fact);
+                }
+                memory.Remove(fact);
             }
-            memory.Remove(fact);
         }
 
         public IEnumerable<Fact> GetFacts(IExecutionContext context)
