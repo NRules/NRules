@@ -66,6 +66,13 @@ $components = @{
 			out_include = @('*.*')
 		}
 	};
+		'Samples.ClaimsAdjudication' = @{
+		name = 'ClaimsAdjudication'
+		src_root = 'samples'
+		bin = @{
+			out_include = @('*.*')
+		}
+	};
 }
 
 $core = @('NRules', 'NRules.Debugger.Visualizer')
