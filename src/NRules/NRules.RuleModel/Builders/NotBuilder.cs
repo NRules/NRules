@@ -3,7 +3,7 @@ using System;
 namespace NRules.RuleModel.Builders
 {
     /// <summary>
-    /// Builder to compose negative existential element.
+    /// Builder to compose a negative existential element.
     /// </summary>
     public class NotBuilder : RuleElementBuilder, IBuilder<NotElement>
     {

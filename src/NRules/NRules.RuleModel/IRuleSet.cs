@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Represents a set of rules.
+    /// Represents a named set of rules.
     /// </summary>
     public interface IRuleSet
     {

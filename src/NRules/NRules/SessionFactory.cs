@@ -13,12 +13,28 @@ namespace NRules
     /// If repeatedly running rules for different sets of facts, don't create a new session factory for each rules run.
     /// Instead, have a single session factory and create a new rules session for each independent universe of facts.
     /// </remarks>
+    /// <event cref="IEventProvider.FactInsertingEvent">Before processing fact insertion.</event>
+    /// <event cref="IEventProvider.FactInsertedEvent">After processing fact insertion.</event>
+    /// <event cref="IEventProvider.FactUpdatingEvent">Before processing fact update.</event>
+    /// <event cref="IEventProvider.FactUpdatedEvent">After processing fact update.</event>
+    /// <event cref="IEventProvider.FactRetractingEvent">Before processing fact retraction.</event>
+    /// <event cref="IEventProvider.FactRetractedEvent">After processing fact retraction.</event>
+    /// <event cref="IEventProvider.ActivationCreatedEvent">When a set of facts matches a rule.</event>
+    /// <event cref="IEventProvider.ActivationDeletedEvent">When a set of facts no longer matches a rule.</event>
+    /// <event cref="IEventProvider.RuleFiringEvent">Before rule's actions are executed.</event>
+    /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
+    /// <event cref="IEventProvider.ConditionFailedEvent">When there is an error during condition evaluation,
+    /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.ActionFailedEvent">When there is an error during action evaluation,
+    /// before throwing exception to the client.</event>
     /// <seealso cref="ISession"/>
     /// <threadsafety instance="true" />
     public interface ISessionFactory
     {
         /// <summary>
-        /// Provider of rule session events. Use it to subscribe to various rules engine lifecycle events.
+        /// Provider of events aggregated across all rule sessions. 
+        /// Event sender is used to convey the session instance responsible for the event.
+        /// Use it to subscribe to various rules engine lifecycle events.
         /// </summary>
         IEventProvider Events { get; }
 

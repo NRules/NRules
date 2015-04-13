@@ -3,7 +3,7 @@ using System;
 namespace NRules.Fluent.Dsl
 {
     /// <summary>
-    /// Adds description to the rule.
+    /// Sets rule's description.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public sealed class DescriptionAttribute : Attribute

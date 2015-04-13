@@ -9,6 +9,9 @@ namespace NRules.Fluent.Dsl
     /// To create a rule using internal DSL, create a class that inherits from <c>NRules.Fluent.Dsl.Rule</c>
     /// and override <see cref="Define"/> method.
     /// Use <see cref="When"/> and <see cref="Then"/> methods to define rule's conditions and actions correspondingly.
+    /// A rule can also be decorated with attributes to add relevant metadata:
+    /// <see cref="NameAttribute"/>, <see cref="DescriptionAttribute"/>, <see cref="TagAttribute"/>, 
+    /// <see cref="PriorityAttribute"/>, <see cref="RepeatabilityAttribute"/>.
     /// </summary>
     public abstract class Rule
     {

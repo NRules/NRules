@@ -35,21 +35,21 @@
         /// Add is called by the rules engine when a new fact enters corresponding aggregation node.
         /// </summary>
         /// <param name="fact">New fact to add to the aggregate.</param>
-        /// <returns>Result of the aggregation, based on the added fact.</returns>
+        /// <returns>Result of the operation on the aggregate, based on the added fact.</returns>
         AggregationResults Add(object fact);
 
         /// <summary>
         /// Modify is called by the rules engine when an existing fact is updated in the corresponding aggregation node.
         /// </summary>
         /// <param name="fact">Existing fact to update in the aggregate.</param>
-        /// <returns>Result of the aggregation, based on the modified fact.</returns>
+        /// <returns>Result of the operation on the aggregate, based on the modified fact.</returns>
         AggregationResults Modify(object fact);
 
         /// <summary>
         /// Remove is called by the rules engine when an existing fact is removed from the corresponding aggregation node.
         /// </summary>
         /// <param name="fact">Existing fact to remove from the aggregate.</param>
-        /// <returns>Result of the aggregation, based on the removed fact.</returns>
+        /// <returns>Result of the operation on the aggregate, based on the removed fact.</returns>
         AggregationResults Remove(object fact);
 
         /// <summary>

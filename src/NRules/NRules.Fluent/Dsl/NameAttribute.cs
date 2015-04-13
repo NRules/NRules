@@ -3,7 +3,7 @@
 namespace NRules.Fluent.Dsl
 {
     /// <summary>
-    /// Adds name to the rule.
+    /// Sets rule's name.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public sealed class NameAttribute : Attribute
