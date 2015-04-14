@@ -12,7 +12,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.StatusRules
             Claim claim = null;
 
             When()
-                .Match<Claim>(() => claim, c => c.Status == ClaimStatus.Open)
+                .Claim(() => claim, c => c.Status == ClaimStatus.Open)
                 .Exists<ClaimAlert>(ce => ce.Claim == claim, ce => ce.Severity == 2);
 
             Then()

@@ -11,10 +11,10 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
             Claim claim = null;
 
             When()
-                .Match<Claim>(() => claim)
+                .Claim(() => claim)
                 .Or(x => x
                     .Not<Patient>(p => p == claim.Patient)
-                    .Match<Patient>(p => p == claim.Patient, p => p.Name.IsEmpty && p.Address.IsEmpty));
+                    .Patient(p => p == claim.Patient, p => p.Name.IsEmpty && p.Address.IsEmpty));
 
             Then()
                 .Do(ctx => ctx.Error(claim, "Patient information not provided"));

@@ -12,10 +12,10 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
             Patient patient = null;
 
             When()
-                .Match<Claim>(() => claim)
-                .Match<Patient>(() => patient, p => p == claim.Patient, 
+                .Claim(() => claim)
+                .Patient(() => patient, p => p == claim.Patient, 
                     p => p.RelationshipToInsured == Relationship.Self)
-                .Match<Insured>(i => i == claim.Insured, 
+                .Insured(i => i == claim.Insured, 
                     i => !Equals(patient.Name, i.Name));
 
             Then()

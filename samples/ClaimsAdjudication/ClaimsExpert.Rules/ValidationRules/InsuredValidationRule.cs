@@ -11,10 +11,10 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
             Claim claim = null;
 
             When()
-                .Match<Claim>(() => claim)
+                .Claim(() => claim)
                 .Or(x => x
                     .Not<Insured>(i => i == claim.Insured)
-                    .Match<Insured>(i => i == claim.Insured, i => i.Name.IsEmpty && i.Address.IsEmpty));
+                    .Insured(i => i == claim.Insured, i => i.Name.IsEmpty && i.Address.IsEmpty));
 
             Then()
                 .Do(ctx => ctx.Error(claim, "Insured information not provided"));

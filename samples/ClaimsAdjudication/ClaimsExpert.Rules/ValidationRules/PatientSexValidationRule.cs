@@ -11,8 +11,8 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
             Claim claim = null;
 
             When()
-                .Match<Claim>(() => claim)
-                .Match<Patient>(p => p == claim.Patient,
+                .Claim(() => claim)
+                .Patient(p => p == claim.Patient,
                     p => p.Sex == Sex.Unspecified);
 
             Then()

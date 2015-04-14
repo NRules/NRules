@@ -44,6 +44,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ContextExtensions.cs" />
+    <Compile Include="DslExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatusRules\ApproveClaimRule.cs" />
     <Compile Include="StatusRules\DenyClaimRule.cs" />
