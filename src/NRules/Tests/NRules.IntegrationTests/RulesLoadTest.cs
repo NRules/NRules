@@ -39,13 +39,38 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Load_EmptyRule_Throws()
+        {
+            //Arrange
+            RuleRepository target = CreateTarget();
+
+            //Act - Assert
+            var ex = Assert.Throws<RuleDefinitionException>(() => target.Load(x => x.From(typeof(EmptyRule))));
+            Assert.AreEqual(typeof(EmptyRule), ex.RuleType);
+        }
+
+        [Test]
+        public void Load_CannotActivateRule_Throws()
+        {
+            //Arrange
+            RuleRepository target = CreateTarget();
+
+            //Act - Assert
+            var ex = Assert.Throws<RuleActivationException>(() => target.Load(x => x.From(typeof(CannotActivateRule))));
+            Assert.AreEqual(typeof(CannotActivateRule), ex.RuleType);
+        }
+
+        [Test]
         public void Load_AssemblyWithRulesToNamedRuleSet_RuleSetNameMatches()
         {
             //Arrange
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load(x => x.From(ThisAssembly).To("Test"));
+            target.Load(x => x
+                .From(ThisAssembly)
+                .Where(r => r.RuleType == typeof(OneFactRule))
+                .To("Test"));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
@@ -59,7 +84,9 @@ namespace NRules.IntegrationTests
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load(x => x.From(ThisAssembly));
+            target.Load(x => x
+                .From(ThisAssembly)
+                .Where(r => r.RuleType == typeof(OneFactRule)));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert

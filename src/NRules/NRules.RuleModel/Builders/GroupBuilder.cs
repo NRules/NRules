@@ -132,13 +132,13 @@ namespace NRules.RuleModel.Builders
                 case GroupType.And:
                     if (_nestedBuilders.Count < 1)
                     {
-                        throw new InvalidOperationException("Group condition AND requires at least one child element");
+                        throw new InvalidOperationException("Group element AND requires at least one child element");
                     }
                     break;
                 case GroupType.Or:
                     if (_nestedBuilders.Count < 1)
                     {
-                        throw new InvalidOperationException("Group condition OR requires at least one child element");
+                        throw new InvalidOperationException("Group element OR requires at least one child element");
                     }
                     break;
             }

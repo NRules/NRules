@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using NRules.Fluent.Dsl;
 using NRules.RuleModel;
 
 namespace NRules.Fluent
@@ -93,9 +94,33 @@ namespace NRules.Fluent
         {
             var ruleDefinitions = _typeScanner
                 .GetTypes()
-                .Select(t => _activator.Activate(t))
-                .Select(r => r.GetDefinition());
+                .Select(Activate)
+                .Select(BuildDefinition);
             return ruleDefinitions;
+        }
+
+        private Rule Activate(Type type)
+        {
+            try
+            {
+                return _activator.Activate(type);
+            }
+            catch (Exception e)
+            {
+                throw new RuleActivationException("Failed to activate rule class", type, e);
+            }
+        }
+
+        private static IRuleDefinition BuildDefinition(Rule rule)
+        {
+            try
+            {
+                return rule.GetDefinition();
+            }
+            catch (Exception e)
+            {
+                throw new RuleDefinitionException("Failed to build rule definition", rule.GetType(), e);
+            }
         }
     }
 }
