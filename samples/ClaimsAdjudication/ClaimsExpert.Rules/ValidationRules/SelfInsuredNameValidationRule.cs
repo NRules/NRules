@@ -19,7 +19,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
                     i => !Equals(patient.Name, i.Name));
 
             Then()
-                .Do(ctx => ctx.Warning(claim, "Self insured name does not match"));
+                .Warning(claim, "Self insured name does not match");
         }
     }
 }

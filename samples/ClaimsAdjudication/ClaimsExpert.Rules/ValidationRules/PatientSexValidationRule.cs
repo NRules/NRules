@@ -16,7 +16,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
                     p => p.Sex == Sex.Unspecified);
 
             Then()
-                .Do(ctx => ctx.Error(claim, "Patient sex not specified"));
+                .Error(claim, "Patient sex not specified");
         }
     }
 }

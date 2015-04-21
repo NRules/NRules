@@ -16,7 +16,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
                     p => p.Name.FirstName == null || p.Name.LastName == null);
 
             Then()
-                .Do(ctx => ctx.Error(claim, "Patient name not fully specified"));
+                .Error(claim, "Patient name not fully specified");
         }
     }
 }

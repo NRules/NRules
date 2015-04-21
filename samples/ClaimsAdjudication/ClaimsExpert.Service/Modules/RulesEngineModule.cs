@@ -11,7 +11,7 @@ namespace NRules.Samples.ClaimsExpert.Service.Modules
         protected override void Load(ContainerBuilder builder)
         {
             var typeScanner = new RuleTypeScanner();
-            var ruleTypes = typeScanner.AssemblyOf(typeof(ContextExtensions)).GetTypes();
+            var ruleTypes = typeScanner.AssemblyOf(typeof(DslExtensions)).GetTypes();
 
             builder.RegisterTypes(ruleTypes).AsSelf();
 

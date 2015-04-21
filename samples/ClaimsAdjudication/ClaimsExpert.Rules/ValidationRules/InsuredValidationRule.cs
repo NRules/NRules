@@ -17,7 +17,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
                     .Insured(i => i == claim.Insured, i => i.Name.IsEmpty && i.Address.IsEmpty));
 
             Then()
-                .Do(ctx => ctx.Error(claim, "Insured information not provided"));
+                .Error(claim, "Insured information not provided");
         }
     }
 }

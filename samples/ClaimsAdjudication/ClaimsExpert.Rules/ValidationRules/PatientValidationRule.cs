@@ -17,7 +17,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
                     .Patient(p => p == claim.Patient, p => p.Name.IsEmpty && p.Address.IsEmpty));
 
             Then()
-                .Do(ctx => ctx.Error(claim, "Patient information not provided"));
+                .Error(claim, "Patient information not provided");
         }
     }
 }
