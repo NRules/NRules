@@ -1,4 +1,5 @@
 using System;
+using NRules.Fluent.Expressions;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
@@ -28,18 +29,18 @@ namespace NRules.Fluent.Dsl
         /// Returns expression builder for rule's left hand side (conditions).
         /// </summary>
         /// <returns>Left hand side expression builder.</returns>
-        protected ILeftHandSide When()
+        protected ILeftHandSideExpression When()
         {
-            return new ExpressionBuilder(_builder);
+            return new LeftHandSideExpression(_builder);
         }
 
         /// <summary>
         /// Returns expression builder for rule's right hand side (actions).
         /// </summary>
         /// <returns>Right hand side expression builder.</returns>
-        protected IRightHandSide Then()
+        protected IRightHandSideExpression Then()
         {
-            return new ExpressionBuilder(_builder);
+            return new RightHandSideExpression(_builder);
         }
 
         /// <summary>

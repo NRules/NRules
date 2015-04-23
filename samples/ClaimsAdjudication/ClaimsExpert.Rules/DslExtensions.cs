@@ -8,42 +8,42 @@ namespace NRules.Samples.ClaimsExpert.Rules
 {
     public static class DslExtensions
     {
-        public static ILeftHandSide Claim(this ILeftHandSide lhs, Expression<Func<Claim>> alias, params Expression<Func<Claim, bool>>[] conditions)
+        public static ILeftHandSideExpression Claim(this ILeftHandSideExpression lhs, Expression<Func<Claim>> alias, params Expression<Func<Claim, bool>>[] conditions)
         {
             return lhs.Match(alias, conditions);
         }
 
-        public static ILeftHandSide Patient(this ILeftHandSide lhs, Expression<Func<Patient>> alias, params Expression<Func<Patient, bool>>[] conditions)
+        public static ILeftHandSideExpression Patient(this ILeftHandSideExpression lhs, Expression<Func<Patient>> alias, params Expression<Func<Patient, bool>>[] conditions)
         {
             return lhs.Match(alias, conditions);
         }
 
-        public static ILeftHandSide Patient(this ILeftHandSide lhs, Expression<Func<Patient, bool>> condition, params Expression<Func<Patient, bool>>[] conditions)
-        {
-            return lhs.Match(condition, conditions);
-        }
- 
-        public static ILeftHandSide Insured(this ILeftHandSide lhs, Expression<Func<Insured>> alias, params Expression<Func<Insured, bool>>[] conditions)
-        {
-            return lhs.Match(alias, conditions);
-        }
-
-        public static ILeftHandSide Insured(this ILeftHandSide lhs, Expression<Func<Insured, bool>> condition, params Expression<Func<Insured, bool>>[] conditions)
+        public static ILeftHandSideExpression Patient(this ILeftHandSideExpression lhs, Expression<Func<Patient, bool>> condition, params Expression<Func<Patient, bool>>[] conditions)
         {
             return lhs.Match(condition, conditions);
         }
 
-        public static IRightHandSide Info(this IRightHandSide rhs, Claim claim, string message)
+        public static ILeftHandSideExpression Insured(this ILeftHandSideExpression lhs, Expression<Func<Insured>> alias, params Expression<Func<Insured, bool>>[] conditions)
+        {
+            return lhs.Match(alias, conditions);
+        }
+
+        public static ILeftHandSideExpression Insured(this ILeftHandSideExpression lhs, Expression<Func<Insured, bool>> condition, params Expression<Func<Insured, bool>>[] conditions)
+        {
+            return lhs.Match(condition, conditions);
+        }
+
+        public static IRightHandSideExpression Info(this IRightHandSideExpression rhs, Claim claim, string message)
         {
             return rhs.Do(ctx => InsertAlert(ctx, 1, claim, message));
         }
 
-        public static IRightHandSide Warning(this IRightHandSide rhs, Claim claim, string message)
+        public static IRightHandSideExpression Warning(this IRightHandSideExpression rhs, Claim claim, string message)
         {
             return rhs.Do(ctx => InsertAlert(ctx, 2, claim, message));
         }
 
-        public static IRightHandSide Error(this IRightHandSide rhs, Claim claim, string message)
+        public static IRightHandSideExpression Error(this IRightHandSideExpression rhs, Claim claim, string message)
         {
             return rhs.Do(ctx => InsertAlert(ctx, 3, claim, message));
         }
