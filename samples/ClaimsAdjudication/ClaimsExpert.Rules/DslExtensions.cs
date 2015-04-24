@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
-using NRules.RuleModel;
 using NRules.Samples.ClaimsExpert.Domain;
 
 namespace NRules.Samples.ClaimsExpert.Rules
@@ -35,23 +34,17 @@ namespace NRules.Samples.ClaimsExpert.Rules
 
         public static IRightHandSideExpression Info(this IRightHandSideExpression rhs, Claim claim, string message)
         {
-            return rhs.Do(ctx => InsertAlert(ctx, 1, claim, message));
+            return rhs.Do(ctx => ctx.Info(claim, message));
         }
 
         public static IRightHandSideExpression Warning(this IRightHandSideExpression rhs, Claim claim, string message)
         {
-            return rhs.Do(ctx => InsertAlert(ctx, 2, claim, message));
+            return rhs.Do(ctx => ctx.Warning(claim, message));
         }
 
         public static IRightHandSideExpression Error(this IRightHandSideExpression rhs, Claim claim, string message)
         {
-            return rhs.Do(ctx => InsertAlert(ctx, 3, claim, message));
-        }
-
-        private static void InsertAlert(IContext context, int severity, Claim claim, string message)
-        {
-            var alert = new ClaimAlert { Severity = severity, Claim = claim, RuleName = context.Rule.Name, Message = message };
-            context.Insert(alert);
+            return rhs.Do(ctx => ctx.Error(claim, message));
         }
     }
 }
