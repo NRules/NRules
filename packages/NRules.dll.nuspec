@@ -2,16 +2,16 @@
 <package>
   <metadata>
     <id>NRules</id>
-    <version>1.0.0</version>
-    <title>NRules, Business Rules Engine for .NET</title>
+    <version>$version$</version>
+    <title>NRules, Rules Engine for .NET</title>
     <authors>Sergiy Nikolayev</authors>
     <owners>Sergiy Nikolayev</owners>
     <licenseUrl>https://github.com/NRules/NRules/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>http://nrules.net</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/NRules/NRules/master/content/NRules_Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>NRules is an open source business rules engine for .NET that is based on the Rete matching algorithm. Among other features it supports forward chaining, negative, existential and universal quantifiers. Rules are authored in C# using internal DSL.</description>
+    <description>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm. NRules is an inference engine that, among other features, supports forward chaining, negative, existential and universal quantifiers. Rules are authored in C# using internal DSL.</description>
     <copyright>Copyright 2012-2015 Sergiy Nikolayev. All rights reserved.</copyright>
-    <tags>business rules engine dsl inference rete</tags>
+    <tags>rules engine inference rete business dsl</tags>
   </metadata>
 </package>
