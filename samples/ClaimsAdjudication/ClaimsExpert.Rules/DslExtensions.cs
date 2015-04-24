@@ -18,9 +18,9 @@ namespace NRules.Samples.ClaimsExpert.Rules
             return lhs.Match(alias, conditions);
         }
 
-        public static ILeftHandSideExpression Patient(this ILeftHandSideExpression lhs, Expression<Func<Patient, bool>> condition, params Expression<Func<Patient, bool>>[] conditions)
+        public static ILeftHandSideExpression Patient(this ILeftHandSideExpression lhs, params Expression<Func<Patient, bool>>[] conditions)
         {
-            return lhs.Match(condition, conditions);
+            return lhs.Match(conditions);
         }
 
         public static ILeftHandSideExpression Insured(this ILeftHandSideExpression lhs, Expression<Func<Insured>> alias, params Expression<Func<Insured, bool>>[] conditions)
@@ -28,9 +28,9 @@ namespace NRules.Samples.ClaimsExpert.Rules
             return lhs.Match(alias, conditions);
         }
 
-        public static ILeftHandSideExpression Insured(this ILeftHandSideExpression lhs, Expression<Func<Insured, bool>> condition, params Expression<Func<Insured, bool>>[] conditions)
+        public static ILeftHandSideExpression Insured(this ILeftHandSideExpression lhs, params Expression<Func<Insured, bool>>[] conditions)
         {
-            return lhs.Match(condition, conditions);
+            return lhs.Match(conditions);
         }
 
         public static IRightHandSideExpression Info(this IRightHandSideExpression rhs, Claim claim, string message)

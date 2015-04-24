@@ -30,16 +30,10 @@ namespace NRules.Fluent.Expressions
             return Match(symbol, conditions);
         }
 
-        public ILeftHandSideExpression Match<T>(Expression<Func<T, bool>> condition, params Expression<Func<T, bool>>[] conditions)
+        public ILeftHandSideExpression Match<T>(params Expression<Func<T, bool>>[] conditions)
         {
             var symbol = Expression.Parameter(typeof(T));
-            return Match(symbol, Enumerable.Repeat(condition, 1).Union(conditions));
-        }
-
-        public ILeftHandSideExpression Match<T>()
-        {
-            var symbol = Expression.Parameter(typeof(T));
-            return Match(symbol, new Expression<Func<T, bool>>[] { });
+            return Match(symbol, conditions);
         }
 
         private ILeftHandSideExpression Match<T>(ParameterExpression symbol, IEnumerable<Expression<Func<T, bool>>> conditions)

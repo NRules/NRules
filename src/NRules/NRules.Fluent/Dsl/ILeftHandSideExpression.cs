@@ -11,6 +11,7 @@ namespace NRules.Fluent.Dsl
     {
         /// <summary>
         /// Defines a pattern for facts matching a set of conditions.
+        /// Binds matching fact to a variable.
         /// </summary>
         /// <typeparam name="T">Type of fact to match.</typeparam>
         /// <param name="alias">Alias for the matching fact.</param>
@@ -23,18 +24,9 @@ namespace NRules.Fluent.Dsl
         /// Does not bind matching fact to a variable.
         /// </summary>
         /// <typeparam name="T">Type of fact to match.</typeparam>
-        /// <param name="condition">Condition the fact must satisfy to trigger the rule.</param>
         /// <param name="conditions">Set of additional conditions the fact must satisfy to trigger the rule.</param>
         /// <returns>Left hand side expression builder.</returns>
-        ILeftHandSideExpression Match<T>(Expression<Func<T, bool>> condition, params Expression<Func<T, bool>>[] conditions);
-
-        /// <summary>
-        /// Defines a pattern matching all facts of a given type.
-        /// Does not bind matching fact to a variable.
-        /// </summary>
-        /// <typeparam name="T">Type of fact to match.</typeparam>
-        /// <returns>Left hand side expression builder.</returns>
-        ILeftHandSideExpression Match<T>();
+        ILeftHandSideExpression Match<T>(params Expression<Func<T, bool>>[] conditions);
 
         /// <summary>
         /// Defines a pattern that aggregates matching facts into a collection.
