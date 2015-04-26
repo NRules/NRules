@@ -51,6 +51,7 @@
     <Compile Include="Dsl\ContextExtensions.cs" />
     <Compile Include="Dsl\DescriptionAttribute.cs" />
     <Compile Include="Dsl\ICollectPatternExpression.cs" />
+    <Compile Include="Dsl\IDependencyExpression.cs" />
     <Compile Include="Dsl\NameAttribute.cs" />
     <Compile Include="Dsl\PriorityAttribute.cs" />
     <Compile Include="Dsl\RepeatabilityAttribute.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Expressions\BuilderExtensions.cs" />
     <Compile Include="Expressions\CollectPatternExpression.cs" />
+    <Compile Include="Expressions\DependencyExpression.cs" />
     <Compile Include="Expressions\ExpressionExtensions.cs" />
     <Compile Include="Expressions\LeftHandSideExpression.cs" />
     <Compile Include="Expressions\RightHandSideExpression.cs" />

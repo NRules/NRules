@@ -55,13 +55,16 @@
     <Compile Include="LifecycleEventTest.cs" />
     <Compile Include="OneFactNonRepeatableRuleTest.cs" />
     <Compile Include="OneFactRepeatableRuleTest.cs" />
+    <Compile Include="OneFactRuleWithDependencyTest.cs" />
     <Compile Include="TestAssets\FactType5.cs" />
+    <Compile Include="TestAssets\ITestService.cs" />
     <Compile Include="TestRules\CannotActivateRule.cs" />
     <Compile Include="TestRules\IdentityMatchRule.cs" />
     <Compile Include="TestRules\CollectionWithConditionsRule.cs" />
     <Compile Include="TestRules\OneFactNonRepeatableRule.cs" />
     <Compile Include="TestRules\OneFactRepeatableRule.cs" />
     <Compile Include="TestRules\EmptyRule.cs" />
+    <Compile Include="TestRules\OneFactRuleWithDependency.cs" />
     <Compile Include="TestRules\ParentRuleWithMetadata.cs" />
     <Compile Include="TestRules\RuleWithMetadataAndParentMetadata.cs" />
     <Compile Include="TestRules\RuleWithMetadataAndParentMetadataAndOverrides.cs" />
@@ -108,7 +111,6 @@
     <Compile Include="OneFactRuleTest.cs" />
     <Compile Include="TestRules\ForwardChainingFirstRule.cs" />
     <Compile Include="TestRules\ForwardChainingSecondRule.cs" />
-    <Compile Include="TestAssets\INotifier.cs" />
     <Compile Include="TestRules\OneFactOneCollectionRule.cs" />
     <Compile Include="TestRules\OneFactRule.cs" />
     <Compile Include="TestAssets\BaseRule.cs" />

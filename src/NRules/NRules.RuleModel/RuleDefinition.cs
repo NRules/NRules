@@ -47,7 +47,12 @@ namespace NRules.RuleModel
         /// Tags applied to the rule.
         /// </summary>
         IEnumerable<string> Tags { get; }
-        
+
+        /// <summary>
+        /// Rule's dependencies.
+        /// </summary>
+        DependencyGroupElement Dependencies { get; }
+
         /// <summary>
         /// Rule left hand side (conditions).
         /// </summary>
@@ -66,6 +71,7 @@ namespace NRules.RuleModel
         private readonly string _description;
         private readonly int _priority;
         private readonly RuleRepeatability _repeatability;
+        private readonly DependencyGroupElement _dependencies;
         private readonly GroupElement _leftHandSide;
         private readonly ActionGroupElement _rightHandSide;
 
@@ -80,7 +86,7 @@ namespace NRules.RuleModel
         }
 
         public RuleDefinition(string name, string description, int priority, RuleRepeatability repeatability, IEnumerable<string> tags, 
-            GroupElement leftHandSide, ActionGroupElement rightHandSide)
+            DependencyGroupElement dependencies, GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
             _name = name;
             _description = description;
@@ -88,6 +94,7 @@ namespace NRules.RuleModel
             _priority = priority;
             _tags = new List<string>(tags);
 
+            _dependencies = dependencies;
             _leftHandSide = leftHandSide;
             _rightHandSide = rightHandSide;
         }
@@ -115,6 +122,11 @@ namespace NRules.RuleModel
         public IEnumerable<string> Tags
         {
             get { return _tags; }
+        }
+
+        public DependencyGroupElement Dependencies
+        {
+            get { return _dependencies; }
         }
 
         public GroupElement LeftHandSide

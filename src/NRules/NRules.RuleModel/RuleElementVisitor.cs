@@ -23,38 +23,16 @@
             }
         }
 
+        protected internal virtual void VisitCondition(TContext context, ConditionElement element)
+        {
+        }
+
         protected internal virtual void VisitAggregate(TContext context, AggregateElement element)
         {
             if (element.Source != null)
             {
                 element.Source.Accept(context, this);
             }
-        }
-
-        protected internal virtual void VisitActionGroup(TContext context, ActionGroupElement element)
-        {
-            foreach (ActionElement action in element.Actions)
-            {
-                action.Accept(context, this);
-            }
-        }
-
-        protected internal virtual void VisitCondition(TContext context, ConditionElement element)
-        {
-        }
-
-        protected internal virtual void VisitAction(TContext context, ActionElement element)
-        {
-        }
-
-        protected internal virtual void VisitAnd(TContext context, AndElement element)
-        {
-            VisitGroup(context, element);
-        }
-
-        protected internal virtual void VisitOr(TContext context, OrElement element)
-        {
-            VisitGroup(context, element);
         }
 
         protected internal virtual void VisitNot(TContext context, NotElement element)
@@ -70,10 +48,20 @@
         protected internal virtual void VisitForAll(TContext context, ForAllElement element)
         {
             element.BasePattern.Accept(context, this);
-            foreach (var pattern in element.Patterns)
+            foreach (PatternElement pattern in element.Patterns)
             {
                 pattern.Accept(context, this);
             }
+        }
+
+        protected internal virtual void VisitAnd(TContext context, AndElement element)
+        {
+            VisitGroup(context, element);
+        }
+
+        protected internal virtual void VisitOr(TContext context, OrElement element)
+        {
+            VisitGroup(context, element);
         }
 
         private void VisitGroup(TContext context, GroupElement element)
@@ -82,6 +70,30 @@
             {
                 childElement.Accept(context, this);
             }
+        }
+
+        protected internal virtual void VisitActionGroup(TContext context, ActionGroupElement element)
+        {
+            foreach (ActionElement action in element.Actions)
+            {
+                action.Accept(context, this);
+            }
+        }
+
+        protected internal virtual void VisitAction(TContext context, ActionElement element)
+        {
+        }
+
+        protected internal virtual void VisitDependencyGroup(TContext context, DependencyGroupElement element)
+        {
+            foreach (DependencyElement dependency in element.Dependencies)
+            {
+                dependency.Accept(context, this);
+            }
+        }
+        
+        protected internal virtual void VisitDependency(TContext context, DependencyElement element)
+        {
         }
     }
 }

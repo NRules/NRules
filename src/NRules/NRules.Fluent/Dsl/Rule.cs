@@ -26,6 +26,15 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
+        /// Returns expression builder for rule's dependencies.
+        /// </summary>
+        /// <returns>Dependencies expression builder.</returns>
+        protected IDependencyExpression Dependency()
+        {
+            return new DependencyExpression(_builder);
+        }
+
+        /// <summary>
         /// Returns expression builder for rule's left hand side (conditions).
         /// </summary>
         /// <returns>Left hand side expression builder.</returns>

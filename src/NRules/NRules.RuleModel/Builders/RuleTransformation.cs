@@ -33,7 +33,7 @@ namespace NRules.RuleModel.Builders
 
             if (lhsContext.IsModified || rhsContext.IsModified)
             {
-                return new RuleDefinition(rule.Name, rule.Description, rule.Priority, rule.Repeatability, rule.Tags, lhs, rhs);
+                return new RuleDefinition(rule.Name, rule.Description, rule.Priority, rule.Repeatability, rule.Tags, rule.Dependencies, lhs, rhs);
             }
             return rule;
         }
