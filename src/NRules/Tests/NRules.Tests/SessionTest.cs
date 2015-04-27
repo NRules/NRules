@@ -12,6 +12,7 @@ namespace NRules.Tests
         private Mock<INetwork> _network;
         private Mock<IWorkingMemory> _workingMemory;
         private Mock<IEventAggregator> _eventAggregator;
+        private Mock<IDependencyResolver> _dependencyResolver;
             
         [SetUp]
         public void Setup()
@@ -20,6 +21,7 @@ namespace NRules.Tests
             _network = new Mock<INetwork>();
             _workingMemory = new Mock<IWorkingMemory>();
             _eventAggregator = new Mock<IEventAggregator>();
+            _dependencyResolver = new Mock<IDependencyResolver>();
         }
 
         [Test]
@@ -38,7 +40,7 @@ namespace NRules.Tests
 
         private Session CreateTarget()
         {
-            return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object);
+            return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, _dependencyResolver.Object);
         }
     }
 }

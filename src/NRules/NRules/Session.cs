@@ -37,6 +37,11 @@ namespace NRules
         IEventProvider Events { get; }
 
         /// <summary>
+        /// Rules dependency resolver.
+        /// </summary>
+        IDependencyResolver DependencyResolver { get; set; }
+
+        /// <summary>
         /// Adds a new fact to the rules engine memory.
         /// </summary>
         /// <param name="fact">Fact to add.</param>
@@ -82,17 +87,20 @@ namespace NRules
         private readonly IEventAggregator _eventAggregator;
         private readonly IExecutionContext _executionContext;
 
-        internal Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator)
+        internal Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator, IDependencyResolver dependencyResolver)
         {
             _network = network;
             _workingMemory = workingMemory;
             _agenda = agenda;
             _eventAggregator = eventAggregator;
             _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator);
+            DependencyResolver = dependencyResolver;
             _network.Activate(_executionContext);
         }
 
         public IEventProvider Events { get { return _eventAggregator; } }
+
+        public IDependencyResolver DependencyResolver { get; set; }
 
         public void Insert(object fact)
         {
@@ -120,7 +128,7 @@ namespace NRules
                 _eventAggregator.RaiseRuleFiring(this, activation);
                 foreach (IRuleAction action in rule.Actions)
                 {
-                    action.Invoke(_executionContext, actionContext, activation.Tuple, activation.TupleFactMap);
+                    action.Invoke(_executionContext, actionContext, activation.Tuple, activation.TupleFactMap, rule.Dependencies);
                     ApplyActionOperations(actionContext);
                 }
                 _eventAggregator.RaiseRuleFired(this, activation);

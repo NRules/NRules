@@ -7,18 +7,18 @@ using NRules.Utilities;
 namespace NRules.Rete
 {
     [DebuggerDisplay("[{string.Join(\" \",_map)}]")]
-    internal class FactIndexMap
+    internal class IndexMap
     {
         private readonly int[] _map;
 
-        public FactIndexMap(int[] map)
+        public IndexMap(int[] map)
         {
             _map = map;
         }
 
-        public int Map(int index)
+        public int this[int index]
         {
-            return (index >= 0) ? _map[index] : index;
+            get { return (index >= 0) ? _map[index] : -1; }
         }
 
         public static void SetElementAt(ref object[] target, int index, int offset, object value)
@@ -29,12 +29,12 @@ namespace NRules.Rete
             }
         }
 
-        public static FactIndexMap CreateMap(IEnumerable<Declaration> declarations, IEnumerable<Declaration> baseDeclarations)
+        public static IndexMap CreateMap(IEnumerable<Declaration> declarations, IEnumerable<Declaration> baseDeclarations)
         {
             var positionMap = declarations.ToIndexMap();
             var map = baseDeclarations
                 .Select(positionMap.IndexOrDefault).ToArray();
-            return new FactIndexMap(map);
+            return new IndexMap(map);
         }
     }
 }

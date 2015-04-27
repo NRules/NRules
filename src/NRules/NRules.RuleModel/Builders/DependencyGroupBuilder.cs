@@ -24,6 +24,7 @@ namespace NRules.RuleModel.Builders
         {
             Declaration declaration = Scope.Declare(type, name);
             var dependency = new DependencyElement(declaration, Scope.Declarations, type);
+            declaration.Target = dependency;
             _dependencies.Add(dependency);
         }
 

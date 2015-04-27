@@ -51,7 +51,7 @@ namespace NRules.RuleModel
         /// <summary>
         /// Rule's dependencies.
         /// </summary>
-        DependencyGroupElement Dependencies { get; }
+        DependencyGroupElement DependencyGroup { get; }
 
         /// <summary>
         /// Rule left hand side (conditions).
@@ -124,7 +124,7 @@ namespace NRules.RuleModel
             get { return _tags; }
         }
 
-        public DependencyGroupElement Dependencies
+        public DependencyGroupElement DependencyGroup
         {
             get { return _dependencies; }
         }

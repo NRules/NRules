@@ -47,7 +47,7 @@ namespace NRules.Rete
             {
                 BuildJoinNode(context);
             }
-            var factIndexMap = FactIndexMap.CreateMap(ruleDeclarations, context.Declarations);
+            var factIndexMap = IndexMap.CreateMap(ruleDeclarations, context.Declarations);
             var terminalNode = new TerminalNode(context.BetaSource, factIndexMap);
             return terminalNode;
         }
@@ -157,7 +157,7 @@ namespace NRules.Rete
             {
                 foreach (var condition in conditions)
                 {
-                    var factIndexMap = FactIndexMap.CreateMap(condition.References, context.Declarations);
+                    var factIndexMap = IndexMap.CreateMap(condition.References, context.Declarations);
                     var betaCondition = new BetaCondition(condition.Expression, factIndexMap);
                     betaConditions.Add(betaCondition);
                 }

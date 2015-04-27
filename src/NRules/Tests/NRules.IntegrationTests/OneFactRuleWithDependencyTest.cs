@@ -1,4 +1,5 @@
-﻿using NRules.IntegrationTests.TestAssets;
+﻿using System;
+using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
@@ -8,9 +9,26 @@ namespace NRules.IntegrationTests
     public class OneFactRuleWithDependencyTest : BaseRuleTestFixture
     {
         [Test]
-        public void Fire_OneMatchingFact_FiresOnce()
+        public void Fire_DefaultResolver_Throws()
         {
             //Arrange
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            Session.Insert(fact);
+
+            //Act - Assert
+            Assert.Throws<InvalidOperationException>(() => Session.Fire());
+        }
+
+        [Test]
+        public void Fire_OneMatchingFact_FiresOnceAndCallsDependency()
+        {
+            //Arrange
+            bool serviceCalled = false;
+            var service = new TestService();
+            service.ServiceCalled += (sender, args) => serviceCalled = true;
+
+            Session.DependencyResolver = new TestDependencyResolver(service);
+
             var fact = new FactType1 {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
@@ -19,11 +37,41 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
+            Assert.AreEqual(true, serviceCalled);
         }
 
         protected override void SetUpRules()
         {
             SetUpRule<OneFactRuleWithDependency>();
+        }
+
+        private class TestService : ITestService
+        {
+            public event EventHandler ServiceCalled;
+
+            public void DoSomething(string value)
+            {
+                var handler = ServiceCalled;
+                if (handler != null)
+                {
+                    handler(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        private class TestDependencyResolver : IDependencyResolver
+        {
+            private readonly TestService _service;
+
+            public TestDependencyResolver(TestService service)
+            {
+                _service = service;
+            }
+
+            public object Resolve(Type serviceType)
+            {
+                return _service;
+            }
         }
     }
 }

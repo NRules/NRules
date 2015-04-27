@@ -55,6 +55,7 @@
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
+    <Compile Include="DependencyResolver.cs" />
     <Compile Include="Diagnostics\ActionErrorEventArgs.cs" />
     <Compile Include="Diagnostics\AgendaEventArgs.cs" />
     <Compile Include="Diagnostics\ConditionErrorEventArgs.cs" />
@@ -82,7 +83,7 @@
     <Compile Include="Rete\SubnetCondition.cs" />
     <Compile Include="Rete\TerminalNode.cs" />
     <Compile Include="Rete\TupleExtensions.cs" />
-    <Compile Include="Rete\FactIndexMap.cs" />
+    <Compile Include="Rete\IndexMap.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleCompilationException.cs" />
     <Compile Include="RuleCompiler.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Rete\RuleNode.cs" />
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />
+    <Compile Include="RuleDependency.cs" />
     <Compile Include="RuleExpressionEvaluationException.cs" />
     <Compile Include="RuleRepositoryExtensions.cs" />
     <Compile Include="RuleActionEvaluationException.cs" />

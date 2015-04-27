@@ -1,5 +1,4 @@
-﻿using System;
-using NRules.IntegrationTests.TestAssets;
+﻿using NRules.IntegrationTests.TestAssets;
 
 namespace NRules.IntegrationTests.TestRules
 {
@@ -17,13 +16,7 @@ namespace NRules.IntegrationTests.TestRules
                 .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => Action())
-                .Do(ctx => Test(service, fact1));
-        }
-
-        private static void Test(ITestService service, FactType1 fact1)
-        {
-            Console.WriteLine(fact1.TestProperty);
-            //service.DoSomething(fact1.TestProperty);
+                .Do(ctx => service.DoSomething(fact1.TestProperty));
         }
     }
 }

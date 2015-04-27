@@ -39,6 +39,11 @@ namespace NRules
         IEventProvider Events { get; }
 
         /// <summary>
+        /// Rules dependency resolver.
+        /// </summary>
+        IDependencyResolver DependencyResolver { get; set; }
+
+        /// <summary>
         /// Creates a new rules session.
         /// </summary>
         /// <returns>New rules session.</returns>
@@ -53,16 +58,18 @@ namespace NRules
         public SessionFactory(INetwork network)
         {
             _network = network;
+            DependencyResolver = new DependencyResolver();
         }
 
         public IEventProvider Events { get { return _eventAggregator; } }
+        public IDependencyResolver DependencyResolver { get; set; }
 
         public ISession CreateSession()
         {
             var agenda = new Agenda();
             var workingMemory = new WorkingMemory();
             var eventAggregator = new EventAggregator(_eventAggregator);
-            var session = new Session(_network, agenda, workingMemory, eventAggregator);
+            var session = new Session(_network, agenda, workingMemory, eventAggregator, DependencyResolver);
             return session;
         }
     }
