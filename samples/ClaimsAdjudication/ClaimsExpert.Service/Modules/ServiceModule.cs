@@ -1,6 +1,7 @@
 using System.Configuration;
 using Autofac;
 using NRules.Samples.ClaimsExpert.Contract;
+using NRules.Samples.ClaimsExpert.Rules;
 using NRules.Samples.ClaimsExpert.Service.Services;
 
 namespace NRules.Samples.ClaimsExpert.Service.Modules
@@ -23,6 +24,8 @@ namespace NRules.Samples.ClaimsExpert.Service.Modules
                 .As<IAdjudicationService>().InstancePerDependency();
             builder.RegisterType<ClaimService>()
                 .As<IClaimService>().InstancePerDependency();
+            builder.RegisterType<NotificationService>()
+                .As<INotificationService>().InstancePerDependency();
         }
     }
 }

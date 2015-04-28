@@ -84,6 +84,7 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Infrastructure\AutofacDependencyResolver.cs" />
     <Compile Include="Infrastructure\AutofacRuleActivator.cs" />
     <Compile Include="Infrastructure\LoggingServiceBehavior.cs" />
     <Compile Include="Infrastructure\WcfLogger.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AdjudicationService.cs" />
     <Compile Include="Services\ClaimService.cs" />
+    <Compile Include="Services\NotificationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -4,7 +4,6 @@ using NRules.Samples.ClaimsExpert.Domain;
 namespace NRules.Samples.ClaimsExpert.Rules.StatusRules
 {
     [Name("Approve claim")]
-    [Priority(1000)]
     public class ApproveClaimRule : Rule
     {
         public override void Define()
@@ -12,7 +11,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.StatusRules
             Claim claim = null;
 
             When()
-                .Claim(() => claim, c => c.Status == ClaimStatus.Open)
+                .Claim(() => claim, c => c.Open)
                 .Not<ClaimAlert>(ce => ce.Claim == claim, ce => ce.Severity > 1);
 
             Then()

@@ -18,6 +18,9 @@ namespace NRules.Samples.ClaimsExpert.Service.Modules
             builder.RegisterType<AutofacRuleActivator>()
                 .As<IRuleActivator>();
 
+            builder.RegisterType<AutofacDependencyResolver>()
+                .As<IDependencyResolver>();
+
             builder.RegisterType<RuleRepository>()
                 .As<IRuleRepository>()
                 .PropertiesAutowired()
@@ -27,6 +30,7 @@ namespace NRules.Samples.ClaimsExpert.Service.Modules
             builder.Register(c => c.Resolve<IRuleRepository>().Compile())
                 .As<ISessionFactory>()
                 .SingleInstance()
+                .PropertiesAutowired()
                 .OnActivating(e => new RulesEngineLogger(e.Instance))
                 .AutoActivate();
         }
