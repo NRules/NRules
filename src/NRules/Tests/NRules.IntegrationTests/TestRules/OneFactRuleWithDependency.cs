@@ -16,7 +16,7 @@ namespace NRules.IntegrationTests.TestRules
                 .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => Action())
-                .Do(ctx => service.DoSomething(fact1.TestProperty));
+                .Do(ctx => service.Action(fact1.TestProperty));
         }
     }
 }

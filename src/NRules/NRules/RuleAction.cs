@@ -47,7 +47,7 @@ namespace NRules
                 var mappedIndex = _dependencyIndexMap[index];
                 if (mappedIndex >= 0)
                 {
-                    var resolvedDependency = dependency.Factory(dependencyResolver);
+                    var resolvedDependency = dependency.Factory(dependencyResolver, new ResolutionContext(context.Session, actionContext.Rule));
                     IndexMap.SetElementAt(ref args, mappedIndex, 1, resolvedDependency);
                 }
                 index++;

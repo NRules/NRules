@@ -49,7 +49,7 @@ namespace NRules.IntegrationTests
         {
             public event EventHandler ServiceCalled;
 
-            public void DoSomething(string value)
+            public void Action(string value)
             {
                 var handler = ServiceCalled;
                 if (handler != null)
@@ -68,7 +68,7 @@ namespace NRules.IntegrationTests
                 _service = service;
             }
 
-            public object Resolve(Type serviceType)
+            public object Resolve(IResolutionContext context, Type serviceType)
             {
                 return _service;
             }

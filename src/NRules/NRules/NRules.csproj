@@ -71,6 +71,7 @@
     <Compile Include="Diagnostics\SnapshotBuilder.cs" />
     <Compile Include="Diagnostics\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
+    <Compile Include="ResolutionContext.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\ConditionComparer.cs" />
     <Compile Include="Rete\INode.cs" />

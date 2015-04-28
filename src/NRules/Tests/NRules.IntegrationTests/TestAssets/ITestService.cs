@@ -2,6 +2,6 @@
 {
     public interface ITestService
     {
-        void DoSomething(string value);
+        void Action(string value);
     }
 }

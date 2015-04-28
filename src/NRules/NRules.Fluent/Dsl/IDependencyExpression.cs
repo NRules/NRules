@@ -3,6 +3,9 @@ using System.Linq.Expressions;
 
 namespace NRules.Fluent.Dsl
 {
+    /// <summary>
+    /// Rule's dependencies expression builder.
+    /// </summary>
     public interface IDependencyExpression
     {
         /// <summary>

@@ -5,7 +5,7 @@ using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Expressions
 {
-    public class DependencyExpression : IDependencyExpression
+    internal class DependencyExpression : IDependencyExpression
     {
         private readonly RuleBuilder _builder;
 

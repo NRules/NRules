@@ -32,7 +32,8 @@ namespace NRules
     public interface ISession
     {
         /// <summary>
-        /// Provider of events from the current rule session. Use it to subscribe to various rules engine lifecycle events.
+        /// Provider of events from the current rule session.
+        /// Use it to subscribe to various rules engine lifecycle events.
         /// </summary>
         IEventProvider Events { get; }
 
