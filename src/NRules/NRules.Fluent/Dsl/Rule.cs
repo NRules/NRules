@@ -1,4 +1,5 @@
 using System;
+using NRules.Fluent.Expressions;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
@@ -9,6 +10,9 @@ namespace NRules.Fluent.Dsl
     /// To create a rule using internal DSL, create a class that inherits from <c>NRules.Fluent.Dsl.Rule</c>
     /// and override <see cref="Define"/> method.
     /// Use <see cref="When"/> and <see cref="Then"/> methods to define rule's conditions and actions correspondingly.
+    /// A rule can also be decorated with attributes to add relevant metadata:
+    /// <see cref="NameAttribute"/>, <see cref="DescriptionAttribute"/>, <see cref="TagAttribute"/>, 
+    /// <see cref="PriorityAttribute"/>, <see cref="RepeatabilityAttribute"/>.
     /// </summary>
     public abstract class Rule
     {
@@ -22,21 +26,31 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
+        /// Sets rule's priority.
+        /// Priority value set at this level overrides the value specified via <see cref="PriorityAttribute"/> attribute.
+        /// </summary>
+        /// <param name="value">Priority value.</param>
+        protected void Priority(int value)
+        {
+            _builder.Priority(value);
+        }
+
+        /// <summary>
         /// Returns expression builder for rule's left hand side (conditions).
         /// </summary>
         /// <returns>Left hand side expression builder.</returns>
-        protected ILeftHandSide When()
+        protected ILeftHandSideExpression When()
         {
-            return new ExpressionBuilder(_builder);
+            return new LeftHandSideExpression(_builder);
         }
 
         /// <summary>
         /// Returns expression builder for rule's right hand side (actions).
         /// </summary>
         /// <returns>Right hand side expression builder.</returns>
-        protected IRightHandSide Then()
+        protected IRightHandSideExpression Then()
         {
-            return new ExpressionBuilder(_builder);
+            return new RightHandSideExpression(_builder);
         }
 
         /// <summary>

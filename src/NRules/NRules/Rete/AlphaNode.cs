@@ -51,36 +51,21 @@ namespace NRules.Rete
             }
         }
 
-        protected virtual void UnsatisfiedFactUpdate(IExecutionContext context, Fact fact)
-        {
-            ForceRetract(context, fact);
-        }
-
         public void PropagateRetract(IExecutionContext context, Fact fact)
-        {
-            if (IsSatisfiedBy(context, fact))
-            {
-                foreach (var childNode in ChildNodes)
-                {
-                    childNode.PropagateRetract(context, fact);
-                }
-                if (MemoryNode != null)
-                {
-                    MemoryNode.PropagateRetract(context, fact);
-                }
-            }
-        }
-
-        public void ForceRetract(IExecutionContext context, Fact fact)
         {
             foreach (var childNode in ChildNodes)
             {
-                childNode.ForceRetract(context, fact);
+                childNode.PropagateRetract(context, fact);
             }
             if (MemoryNode != null)
             {
                 MemoryNode.PropagateRetract(context, fact);
             }
+        }
+
+        protected virtual void UnsatisfiedFactUpdate(IExecutionContext context, Fact fact)
+        {
+            PropagateRetract(context, fact);
         }
 
         public abstract void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);

@@ -1,0 +1,46 @@
+﻿<Window x:Class="NRules.Samples.ClaimsCenter.Presentation.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="clr-namespace:NRules.Samples.ClaimsCenter.Presentation.Properties"
+        Title="{Binding Title}"
+        Icon="{StaticResource ClaimsCenterImage}"
+        Height="350" Width="525">
+
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding AboutCommand}" Key="F1"/>
+    </Window.InputBindings>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Data">
+                <MenuItem Command="{Binding RefreshCommand}" Header="Refresh" Icon="{StaticResource RefreshImage}"/>
+            </MenuItem>
+        </Menu>
+
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Command="{Binding RefreshCommand}" Content="{StaticResource RefreshImage}" ToolTip="Adjudicate claim"/>
+            </ToolBar>
+        </ToolBarTray>
+
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem Content="{Binding CurrentClaimStatus}" />
+        </StatusBar>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"
+                                  MinWidth="{Binding Content.MinWidth, ElementName=ClaimViewPresenter}"/>
+            </Grid.ColumnDefinitions>
+
+            <ContentControl Content="{Binding ClaimListView}" Grid.Row="0" Grid.Column="0" Margin="0,0,5,0"/>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="0" Grid.Column="1">
+                <ContentControl x:Name="ClaimViewPresenter" Content="{Binding ClaimView}" Focusable="False"/>
+            </ScrollViewer>
+
+            <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="4" Grid.Row="0" Grid.Column="0"/>
+        </Grid>
+    </DockPanel>
+</Window>

@@ -97,20 +97,5 @@ namespace NRules.Tests.Rete
             //Assert
             Assert.AreEqual(0, target.Length);
         }
-
-        [Test]
-        public void Clear_WhenCalled_ClearsItself()
-        {
-            //Arrange
-            var fact = new Fact(1);
-            var target = new Tuple(new Tuple(), fact);
-
-            //Act
-            target.Clear();
-
-            //Assert
-            Assert.IsNull(target.RightFact);
-            Assert.IsNull(target.LeftTuple);
-        }
     }
 }

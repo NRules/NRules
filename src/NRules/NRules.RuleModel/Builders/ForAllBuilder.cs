@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace NRules.RuleModel.Builders
 {
     /// <summary>
-    /// Builder to compose forall element.
+    /// Builder to compose a forall element (universal quantifier).
     /// </summary>
     public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
     {

@@ -95,6 +95,8 @@ namespace NRules.Diagnostics
 
     internal class EventAggregator : IEventAggregator
     {
+        private readonly IEventAggregator _parent;
+
         public event EventHandler<AgendaEventArgs> ActivationCreatedEvent;
         public event EventHandler<AgendaEventArgs> ActivationDeletedEvent;
         public event EventHandler<AgendaEventArgs> RuleFiringEvent;
@@ -108,6 +110,15 @@ namespace NRules.Diagnostics
         public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
         public event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
 
+        public EventAggregator()
+        {
+        }
+
+        public EventAggregator(IEventAggregator eventAggregator)
+        {
+            _parent = eventAggregator;
+        }
+
         public void RaiseActivationCreated(ISession session, Activation activation)
         {
             var handler = ActivationCreatedEvent;
@@ -115,6 +126,10 @@ namespace NRules.Diagnostics
             {
                 var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
                 handler(session, @event);
+            }
+            if (_parent != null)
+            {
+                _parent.RaiseActivationCreated(session, activation);
             }
         }
 
@@ -126,6 +141,10 @@ namespace NRules.Diagnostics
                 var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
                 handler(session, @event);
             }
+            if (_parent != null)
+            {
+                _parent.RaiseActivationDeleted(session, activation);
+            }
         }
 
         public void RaiseRuleFiring(ISession session, Activation activation)
@@ -135,6 +154,10 @@ namespace NRules.Diagnostics
             {
                 var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
                 handler(session, @event);
+            }
+            if (_parent != null)
+            {
+                _parent.RaiseRuleFiring(session, activation);
             }
         }
 
@@ -146,6 +169,10 @@ namespace NRules.Diagnostics
                 var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
                 handler(session, @event);
             }
+            if (_parent != null)
+            {
+                _parent.RaiseRuleFired(session, activation);
+            }
         }
 
         public void RaiseFactInserting(ISession session, Fact fact)
@@ -155,6 +182,10 @@ namespace NRules.Diagnostics
             {
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
+            }
+            if (_parent != null)
+            {
+                _parent.RaiseFactInserting(session, fact);
             }
         }
 
@@ -166,6 +197,10 @@ namespace NRules.Diagnostics
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
             }
+            if (_parent != null)
+            {
+                _parent.RaiseFactInserted(session, fact);
+            }
         }
 
         public void RaiseFactUpdating(ISession session, Fact fact)
@@ -175,6 +210,10 @@ namespace NRules.Diagnostics
             {
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
+            }
+            if (_parent != null)
+            {
+                _parent.RaiseFactUpdating(session, fact);
             }
         }
 
@@ -186,6 +225,10 @@ namespace NRules.Diagnostics
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
             }
+            if (_parent != null)
+            {
+                _parent.RaiseFactUpdated(session, fact);
+            }
         }
 
         public void RaiseFactRetracting(ISession session, Fact fact)
@@ -196,6 +239,10 @@ namespace NRules.Diagnostics
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
             }
+            if (_parent != null)
+            {
+                _parent.RaiseFactRetracting(session, fact);
+            }
         }
 
         public void RaiseFactRetracted(ISession session, Fact fact)
@@ -205,6 +252,10 @@ namespace NRules.Diagnostics
             {
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
+            }
+            if (_parent != null)
+            {
+                _parent.RaiseFactRetracted(session, fact);
             }
         }
 
@@ -217,7 +268,11 @@ namespace NRules.Diagnostics
                 var @event = new ActionErrorEventArgs(exception, expression, tuple);
                 handler(session, @event);
                 isHandled = @event.IsHandled;
-            }            
+            }
+            if (_parent != null && !isHandled)
+            {
+                _parent.RaiseActionFailed(session, exception, expression, tuple, out isHandled);
+            }
         }
 
         public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact)
@@ -227,6 +282,10 @@ namespace NRules.Diagnostics
             {
                 var @event = new ConditionErrorEventArgs(exception, expression, tuple, fact);
                 hanlder(session, @event);
+            }
+            if (_parent != null)
+            {
+                _parent.RaiseConditionFailed(session, exception, expression, tuple, fact);
             }
         }
     }

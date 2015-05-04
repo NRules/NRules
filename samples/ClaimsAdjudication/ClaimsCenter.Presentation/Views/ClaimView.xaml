@@ -1,0 +1,108 @@
+﻿<UserControl x:Class="NRules.Samples.ClaimsCenter.Presentation.Views.ClaimView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:waf="http://waf.codeplex.com/schemas"
+    mc:Ignorable="d"
+    MinWidth="250" MinHeight="270" IsEnabled="{Binding IsEnabled}"
+    waf:ValidationHelper.IsEnabled="true" waf:ValidationHelper.IsValid="{Binding IsValid, Mode=OneWayToSource}">
+
+    <StackPanel Orientation="Vertical">
+        <Grid Margin="0,0,22,11">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Button Command="{Binding AdjudicateCommand}" CommandParameter="{Binding Claim, ValidatesOnNotifyDataErrors=False}" Content="Adjudicate"
+                MinWidth="25" Margin="7,11,0,0" Grid.Column="0" Grid.Row="0"/>
+            <Label Content="{Binding Claim.Status}" Grid.Column="1" Grid.Row="0"/>
+        </Grid>
+
+        <ListView ItemsSource="{Binding Claim.Alerts}" Visibility="{Binding HasAlerts, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="200" Header="Rule" DisplayMemberBinding="{Binding RuleName}"  />
+                    <GridViewColumn Width="200" Header="Message" DisplayMemberBinding="{Binding Message}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Grid Margin="0,0,22,11">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label Content="Id" Target="{Binding ElementName=IdBox}" Grid.Column="0" Grid.Row="0"/>
+            <TextBox x:Name="IdBox" IsReadOnly="True" 
+                 Text="{Binding Claim.Id, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=true, NotifyOnValidationError=true}"
+                 Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+
+            <Label Content="Claim Type" Target="{Binding ElementName=ClaimTypeBox}" Grid.Column="0" Grid.Row="1"/>
+            <TextBox x:Name="ClaimTypeBox" IsReadOnly="True" 
+                 Text="{Binding Claim.ClaimType, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=true, NotifyOnValidationError=true}" 
+                 Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+
+            <Label Content="Patient First Name" Target="{Binding ElementName=PatientFirstNameBox}" Grid.Column="0" Grid.Row="2"/>
+            <TextBox x:Name="PatientFirstNameBox" IsReadOnly="True" 
+                 Text="{Binding Claim.PatientFirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=true, NotifyOnValidationError=true}" 
+                 Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+
+            <Label Content="Patient Middle Name" Target="{Binding ElementName=PatientMiddleNameBox}" Grid.Column="0" Grid.Row="3"/>
+            <TextBox x:Name="PatientMiddleNameBox" IsReadOnly="True" 
+                 Text="{Binding Claim.PatientMiddleName, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=true, NotifyOnValidationError=true}" 
+                 Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+
+            <Label Content="Patient Last Name" Target="{Binding ElementName=PatientLastNameBox}" Grid.Column="0" Grid.Row="4"/>
+            <TextBox x:Name="PatientLastNameBox" IsReadOnly="True" 
+                 Text="{Binding Claim.PatientLastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=true, NotifyOnValidationError=true}" 
+                 Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+
+            <Label Content="Patient Address Line1" Target="{Binding ElementName=PatientAddressLine1Box}" Grid.Column="0" Grid.Row="5"/>
+            <TextBox x:Name="PatientAddressLine1Box" IsReadOnly="True" 
+                 Text="{Binding Claim.PatientAddressLine1, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=true, NotifyOnValidationError=true}" 
+                 Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+
+            <Label Content="Patient Address Line2" Target="{Binding ElementName=PatientAddressLine2Box}" Grid.Column="0" Grid.Row="6"/>
+            <TextBox x:Name="PatientAddressLine2Box" IsReadOnly="True" 
+                 Text="{Binding Claim.PatientAddressLine2, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=true, NotifyOnValidationError=true}" 
+                 Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+
+            <Label Content="Patient Address City" Target="{Binding ElementName=PatientAddressCityBox}" Grid.Column="0" Grid.Row="7"/>
+            <TextBox x:Name="PatientAddressCityBox" IsReadOnly="True" 
+                 Text="{Binding Claim.PatientAddressCity, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=true, NotifyOnValidationError=true}" 
+                 Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+
+            <Label Content="Patient Address State" Target="{Binding ElementName=PatientAddressStateBox}" Grid.Column="0" Grid.Row="8"/>
+            <TextBox x:Name="PatientAddressStateBox" IsReadOnly="True" 
+                 Text="{Binding Claim.PatientAddressState, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=true, NotifyOnValidationError=true}" 
+                 Grid.Column="1" Grid.Row="8" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+
+            <Label Content="Patient Address Zip" Target="{Binding ElementName=PatientAddressZipBox}" Grid.Column="0" Grid.Row="9"/>
+            <TextBox x:Name="PatientAddressZipBox" IsReadOnly="True" 
+                 Text="{Binding Claim.PatientAddressZip, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=true, NotifyOnValidationError=true}" 
+                 Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+        </Grid>
+
+    </StackPanel>
+
+</UserControl>

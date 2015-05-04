@@ -117,7 +117,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test, Ignore("TODO: Rework retract logic to not re-evaluate conditions")]
+        [Test]
         public void Fire_OneMatchingFactAssertedAndModifiedAndRetracted_DoesNotFire()
         {
             //Arrange

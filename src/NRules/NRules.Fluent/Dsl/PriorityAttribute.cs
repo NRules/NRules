@@ -8,7 +8,7 @@ namespace NRules.Fluent.Dsl
     /// Priority value can be positive, negative or zero.
     /// Default priority is zero.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public sealed class PriorityAttribute : Attribute
     {
         public PriorityAttribute(int value)

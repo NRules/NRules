@@ -29,7 +29,7 @@ task Init {
 	$script:build_dir = "$base_dir\build"
 	$script:out_dir =  "$build_dir\output\$comp_name"
 	$script:merge_dir = "$build_dir\merge\$comp_name"
-	$script:nuget_dir = "$build_dir\NuGet\$comp_name"
+	$script:pkg_out_dir = "$build_dir\packages\$comp_name"
 	$script:packages_dir = "$base_dir\packages"
 	$script:help_dir = "$base_dir\help"
 	$script:tools_restore_dir = "$tools_dir\packages"
@@ -50,7 +50,7 @@ task Init {
 task Clean -depends Init {
 	Delete-Directory $out_dir
 	Delete-Directory $merge_dir
-	Delete-Directory $nuget_dir
+	Delete-Directory $pkg_out_dir
 	Delete-Directory $binaries_dir
 }
 
@@ -119,14 +119,14 @@ task Build -depends Compile, Test, Merge, ResetVersion {
 task PackageNuGet -depends Build -precondition { return $component.package.ContainsKey('nuget') } {
 	$nuget = $component.package.nuget
 	
-	Create-Directory $nuget_dir
-	Create-Directory $nuget_dir\$($nuget.id)\lib\net40
+	Create-Directory $pkg_out_dir
+	Create-Directory $pkg_out_dir\$($nuget.id)\lib\net40
 	
-	Copy-Item $packages_dir\$($nuget.id).dll.nuspec $nuget_dir\$($nuget.id)\$($nuget.id).nuspec -Force
-	Get-ChildItem "$binaries_dir\**" -Include $nuget.include -Exclude $nuget.exclude | Copy-Item -Destination $nuget_dir\$($nuget.id)\lib\net40 -Force
+	Copy-Item $packages_dir\$($nuget.id).dll.nuspec $pkg_out_dir\$($nuget.id)\$($nuget.id).nuspec -Force
+	Get-ChildItem "$binaries_dir\**" -Include $nuget.include -Exclude $nuget.exclude | Copy-Item -Destination $pkg_out_dir\$($nuget.id)\lib\net40 -Force
 
 	# Set the package version
-	$package = "$nuget_dir\$($nuget.id)\$($nuget.id).nuspec"
+	$package = "$pkg_out_dir\$($nuget.id)\$($nuget.id).nuspec"
 	$nuspec = [xml](Get-Content $package)
 	$nuspec.package.metadata.version = $version
 	$nuspec | Select-Xml '//dependency' |% {
@@ -135,12 +135,13 @@ task PackageNuGet -depends Build -precondition { return $component.package.Conta
 		}
 	}
 	$nuspec.Save($package);
-	exec { &$script:nuget_exec pack $package -OutputDirectory $nuget_dir }
+	exec { &$script:nuget_exec pack $package -OutputDirectory $pkg_out_dir }
 }
 
 task PackageZip -depends Build -precondition { $component.package.ContainsKey('zip') } {
 	$zip = $component.package.zip
-	$file = "$script:packages_dir\$($zip.name)"
+	Create-Directory $pkg_out_dir
+	$file = "$pkg_out_dir\$($zip.name)"
 	Delete-File $file
 	exec { &$script:zip_exec a -tzip $file $binaries_dir }
 }
@@ -157,7 +158,7 @@ task PublishNuGet -precondition { return $component.package.ContainsKey('nuget')
 		$accessKey = $accessKey.Trim()
 		
 		# Push to nuget repository
-		exec { &$script:nuget_exec push "$nuget_dir\$($nuget.id).$version.nupkg" $accessKey }
+		exec { &$script:nuget_exec push "$pkg_out_dir\$($nuget.id).$version.nupkg" $accessKey }
 	} else {
 		Write-Host "Nuget-Access-Key.txt does not exist. Cannot publish the nuget package." -ForegroundColor Yellow
 	}

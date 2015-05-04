@@ -3,7 +3,7 @@
 namespace NRules.RuleModel.Builders
 {
     /// <summary>
-    /// Builder to compose existential element.
+    /// Builder to compose an existential element.
     /// </summary>
     public class ExistsBuilder : RuleElementBuilder, IBuilder<ExistsElement>
     {

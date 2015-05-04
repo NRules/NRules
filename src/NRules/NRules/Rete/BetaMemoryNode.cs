@@ -55,7 +55,6 @@ namespace NRules.Rete
                     sink.PropagateRetract(context, childTuple);
                 }
                 memory.Remove(childTuple);
-                childTuple.Clear();
             }
         }
 

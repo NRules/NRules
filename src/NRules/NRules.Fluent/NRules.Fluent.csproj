@@ -48,24 +48,27 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CollectExpressionBuilder.cs" />
     <Compile Include="Dsl\ContextExtensions.cs" />
     <Compile Include="Dsl\DescriptionAttribute.cs" />
-    <Compile Include="Dsl\ICollectPattern.cs" />
+    <Compile Include="Dsl\ICollectPatternExpression.cs" />
     <Compile Include="Dsl\NameAttribute.cs" />
     <Compile Include="Dsl\PriorityAttribute.cs" />
     <Compile Include="Dsl\RepeatabilityAttribute.cs" />
     <Compile Include="Dsl\TagAttribute.cs" />
     <Compile Include="EnumerableExtensions.cs" />
-    <Compile Include="ExpressionBuilder.cs" />
-    <Compile Include="Dsl\ILeftHandSide.cs" />
-    <Compile Include="Dsl\IRightHandSide.cs" />
+    <Compile Include="Expressions\BuilderExtensions.cs" />
+    <Compile Include="Expressions\CollectPatternExpression.cs" />
+    <Compile Include="Expressions\ExpressionExtensions.cs" />
+    <Compile Include="Expressions\LeftHandSideExpression.cs" />
+    <Compile Include="Expressions\RightHandSideExpression.cs" />
+    <Compile Include="Dsl\ILeftHandSideExpression.cs" />
+    <Compile Include="Dsl\IRightHandSideExpression.cs" />
     <Compile Include="Dsl\Rule.cs" />
-    <Compile Include="ExpressionBuilderDecorator.cs" />
     <Compile Include="Expressions\ActionRewriter.cs" />
     <Compile Include="Expressions\ConditionRewriter.cs" />
     <Compile Include="Expressions\ExpressionRewriter.cs" />
-    <Compile Include="GroupBuilderChain.cs" />
+    <Compile Include="RuleActivationException.cs" />
+    <Compile Include="RuleDefinitionException.cs" />
     <Compile Include="RuleMetadata.cs" />
     <Compile Include="RuleMetadataExtensions.cs" />
     <Compile Include="RuleRepository.cs" />

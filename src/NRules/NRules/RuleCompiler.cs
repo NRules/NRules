@@ -18,6 +18,7 @@ namespace NRules
         /// <param name="ruleDefinitions">Rules to compile.</param>
         /// <returns>Session factory.</returns>
         /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
+        /// <seealso cref="IRuleRepository"/>
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
         {
             var rules = new List<ICompiledRule>();
