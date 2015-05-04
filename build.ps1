@@ -66,7 +66,7 @@ $components = @{
 			out_include = @('*.*')
 		}
 	};
-		'Samples.ClaimsAdjudication' = @{
+	'Samples.ClaimsAdjudication' = @{
 		name = 'ClaimsAdjudication'
 		src_root = 'samples'
 		bin = @{
