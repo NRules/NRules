@@ -10,6 +10,17 @@ namespace NRules.IntegrationTests
     public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
     {
         [Test]
+        public void Fire_NoMatchingFacts_FiresOnceWithEmptyCollection()
+        {
+            //Arrange - Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType1>>().Count());
+        }
+
+        [Test]
         public void Fire_TwoMatchingFactsAndOneInvalid_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
@@ -49,7 +60,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void Fire_TwoMatchingFactsInsertedTwoRetracted_DoesNotFire()
+        public void Fire_TwoMatchingFactsInsertedTwoRetracted_FiresOnceWithEmptyCollection()
         {
             //Arrange
             var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
@@ -64,7 +75,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            AssertFiredOnce();
+            Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType1>>().Count());
         }
 
         protected override void SetUpRules()

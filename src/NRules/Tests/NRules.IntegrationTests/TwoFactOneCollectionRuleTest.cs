@@ -105,7 +105,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void Fire_FactOfOneKindIsValidAndTwoOfAnotherKindAreAssertedThenRetracted_DoesNotFire()
+        public void Fire_FactOfOneKindIsValidAndTwoOfAnotherKindAreAssertedThenRetracted_FiresOnceWithEmptyCollection()
         {
             //Arrange
             var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
@@ -123,7 +123,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            AssertFiredOnce();
+            Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType2>>().Count());
         }
 
         [Test]
@@ -195,7 +196,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void Fire_TwoFactsOfOneKindAndAggregatedFactsMatchingOneOfTheFacts_FiresOnce()
+        public void Fire_TwoFactsOfOneKindAndAggregatedFactsMatchingOneOfTheFacts_FiresOnceWithTwoFactsAndOnceWithEmptyCollection()
         {
             //Arrange
             var fact11 = new FactType1 {TestProperty = "Valid Value 1"};
@@ -212,7 +213,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            AssertFiredTwice();
+            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType2>>(0).Count());
+            Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType2>>(1).Count());
         }
 
         [Test]
