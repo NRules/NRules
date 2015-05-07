@@ -130,9 +130,7 @@ task PackageNuGet -depends Build -precondition { return $component.package.Conta
 	$nuspec = [xml](Get-Content $package)
 	$nuspec.package.metadata.version = $version
 	$nuspec | Select-Xml '//dependency' |% {
-		if($_.Node.Id.StartsWith($nuget.id)) {
-			$_.Node.Version = "[$version]"
-		}
+		$_.Node.Version = $_.Node.Version -replace '\$version\$', "$version"
 	}
 	$nuspec.Save($package);
 	exec { &$script:nuget_exec pack $package -OutputDirectory $pkg_out_dir }

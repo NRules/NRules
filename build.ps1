@@ -45,6 +45,19 @@ $components = @{
 			}
 		}
 	};
+	'NRules.Integration.Autofac' = @{
+		name = 'NRules.Integration.Autofac'
+		src_root = 'src/NRules.Integration'
+		bin = @{
+			out_include = @('NRules.Integration.Autofac.*')
+		}
+		package = @{
+			nuget = @{
+				id = 'NRules.Integration.Autofac'
+				include = @('NRules.Integration.Autofac.*')
+			}
+		}
+	};
 	'Samples.SimpleRules' = @{
 		name = 'SimpleRules'
 		src_root = 'samples'
@@ -76,15 +89,19 @@ $components = @{
 }
 
 $core = @('NRules', 'NRules.Debugger.Visualizer')
+$integration = $components.keys | where { $_.StartsWith("NRules.Integration.") }
 $samples = $components.keys | where { $_.StartsWith("Samples.") }
 
 $component_list = @()
 if ($component_name -eq "Core") {
 	$component_list += $core
+} elseif ($component_name -eq "Integration") {
+	$component_list += $integration
 } elseif ($component_name -eq "Samples") {
 	$component_list += $samples
 } elseif ($component_name -eq "All") {
 	$component_list += $core
+	$component_list += $integration
 	$component_list += $samples
 } else {
 	$component_list += $component_name
