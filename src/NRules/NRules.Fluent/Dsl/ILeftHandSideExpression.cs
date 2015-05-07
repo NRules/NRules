@@ -30,7 +30,6 @@ namespace NRules.Fluent.Dsl
 
         /// <summary>
         /// Defines a pattern that aggregates matching facts into a collection.
-        /// The rule only fires if the collection contains elements.
         /// </summary>
         /// <typeparam name="T">Type of facts to aggregate.</typeparam>
         /// <param name="alias">Alias for the collection of matching facts.</param>

@@ -32,21 +32,27 @@
     public interface IAggregate
     {
         /// <summary>
-        /// Add is called by the rules engine when a new fact enters corresponding aggregation node.
+        /// Called when the new aggregate is initialized.
+        /// </summary>
+        /// <returns>Result of the operation on the aggregate.</returns>
+        AggregationResults Initial();
+
+        /// <summary>
+        /// Called by the rules engine when a new fact enters corresponding aggregate.
         /// </summary>
         /// <param name="fact">New fact to add to the aggregate.</param>
         /// <returns>Result of the operation on the aggregate, based on the added fact.</returns>
         AggregationResults Add(object fact);
 
         /// <summary>
-        /// Modify is called by the rules engine when an existing fact is updated in the corresponding aggregation node.
+        /// Called by the rules engine when an existing fact is updated in the corresponding aggregate.
         /// </summary>
         /// <param name="fact">Existing fact to update in the aggregate.</param>
         /// <returns>Result of the operation on the aggregate, based on the modified fact.</returns>
         AggregationResults Modify(object fact);
 
         /// <summary>
-        /// Remove is called by the rules engine when an existing fact is removed from the corresponding aggregation node.
+        /// Called by the rules engine when an existing fact is removed from the corresponding aggregate.
         /// </summary>
         /// <param name="fact">Existing fact to remove from the aggregate.</param>
         /// <returns>Result of the operation on the aggregate, based on the removed fact.</returns>

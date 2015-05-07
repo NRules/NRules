@@ -4,7 +4,7 @@ param (
 )
 
 $product_version = '0.3'
-$build_number = '2'
+$build_number = '3'
 $target_framework = 'net-4.0'
 $configuration = 'Release'
 
@@ -66,7 +66,7 @@ $components = @{
 			out_include = @('*.*')
 		}
 	};
-		'Samples.ClaimsAdjudication' = @{
+	'Samples.ClaimsAdjudication' = @{
 		name = 'ClaimsAdjudication'
 		src_root = 'samples'
 		bin = @{

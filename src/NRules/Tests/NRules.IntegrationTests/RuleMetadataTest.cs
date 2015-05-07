@@ -122,6 +122,20 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Priority_PriorityAttributeOverridenProgrammatically_CustomValue()
+        {
+            //Arrange
+            _repository.Load(x => x.From(typeof(RuleWithMetadataAndPriorityOverride)));
+            IRuleDefinition rule = _repository.GetRules().Single();
+
+            //Act
+            int actual = rule.Priority;
+
+            //Assert
+            Assert.AreEqual(1000, actual);
+        }
+
+        [Test]
         public void Name_NoAttributes_TypeName()
         {
             //Arrange

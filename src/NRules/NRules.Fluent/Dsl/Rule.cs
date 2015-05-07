@@ -35,6 +35,16 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
+        /// Sets rule's priority.
+        /// Priority value set at this level overrides the value specified via <see cref="PriorityAttribute"/> attribute.
+        /// </summary>
+        /// <param name="value">Priority value.</param>
+        protected void Priority(int value)
+        {
+            _builder.Priority(value);
+        }
+
+        /// <summary>
         /// Returns expression builder for rule's left hand side (conditions).
         /// </summary>
         /// <returns>Left hand side expression builder.</returns>

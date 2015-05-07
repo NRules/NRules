@@ -68,6 +68,7 @@
     <Compile Include="TestRules\ParentRuleWithMetadata.cs" />
     <Compile Include="TestRules\RuleWithMetadataAndParentMetadata.cs" />
     <Compile Include="TestRules\RuleWithMetadataAndParentMetadataAndOverrides.cs" />
+    <Compile Include="TestRules\RuleWithMetadataAndPriorityOverride.cs" />
     <Compile Include="TestRules\TwoFactOneForAllCheckRule.cs" />
     <Compile Include="TestRules\ThreeFactOrGroupRule.cs" />
     <Compile Include="TestRules\TwoFactOrGroupRule.cs" />
