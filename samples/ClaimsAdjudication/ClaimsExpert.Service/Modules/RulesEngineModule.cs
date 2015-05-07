@@ -1,6 +1,5 @@
 using Autofac;
-using NRules.Fluent;
-using NRules.RuleModel;
+using NRules.Integration.Autofac;
 using NRules.Samples.ClaimsExpert.Rules;
 using NRules.Samples.ClaimsExpert.Service.Infrastructure;
 
@@ -10,27 +9,9 @@ namespace NRules.Samples.ClaimsExpert.Service.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            var typeScanner = new RuleTypeScanner();
-            var ruleTypes = typeScanner.AssemblyOf(typeof(DslExtensions)).GetTypes();
-
-            builder.RegisterTypes(ruleTypes).AsSelf();
-
-            builder.RegisterType<AutofacRuleActivator>()
-                .As<IRuleActivator>();
-
-            builder.RegisterType<AutofacDependencyResolver>()
-                .As<IDependencyResolver>();
-
-            builder.RegisterType<RuleRepository>()
-                .As<IRuleRepository>()
-                .PropertiesAutowired()
-                .SingleInstance()
-                .OnActivating(e => e.Instance.Load(x => x.From(ruleTypes)));
-
-            builder.Register(c => c.Resolve<IRuleRepository>().Compile())
-                .As<ISessionFactory>()
-                .SingleInstance()
-                .PropertiesAutowired()
+            var types = builder.RegisterRules(x => x.AssemblyOf(typeof(DslExtensions)));
+            builder.RegisterRepository(r => r.Load(x => x.From(types)));
+            builder.RegisterSessionFactory()
                 .OnActivating(e => new RulesEngineLogger(e.Instance))
                 .AutoActivate();
         }

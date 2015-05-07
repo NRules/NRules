@@ -66,6 +66,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\binaries\NRules\NRules.dll</HintPath>
     </Reference>
+    <Reference Include="NRules.Integration.Autofac">
+      <HintPath>..\..\..\binaries\NRules.Integration.Autofac\NRules.Integration.Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -84,8 +87,6 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Infrastructure\AutofacDependencyResolver.cs" />
-    <Compile Include="Infrastructure\AutofacRuleActivator.cs" />
     <Compile Include="Infrastructure\LoggingServiceBehavior.cs" />
     <Compile Include="Infrastructure\WcfLogger.cs" />
     <Compile Include="Infrastructure\RulesEngineLogger.cs" />
