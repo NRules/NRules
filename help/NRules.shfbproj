@@ -36,7 +36,7 @@
     <PresentationStyle>VS2013</PresentationStyle>
     <Preliminary>False</Preliminary>
     <NamingMethod>MemberName</NamingMethod>
-    <HelpTitle>NRules, Business Rules Engine for .NET</HelpTitle>
+    <HelpTitle>NRules, Open Source Rules Engine for .NET</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <VisibleItems>ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected</VisibleItems>
     <HeaderText>
