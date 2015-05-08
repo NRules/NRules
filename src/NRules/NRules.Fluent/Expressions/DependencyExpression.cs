@@ -14,7 +14,7 @@ namespace NRules.Fluent.Expressions
             _builder = builder;
         }
 
-        public IDependencyExpression Required<TDependency>(Expression<Func<TDependency>> alias)
+        public IDependencyExpression Resolve<TDependency>(Expression<Func<TDependency>> alias)
         {
             var symbol = alias.ToParameterExpression();
             var dependencies = _builder.Dependencies();

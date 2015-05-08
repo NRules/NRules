@@ -10,7 +10,7 @@ namespace NRules.IntegrationTests.TestRules
             ITestService service = null;
 
             Dependency()
-                .Required(() => service);
+                .Resolve(() => service);
 
             When()
                 .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));

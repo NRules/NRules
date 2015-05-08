@@ -14,6 +14,6 @@ namespace NRules.Fluent.Dsl
         /// <typeparam name="TDependency">Type of the service to inject.</typeparam>
         /// <param name="alias">Alias for the injected service.</param>
         /// <returns>Dependencies expression builder.</returns>
-        IDependencyExpression Required<TDependency>(Expression<Func<TDependency>> alias);
+        IDependencyExpression Resolve<TDependency>(Expression<Func<TDependency>> alias);
     }
 }

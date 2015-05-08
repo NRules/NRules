@@ -12,7 +12,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.NotificationRules
             Claim claim = null;
 
             Dependency()
-                .Required(() => service);
+                .Resolve(() => service);
 
             When()
                 .Match(() => claim, c => c.Status == ClaimStatus.Denied);
