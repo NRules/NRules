@@ -18,6 +18,13 @@ namespace NRules.Fluent
         /// <param name="assemblies">Assemblies to load from.</param>
         /// <returns>Spec to continue fluent configuration.</returns>
         IRuleLoadSpec From(params Assembly[] assemblies);
+        
+        /// <summary>
+        /// Specifies to load all rule definitions from a given collection of assemblies.
+        /// </summary>
+        /// <param name="assemblies">Assemblies to load from.</param>
+        /// <returns>Spec to continue fluent configuration.</returns>
+        IRuleLoadSpec From(IEnumerable<Assembly> assemblies);
 
         /// <summary>
         /// Specifies to load rule definitions from a given collection of types.
@@ -25,6 +32,20 @@ namespace NRules.Fluent
         /// <param name="types">Types that represent rule definitions.</param>
         /// <returns>Spec to continue fluent configuration.</returns>
         IRuleLoadSpec From(params Type[] types);
+
+        /// <summary>
+        /// Specifies to load rule definitions from a given collection of types.
+        /// </summary>
+        /// <param name="types">Types that represent rule definitions.</param>
+        /// <returns>Spec to continue fluent configuration.</returns>
+        IRuleLoadSpec From(IEnumerable<Type> types);
+
+        /// <summary>
+        /// Specifies to load rule definitions by scanning types/assemblies.
+        /// </summary>
+        /// <param name="scanAction">Assembly/type scan action.</param>
+        /// <returns>Spec to continue fluent configuration.</returns>
+        IRuleLoadSpec From(Action<IRuleTypeScanner> scanAction);
 
         /// <summary>
         /// Specifies which rules to load by filtering on rule's metadata.
@@ -46,6 +67,7 @@ namespace NRules.Fluent
     {
         private readonly IRuleActivator _activator;
         private readonly RuleTypeScanner _typeScanner = new RuleTypeScanner();
+        private Func<IRuleMetadata, bool> _filter;
         private string _ruleSetName;
 
         public RuleLoadSpec(IRuleActivator activator)
@@ -64,19 +86,37 @@ namespace NRules.Fluent
             return this;
         }
 
+        public IRuleLoadSpec From(IEnumerable<Assembly> assemblies)
+        {
+            _typeScanner.Assembly(assemblies.ToArray());
+            return this;
+        }
+
         public IRuleLoadSpec From(params Type[] types)
         {
             _typeScanner.Type(types);
             return this;
         }
 
+        public IRuleLoadSpec From(IEnumerable<Type> types)
+        {
+            _typeScanner.Type(types.ToArray());
+            return this;
+        }
+
+        public IRuleLoadSpec From(Action<IRuleTypeScanner> scanAction)
+        {
+            scanAction(_typeScanner);
+            return this;
+        }
+
         public IRuleLoadSpec Where(Func<IRuleMetadata, bool> filter)
         {
-            if (_typeScanner.IsFilterSet())
+            if (IsFilterSet())
             {
                 throw new InvalidOperationException("Rule load specification can only have a single 'Where' clause");
             }
-            _typeScanner.Where(filter);
+            _filter = filter;
             return this;
         }
 
@@ -92,11 +132,22 @@ namespace NRules.Fluent
 
         public IEnumerable<IRuleDefinition> Load()
         {
-            var ruleDefinitions = _typeScanner
-                .GetTypes()
+            var ruleDefinitions = GetRuleTypes()
                 .Select(Activate)
                 .Select(BuildDefinition);
             return ruleDefinitions;
+        }
+
+        private IEnumerable<Type> GetRuleTypes()
+        {
+            var ruleTypes = _typeScanner.GetRuleTypes();
+            if (IsFilterSet())
+            {
+                var metadata = ruleTypes.Select(ruleType => new RuleMetadata(ruleType));
+                var filteredTypes = metadata.Where(x => _filter(x)).Select(x => x.RuleType);
+                ruleTypes = filteredTypes.ToArray();
+            }
+            return ruleTypes;
         }
 
         private Rule Activate(Type type)
@@ -121,6 +172,11 @@ namespace NRules.Fluent
             {
                 throw new RuleDefinitionException("Failed to build rule definition", rule.GetType(), e);
             }
+        }
+
+        internal bool IsFilterSet()
+        {
+            return _filter != null;
         }
     }
 }

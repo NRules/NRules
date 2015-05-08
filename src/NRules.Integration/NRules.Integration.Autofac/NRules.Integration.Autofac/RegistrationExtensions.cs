@@ -14,11 +14,11 @@ namespace NRules.Integration.Autofac
         /// <param name="builder">Container builder.</param>
         /// <param name="scanAction">Configuration action on the rule type scanner.</param>
         /// <returns>Rule types registered with the container.</returns>
-        public static Type[] RegisterRules(this ContainerBuilder builder, Action<RuleTypeScanner> scanAction)
+        public static Type[] RegisterRules(this ContainerBuilder builder, Action<IRuleTypeScanner> scanAction)
         {
             var scanner = new RuleTypeScanner();
             scanAction(scanner);
-            var ruleTypes = scanner.GetTypes();
+            var ruleTypes = scanner.GetRuleTypes();
             builder.RegisterTypes(ruleTypes)
                 .AsSelf()
                 .InstancePerDependency();
@@ -30,10 +30,10 @@ namespace NRules.Integration.Autofac
         /// By default repository is registered as a single instance and is autowired with a <see cref="IRuleActivator"/>.
         /// </summary>
         /// <param name="builder">Container builder.</param>
-        /// <param name="loadAction">Load action for the repository when it's created.</param>
+        /// <param name="initAction">Initialization action for the repository when it's created. This is the place to load rules.</param>
         /// <returns>Registration builder for <see cref="RuleRepository"/> to specify additional registration configuration.</returns>
         public static IRegistrationBuilder<RuleRepository, ConcreteReflectionActivatorData, SingleRegistrationStyle> 
-            RegisterRepository(this ContainerBuilder builder, Action<RuleRepository> loadAction)
+            RegisterRepository(this ContainerBuilder builder, Action<RuleRepository> initAction)
         {
             builder.RegisterType<AutofacRuleActivator>()
                 .As<IRuleActivator>();
@@ -42,7 +42,7 @@ namespace NRules.Integration.Autofac
                 .As<IRuleRepository>()
                 .PropertiesAutowired()
                 .SingleInstance()
-                .OnActivating(e => loadAction(e.Instance));
+                .OnActivating(e => initAction(e.Instance));
         }
 
         /// <summary>
