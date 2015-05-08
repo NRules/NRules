@@ -116,7 +116,7 @@ task Build -depends Compile, Test, Merge, ResetVersion -precondition { return -n
 	}
 }
 
-task PackageNuGet -depends Build -precondition { return $component.package.ContainsKey('nuget') } {
+task PackageNuGet -depends Build -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
 	$nuget = $component.package.nuget
 	
 	Create-Directory $pkg_out_dir
@@ -136,7 +136,7 @@ task PackageNuGet -depends Build -precondition { return $component.package.Conta
 	exec { &$script:nuget_exec pack $package -OutputDirectory $pkg_out_dir }
 }
 
-task PackageZip -depends Build -precondition { $component.package.ContainsKey('zip') } {
+task PackageZip -depends Build -precondition { $component.ContainsKey('package') -and $component.package.ContainsKey('zip') } {
 	$zip = $component.package.zip
 	Create-Directory $pkg_out_dir
 	$file = "$pkg_out_dir\$($zip.name)"
@@ -147,7 +147,7 @@ task PackageZip -depends Build -precondition { $component.package.ContainsKey('z
 task Package -depends Build, PackageNuGet, PackageZip {
 }
 
-task PublishNuGet -precondition { return $component.package.ContainsKey('nuget') } {
+task PublishNuGet -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
 	$nuget = $component.package.nuget
 	# Upload packages
 	$accessKeyFile = "$base_dir\..\Nuget-Access-Key.txt"
