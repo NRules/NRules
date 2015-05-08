@@ -71,7 +71,7 @@ task RestoreDependencies {
 	exec { &$script:nuget_exec restore $src_dir -NonInteractive }
 }
 
-task Compile -depends Init, Clean, SetVersion, RestoreTools, RestoreDependencies {
+task Compile -depends Init, Clean, SetVersion, RestoreTools, RestoreDependencies { 
 	Create-Directory $build_dir
 	Create-Directory $out_dir
 	
@@ -105,7 +105,7 @@ task Merge -depends Compile -precondition { return $component.ContainsKey('merge
 	exec { &$script:ilmerge_exec /out:$output /log $keyfileOption $script:ilmerge_target_framework $assemblies /xmldocs /attr:$attribute_file }
 }
 
-task Build -depends Compile, Test, Merge, ResetVersion {
+task Build -depends Compile, Test, Merge, ResetVersion -precondition { return -not $component.ContainsKey('nobuild') } { 
 	Create-Directory $binaries_dir
 	
 	if ($component.ContainsKey('merge') -and $component.bin.merge_include) {
@@ -165,7 +165,7 @@ task PublishNuGet -precondition { return $component.package.ContainsKey('nuget')
 task Publish -depends Package, PublishNuGet {
 }
 
-task Help -depends Build -precondition { return $component.ContainsKey('help') } {
+task Help -depends Init, Build -precondition { return $component.ContainsKey('help') } {
 	Assert (Test-Path Env:\SHFBROOT) 'Sandcastle root environment variable SHFBROOT is not set'
 	
 	Create-Directory $build_dir

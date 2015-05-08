@@ -13,7 +13,7 @@
     <Name>Documentation</Name>
     <!-- SHFB properties -->
     <FrameworkVersion>.NET Framework 4.0</FrameworkVersion>
-    <OutputPath>..\build\help\NRules\</OutputPath>
+    <OutputPath>..\build\help\NRules.Integration\</OutputPath>
     <HtmlHelpName>NRules</HtmlHelpName>
     <Language>en-US</Language>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
@@ -24,9 +24,9 @@
     <CppCommentsFixup>False</CppCommentsFixup>
     <CleanIntermediates>True</CleanIntermediates>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\src\NRules\NamespaceDoc.xml" />
-      <DocumentationSource sourceFile="..\binaries\NRules\NRules.dll" />
-      <DocumentationSource sourceFile="..\binaries\NRules\NRules.xml" />
+      <DocumentationSource sourceFile="..\src\NRules.Integration\NamespaceDoc.xml" />
+      <DocumentationSource sourceFile="..\binaries\NRules.Integration.Autofac\NRules.Integration.Autofac.dll" />
+      <DocumentationSource sourceFile="..\binaries\NRules.Integration.Autofac\NRules.Integration.Autofac.xml" />
     </DocumentationSources>
     <MaximumGroupParts>20</MaximumGroupParts>
     <NamespaceGrouping>True</NamespaceGrouping>
@@ -36,7 +36,7 @@
     <PresentationStyle>VS2013</PresentationStyle>
     <Preliminary>False</Preliminary>
     <NamingMethod>MemberName</NamingMethod>
-    <HelpTitle>NRules, Business Rules Engine for .NET</HelpTitle>
+    <HelpTitle>NRules Integration</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <VisibleItems>ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected</VisibleItems>
     <HeaderText>

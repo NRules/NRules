@@ -49,7 +49,8 @@ $components = @{
 		name = 'NRules.Integration.Autofac'
 		src_root = 'src/NRules.Integration'
 		bin = @{
-			out_include = @('NRules.Integration.Autofac.*')
+			out_include = @('*.dll','*.pdb','*.xml')
+			out_exclude = @('**Tests**','nunit**','Moq**')
 		}
 		package = @{
 			nuget = @{
@@ -57,6 +58,11 @@ $components = @{
 				include = @('NRules.Integration.Autofac.*')
 			}
 		}
+	};
+	'NRules.Integration' = @{
+		name = 'NRules.Integration'
+		nobuild = $true
+		help = 'NRules.Integration.shfbproj'
 	};
 	'Samples.SimpleRules' = @{
 		name = 'SimpleRules'
@@ -89,7 +95,7 @@ $components = @{
 }
 
 $core = @('NRules', 'NRules.Debugger.Visualizer')
-$integration = $components.keys | where { $_.StartsWith("NRules.Integration.") }
+$integration = $components.keys | where { $_.StartsWith("NRules.Integration") }
 $samples = $components.keys | where { $_.StartsWith("Samples.") }
 
 $component_list = @()
