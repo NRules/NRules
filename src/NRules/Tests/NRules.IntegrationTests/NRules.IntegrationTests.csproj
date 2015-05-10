@@ -54,6 +54,7 @@
     <Compile Include="CollectionWithConditionsRuleTest.cs" />
     <Compile Include="LifecycleEventTest.cs" />
     <Compile Include="OneFactNonRepeatableRuleTest.cs" />
+    <Compile Include="OneFactOneGroupByRuleTest.cs" />
     <Compile Include="OneFactRepeatableRuleTest.cs" />
     <Compile Include="OneFactRuleWithDependencyTest.cs" />
     <Compile Include="TestAssets\FactType5.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="TestRules\IdentityMatchRule.cs" />
     <Compile Include="TestRules\CollectionWithConditionsRule.cs" />
     <Compile Include="TestRules\OneFactNonRepeatableRule.cs" />
+    <Compile Include="TestRules\OneFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactRepeatableRule.cs" />
     <Compile Include="TestRules\EmptyRule.cs" />
     <Compile Include="TestRules\OneFactRuleWithDependency.cs" />

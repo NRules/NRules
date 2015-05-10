@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace NRules.Fluent.Dsl
@@ -33,9 +34,21 @@ namespace NRules.Fluent.Dsl
         /// </summary>
         /// <typeparam name="T">Type of facts to aggregate.</typeparam>
         /// <param name="alias">Alias for the collection of matching facts.</param>
-        /// <param name="itemConditions">Set of conditions the facts must satisfy to get into the collection.</param>
+        /// <param name="conditions">Set of conditions the facts must satisfy to get into the collection.</param>
         /// <returns>Expression builder for collection conditions.</returns>
-        ICollectPatternExpression<IEnumerable<T>> Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] itemConditions);
+        ICollectPatternExpression<T> Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] conditions);
+
+        /// <summary>
+        /// Defines a pattern that aggregates matching facts into groups.
+        /// The rule is fired for each group separately.
+        /// </summary>
+        /// <typeparam name="TKey">Type of grouping key.</typeparam>
+        /// <typeparam name="T">Type of facts to aggregate.</typeparam>
+        /// <param name="alias">Alias for the group of matching facts.</param>
+        /// <param name="keySelector">Key selector.</param>
+        /// <param name="conditions">Set of conditions the facts must satisfy to get into the grouping.</param>
+        /// <returns>Expression builder for the group conditions.</returns>
+        IGroupByPatternExpression<TKey, T> GroupBy<TKey, T>(Expression<Func<IGrouping<TKey, T>>> alias, Expression<Func<T, TKey>> keySelector, params Expression<Func<T, bool>>[] conditions);
 
         /// <summary>
         /// Defines a pattern that triggers the rule only if there is at least one matching fact (existential quantifier).

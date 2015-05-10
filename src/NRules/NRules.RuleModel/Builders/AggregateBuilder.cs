@@ -1,4 +1,5 @@
 using System;
+using NRules.RuleModel.Aggregators;
 
 namespace NRules.RuleModel.Builders
 {
@@ -8,7 +9,7 @@ namespace NRules.RuleModel.Builders
     public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
     {
         private readonly Type _resultType;
-        private Type _aggregateType;
+        private IAggregateFactory _aggregateFactory; 
         private PatternBuilder _sourceBuilder;
 
         internal AggregateBuilder(Type resultType, SymbolTable scope) 
@@ -25,19 +26,55 @@ namespace NRules.RuleModel.Builders
         {
             if (!typeof(IAggregate).IsAssignableFrom(aggregateType))
             {
-                throw new InvalidOperationException("Aggregate type must implement IAggregate interface");
+                throw new InvalidOperationException(
+                    "Aggregate type must implement IAggregate interface");
             }
-            _aggregateType = aggregateType;
+            if (aggregateType.GetConstructor(Type.EmptyTypes) == null)
+            {
+                throw new InvalidOperationException(
+                    "Aggregate type must have a parameterless constructor to be used directly. Provide aggregate factory instead.");
+            }
+            Type factoryType = typeof(DefaultAggregateFactory<>).MakeGenericType(aggregateType);
+            var aggregateFactory = (IAggregateFactory) Activator.CreateInstance(factoryType);
+            AggregateFactory(aggregateFactory);
         }
 
         /// <summary>
-        /// Sets aggregate type to the collection aggregate.
+        /// Sets aggregate type.
+        /// </summary>
+        /// <param name="aggregateFactory">Factory to create new aggregates.</param>
+        public void AggregateFactory(IAggregateFactory aggregateFactory)
+        {
+            _aggregateFactory = aggregateFactory;
+        }
+
+        /// <summary>
+        /// Configure a collection aggregate.
         /// </summary>
         /// <param name="elementType">Type of element to aggregate.</param>
         public void CollectionOf(Type elementType)
         {
             Type aggregateType = typeof (CollectionAggregate<>).MakeGenericType(elementType);
             AggregateType(aggregateType);
+        }
+
+        /// <summary>
+        /// Configure a collection aggregate.
+        /// </summary>
+        public void CollectionOf<TElement>()
+        {
+            var aggregateFactory = new DefaultAggregateFactory<CollectionAggregate<TElement>>();
+            AggregateFactory(aggregateFactory);
+        }
+
+        /// <summary>
+        /// Sets aggregate type to the collection aggregate.
+        /// </summary>
+        /// <param name="keySelector">Key selection function.</param>
+        public void GroupBy<TKey, TElement>(Func<TElement, TKey> keySelector)
+        {
+            var aggregateFactory = new GroupByAggregateFactory<TKey, TElement>(keySelector);
+            AggregateFactory(aggregateFactory);
         }
 
         /// <summary>
@@ -70,15 +107,15 @@ namespace NRules.RuleModel.Builders
             Validate();
             IBuilder<PatternElement> sourceBuilder = _sourceBuilder;
             PatternElement sourceElement = sourceBuilder.Build();
-            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _aggregateType, sourceElement);
+            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _aggregateFactory, sourceElement);
             return aggregateElement;
         }
 
         private void Validate()
         {
-            if (_aggregateType == null)
+            if (_aggregateFactory == null)
             {
-                throw new InvalidOperationException("Aggregate type not specified");
+                throw new InvalidOperationException("Aggregate factory is not provided");
             }
             if (_sourceBuilder == null)
             {

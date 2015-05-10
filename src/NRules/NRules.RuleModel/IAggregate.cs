@@ -1,31 +1,7 @@
-﻿namespace NRules.RuleModel
+﻿using System.Collections.Generic;
+
+namespace NRules.RuleModel
 {
-    /// <summary>
-    /// Result of an aggregation, based on added/modified/removed facts.
-    /// </summary>
-    public enum AggregationResults
-    {
-        /// <summary>
-        /// No changes at the aggregate level.
-        /// </summary>
-        None = 0,
-
-        /// <summary>
-        /// New aggregate created.
-        /// </summary>
-        Added = 1,
-
-        /// <summary>
-        /// Existing aggregate modified.
-        /// </summary>
-        Modified = 2,
-
-        /// <summary>
-        /// Existing aggregate removed.
-        /// </summary>
-        Removed = 3,
-    }
-
     /// <summary>
     /// Base interface for aggregate types.
     /// </summary>
@@ -34,33 +10,30 @@
         /// <summary>
         /// Called when the new aggregate is initialized.
         /// </summary>
-        /// <returns>Result of the operation on the aggregate.</returns>
-        AggregationResults Initial();
+        /// <returns>Results of the operation on the aggregate.</returns>
+        IEnumerable<AggregationResult> Initial();
 
         /// <summary>
         /// Called by the rules engine when a new fact enters corresponding aggregate.
         /// </summary>
         /// <param name="fact">New fact to add to the aggregate.</param>
-        /// <returns>Result of the operation on the aggregate, based on the added fact.</returns>
-        AggregationResults Add(object fact);
+        /// <returns>Results of the operation on the aggregate, based on the added fact.</returns>
+        IEnumerable<AggregationResult> Add(object fact);
 
         /// <summary>
         /// Called by the rules engine when an existing fact is updated in the corresponding aggregate.
         /// </summary>
         /// <param name="fact">Existing fact to update in the aggregate.</param>
-        /// <returns>Result of the operation on the aggregate, based on the modified fact.</returns>
-        AggregationResults Modify(object fact);
+        /// <returns>Results of the operation on the aggregate, based on the modified fact.</returns>
+        IEnumerable<AggregationResult> Modify(object fact);
 
         /// <summary>
         /// Called by the rules engine when an existing fact is removed from the corresponding aggregate.
         /// </summary>
         /// <param name="fact">Existing fact to remove from the aggregate.</param>
-        /// <returns>Result of the operation on the aggregate, based on the removed fact.</returns>
-        AggregationResults Remove(object fact);
+        /// <returns>Results of the operation on the aggregate, based on the removed fact.</returns>
+        IEnumerable<AggregationResult> Remove(object fact);
 
-        /// <summary>
-        /// Result of the aggregation.
-        /// </summary>
-        object Result { get; }
+        IEnumerable<object> Results { get; } 
     }
 }

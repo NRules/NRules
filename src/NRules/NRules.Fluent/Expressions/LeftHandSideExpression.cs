@@ -43,7 +43,7 @@ namespace NRules.Fluent.Expressions
             return this;
         }
 
-        public ICollectPatternExpression<IEnumerable<T>> Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] conditions)
+        public ICollectPatternExpression<T> Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] conditions)
         {
             var symbol = alias.ToParameterExpression();
 
@@ -55,7 +55,23 @@ namespace NRules.Fluent.Expressions
             var itemPatternBuilder = aggregateBuilder.Pattern(typeof (T));
             itemPatternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
 
-            return new CollectPatternExpression<IEnumerable<T>>(_builder, _groupBuilder, collectionPatternBuilder);
+            return new CollectPatternExpression<T>(_builder, _groupBuilder, collectionPatternBuilder);
+        }
+
+        public IGroupByPatternExpression<TKey, T> GroupBy<TKey, T>(Expression<Func<IGrouping<TKey, T>>> alias, Expression<Func<T, TKey>> keySelector, params Expression<Func<T, bool>>[] conditions)
+        {
+            var symbol = alias.ToParameterExpression();
+
+            var groupByPatternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
+
+            var aggregateBuilder = groupByPatternBuilder.Aggregate();
+            var keySelectorDelegate = keySelector.Compile();
+            aggregateBuilder.GroupBy(keySelectorDelegate);
+
+            var itemPatternBuilder = aggregateBuilder.Pattern(typeof (T));
+            itemPatternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
+
+            return new GroupByPatternExpression<TKey, T>(_builder, _groupBuilder, groupByPatternBuilder);
         }
 
         public ILeftHandSideExpression Exists<T>(params Expression<Func<T, bool>>[] conditions)
