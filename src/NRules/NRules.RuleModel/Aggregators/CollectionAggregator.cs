@@ -6,7 +6,7 @@ namespace NRules.RuleModel.Aggregators
     /// Aggregate that folds matching facts into a collection.
     /// </summary>
     /// <typeparam name="TElement">Type of facts to collect.</typeparam>
-    internal class CollectionAggregate<TElement> : IAggregate
+    internal class CollectionAggregator<TElement> : IAggregator
     {
         private readonly List<TElement> _items = new List<TElement>();
 
@@ -32,6 +32,6 @@ namespace NRules.RuleModel.Aggregators
             return new[] {AggregationResult.Modified(_items)};
         }
 
-        public IEnumerable<object> Results { get { return new[] {_items}; } }
+        public IEnumerable<object> Aggregates { get { return new[] {_items}; } }
     }
 }

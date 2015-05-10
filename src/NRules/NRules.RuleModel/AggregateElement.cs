@@ -8,13 +8,13 @@ namespace NRules.RuleModel
     /// </summary>
     public class AggregateElement : PatternSourceElement
     {
-        private readonly IAggregateFactory _factory;
+        private readonly IAggregatorFactory _factory;
         private readonly PatternElement _source;
 
         /// <summary>
-        /// Factory to create aggregates of this type.
+        /// Factory to create aggregators of this type.
         /// </summary>
-        public IAggregateFactory AggregateFactory
+        public IAggregatorFactory AggregatorFactory
         {
             get { return _factory; }
         }
@@ -27,7 +27,7 @@ namespace NRules.RuleModel
             get { return _source; }
         }
 
-        internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, IAggregateFactory factory, PatternElement source) 
+        internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, IAggregatorFactory factory, PatternElement source) 
             : base(declarations, resultType)
         {
             _factory = factory;

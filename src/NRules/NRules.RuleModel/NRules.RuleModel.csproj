@@ -51,8 +51,8 @@
     <Compile Include="ActionGroupElement.cs" />
     <Compile Include="AggregateElement.cs" />
     <Compile Include="AggregationResult.cs" />
-    <Compile Include="Aggregators\CollectionAggregate.cs" />
-    <Compile Include="Aggregators\GroupByAggregate.cs" />
+    <Compile Include="Aggregators\CollectionAggregator.cs" />
+    <Compile Include="Aggregators\GroupByAggregator.cs" />
     <Compile Include="AndElement.cs" />
     <Compile Include="Builders\ActionGroupBuilder.cs" />
     <Compile Include="Builders\AggregateBuilder.cs" />
@@ -70,7 +70,7 @@
     <Compile Include="DependencyGroupElement.cs" />
     <Compile Include="ExistsElement.cs" />
     <Compile Include="ForAllElement.cs" />
-    <Compile Include="IAggregateFactory.cs" />
+    <Compile Include="IAggregatorFactory.cs" />
     <Compile Include="IContext.cs" />
     <Compile Include="IRuleRepository.cs" />
     <Compile Include="IRuleSet.cs" />
@@ -85,7 +85,7 @@
     <Compile Include="PatternElement.cs" />
     <Compile Include="Declaration.cs" />
     <Compile Include="GroupElement.cs" />
-    <Compile Include="IAggregate.cs" />
+    <Compile Include="IAggregator.cs" />
     <Compile Include="PatternSourceElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ActionElement.cs" />

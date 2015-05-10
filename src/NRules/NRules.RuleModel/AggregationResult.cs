@@ -32,13 +32,13 @@ namespace NRules.RuleModel
     public struct AggregationResult
     {
         private readonly AggregationAction _action;
-        private readonly object _result;
+        private readonly object _aggregate;
         public static AggregationResult[] Empty = new AggregationResult[0];
 
-        private AggregationResult(AggregationAction action, object result)
+        private AggregationResult(AggregationAction action, object aggregate)
         {
             _action = action;
-            _result = result;
+            _aggregate = aggregate;
         }
 
         /// <summary>
@@ -87,8 +87,8 @@ namespace NRules.RuleModel
         public AggregationAction Action { get { return _action; } }
 
         /// <summary>
-        /// Aggregation result.
+        /// Resulting aggregate.
         /// </summary>
-        public object Result { get { return _result; } }
+        public object Aggregate { get { return _aggregate; } }
     }
 }

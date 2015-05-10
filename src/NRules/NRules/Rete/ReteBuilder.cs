@@ -89,7 +89,7 @@ namespace NRules.Rete
         protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
         {
             BuildSubnet(context, element.Source);
-            BuildAggregateNode(context, element.AggregateFactory);
+            BuildAggregateNode(context, element.AggregatorFactory);
         }
 
         protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
@@ -213,17 +213,17 @@ namespace NRules.Rete
             context.ResetAlphaSource();
         }
 
-        private void BuildAggregateNode(ReteBuilderContext context, IAggregateFactory aggregateFactory)
+        private void BuildAggregateNode(ReteBuilderContext context, IAggregatorFactory aggregatorFactory)
         {
             var node = context.AlphaSource
                 .Sinks.OfType<AggregateNode>()
                 .FirstOrDefault(x =>
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
-                    x.AggregateFactory == aggregateFactory);
+                    x.AggregatorFactory == aggregatorFactory);
             if (node == null)
             {
-                node = new AggregateNode(context.BetaSource, context.AlphaSource, aggregateFactory);
+                node = new AggregateNode(context.BetaSource, context.AlphaSource, aggregatorFactory);
                 if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
             }
             BuildBetaMemoryNode(context, node);

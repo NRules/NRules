@@ -9,7 +9,7 @@ namespace NRules.RuleModel.Builders
     public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
     {
         private readonly Type _resultType;
-        private IAggregateFactory _aggregateFactory; 
+        private IAggregatorFactory _aggregatorFactory; 
         private PatternBuilder _sourceBuilder;
 
         internal AggregateBuilder(Type resultType, SymbolTable scope) 
@@ -19,62 +19,65 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Sets aggregate type.
+        /// Sets aggregator.
         /// </summary>
-        /// <param name="aggregateType">Type that implements <see cref="IAggregate"/> that aggregates facts.</param>
-        public void AggregateType(Type aggregateType)
+        /// <param name="aggregatorType">Type that implements <see cref="IAggregator"/> that aggregates facts.</param>
+        public void Aggregator(Type aggregatorType)
         {
-            if (!typeof(IAggregate).IsAssignableFrom(aggregateType))
+            if (!typeof(IAggregator).IsAssignableFrom(aggregatorType))
             {
                 throw new InvalidOperationException(
-                    "Aggregate type must implement IAggregate interface");
+                    "Aggregator type must implement IAggregator interface");
             }
-            if (aggregateType.GetConstructor(Type.EmptyTypes) == null)
+            if (aggregatorType.GetConstructor(Type.EmptyTypes) == null)
             {
                 throw new InvalidOperationException(
-                    "Aggregate type must have a parameterless constructor to be used directly. Provide aggregate factory instead.");
+                    "Aggregator type must have a parameterless constructor to be used directly. Provide aggregator factory instead.");
             }
-            Type factoryType = typeof(DefaultAggregateFactory<>).MakeGenericType(aggregateType);
-            var aggregateFactory = (IAggregateFactory) Activator.CreateInstance(factoryType);
-            AggregateFactory(aggregateFactory);
+            Type factoryType = typeof(DefaultAggregatorFactory<>).MakeGenericType(aggregatorType);
+            var aggregatorFactory = (IAggregatorFactory) Activator.CreateInstance(factoryType);
+            AggregatorFactory(aggregatorFactory);
         }
 
         /// <summary>
-        /// Sets aggregate type.
+        /// Sets aggregator factory.
         /// </summary>
-        /// <param name="aggregateFactory">Factory to create new aggregates.</param>
-        public void AggregateFactory(IAggregateFactory aggregateFactory)
+        /// <param name="aggregatorFactory">Factory to create new aggregators.</param>
+        public void AggregatorFactory(IAggregatorFactory aggregatorFactory)
         {
-            _aggregateFactory = aggregateFactory;
+            _aggregatorFactory = aggregatorFactory;
         }
 
         /// <summary>
-        /// Configure a collection aggregate.
+        /// Configure a collection aggregator.
         /// </summary>
-        /// <param name="elementType">Type of element to aggregate.</param>
+        /// <param name="elementType">Type of elements to aggregate.</param>
         public void CollectionOf(Type elementType)
         {
-            Type aggregateType = typeof (CollectionAggregate<>).MakeGenericType(elementType);
-            AggregateType(aggregateType);
+            Type aggregateType = typeof (CollectionAggregator<>).MakeGenericType(elementType);
+            Aggregator(aggregateType);
         }
 
         /// <summary>
         /// Configure a collection aggregate.
         /// </summary>
+        /// <typeparam name="TElement">Type of elements to aggregate.</typeparam>
         public void CollectionOf<TElement>()
         {
-            var aggregateFactory = new DefaultAggregateFactory<CollectionAggregate<TElement>>();
-            AggregateFactory(aggregateFactory);
+            var aggregateFactory = new DefaultAggregatorFactory<CollectionAggregator<TElement>>();
+            AggregatorFactory(aggregateFactory);
         }
 
         /// <summary>
-        /// Sets aggregate type to the collection aggregate.
+        /// Configure group by aggregator.
         /// </summary>
         /// <param name="keySelector">Key selection function.</param>
+        /// <typeparam name="TKey">Type of grouping key.</typeparam>
+        /// <typeparam name="TElement">Type of elements to aggregate.</typeparam>
         public void GroupBy<TKey, TElement>(Func<TElement, TKey> keySelector)
         {
-            var aggregateFactory = new GroupByAggregateFactory<TKey, TElement>(keySelector);
-            AggregateFactory(aggregateFactory);
+            var aggregateFactory = new GroupByAggregatorFactory<TKey, TElement>(keySelector);
+            AggregatorFactory(aggregateFactory);
         }
 
         /// <summary>
@@ -90,7 +93,7 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Creates a pattern builder that builds the source of the aggregate.
+        /// Creates a pattern builder that builds the source of the aggregate element.
         /// </summary>
         /// <param name="declaration">Pattern declaration.</param>
         /// <returns>Pattern builder.</returns>
@@ -107,19 +110,19 @@ namespace NRules.RuleModel.Builders
             Validate();
             IBuilder<PatternElement> sourceBuilder = _sourceBuilder;
             PatternElement sourceElement = sourceBuilder.Build();
-            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _aggregateFactory, sourceElement);
+            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _aggregatorFactory, sourceElement);
             return aggregateElement;
         }
 
         private void Validate()
         {
-            if (_aggregateFactory == null)
+            if (_aggregatorFactory == null)
             {
-                throw new InvalidOperationException("Aggregate factory is not provided");
+                throw new InvalidOperationException("Aggregator factory is not provided");
             }
             if (_sourceBuilder == null)
             {
-                throw new InvalidOperationException("Aggregate source is not provided");
+                throw new InvalidOperationException("Aggregate element source is not provided");
             }
         }
 

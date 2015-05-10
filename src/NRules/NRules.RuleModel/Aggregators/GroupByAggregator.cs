@@ -10,13 +10,13 @@ namespace NRules.RuleModel.Aggregators
     /// </summary>
     /// <typeparam name="TKey">Type of grouping key.</typeparam>
     /// <typeparam name="TElement">Type of facts to group.</typeparam>
-    internal class GroupByAggregate<TKey, TElement> : IAggregate
+    internal class GroupByAggregator<TKey, TElement> : IAggregator
     {
         private readonly Func<TElement, TKey> _keySelector;
         private readonly Dictionary<TKey, Grouping> _groups = new Dictionary<TKey, Grouping>();
         private readonly Dictionary<object, TKey> _factToKey = new Dictionary<object, TKey>(); 
 
-        public GroupByAggregate(Func<TElement, TKey> keySelector)
+        public GroupByAggregator(Func<TElement, TKey> keySelector)
         {
             _keySelector = keySelector;
         }
@@ -81,7 +81,7 @@ namespace NRules.RuleModel.Aggregators
             return new[] { AggregationResult.Modified(group) };
         }
 
-        public IEnumerable<object> Results { get { return new[] { _groups.Values }; } }
+        public IEnumerable<object> Aggregates { get { return new[] { _groups.Values }; } }
 
         private class Grouping : IGrouping<TKey, TElement>
         {
@@ -119,22 +119,22 @@ namespace NRules.RuleModel.Aggregators
     }
 
     /// <summary>
-    /// Aggregate factory for group by aggregate.
+    /// Aggregate factory for group by aggregator.
     /// </summary>
     /// <typeparam name="TKey">Type of grouping key.</typeparam>
     /// <typeparam name="TElement">Type of facts to group.</typeparam>
-    internal class GroupByAggregateFactory<TKey, TElement> : IAggregateFactory
+    internal class GroupByAggregatorFactory<TKey, TElement> : IAggregatorFactory
     {
         private readonly Func<TElement, TKey> _keySelector;
 
-        public GroupByAggregateFactory(Func<TElement, TKey> keySelector)
+        public GroupByAggregatorFactory(Func<TElement, TKey> keySelector)
         {
             _keySelector = keySelector;
         }
 
-        public IAggregate Create()
+        public IAggregator Create()
         {
-            return new GroupByAggregate<TKey, TElement>(_keySelector);
+            return new GroupByAggregator<TKey, TElement>(_keySelector);
         }
     }
 }

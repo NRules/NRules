@@ -5,24 +5,24 @@ namespace NRules.Rete
 {
     internal class AggregateNode : BetaNode
     {
-        private readonly IAggregateFactory _aggregateFactory;
+        private readonly IAggregatorFactory _aggregatorFactory;
 
-        public IAggregateFactory AggregateFactory { get { return _aggregateFactory; } }
+        public IAggregatorFactory AggregatorFactory { get { return _aggregatorFactory; } }
 
-        public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, IAggregateFactory aggregateFactory)
+        public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, IAggregatorFactory aggregatorFactory)
             : base(leftSource, rightSource)
         {
-            _aggregateFactory = aggregateFactory;
+            _aggregatorFactory = aggregatorFactory;
         }
 
         public override void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
-            IAggregate aggregate = Aggregate(context, tuple);
+            IAggregator aggregator = Aggregator(context, tuple);
             var matchingFacts = MatchingFacts(context, tuple);
             foreach (var matchingFact in matchingFacts)
             {
-                var results = aggregate.Add(matchingFact.Object);
-                HandleAggregateResult(context, results, tuple, aggregate);
+                var results = aggregator.Add(matchingFact.Object);
+                HandleAggregationResult(context, results, tuple);
             }
         }
 
@@ -33,10 +33,10 @@ namespace NRules.Rete
 
         public override void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            IAggregate aggregate = Aggregate(context, tuple);
-            foreach (var result in aggregate.Results)
+            IAggregator aggregator = Aggregator(context, tuple);
+            foreach (var aggregate in aggregator.Aggregates)
             {
-                Fact aggregateFact = ToAggregateFact(context, result);
+                Fact aggregateFact = ToAggregateFact(context, aggregate);
                 PropagateAggregateRetract(context, tuple, aggregateFact);
             }
         }
@@ -46,9 +46,9 @@ namespace NRules.Rete
             var tuples = MatchingTuples(context, fact);
             foreach (var tuple in tuples)
             {
-                IAggregate aggregate = Aggregate(context, tuple);
-                var results = aggregate.Add(fact.Object);
-                HandleAggregateResult(context, results, tuple, aggregate);
+                IAggregator aggregator = Aggregator(context, tuple);
+                var results = aggregator.Add(fact.Object);
+                HandleAggregationResult(context, results, tuple);
             }
         }
 
@@ -57,9 +57,9 @@ namespace NRules.Rete
             var tuples = MatchingTuples(context, fact);
             foreach (var tuple in tuples)
             {
-                IAggregate aggregate = Aggregate(context, tuple);
-                var results = aggregate.Modify(fact.Object);
-                HandleAggregateResult(context, results, tuple, aggregate);
+                IAggregator aggregator = Aggregator(context, tuple);
+                var results = aggregator.Modify(fact.Object);
+                HandleAggregationResult(context, results, tuple);
             }
         }
 
@@ -68,9 +68,9 @@ namespace NRules.Rete
             var tuples = MatchingTuples(context, fact);
             foreach (var tuple in tuples)
             {
-                IAggregate aggregate = Aggregate(context, tuple);
-                var results = aggregate.Remove(fact.Object);
-                HandleAggregateResult(context, results, tuple, aggregate);
+                IAggregator aggregator = Aggregator(context, tuple);
+                var results = aggregator.Remove(fact.Object);
+                HandleAggregationResult(context, results, tuple);
             }
         }
 
@@ -79,12 +79,12 @@ namespace NRules.Rete
             visitor.VisitAggregateNode(context, this);
         }
 
-        private void HandleAggregateResult(IExecutionContext context, IEnumerable<AggregationResult> results, Tuple leftTuple, IAggregate aggregate)
+        private void HandleAggregationResult(IExecutionContext context, IEnumerable<AggregationResult> results, Tuple leftTuple)
         {
-            foreach (var item in results)
+            foreach (var result in results)
             {
-                Fact aggregateFact = ToAggregateFact(context, item.Result);
-                switch (item.Action)
+                Fact aggregateFact = ToAggregateFact(context, result.Aggregate);
+                switch (result.Action)
                 {
                     case AggregationAction.Added:
                         PropagateAggregateAssert(context, leftTuple, aggregateFact);
@@ -123,26 +123,26 @@ namespace NRules.Rete
             }
         }
 
-        private IAggregate Aggregate(IExecutionContext context, Tuple tuple)
+        private IAggregator Aggregator(IExecutionContext context, Tuple tuple)
         {
-            var aggregate = tuple.GetState<IAggregate>(this);
-            if (aggregate == null)
+            var aggregator = tuple.GetState<IAggregator>(this);
+            if (aggregator == null)
             {
-                aggregate = _aggregateFactory.Create();
-                tuple.SetState(this, aggregate);
-                var results = aggregate.Initial();
-                HandleAggregateResult(context, results, tuple, aggregate);
+                aggregator = _aggregatorFactory.Create();
+                tuple.SetState(this, aggregator);
+                var results = aggregator.Initial();
+                HandleAggregationResult(context, results, tuple);
             }
-            return aggregate;
+            return aggregator;
         }
 
-        private Fact ToAggregateFact(IExecutionContext context, object result)
+        private Fact ToAggregateFact(IExecutionContext context, object aggregate)
         {
-            if (result == null) return null;
-            Fact fact = context.WorkingMemory.GetFact(result);
+            if (aggregate == null) return null;
+            Fact fact = context.WorkingMemory.GetFact(aggregate);
             if (fact == null)
             {
-                fact = new Fact(result);
+                fact = new Fact(aggregate);
                 context.WorkingMemory.SetFact(fact);
             }
             return fact;
