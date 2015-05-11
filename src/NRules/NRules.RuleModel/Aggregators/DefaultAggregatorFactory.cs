@@ -5,17 +5,17 @@ namespace NRules.RuleModel.Aggregators
     /// <summary>
     /// Aggregator factory that creates new instances of the aggregator via a default constructor.
     /// </summary>
-    /// <typeparam name="T">Type of aggregator.</typeparam>
-    internal class DefaultAggregatorFactory<T> : IAggregatorFactory, IEquatable<DefaultAggregatorFactory<T>> where T : IAggregator, new()
+    /// <typeparam name="TAggregator">Type of aggregator.</typeparam>
+    internal class DefaultAggregatorFactory<TAggregator> : IAggregatorFactory, IEquatable<DefaultAggregatorFactory<TAggregator>> where TAggregator : IAggregator, new()
     {
-        private readonly Type _aggregatorType = typeof(T);
+        private readonly Type _aggregatorType = typeof(TAggregator);
 
         public IAggregator Create()
         {
-            return new T();
+            return new TAggregator();
         }
 
-        public bool Equals(DefaultAggregatorFactory<T> other)
+        public bool Equals(DefaultAggregatorFactory<TAggregator> other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -27,7 +27,7 @@ namespace NRules.RuleModel.Aggregators
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((DefaultAggregatorFactory<T>) obj);
+            return Equals((DefaultAggregatorFactory<TAggregator>) obj);
         }
 
         public override int GetHashCode()

@@ -7,13 +7,13 @@ namespace NRules.RuleModel.Aggregators
     /// Aggregate factory for group by aggregator.
     /// </summary>
     /// <typeparam name="TKey">Type of grouping key.</typeparam>
-    /// <typeparam name="TElement">Type of facts to group.</typeparam>
-    internal class GroupByAggregatorFactory<TKey, TElement> : IAggregatorFactory, IEquatable<GroupByAggregatorFactory<TKey, TElement>>
+    /// <typeparam name="TFact">Type of facts to group.</typeparam>
+    internal class GroupByAggregatorFactory<TKey, TFact> : IAggregatorFactory, IEquatable<GroupByAggregatorFactory<TKey, TFact>>
     {
-        private readonly Expression<Func<TElement, TKey>> _keySelectorExpression;
-        private readonly Func<TElement, TKey> _keySelector;
+        private readonly Expression<Func<TFact, TKey>> _keySelectorExpression;
+        private readonly Func<TFact, TKey> _keySelector;
 
-        public GroupByAggregatorFactory(Expression<Func<TElement, TKey>> keySelectorExpression)
+        public GroupByAggregatorFactory(Expression<Func<TFact, TKey>> keySelectorExpression)
         {
             _keySelectorExpression = keySelectorExpression;
             _keySelector = keySelectorExpression.Compile();
@@ -21,10 +21,10 @@ namespace NRules.RuleModel.Aggregators
 
         public IAggregator Create()
         {
-            return new GroupByAggregator<TKey, TElement>(_keySelector);
+            return new GroupByAggregator<TKey, TFact>(_keySelector);
         }
 
-        public bool Equals(GroupByAggregatorFactory<TKey, TElement> other)
+        public bool Equals(GroupByAggregatorFactory<TKey, TFact> other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -36,7 +36,7 @@ namespace NRules.RuleModel.Aggregators
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((GroupByAggregatorFactory<TKey, TElement>)obj);
+            return Equals((GroupByAggregatorFactory<TKey, TFact>)obj);
         }
 
         public override int GetHashCode()

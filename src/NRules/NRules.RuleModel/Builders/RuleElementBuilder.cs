@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace NRules.RuleModel.Builders
 {
-    internal interface IBuilder<out T>
+    internal interface IBuilder<out TElement> where TElement : RuleElement
     {
-        T Build();
+        TElement Build();
     }
 
     /// <summary>

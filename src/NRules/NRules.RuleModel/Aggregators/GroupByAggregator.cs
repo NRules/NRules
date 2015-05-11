@@ -9,14 +9,14 @@ namespace NRules.RuleModel.Aggregators
     /// Aggregate that groups matching facts into collections of elements with the same key.
     /// </summary>
     /// <typeparam name="TKey">Type of grouping key.</typeparam>
-    /// <typeparam name="TElement">Type of facts to group.</typeparam>
-    internal class GroupByAggregator<TKey, TElement> : IAggregator
+    /// <typeparam name="TFact">Type of facts to group.</typeparam>
+    internal class GroupByAggregator<TKey, TFact> : IAggregator
     {
-        private readonly Func<TElement, TKey> _keySelector;
+        private readonly Func<TFact, TKey> _keySelector;
         private readonly Dictionary<TKey, Grouping> _groups = new Dictionary<TKey, Grouping>();
         private readonly Dictionary<object, TKey> _factToKey = new Dictionary<object, TKey>(); 
 
-        public GroupByAggregator(Func<TElement, TKey> keySelector)
+        public GroupByAggregator(Func<TFact, TKey> keySelector)
         {
             _keySelector = keySelector;
         }
@@ -28,14 +28,14 @@ namespace NRules.RuleModel.Aggregators
 
         public IEnumerable<AggregationResult> Add(object fact)
         {
-            var key = _keySelector((TElement) fact);
+            var key = _keySelector((TFact) fact);
             _factToKey[fact] = key;
             return Add(key, fact);
         }
 
         public IEnumerable<AggregationResult> Modify(object fact)
         {
-            var key = _keySelector((TElement)fact);
+            var key = _keySelector((TFact)fact);
             var oldKey = _factToKey[fact];
             _factToKey[fact] = key;
             if (Equals(key, oldKey)) return AggregationResult.Empty;
@@ -60,18 +60,18 @@ namespace NRules.RuleModel.Aggregators
                 group = new Grouping(key);
                 _groups[key] = group;
 
-                group.Add((TElement)fact);
+                group.Add((TFact)fact);
                 return new[] { AggregationResult.Added(group) };
             }
 
-            group.Add((TElement)fact);
+            group.Add((TFact)fact);
             return new[] { AggregationResult.Modified(group) };
         }
         
         private IEnumerable<AggregationResult> Remove(TKey key, object fact)
         {
             var group = _groups[key];
-            group.Remove((TElement) fact);
+            group.Remove((TFact) fact);
             if (group.Count == 0)
             {
                 _groups.Remove(key);
@@ -83,10 +83,10 @@ namespace NRules.RuleModel.Aggregators
 
         public IEnumerable<object> Aggregates { get { return new[] { _groups.Values }; } }
 
-        private class Grouping : IGrouping<TKey, TElement>
+        private class Grouping : IGrouping<TKey, TFact>
         {
             private readonly TKey _key;
-            private readonly List<TElement> _elements = new List<TElement>();
+            private readonly List<TFact> _elements = new List<TFact>();
 
             public Grouping(TKey key)
             {
@@ -96,17 +96,17 @@ namespace NRules.RuleModel.Aggregators
             public TKey Key { get { return _key; } }
             public int Count { get { return _elements.Count; } }
 
-            public void Add(TElement fact)
+            public void Add(TFact fact)
             {
                 _elements.Add(fact);
             }
 
-            public void Remove(TElement fact)
+            public void Remove(TFact fact)
             {
                 _elements.Remove(fact);
             }
 
-            public IEnumerator<TElement> GetEnumerator()
+            public IEnumerator<TFact> GetEnumerator()
             {
                 return _elements.GetEnumerator();
             }

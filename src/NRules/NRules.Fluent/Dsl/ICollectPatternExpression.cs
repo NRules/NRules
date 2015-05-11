@@ -7,14 +7,14 @@ namespace NRules.Fluent.Dsl
     /// <summary>
     /// Expression builder for optional conditions on collection pattern.
     /// </summary>
-    /// <typeparam name="TElement">Type of collection element.</typeparam>
-    public interface ICollectPatternExpression<TElement> : ILeftHandSideExpression
+    /// <typeparam name="TFact">Type of fact to collect.</typeparam>
+    public interface ICollectPatternExpression<TFact> : ILeftHandSideExpression
     {
         /// <summary>
         /// Optional conditions on the collection pattern.
         /// </summary>
         /// <param name="conditions">Collection conditions.</param>
         /// <returns>Left hand side expression builder.</returns>
-        ILeftHandSideExpression Where(params Expression<Func<IEnumerable<TElement>, bool>>[] conditions);
+        ILeftHandSideExpression Where(params Expression<Func<IEnumerable<TFact>, bool>>[] conditions);
     }
 }

@@ -8,14 +8,14 @@ namespace NRules.Fluent.Dsl
     /// Expression builder for optional conditions on group by pattern.
     /// </summary>
     /// <typeparam name="TKey">Type of grouping key.</typeparam>
-    /// <typeparam name="T">Type of group element.</typeparam>
-    public interface IGroupByPatternExpression<TKey, T> : ILeftHandSideExpression
+    /// <typeparam name="TFact">Type of fact to group.</typeparam>
+    public interface IGroupByPatternExpression<TKey, TFact> : ILeftHandSideExpression
     {
         /// <summary>
         /// Optional conditions on the group by pattern.
         /// </summary>
         /// <param name="conditions">Group conditions.</param>
         /// <returns>Left hand side expression builder.</returns>
-        ILeftHandSideExpression Where(params Expression<Func<IGrouping<TKey, T>, bool>>[] conditions);
+        ILeftHandSideExpression Where(params Expression<Func<IGrouping<TKey, TFact>, bool>>[] conditions);
     }
 }

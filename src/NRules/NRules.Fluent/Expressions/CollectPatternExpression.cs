@@ -6,7 +6,7 @@ using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Expressions
 {
-    internal class CollectPatternExpression<TElement> : LeftHandSideExpression, ICollectPatternExpression<TElement>
+    internal class CollectPatternExpression<TFact> : LeftHandSideExpression, ICollectPatternExpression<TFact>
     {
         private readonly PatternBuilder _patternBuilder;
 
@@ -16,7 +16,7 @@ namespace NRules.Fluent.Expressions
             _patternBuilder = patternBuilder;
         }
 
-        public ILeftHandSideExpression Where(params Expression<Func<IEnumerable<TElement>, bool>>[] conditions)
+        public ILeftHandSideExpression Where(params Expression<Func<IEnumerable<TFact>, bool>>[] conditions)
         {
             _patternBuilder.DslConditions(_patternBuilder.Declarations, conditions);
             return this;

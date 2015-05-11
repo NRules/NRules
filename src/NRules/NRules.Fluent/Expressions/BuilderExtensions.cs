@@ -9,12 +9,12 @@ namespace NRules.Fluent.Expressions
 {
     internal static class BuilderExtensions
     {
-        public static void DslCondition<T>(this PatternBuilder builder, IEnumerable<Declaration> declarations, Expression<Func<T, bool>> condition)
+        public static void DslCondition<TFact>(this PatternBuilder builder, IEnumerable<Declaration> declarations, Expression<Func<TFact, bool>> condition)
         {
             builder.DslConditions(builder.Declarations, Enumerable.Repeat(condition, 1));
         }
         
-        public static void DslConditions<T>(this PatternBuilder builder, IEnumerable<Declaration> declarations, IEnumerable<Expression<Func<T, bool>>> conditions)
+        public static void DslConditions<TFact>(this PatternBuilder builder, IEnumerable<Declaration> declarations, IEnumerable<Expression<Func<TFact, bool>>> conditions)
         {
             var availableDeclarations = declarations.ToArray();
             foreach (var condition in conditions)
