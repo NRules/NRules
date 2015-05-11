@@ -72,6 +72,11 @@ namespace NRules.IntegrationTests.TestAssets
             Assert.AreEqual(2, _firedRulesMap.First().Value.Count);
         }
 
+        protected void AssertFiredTimes(int value)
+        {
+            Assert.AreEqual(value, _firedRulesMap.First().Value.Count);
+        }
+
         protected void AssertDidNotFire()
         {
             Assert.AreEqual(0, _firedRulesMap.First().Value.Count);

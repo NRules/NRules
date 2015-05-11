@@ -63,6 +63,7 @@
     <Compile Include="TestRules\IdentityMatchRule.cs" />
     <Compile Include="TestRules\CollectionWithConditionsRule.cs" />
     <Compile Include="TestRules\OneFactNonRepeatableRule.cs" />
+    <Compile Include="TestRules\TwoFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactRepeatableRule.cs" />
     <Compile Include="TestRules\EmptyRule.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="TestRules\TwoFactOneForAllCheckRule.cs" />
     <Compile Include="TestRules\ThreeFactOrGroupRule.cs" />
     <Compile Include="TestRules\TwoFactOrGroupRule.cs" />
+    <Compile Include="TwoFactOneGroupByRuleTest.cs" />
     <Compile Include="TwoFactOrGroupRuleTest.cs" />
     <Compile Include="ThreeFactTwoExistsRuleTest.cs" />
     <Compile Include="TestRules\ThreeFactTwoExistsRule.cs" />

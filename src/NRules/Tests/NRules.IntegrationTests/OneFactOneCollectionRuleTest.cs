@@ -79,6 +79,48 @@ namespace NRules.IntegrationTests
             Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType1>>().Count());
         }
 
+        [Test]
+        public void Fire_TwoMatchingFactsInsertedOneUpdatedToInvalid_FiresOnceWithOneFactInCollection()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType1 { TestProperty = "Valid Value 2" };
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            fact2.TestProperty = "Invalid Value";
+            Session.Update(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType1>>().Count());
+        }
+
+        [Test]
+        public void Fire_OneMatchingFactsAndOneInvalidInsertedTheInvalidUpdatedToValid_FiresOnceWithTwoFactInCollection()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType1 { TestProperty = "Invalid Value" };
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            fact2.TestProperty = "Valid Value 2";
+            Session.Update(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType1>>().Count());
+        }
+
         protected override void SetUpRules()
         {
             SetUpRule<OneFactOneCollectionRule>();
