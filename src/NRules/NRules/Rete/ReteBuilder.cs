@@ -220,7 +220,7 @@ namespace NRules.Rete
                 .FirstOrDefault(x =>
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
-                    x.AggregatorFactory == aggregatorFactory);
+                    Equals(x.AggregatorFactory, aggregatorFactory));
             if (node == null)
             {
                 node = new AggregateNode(context.BetaSource, context.AlphaSource, aggregatorFactory);

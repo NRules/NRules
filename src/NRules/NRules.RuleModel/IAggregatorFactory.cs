@@ -11,12 +11,4 @@ namespace NRules.RuleModel
         /// <returns>Aggregator instance.</returns>
         IAggregator Create();
     }
-
-    internal class DefaultAggregatorFactory<T> : IAggregatorFactory where T : IAggregator, new()
-    {
-        public IAggregator Create()
-        {
-            return new T();
-        }
-    }
 }

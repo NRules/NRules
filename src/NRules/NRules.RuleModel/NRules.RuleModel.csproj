@@ -52,7 +52,9 @@
     <Compile Include="AggregateElement.cs" />
     <Compile Include="AggregationResult.cs" />
     <Compile Include="Aggregators\CollectionAggregator.cs" />
+    <Compile Include="Aggregators\DefaultAggregatorFactory.cs" />
     <Compile Include="Aggregators\GroupByAggregator.cs" />
+    <Compile Include="Aggregators\GroupByAggregatorFactory.cs" />
     <Compile Include="AndElement.cs" />
     <Compile Include="Builders\ActionGroupBuilder.cs" />
     <Compile Include="Builders\AggregateBuilder.cs" />

@@ -65,8 +65,7 @@ namespace NRules.Fluent.Expressions
             var groupByPatternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
 
             var aggregateBuilder = groupByPatternBuilder.Aggregate();
-            var keySelectorDelegate = keySelector.Compile();
-            aggregateBuilder.GroupBy(keySelectorDelegate);
+            aggregateBuilder.GroupBy(keySelector);
 
             var itemPatternBuilder = aggregateBuilder.Pattern(typeof (T));
             itemPatternBuilder.DslConditions(_groupBuilder.Declarations, conditions);

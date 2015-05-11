@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using NRules.RuleModel.Aggregators;
 
 namespace NRules.RuleModel.Builders
@@ -71,10 +72,10 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Configure group by aggregator.
         /// </summary>
-        /// <param name="keySelector">Key selection function.</param>
+        /// <param name="keySelector">Key selection expressions.</param>
         /// <typeparam name="TKey">Type of grouping key.</typeparam>
         /// <typeparam name="TElement">Type of elements to aggregate.</typeparam>
-        public void GroupBy<TKey, TElement>(Func<TElement, TKey> keySelector)
+        public void GroupBy<TKey, TElement>(Expression<Func<TElement, TKey>> keySelector)
         {
             var aggregateFactory = new GroupByAggregatorFactory<TKey, TElement>(keySelector);
             AggregatorFactory(aggregateFactory);

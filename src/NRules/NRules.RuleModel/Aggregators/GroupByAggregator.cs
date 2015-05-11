@@ -117,24 +117,4 @@ namespace NRules.RuleModel.Aggregators
             }
         }
     }
-
-    /// <summary>
-    /// Aggregate factory for group by aggregator.
-    /// </summary>
-    /// <typeparam name="TKey">Type of grouping key.</typeparam>
-    /// <typeparam name="TElement">Type of facts to group.</typeparam>
-    internal class GroupByAggregatorFactory<TKey, TElement> : IAggregatorFactory
-    {
-        private readonly Func<TElement, TKey> _keySelector;
-
-        public GroupByAggregatorFactory(Func<TElement, TKey> keySelector)
-        {
-            _keySelector = keySelector;
-        }
-
-        public IAggregator Create()
-        {
-            return new GroupByAggregator<TKey, TElement>(_keySelector);
-        }
-    }
 }
