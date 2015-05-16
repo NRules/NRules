@@ -8,7 +8,7 @@ namespace NRules.IntegrationTests
     public class CoJoinedCollectAndExistsRulesTest : BaseRuleTestFixture
     {
         [Test]
-        public void Fire_MatchingFactOfFirstKindNoFactsOfOtherKind_DoesNotFire()
+        public void Fire_MatchingFactOfFirstKindNoFactsOfOtherKind_FiresCollect()
         {
             //Arrange
             var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
@@ -19,7 +19,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire<TwoFactOneCollectionRule>();
+            AssertFiredOnce<TwoFactOneCollectionRule>();
             AssertDidNotFire<TwoFactOneExistsCheckRule>();
         }
 
