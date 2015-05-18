@@ -7,7 +7,7 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose an aggregate element.
     /// </summary>
-    public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
+    public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
     {
         private readonly Type _resultType;
         private IAggregatorFactory _aggregatorFactory; 

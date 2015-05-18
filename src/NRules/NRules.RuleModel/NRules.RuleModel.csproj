@@ -59,6 +59,7 @@
     <Compile Include="Builders\ActionGroupBuilder.cs" />
     <Compile Include="Builders\AggregateBuilder.cs" />
     <Compile Include="Builders\DependencyGroupBuilder.cs" />
+    <Compile Include="Builders\IPatternContainerBuilder.cs" />
     <Compile Include="Builders\RuleTransformation.cs" />
     <Compile Include="Builders\ForAllBuilder.cs" />
     <Compile Include="Builders\GroupBuilder.cs" />

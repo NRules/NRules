@@ -13,7 +13,8 @@ namespace NRules.IntegrationTests.TestRules
 
             When()
                 .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                .Collect<FactType2>(() => collection2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty);
+                .Match<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
+                    .Collect(() => collection2);
             Then()
                 .Do(ctx => Action())
                 .Do(ctx => collection2.ToList().ForEach(x => x.TestProperty.Normalize()));

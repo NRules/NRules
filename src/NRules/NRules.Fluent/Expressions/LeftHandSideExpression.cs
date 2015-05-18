@@ -11,11 +11,12 @@ namespace NRules.Fluent.Expressions
     {
         private readonly RuleBuilder _builder;
         private readonly GroupBuilder _groupBuilder;
+        private IContinuationExpression _continuationExpression;
 
         public LeftHandSideExpression(RuleBuilder builder)
         {
             _builder = builder;
-            _groupBuilder = _builder.LeftHandSide();
+            _groupBuilder = Builder.LeftHandSide();
         }
 
         public LeftHandSideExpression(RuleBuilder builder, GroupBuilder groupBuilder)
@@ -24,107 +25,112 @@ namespace NRules.Fluent.Expressions
             _groupBuilder = groupBuilder;
         }
 
+        public RuleBuilder Builder
+        {
+            get { return _builder; }
+        }
+
+        public GroupBuilder GroupBuilder
+        {
+            get { return _groupBuilder; }
+        }
+
         public ILeftHandSideExpression Match<TFact>(Expression<Func<TFact>> alias, params Expression<Func<TFact, bool>>[] conditions)
         {
+            CompleteContinuation();
             var symbol = alias.ToParameterExpression();
-            return Match(symbol, conditions);
-        }
-
-        public ILeftHandSideExpression Match<TFact>(params Expression<Func<TFact, bool>>[] conditions)
-        {
-            var symbol = Expression.Parameter(typeof(TFact));
-            return Match(symbol, conditions);
-        }
-
-        private ILeftHandSideExpression Match<TFact>(ParameterExpression symbol, IEnumerable<Expression<Func<TFact, bool>>> conditions)
-        {
-            var patternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
-            patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
+            var patternBuilder = GroupBuilder.Pattern(symbol.Type, symbol.Name);
+            patternBuilder.DslConditions(GroupBuilder.Declarations, conditions);
             return this;
         }
 
-        public ICollectPatternExpression<TFact> Collect<TFact>(Expression<Func<IEnumerable<TFact>>> alias, params Expression<Func<TFact, bool>>[] conditions)
+        public IContinuationExpression<TFact> Match<TFact>(params Expression<Func<TFact, bool>>[] conditions)
         {
-            var symbol = alias.ToParameterExpression();
-
-            var collectionPatternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
-
-            var aggregateBuilder = collectionPatternBuilder.Aggregate();
-            aggregateBuilder.CollectionOf(typeof (TFact));
-
-            var itemPatternBuilder = aggregateBuilder.Pattern(typeof (TFact));
-            itemPatternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
-
-            return new CollectPatternExpression<TFact>(_builder, _groupBuilder, collectionPatternBuilder);
+            CompleteContinuation();
+            var matchContinuation = new ContinuationExpression<TFact>(this);
+            matchContinuation.Match(conditions);
+            RegisterContinuation(matchContinuation);
+            return new ContinuationExpression<TFact>(this, matchContinuation);
         }
 
-        public IGroupByPatternExpression<TKey, TFact> GroupBy<TKey, TFact>(Expression<Func<IGrouping<TKey, TFact>>> alias, Expression<Func<TFact, TKey>> keySelector, params Expression<Func<TFact, bool>>[] conditions)
+        public IConditionExpression<IEnumerable<TFact>> Collect<TFact>(Expression<Func<IEnumerable<TFact>>> alias, params Expression<Func<TFact, bool>>[] conditions)
         {
-            var symbol = alias.ToParameterExpression();
-
-            var groupByPatternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
-
-            var aggregateBuilder = groupByPatternBuilder.Aggregate();
-            aggregateBuilder.GroupBy(keySelector);
-
-            var itemPatternBuilder = aggregateBuilder.Pattern(typeof (TFact));
-            itemPatternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
-
-            return new GroupByPatternExpression<TKey, TFact>(_builder, _groupBuilder, groupByPatternBuilder);
+            CompleteContinuation();
+            return Match(conditions).Collect(alias);
         }
 
         public ILeftHandSideExpression Exists<TFact>(params Expression<Func<TFact, bool>>[] conditions)
         {
-            var existsBuilder = _groupBuilder.Exists();
+            CompleteContinuation();
+            var existsBuilder = GroupBuilder.Exists();
 
-            var patternBuilder = existsBuilder.Pattern(typeof (TFact));
-            patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
+            var patternBuilder = existsBuilder.Pattern(typeof(TFact));
+            patternBuilder.DslConditions(GroupBuilder.Declarations, conditions);
             return this;
         }
 
         public ILeftHandSideExpression Not<TFact>(params Expression<Func<TFact, bool>>[] conditions)
         {
-            var notBuilder = _groupBuilder.Not();
+            CompleteContinuation();
+            var notBuilder = GroupBuilder.Not();
 
             var patternBuilder = notBuilder.Pattern(typeof(TFact));
-            patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
+            patternBuilder.DslConditions(GroupBuilder.Declarations, conditions);
             return this;
         }
 
         public ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> condition)
         {
-            return All(x => true, new [] {condition});
+            CompleteContinuation();
+            return All(x => true, new[] { condition });
         }
 
         public ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> baseCondition, params Expression<Func<TFact, bool>>[] conditions)
         {
+            CompleteContinuation();
             return All(baseCondition, conditions.AsEnumerable());
         }
 
         private ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> baseCondition, IEnumerable<Expression<Func<TFact, bool>>> conditions)
         {
-            var forallBuilder = _groupBuilder.ForAll();
-            
+            var forallBuilder = GroupBuilder.ForAll();
+
             var basePatternBuilder = forallBuilder.BasePattern(typeof(TFact));
-            basePatternBuilder.DslCondition(_groupBuilder.Declarations, baseCondition);
+            basePatternBuilder.DslCondition(GroupBuilder.Declarations, baseCondition);
 
             var patternBuilder = forallBuilder.Pattern(typeof(TFact));
-            patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
+            patternBuilder.DslConditions(GroupBuilder.Declarations, conditions);
             return this;
         }
 
         public ILeftHandSideExpression And(Action<ILeftHandSideExpression> builderAction)
         {
-            var expressionBuilder = new LeftHandSideExpression(_builder, _groupBuilder.Group(GroupType.And));
+            CompleteContinuation();
+            var expressionBuilder = new LeftHandSideExpression(Builder, GroupBuilder.Group(GroupType.And));
             builderAction(expressionBuilder);
             return this;
         }
 
         public ILeftHandSideExpression Or(Action<ILeftHandSideExpression> builderAction)
         {
-            var expressionBuilder = new LeftHandSideExpression(_builder, _groupBuilder.Group(GroupType.Or));
+            CompleteContinuation();
+            var expressionBuilder = new LeftHandSideExpression(Builder, GroupBuilder.Group(GroupType.Or));
             builderAction(expressionBuilder);
             return this;
+        }
+
+        public void RegisterContinuation(IContinuationExpression continuationExpression)
+        {
+            _continuationExpression = continuationExpression;
+        }
+
+        public void CompleteContinuation()
+        {
+            if (_continuationExpression != null)
+            {
+                _continuationExpression.Complete(GroupBuilder);
+                _continuationExpression = null;
+            }
         }
     }
 }

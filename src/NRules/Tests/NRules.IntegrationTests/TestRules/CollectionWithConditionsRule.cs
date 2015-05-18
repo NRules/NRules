@@ -11,7 +11,9 @@ namespace NRules.IntegrationTests.TestRules
             IEnumerable<FactType1> collection1 = null;
 
             When()
-                .Collect<FactType1>(() => collection1, f => f.TestProperty.StartsWith("Valid")).Where(x => x.Count() > 2);
+                .Match<FactType1>(f => f.TestProperty.StartsWith("Valid"))
+                    .Collect(() => collection1)
+                    .Where(x => x.Count() > 2);
             Then()
                 .Do(ctx => Action());
         }

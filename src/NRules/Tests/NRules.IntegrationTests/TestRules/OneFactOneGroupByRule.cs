@@ -10,7 +10,8 @@ namespace NRules.IntegrationTests.TestRules
             IGrouping<string, FactType1> group1 = null;
 
             When()
-                .GroupBy(() => group1, f => f.TestProperty, f => f.TestProperty.StartsWith("Valid"))
+                .Match<FactType1>(f => f.TestProperty.StartsWith("Valid"))
+                    .GroupBy(() => group1, f => f.TestProperty)
                     .Where(x => x.Count() > 1);
             Then()
                 .Do(ctx => Action());
