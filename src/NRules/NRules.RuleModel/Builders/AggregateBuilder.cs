@@ -73,11 +73,13 @@ namespace NRules.RuleModel.Builders
         /// Configure group by aggregator.
         /// </summary>
         /// <param name="keySelector">Key selection expressions.</param>
+        /// <param name="valueSelector">Value selection expression.</param>
         /// <typeparam name="TKey">Type of grouping key.</typeparam>
-        /// <typeparam name="TElement">Type of elements to aggregate.</typeparam>
-        public void GroupBy<TKey, TElement>(Expression<Func<TElement, TKey>> keySelector)
+        /// <typeparam name="TValue">Type of grouping value.</typeparam>
+        /// <typeparam name="TFact">Type of facts to aggregate.</typeparam>
+        public void GroupBy<TKey, TValue, TFact>(Expression<Func<TFact, TKey>> keySelector, Expression<Func<TFact, TValue>> valueSelector)
         {
-            var aggregateFactory = new GroupByAggregatorFactory<TKey, TElement>(keySelector);
+            var aggregateFactory = new GroupByAggregatorFactory<TKey, TValue, TFact>(keySelector, valueSelector);
             AggregatorFactory(aggregateFactory);
         }
 

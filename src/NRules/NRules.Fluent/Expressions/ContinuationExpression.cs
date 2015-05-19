@@ -80,7 +80,7 @@ namespace NRules.Fluent.Expressions
                 var aggregatePatternBuilder = b.Pattern(symbol.Type, symbol.Name);
 
                 var aggregateBuilder = aggregatePatternBuilder.Aggregate();
-                aggregateBuilder.GroupBy(keySelector);
+                aggregateBuilder.GroupBy(keySelector, x => x);
 
                 _sourceExpression.Complete(aggregateBuilder);
                 return aggregatePatternBuilder;
@@ -91,18 +91,23 @@ namespace NRules.Fluent.Expressions
 
         public IContinuationConditionExpression<IGrouping<TKey, TFact>> GroupBy<TKey>(Expression<Func<TFact, TKey>> keySelector)
         {
+            return GroupBy(keySelector, x => x);
+        }
+
+        public IContinuationConditionExpression<IGrouping<TKey, TValue>> GroupBy<TKey, TValue>(Expression<Func<TFact, TKey>> keySelector, Expression<Func<TFact, TValue>> valueSelector)
+        {
             _buildAction = b =>
             {
                 var aggregatePatternBuilder = b.Pattern(typeof(IGrouping<TKey, TFact>));
 
                 var aggregateBuilder = aggregatePatternBuilder.Aggregate();
-                aggregateBuilder.GroupBy(keySelector);
+                aggregateBuilder.GroupBy(keySelector, valueSelector);
 
                 _sourceExpression.Complete(aggregateBuilder);
                 return aggregatePatternBuilder;
             };
 
-            return new ContinuationExpression<IGrouping<TKey, TFact>>(BaseExpression, this);
+            return new ContinuationExpression<IGrouping<TKey, TValue>>(BaseExpression, this);
         }
 
         IContinuationExpression<TFact> IContinuationConditionExpression<TFact>.Where(params Expression<Func<TFact, bool>>[] conditions)

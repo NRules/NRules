@@ -34,5 +34,15 @@ namespace NRules.Fluent.Dsl
         /// <param name="keySelector">Key selector.</param>
         /// <returns>Expression builder for the continuation of the group pattern.</returns>
         IContinuationConditionExpression<IGrouping<TKey, TFact>> GroupBy<TKey>(Expression<Func<TFact, TKey>> keySelector);
+
+        /// <summary>
+        /// Aggregates matching facts into groups, based on the grouping key.
+        /// </summary>
+        /// <typeparam name="TKey">Type of grouping key.</typeparam>
+        /// <typeparam name="TValue">Type of value to group.</typeparam>
+        /// <param name="keySelector">Key selector.</param>
+        /// <param name="valueSelector">Value selector.</param>
+        /// <returns>Expression builder for the continuation of the group pattern.</returns>
+        IContinuationConditionExpression<IGrouping<TKey, TValue>> GroupBy<TKey, TValue>(Expression<Func<TFact, TKey>> keySelector, Expression<Func<TFact, TValue>> valueSelector);
     }
 }
