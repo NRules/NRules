@@ -53,12 +53,6 @@ namespace NRules.Fluent.Expressions
             return new ContinuationExpression<TFact>(this, matchContinuation);
         }
 
-        public IConditionExpression<IEnumerable<TFact>> Collect<TFact>(Expression<Func<IEnumerable<TFact>>> alias, params Expression<Func<TFact, bool>>[] conditions)
-        {
-            CompleteContinuation();
-            return Match(conditions).Collect(alias);
-        }
-
         public ILeftHandSideExpression Exists<TFact>(params Expression<Func<TFact, bool>>[] conditions)
         {
             CompleteContinuation();

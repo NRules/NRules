@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace NRules.Fluent.Dsl
@@ -27,16 +26,6 @@ namespace NRules.Fluent.Dsl
         /// <param name="conditions">Set of additional conditions the fact must satisfy to trigger the rule.</param>
         /// <returns>Pattern continuation expression builder.</returns>
         IContinuationExpression<TFact> Match<TFact>(params Expression<Func<TFact, bool>>[] conditions);
-
-        /// <summary>
-        /// Defines a pattern that aggregates matching facts into a collection.
-        /// </summary>
-        /// <typeparam name="TFact">Type of facts to aggregate.</typeparam>
-        /// <param name="alias">Alias for the collection of matching facts.</param>
-        /// <param name="conditions">Set of conditions the facts must satisfy to get into the collection.</param>
-        /// <returns>Expression builder for collection conditions.</returns>
-        [Obsolete("Use Match<T>(conditions).Collect() instead of Collect<T>(conditions)")]
-        IConditionExpression<IEnumerable<TFact>> Collect<TFact>(Expression<Func<IEnumerable<TFact>>> alias, params Expression<Func<TFact, bool>>[] conditions);
 
         /// <summary>
         /// Defines a pattern that triggers the rule only if there is at least one matching fact (existential quantifier).
