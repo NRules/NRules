@@ -55,6 +55,8 @@
     <Compile Include="Aggregators\DefaultAggregatorFactory.cs" />
     <Compile Include="Aggregators\GroupByAggregator.cs" />
     <Compile Include="Aggregators\GroupByAggregatorFactory.cs" />
+    <Compile Include="Aggregators\ProjectionAggregator.cs" />
+    <Compile Include="Aggregators\ProjectionAggregatorFactory.cs" />
     <Compile Include="AndElement.cs" />
     <Compile Include="Builders\ActionGroupBuilder.cs" />
     <Compile Include="Builders\AggregateBuilder.cs" />

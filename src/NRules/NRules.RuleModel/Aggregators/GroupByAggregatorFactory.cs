@@ -4,19 +4,19 @@ using System.Linq.Expressions;
 namespace NRules.RuleModel.Aggregators
 {
     /// <summary>
-    /// Aggregate factory for group by aggregator.
+    /// Aggregator factory for group by aggregator.
     /// </summary>
+    /// <typeparam name="TSource">Type of source elements to group.</typeparam>
     /// <typeparam name="TKey">Type of grouping key.</typeparam>
     /// <typeparam name="TValue">Type of values to group.</typeparam>
-    /// <typeparam name="TFact">Type of facts to group.</typeparam>
-    internal class GroupByAggregatorFactory<TKey, TValue, TFact> : IAggregatorFactory, IEquatable<GroupByAggregatorFactory<TKey, TValue, TFact>>
+    internal class GroupByAggregatorFactory<TSource, TKey, TValue> : IAggregatorFactory, IEquatable<GroupByAggregatorFactory<TSource, TKey, TValue>>
     {
-        private readonly Expression<Func<TFact, TKey>> _keySelectorExpression;
-        private readonly Expression<Func<TFact, TValue>> _valueSelectorExpression;
-        private readonly Func<TFact, TKey> _keySelector;
-        private readonly Func<TFact, TValue> _valueSelector;
+        private readonly Expression<Func<TSource, TKey>> _keySelectorExpression;
+        private readonly Expression<Func<TSource, TValue>> _valueSelectorExpression;
+        private readonly Func<TSource, TKey> _keySelector;
+        private readonly Func<TSource, TValue> _valueSelector;
 
-        public GroupByAggregatorFactory(Expression<Func<TFact, TKey>> keySelectorExpression, Expression<Func<TFact, TValue>> valueSelectorExpression)
+        public GroupByAggregatorFactory(Expression<Func<TSource, TKey>> keySelectorExpression, Expression<Func<TSource, TValue>> valueSelectorExpression)
         {
             _keySelectorExpression = keySelectorExpression;
             _valueSelectorExpression = valueSelectorExpression;
@@ -26,10 +26,10 @@ namespace NRules.RuleModel.Aggregators
 
         public IAggregator Create()
         {
-            return new GroupByAggregator<TKey, TValue, TFact>(_keySelector, _valueSelector);
+            return new GroupByAggregator<TSource, TKey, TValue>(_keySelector, _valueSelector);
         }
 
-        public bool Equals(GroupByAggregatorFactory<TKey, TValue, TFact> other)
+        public bool Equals(GroupByAggregatorFactory<TSource, TKey, TValue> other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -41,7 +41,7 @@ namespace NRules.RuleModel.Aggregators
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((GroupByAggregatorFactory<TKey, TValue, TFact>)obj);
+            return Equals((GroupByAggregatorFactory<TSource, TKey, TValue>)obj);
         }
 
         public override int GetHashCode()

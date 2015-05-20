@@ -6,20 +6,20 @@ using System.Linq;
 namespace NRules.RuleModel.Aggregators
 {
     /// <summary>
-    /// Aggregate that groups matching facts into collections of elements with the same key.
+    /// Aggregator that groups matching facts into collections of elements with the same key.
     /// </summary>
+    /// <typeparam name="TSource">Type of source elements to group.</typeparam>
     /// <typeparam name="TKey">Type of grouping key.</typeparam>
-    /// <typeparam name="TValue">Type of grouping value.</typeparam>
-    /// <typeparam name="TFact">Type of facts to group.</typeparam>
-    internal class GroupByAggregator<TKey, TValue, TFact> : IAggregator
+    /// <typeparam name="TValue">Type of values to group.</typeparam>
+    internal class GroupByAggregator<TSource, TKey, TValue> : IAggregator
     {
-        private readonly Func<TFact, TKey> _keySelector;
-        private readonly Func<TFact, TValue> _valueSelector;
+        private readonly Func<TSource, TKey> _keySelector;
+        private readonly Func<TSource, TValue> _valueSelector;
         private readonly Dictionary<TKey, Grouping> _groups = new Dictionary<TKey, Grouping>();
-        private readonly Dictionary<object, TKey> _factToKey = new Dictionary<object, TKey>(); 
-        private readonly Dictionary<object, TValue> _factToValue = new Dictionary<object, TValue>(); 
+        private readonly Dictionary<object, TKey> _sourceToKey = new Dictionary<object, TKey>(); 
+        private readonly Dictionary<object, TValue> _sourceToValue = new Dictionary<object, TValue>(); 
 
-        public GroupByAggregator(Func<TFact, TKey> keySelector, Func<TFact, TValue> valueSelector)
+        public GroupByAggregator(Func<TSource, TKey> keySelector, Func<TSource, TValue> valueSelector)
         {
             _keySelector = keySelector;
             _valueSelector = valueSelector;
@@ -32,22 +32,26 @@ namespace NRules.RuleModel.Aggregators
 
         public IEnumerable<AggregationResult> Add(object fact)
         {
-            var key = _keySelector((TFact) fact);
-            var value = _valueSelector((TFact) fact);
-            _factToKey[fact] = key;
-            _factToValue[fact] = value;
+            var source = (TSource) fact;
+            var key = _keySelector(source);
+            var value = _valueSelector(source);
+            _sourceToKey[fact] = key;
+            _sourceToValue[fact] = value;
             return Add(key, value);
         }
 
         public IEnumerable<AggregationResult> Modify(object fact)
         {
-            var key = _keySelector((TFact)fact);
-            var value = _valueSelector((TFact)fact);
-            var oldKey = _factToKey[fact];
-            var oldValue = _factToValue[fact];
-            _factToKey[fact] = key;
-            _factToValue[fact] = value;
-            if (Equals(key, oldKey)) return AggregationResult.Empty;
+            var source = (TSource)fact;
+            var key = _keySelector(source);
+            var value = _valueSelector(source);
+            var oldKey = _sourceToKey[fact];
+            var oldValue = _sourceToValue[fact];
+            _sourceToKey[fact] = key;
+            _sourceToValue[fact] = value;
+
+            if (Equals(key, oldKey) && ReferenceEquals(value, oldValue))
+                return AggregationResult.Empty;
 
             var result1 = Remove(oldKey, oldValue);
             var result2 = Add(key, value);
@@ -56,10 +60,10 @@ namespace NRules.RuleModel.Aggregators
 
         public IEnumerable<AggregationResult> Remove(object fact)
         {
-            var oldKey = _factToKey[fact];
-            var oldValue = _factToValue[fact];
-            _factToKey.Remove(fact);
-            _factToValue.Remove(fact);
+            var oldKey = _sourceToKey[fact];
+            var oldValue = _sourceToValue[fact];
+            _sourceToKey.Remove(fact);
+            _sourceToValue.Remove(fact);
             return Remove(oldKey, oldValue);
         }
 
@@ -92,7 +96,7 @@ namespace NRules.RuleModel.Aggregators
             return new[] { AggregationResult.Modified(group) };
         }
 
-        public IEnumerable<object> Aggregates { get { return new[] { _groups.Values }; } }
+        public IEnumerable<object> Aggregates { get { return _groups.Values; } }
 
         private class Grouping : IGrouping<TKey, TValue>
         {

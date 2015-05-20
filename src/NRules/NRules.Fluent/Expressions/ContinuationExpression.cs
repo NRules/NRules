@@ -53,6 +53,40 @@ namespace NRules.Fluent.Expressions
             return new ContinuationExpression<TFact>(BaseExpression, this);
         }
 
+        public ILeftHandSideExpression Select<TResult>(Expression<Func<TResult>> alias, Expression<Func<TFact, TResult>> selector)
+        {
+            var symbol = alias.ToParameterExpression();
+
+            _buildAction = b =>
+            {
+                var aggregatePatternBuilder = b.Pattern(symbol.Type, symbol.Name);
+
+                var aggregateBuilder = aggregatePatternBuilder.Aggregate();
+                aggregateBuilder.Project(selector);
+
+                _sourceExpression.Complete(aggregateBuilder);
+                return aggregatePatternBuilder;
+            };
+
+            return BaseExpression;
+        }
+
+        public IContinuationExpression<TResult> Select<TResult>(Expression<Func<TFact, TResult>> selector)
+        {
+            _buildAction = b =>
+            {
+                var aggregatePatternBuilder = b.Pattern(typeof(TResult));
+
+                var aggregateBuilder = aggregatePatternBuilder.Aggregate();
+                aggregateBuilder.Project(selector);
+
+                _sourceExpression.Complete(aggregateBuilder);
+                return aggregatePatternBuilder;
+            };
+
+            return new ContinuationExpression<TResult>(BaseExpression, this);
+        }
+
         public IConditionExpression<IEnumerable<TFact>> Collect(Expression<Func<IEnumerable<TFact>>> alias)
         {
             var symbol = alias.ToParameterExpression();

@@ -12,6 +12,21 @@ namespace NRules.Fluent.Dsl
     public interface IContinuationExpression<TFact> : ILeftHandSideExpression
     {
         /// <summary>
+        /// Projects matching facts using given expression.
+        /// </summary>
+        /// <param name="alias">Alias for the projected fact.</param>
+        /// <param name="selector">Projection expression.</param>
+        /// <returns>Expression builder to continue building a pattern.</returns>
+        ILeftHandSideExpression Select<TResult>(Expression<Func<TResult>> alias, Expression<Func<TFact, TResult>> selector);
+        
+        /// <summary>
+        /// Projects matching facts using given expression.
+        /// </summary>
+        /// <param name="selector">Projection expression.</param>
+        /// <returns>Expression builder to continue building a pattern.</returns>
+        IContinuationExpression<TResult> Select<TResult>(Expression<Func<TFact, TResult>> selector);
+        
+        /// <summary>
         /// Aggregates matching facts into a collection.
         /// </summary>
         /// <param name="alias">Alias for the collection of matching facts.</param>

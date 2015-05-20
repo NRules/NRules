@@ -74,12 +74,24 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="keySelector">Key selection expressions.</param>
         /// <param name="valueSelector">Value selection expression.</param>
+        /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
         /// <typeparam name="TKey">Type of grouping key.</typeparam>
         /// <typeparam name="TValue">Type of grouping value.</typeparam>
-        /// <typeparam name="TFact">Type of facts to aggregate.</typeparam>
-        public void GroupBy<TKey, TValue, TFact>(Expression<Func<TFact, TKey>> keySelector, Expression<Func<TFact, TValue>> valueSelector)
+        public void GroupBy<TSource, TKey, TValue>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TValue>> valueSelector)
         {
-            var aggregateFactory = new GroupByAggregatorFactory<TKey, TValue, TFact>(keySelector, valueSelector);
+            var aggregateFactory = new GroupByAggregatorFactory<TSource, TKey, TValue>(keySelector, valueSelector);
+            AggregatorFactory(aggregateFactory);
+        }
+
+        /// <summary>
+        /// Configure projection aggregator.
+        /// </summary>
+        /// <param name="selector">Projection expression.</param>
+        /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
+        /// <typeparam name="TElement">Type of projection elements to produce.</typeparam>
+        public void Project<TSource, TElement>(Expression<Func<TSource, TElement>> selector)
+        {
+            var aggregateFactory = new ProjectionAggregatorFactory<TSource, TElement>(selector);
             AggregatorFactory(aggregateFactory);
         }
 
