@@ -87,6 +87,40 @@ namespace NRules.Fluent.Expressions
             return new ContinuationExpression<TResult>(BaseExpression, this);
         }
 
+        public ILeftHandSideExpression SelectMany<TResult>(Expression<Func<TResult>> alias, Expression<Func<TFact, IEnumerable<TResult>>> selector)
+        {
+            var symbol = alias.ToParameterExpression();
+
+            _buildAction = b =>
+            {
+                var aggregatePatternBuilder = b.Pattern(symbol.Type, symbol.Name);
+
+                var aggregateBuilder = aggregatePatternBuilder.Aggregate();
+                aggregateBuilder.Flatten(selector);
+
+                _sourceExpression.Complete(aggregateBuilder);
+                return aggregatePatternBuilder;
+            };
+
+            return BaseExpression;
+        }
+
+        public IContinuationExpression<TResult> SelectMany<TResult>(Expression<Func<TFact, IEnumerable<TResult>>> selector)
+        {
+            _buildAction = b =>
+            {
+                var aggregatePatternBuilder = b.Pattern(typeof(TResult));
+
+                var aggregateBuilder = aggregatePatternBuilder.Aggregate();
+                aggregateBuilder.Flatten(selector);
+
+                _sourceExpression.Complete(aggregateBuilder);
+                return aggregatePatternBuilder;
+            };
+
+            return new ContinuationExpression<TResult>(BaseExpression, this);
+        }
+
         public IConditionExpression<IEnumerable<TFact>> Collect(Expression<Func<IEnumerable<TFact>>> alias)
         {
             var symbol = alias.ToParameterExpression();

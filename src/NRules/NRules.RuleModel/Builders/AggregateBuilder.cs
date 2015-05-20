@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NRules.RuleModel.Aggregators;
 
@@ -88,10 +89,22 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="selector">Projection expression.</param>
         /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
-        /// <typeparam name="TElement">Type of projection elements to produce.</typeparam>
-        public void Project<TSource, TElement>(Expression<Func<TSource, TElement>> selector)
+        /// <typeparam name="TResult">Type of result elements to aggregate.</typeparam>
+        public void Project<TSource, TResult>(Expression<Func<TSource, TResult>> selector)
         {
-            var aggregateFactory = new ProjectionAggregatorFactory<TSource, TElement>(selector);
+            var aggregateFactory = new ProjectionAggregatorFactory<TSource, TResult>(selector);
+            AggregatorFactory(aggregateFactory);
+        }
+
+        /// <summary>
+        /// Configure flattening aggregator.
+        /// </summary>
+        /// <param name="selector">Projection expression.</param>
+        /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
+        /// <typeparam name="TResult">Type of result elements to aggregate.</typeparam>
+        public void Flatten<TSource, TResult>(Expression<Func<TSource, IEnumerable<TResult>>> selector)
+        {
+            var aggregateFactory = new FlatteningAggregatorFactory<TSource, TResult>(selector);
             AggregatorFactory(aggregateFactory);
         }
 

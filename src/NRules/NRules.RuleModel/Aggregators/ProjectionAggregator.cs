@@ -7,13 +7,13 @@ namespace NRules.RuleModel.Aggregators
     /// Aggregator that projects matching facts into new elements.
     /// </summary>
     /// <typeparam name="TSource">Type of source element.</typeparam>
-    /// <typeparam name="TElement">Type of projected element.</typeparam>
-    internal class ProjectionAggregator<TSource, TElement> : IAggregator
+    /// <typeparam name="TResult">Type of result element.</typeparam>
+    internal class ProjectionAggregator<TSource, TResult> : IAggregator
     {
-        private readonly Func<TSource, TElement> _selector;
+        private readonly Func<TSource, TResult> _selector;
         private readonly Dictionary<TSource, object> _sourceToValue = new Dictionary<TSource, object>();
 
-        public ProjectionAggregator(Func<TSource, TElement> selector)
+        public ProjectionAggregator(Func<TSource, TResult> selector)
         {
             _selector = selector;
         }

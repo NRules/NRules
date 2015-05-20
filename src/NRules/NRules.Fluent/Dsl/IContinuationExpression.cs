@@ -27,6 +27,21 @@ namespace NRules.Fluent.Dsl
         IContinuationExpression<TResult> Select<TResult>(Expression<Func<TFact, TResult>> selector);
         
         /// <summary>
+        /// Flattens matching facts using given expression.
+        /// </summary>
+        /// <param name="alias">Alias for the flattened fact.</param>
+        /// <param name="selector">Projection expression.</param>
+        /// <returns>Expression builder to continue building a pattern.</returns>
+        ILeftHandSideExpression SelectMany<TResult>(Expression<Func<TResult>> alias, Expression<Func<TFact, IEnumerable<TResult>>> selector);
+        
+        /// <summary>
+        /// Flattens matching facts using given expression.
+        /// </summary>
+        /// <param name="selector">Projection expression.</param>
+        /// <returns>Expression builder to continue building a pattern.</returns>
+        IContinuationExpression<TResult> SelectMany<TResult>(Expression<Func<TFact, IEnumerable<TResult>>> selector);
+        
+        /// <summary>
         /// Aggregates matching facts into a collection.
         /// </summary>
         /// <param name="alias">Alias for the collection of matching facts.</param>

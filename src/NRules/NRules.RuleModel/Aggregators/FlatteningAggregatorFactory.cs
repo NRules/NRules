@@ -1,19 +1,20 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel.Aggregators
 {
     /// <summary>
-    /// Aggregator factory for projection aggregator.
+    /// Aggregator factory for flattening aggregator.
     /// </summary>
     /// <typeparam name="TSource">Type of source element.</typeparam>
     /// <typeparam name="TResult">Type of result element.</typeparam>
-    internal class ProjectionAggregatorFactory<TSource, TResult> : IAggregatorFactory, IEquatable<ProjectionAggregatorFactory<TSource, TResult>>
+    internal class FlatteningAggregatorFactory<TSource, TResult> : IAggregatorFactory, IEquatable<FlatteningAggregatorFactory<TSource, TResult>>
     {
-        private readonly Expression<Func<TSource, TResult>> _selectorExpression;
-        private readonly Func<TSource, TResult> _selector;
+        private readonly Expression<Func<TSource, IEnumerable<TResult>>> _selectorExpression;
+        private readonly Func<TSource, IEnumerable<TResult>> _selector;
 
-        public ProjectionAggregatorFactory(Expression<Func<TSource, TResult>> selectorExpression)
+        public FlatteningAggregatorFactory(Expression<Func<TSource, IEnumerable<TResult>>> selectorExpression)
         {
             _selectorExpression = selectorExpression;
             _selector = selectorExpression.Compile();
@@ -21,10 +22,10 @@ namespace NRules.RuleModel.Aggregators
 
         public IAggregator Create()
         {
-            return new ProjectionAggregator<TSource, TResult>(_selector);
+            return new FlatteningAggregator<TSource, TResult>(_selector);
         }
 
-        public bool Equals(ProjectionAggregatorFactory<TSource, TResult> other)
+        public bool Equals(FlatteningAggregatorFactory<TSource, TResult> other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -36,7 +37,7 @@ namespace NRules.RuleModel.Aggregators
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((ProjectionAggregatorFactory<TSource, TResult>)obj);
+            return Equals((FlatteningAggregatorFactory<TSource, TResult>)obj);
         }
 
         public override int GetHashCode()
