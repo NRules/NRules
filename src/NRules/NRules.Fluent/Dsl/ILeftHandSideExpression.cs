@@ -22,10 +22,9 @@ namespace NRules.Fluent.Dsl
         /// Defines a pattern for facts matching a set of conditions.
         /// Does not bind matching fact to a variable. Optionally, enables aggregation of matching facts.
         /// </summary>
-        /// <typeparam name="TFact">Type of fact to match.</typeparam>
         /// <param name="conditions">Set of additional conditions the fact must satisfy to trigger the rule.</param>
-        /// <returns>Pattern continuation expression builder.</returns>
-        IContinuationExpression<TFact> Match<TFact>(params Expression<Func<TFact, bool>>[] conditions);
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSideExpression Match<TFact>(params Expression<Func<TFact, bool>>[] conditions);
 
         /// <summary>
         /// Defines a pattern that triggers the rule only if there is at least one matching fact (existential quantifier).
@@ -60,6 +59,15 @@ namespace NRules.Fluent.Dsl
         /// <param name="condition">Condition that all facts of a given type must satisfy to trigger the rule.</param>
         /// <returns>Left hand side expression builder.</returns>
         ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> condition);
+
+        /// <summary>
+        /// Queries rules engine for matching facts.
+        /// </summary>
+        /// <typeparam name="TResult">Query result type.</typeparam>
+        /// <param name="alias">Alias for the query results.</param>
+        /// <param name="queryExpression">Query expression.</param>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSideExpression Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryExpression);
 
         /// <summary>
         /// Defines a group of patterns joined by an AND operator.

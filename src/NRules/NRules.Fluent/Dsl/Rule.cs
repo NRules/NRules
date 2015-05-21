@@ -63,7 +63,6 @@ namespace NRules.Fluent.Dsl
         /// <returns>Right hand side expression builder.</returns>
         protected IRightHandSideExpression Then()
         {
-            _lhsExpression.CompleteContinuation();
             return _rhsExpression;
         }
 
