@@ -16,10 +16,13 @@ namespace NRules.Samples.SimpleRules.Rules
 
             When()
                 .Match<Customer>(() => customer, c => c.IsPreferred)
-                .Collect<Order>(() => orders,
-                    o => o.Customer == customer,
-                    o => o.IsOpen,
-                    o => !o.IsDiscounted);
+                .Query(() => orders, x => x
+                    .From<Order>()
+                    .Where(
+                        o => o.Customer == customer,
+                        o => o.IsOpen,
+                        o => !o.IsDiscounted)
+                    .Collect());
 
             Then()
                 .Do(ctx => ApplyDiscount(orders, 10.0))
