@@ -12,7 +12,6 @@ namespace NRules.RuleModel.Aggregators
     internal class FlatteningAggregator<TSource, TResult> : IAggregator
     {
         private readonly Func<TSource, IEnumerable<TResult>> _selector;
-        private readonly Dictionary<TSource, object> _sourceToValue = new Dictionary<TSource, object>();
         private readonly Dictionary<TSource, IList<TResult>> _sourceToList = new Dictionary<TSource, IList<TResult>>();
 
         public FlatteningAggregator(Func<TSource, IEnumerable<TResult>> selector)
@@ -30,7 +29,6 @@ namespace NRules.RuleModel.Aggregators
             var source = (TSource) fact;
             var value = _selector(source);
             var list = value.ToList();
-            _sourceToValue[source] = value;
             _sourceToList[source] = list;
             
             return list.Select(x => AggregationResult.Added(x)).ToArray();
@@ -42,6 +40,7 @@ namespace NRules.RuleModel.Aggregators
             var value = _selector(source);
             var list = value.ToList();
             var oldList = _sourceToList[source];
+            _sourceToList[source] = list;
 
             return oldList.Select(x => AggregationResult.Removed(x)).Union(
                 list.Select(x => AggregationResult.Added(x))).ToArray();
@@ -51,7 +50,6 @@ namespace NRules.RuleModel.Aggregators
         {
             var source = (TSource)fact;
             var oldList = _sourceToList[source];
-            _sourceToValue.Remove(source);
             _sourceToList.Remove(source);
             return oldList.Select(x => AggregationResult.Removed(x)).ToArray();
         }
