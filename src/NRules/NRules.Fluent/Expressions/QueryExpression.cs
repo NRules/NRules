@@ -22,11 +22,12 @@ namespace NRules.Fluent.Expressions
 
         public IQueryBuilder Builder { get; private set; }
 
-        public void FactQuery<TSource>()
+        public void FactQuery<TSource>(Expression<Func<TSource, bool>>[] conditions)
         {
             _buildAction = (b, n) =>
             {
                 var patternBuilder = b.Pattern(typeof(TSource), n);
+                patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
                 return patternBuilder;
             };
         }

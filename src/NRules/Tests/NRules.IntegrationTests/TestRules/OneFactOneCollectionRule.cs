@@ -12,8 +12,7 @@ namespace NRules.IntegrationTests.TestRules
 
             When()
                 .Query(() => collection1, x => x
-                    .From<FactType1>()
-                    .Where(f => f.TestProperty.StartsWith("Valid"))
+                    .Match<FactType1>(f => f.TestProperty.StartsWith("Valid"))
                     .Collect());
             Then()
                 .Do(ctx => Action());

@@ -9,15 +9,16 @@ namespace NRules.Fluent.Dsl
     public static class QueryExtensions
     {
         /// <summary>
-        /// Creates a query from facts of a given type from the engine's working memory.
+        /// Creates a query from matching facts in the engine's working memory.
         /// </summary>
-        /// <typeparam name="TSource">Type of facts to query.</typeparam>
+        /// <typeparam name="TFact">Type of facts to query.</typeparam>
         /// <param name="query">Query expression builder.</param>
+        /// <param name="conditions">Set of conditions the fact must satisfy.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<TSource> From<TSource>(this IQuery query)
+        public static IQuery<TFact> Match<TFact>(this IQuery query, params Expression<Func<TFact, bool>>[] conditions)
         {
-            query.Builder.FactQuery<TSource>();
-            return new QueryExpression<TSource>(query.Builder);
+            query.Builder.FactQuery(conditions);
+            return new QueryExpression<TFact>(query.Builder);
         }
 
         /// <summary>
