@@ -23,7 +23,7 @@ namespace NRules.RuleModel.Aggregators
 
         public IEnumerable<AggregationResult> Modify(object fact)
         {
-            return AggregationResult.Empty;
+            return new[] {AggregationResult.Modified(_items)};
         }
 
         public IEnumerable<AggregationResult> Remove(object fact)

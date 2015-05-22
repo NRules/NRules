@@ -50,8 +50,8 @@ namespace NRules.RuleModel.Aggregators
             _sourceToKey[fact] = key;
             _sourceToValue[fact] = value;
 
-            if (Equals(key, oldKey) && ReferenceEquals(value, oldValue))
-                return AggregationResult.Empty;
+            if (Equals(key, oldKey) && Equals(value, oldValue))
+                return new[] {AggregationResult.Modified(_groups[key])};
 
             var result1 = Remove(oldKey, oldValue);
             var result2 = Add(key, value);

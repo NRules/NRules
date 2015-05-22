@@ -37,7 +37,7 @@ namespace NRules.RuleModel.Aggregators
             var value = _selector(source);
             var oldValue = _sourceToValue[source];
 
-            if (ReferenceEquals(oldValue, value))
+            if (Equals(oldValue, value))
                 return new[] { AggregationResult.Modified(value) };
 
             return new[] {AggregationResult.Removed(oldValue), AggregationResult.Added(value)};
