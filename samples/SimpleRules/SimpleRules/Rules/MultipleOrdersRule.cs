@@ -16,8 +16,9 @@ namespace NRules.Samples.SimpleRules.Rules
             When()
                 .Match<Customer>(() => customer, c => c.IsPreferred)
                 .Query(() => orders, x => x
-                    .From<Order>()
-                    .Where(o => o.Customer == customer, o => o.IsOpen)
+                    .Match<Order>(
+                        o => o.Customer == customer,
+                        o => o.IsOpen)
                     .Collect()
                     .Where(c => c.Count() >= 3));
 
