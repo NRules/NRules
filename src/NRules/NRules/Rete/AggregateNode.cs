@@ -5,13 +5,22 @@ namespace NRules.Rete
 {
     internal class AggregateNode : BetaNode
     {
+        private readonly string _name;
+        private readonly ExpressionMap _expressionMap;
         private readonly IAggregatorFactory _aggregatorFactory;
 
-        public IAggregatorFactory AggregatorFactory { get { return _aggregatorFactory; } }
+        public string Name { get { return _name; } }
 
-        public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, IAggregatorFactory aggregatorFactory)
+        public ExpressionMap ExpressionMap
+        {
+            get { return _expressionMap; }
+        }
+
+        public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, string name, ExpressionMap expressionMap, IAggregatorFactory aggregatorFactory)
             : base(leftSource, rightSource)
         {
+            _name = name;
+            _expressionMap = expressionMap;
             _aggregatorFactory = aggregatorFactory;
         }
 

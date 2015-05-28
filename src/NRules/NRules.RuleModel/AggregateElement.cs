@@ -8,6 +8,9 @@ namespace NRules.RuleModel
     /// </summary>
     public class AggregateElement : PatternSourceElement
     {
+        private readonly string _name;
+        private readonly ExpressionMap _expressionMap;
+
         private readonly IAggregatorFactory _factory;
         private readonly PatternElement _source;
 
@@ -27,9 +30,27 @@ namespace NRules.RuleModel
             get { return _source; }
         }
 
-        internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, IAggregatorFactory factory, PatternElement source) 
-            : base(declarations, resultType)
+        /// <summary>
+        /// Aggregate name.
+        /// </summary>
+        public string Name
         {
+            get { return _name; }
+        }
+
+        /// <summary>
+        /// Expressions used by the aggregate.
+        /// </summary>
+        public ExpressionMap ExpressionMap
+        {
+            get { return _expressionMap; }
+        }
+
+        internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, string name, ExpressionMap expressionMap, IAggregatorFactory factory, PatternElement source) 
+            : base(declarations, resultType) 
+        {
+            _name = name;
+            _expressionMap = expressionMap;
             _factory = factory;
             _source = source;
         }

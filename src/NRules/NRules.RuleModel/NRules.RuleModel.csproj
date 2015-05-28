@@ -76,11 +76,13 @@
     <Compile Include="DependencyElement.cs" />
     <Compile Include="DependencyGroupElement.cs" />
     <Compile Include="ExistsElement.cs" />
+    <Compile Include="ExpressionMap.cs" />
     <Compile Include="ForAllElement.cs" />
     <Compile Include="IAggregatorFactory.cs" />
     <Compile Include="IContext.cs" />
     <Compile Include="IRuleRepository.cs" />
     <Compile Include="IRuleSet.cs" />
+    <Compile Include="NamedExpression.cs" />
     <Compile Include="NotElement.cs" />
     <Compile Include="OrElement.cs" />
     <Compile Include="RuleLeftElement.cs" />
