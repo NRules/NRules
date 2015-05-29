@@ -56,13 +56,16 @@
     <Compile Include="OneFactNonRepeatableRuleTest.cs" />
     <Compile Include="OneFactOneGroupByRuleTest.cs" />
     <Compile Include="OneFactRepeatableRuleTest.cs" />
+    <Compile Include="OneEquatableFactRuleTest.cs" />
     <Compile Include="OneFactRuleWithDependencyTest.cs" />
+    <Compile Include="TestAssets\EquatableFact.cs" />
     <Compile Include="TestAssets\FactType5.cs" />
     <Compile Include="TestAssets\ITestService.cs" />
     <Compile Include="TestRules\CannotActivateRule.cs" />
     <Compile Include="TestRules\IdentityMatchRule.cs" />
     <Compile Include="TestRules\CollectionWithConditionsRule.cs" />
     <Compile Include="TestRules\OneFactNonRepeatableRule.cs" />
+    <Compile Include="TestRules\OneEquatableFactRule.cs" />
     <Compile Include="TestRules\TwoFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactRepeatableRule.cs" />

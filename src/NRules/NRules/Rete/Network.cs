@@ -51,6 +51,7 @@ namespace NRules.Rete
             {
                 throw new ArgumentException("Fact for update does not exist", "factObject");
             }
+            UpdateFact(context, fact, factObject);
             context.EventAggregator.RaiseFactUpdating(context.Session, fact);
             _root.PropagateUpdate(context, fact);
             context.EventAggregator.RaiseFactUpdated(context.Session, fact);
@@ -81,6 +82,14 @@ namespace NRules.Rete
         public void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.Visit(context, _root);
+        }
+
+        private static void UpdateFact(IExecutionContext context, Fact fact, object factObject)
+        {
+            if (ReferenceEquals(fact.RawObject, factObject)) return;
+
+            fact.RawObject = factObject;
+            context.WorkingMemory.SetFact(fact);
         }
     }
 }
