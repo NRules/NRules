@@ -18,10 +18,14 @@ namespace NRules.Fluent.Dsl
     {
         private readonly Lazy<IRuleDefinition> _definition;
         private readonly RuleBuilder _builder;
+        private readonly LeftHandSideExpression _lhsExpression;
+        private readonly RightHandSideExpression _rhsExpression;
 
         protected Rule()
         {
             _builder = new RuleBuilder();
+            _lhsExpression = new LeftHandSideExpression(_builder);
+            _rhsExpression = new RightHandSideExpression(_builder);
             _definition = new Lazy<IRuleDefinition>(BuildDefinition);
         }
 
@@ -50,7 +54,7 @@ namespace NRules.Fluent.Dsl
         /// <returns>Left hand side expression builder.</returns>
         protected ILeftHandSideExpression When()
         {
-            return new LeftHandSideExpression(_builder);
+            return _lhsExpression;
         }
 
         /// <summary>
@@ -59,7 +63,7 @@ namespace NRules.Fluent.Dsl
         /// <returns>Right hand side expression builder.</returns>
         protected IRightHandSideExpression Then()
         {
-            return new RightHandSideExpression(_builder);
+            return _rhsExpression;
         }
 
         /// <summary>

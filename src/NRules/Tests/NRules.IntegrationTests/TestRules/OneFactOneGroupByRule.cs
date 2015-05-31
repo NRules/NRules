@@ -1,4 +1,5 @@
 using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 
 namespace NRules.IntegrationTests.TestRules
@@ -10,8 +11,10 @@ namespace NRules.IntegrationTests.TestRules
             IGrouping<string, FactType1> group1 = null;
 
             When()
-                .GroupBy(() => group1, f => f.TestProperty, f => f.TestProperty.StartsWith("Valid"))
-                    .Where(x => x.Count() > 1);
+                .Query(() => group1, x => x
+                    .Match<FactType1>(f => f.TestProperty.StartsWith("Valid"))
+                    .GroupBy(f => f.TestProperty)
+                    .Where(g => g.Count() > 1));
             Then()
                 .Do(ctx => Action());
         }

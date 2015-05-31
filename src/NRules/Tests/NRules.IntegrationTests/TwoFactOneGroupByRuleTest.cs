@@ -34,6 +34,31 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_OneMatchingFactOfOneKindAndTwoOfAnotherInsertedInOppositeOrder_FiresTwiceWithOneFactInEachGroup()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value Group 1", JoinProperty = fact1.TestProperty};
+            var fact3 = new FactType2 {TestProperty = "Valid Value Group 2", JoinProperty = null};
+            var fact4 = new FactType2 {TestProperty = "Invalid Value", JoinProperty = fact1.TestProperty};
+            var fact5 = new FactType2 {TestProperty = "Valid Value Group 3", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact2);
+            Session.Insert(fact3);
+            Session.Insert(fact4);
+            Session.Insert(fact5);
+            Session.Insert(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredTwice();
+            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType2>>(0).Count());
+            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType2>>(1).Count());
+        }
+
+        [Test]
         public void Fire_OneMatchingFactOfOneKindAndTwoOfAnotherThenFireThenAnotherMatchingFactForSecondGroupThenFire_FiresTwiceWithOneFactInEachGroupThenFiresAgainWithTwoFactsInOneGroup()
         {
             //Arrange
@@ -172,6 +197,32 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertDidNotFire();
+        }
+
+        [Test]
+        public void Fire_FactOfOneKindIsInvalidThenUpdatedToValidAndTwoOfAnotherKindAreValid_FiresTwiceWithOneFactInEachGroup()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Invalid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value Group 1", JoinProperty = "Valid Value 1"};
+            var fact3 = new FactType2 {TestProperty = "Invalid Value", JoinProperty = "Valid Value 1"};
+            var fact4 = new FactType2 {TestProperty = "Valid Value Group 2", JoinProperty = "Valid Value 1"};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+            Session.Insert(fact3);
+            Session.Insert(fact4);
+
+            fact1.TestProperty = "Valid Value 1";
+            Session.Update(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredTwice();
+            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType2>>(0).Count());
+            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType2>>(1).Count());
         }
 
         [Test]

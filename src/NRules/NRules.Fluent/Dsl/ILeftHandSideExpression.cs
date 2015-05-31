@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace NRules.Fluent.Dsl
@@ -22,33 +20,11 @@ namespace NRules.Fluent.Dsl
 
         /// <summary>
         /// Defines a pattern for facts matching a set of conditions.
-        /// Does not bind matching fact to a variable.
+        /// Does not bind matching fact to a variable. Optionally, enables aggregation of matching facts.
         /// </summary>
-        /// <typeparam name="TFact">Type of fact to match.</typeparam>
         /// <param name="conditions">Set of additional conditions the fact must satisfy to trigger the rule.</param>
         /// <returns>Left hand side expression builder.</returns>
         ILeftHandSideExpression Match<TFact>(params Expression<Func<TFact, bool>>[] conditions);
-
-        /// <summary>
-        /// Defines a pattern that aggregates matching facts into a collection.
-        /// </summary>
-        /// <typeparam name="TFact">Type of facts to aggregate.</typeparam>
-        /// <param name="alias">Alias for the collection of matching facts.</param>
-        /// <param name="conditions">Set of conditions the facts must satisfy to get into the collection.</param>
-        /// <returns>Expression builder for collection conditions.</returns>
-        ICollectPatternExpression<TFact> Collect<TFact>(Expression<Func<IEnumerable<TFact>>> alias, params Expression<Func<TFact, bool>>[] conditions);
-
-        /// <summary>
-        /// Defines a pattern that aggregates matching facts into groups.
-        /// The rule is fired for each group separately.
-        /// </summary>
-        /// <typeparam name="TKey">Type of grouping key.</typeparam>
-        /// <typeparam name="TFact">Type of facts to aggregate.</typeparam>
-        /// <param name="alias">Alias for the group of matching facts.</param>
-        /// <param name="keySelector">Key selector.</param>
-        /// <param name="conditions">Set of conditions the facts must satisfy to get into the grouping.</param>
-        /// <returns>Expression builder for the group conditions.</returns>
-        IGroupByPatternExpression<TKey, TFact> GroupBy<TKey, TFact>(Expression<Func<IGrouping<TKey, TFact>>> alias, Expression<Func<TFact, TKey>> keySelector, params Expression<Func<TFact, bool>>[] conditions);
 
         /// <summary>
         /// Defines a pattern that triggers the rule only if there is at least one matching fact (existential quantifier).
@@ -83,6 +59,15 @@ namespace NRules.Fluent.Dsl
         /// <param name="condition">Condition that all facts of a given type must satisfy to trigger the rule.</param>
         /// <returns>Left hand side expression builder.</returns>
         ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> condition);
+
+        /// <summary>
+        /// Queries rules engine for matching facts.
+        /// </summary>
+        /// <typeparam name="TResult">Query result type.</typeparam>
+        /// <param name="alias">Alias for the query results.</param>
+        /// <param name="queryExpression">Query expression.</param>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSideExpression Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryExpression);
 
         /// <summary>
         /// Defines a group of patterns joined by an AND operator.

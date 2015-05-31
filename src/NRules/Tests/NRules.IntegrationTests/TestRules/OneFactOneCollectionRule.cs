@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 
 namespace NRules.IntegrationTests.TestRules
@@ -10,7 +11,9 @@ namespace NRules.IntegrationTests.TestRules
             IEnumerable<FactType1> collection1 = null;
 
             When()
-                .Collect<FactType1>(() => collection1, f => f.TestProperty.StartsWith("Valid"));
+                .Query(() => collection1, x => x
+                    .Match<FactType1>(f => f.TestProperty.StartsWith("Valid"))
+                    .Collect());
             Then()
                 .Do(ctx => Action());
         }

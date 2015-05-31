@@ -22,7 +22,7 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a group element.
     /// </summary>
-    public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
+    public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>, IPatternContainerBuilder
     {
         private readonly GroupType _groupType;
         private readonly List<IBuilder<RuleLeftElement>> _nestedBuilders = new List<IBuilder<RuleLeftElement>>();

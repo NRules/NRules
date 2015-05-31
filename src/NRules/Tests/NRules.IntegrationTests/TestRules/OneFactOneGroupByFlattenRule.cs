@@ -1,21 +1,21 @@
-﻿using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 
 namespace NRules.IntegrationTests.TestRules
 {
-    public class CollectionWithConditionsRule : BaseRule
+    public class OneFactOneGroupByFlattenRule : BaseRule
     {
         public override void Define()
         {
-            IEnumerable<FactType1> collection1 = null;
+            FactType1 fact1 = null;
 
             When()
-                .Query(() => collection1, x => x
+                .Query(() => fact1, q => q
                     .Match<FactType1>(f => f.TestProperty.StartsWith("Valid"))
-                    .Collect()
-                    .Where(c => c.Count() > 2));
+                    .GroupBy(f => f.TestProperty)
+                    .Where(g => g.Count() > 1)
+                    .SelectMany(x => x));
             Then()
                 .Do(ctx => Action());
         }
