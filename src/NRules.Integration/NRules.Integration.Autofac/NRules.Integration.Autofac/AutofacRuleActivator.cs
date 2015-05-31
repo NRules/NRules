@@ -20,10 +20,18 @@ namespace NRules.Integration.Autofac
 
         public IEnumerable<Rule> Activate(Type type)
         {
-            if (_container.IsRegistered(type)) 
-                yield return (Rule) _container.Resolve(type);
+            if (_container.IsRegistered(type))
+            {
+                var collectionType = typeof (IEnumerable<>).MakeGenericType(type);
+                return (IEnumerable<Rule>)_container.Resolve(collectionType);
+            }
 
-            yield return (Rule)Activator.CreateInstance(type);
+            return ActivateDefault(type);
+        }
+
+        private static IEnumerable<Rule> ActivateDefault(Type type)
+        {
+            yield return (Rule) Activator.CreateInstance(type);
         }
     }
 }
