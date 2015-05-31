@@ -56,7 +56,6 @@
     <Compile Include="Rete\TupleTest.cs" />
     <Compile Include="Rete\TypeNodeTest.cs" />
     <Compile Include="SessionTest.cs" />
-    <Compile Include="TestAssets\TestRules.cs" />
     <Compile Include="Utilities\ExpressionComparerTest.cs" />
   </ItemGroup>
   <ItemGroup>
