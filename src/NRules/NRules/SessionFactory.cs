@@ -20,6 +20,7 @@ namespace NRules
     /// <event cref="IEventProvider.FactRetractingEvent">Before processing fact retraction.</event>
     /// <event cref="IEventProvider.FactRetractedEvent">After processing fact retraction.</event>
     /// <event cref="IEventProvider.ActivationCreatedEvent">When a set of facts matches a rule.</event>
+    /// <event cref="IEventProvider.ActivationUpdatedEvent">When a set of facts is updated and re-matches a rule.</event>
     /// <event cref="IEventProvider.ActivationDeletedEvent">When a set of facts no longer matches a rule.</event>
     /// <event cref="IEventProvider.RuleFiringEvent">Before rule's actions are executed.</event>
     /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>

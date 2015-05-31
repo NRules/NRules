@@ -219,7 +219,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void Insert_RuleActivated_RaisesActivationCreatingEvent()
+        public void Insert_RuleActivated_RaisesActivationCreatedEvent()
         {
             //Arrange
             var factory = CreateTarget();
@@ -244,6 +244,43 @@ namespace NRules.IntegrationTests
 
             //Act
             session.Insert(fact);
+
+            //Assert
+            Assert.AreSame(session, factorySender);
+            Assert.AreSame(session, sessionSender);
+            Assert.AreSame(fact, factoryArgs.Facts.Single().Value);
+            Assert.AreSame(fact, sessionArgs.Facts.Single().Value);
+            Assert.That(factoryArgs.Rule.Name.Contains("OneFactRule"));
+            Assert.That(sessionArgs.Rule.Name.Contains("OneFactRule"));
+        }
+
+        [Test]
+        public void Update_RuleReactivated_RaisesActivationUpatedEvent()
+        {
+            //Arrange
+            var factory = CreateTarget();
+            var session = factory.CreateSession();
+
+            var fact = new FactType1 { TestProperty = "Valid Value" };
+            session.Insert(fact);
+
+            object factorySender = null;
+            AgendaEventArgs factoryArgs = null;
+            object sessionSender = null;
+            AgendaEventArgs sessionArgs = null;
+            factory.Events.ActivationUpdatedEvent += (sender, args) =>
+            {
+                factorySender = sender;
+                factoryArgs = args;
+            };
+            session.Events.ActivationUpdatedEvent += (sender, args) =>
+            {
+                sessionSender = sender;
+                sessionArgs = args;
+            };
+
+            //Act
+            session.Update(fact);
 
             //Assert
             Assert.AreSame(session, factorySender);

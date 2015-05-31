@@ -7,6 +7,7 @@ namespace NRules
         bool HasActiveRules();
         Activation NextActivation();
         void Activate(Activation activation);
+        void Reactivate(Activation activation);
         void Deactivate(Activation activation);
     }
 
@@ -26,6 +27,11 @@ namespace NRules
         }
 
         public void Activate(Activation activation)
+        {
+            _activationQueue.Enqueue(activation.Rule.Priority, activation);
+        }
+
+        public void Reactivate(Activation activation)
         {
             _activationQueue.Enqueue(activation.Rule.Priority, activation);
         }

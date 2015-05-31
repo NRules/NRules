@@ -33,7 +33,7 @@
 
         public void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            RuleNode.Activate(context, tuple, _factIndexMap);
+            RuleNode.Reactivate(context, tuple, _factIndexMap);
         }
 
         public void PropagateRetract(IExecutionContext context, Tuple tuple)
