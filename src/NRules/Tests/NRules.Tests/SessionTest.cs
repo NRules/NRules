@@ -38,6 +38,34 @@ namespace NRules.Tests
             _network.Verify(x => x.PropagateAssert(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), fact), Times.Exactly(1));
         }
 
+        [Test]
+        public void Update_Always_PropagatesUpdate()
+        {
+            // Arrange
+            var fact = new object();
+            var target = CreateTarget();
+
+            // Act
+            target.Update(fact);
+
+            // Assert
+            _network.Verify(x => x.PropagateUpdate(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), fact), Times.Exactly(1));
+        }
+
+        [Test]
+        public void Retract_Always_PropagatesRetract()
+        {
+            // Arrange
+            var fact = new object();
+            var target = CreateTarget();
+
+            // Act
+            target.Retract(fact);
+
+            // Assert
+            _network.Verify(x => x.PropagateRetract(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), fact), Times.Exactly(1));
+        }
+
         private Session CreateTarget()
         {
             return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, _dependencyResolver.Object);

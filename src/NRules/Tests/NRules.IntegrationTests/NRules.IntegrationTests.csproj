@@ -54,11 +54,14 @@
     <Compile Include="CollectionWithConditionsRuleTest.cs" />
     <Compile Include="LifecycleEventTest.cs" />
     <Compile Include="OneFactNonRepeatableRuleTest.cs" />
+    <Compile Include="OneFactOneGroupByFlattenRuleTest.cs" />
     <Compile Include="OneFactOneGroupByRuleTest.cs" />
     <Compile Include="OneFactRepeatableRuleTest.cs" />
     <Compile Include="OneEquatableFactRuleTest.cs" />
+    <Compile Include="OneFactOneSelectRuleTest.cs" />
     <Compile Include="OneFactRuleWithDependencyTest.cs" />
     <Compile Include="TestAssets\EquatableFact.cs" />
+    <Compile Include="TestAssets\FactType1Projection.cs" />
     <Compile Include="TestAssets\FactType5.cs" />
     <Compile Include="TestAssets\ITestService.cs" />
     <Compile Include="TestRules\CannotActivateRule.cs" />
@@ -67,6 +70,8 @@
     <Compile Include="TestRules\OneFactNonRepeatableRule.cs" />
     <Compile Include="TestRules\OneEquatableFactRule.cs" />
     <Compile Include="TestRules\OneFactAggregateJoinRule.cs" />
+    <Compile Include="TestRules\OneFactOneGroupByFlattenRule.cs" />
+    <Compile Include="TestRules\OneFactOneSelectRule.cs" />
     <Compile Include="TestRules\TwoFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactRepeatableRule.cs" />
