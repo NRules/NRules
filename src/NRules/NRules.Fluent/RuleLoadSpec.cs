@@ -133,7 +133,7 @@ namespace NRules.Fluent
         public IEnumerable<IRuleDefinition> Load()
         {
             var ruleDefinitions = GetRuleTypes()
-                .Select(Activate)
+                .SelectMany(Activate)
                 .Select(BuildDefinition);
             return ruleDefinitions;
         }
@@ -150,15 +150,16 @@ namespace NRules.Fluent
             return ruleTypes;
         }
 
-        private Rule Activate(Type type)
+        private IEnumerable<Rule> Activate(Type type)
         {
             try
             {
-                return _activator.Activate(type);
+                var ruleInstances = _activator.Activate(type);
+                return ruleInstances.ToList();
             }
             catch (Exception e)
             {
-                throw new RuleActivationException("Failed to activate rule class", type, e);
+                throw new RuleActivationException("Failed to activate rule type", type, e);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NRules.Fluent.Dsl;
 
 namespace NRules.Fluent
@@ -10,18 +11,22 @@ namespace NRules.Fluent
     public interface IRuleActivator
     {
         /// <summary>
-        /// Creates an instance of a rule from a .NET type.
+        /// Creates rule's instances from a .NET type.
         /// </summary>
         /// <param name="type">Rule type.</param>
-        /// <returns>Rule instance.</returns>
-        Rule Activate(Type type);
+        /// <returns>Rule instances.</returns>
+        /// <remarks>
+        /// The same rule type may be instantiated multiple times with different parameters. 
+        /// Each instance is considered as separate rule, and should have a unique name.
+        /// </remarks>
+        IEnumerable<Rule> Activate(Type type);
     }
 
     internal class RuleActivator : IRuleActivator
     {
-        public Rule Activate(Type type)
+        public IEnumerable<Rule> Activate(Type type)
         {
-            return (Rule) Activator.CreateInstance(type);
+            yield return (Rule) Activator.CreateInstance(type);
         }
     }
 }

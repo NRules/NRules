@@ -39,6 +39,16 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
+        /// Sets rule's name.
+        /// Name value set at this level overrides the values specified via <see cref="NameAttribute"/> attribute.
+        /// </summary>
+        /// <param name="value">Rule name value.</param>
+        protected void Name(string value)
+        {
+            _builder.Name(value);
+        }
+
+        /// <summary>
         /// Sets rule's priority.
         /// Priority value set at this level overrides the value specified via <see cref="PriorityAttribute"/> attribute.
         /// </summary>

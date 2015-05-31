@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Autofac;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
@@ -17,12 +18,12 @@ namespace NRules.Integration.Autofac
             _container = container;
         }
 
-        public Rule Activate(Type type)
+        public IEnumerable<Rule> Activate(Type type)
         {
             if (_container.IsRegistered(type)) 
-                return (Rule) _container.Resolve(type);
+                yield return (Rule) _container.Resolve(type);
 
-            return (Rule)Activator.CreateInstance(type);
+            yield return (Rule)Activator.CreateInstance(type);
         }
     }
 }
