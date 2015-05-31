@@ -170,6 +170,28 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
+        public void AreEqual_EquivalentNew_True()
+        {
+            //Arrange
+            Expression<Func<SomeFact, bool>> first = f => new Tuple<int>(1).Item1 == f.Value;
+            Expression<Func<SomeFact, bool>> second = f => new Tuple<int>(1).Item1 == f.Value;
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Test]
+        public void AreEqual_NonEquivalentNew_False()
+        {
+            //Arrange
+            Expression<Func<SomeFact, bool>> first = f => new Tuple<int>(1).Item1 == f.Value;
+            Expression<Func<SomeFact, bool>> second = f => new Tuple<int>(2).Item1 == f.Value;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Test]
         public void AreEqual_EquivalentInvocationExpression_True()
         {
             //Arrange
