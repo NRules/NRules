@@ -19,7 +19,8 @@ namespace NRules.Samples.SimpleRules.Rules
                 .Collect<Order>(() => orders,
                     o => o.Customer == customer,
                     o => o.IsOpen,
-                    o => !o.IsDiscounted);
+                    o => !o.IsDiscounted)
+                .Where(x => x.Any());
 
             Then()
                 .Do(ctx => ApplyDiscount(orders, 10.0))
