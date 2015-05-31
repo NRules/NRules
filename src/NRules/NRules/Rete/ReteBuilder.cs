@@ -172,6 +172,7 @@ namespace NRules.Rete
             if (node == null)
             {
                 node = new JoinNode(context.BetaSource, context.AlphaSource);
+                if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
                 foreach (var betaCondition in betaConditions)
                 {
                     node.Conditions.Add(betaCondition);
