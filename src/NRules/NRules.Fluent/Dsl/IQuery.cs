@@ -1,4 +1,6 @@
-﻿namespace NRules.Fluent.Dsl
+﻿using System.ComponentModel;
+
+namespace NRules.Fluent.Dsl
 {
     /// <summary>
     /// Root of the query method chain.
@@ -9,6 +11,7 @@
         /// Internal query builder.
         /// This method is intended for framework use only.
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         IQueryBuilder Builder { get; }
     }
 
@@ -22,6 +25,7 @@
         /// Internal query builder.
         /// This method is intended for framework use only.
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         IQueryBuilder Builder { get; }
     }
 }
