@@ -25,11 +25,12 @@ namespace NRules.Tests
         }
 
         [Test]
-        public void Insert_Always_PropagatesAssert()
+        public void Insert_Called_PropagatesAssert()
         {
             // Arrange
             var fact = new object();
             var target = CreateTarget();
+            _network.Setup(x => x.PropagateAssert(It.IsAny<IExecutionContext>(), fact)).Returns(true);
 
             // Act
             target.Insert(fact);
@@ -39,11 +40,12 @@ namespace NRules.Tests
         }
 
         [Test]
-        public void Update_Always_PropagatesUpdate()
+        public void Update_Called_PropagatesUpdate()
         {
             // Arrange
             var fact = new object();
             var target = CreateTarget();
+            _network.Setup(x => x.PropagateUpdate(It.IsAny<IExecutionContext>(), fact)).Returns(true);
 
             // Act
             target.Update(fact);
@@ -53,11 +55,12 @@ namespace NRules.Tests
         }
 
         [Test]
-        public void Retract_Always_PropagatesRetract()
+        public void Retract_Called_PropagatesRetract()
         {
             // Arrange
             var fact = new object();
             var target = CreateTarget();
+            _network.Setup(x => x.PropagateRetract(It.IsAny<IExecutionContext>(), fact)).Returns(true);
 
             // Act
             target.Retract(fact);

@@ -23,14 +23,29 @@ namespace NRules
             _session.Insert(fact);
         }
 
+        public bool TryInsert(object fact)
+        {
+            return _session.TryInsert(fact);
+        }
+
         public void Update(object fact)
         {
             _session.Update(fact);
         }
 
+        public bool TryUpdate(object fact)
+        {
+            return _session.TryUpdate(fact);
+        }
+
         public void Retract(object fact)
         {
             _session.Retract(fact);
+        }
+
+        public bool TryRetract(object fact)
+        {
+            return _session.TryRetract(fact);
         }
 
         public void Halt()

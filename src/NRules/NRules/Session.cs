@@ -44,11 +44,18 @@ namespace NRules
         IDependencyResolver DependencyResolver { get; set; }
 
         /// <summary>
-        /// Adds a new fact to the rules engine memory.
+        /// Inserts a new fact to the rules engine memory.
         /// </summary>
         /// <param name="fact">Fact to add.</param>
         /// <exception cref="ArgumentException">If fact already exists in working memory.</exception>
         void Insert(object fact);
+
+        /// <summary>
+        /// Inserts a fact to the rules engine memory if the fact does not exist.
+        /// </summary>
+        /// <param name="fact">Fact to add.</param>
+        /// <returns>Whether the fact was inserted or not.</returns>
+        bool TryInsert(object fact);
 
         /// <summary>
         /// Updates existing fact in the rules engine memory.
@@ -58,11 +65,25 @@ namespace NRules
         void Update(object fact);
 
         /// <summary>
+        /// Updates a fact in the rules engine memory if the fact exists.
+        /// </summary>
+        /// <param name="fact">Fact to update.</param>
+        /// <returns>Whether the fact was updated or not.</returns>
+        bool TryUpdate(object fact);
+
+        /// <summary>
         /// Removes existing fact from the rules engine memory.
         /// </summary>
         /// <param name="fact">Fact to remove.</param>
         /// <exception cref="ArgumentException">If fact does not exist in working memory.</exception>
         void Retract(object fact);
+
+        /// <summary>
+        /// Removes a fact from the rules engine memory if the fact exists.
+        /// </summary>
+        /// <param name="fact">Fact to remove.</param>
+        /// <returns>Whether the fact was retracted or not.</returns>
+        bool TryRetract(object fact);
 
         /// <summary>
         /// Starts rules execution cycle.
@@ -106,17 +127,44 @@ namespace NRules
 
         public void Insert(object fact)
         {
-            _network.PropagateAssert(_executionContext, fact);
+            bool inserted = TryInsert(fact);
+            if (!inserted)
+            {
+                throw new ArgumentException("Fact for insert already exists", "fact");
+            }
+        }
+
+        public bool TryInsert(object fact)
+        {
+            return _network.PropagateAssert(_executionContext, fact);
         }
 
         public void Update(object fact)
         {
-            _network.PropagateUpdate(_executionContext, fact);
+            bool updated = TryUpdate(fact);
+            if (!updated)
+            {
+                throw new ArgumentException("Fact for update does not exist", "fact");
+            }
+        }
+
+        public bool TryUpdate(object fact)
+        {
+            return _network.PropagateUpdate(_executionContext, fact);
         }
 
         public void Retract(object fact)
         {
-            _network.PropagateRetract(_executionContext, fact);
+            bool retracted = TryRetract(fact);
+            if (!retracted)
+            {
+                throw new ArgumentException("Fact for retract does not exist", "fact");
+            }
+        }
+
+        public bool TryRetract(object fact)
+        {
+            return _network.PropagateRetract(_executionContext, fact);
         }
 
         public void Fire()

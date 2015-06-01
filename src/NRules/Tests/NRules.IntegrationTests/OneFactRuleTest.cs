@@ -135,7 +135,7 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void Fire_DuplicateInsert_Throws()
+        public void Insert_DuplicateInsert_Throws()
         {
             //Arrange
             var fact = new FactType1 {TestProperty = "Valid Value 1"};
@@ -146,7 +146,21 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void Fire_UpdateWithoutInsert_Throws()
+        public void TryInsert_DuplicateInsert_False()
+        {
+            //Arrange
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+
+            //Act
+            Session.Insert(fact);
+            bool actual = Session.TryInsert(fact);
+
+            //Assert
+            Assert.False(actual);
+        }
+
+        [Test]
+        public void Update_UpdateWithoutInsert_Throws()
         {
             //Arrange
             var fact = new FactType1 {TestProperty = "Valid Value 1"};
@@ -156,13 +170,39 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
-        public void Fire_RetractWithoutInsert_Throws()
+        public void TryUpdate_UpdateWithoutInsert_False()
+        {
+            //Arrange
+            var fact = new FactType1 { TestProperty = "Valid Value 1" };
+
+            //Act
+            bool actual = Session.TryUpdate(fact);
+
+            //Assert
+            Assert.False(actual);
+        }
+
+        [Test]
+        public void Retract_RetractWithoutInsert_Throws()
         {
             //Arrange
             var fact = new FactType1 {TestProperty = "Valid Value 1"};
 
             //Act - Assert
             Assert.Throws<ArgumentException>(() => Session.Retract(fact));
+        }
+
+        [Test]
+        public void TryRetract_RetractWithoutInsert_False()
+        {
+            //Arrange
+            var fact = new FactType1 { TestProperty = "Valid Value 1" };
+
+            //Act
+            bool actual = Session.TryRetract(fact);
+
+            //Assert
+            Assert.False(actual);
         }
 
         protected override void SetUpRules()
