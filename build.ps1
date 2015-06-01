@@ -3,8 +3,8 @@ param (
 	[string]$component_name = 'Core'
 )
 
-$product_version = '0.3'
-$build_number = '3'
+$product_version = '0.4'
+$build_number = '1'
 $target_framework = 'net-4.0'
 $configuration = 'Release'
 
