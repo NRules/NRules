@@ -125,37 +125,16 @@ namespace NRules
             {
                 Activation activation = _agenda.NextActivation();
                 ICompiledRule rule = activation.Rule;
-                var actionContext = new ActionContext(rule.Definition);
+                var actionContext = new ActionContext(rule.Definition, this);
 
                 _eventAggregator.RaiseRuleFiring(this, activation);
                 foreach (IRuleAction action in rule.Actions)
                 {
                     action.Invoke(_executionContext, actionContext, activation.Tuple, activation.TupleFactMap, rule.Dependencies);
-                    ApplyActionOperations(actionContext);
                 }
                 _eventAggregator.RaiseRuleFired(this, activation);
 
                 if (actionContext.IsHalted) break;
-            }
-        }
-
-        private void ApplyActionOperations(ActionContext actionContext)
-        {
-            while (actionContext.Operations.Count > 0)
-            {
-                var operation = actionContext.Operations.Dequeue();
-                switch (operation.OperationType)
-                {
-                    case ActionOperationType.Insert:
-                        Insert(operation.Fact);
-                        break;
-                    case ActionOperationType.Update:
-                        Update(operation.Fact);
-                        break;
-                    case ActionOperationType.Retract:
-                        Retract(operation.Fact);
-                        break;
-                }
             }
         }
 

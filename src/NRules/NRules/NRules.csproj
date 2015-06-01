@@ -49,7 +49,6 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ActionContext.cs" />
-    <Compile Include="ActionOperation.cs" />
     <Compile Include="ActivationQueue.cs" />
     <Compile Include="Collections\OrderedHashSet.cs" />
     <Compile Include="Collections\OrderedPriorityQueue.cs" />

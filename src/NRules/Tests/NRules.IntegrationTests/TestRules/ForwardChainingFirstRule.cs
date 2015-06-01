@@ -6,16 +6,16 @@ namespace NRules.IntegrationTests.TestRules
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
+            FactType2 fact2 = null;
 
             When()
-                .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
+                .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => Action())
-                .Do(ctx => ctx.Insert(new FactType2()
+                .Do(ctx => ctx.Insert(new FactType3()
                     {
-                        TestProperty = "Valid Value",
-                        JoinProperty = fact1.TestProperty
+                        TestProperty = fact2.JoinProperty,
+                        JoinProperty = fact2.TestProperty
                     }));
         }
     }
