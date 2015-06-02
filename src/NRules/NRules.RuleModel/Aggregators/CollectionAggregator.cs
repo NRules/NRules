@@ -5,10 +5,10 @@ namespace NRules.RuleModel.Aggregators
     /// <summary>
     /// Aggregate that folds matching facts into a collection.
     /// </summary>
-    /// <typeparam name="TFact">Type of facts to collect.</typeparam>
-    internal class CollectionAggregator<TFact> : IAggregator
+    /// <typeparam name="TElement">Type of elements to collect.</typeparam>
+    internal class CollectionAggregator<TElement> : IAggregator
     {
-        private readonly List<TFact> _items = new List<TFact>();
+        private readonly FactCollection<TElement> _items = new FactCollection<TElement>(); 
 
         public IEnumerable<AggregationResult> Initial()
         {
@@ -17,18 +17,22 @@ namespace NRules.RuleModel.Aggregators
 
         public IEnumerable<AggregationResult> Add(object fact)
         {
-            _items.Add((TFact) fact);
+            var item = (TElement) fact;
+            _items.Add(item);
             return new[] { AggregationResult.Modified(_items) };
         }
 
         public IEnumerable<AggregationResult> Modify(object fact)
         {
-            return new[] {AggregationResult.Modified(_items)};
+            var item = (TElement)fact;
+            _items.Modify(item);
+            return new[] { AggregationResult.Modified(_items) };
         }
 
         public IEnumerable<AggregationResult> Remove(object fact)
         {
-            _items.Remove((TFact) fact);
+            var item = (TElement)fact;
+            _items.Remove(item);
             return new[] {AggregationResult.Modified(_items)};
         }
 

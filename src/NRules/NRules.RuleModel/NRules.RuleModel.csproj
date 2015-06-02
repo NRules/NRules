@@ -53,6 +53,7 @@
     <Compile Include="AggregationResult.cs" />
     <Compile Include="Aggregators\CollectionAggregator.cs" />
     <Compile Include="Aggregators\DefaultAggregatorFactory.cs" />
+    <Compile Include="Aggregators\FactCollection.cs" />
     <Compile Include="Aggregators\FlatteningAggregator.cs" />
     <Compile Include="Aggregators\FlatteningAggregatorFactory.cs" />
     <Compile Include="Aggregators\GroupByAggregator.cs" />

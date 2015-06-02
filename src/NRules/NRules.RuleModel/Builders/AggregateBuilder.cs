@@ -87,10 +87,10 @@ namespace NRules.RuleModel.Builders
         /// <param name="elementSelector">Element selection expression.</param>
         /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
         /// <typeparam name="TKey">Type of grouping key.</typeparam>
-        /// <typeparam name="TValue">Type of grouping value.</typeparam>
-        public void GroupBy<TSource, TKey, TValue>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TValue>> elementSelector)
+        /// <typeparam name="TElement">Type of grouping element.</typeparam>
+        public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
         {
-            var aggregateFactory = new GroupByAggregatorFactory<TSource, TKey, TValue>(keySelector.Compile(), elementSelector.Compile());
+            var aggregateFactory = new GroupByAggregatorFactory<TSource, TKey, TElement>(keySelector.Compile(), elementSelector.Compile());
             _expressions["KeySelector"] = keySelector;
             _expressions["ElementSelector"] = keySelector;
             AggregatorFactory(GroupByName, aggregateFactory);

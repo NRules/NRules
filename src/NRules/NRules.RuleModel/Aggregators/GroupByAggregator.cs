@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,19 +9,19 @@ namespace NRules.RuleModel.Aggregators
     /// </summary>
     /// <typeparam name="TSource">Type of source elements to group.</typeparam>
     /// <typeparam name="TKey">Type of grouping key.</typeparam>
-    /// <typeparam name="TValue">Type of values to group.</typeparam>
-    internal class GroupByAggregator<TSource, TKey, TValue> : IAggregator
+    /// <typeparam name="TElement">Type of elements to group.</typeparam>
+    internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
     {
         private readonly Func<TSource, TKey> _keySelector;
-        private readonly Func<TSource, TValue> _valueSelector;
+        private readonly Func<TSource, TElement> _elementSelector;
         private readonly Dictionary<TKey, Grouping> _groups = new Dictionary<TKey, Grouping>();
         private readonly Dictionary<object, TKey> _sourceToKey = new Dictionary<object, TKey>(); 
-        private readonly Dictionary<object, TValue> _sourceToValue = new Dictionary<object, TValue>(); 
+        private readonly Dictionary<object, TElement> _sourceToElement = new Dictionary<object, TElement>(); 
 
-        public GroupByAggregator(Func<TSource, TKey> keySelector, Func<TSource, TValue> valueSelector)
+        public GroupByAggregator(Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
         {
             _keySelector = keySelector;
-            _valueSelector = valueSelector;
+            _elementSelector = elementSelector;
         }
 
         public IEnumerable<AggregationResult> Initial()
@@ -34,40 +33,42 @@ namespace NRules.RuleModel.Aggregators
         {
             var source = (TSource) fact;
             var key = _keySelector(source);
-            var value = _valueSelector(source);
+            var element = _elementSelector(source);
             _sourceToKey[fact] = key;
-            _sourceToValue[fact] = value;
-            return Add(key, value);
+            _sourceToElement[fact] = element;
+            return Add(key, element);
         }
 
         public IEnumerable<AggregationResult> Modify(object fact)
         {
             var source = (TSource)fact;
             var key = _keySelector(source);
-            var value = _valueSelector(source);
+            var element = _elementSelector(source);
             var oldKey = _sourceToKey[fact];
-            var oldValue = _sourceToValue[fact];
+            var oldElement = _sourceToElement[fact];
             _sourceToKey[fact] = key;
-            _sourceToValue[fact] = value;
+            _sourceToElement[fact] = element;
 
-            if (Equals(key, oldKey) && Equals(value, oldValue))
-                return new[] {AggregationResult.Modified(_groups[key])};
+            if (Equals(key, oldKey) && Equals(element, oldElement))
+            {
+                return Modify(key, element);
+            }
 
-            var result1 = Remove(oldKey, oldValue);
-            var result2 = Add(key, value);
+            var result1 = Remove(oldKey, oldElement);
+            var result2 = Add(key, element);
             return result1.Union(result2);
         }
 
         public IEnumerable<AggregationResult> Remove(object fact)
         {
             var oldKey = _sourceToKey[fact];
-            var oldValue = _sourceToValue[fact];
+            var oldElement = _sourceToElement[fact];
             _sourceToKey.Remove(fact);
-            _sourceToValue.Remove(fact);
-            return Remove(oldKey, oldValue);
+            _sourceToElement.Remove(fact);
+            return Remove(oldKey, oldElement);
         }
 
-        private IEnumerable<AggregationResult> Add(TKey key, TValue value)
+        private IEnumerable<AggregationResult> Add(TKey key, TElement element)
         {
             Grouping group;
             if (!_groups.TryGetValue(key, out group))
@@ -75,18 +76,26 @@ namespace NRules.RuleModel.Aggregators
                 group = new Grouping(key);
                 _groups[key] = group;
 
-                group.Add(value);
+                group.Add(element);
                 return new[] { AggregationResult.Added(group) };
             }
 
-            group.Add(value);
+            group.Add(element);
             return new[] { AggregationResult.Modified(group) };
         }
         
-        private IEnumerable<AggregationResult> Remove(TKey key, TValue value)
+        private IEnumerable<AggregationResult> Modify(TKey key, TElement element)
         {
             var group = _groups[key];
-            group.Remove(value);
+            group.Modify(element);
+
+            return new[] { AggregationResult.Modified(group) };
+        }
+        
+        private IEnumerable<AggregationResult> Remove(TKey key, TElement element)
+        {
+            var group = _groups[key];
+            group.Remove(element);
             if (group.Count == 0)
             {
                 _groups.Remove(key);
@@ -98,10 +107,9 @@ namespace NRules.RuleModel.Aggregators
 
         public IEnumerable<object> Aggregates { get { return _groups.Values; } }
 
-        private class Grouping : IGrouping<TKey, TValue>
+        private class Grouping : FactCollection<TElement>, IGrouping<TKey, TElement>
         {
             private readonly TKey _key;
-            private readonly List<TValue> _elements = new List<TValue>();
 
             public Grouping(TKey key)
             {
@@ -109,27 +117,6 @@ namespace NRules.RuleModel.Aggregators
             }
 
             public TKey Key { get { return _key; } }
-            public int Count { get { return _elements.Count; } }
-
-            public void Add(TValue value)
-            {
-                _elements.Add(value);
-            }
-
-            public void Remove(TValue value)
-            {
-                _elements.Remove(value);
-            }
-
-            public IEnumerator<TValue> GetEnumerator()
-            {
-                return _elements.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
         }
     }
 }
