@@ -14,9 +14,14 @@ namespace NRules.RuleModel.Aggregators
     {
         private readonly Func<TSource, TKey> _keySelector;
         private readonly Func<TSource, TElement> _elementSelector;
+        
+        private readonly Dictionary<object, TKey> _sourceToKey = new Dictionary<object, TKey>();
+        private readonly Dictionary<object, TElement> _sourceToElement = new Dictionary<object, TElement>();
+
         private readonly Dictionary<TKey, Grouping> _groups = new Dictionary<TKey, Grouping>();
-        private readonly Dictionary<object, TKey> _sourceToKey = new Dictionary<object, TKey>(); 
-        private readonly Dictionary<object, TElement> _sourceToElement = new Dictionary<object, TElement>(); 
+
+        private readonly TKey _defaultKey = default(TKey);
+        private Grouping _defaultGroup;
 
         public GroupByAggregator(Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
         {
@@ -70,6 +75,18 @@ namespace NRules.RuleModel.Aggregators
 
         private IEnumerable<AggregationResult> Add(TKey key, TElement element)
         {
+            if (Equals(key, _defaultKey))
+            {
+                if (_defaultGroup == null)
+                {
+                    _defaultGroup = new Grouping(key);
+                    _defaultGroup.Add(element);
+                    return new[] { AggregationResult.Added(_defaultGroup) };
+                }
+                _defaultGroup.Add(element);
+                return new[] { AggregationResult.Modified(_defaultGroup) };
+            }
+
             Grouping group;
             if (!_groups.TryGetValue(key, out group))
             {
@@ -86,14 +103,31 @@ namespace NRules.RuleModel.Aggregators
         
         private IEnumerable<AggregationResult> Modify(TKey key, TElement element)
         {
+            if (Equals(key, _defaultKey))
+            {
+                _defaultGroup.Modify(element);
+                return new[] { AggregationResult.Modified(_defaultGroup) };
+            }
+
             var group = _groups[key];
             group.Modify(element);
-
             return new[] { AggregationResult.Modified(group) };
         }
         
         private IEnumerable<AggregationResult> Remove(TKey key, TElement element)
         {
+            if (Equals(key, _defaultKey))
+            {
+                _defaultGroup.Remove(element);
+                if (_defaultGroup.Count == 0)
+                {
+                    var removedGroup = _defaultGroup;
+                    _defaultGroup = null;
+                    return new[] { AggregationResult.Removed(removedGroup) };
+                }
+                return new[] { AggregationResult.Modified(_defaultGroup) };
+            }
+
             var group = _groups[key];
             group.Remove(element);
             if (group.Count == 0)
@@ -101,11 +135,19 @@ namespace NRules.RuleModel.Aggregators
                 _groups.Remove(key);
                 return new[] { AggregationResult.Removed(group) };
             }
-
             return new[] { AggregationResult.Modified(group) };
         }
 
-        public IEnumerable<object> Aggregates { get { return _groups.Values; } }
+        public IEnumerable<object> Aggregates
+        {
+            get
+            {
+                var aggregates = _defaultGroup == null
+                    ? _groups.Values
+                    : new[] {_defaultGroup}.Union(_groups.Values);
+                return aggregates;
+            }
+        }
 
         private class Grouping : FactCollection<TElement>, IGrouping<TKey, TElement>
         {

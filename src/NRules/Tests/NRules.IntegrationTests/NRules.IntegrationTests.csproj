@@ -60,6 +60,7 @@
     <Compile Include="OneEquatableFactRuleTest.cs" />
     <Compile Include="OneFactOneSelectRuleTest.cs" />
     <Compile Include="OneFactRuleWithDependencyTest.cs" />
+    <Compile Include="OneFactSimpleGroupByRuleTest.cs" />
     <Compile Include="TestAssets\EquatableFact.cs" />
     <Compile Include="TestAssets\FactType1Projection.cs" />
     <Compile Include="TestAssets\FactType5.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="TestRules\OneFactAggregateJoinRule.cs" />
     <Compile Include="TestRules\OneFactOneGroupByFlattenRule.cs" />
     <Compile Include="TestRules\OneFactOneSelectRule.cs" />
+    <Compile Include="TestRules\OneFactSimpleGroupByRule.cs" />
     <Compile Include="TestRules\TwoFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactRepeatableRule.cs" />
