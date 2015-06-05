@@ -100,6 +100,26 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
+        [Test]
+        public void Fire_OneFactInsertedThenUpdatedToAnotherGroup_FiresOnceWithOneFactInSecondGroup()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value Group1" };
+            Session.Insert(fact1);
+            
+            fact1.TestProperty = "Valid Value Group2";
+            Session.Update(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            var firedGroup = GetFiredFact<IGrouping<string, FactType1>>();
+            Assert.AreEqual(1, firedGroup.Count());
+            Assert.AreEqual("Valid Value Group2", firedGroup.Key);
+        }
+
         protected override void SetUpRules()
         {
             SetUpRule<OneFactSimpleGroupByRule>();

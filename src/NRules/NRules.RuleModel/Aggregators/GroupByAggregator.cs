@@ -54,7 +54,7 @@ namespace NRules.RuleModel.Aggregators
             _sourceToKey[fact] = key;
             _sourceToElement[fact] = element;
 
-            if (Equals(key, oldKey) && Equals(element, oldElement))
+            if (Equals(key, oldKey))
             {
                 return Modify(key, element);
             }
