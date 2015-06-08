@@ -40,6 +40,21 @@ namespace NRules.Fluent.Expressions
             return this;
         }
 
+        public ICollectPatternExpression<IEnumerable<T>> Collect<T>(Expression<Func<IEnumerable<T>>> alias, params Expression<Func<T, bool>>[] conditions)
+        {
+            var symbol = alias.ToParameterExpression();
+
+            var collectionPatternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
+
+            var aggregateBuilder = collectionPatternBuilder.Aggregate();
+            aggregateBuilder.CollectionOf(typeof(T));
+
+            var itemPatternBuilder = aggregateBuilder.Pattern(typeof(T));
+            itemPatternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
+
+            return new CollectPatternExpression<IEnumerable<T>>(_builder, _groupBuilder, collectionPatternBuilder);
+        }
+
         public ILeftHandSideExpression Exists<TFact>(params Expression<Func<TFact, bool>>[] conditions)
         {
             var existsBuilder = _groupBuilder.Exists();
