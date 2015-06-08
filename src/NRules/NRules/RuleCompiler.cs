@@ -57,20 +57,33 @@ namespace NRules
             var transformation = new RuleTransformation();
             var transformedRule = transformation.Transform(ruleDefinition);
             var ruleDeclarations = transformedRule.LeftHandSide.Declarations.ToList();
+            var ruleDependencies = transformedRule.DependencyGroup.Dependencies.Select(x => x.Declaration).ToList();
 
+            IEnumerable<IRuleDependency> dependencies = CompileDependencies(transformedRule);
             IEnumerable<ITerminalNode> terminals = reteBuilder.AddRule(transformedRule);
+
             var rightHandSide = transformedRule.RightHandSide;
             var actions = new List<IRuleAction>();
             foreach (var action in rightHandSide.Actions)
             {
-                var factIndexMap = FactIndexMap.CreateMap(action.References, ruleDeclarations);
-                var ruleAction = new RuleAction(action.Expression, factIndexMap);
+                var factIndexMap = IndexMap.CreateMap(action.References, ruleDeclarations);
+                var dependencyIndexMap = IndexMap.CreateMap(action.References, ruleDependencies);
+                var ruleAction = new RuleAction(action.Expression, factIndexMap, dependencyIndexMap);
                 actions.Add(ruleAction);
             }
 
-            var rule = new CompiledRule(ruleDefinition, actions);
+            var rule = new CompiledRule(ruleDefinition, actions, dependencies);
             BuildRuleNode(rule, terminals);
             return rule;
+        }
+
+        private IEnumerable<IRuleDependency> CompileDependencies(IRuleDefinition ruleDefinition)
+        {
+            foreach (var dependency in ruleDefinition.DependencyGroup.Dependencies)
+            {
+                var compiledDependency = new RuleDependency(dependency.Declaration, dependency.ServiceType);
+                yield return compiledDependency;
+            }
         }
 
         private void BuildRuleNode(ICompiledRule rule, IEnumerable<ITerminalNode> terminalNodes)

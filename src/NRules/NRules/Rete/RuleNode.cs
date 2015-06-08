@@ -2,8 +2,9 @@
 {
     internal interface IRuleNode : INode
     {
-        void Activate(IExecutionContext context, Tuple tuple, FactIndexMap tupleFactMap);
-        void Deactivate(IExecutionContext context, Tuple tuple, FactIndexMap tupleFactMap);
+        void Activate(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap);
+        void Reactivate(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap);
+        void Deactivate(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap);
     }
 
     internal class RuleNode : IRuleNode
@@ -15,14 +16,21 @@
             Rule = rule;
         }
 
-        public void Activate(IExecutionContext context, Tuple tuple, FactIndexMap tupleFactMap)
+        public void Activate(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap)
         {
             var activation = new Activation(Rule, tuple, tupleFactMap);
             context.Agenda.Activate(activation);
             context.EventAggregator.RaiseActivationCreated(context.Session, activation);
         }
 
-        public void Deactivate(IExecutionContext context, Tuple tuple, FactIndexMap tupleFactMap)
+        public void Reactivate(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap)
+        {
+            var activation = new Activation(Rule, tuple, tupleFactMap);
+            context.Agenda.Reactivate(activation);
+            context.EventAggregator.RaiseActivationUpdated(context.Session, activation);
+        }
+
+        public void Deactivate(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap)
         {
             var activation = new Activation(Rule, tuple, tupleFactMap);
             context.Agenda.Deactivate(activation);

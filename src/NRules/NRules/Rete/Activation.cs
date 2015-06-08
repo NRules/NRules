@@ -6,9 +6,9 @@ namespace NRules.Rete
     {
         private readonly ICompiledRule _rule;
         private readonly Tuple _tuple;
-        private readonly FactIndexMap _tupleFactMap;
+        private readonly IndexMap _tupleFactMap;
 
-        public Activation(ICompiledRule rule, Tuple tuple, FactIndexMap tupleFactMap)
+        public Activation(ICompiledRule rule, Tuple tuple, IndexMap tupleFactMap)
         {
             _rule = rule;
             _tuple = tuple;
@@ -25,7 +25,7 @@ namespace NRules.Rete
             get { return _tuple; }
         }
 
-        public FactIndexMap TupleFactMap
+        public IndexMap TupleFactMap
         {
             get { return _tupleFactMap; }
         }

@@ -15,7 +15,7 @@ namespace NRules.Fluent.Expressions
         public LeftHandSideExpression(RuleBuilder builder)
         {
             _builder = builder;
-            _groupBuilder = _builder.LeftHandSide();
+            _groupBuilder = builder.LeftHandSide();
         }
 
         public LeftHandSideExpression(RuleBuilder builder, GroupBuilder groupBuilder)
@@ -24,20 +24,17 @@ namespace NRules.Fluent.Expressions
             _groupBuilder = groupBuilder;
         }
 
-        public ILeftHandSideExpression Match<T>(Expression<Func<T>> alias, params Expression<Func<T, bool>>[] conditions)
+        public ILeftHandSideExpression Match<TFact>(Expression<Func<TFact>> alias, params Expression<Func<TFact, bool>>[] conditions)
         {
             var symbol = alias.ToParameterExpression();
-            return Match(symbol, conditions);
+            var patternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
+            patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
+            return this;
         }
 
-        public ILeftHandSideExpression Match<T>(params Expression<Func<T, bool>>[] conditions)
+        public ILeftHandSideExpression Match<TFact>(params Expression<Func<TFact, bool>>[] conditions)
         {
-            var symbol = Expression.Parameter(typeof(T));
-            return Match(symbol, conditions);
-        }
-
-        private ILeftHandSideExpression Match<T>(ParameterExpression symbol, IEnumerable<Expression<Func<T, bool>>> conditions)
-        {
+            var symbol = Expression.Parameter(typeof (TFact));
             var patternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
             patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
             return this;
@@ -50,51 +47,58 @@ namespace NRules.Fluent.Expressions
             var collectionPatternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
 
             var aggregateBuilder = collectionPatternBuilder.Aggregate();
-            aggregateBuilder.CollectionOf(typeof (T));
+            aggregateBuilder.CollectionOf(typeof(T));
 
-            var itemPatternBuilder = aggregateBuilder.Pattern(typeof (T));
+            var itemPatternBuilder = aggregateBuilder.Pattern(typeof(T));
             itemPatternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
 
             return new CollectPatternExpression<IEnumerable<T>>(_builder, _groupBuilder, collectionPatternBuilder);
         }
 
-        public ILeftHandSideExpression Exists<T>(params Expression<Func<T, bool>>[] conditions)
+        public ILeftHandSideExpression Exists<TFact>(params Expression<Func<TFact, bool>>[] conditions)
         {
             var existsBuilder = _groupBuilder.Exists();
-
-            var patternBuilder = existsBuilder.Pattern(typeof (T));
+            var patternBuilder = existsBuilder.Pattern(typeof(TFact));
             patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
             return this;
         }
 
-        public ILeftHandSideExpression Not<T>(params Expression<Func<T, bool>>[] conditions)
+        public ILeftHandSideExpression Not<TFact>(params Expression<Func<TFact, bool>>[] conditions)
         {
             var notBuilder = _groupBuilder.Not();
-
-            var patternBuilder = notBuilder.Pattern(typeof(T));
+            var patternBuilder = notBuilder.Pattern(typeof(TFact));
             patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
             return this;
         }
 
-        public ILeftHandSideExpression All<T>(Expression<Func<T, bool>> condition)
+        public ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> condition)
         {
-            return All(x => true, new [] {condition});
+            return All(x => true, new[] { condition });
         }
 
-        public ILeftHandSideExpression All<T>(Expression<Func<T, bool>> baseCondition, params Expression<Func<T, bool>>[] conditions)
+        public ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> baseCondition, params Expression<Func<TFact, bool>>[] conditions)
         {
             return All(baseCondition, conditions.AsEnumerable());
         }
 
-        private ILeftHandSideExpression All<T>(Expression<Func<T, bool>> baseCondition, IEnumerable<Expression<Func<T, bool>>> conditions)
+        private ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> baseCondition, IEnumerable<Expression<Func<TFact, bool>>> conditions)
         {
             var forallBuilder = _groupBuilder.ForAll();
-            
-            var basePatternBuilder = forallBuilder.BasePattern(typeof(T));
+
+            var basePatternBuilder = forallBuilder.BasePattern(typeof(TFact));
             basePatternBuilder.DslCondition(_groupBuilder.Declarations, baseCondition);
 
-            var patternBuilder = forallBuilder.Pattern(typeof(T));
+            var patternBuilder = forallBuilder.Pattern(typeof(TFact));
             patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
+            return this;
+        }
+
+        public ILeftHandSideExpression Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryAction)
+        {
+            var symbol = alias.ToParameterExpression();
+            var queryBuilder = new QueryExpression(symbol, _groupBuilder);
+            queryAction(queryBuilder);
+            queryBuilder.Build();
             return this;
         }
 

@@ -11,7 +11,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
             Claim claim = null;
 
             When()
-                .Claim(() => claim)
+                .Claim(() => claim, c => c.Open)
                 .Or(x => x
                     .Not<Insured>(i => i == claim.Insured)
                     .Insured(i => i == claim.Insured, i => i.Name.IsEmpty && i.Address.IsEmpty));

@@ -15,8 +15,12 @@ namespace NRules.Samples.SimpleRules.Rules
 
             When()
                 .Match<Customer>(() => customer, c => c.IsPreferred)
-                .Collect<Order>(() => orders, o => o.Customer == customer, o => o.IsOpen)
-                    .Where(x => x.Count() >= 3);
+                .Query(() => orders, x => x
+                    .Match<Order>(
+                        o => o.Customer == customer,
+                        o => o.IsOpen)
+                    .Collect()
+                    .Where(c => c.Count() >= 3));
 
             Then()
                 .Do(ctx => Console.WriteLine("Customer {0} has over 3 open orders", customer.Name));

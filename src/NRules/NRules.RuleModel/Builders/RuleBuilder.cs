@@ -16,6 +16,7 @@ namespace NRules.RuleModel.Builders
         private int _priority = RuleDefinition.DefaultPriority;
         private RuleRepeatability _repeatability = RuleDefinition.DefaultRepeatability;
         private readonly List<string> _tags = new List<string>();
+        private readonly DependencyGroupBuilder _dependencyBuilder;
         private readonly GroupBuilder _groupBuilder;
         private readonly ActionGroupBuilder _actionGroupBuilder;
 
@@ -25,6 +26,7 @@ namespace NRules.RuleModel.Builders
         public RuleBuilder()
         {
             var rootScope = new SymbolTable();
+            _dependencyBuilder = new DependencyGroupBuilder(rootScope);
             _groupBuilder = new GroupBuilder(rootScope, GroupType.And);
             _actionGroupBuilder = new ActionGroupBuilder(rootScope);
         }
@@ -76,6 +78,15 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
+        /// Retrieves dependencies builder.
+        /// </summary>
+        /// <returns>Left hand side builder.</returns>
+        public DependencyGroupBuilder Dependencies()
+        {
+            return _dependencyBuilder;
+        }
+
+        /// <summary>
         /// Retrieves left hand side builder (conditions).
         /// </summary>
         /// <returns>Left hand side builder.</returns>
@@ -101,13 +112,16 @@ namespace NRules.RuleModel.Builders
         {
             Validate();
 
+            IBuilder<DependencyGroupElement> dependencyBuilder = _dependencyBuilder;
+            DependencyGroupElement dependencies = dependencyBuilder.Build();
+
             IBuilder<GroupElement> groupBuilder = _groupBuilder;
             GroupElement conditions = groupBuilder.Build();
 
             IBuilder<ActionGroupElement> actionBuilder = _actionGroupBuilder;
             ActionGroupElement actions = actionBuilder.Build();
 
-            var ruleDefinition = new RuleDefinition(_name, _description, _priority, _repeatability, _tags, conditions, actions);
+            var ruleDefinition = new RuleDefinition(_name, _description, _priority, _repeatability, _tags, dependencies, conditions, actions);
             return ruleDefinition;
         }
 

@@ -3,8 +3,8 @@ param (
 	[string]$component_name = 'Core'
 )
 
-$product_version = '0.3'
-$build_number = '4'
+$product_version = '0.4'
+$build_number = '1'
 $target_framework = 'net-4.0'
 $configuration = 'Release'
 
@@ -45,6 +45,25 @@ $components = @{
 			}
 		}
 	};
+	'NRules.Integration.Autofac' = @{
+		name = 'NRules.Integration.Autofac'
+		src_root = 'src/NRules.Integration'
+		bin = @{
+			out_include = @('*.dll','*.pdb','*.xml')
+			out_exclude = @('**Tests**','nunit**','Moq**')
+		}
+		package = @{
+			nuget = @{
+				id = 'NRules.Integration.Autofac'
+				include = @('NRules.Integration.Autofac.*')
+			}
+		}
+	};
+	'NRules.Integration' = @{
+		name = 'NRules.Integration'
+		nobuild = $true
+		help = 'NRules.Integration.shfbproj'
+	};
 	'Samples.SimpleRules' = @{
 		name = 'SimpleRules'
 		src_root = 'samples'
@@ -76,15 +95,19 @@ $components = @{
 }
 
 $core = @('NRules', 'NRules.Debugger.Visualizer')
+$integration = $components.keys | where { $_.StartsWith("NRules.Integration") }
 $samples = $components.keys | where { $_.StartsWith("Samples.") }
 
 $component_list = @()
 if ($component_name -eq "Core") {
 	$component_list += $core
+} elseif ($component_name -eq "Integration") {
+	$component_list += $integration
 } elseif ($component_name -eq "Samples") {
 	$component_list += $samples
 } elseif ($component_name -eq "All") {
 	$component_list += $core
+	$component_list += $integration
 	$component_list += $samples
 } else {
 	$component_list += $component_name

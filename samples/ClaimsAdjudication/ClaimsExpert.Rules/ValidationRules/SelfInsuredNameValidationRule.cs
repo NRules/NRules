@@ -12,7 +12,7 @@ namespace NRules.Samples.ClaimsExpert.Rules.ValidationRules
             Patient patient = null;
 
             When()
-                .Claim(() => claim)
+                .Claim(() => claim, c => c.Open)
                 .Patient(() => patient, p => p == claim.Patient, 
                     p => p.RelationshipToInsured == Relationship.Self)
                 .Insured(i => i == claim.Insured, 

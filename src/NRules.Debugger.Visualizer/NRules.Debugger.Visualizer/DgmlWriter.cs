@@ -45,6 +45,7 @@ namespace NRules.Debugger.Visualizer
             {
                 var labelComponents = new[] {nodeInfo.NodeType.ToString(), nodeInfo.Details}
                     .Union(nodeInfo.Conditions)
+                    .Union(nodeInfo.Expressions)
                     .Where(x => !string.IsNullOrEmpty(x));
                 string label = string.Join("\n", labelComponents);
                 var node = new XElement(Name("Node"),

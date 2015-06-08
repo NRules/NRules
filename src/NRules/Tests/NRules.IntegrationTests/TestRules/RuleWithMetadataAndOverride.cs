@@ -3,13 +3,15 @@ using NRules.IntegrationTests.TestAssets;
 
 namespace NRules.IntegrationTests.TestRules
 {
+    [Name("Declarative name")]
     [Priority(500)]
-    public class RuleWithMetadataAndPriorityOverride : ParentRuleWithMetadata
+    public class RuleWithMetadataAndOverride : ParentRuleWithMetadata
     {
         public override void Define()
         {
             FactType1 fact1 = null;
 
+            Name("Programmatic name");
             Priority(1000);
 
             When()

@@ -18,11 +18,34 @@ namespace NRules.Fluent.Dsl
     {
         private readonly Lazy<IRuleDefinition> _definition;
         private readonly RuleBuilder _builder;
+        private readonly LeftHandSideExpression _lhsExpression;
+        private readonly RightHandSideExpression _rhsExpression;
 
         protected Rule()
         {
             _builder = new RuleBuilder();
+            _lhsExpression = new LeftHandSideExpression(_builder);
+            _rhsExpression = new RightHandSideExpression(_builder);
             _definition = new Lazy<IRuleDefinition>(BuildDefinition);
+        }
+
+        /// <summary>
+        /// Returns expression builder for rule's dependencies.
+        /// </summary>
+        /// <returns>Dependencies expression builder.</returns>
+        protected IDependencyExpression Dependency()
+        {
+            return new DependencyExpression(_builder);
+        }
+
+        /// <summary>
+        /// Sets rule's name.
+        /// Name value set at this level overrides the values specified via <see cref="NameAttribute"/> attribute.
+        /// </summary>
+        /// <param name="value">Rule name value.</param>
+        protected void Name(string value)
+        {
+            _builder.Name(value);
         }
 
         /// <summary>
@@ -41,7 +64,7 @@ namespace NRules.Fluent.Dsl
         /// <returns>Left hand side expression builder.</returns>
         protected ILeftHandSideExpression When()
         {
-            return new LeftHandSideExpression(_builder);
+            return _lhsExpression;
         }
 
         /// <summary>
@@ -50,7 +73,7 @@ namespace NRules.Fluent.Dsl
         /// <returns>Right hand side expression builder.</returns>
         protected IRightHandSideExpression Then()
         {
-            return new RightHandSideExpression(_builder);
+            return _rhsExpression;
         }
 
         /// <summary>

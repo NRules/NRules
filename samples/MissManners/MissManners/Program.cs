@@ -20,6 +20,7 @@ namespace NRules.Samples.MissManners
             session.Events.FactUpdatingEvent += EventProviderOnFactUpdatingEvent;
             session.Events.FactRetractingEvent += EventProviderOnFactRetractingEvent;
             session.Events.ActivationCreatedEvent += EventProviderOnActivationCreatedEvent;
+            session.Events.ActivationUpdatedEvent += EventProviderOnActivationUpdatedEvent;
             session.Events.ActivationDeletedEvent += EventProviderOnActivationDeletedEvent;
             session.Events.RuleFiringEvent += EventProviderOnRuleFiringEvent;
 
@@ -66,6 +67,11 @@ namespace NRules.Samples.MissManners
             Console.WriteLine("-A({0}): {1}", e.Rule.Name, string.Join(",", e.Facts.Select(f => f.Value).ToArray()));
         }
 
+        private static void EventProviderOnActivationUpdatedEvent(object sender, AgendaEventArgs e)
+        {
+            Console.WriteLine("=A({0}): {1}", e.Rule.Name, string.Join(",", e.Facts.Select(f => f.Value).ToArray()));
+        }
+        
         private static void EventProviderOnActivationCreatedEvent(object sender, AgendaEventArgs e)
         {
             Console.WriteLine("+A({0}): {1}", e.Rule.Name, string.Join(",", e.Facts.Select(f => f.Value).ToArray()));

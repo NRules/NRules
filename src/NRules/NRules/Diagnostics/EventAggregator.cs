@@ -18,6 +18,14 @@ namespace NRules.Diagnostics
         event EventHandler<AgendaEventArgs> ActivationCreatedEvent;
 
         /// <summary>
+        /// Raised when an existing activation is updated.
+        /// An activation is updated when a previously matching set of facts (tuple) is updated 
+        /// and it still matches the rule.
+        /// The activation is updated in the agenda and remains a candidate for firing.
+        /// </summary>
+        event EventHandler<AgendaEventArgs> ActivationUpdatedEvent;
+
+        /// <summary>
         /// Raised when an existing activation is deleted.
         /// An activation is deleted when a previously matching set of facts (tuple) no longer 
         /// matches the rule due to updated or retracted facts.
@@ -80,6 +88,7 @@ namespace NRules.Diagnostics
     internal interface IEventAggregator : IEventProvider
     {
         void RaiseActivationCreated(ISession session, Activation activation);
+        void RaiseActivationUpdated(ISession session, Activation activation);
         void RaiseActivationDeleted(ISession session, Activation activation);
         void RaiseRuleFiring(ISession session, Activation activation);
         void RaiseRuleFired(ISession session, Activation activation);
@@ -98,6 +107,7 @@ namespace NRules.Diagnostics
         private readonly IEventAggregator _parent;
 
         public event EventHandler<AgendaEventArgs> ActivationCreatedEvent;
+        public event EventHandler<AgendaEventArgs> ActivationUpdatedEvent;
         public event EventHandler<AgendaEventArgs> ActivationDeletedEvent;
         public event EventHandler<AgendaEventArgs> RuleFiringEvent;
         public event EventHandler<AgendaEventArgs> RuleFiredEvent;
@@ -130,6 +140,20 @@ namespace NRules.Diagnostics
             if (_parent != null)
             {
                 _parent.RaiseActivationCreated(session, activation);
+            }
+        }
+
+        public void RaiseActivationUpdated(ISession session, Activation activation)
+        {
+            var handler = ActivationUpdatedEvent;
+            if (handler != null)
+            {
+                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                handler(session, @event);
+            }
+            if (_parent != null)
+            {
+                _parent.RaiseActivationUpdated(session, activation);
             }
         }
 

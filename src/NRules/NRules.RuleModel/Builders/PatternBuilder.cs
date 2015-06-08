@@ -49,6 +49,7 @@ namespace NRules.RuleModel.Builders
 
         PatternElement IBuilder<PatternElement>.Build()
         {
+            Validate();
             PatternElement patternElement;
             if (_sourceBuilder != null)
             {
@@ -68,6 +69,21 @@ namespace NRules.RuleModel.Builders
             if (_sourceBuilder != null)
             {
                 throw new InvalidOperationException("Pattern element can only have a single source");
+            }
+        }
+
+        private void Validate()
+        {
+            foreach (var condition in _conditions)
+            {
+                var dependencyDeclarations = condition.References.Where(x => x.Target is DependencyElement).ToArray();
+                if (dependencyDeclarations.Any())
+                {
+                    var message = string.Format(
+                        "Pattern element cannot reference injected dependency. Condition={0}, Dependency={1}",
+                        condition.Expression, string.Join(",", dependencyDeclarations.Select(x => x.Name)));
+                    throw new InvalidOperationException(message);
+                }
             }
         }
     }

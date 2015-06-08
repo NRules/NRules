@@ -1,39 +1,56 @@
-﻿using System.Collections.Generic;
-using NRules.RuleModel;
+﻿using NRules.RuleModel;
 
 namespace NRules
 {
     internal class ActionContext : IContext
     {
-        public ActionContext(IRuleDefinition rule)
+        private readonly IRuleDefinition _rule;
+        private readonly ISession _session;
+        private bool _isHalted;
+
+        public ActionContext(IRuleDefinition rule, ISession session)
         {
-            Rule = rule;
-            IsHalted = false;
-            Operations = new Queue<ActionOperation>();
+            _rule = rule;
+            _session = session;
+            _isHalted = false;
         }
 
-        public IRuleDefinition Rule { get; private set; }
-        public bool IsHalted { get; private set; }
-        public Queue<ActionOperation> Operations { get; set; } 
+        public IRuleDefinition Rule { get { return _rule; } }
+        public bool IsHalted { get { return _isHalted; } }
 
         public void Insert(object fact)
         {
-            Operations.Enqueue(new ActionOperation(fact, ActionOperationType.Insert));
+            _session.Insert(fact);
+        }
+
+        public bool TryInsert(object fact)
+        {
+            return _session.TryInsert(fact);
         }
 
         public void Update(object fact)
         {
-            Operations.Enqueue(new ActionOperation(fact, ActionOperationType.Update));
+            _session.Update(fact);
+        }
+
+        public bool TryUpdate(object fact)
+        {
+            return _session.TryUpdate(fact);
         }
 
         public void Retract(object fact)
         {
-            Operations.Enqueue(new ActionOperation(fact, ActionOperationType.Retract));
+            _session.Retract(fact);
+        }
+
+        public bool TryRetract(object fact)
+        {
+            return _session.TryRetract(fact);
         }
 
         public void Halt()
         {
-            IsHalted = true;
+            _isHalted = true;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace NRules.IntegrationTests
         public void Query_OneFact_RetrievesFactFromQuery()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType2 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
             Session.Insert(fact1);
 
             //Act
@@ -40,7 +40,7 @@ namespace NRules.IntegrationTests
         public void Query_RuleInsertsSecondFact_TwoFactsInMemory()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType2 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
             Session.Insert(fact1);
             Session.Fire();
 
@@ -56,12 +56,12 @@ namespace NRules.IntegrationTests
         public void Query_QueryFactsByType_OnlyReturnsFactsOfThatType()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType2 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
             Session.Insert(fact1);
             Session.Fire();
 
             //Act
-            var query = Session.Query<FactType2>();
+            var query = Session.Query<FactType3>();
             var facts = query.ToList();
 
             //Assert

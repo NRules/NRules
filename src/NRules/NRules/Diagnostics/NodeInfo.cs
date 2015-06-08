@@ -31,7 +31,7 @@ namespace NRules.Diagnostics
     [Serializable]
     public class NodeInfo
     {
-        private static readonly string[] Empty = new string[]{};
+        private static readonly string[] Empty = {};
 
         internal static NodeInfo Create(RootNode node)
         {
@@ -45,17 +45,17 @@ namespace NRules.Diagnostics
         
         internal static NodeInfo Create(SelectionNode node)
         {
-            return new NodeInfo(NodeType.Selection, string.Empty, node.Conditions.Select(c => c.ToString()), Empty);
+            return new NodeInfo(NodeType.Selection, string.Empty, node.Conditions.Select(c => c.ToString()), Empty, Empty);
         }
 
         internal static NodeInfo Create(AlphaMemoryNode node, IAlphaMemory memory)
         {
-            return new NodeInfo(NodeType.AlphaMemory, string.Empty, Empty, memory.Facts.Select(f => f.Object.ToString()));
+            return new NodeInfo(NodeType.AlphaMemory, string.Empty, Empty, Empty, memory.Facts.Select(f => f.Object.ToString()));
         }
 
         internal static NodeInfo Create(JoinNode node)
         {
-            return new NodeInfo(NodeType.Join, string.Empty, node.Conditions.Select(c => c.ToString()), Empty);
+            return new NodeInfo(NodeType.Join, string.Empty, node.Conditions.Select(c => c.ToString()), Empty, Empty);
         }
 
         internal static NodeInfo Create(NotNode node)
@@ -70,7 +70,8 @@ namespace NRules.Diagnostics
 
         internal static NodeInfo Create(AggregateNode node)
         {
-            return new NodeInfo(NodeType.Aggregate, string.Empty);
+            var expressions = node.ExpressionMap.Select(e => string.Format("{0}={1}", e.Name, e.Expression.ToString()));
+            return new NodeInfo(NodeType.Aggregate, node.Name, Empty, expressions, Empty);
         }
 
         internal static NodeInfo Create(ObjectInputAdapter node)
@@ -82,7 +83,7 @@ namespace NRules.Diagnostics
         {
             var tuples = memory.Tuples.Select(
                 t => string.Join(" || ", t.Facts.Reverse().Select(f => f.Object).ToArray()));
-            return new NodeInfo(NodeType.BetaMemory, string.Empty, Empty, tuples);
+            return new NodeInfo(NodeType.BetaMemory, string.Empty, Empty, Empty, tuples);
         }
 
         internal static NodeInfo Create(TerminalNode node)
@@ -96,15 +97,16 @@ namespace NRules.Diagnostics
         }
 
         internal NodeInfo(NodeType nodeType, string details)
-            : this(nodeType, details, Empty, Empty)
+            : this(nodeType, details, Empty, Empty, Empty)
         {
         }
 
-        internal NodeInfo(NodeType nodeType, string details, IEnumerable<string> conditions, IEnumerable<string> items)
+        internal NodeInfo(NodeType nodeType, string details, IEnumerable<string> conditions, IEnumerable<string> expressions, IEnumerable<string> items)
         {
             NodeType = nodeType;
             Details = details;
             Conditions = conditions.ToArray();
+            Expressions = expressions.ToArray();
             Items = items.ToArray();
         }
 
@@ -122,6 +124,11 @@ namespace NRules.Diagnostics
         /// Match conditions.
         /// </summary>
         public string[] Conditions { get; private set; }
+
+        /// <summary>
+        /// Additional node expressions.
+        /// </summary>
+        public string[] Expressions { get; private set; }
 
         /// <summary>
         /// Facts/tuples currently associated with the node.

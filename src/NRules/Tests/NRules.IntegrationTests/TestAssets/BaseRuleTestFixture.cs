@@ -43,7 +43,7 @@ namespace NRules.IntegrationTests.TestAssets
 
         protected T GetRuleInstance<T>() where T : BaseRule
         {
-            return (T)Repository.Activator.Activate(typeof(T));
+            return (T)Repository.Activator.Activate(typeof(T)).Single();
         }
 
         protected T GetFiredFact<T>()
@@ -70,6 +70,11 @@ namespace NRules.IntegrationTests.TestAssets
         protected void AssertFiredTwice()
         {
             Assert.AreEqual(2, _firedRulesMap.First().Value.Count);
+        }
+
+        protected void AssertFiredTimes(int value)
+        {
+            Assert.AreEqual(value, _firedRulesMap.First().Value.Count);
         }
 
         protected void AssertDidNotFire()
@@ -99,7 +104,7 @@ namespace NRules.IntegrationTests.TestAssets
         {
             private readonly Dictionary<Type, Rule> _rules = new Dictionary<Type, Rule>();
 
-            public Rule Activate(Type type)
+            public IEnumerable<Rule> Activate(Type type)
             {
                 Rule rule;
                 if (!_rules.TryGetValue(type, out rule))
@@ -107,7 +112,7 @@ namespace NRules.IntegrationTests.TestAssets
                     rule = (Rule) Activator.CreateInstance(type);
                     _rules[type] = rule;
                 }
-                return rule;
+                yield return rule;
             }
         }
     }

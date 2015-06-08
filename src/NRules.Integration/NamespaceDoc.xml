@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>_NamespaceComments_</name>
+  </assembly>
+  <members>
+    <member name="N:NRules.Integration.Autofac">
+      <summary>
+        Contains types that integrate NRules with Autofac IoC container.
+      </summary>
+    </member>
+  </members>
+</doc>

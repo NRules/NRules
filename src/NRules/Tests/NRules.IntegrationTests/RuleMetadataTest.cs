@@ -32,6 +32,20 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Name_NameAttributeOverriden_CustomValue()
+        {
+            //Arrange
+            _repository.Load(x => x.From(typeof(RuleWithMetadataAndOverride)));
+            IRuleDefinition rule = _repository.GetRules().Single();
+
+            //Act
+            string actual = rule.Name;
+
+            //Assert
+            Assert.AreEqual("Programmatic name", actual);
+        }
+
+        [Test]
         public void Description_DescriptionAttributePresent_CustomValue()
         {
             //Arrange
@@ -125,7 +139,7 @@ namespace NRules.IntegrationTests
         public void Priority_PriorityAttributeOverridenProgrammatically_CustomValue()
         {
             //Arrange
-            _repository.Load(x => x.From(typeof(RuleWithMetadataAndPriorityOverride)));
+            _repository.Load(x => x.From(typeof(RuleWithMetadataAndOverride)));
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act

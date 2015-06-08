@@ -227,6 +227,26 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_OneInvalidFactAndSecondMatchingFactFirstUpdatedToValid_FiresOnce()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Invalid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = "Valid Value 1"};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            fact1.TestProperty = "Valid Value 1";
+            Session.Update(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+        }
+
+        [Test]
         public void Fire_TwoMatchingFactsSecondUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
@@ -244,6 +264,46 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertDidNotFire();
+        }
+
+        [Test]
+        public void Fire_OneMatchingFactSecondInvalidThenUpdatedToValid_FiresOnce()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Invalid Value 2", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            fact2.TestProperty = "Valid Value 2";
+            Session.Update(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+        }
+
+        [Test]
+        public void Fire_OneMatchingFactSecondInvalidThenUpdatedToValidJoin_FiresOnce()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = null};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            fact2.JoinProperty = fact1.TestProperty;
+            Session.Update(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
         }
 
         protected override void SetUpRules()

@@ -7,10 +7,10 @@
 
     internal class TerminalNode : ITerminalNode, ITupleSink
     {
-        private readonly FactIndexMap _factIndexMap;
+        private readonly IndexMap _factIndexMap;
         private IRuleNode _ruleNode;
 
-        public FactIndexMap FactIndexMap
+        public IndexMap FactIndexMap
         {
             get { return _factIndexMap; }
         }
@@ -20,7 +20,7 @@
             get { return _ruleNode; }
         }
 
-        public TerminalNode(ITupleSource source, FactIndexMap factIndexMap)
+        public TerminalNode(ITupleSource source, IndexMap factIndexMap)
         {
             _factIndexMap = factIndexMap;
             source.Attach(this);
@@ -33,7 +33,7 @@
 
         public void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            RuleNode.Activate(context, tuple, _factIndexMap);
+            RuleNode.Reactivate(context, tuple, _factIndexMap);
         }
 
         public void PropagateRetract(IExecutionContext context, Tuple tuple)

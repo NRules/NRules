@@ -32,7 +32,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>1</WarningLevel>
+    <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\NRules.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
@@ -49,12 +49,12 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ActionContext.cs" />
-    <Compile Include="ActionOperation.cs" />
     <Compile Include="ActivationQueue.cs" />
     <Compile Include="Collections\OrderedHashSet.cs" />
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
+    <Compile Include="DependencyResolver.cs" />
     <Compile Include="Diagnostics\ActionErrorEventArgs.cs" />
     <Compile Include="Diagnostics\AgendaEventArgs.cs" />
     <Compile Include="Diagnostics\ConditionErrorEventArgs.cs" />
@@ -70,8 +70,10 @@
     <Compile Include="Diagnostics\SnapshotBuilder.cs" />
     <Compile Include="Diagnostics\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
+    <Compile Include="ResolutionContext.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\ConditionComparer.cs" />
+    <Compile Include="Rete\ExpressionMapComparer.cs" />
     <Compile Include="Rete\INode.cs" />
     <Compile Include="Rete\NotNode.cs" />
     <Compile Include="Rete\IObjectSource.cs" />
@@ -82,7 +84,7 @@
     <Compile Include="Rete\SubnetCondition.cs" />
     <Compile Include="Rete\TerminalNode.cs" />
     <Compile Include="Rete\TupleExtensions.cs" />
-    <Compile Include="Rete\FactIndexMap.cs" />
+    <Compile Include="Rete\IndexMap.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleCompilationException.cs" />
     <Compile Include="RuleCompiler.cs" />
@@ -110,6 +112,7 @@
     <Compile Include="Rete\RuleNode.cs" />
     <Compile Include="Rete\Tuple.cs" />
     <Compile Include="Rete\TypeNode.cs" />
+    <Compile Include="RuleDependency.cs" />
     <Compile Include="RuleExpressionEvaluationException.cs" />
     <Compile Include="RuleRepositoryExtensions.cs" />
     <Compile Include="RuleActionEvaluationException.cs" />

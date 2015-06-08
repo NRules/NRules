@@ -7,7 +7,7 @@ namespace NRules.Rete
     internal class Fact
     {
         private readonly Type _factType;
-        private readonly object _object;
+        private object _object;
 
         public Fact()
         {
@@ -27,6 +27,7 @@ namespace NRules.Rete
         public object RawObject
         {
             get { return _object; }
+            set { _object = value; }
         }
 
         public virtual object Object

@@ -10,5 +10,7 @@ namespace NRules.Samples.ClaimsExpert.Domain
         public virtual IList<ClaimAlert> Alerts { get; set; }
         public virtual Patient Patient { get; set; }
         public virtual Insured Insured { get; set; }
+
+        public virtual bool Open { get { return Status == ClaimStatus.Open; } }
     }
 }

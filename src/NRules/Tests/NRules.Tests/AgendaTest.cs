@@ -23,7 +23,9 @@ namespace NRules.Tests
         {
             // Arrange
             var ruleMock = new Mock<ICompiledRule>();
-            var activation = new Activation(ruleMock.Object, new Tuple(), null);
+            var factObject = new FactObject {Value = "Test"};
+            var tuple = CreateTuple(factObject);
+            var activation = new Activation(ruleMock.Object, tuple, null);
             var target = CreateTarget();
 
             // Act
@@ -31,7 +33,33 @@ namespace NRules.Tests
 
             // Assert
             Assert.True(target.HasActiveRules());
-            Assert.AreEqual(ruleMock.Object, target.NextActivation().Rule);
+            var actualActivation = target.NextActivation();
+            Assert.AreEqual(ruleMock.Object, actualActivation.Rule);
+            Assert.AreEqual(factObject, actualActivation.Tuple.RightFact.Object);
+            Assert.False(target.HasActiveRules());
+        }
+
+        [Test]
+        public void Reactivate_Called_ActivationUpdatedInQueue()
+        {
+            // Arrange
+            var ruleMock = new Mock<ICompiledRule>();
+            var factObject = new FactObject { Value = "Test" };
+            var tuple = CreateTuple(factObject);
+            var activation1 = new Activation(ruleMock.Object, tuple, null);
+            var target = CreateTarget();
+            target.Activate(activation1);
+
+            // Act
+            factObject.Value = "New Value";
+            var activation2 = new Activation(ruleMock.Object, tuple, null);
+            target.Reactivate(activation2);
+
+            // Assert
+            var actualActivation = target.NextActivation();
+            Assert.AreEqual(ruleMock.Object, actualActivation.Rule);
+            Assert.AreEqual(factObject, actualActivation.Tuple.RightFact.Object);
+            Assert.False(target.HasActiveRules());
         }
         
         [Test]
@@ -39,12 +67,15 @@ namespace NRules.Tests
         {
             // Arrange
             var ruleMock = new Mock<ICompiledRule>();
-            var activation = new Activation(ruleMock.Object, new Tuple(), null);
+            var factObject = new FactObject { Value = "Test" };
+            var tuple = CreateTuple(factObject);
+            var activation1 = new Activation(ruleMock.Object, tuple, null);
             var target = CreateTarget();
-            target.Activate(activation);
+            target.Activate(activation1);
 
             // Act
-            target.Deactivate(activation);
+            var activation2 = new Activation(ruleMock.Object, tuple, null);
+            target.Deactivate(activation2);
 
             // Assert
             Assert.False(target.HasActiveRules());
@@ -74,6 +105,36 @@ namespace NRules.Tests
         private Agenda CreateTarget()
         {
             return new Agenda();
+        }
+
+        private static Tuple CreateTuple(object factObject)
+        {
+            return new Tuple(new Tuple(), new Fact(factObject));
+        }
+
+        private class FactObject : System.IEquatable<FactObject>
+        {
+            public string Value { get; set; }
+
+            public bool Equals(FactObject other)
+            {
+                if (ReferenceEquals(null, other)) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return string.Equals(Value, other.Value);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != GetType()) return false;
+                return Equals((FactObject) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return Value.GetHashCode();
+            }
         }
     }
 }

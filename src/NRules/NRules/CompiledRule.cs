@@ -9,6 +9,7 @@ namespace NRules
         RuleRepeatability Repeatability { get; }
         IRuleDefinition Definition { get; }
         IEnumerable<IRuleAction> Actions { get; }
+        IEnumerable<IRuleDependency> Dependencies { get; }
     }
 
     internal class CompiledRule : ICompiledRule
@@ -17,13 +18,15 @@ namespace NRules
         private readonly RuleRepeatability _repeatability;
         private readonly IRuleDefinition _definition;
         private readonly List<IRuleAction> _actions;
+        private readonly List<IRuleDependency> _dependencies;
 
-        public CompiledRule(IRuleDefinition definition, IEnumerable<IRuleAction> actions)
+        public CompiledRule(IRuleDefinition definition, IEnumerable<IRuleAction> actions, IEnumerable<IRuleDependency> dependencies)
         {
             _priority = definition.Priority;
             _repeatability = definition.Repeatability;
             _definition = definition;
             _actions = new List<IRuleAction>(actions);
+            _dependencies = new List<IRuleDependency>(dependencies);
         }
 
         public int Priority
@@ -44,6 +47,11 @@ namespace NRules
         public IEnumerable<IRuleAction> Actions
         {
             get { return _actions; }
+        }
+
+        public IEnumerable<IRuleDependency> Dependencies
+        {
+            get { return _dependencies; }
         }
     }
 }

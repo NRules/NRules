@@ -47,7 +47,7 @@ namespace NRules.Rete
             {
                 BuildJoinNode(context);
             }
-            var factIndexMap = FactIndexMap.CreateMap(ruleDeclarations, context.Declarations);
+            var factIndexMap = IndexMap.CreateMap(ruleDeclarations, context.Declarations);
             var terminalNode = new TerminalNode(context.BetaSource, factIndexMap);
             return terminalNode;
         }
@@ -89,7 +89,7 @@ namespace NRules.Rete
         protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
         {
             BuildSubnet(context, element.Source);
-            BuildAggregateNode(context, element.AggregateType);
+            BuildAggregateNode(context, element);
         }
 
         protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
@@ -157,7 +157,7 @@ namespace NRules.Rete
             {
                 foreach (var condition in conditions)
                 {
-                    var factIndexMap = FactIndexMap.CreateMap(condition.References, context.Declarations);
+                    var factIndexMap = IndexMap.CreateMap(condition.References, context.Declarations);
                     var betaCondition = new BetaCondition(condition.Expression, factIndexMap);
                     betaConditions.Add(betaCondition);
                 }
@@ -172,6 +172,7 @@ namespace NRules.Rete
             if (node == null)
             {
                 node = new JoinNode(context.BetaSource, context.AlphaSource);
+                if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
                 foreach (var betaCondition in betaConditions)
                 {
                     node.Conditions.Add(betaCondition);
@@ -213,17 +214,18 @@ namespace NRules.Rete
             context.ResetAlphaSource();
         }
 
-        private void BuildAggregateNode(ReteBuilderContext context, Type aggregateType)
+        private void BuildAggregateNode(ReteBuilderContext context, AggregateElement element)
         {
             var node = context.AlphaSource
                 .Sinks.OfType<AggregateNode>()
                 .FirstOrDefault(x =>
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
-                    x.AggregateType == aggregateType);
+                    x.Name == element.Name &&
+                    ExpressionMapComparer.AreEqual(x.ExpressionMap, element.ExpressionMap));
             if (node == null)
             {
-                node = new AggregateNode(context.BetaSource, context.AlphaSource, aggregateType);
+                node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name, element.ExpressionMap, element.AggregatorFactory);
                 if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
             }
             BuildBetaMemoryNode(context, node);
