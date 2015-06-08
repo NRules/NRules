@@ -36,6 +36,7 @@ namespace NRules.RuleModel.Aggregators
             var source = (TSource)fact;
             var value = _selector(source);
             var oldValue = _sourceToValue[source];
+            _sourceToValue[source] = value;
 
             if (Equals(oldValue, value))
                 return new[] { AggregationResult.Modified(value) };
