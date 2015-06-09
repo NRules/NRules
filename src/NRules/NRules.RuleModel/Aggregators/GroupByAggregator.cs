@@ -61,7 +61,7 @@ namespace NRules.RuleModel.Aggregators
 
             var result1 = Remove(oldKey, oldElement);
             var result2 = Add(key, element);
-            return result1.Union(result2);
+            return result1.Concat(result2);
         }
 
         public IEnumerable<AggregationResult> Remove(object fact)
@@ -144,7 +144,7 @@ namespace NRules.RuleModel.Aggregators
             {
                 var aggregates = _defaultGroup == null
                     ? _groups.Values
-                    : new[] {_defaultGroup}.Union(_groups.Values);
+                    : new[] {_defaultGroup}.Concat(_groups.Values);
                 return aggregates;
             }
         }

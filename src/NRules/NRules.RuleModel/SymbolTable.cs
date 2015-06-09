@@ -49,7 +49,7 @@ namespace NRules.RuleModel
 
         public IEnumerable<Declaration> VisibleDeclarations
         {
-            get { return (ParentScope != null) ? ParentScope.VisibleDeclarations.Union(Declarations) : Declarations; }
+            get { return (ParentScope != null) ? ParentScope.VisibleDeclarations.Concat(Declarations) : Declarations; }
         }
 
         public void Add(Declaration declaration)
