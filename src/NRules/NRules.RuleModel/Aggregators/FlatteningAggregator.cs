@@ -42,7 +42,7 @@ namespace NRules.RuleModel.Aggregators
             var oldList = _sourceToList[source];
             _sourceToList[source] = list;
 
-            return oldList.Select(x => AggregationResult.Removed(x)).Union(
+            return oldList.Select(x => AggregationResult.Removed(x)).Concat(
                 list.Select(x => AggregationResult.Added(x))).ToArray();
         }
 
