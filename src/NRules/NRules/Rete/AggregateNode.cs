@@ -129,6 +129,7 @@ namespace NRules.Rete
             if (aggregateFact != null)
             {
                 MemoryNode.PropagateRetract(context, tuple, aggregateFact);
+                context.WorkingMemory.RemoveFact(aggregateFact);
             }
         }
 
