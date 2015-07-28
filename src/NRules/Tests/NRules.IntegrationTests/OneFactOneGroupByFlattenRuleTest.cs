@@ -169,6 +169,30 @@ namespace NRules.IntegrationTests
             Assert.AreEqual(fact4, GetFiredFact<FactType1>(3));
         }
 
+        [Test]
+        public void Fire_TwoFactsForOneGroupAssertedThenOneRetractedAnotherUpdatedThenOneAssertedBack_FiresTwiceWithFactsFromOneGroup()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value Group1" };
+            var fact2 = new FactType1 { TestProperty = "Valid Value Group1" };
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            Session.Retract(fact2);
+            
+            Session.Update(fact1);
+            Session.Insert(fact2);
+            
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredTimes(2);
+            Assert.AreEqual(fact1, GetFiredFact<FactType1>(0));
+            Assert.AreEqual(fact2, GetFiredFact<FactType1>(1));
+        }
+
         protected override void SetUpRules()
         {
             SetUpRule<OneFactOneGroupByFlattenRule>();

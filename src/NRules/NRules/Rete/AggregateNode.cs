@@ -129,7 +129,7 @@ namespace NRules.Rete
             if (aggregateFact != null)
             {
                 MemoryNode.PropagateRetract(context, tuple, aggregateFact);
-                context.WorkingMemory.RemoveFact(aggregateFact);
+                context.WorkingMemory.RemoveInternalFact(this, aggregateFact);
             }
         }
 
@@ -149,11 +149,11 @@ namespace NRules.Rete
         private Fact ToAggregateFact(IExecutionContext context, object aggregate)
         {
             if (aggregate == null) return null;
-            Fact fact = context.WorkingMemory.GetFact(aggregate);
+            Fact fact = context.WorkingMemory.GetInternalFact(this, aggregate);
             if (fact == null)
             {
                 fact = new Fact(aggregate);
-                context.WorkingMemory.SetFact(fact);
+                context.WorkingMemory.SetInternalFact(this, fact);
             }
             return fact;
         }

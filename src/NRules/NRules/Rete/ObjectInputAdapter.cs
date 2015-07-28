@@ -19,7 +19,7 @@ namespace NRules.Rete
         public void PropagateAssert(IExecutionContext context, Tuple tuple)
         {
             var wrapperFact = new WrapperFact(tuple);
-            context.WorkingMemory.SetFact(wrapperFact);
+            context.WorkingMemory.SetInternalFact(this, wrapperFact);
             foreach (var sink in _sinks)
             {
                 sink.PropagateAssert(context, wrapperFact);
@@ -28,7 +28,7 @@ namespace NRules.Rete
 
         public void PropagateUpdate(IExecutionContext context, Tuple tuple)
         {
-            var wrapperFact = context.WorkingMemory.GetFact(tuple);
+            var wrapperFact = context.WorkingMemory.GetInternalFact(this, tuple);
             foreach (var sink in _sinks)
             {
                 sink.PropagateUpdate(context, wrapperFact);
@@ -37,17 +37,19 @@ namespace NRules.Rete
 
         public void PropagateRetract(IExecutionContext context, Tuple tuple)
         {
-            var wrapperFact = context.WorkingMemory.GetFact(tuple);
+            var wrapperFact = context.WorkingMemory.GetInternalFact(this, tuple);
             foreach (var sink in _sinks)
             {
                 sink.PropagateRetract(context, wrapperFact);
             }
-            context.WorkingMemory.RemoveFact(wrapperFact);
+            context.WorkingMemory.RemoveInternalFact(this, wrapperFact);
         }
 
         public IEnumerable<Fact> GetFacts(IExecutionContext context)
         {
-            return _source.GetTuples(context).Select(t => context.WorkingMemory.GetFact(t));
+            var sourceTuples = _source.GetTuples(context);
+            var sourceFacts = sourceTuples.Select(t => context.WorkingMemory.GetInternalFact(this, t));
+            return sourceFacts;
         }
 
         public void Attach(IObjectSink sink)

@@ -9,6 +9,9 @@ namespace NRules
         Fact GetFact(object factObject);
         void SetFact(Fact fact);
         void RemoveFact(Fact fact);
+        Fact GetInternalFact(INode node, object factObject);
+        void SetInternalFact(INode node, Fact fact);
+        void RemoveInternalFact(INode node, Fact fact);
         IAlphaMemory GetNodeMemory(IAlphaMemoryNode node);
         IBetaMemory GetNodeMemory(IBetaMemoryNode node);
     }
@@ -16,6 +19,7 @@ namespace NRules
     internal class WorkingMemory : IWorkingMemory
     {
         private readonly Dictionary<object, Fact> _factMap = new Dictionary<object, Fact>();
+        private readonly Dictionary<INode, Dictionary<object, Fact>> _internalFactMap = new Dictionary<INode, Dictionary<object, Fact>>();
 
         private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap =
             new Dictionary<IAlphaMemoryNode, IAlphaMemory>();
@@ -40,6 +44,37 @@ namespace NRules
         public void RemoveFact(Fact fact)
         {
             _factMap.Remove(fact.RawObject);
+        }
+
+        public Fact GetInternalFact(INode node, object factObject)
+        {
+            Dictionary<object, Fact> factMap;
+            if (!_internalFactMap.TryGetValue(node, out factMap)) return null;
+
+            Fact fact;
+            factMap.TryGetValue(factObject, out fact);
+            return fact;
+        }
+
+        public void SetInternalFact(INode node, Fact fact)
+        {
+            Dictionary<object, Fact> factMap;
+            if (!_internalFactMap.TryGetValue(node, out factMap))
+            {
+                factMap = new Dictionary<object, Fact>();
+                _internalFactMap[node] = factMap;
+            }
+
+            factMap[fact.RawObject] = fact;
+        }
+
+        public void RemoveInternalFact(INode node, Fact fact)
+        {
+            Dictionary<object, Fact> factMap;
+            if (!_internalFactMap.TryGetValue(node, out factMap)) return;
+
+            factMap.Remove(fact.RawObject);
+            if (factMap.Count == 0) _internalFactMap.Remove(node);
         }
 
         public IAlphaMemory GetNodeMemory(IAlphaMemoryNode node)
