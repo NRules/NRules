@@ -21,14 +21,12 @@ namespace NRules
         /// <seealso cref="IRuleRepository"/>
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
         {
-            var rules = new List<ICompiledRule>();
             var reteBuilder = new ReteBuilder();
             foreach (var ruleDefinition in ruleDefinitions)
             {
                 try
                 {
-                    var compiledRule = CompileRule(reteBuilder, ruleDefinition);
-                    rules.Add(compiledRule);
+                    CompileRule(reteBuilder, ruleDefinition);
                 }
                 catch (Exception e)
                 {
@@ -52,7 +50,7 @@ namespace NRules
             return Compile(rules);
         }
 
-        private ICompiledRule CompileRule(ReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
+        private void CompileRule(ReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
         {
             var transformation = new RuleTransformation();
             var transformedRule = transformation.Transform(ruleDefinition);
@@ -74,7 +72,6 @@ namespace NRules
 
             var rule = new CompiledRule(ruleDefinition, actions, dependencies);
             BuildRuleNode(rule, terminals);
-            return rule;
         }
 
         private IEnumerable<IRuleDependency> CompileDependencies(IRuleDefinition ruleDefinition)
