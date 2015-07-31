@@ -41,6 +41,25 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_TwoMatchingFactsInsertedOneUpdated_FiresOnceWithTwoFactsInCollection()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+            Session.Update(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType1>>().Count());
+        }
+
+        [Test]
         public void Fire_TwoMatchingFactsInsertedOneRetracted_FiresOnceWithOneFactInCollection()
         {
             //Arrange

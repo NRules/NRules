@@ -54,8 +54,10 @@
     <Compile Include="CollectionWithConditionsRuleTest.cs" />
     <Compile Include="LifecycleEventTest.cs" />
     <Compile Include="OneFactNonRepeatableRuleTest.cs" />
+    <Compile Include="OneEquatableFactOneCollectionRuleTest.cs" />
     <Compile Include="OneFactOneGroupByFlattenRuleTest.cs" />
     <Compile Include="OneFactOneGroupByRuleTest.cs" />
+    <Compile Include="OneFactRetractingRuleTest.cs" />
     <Compile Include="OneFactRepeatableRuleTest.cs" />
     <Compile Include="OneEquatableFactRuleTest.cs" />
     <Compile Include="OneFactOneSelectRuleTest.cs" />
@@ -68,11 +70,13 @@
     <Compile Include="TestRules\CannotActivateRule.cs" />
     <Compile Include="TestRules\IdentityMatchRule.cs" />
     <Compile Include="TestRules\CollectionWithConditionsRule.cs" />
+    <Compile Include="TestRules\OneEquatableFactOneCollectionRule.cs" />
     <Compile Include="TestRules\OneFactNonRepeatableRule.cs" />
     <Compile Include="TestRules\OneEquatableFactRule.cs" />
     <Compile Include="TestRules\OneFactAggregateJoinRule.cs" />
     <Compile Include="TestRules\OneFactOneGroupByFlattenRule.cs" />
     <Compile Include="TestRules\OneFactOneSelectRule.cs" />
+    <Compile Include="TestRules\OneFactRetractingRule.cs" />
     <Compile Include="TestRules\OneFactSimpleGroupByRule.cs" />
     <Compile Include="TestRules\TwoFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactOneGroupByRule.cs" />

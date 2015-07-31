@@ -18,6 +18,45 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_TwoFactsForOneGroup_FiresTwiceWithFactsFromGroupOne()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value Group1"};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredTwice();
+            Assert.AreEqual(fact1, GetFiredFact<FactType1>(0));
+            Assert.AreEqual(fact2, GetFiredFact<FactType1>(1));
+        }
+
+        [Test]
+        public void Fire_TwoFactsForOneGroupInsertedThenOneUpdated_FiresTwiceWithFactsFromGroupOne()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value Group1"};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+            Session.Update(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredTwice();
+            Assert.AreEqual(fact1, GetFiredFact<FactType1>(0));
+            Assert.AreEqual(fact2, GetFiredFact<FactType1>(1));
+        }
+
+        [Test]
         public void Fire_TwoFactsForOneGroupAndOneForAnother_FiresTwiceWithFactsFromGroupOne()
         {
             //Arrange

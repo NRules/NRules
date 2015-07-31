@@ -21,6 +21,22 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
             Assert.AreEqual(fact.TestProperty, GetFiredFact<FactType1Projection>().Value);
         }
+        
+        [Test]
+        public void Fire_OneMatchingFactInsertedThenUpdated_FiresOnce()
+        {
+            //Arrange
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            Session.Insert(fact);
+            Session.Update(fact);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactType1Projection>().Value);
+        }
 
         [Test]
         public void Fire_TwoMatchingFacts_FiresTwice()
