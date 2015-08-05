@@ -78,6 +78,22 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_MatchingFactInsertedThenUpdatedAndNoFactsMatchingNotPattern_FiresOnce()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+
+            Session.Insert(fact1);
+            Session.Update(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+        }
+
+        [Test]
         public void Fire_TwoMatchingFactsAndNoFactsMatchingNotPattern_FiresTwice()
         {
             //Arrange

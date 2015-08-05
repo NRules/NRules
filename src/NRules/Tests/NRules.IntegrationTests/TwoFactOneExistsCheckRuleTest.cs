@@ -25,6 +25,23 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_MatchingFactsInReverseOrder_FiresOnce()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact2);
+            Session.Insert(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+        }
+
+        [Test]
         public void Fire_MatchingFactsMultipleOfTypeTwo_FiresOnce()
         {
             //Arrange
@@ -82,6 +99,42 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertDidNotFire();
+        }
+
+        [Test]
+        public void Fire_FactOneAssertedAndRetractedFactTwoValid_DoesNotFire()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+            Session.Retract(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+
+        [Test]
+        public void Fire_FactOneAssertedAndUpdatedFactTwoValid_FiresOnce()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+            Session.Update(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
         }
 
         [Test]
