@@ -25,6 +25,10 @@ namespace NRules.RuleModel.Builders
         /// Names and types of the expression parameters must match the names and types defined in the pattern declarations.</param>
         public void Condition(LambdaExpression expression)
         {
+            if (expression.ReturnType != typeof(bool))
+            {
+                throw new ArgumentException("Condition expression must return a Boolean");
+            }
             IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
             var condition = new ConditionElement(Scope.Declarations, references, expression);
             _conditions.Add(condition);

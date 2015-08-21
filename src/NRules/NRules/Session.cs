@@ -173,12 +173,12 @@ namespace NRules
             {
                 Activation activation = _agenda.NextActivation();
                 ICompiledRule rule = activation.Rule;
-                var actionContext = new ActionContext(rule.Definition, this);
+                var actionContext = new ActionContext(rule, this);
 
                 _eventAggregator.RaiseRuleFiring(this, activation);
                 foreach (IRuleAction action in rule.Actions)
                 {
-                    action.Invoke(_executionContext, actionContext, activation.Tuple, activation.TupleFactMap, rule.Dependencies);
+                    action.Invoke(_executionContext, actionContext, activation.Tuple, activation.TupleFactMap);
                 }
                 _eventAggregator.RaiseRuleFired(this, activation);
 

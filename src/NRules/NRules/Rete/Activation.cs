@@ -5,12 +5,14 @@ namespace NRules.Rete
     internal class Activation : IEquatable<Activation>
     {
         private readonly ICompiledRule _rule;
+        private readonly int _priority;
         private readonly Tuple _tuple;
         private readonly IndexMap _tupleFactMap;
 
-        public Activation(ICompiledRule rule, Tuple tuple, IndexMap tupleFactMap)
+        public Activation(ICompiledRule rule, int priority, Tuple tuple, IndexMap tupleFactMap)
         {
             _rule = rule;
+            _priority = priority;
             _tuple = tuple;
             _tupleFactMap = tupleFactMap;
         }
@@ -18,6 +20,11 @@ namespace NRules.Rete
         public ICompiledRule Rule
         {
             get { return _rule; }
+        }
+
+        public int Priority
+        {
+            get { return _priority; }
         }
 
         public Tuple Tuple

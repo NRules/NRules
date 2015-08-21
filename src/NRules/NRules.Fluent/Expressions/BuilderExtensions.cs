@@ -31,5 +31,12 @@ namespace NRules.Fluent.Expressions
             var rewrittenAction = rewriter.Rewrite(action);
             builder.Action(rewrittenAction);
         }
+
+        public static void DslExpression(this PriorityBuilder builder, Expression<Func<int>> expression)
+        {
+            var rewriter = new ExpressionRewriter(builder.Declarations);
+            var rewrittenExpression = rewriter.Rewrite(expression);
+            builder.PriorityExpression(rewrittenExpression);
+        }
     }
 }

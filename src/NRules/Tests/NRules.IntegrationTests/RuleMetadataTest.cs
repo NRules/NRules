@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Linq.Expressions;
 using NRules.Fluent;
 using NRules.IntegrationTests.TestRules;
 using NRules.RuleModel;
@@ -83,10 +84,11 @@ namespace NRules.IntegrationTests
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act
-            int actual = rule.Priority;
+            var actual = rule.Priority.Expression;
 
             //Assert
-            Assert.AreEqual(100, actual);
+            Assert.AreEqual(ExpressionType.Constant, actual.Body.NodeType);
+            Assert.AreEqual(100, ((ConstantExpression)actual.Body).Value);
         }
 
         [Test]
@@ -115,10 +117,11 @@ namespace NRules.IntegrationTests
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act
-            int actual = rule.Priority;
+            var actual = rule.Priority.Expression;
 
             //Assert
-            Assert.AreEqual(200, actual);
+            Assert.AreEqual(ExpressionType.Constant, actual.Body.NodeType);
+            Assert.AreEqual(200, ((ConstantExpression)actual.Body).Value);
         }
 
         [Test]
@@ -129,10 +132,11 @@ namespace NRules.IntegrationTests
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act
-            int actual = rule.Priority;
+            var actual = rule.Priority.Expression;
 
             //Assert
-            Assert.AreEqual(500, actual);
+            Assert.AreEqual(ExpressionType.Constant, actual.Body.NodeType);
+            Assert.AreEqual(500, ((ConstantExpression)actual.Body).Value);
         }
 
         [Test]
@@ -143,10 +147,11 @@ namespace NRules.IntegrationTests
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act
-            int actual = rule.Priority;
+            var actual = rule.Priority.Expression;
 
             //Assert
-            Assert.AreEqual(1000, actual);
+            Assert.AreEqual(ExpressionType.Constant, actual.Body.NodeType);
+            Assert.AreEqual(1000, ((ConstantExpression)actual.Body).Value);
         }
 
         [Test]
@@ -199,10 +204,11 @@ namespace NRules.IntegrationTests
             IRuleDefinition rule = _repository.GetRules().Single();
 
             //Act
-            int actual = rule.Priority;
+            var actual = rule.Priority.Expression;
 
             //Assert
-            Assert.AreEqual(0, actual);
+            Assert.AreEqual(ExpressionType.Constant, actual.Body.NodeType);
+            Assert.AreEqual(0, ((ConstantExpression)actual.Body).Value);
         }
     }
 }

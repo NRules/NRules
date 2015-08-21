@@ -13,9 +13,9 @@ namespace NRules.RuleModel.Builders
     {
         private string _name;
         private string _description = string.Empty;
-        private int _priority = RuleDefinition.DefaultPriority;
         private RuleRepeatability _repeatability = RuleDefinition.DefaultRepeatability;
         private readonly List<string> _tags = new List<string>();
+        private readonly PriorityBuilder _priorityBuilder;
         private readonly DependencyGroupBuilder _dependencyBuilder;
         private readonly GroupBuilder _groupBuilder;
         private readonly ActionGroupBuilder _actionGroupBuilder;
@@ -26,6 +26,7 @@ namespace NRules.RuleModel.Builders
         public RuleBuilder()
         {
             var rootScope = new SymbolTable();
+            _priorityBuilder = new PriorityBuilder(rootScope);
             _dependencyBuilder = new DependencyGroupBuilder(rootScope);
             _groupBuilder = new GroupBuilder(rootScope, GroupType.And);
             _actionGroupBuilder = new ActionGroupBuilder(rootScope);
@@ -65,7 +66,16 @@ namespace NRules.RuleModel.Builders
         /// <param name="priority">Rule priority value.</param>
         public void Priority(int priority)
         {
-            _priority = priority;
+            _priorityBuilder.PriorityValue(priority);
+        }
+
+        /// <summary>
+        /// Retrieves priority expression builder.
+        /// </summary>
+        /// <returns>Priority builder.</returns>
+        public PriorityBuilder Priority()
+        {
+            return _priorityBuilder;
         }
 
         /// <summary>
@@ -121,7 +131,9 @@ namespace NRules.RuleModel.Builders
             IBuilder<ActionGroupElement> actionBuilder = _actionGroupBuilder;
             ActionGroupElement actions = actionBuilder.Build();
 
-            var ruleDefinition = new RuleDefinition(_name, _description, _priority, _repeatability, _tags, dependencies, conditions, actions);
+            PriorityElement priority = _priorityBuilder.Build();
+
+            var ruleDefinition = new RuleDefinition(_name, _description, _repeatability, _tags, priority, dependencies, conditions, actions);
             return ruleDefinition;
         }
 

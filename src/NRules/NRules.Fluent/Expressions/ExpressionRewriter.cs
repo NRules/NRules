@@ -6,7 +6,7 @@ using NRules.RuleModel;
 
 namespace NRules.Fluent.Expressions
 {
-    internal abstract class ExpressionRewriter : ExpressionVisitor
+    internal class ExpressionRewriter : ExpressionVisitor
     {
         protected IDictionary<string, Declaration> Declarations { get; private set; }
         protected IList<ParameterExpression> Parameters { get; private set; }
@@ -25,7 +25,9 @@ namespace NRules.Fluent.Expressions
             return Expression.Lambda(body, expression.TailCall, Parameters);
         }
 
-        protected abstract void InitParameters(LambdaExpression expression);
+        protected virtual void InitParameters(LambdaExpression expression)
+        {
+        }
         
         protected override Expression VisitMember(MemberExpression member)
         {
