@@ -192,6 +192,28 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
+        public void AreEqual_EquivalentMemberCall_True()
+        {
+            //Arrange
+            Expression<Func<SomeClass, bool>> first = x => x.NestedValue1().Values == null;
+            Expression<Func<SomeClass, bool>> second = y => y.NestedValue1().Values == null;
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Test]
+        public void AreEqual_NonEquivalentMemberCall_False()
+        {
+            //Arrange
+            Expression<Func<SomeClass, bool>> first = x => x.NestedValue1().Values == null;
+            Expression<Func<SomeClass, bool>> second = x => x.NestedValue2().Values == null;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Test]
         public void AreEqual_EquivalentInvocationExpression_True()
         {
             //Arrange
@@ -306,6 +328,16 @@ namespace NRules.Tests.Utilities
         public class SomeClass
         {
             public string[] Values = { "blop" };
+
+            public SomeClass NestedValue1()
+            {
+                return new SomeClass();
+            }
+
+            public SomeClass NestedValue2()
+            {
+                return new SomeClass();
+            }
         }
     }
 }
