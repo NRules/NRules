@@ -4,7 +4,7 @@ param (
 )
 
 $product_version = '0.4'
-$build_number = '2'
+$build_number = '3'
 $target_framework = 'net-4.0'
 $configuration = 'Release'
 
