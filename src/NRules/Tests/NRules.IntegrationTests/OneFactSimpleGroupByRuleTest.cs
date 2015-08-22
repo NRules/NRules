@@ -81,6 +81,26 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_OneFactWithValueAnotherWithNullThenNullUpdated_FiresTwiceWithOneFactInEachGroup()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Value"};
+            var fact2 = new FactType1 {TestProperty = null};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+            Session.Update(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredTwice();
+            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType1>>(0).Count());
+            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType1>>(1).Count());
+        }
+
+        [Test]
         public void Fire_TwoFactsWithNullBothRetracted_DoesNotFire()
         {
             //Arrange

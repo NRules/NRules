@@ -35,7 +35,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetFiredFact<IGrouping<string, FactType1>>().Count());
+            Assert.AreEqual(2, GetFiredFact<IGrouping<string, string>>().Count());
         }
 
         [Test]
@@ -57,8 +57,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(2, GetFiredFact<IGrouping<string, FactType1>>(0).Count());
-            Assert.AreEqual(2, GetFiredFact<IGrouping<string, FactType1>>(1).Count());
+            Assert.AreEqual(2, GetFiredFact<IGrouping<string, string>>(0).Count());
+            Assert.AreEqual(2, GetFiredFact<IGrouping<string, string>>(1).Count());
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetFiredFact<IGrouping<string, FactType1>>().Count());
+            Assert.AreEqual(2, GetFiredFact<IGrouping<string, string>>().Count());
         }
 
         [Test]
@@ -107,7 +107,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetFiredFact<IGrouping<string, FactType1>>().Count());
+            Assert.AreEqual(2, GetFiredFact<IGrouping<string, string>>().Count());
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(3, GetFiredFact<IGrouping<string, FactType1>>().Count());
+            Assert.AreEqual(3, GetFiredFact<IGrouping<string, string>>().Count());
         }
 
         [Test]
@@ -157,8 +157,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(2, GetFiredFact<IGrouping<string, FactType1>>(0).Count());
-            Assert.AreEqual(2, GetFiredFact<IGrouping<string, FactType1>>(1).Count());
+            Assert.AreEqual(2, GetFiredFact<IGrouping<string, string>>(0).Count());
+            Assert.AreEqual(2, GetFiredFact<IGrouping<string, string>>(1).Count());
         }
 
         protected override void SetUpRules()

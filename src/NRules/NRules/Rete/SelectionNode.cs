@@ -1,23 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-
-namespace NRules.Rete
+﻿namespace NRules.Rete
 {
     internal class SelectionNode : AlphaNode
     {
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public IList<IAlphaCondition> Conditions { get; private set; }
+        private readonly IAlphaCondition _condition;
+
+        public IAlphaCondition Condition { get { return _condition; } }
 
         public SelectionNode(IAlphaCondition condition)
         {
-            Conditions = new List<IAlphaCondition>();
-            Conditions.Add(condition);
+            _condition = condition;
         }
 
         public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
-            return Conditions.All(c => c.IsSatisfiedBy(context, fact));
+            return _condition.IsSatisfiedBy(context, fact);
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)

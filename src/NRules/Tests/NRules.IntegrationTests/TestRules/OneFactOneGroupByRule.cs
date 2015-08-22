@@ -8,12 +8,12 @@ namespace NRules.IntegrationTests.TestRules
     {
         public override void Define()
         {
-            IGrouping<string, FactType1> group1 = null;
+            IGrouping<string, string> group1 = null;
 
             When()
                 .Query(() => group1, x => x
                     .Match<FactType1>(f => f.TestProperty.StartsWith("Valid"))
-                    .GroupBy(f => f.TestProperty)
+                    .GroupBy(f => f.TestProperty, f => f.TestProperty)
                     .Where(g => g.Count() > 1));
             Then()
                 .Do(ctx => Action());

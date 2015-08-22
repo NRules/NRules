@@ -45,7 +45,7 @@ namespace NRules.Diagnostics
         
         internal static NodeInfo Create(SelectionNode node)
         {
-            return new NodeInfo(NodeType.Selection, string.Empty, node.Conditions.Select(c => c.ToString()), Empty, Empty);
+            return new NodeInfo(NodeType.Selection, string.Empty, new[] {node.Condition.ToString()}, Empty, Empty);
         }
 
         internal static NodeInfo Create(AlphaMemoryNode node, IAlphaMemory memory)

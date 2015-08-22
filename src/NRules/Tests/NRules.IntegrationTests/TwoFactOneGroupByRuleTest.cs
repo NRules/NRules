@@ -278,6 +278,65 @@ namespace NRules.IntegrationTests
             Assert.AreSame(fact12, GetFiredFact<FactType1>(2));
         }
 
+        [Test]
+        public void Fire_TwoFactsOfOneKindAndAggregatedFactsMatchingBothOfTheFactsInsertInReverse_FiresThreeTimesWithCorrectCounts()
+        {
+            //Arrange
+            var fact11 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact12 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact21 = new FactType2 {TestProperty = "Valid Value Group 1", JoinProperty = fact11.TestProperty};
+            var fact22 = new FactType2 {TestProperty = "Valid Value Group 1", JoinProperty = fact11.TestProperty};
+            var fact23 = new FactType2 {TestProperty = "Valid Value Group 2", JoinProperty = fact11.TestProperty};
+            var fact24 = new FactType2 {TestProperty = "Valid Value Group 1", JoinProperty = fact12.TestProperty};
+
+            Session.Insert(fact24);
+            Session.Insert(fact23);
+            Session.Insert(fact22);
+            Session.Insert(fact21);
+            Session.Insert(fact12);
+            Session.Insert(fact11);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredTimes(3);
+            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType2>>(0).Count());
+            Assert.AreSame(fact12, GetFiredFact<FactType1>(0));
+            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType2>>(1).Count());
+            Assert.AreSame(fact11, GetFiredFact<FactType1>(1));
+            Assert.AreEqual(2, GetFiredFact<IGrouping<string, FactType2>>(2).Count());
+            Assert.AreSame(fact11, GetFiredFact<FactType1>(2));
+        }
+
+        [Test]
+        public void Fire_TwoMatchingCombinationsThenOneFactOfFirstKindUpdated_FiresTwiceBeforeUpdateAndOnceAfter()
+        {
+            //Arrange
+            var fact11 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact12 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact21 = new FactType2 {TestProperty = "Valid Value Group 1", JoinProperty = fact11.TestProperty};
+            var fact22 = new FactType2 {TestProperty = "Valid Value Group 1", JoinProperty = fact12.TestProperty};
+
+            Session.Insert(fact11);
+            Session.Insert(fact12);
+            Session.Insert(fact21);
+            Session.Insert(fact22);
+
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredTimes(2);
+
+            //Act - 2
+            Session.Update(fact11);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTimes(3);
+        }
+
         protected override void SetUpRules()
         {
             SetUpRule<TwoFactOneGroupByRule>();

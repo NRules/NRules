@@ -13,6 +13,7 @@ Use the following resources to get up and running with NRules.
 - [Wiki Documentation](https://github.com/NRules/NRules/wiki)
 - [API Documentation](http://nrules.net/api/index.html)
 - [Discussion Group](http://groups.google.com/group/nrules-users)
+- [Stack Overflow](http://stackoverflow.com/questions/tagged/nrules)
 
 --
 Copyright &copy; 2012-2015 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).

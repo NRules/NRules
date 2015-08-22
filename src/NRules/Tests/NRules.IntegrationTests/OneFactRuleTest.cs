@@ -135,6 +135,13 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Insert_Null_Throws()
+        {
+            //Arrange - Act - Assert
+            Assert.Throws<ArgumentNullException>(() => Session.Insert(null));
+        }
+
+        [Test]
         public void Insert_DuplicateInsert_Throws()
         {
             //Arrange
@@ -160,6 +167,13 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Update_Null_Throws()
+        {
+            //Arrange - Act - Assert
+            Assert.Throws<ArgumentNullException>(() => Session.Update(null));
+        }
+
+        [Test]
         public void Update_UpdateWithoutInsert_Throws()
         {
             //Arrange
@@ -180,6 +194,13 @@ namespace NRules.IntegrationTests
 
             //Assert
             Assert.False(actual);
+        }
+
+        [Test]
+        public void Retract_Null_Throws()
+        {
+            //Arrange - Act - Assert
+            Assert.Throws<ArgumentNullException>(() => Session.Retract(null));
         }
 
         [Test]

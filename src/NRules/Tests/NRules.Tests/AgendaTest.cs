@@ -112,29 +112,9 @@ namespace NRules.Tests
             return new Tuple(new Tuple(), new Fact(factObject));
         }
 
-        private class FactObject : System.IEquatable<FactObject>
+        private class FactObject
         {
             public string Value { get; set; }
-
-            public bool Equals(FactObject other)
-            {
-                if (ReferenceEquals(null, other)) return false;
-                if (ReferenceEquals(this, other)) return true;
-                return string.Equals(Value, other.Value);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != GetType()) return false;
-                return Equals((FactObject) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return Value.GetHashCode();
-            }
         }
     }
 }

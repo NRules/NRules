@@ -6,7 +6,6 @@ namespace NRules.Rete
     internal interface IBetaMemory
     {
         IEnumerable<Tuple> Tuples { get; }
-        bool Contains(Tuple tuple);
         void Add(Tuple tuple);
         void Remove(Tuple tuple);
         Tuple FindTuple(Tuple leftTuple, Fact rightFact);
@@ -22,11 +21,6 @@ namespace NRules.Rete
         public IEnumerable<Tuple> Tuples
         {
             get { return _tuples; }
-        }
-
-        public bool Contains(Tuple tuple)
-        {
-            return _tuples.Contains(tuple);
         }
 
         public void Add(Tuple tuple)

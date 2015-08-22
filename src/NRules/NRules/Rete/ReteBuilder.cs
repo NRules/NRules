@@ -260,7 +260,7 @@ namespace NRules.Rete
             var alphaCondition = new AlphaCondition(condition.Expression);
             SelectionNode selectionNode = context.CurrentAlphaNode
                 .ChildNodes.OfType<SelectionNode>()
-                .FirstOrDefault(sn => sn.Conditions.Single().Equals(alphaCondition));
+                .FirstOrDefault(sn => sn.Condition.Equals(alphaCondition));
 
             if (selectionNode == null)
             {
