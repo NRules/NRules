@@ -8,24 +8,27 @@ namespace NRules.Rete
     [DebuggerTypeProxy(typeof(TupleDebugView))]
     internal class Tuple
     {
-        private Dictionary<INode, object> _stateMap;
+        private readonly Dictionary<INode, object> _stateMap = new Dictionary<INode, object>();
+        private readonly Fact _rightFact;
+        private readonly Tuple _leftTuple;
+        private readonly int _count;
 
         public Tuple()
         {
-            Count = 0;
+            _count = 0;
         }
 
         public Tuple(Tuple left, Fact right)
         {
-            RightFact = right;
-            LeftTuple = left;
-            Count = left.Count;
-            if (right != null) Count++;
+            _rightFact = right;
+            _leftTuple = left;
+            _count = left.Count;
+            if (right != null) _count++;
         }
 
-        public Fact RightFact { get; private set; }
-        public Tuple LeftTuple { get; private set; }
-        public int Count { get; private set; }
+        public Fact RightFact { get { return _rightFact; } }
+        public Tuple LeftTuple { get { return _leftTuple; } }
+        public int Count { get { return _count; } }
 
         public T GetState<T>(INode node)
         {
@@ -39,7 +42,6 @@ namespace NRules.Rete
 
         public void SetState(INode node, object value)
         {
-            if (_stateMap == null) _stateMap = new Dictionary<INode, object>();
             _stateMap[node] = value;
         }
 
@@ -51,9 +53,9 @@ namespace NRules.Rete
         {
             get
             {
-                if (RightFact != null) yield return RightFact;
-                if (LeftTuple == null) yield break;
-                foreach (var leftFact in LeftTuple.Facts)
+                if (_rightFact != null) yield return _rightFact;
+                if (_leftTuple == null) yield break;
+                foreach (var leftFact in _leftTuple.Facts)
                 {
                     yield return leftFact;
                 }
