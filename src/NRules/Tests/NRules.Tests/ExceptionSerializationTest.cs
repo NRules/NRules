@@ -14,7 +14,7 @@ namespace NRules.Tests
         public void RuleActionEvaluationException_SerializedDeserialized_Equals()
         {
             //Arrange
-            var exception = new RuleActionEvaluationException("Test message", "Test expression", new Exception("Inner exception"));
+            var exception = new RuleActionEvaluationException("Test message", "Test rule", "Test expression", new Exception("Inner exception"));
 
             //Act
             var newException = SerializeDeserialize(exception);
@@ -23,6 +23,7 @@ namespace NRules.Tests
             Assert.IsNotNull(newException);
             Assert.AreNotSame(exception, newException);
             Assert.AreEqual(exception.Message, newException.Message);
+            Assert.AreEqual(exception.RuleName, newException.RuleName);
             Assert.AreEqual(exception.Expression, newException.Expression);
             Assert.AreEqual(exception.InnerException.Message, newException.InnerException.Message);
         }

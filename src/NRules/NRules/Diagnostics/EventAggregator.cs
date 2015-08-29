@@ -98,7 +98,7 @@ namespace NRules.Diagnostics
         void RaiseFactUpdated(ISession session, Fact fact);
         void RaiseFactRetracting(ISession session, Fact fact);
         void RaiseFactRetracted(ISession session, Fact fact);
-        void RaiseActionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, out bool isHandled);
+        void RaiseActionFailed(ISession session, ICompiledRule rule, Exception exception, Expression expression, Tuple tuple, out bool isHandled);
         void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact);
     }
 
@@ -283,19 +283,19 @@ namespace NRules.Diagnostics
             }
         }
 
-        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, out bool isHandled)
+        public void RaiseActionFailed(ISession session, ICompiledRule rule, Exception exception, Expression expression, Tuple tuple, out bool isHandled)
         {
             isHandled = false;
             var handler = ActionFailedEvent;
             if (handler != null)
             {
-                var @event = new ActionErrorEventArgs(exception, expression, tuple);
+                var @event = new ActionErrorEventArgs(exception, rule, expression, tuple);
                 handler(session, @event);
                 isHandled = @event.IsHandled;
             }
             if (_parent != null && !isHandled)
             {
-                _parent.RaiseActionFailed(session, exception, expression, tuple, out isHandled);
+                _parent.RaiseActionFailed(session, rule, exception, expression, tuple, out isHandled);
             }
         }
 

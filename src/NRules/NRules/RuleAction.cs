@@ -59,10 +59,11 @@ namespace NRules
             catch (Exception e)
             {
                 bool isHandled;
-                executionContext.EventAggregator.RaiseActionFailed(executionContext.Session, e, _expression, tuple, out isHandled);
+                executionContext.EventAggregator.RaiseActionFailed(executionContext.Session, actionContext.CompiledRule, e, _expression, tuple, out isHandled);
                 if (!isHandled)
                 {
-                    throw new RuleActionEvaluationException("Failed to evaluate rule action", _expression.ToString(), e);
+                    throw new RuleActionEvaluationException("Failed to evaluate rule action", 
+                        actionContext.Rule.Name, _expression.ToString(), e);
                 }
             }
         }

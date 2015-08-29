@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NRules.RuleModel;
 using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Diagnostics
@@ -11,18 +12,26 @@ namespace NRules.Diagnostics
     /// </summary>
     public class ActionErrorEventArgs : RecoverableErrorEventArgs
     {
+        private readonly ICompiledRule _rule;
+        private readonly Expression _expression;
         private readonly Tuple _tuple;
 
-        internal ActionErrorEventArgs(Exception exception, Expression expression, Tuple tuple) : base(exception)
+        internal ActionErrorEventArgs(Exception exception, ICompiledRule rule, Expression expression, Tuple tuple) : base(exception)
         {
+            _rule = rule;
+            _expression = expression;
             _tuple = tuple;
-            Action = expression;
         }
+
+        /// <summary>
+        /// Rule related to the event.
+        /// </summary>
+        public IRuleDefinition Rule { get { return _rule.Definition; } }
 
         /// <summary>
         /// Action that caused exception.
         /// </summary>
-        public Expression Action { get; private set; }
+        public Expression Action { get { return _expression; } }
 
         /// <summary>
         /// Facts that caused exception.

@@ -7,14 +7,16 @@ namespace NRules.Diagnostics
     /// </summary>
     public class ErrorEventArgs : EventArgs
     {
+        private readonly Exception _exception;
+
         internal ErrorEventArgs(Exception exception)
         {
-            Exception = exception;
+            _exception = exception;
         }
 
         /// <summary>
         /// Exception related to the event.
         /// </summary>
-        public Exception Exception { get; private set; }
+        public Exception Exception { get { return _exception; } }
     }
 }
