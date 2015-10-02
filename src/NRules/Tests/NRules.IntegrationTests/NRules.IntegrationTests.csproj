@@ -80,6 +80,7 @@
     <Compile Include="TestRules\OneFactRetractingRule.cs" />
     <Compile Include="TestRules\DynamicPriorityRule.cs" />
     <Compile Include="TestRules\OneFactSimpleGroupByRule.cs" />
+    <Compile Include="TestRules\ThreeFactNestedOrGroupRule.cs" />
     <Compile Include="TestRules\TwoFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactOneGroupByRule.cs" />
     <Compile Include="TestRules\OneFactRepeatableRule.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="TestRules\ThreeFactOrGroupRule.cs" />
     <Compile Include="TestRules\TwoFactOrGroupRule.cs" />
     <Compile Include="OneFactAggregateJoinRuleTest.cs" />
+    <Compile Include="ThreeFactNestedOrGroupRuleTest.cs" />
     <Compile Include="TwoFactOneGroupByRuleTest.cs" />
     <Compile Include="TwoFactOrGroupRuleTest.cs" />
     <Compile Include="ThreeFactTwoExistsRuleTest.cs" />

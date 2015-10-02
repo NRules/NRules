@@ -51,11 +51,11 @@ namespace NRules.RuleModel.Builders
 
             bool savedIsModified = context.IsModified;
             context.IsModified = false;
-            
+
             context.Push(element);
             Visit(context, element);
             context.IsModified |= savedIsModified;
-            
+
             return (T)context.Pop();
         }
 
@@ -115,6 +115,7 @@ namespace NRules.RuleModel.Builders
         {
             var childElements = element.ChildElements.Select(x => Transform<RuleLeftElement>(context, x)).ToList();
             if (CollapseSingleGroup(context, childElements)) return;
+            if (MergeOrGroups(context, element, childElements)) return;
             if (context.IsModified)
             {
                 var newElement = new OrElement(element.Declarations, childElements);
@@ -167,14 +168,14 @@ namespace NRules.RuleModel.Builders
                 var patternBuilder = groupBuilder
                     .Not()
                     .Pattern(pattern.Declaration);
-                
+
                 var parameter = patternBuilder.Declaration.ToParameterExpression();
                 //Join is required to correlate negated patterns with the base pattern
                 patternBuilder.Condition(
                     Expression.Lambda(
-                        Expression.ReferenceEqual(baseParameter, parameter), 
+                        Expression.ReferenceEqual(baseParameter, parameter),
                         baseParameter, parameter));
-                
+
                 foreach (var condition in pattern.Conditions)
                 {
                     patternBuilder.Condition(condition.Expression);
@@ -210,13 +211,35 @@ namespace NRules.RuleModel.Builders
             return true;
         }
 
+        private bool MergeOrGroups(Context context, OrElement element, IList<RuleLeftElement> childElements)
+        {
+            if (!childElements.OfType<OrElement>().Any()) return false;
+            var newChildElements = new List<RuleLeftElement>();
+            foreach (var childElement in childElements)
+            {
+                var childOrElement = childElement as OrElement;
+                if (childOrElement != null)
+                {
+                    newChildElements.AddRange(childOrElement.ChildElements);
+                }
+                else
+                {
+                    newChildElements.Add(childElement);
+                }
+
+            }
+            var orElement = new OrElement(element.Declarations, newChildElements);
+            Result(context, orElement);
+            return true;
+        }
+
         private void ExpandOrElements(IList<IList<RuleLeftElement>> groups, IList<RuleLeftElement> childElements, int index)
         {
             if (index == childElements.Count) return;
 
             var currentElement = childElements[index];
             var orElement = currentElement as OrElement;
-            
+
             var count = groups.Count;
             for (int i = 0; i < count; i++)
             {
