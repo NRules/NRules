@@ -1,6 +1,8 @@
 # NRules
 NRules is an open source production rules engine for .NET, based on the [Rete](http://www.wikipedia.org/wiki/Rete_algorithm) matching algorithm. Rules are authored in C# using internal DSL.
 
+(https://img.shields.io/nuget/v/NRules.svg)](https://nuget.org/packages/NRules)(https://img.shields.io/badge/stack%20overflow-nrules-orange.svg)](http://stackoverflow.com/questions/tagged/nrules)
+
 ## Installing NRules
 First, [install NuGet](http://docs.nuget.org/docs/start-here/installing-nuget). Then, install [NRules](https://www.nuget.org/packages/NRules) from the Package Manager Console:
 
