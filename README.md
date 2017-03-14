@@ -16,4 +16,4 @@ Use the following resources to get up and running with NRules.
 - [Stack Overflow](http://stackoverflow.com/questions/tagged/nrules)
 
 --
-Copyright &copy; 2012-2015 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).
+Copyright &copy; 2012-2017 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).

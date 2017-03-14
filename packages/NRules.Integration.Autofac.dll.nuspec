@@ -11,7 +11,7 @@
     <iconUrl>https://raw.githubusercontent.com/NRules/NRules/master/content/NRules_Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Autofac IoC container integration for NRules.</description>
-    <copyright>Copyright 2012-2015 Sergiy Nikolayev. All rights reserved.</copyright>
+    <copyright>Copyright 2012-2017 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>nrules autofac</tags>
     <dependencies>
       <dependency id="NRules" version="[$version$]" />
