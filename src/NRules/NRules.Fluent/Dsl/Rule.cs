@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using NRules.Fluent.Expressions;
 using NRules.RuleModel;
@@ -22,7 +21,6 @@ namespace NRules.Fluent.Dsl
         private readonly RuleBuilder _builder;
         private readonly LeftHandSideExpression _lhsExpression;
         private readonly RightHandSideExpression _rhsExpression;
-        private readonly List<Action<RuleBuilder>> _delayedBuildActions = new List<Action<RuleBuilder>>();
 
         protected Rule()
         {
@@ -58,8 +56,7 @@ namespace NRules.Fluent.Dsl
         /// <param name="value">Priority value.</param>
         protected void Priority(int value)
         {
-            Action<RuleBuilder> action = b => b.Priority().PriorityValue(value);
-            _delayedBuildActions.Add(action);
+            _builder.Priority().PriorityValue(value);
         }
 
         /// <summary>
@@ -69,8 +66,8 @@ namespace NRules.Fluent.Dsl
         /// <param name="expression">Priority expression.</param>
         protected void Priority(Expression<Func<int>> expression)
         {
-            Action<RuleBuilder> action = b => b.Priority().DslExpression(expression);
-            _delayedBuildActions.Add(action);
+            var priorityBuilder = _builder.Priority();
+            priorityBuilder.DslExpression(expression);
         }
 
         /// <summary>
@@ -118,11 +115,6 @@ namespace NRules.Fluent.Dsl
             }
 
             Define();
-
-            foreach (var delayedBuildAction in _delayedBuildActions)
-            {
-                delayedBuildAction(_builder);
-            }
 
             return _builder.Build();
         }

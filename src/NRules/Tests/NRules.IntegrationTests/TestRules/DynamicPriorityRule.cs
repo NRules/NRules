@@ -8,12 +8,12 @@ namespace NRules.IntegrationTests.TestRules
         {
             FactType5 fact5 = null;
 
-            Priority(() => fact5.TestCount);
-
             When()
                 .Match<FactType5>(() => fact5, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => Action());
+
+            Priority(() => fact5.TestCount);
         }
     }
 }
