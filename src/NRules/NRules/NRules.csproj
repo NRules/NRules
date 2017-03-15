@@ -114,7 +114,6 @@
     <Compile Include="Rete\TypeNode.cs" />
     <Compile Include="RuleDependency.cs" />
     <Compile Include="RuleExpressionEvaluationException.cs" />
-    <Compile Include="RulePriority.cs" />
     <Compile Include="RuleRepositoryExtensions.cs" />
     <Compile Include="RuleActionEvaluationException.cs" />
     <Compile Include="RuleConditionEvaluationException.cs" />

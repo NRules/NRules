@@ -65,7 +65,6 @@
     <Compile Include="Builders\AggregateBuilder.cs" />
     <Compile Include="Builders\DependencyGroupBuilder.cs" />
     <Compile Include="Builders\IPatternContainerBuilder.cs" />
-    <Compile Include="Builders\PriorityBuilder.cs" />
     <Compile Include="Builders\RuleTransformation.cs" />
     <Compile Include="Builders\ForAllBuilder.cs" />
     <Compile Include="Builders\GroupBuilder.cs" />
@@ -87,7 +86,6 @@
     <Compile Include="NamedExpression.cs" />
     <Compile Include="NotElement.cs" />
     <Compile Include="OrElement.cs" />
-    <Compile Include="PriorityElement.cs" />
     <Compile Include="RuleLeftElement.cs" />
     <Compile Include="RuleRightElement.cs" />
     <Compile Include="RuleDefinition.cs" />

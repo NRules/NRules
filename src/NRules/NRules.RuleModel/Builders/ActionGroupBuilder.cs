@@ -30,10 +30,6 @@ namespace NRules.RuleModel.Builders
                 throw new ArgumentException(
                     string.Format("Action expression must have {0} as its first parameter", typeof(IContext)));
             }
-            if (expression.ReturnType != typeof(void))
-            {
-                throw new ArgumentException("Action expression must not return a value");
-            }
             IEnumerable<ParameterExpression> parameters = expression.Parameters.Skip(1);
             IEnumerable<Declaration> references = parameters.Select(p => Scope.Lookup(p.Name, p.Type));
             var actionElement = new ActionElement(Scope.Declarations, references, expression);

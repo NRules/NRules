@@ -28,12 +28,12 @@ namespace NRules
 
         public void Activate(Activation activation)
         {
-            _activationQueue.Enqueue(activation.Priority, activation);
+            _activationQueue.Enqueue(activation.Rule.Priority, activation);
         }
 
         public void Reactivate(Activation activation)
         {
-            _activationQueue.Enqueue(activation.Priority, activation);
+            _activationQueue.Enqueue(activation.Rule.Priority, activation);
         }
 
         public void Deactivate(Activation activation)

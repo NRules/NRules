@@ -1,5 +1,4 @@
 using System;
-using System.Linq.Expressions;
 using NRules.Fluent.Expressions;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
@@ -56,18 +55,7 @@ namespace NRules.Fluent.Dsl
         /// <param name="value">Priority value.</param>
         protected void Priority(int value)
         {
-            _builder.Priority().PriorityValue(value);
-        }
-
-        /// <summary>
-        /// Sets rule's priority.
-        /// Priority value set at this level overrides the value specified via <see cref="PriorityAttribute"/> attribute.
-        /// </summary>
-        /// <param name="expression">Priority expression.</param>
-        protected void Priority(Expression<Func<int>> expression)
-        {
-            var priorityBuilder = _builder.Priority();
-            priorityBuilder.DslExpression(expression);
+            _builder.Priority(value);
         }
 
         /// <summary>

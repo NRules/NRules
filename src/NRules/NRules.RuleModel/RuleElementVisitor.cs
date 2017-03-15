@@ -95,9 +95,5 @@
         protected internal virtual void VisitDependency(TContext context, DependencyElement element)
         {
         }
-
-        protected internal virtual void VisitPriority(TContext context, PriorityElement element)
-        {
-        }
     }
 }

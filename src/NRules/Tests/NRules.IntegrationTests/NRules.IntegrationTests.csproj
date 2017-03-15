@@ -61,7 +61,6 @@
     <Compile Include="OneFactRepeatableRuleTest.cs" />
     <Compile Include="OneEquatableFactRuleTest.cs" />
     <Compile Include="OneFactOneSelectRuleTest.cs" />
-    <Compile Include="DynamicPriorityRuleTest.cs" />
     <Compile Include="OneFactRuleWithDependencyTest.cs" />
     <Compile Include="OneFactSimpleGroupByRuleTest.cs" />
     <Compile Include="TestAssets\EquatableFact.cs" />
@@ -78,7 +77,6 @@
     <Compile Include="TestRules\OneFactOneGroupByFlattenRule.cs" />
     <Compile Include="TestRules\OneFactOneSelectRule.cs" />
     <Compile Include="TestRules\OneFactRetractingRule.cs" />
-    <Compile Include="TestRules\DynamicPriorityRule.cs" />
     <Compile Include="TestRules\OneFactSimpleGroupByRule.cs" />
     <Compile Include="TestRules\ThreeFactNestedOrGroupRule.cs" />
     <Compile Include="TestRules\TwoFactOneGroupByRule.cs" />

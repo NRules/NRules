@@ -34,6 +34,11 @@ namespace NRules.RuleModel
         string Description { get; }
 
         /// <summary>
+        /// Rule priority.
+        /// </summary>
+        int Priority { get; }
+
+        /// <summary>
         /// Rule repeatability.
         /// </summary>
         RuleRepeatability Repeatability { get; }
@@ -42,11 +47,6 @@ namespace NRules.RuleModel
         /// Tags applied to the rule.
         /// </summary>
         IEnumerable<string> Tags { get; }
-
-        /// <summary>
-        /// Rule priority.
-        /// </summary>
-        PriorityElement Priority { get; }
 
         /// <summary>
         /// Rule's dependencies.
@@ -69,7 +69,7 @@ namespace NRules.RuleModel
         private readonly List<string> _tags;
         private readonly string _name;
         private readonly string _description;
-        private readonly PriorityElement _priority;
+        private readonly int _priority;
         private readonly RuleRepeatability _repeatability;
         private readonly DependencyGroupElement _dependencies;
         private readonly GroupElement _leftHandSide;
@@ -85,15 +85,15 @@ namespace NRules.RuleModel
             get { return RuleRepeatability.Repeatable; }
         }
 
-        public RuleDefinition(string name, string description, RuleRepeatability repeatability, IEnumerable<string> tags,
-            PriorityElement priority, DependencyGroupElement dependencies, GroupElement leftHandSide, ActionGroupElement rightHandSide)
+        public RuleDefinition(string name, string description, int priority, RuleRepeatability repeatability, IEnumerable<string> tags, 
+            DependencyGroupElement dependencies, GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
             _name = name;
             _description = description;
             _repeatability = repeatability;
+            _priority = priority;
             _tags = new List<string>(tags);
 
-            _priority = priority;
             _dependencies = dependencies;
             _leftHandSide = leftHandSide;
             _rightHandSide = rightHandSide;
@@ -102,6 +102,11 @@ namespace NRules.RuleModel
         public string Name
         {
             get { return _name; }
+        }
+
+        public int Priority
+        {
+            get { return _priority; }
         }
 
         public string Description
@@ -117,11 +122,6 @@ namespace NRules.RuleModel
         public IEnumerable<string> Tags
         {
             get { return _tags; }
-        }
-
-        public PriorityElement Priority
-        {
-            get { return _priority; }
         }
 
         public DependencyGroupElement DependencyGroup

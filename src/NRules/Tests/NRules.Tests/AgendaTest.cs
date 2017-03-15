@@ -25,7 +25,7 @@ namespace NRules.Tests
             var ruleMock = new Mock<ICompiledRule>();
             var factObject = new FactObject {Value = "Test"};
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(ruleMock.Object, 1, tuple, null);
+            var activation = new Activation(ruleMock.Object, tuple, null);
             var target = CreateTarget();
 
             // Act
@@ -46,13 +46,13 @@ namespace NRules.Tests
             var ruleMock = new Mock<ICompiledRule>();
             var factObject = new FactObject { Value = "Test" };
             var tuple = CreateTuple(factObject);
-            var activation1 = new Activation(ruleMock.Object, 1, tuple, null);
+            var activation1 = new Activation(ruleMock.Object, tuple, null);
             var target = CreateTarget();
             target.Activate(activation1);
 
             // Act
             factObject.Value = "New Value";
-            var activation2 = new Activation(ruleMock.Object, 1, tuple, null);
+            var activation2 = new Activation(ruleMock.Object, tuple, null);
             target.Reactivate(activation2);
 
             // Assert
@@ -69,12 +69,12 @@ namespace NRules.Tests
             var ruleMock = new Mock<ICompiledRule>();
             var factObject = new FactObject { Value = "Test" };
             var tuple = CreateTuple(factObject);
-            var activation1 = new Activation(ruleMock.Object, 1, tuple, null);
+            var activation1 = new Activation(ruleMock.Object, tuple, null);
             var target = CreateTarget();
             target.Activate(activation1);
 
             // Act
-            var activation2 = new Activation(ruleMock.Object, 1, tuple, null);
+            var activation2 = new Activation(ruleMock.Object, tuple, null);
             target.Deactivate(activation2);
 
             // Assert
@@ -87,8 +87,8 @@ namespace NRules.Tests
             // Arrange
             var ruleMock1 = new Mock<ICompiledRule>();
             var ruleMock2 = new Mock<ICompiledRule>();
-            var activation1 = new Activation(ruleMock1.Object, 1, new Tuple(), null);
-            var activation2 = new Activation(ruleMock2.Object, 1, new Tuple(), null);
+            var activation1 = new Activation(ruleMock1.Object, new Tuple(), null);
+            var activation2 = new Activation(ruleMock2.Object, new Tuple(), null);
             var target = CreateTarget();
 
             // Act
