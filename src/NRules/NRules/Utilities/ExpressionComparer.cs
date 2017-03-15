@@ -95,11 +95,8 @@ namespace NRules.Utilities
 
         private static bool MemberExpressionsEqual(MemberExpression x, MemberExpression y, LambdaExpression rootX, LambdaExpression rootY)
         {
-            // Special case for static field and static property
-            if (x.Expression == null)
-            {
+            if (x.Expression == null || y.Expression == null)
                 return Equals(x.Member, y.Member);
-            }
 
             if (x.Expression.NodeType != y.Expression.NodeType)
                 return false;
