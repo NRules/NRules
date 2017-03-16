@@ -77,9 +77,12 @@
     <Compile Include="Diagnostics\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="ResolutionContext.cs" />
+    <Compile Include="Rete\Aggregation.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\ConditionComparer.cs" />
     <Compile Include="Rete\ExpressionMapComparer.cs" />
+    <Compile Include="Rete\FactResult.cs" />
+    <Compile Include="Rete\TupleFactSet.cs" />
     <Compile Include="Rete\INode.cs" />
     <Compile Include="Rete\NotNode.cs" />
     <Compile Include="Rete\IObjectSource.cs" />
@@ -91,6 +94,7 @@
     <Compile Include="Rete\TerminalNode.cs" />
     <Compile Include="Rete\TupleExtensions.cs" />
     <Compile Include="Rete\IndexMap.cs" />
+    <Compile Include="Rete\TupleFactList.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleCompilationException.cs" />
     <Compile Include="RuleCompiler.cs" />
@@ -138,7 +142,6 @@
       <Name>NRules.RuleModel</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

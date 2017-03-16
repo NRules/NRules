@@ -34,108 +34,175 @@ namespace NRules.RuleModel.Aggregators
             return AggregationResult.Empty;
         }
 
-        public IEnumerable<AggregationResult> Add(object fact)
+        public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
         {
-            var source = (TSource) fact;
-            var key = _keySelector(source);
-            var element = _elementSelector(source);
-            _sourceToKey[fact] = key;
-            _sourceToElement[fact] = element;
-            return Add(key, element);
-        }
-
-        public IEnumerable<AggregationResult> Modify(object fact)
-        {
-            var source = (TSource)fact;
-            var key = _keySelector(source);
-            var element = _elementSelector(source);
-            var oldKey = _sourceToKey[fact];
-            var oldElement = _sourceToElement[fact];
-            _sourceToKey[fact] = key;
-            _sourceToElement[fact] = element;
-
-            if (Equals(key, oldKey))
+            var keyElements = new List<KeyValuePair<TKey, TElement>>();
+            foreach (var fact in facts)
             {
-                return Modify(key, element);
+                var source = (TSource)fact;
+                var key = _keySelector(source);
+                var element = _elementSelector(source);
+                _sourceToKey[fact] = key;
+                _sourceToElement[fact] = element;
+                var keyElement = new KeyValuePair<TKey, TElement>(key, element);
+                keyElements.Add(keyElement);
             }
-
-            var result1 = Remove(oldKey, oldElement);
-            var result2 = Add(key, element);
-            return result1.Concat(result2);
+            return Add(keyElements);
         }
 
-        public IEnumerable<AggregationResult> Remove(object fact)
+        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
         {
-            var oldKey = _sourceToKey[fact];
-            var oldElement = _sourceToElement[fact];
-            _sourceToKey.Remove(fact);
-            _sourceToElement.Remove(fact);
-            return Remove(oldKey, oldElement);
-        }
-
-        private IEnumerable<AggregationResult> Add(TKey key, TElement element)
-        {
-            if (Equals(key, _defaultKey))
+            var keyElementsToUpdate = new List<KeyValuePair<TKey, TElement>>();
+            var keyElementsToAdd = new List<KeyValuePair<TKey, TElement>>();
+            var keyElementsToRemove = new List<KeyValuePair<TKey, TElement>>();
+            foreach (var fact in facts)
             {
-                if (_defaultGroup == null)
+                var source = (TSource)fact;
+                var key = _keySelector(source);
+                var element = _elementSelector(source);
+                var oldKey = _sourceToKey[fact];
+                var oldElement = _sourceToElement[fact];
+                _sourceToKey[fact] = key;
+                _sourceToElement[fact] = element;
+
+                if (Equals(key, oldKey))
                 {
-                    _defaultGroup = new Grouping(key);
-                    _defaultGroup.Add(element);
-                    return new[] { AggregationResult.Added(_defaultGroup) };
+                    var keyElementToModify = new KeyValuePair<TKey, TElement>(key, element);
+                    keyElementsToUpdate.Add(keyElementToModify);
+                    continue;
                 }
-                _defaultGroup.Add(element);
-                return new[] { AggregationResult.Modified(_defaultGroup) };
-            }
 
-            Grouping group;
-            if (!_groups.TryGetValue(key, out group))
+                var keyElementToRemove = new KeyValuePair<TKey, TElement>(oldKey, oldElement);
+                keyElementsToRemove.Add(keyElementToRemove);
+
+                var keyElementToInsert = new KeyValuePair<TKey, TElement>(key, element);
+                keyElementsToAdd.Add(keyElementToInsert);
+            }
+            var results = new List<AggregationResult>();
+            var additionResults = Add(keyElementsToAdd);
+            var modifiedResults = Modify(keyElementsToUpdate);
+            var removeResults = Remove(keyElementsToRemove);
+            results.AddRange(modifiedResults);
+            results.AddRange(additionResults);
+            results.AddRange(removeResults);
+            return results;
+        }
+
+        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
+        {
+            var keyElementsToRemove = new List<KeyValuePair<TKey, TElement>>();
+            foreach (var fact in facts)
             {
-                group = new Grouping(key);
-                _groups[key] = group;
+                var oldKey = _sourceToKey[fact];
+                var oldElement = _sourceToElement[fact];
+                _sourceToKey.Remove(fact);
+                _sourceToElement.Remove(fact);
+                keyElementsToRemove.Add(new KeyValuePair<TKey, TElement>(oldKey, oldElement));
+            }
+            return Remove(keyElementsToRemove);
+        }
+
+        private IEnumerable<AggregationResult> Add(List<KeyValuePair<TKey, TElement>> keyElements)
+        {
+            var groupsToAdd = new HashSet<Grouping>();
+            var groupsToModify = new HashSet<Grouping>();
+            foreach (var keyElement in keyElements)
+            {
+                var key = keyElement.Key;
+                var element = keyElement.Value;
+                if (Equals(key, _defaultKey))
+                {
+                    if (_defaultGroup == null)
+                    {
+                        _defaultGroup = new Grouping(key);
+                        _defaultGroup.Add(element);
+                        groupsToAdd.Add(_defaultGroup);
+                        continue;
+                    }
+                    _defaultGroup.Add(element);
+                    groupsToModify.Add(_defaultGroup);
+                    continue;
+                }
+
+                Grouping group;
+                if (!_groups.TryGetValue(key, out group))
+                {
+                    group = new Grouping(key);
+                    _groups[key] = group;
+
+                    group.Add(element);
+                    groupsToAdd.Add(group);
+                    continue;
+                }
 
                 group.Add(element);
-                return new[] { AggregationResult.Added(group) };
+                groupsToModify.Add(group);
+                continue;
             }
-
-            group.Add(element);
-            return new[] { AggregationResult.Modified(group) };
+            var actualGroupsToModify = groupsToModify.Except(groupsToAdd);
+            var aggregationResults = groupsToAdd.Select(AggregationResult.Added).ToList();
+            aggregationResults.AddRange(actualGroupsToModify.Select(AggregationResult.Modified));
+            return aggregationResults;
         }
-        
-        private IEnumerable<AggregationResult> Modify(TKey key, TElement element)
-        {
-            if (Equals(key, _defaultKey))
-            {
-                _defaultGroup.Modify(element);
-                return new[] { AggregationResult.Modified(_defaultGroup) };
-            }
 
-            var group = _groups[key];
-            group.Modify(element);
-            return new[] { AggregationResult.Modified(group) };
-        }
-        
-        private IEnumerable<AggregationResult> Remove(TKey key, TElement element)
+        private IEnumerable<AggregationResult> Modify(List<KeyValuePair<TKey, TElement>> keyElements)
         {
-            if (Equals(key, _defaultKey))
+            var groupsToModify = new HashSet<Grouping>();
+            foreach (var keyElement in keyElements)
             {
-                _defaultGroup.Remove(element);
-                if (_defaultGroup.Count == 0)
+                var key = keyElement.Key;
+                var element = keyElement.Value;
+                if (Equals(key, _defaultKey))
                 {
-                    var removedGroup = _defaultGroup;
-                    _defaultGroup = null;
-                    return new[] { AggregationResult.Removed(removedGroup) };
+                    _defaultGroup.Modify(element);
+                    groupsToModify.Add(_defaultGroup);
+                    continue;
                 }
-                return new[] { AggregationResult.Modified(_defaultGroup) };
-            }
 
-            var group = _groups[key];
-            group.Remove(element);
-            if (group.Count == 0)
-            {
-                _groups.Remove(key);
-                return new[] { AggregationResult.Removed(group) };
+                var group = _groups[key];
+                group.Modify(element);
+                groupsToModify.Add(group);
             }
-            return new[] { AggregationResult.Modified(group) };
+            return groupsToModify.Select(AggregationResult.Modified);
+        }
+
+        private IEnumerable<AggregationResult> Remove(List<KeyValuePair<TKey, TElement>> keyElements)
+        {
+            var groupsToRemove = new HashSet<Grouping>();
+            var groupsToModify = new HashSet<Grouping>();
+            foreach (var keyElement in keyElements)
+            {
+                var key = keyElement.Key;
+                var element = keyElement.Value;
+                if (Equals(key, _defaultKey))
+                {
+                    _defaultGroup.Remove(element);
+                    if (_defaultGroup.Count == 0)
+                    {
+                        var removedGroup = _defaultGroup;
+                        _defaultGroup = null;
+                        groupsToRemove.Add(removedGroup);
+                        continue;
+                    }
+                    groupsToModify.Add(_defaultGroup);
+                    continue;
+                }
+
+                var group = _groups[key];
+                group.Remove(element);
+                if (group.Count == 0)
+                {
+                    _groups.Remove(key);
+                    groupsToRemove.Add(group);
+                    continue;
+                }
+                groupsToModify.Add(group);
+                continue;
+            }
+            var actualGroupsToModify = groupsToModify.Except(groupsToRemove);
+            var aggregationResults = groupsToRemove.Select(AggregationResult.Removed).ToList();
+            aggregationResults.AddRange(actualGroupsToModify.Select(AggregationResult.Modified));
+            return aggregationResults;
         }
 
         public IEnumerable<object> Aggregates

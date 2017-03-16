@@ -17,9 +17,8 @@ namespace NRules.IntegrationTests
             var fact2 = new EquatableFact(2) {TestProperty = "Valid Value 2"};
             var fact3 = new EquatableFact(3) {TestProperty = "Invalid Value 3"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
+            var facts = new[] {fact1, fact2, fact3};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -55,8 +54,8 @@ namespace NRules.IntegrationTests
             var fact2 = new EquatableFact(2) {TestProperty = "Valid Value 2"};
             var fact21 = new EquatableFact(2) {TestProperty = "Valid Value 2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
             Session.Update(fact21);
 
             //Act
@@ -75,8 +74,8 @@ namespace NRules.IntegrationTests
             var fact2 = new EquatableFact(2) {TestProperty = "Valid Value 2"};
             var fact21 = new EquatableFact(2) {TestProperty = "Valid Value 2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
             Session.Retract(fact21);
 
             //Act
@@ -96,8 +95,8 @@ namespace NRules.IntegrationTests
             var fact2 = new EquatableFact(2) {TestProperty = "Valid Value 2"};
             var fact21 = new EquatableFact(2) {TestProperty = "Valid Value 2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
             Session.Retract(fact11);
             Session.Retract(fact21);
 
@@ -117,8 +116,8 @@ namespace NRules.IntegrationTests
             var fact2 = new EquatableFact(2) {TestProperty = "Valid Value 2"};
             var fact21 = new EquatableFact(2) {TestProperty = "Invalid Value"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             Session.Update(fact21);
 
@@ -138,8 +137,8 @@ namespace NRules.IntegrationTests
             var fact2 = new EquatableFact(2) {TestProperty = "Invalid Value"};
             var fact21 = new EquatableFact(2) {TestProperty = "Valid Value 2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             Session.Update(fact21);
 

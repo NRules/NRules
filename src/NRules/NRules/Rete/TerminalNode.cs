@@ -1,4 +1,6 @@
-﻿namespace NRules.Rete
+﻿using System.Collections.Generic;
+
+namespace NRules.Rete
 {
     internal interface ITerminalNode
     {
@@ -26,19 +28,28 @@
             source.Attach(this);
         }
 
-        public void PropagateAssert(IExecutionContext context, Tuple tuple)
+        public void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
         {
-            RuleNode.Activate(context, tuple, _factIndexMap);
+            foreach (var tuple in tuples)
+            {
+                RuleNode.Activate(context, tuple, _factIndexMap);
+            }
         }
 
-        public void PropagateUpdate(IExecutionContext context, Tuple tuple)
+        public void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
         {
-            RuleNode.Reactivate(context, tuple, _factIndexMap);
+            foreach (var tuple in tuples)
+            {
+                RuleNode.Reactivate(context, tuple, _factIndexMap);
+            }
         }
 
-        public void PropagateRetract(IExecutionContext context, Tuple tuple)
+        public void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
         {
-            RuleNode.Deactivate(context, tuple, _factIndexMap);
+            foreach (var tuple in tuples)
+            {
+                RuleNode.Deactivate(context, tuple, _factIndexMap);
+            }
         }
 
         public void Attach(IRuleNode ruleNode)

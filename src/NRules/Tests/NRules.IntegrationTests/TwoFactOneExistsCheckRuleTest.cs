@@ -50,8 +50,8 @@ namespace NRules.IntegrationTests
             var fact3 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
 
             Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
+            var facts = new[] {fact2, fact3};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -72,9 +72,9 @@ namespace NRules.IntegrationTests
 
             Session.Insert(fact1);
             Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
-            Session.Insert(fact5);
+            var facts = new[] {fact3, fact4, fact5};
+            Session.InsertAll(facts);
+
 
             //Act
             Session.Fire();
@@ -176,12 +176,12 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsAndOneFactExists_FiresOnce()
         {
             //Arrange
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
-            var fact12 = new FactType1 { TestProperty = "Valid Value 2" };
-            var fact21 = new FactType2 { TestProperty = "Valid Value 3", JoinProperty = fact11.TestProperty};
+            var fact11 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact12 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact21 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact11.TestProperty};
 
-            Session.Insert(fact11);
-            Session.Insert(fact12);
+            var facts = new[] {fact11, fact12};
+            Session.InsertAll(facts);
             Session.Insert(fact21);
 
             //Act

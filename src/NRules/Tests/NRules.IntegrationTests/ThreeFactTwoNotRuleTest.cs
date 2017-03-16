@@ -86,8 +86,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact1);
             Session.Insert(fact2);
             Session.Insert(fact3);
-            Session.Retract(fact2);
-            Session.Retract(fact3);
+            Session.RetractAll(new object[] {fact2, fact3});
 
             //Act
             Session.Fire();
@@ -222,6 +221,59 @@ namespace NRules.IntegrationTests
 
             fact3.TestProperty = "Invalid Value 3";
             Session.Update(fact3);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+
+        [Test]
+        public void Fire_MatchingNotPatternFactsInsertedThenRetractSomeOfThemButNotAll_StillDoesNotFire()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+            var fact3 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
+            var fact4 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact1.TestProperty};
+
+            var fact5 = new FactType3 {TestProperty = "Valid Value 5", JoinProperty = fact1.TestProperty};
+            var fact6 = new FactType3 {TestProperty = "Valid Value 6", JoinProperty = fact1.TestProperty};
+
+            var allFacts = new object[] {fact1, fact2, fact3, fact4, fact5, fact6};
+            Session.InsertAll(allFacts);
+            Session.RetractAll(new object[] {fact3, fact4, fact5});
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+
+        [Test]
+        public void Fire_MatchingNotPatternFactsInsertedTheUpdatesSomeOfThemButNotAll_StillDoesNotFire()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+            var fact3 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
+            var fact4 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact1.TestProperty};
+
+            var fact5 = new FactType3 {TestProperty = "Valid Value 5", JoinProperty = fact1.TestProperty};
+            var fact6 = new FactType3 {TestProperty = "Valid Value 6", JoinProperty = fact1.TestProperty};
+
+            var allFacts = new object[] {fact1, fact2, fact3, fact4, fact5, fact6};
+            Session.InsertAll(allFacts);
+
+            fact3.JoinProperty = "FakeJoinProp";
+            fact4.JoinProperty = "FakeJoinProp";
+            fact5.JoinProperty = "FakeJoinProp";
+            var facts = new object[] {fact3, fact4, fact5};
+            Session.UpdateAll(facts);
 
             //Act
             Session.Fire();

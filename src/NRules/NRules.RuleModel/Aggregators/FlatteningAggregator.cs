@@ -24,34 +24,49 @@ namespace NRules.RuleModel.Aggregators
             return AggregationResult.Empty;
         }
 
-        public IEnumerable<AggregationResult> Add(object fact)
+        public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
         {
-            var source = (TSource) fact;
+            return facts.SelectMany(AddSingle);
+        }
+
+        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
+        {
+            var results = new List<AggregationResult>();
+            foreach (var fact in facts)
+            {
+                var source = (TSource)fact;
+                var value = _selector(source);
+                var list = value.ToList();
+                var oldList = _sourceToList[source];
+                _sourceToList[source] = list;
+                var result = oldList.Select(x => AggregationResult.Removed(x)).Concat(
+                    list.Select(x => AggregationResult.Added(x)));
+                results.AddRange(result);
+            }
+            return results;
+        }
+
+        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
+        {
+            var oldLists = new List<TResult>();
+            foreach (var fact in facts)
+            {
+                var source = (TSource)fact;
+                var oldList = _sourceToList[source];
+                _sourceToList.Remove(source);
+                oldLists.AddRange(oldList);
+            }
+            return oldLists.Select(x => AggregationResult.Removed(x));
+        }
+
+        private IEnumerable<AggregationResult> AddSingle(object fact)
+        {
+            var source = (TSource)fact;
             var value = _selector(source);
             var list = value.ToList();
             _sourceToList[source] = list;
-            
+
             return list.Select(x => AggregationResult.Added(x)).ToArray();
-        }
-
-        public IEnumerable<AggregationResult> Modify(object fact)
-        {
-            var source = (TSource)fact;
-            var value = _selector(source);
-            var list = value.ToList();
-            var oldList = _sourceToList[source];
-            _sourceToList[source] = list;
-
-            return oldList.Select(x => AggregationResult.Removed(x)).Concat(
-                list.Select(x => AggregationResult.Added(x))).ToArray();
-        }
-
-        public IEnumerable<AggregationResult> Remove(object fact)
-        {
-            var source = (TSource)fact;
-            var oldList = _sourceToList[source];
-            _sourceToList.Remove(source);
-            return oldList.Select(x => AggregationResult.Removed(x)).ToArray();
         }
 
         public IEnumerable<object> Aggregates { get { return _sourceToList.Values.SelectMany(x => x).Cast<object>(); } }

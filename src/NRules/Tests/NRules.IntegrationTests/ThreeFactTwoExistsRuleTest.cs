@@ -45,8 +45,8 @@ namespace NRules.IntegrationTests
         public void Fire_NoMatchingFactsFirstKind_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
-            var fact3 = new FactType3 { TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty };
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact3 = new FactType3 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
 
             Session.Insert(fact1);
             Session.Insert(fact3);
@@ -165,9 +165,9 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingFactsInsertedThenUpdated_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
-            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
-            var fact3 = new FactType3 { TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty };
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+            var fact3 = new FactType3 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -228,6 +228,26 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertDidNotFire();
+        }
+
+        [Test]
+        public void Fire_MatchingFactsInsertedThenSomeRetractedRetracted_StillFires()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+            var fact3 = new FactType3 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
+            var fact4 = new FactType3 {TestProperty = "Valid Value 4", JoinProperty = fact1.TestProperty};
+
+            var facts = new object[] {fact1, fact2, fact3, fact4};
+            Session.InsertAll(facts);
+            Session.Retract(fact3);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
         }
 
         protected override void SetUpRules()

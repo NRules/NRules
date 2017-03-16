@@ -14,11 +14,13 @@ namespace NRules.Rete
         public void Activate(IExecutionContext context)
         {
             var tuple = new Tuple();
+            var tupleList = new List<Tuple>();
+            tupleList.Add(tuple);
 
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             foreach (ITupleSink sink in _sinks)
             {
-                sink.PropagateAssert(context, tuple);
+                sink.PropagateAssert(context, tupleList);
             }
             memory.Add(tuple);
         }
@@ -39,17 +41,17 @@ namespace NRules.Rete
             visitor.VisitDummyNode(context, this);
         }
 
-        public void PropagateAssert(IExecutionContext context, Tuple tuple, Fact fact)
+        public void PropagateAssert(IExecutionContext context, ITupleFactList tupleFactList)
         {
             //Do nothing
         }
 
-        public void PropagateUpdate(IExecutionContext context, Tuple tuple, Fact fact)
+        public void PropagateUpdate(IExecutionContext context, ITupleFactList tupleFactList)
         {
             //Do nothing
         }
 
-        public void PropagateRetract(IExecutionContext context, Tuple tuple, Fact fact)
+        public void PropagateRetract(IExecutionContext context, ITupleFactList tupleFactList)
         {
             //Do nothing
         }

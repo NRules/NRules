@@ -34,13 +34,22 @@ namespace NRules.Rete
         {
             get { return _object; }
         }
+
+        public virtual bool IsWrapperFact
+        {
+            get { return false; }
+        }
     }
 
+    [DebuggerDisplay("Wrapper Tuple({WrappedTuple.Count})")]
     internal class WrapperFact : Fact
     {
+        private readonly long _groupId;
+
         public WrapperFact(Tuple tuple)
             : base(tuple)
         {
+            _groupId = tuple.GroupId;
         }
 
         public override Type FactType
@@ -56,6 +65,11 @@ namespace NRules.Rete
         public Tuple WrappedTuple
         {
             get { return (Tuple) RawObject; }
+        }
+
+        public override bool IsWrapperFact
+        {
+            get { return true; }
         }
     }
 }

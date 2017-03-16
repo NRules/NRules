@@ -1,4 +1,5 @@
-﻿using NRules.IntegrationTests.TestAssets;
+﻿using System.Linq;
+using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
@@ -24,8 +25,8 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 {TestProperty = "Valid Value Group1"};
             var fact2 = new FactType1 {TestProperty = "Valid Value Group1"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -43,8 +44,8 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 {TestProperty = "Valid Value Group1"};
             var fact2 = new FactType1 {TestProperty = "Valid Value Group1"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
             Session.Update(fact2);
 
             //Act
@@ -64,9 +65,8 @@ namespace NRules.IntegrationTests
             var fact2 = new FactType1 {TestProperty = "Valid Value Group1"};
             var fact3 = new FactType1 {TestProperty = "Valid Value Group2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
+            var facts = new[] {fact1, fact2, fact3};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -86,10 +86,8 @@ namespace NRules.IntegrationTests
             var fact3 = new FactType1 {TestProperty = "Valid Value Group2"};
             var fact4 = new FactType1 {TestProperty = "Valid Value Group2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
+            var facts = new[] {fact1, fact2, fact3, fact4};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -106,15 +104,13 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneRetracted_FiresTwiceWithFactsFromGroupOne()
         {
             //Arrange
-            var fact1 = new FactType1 { TestProperty = "Valid Value Group1" };
-            var fact2 = new FactType1 { TestProperty = "Valid Value Group1" };
-            var fact3 = new FactType1 { TestProperty = "Valid Value Group2" };
-            var fact4 = new FactType1 { TestProperty = "Valid Value Group2" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact3 = new FactType1 {TestProperty = "Valid Value Group2"};
+            var fact4 = new FactType1 {TestProperty = "Valid Value Group2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
+            var facts = new[] {fact1, fact2, fact3, fact4};
+            Session.InsertAll(facts);
 
             Session.Retract(fact4);
 
@@ -131,15 +127,13 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneUpdatedToInvalid_FiresTwiceWithFactsFromGroupOne()
         {
             //Arrange
-            var fact1 = new FactType1 { TestProperty = "Valid Value Group1" };
-            var fact2 = new FactType1 { TestProperty = "Valid Value Group1" };
-            var fact3 = new FactType1 { TestProperty = "Valid Value Group2" };
-            var fact4 = new FactType1 { TestProperty = "Valid Value Group2" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact3 = new FactType1 {TestProperty = "Valid Value Group2"};
+            var fact4 = new FactType1 {TestProperty = "Valid Value Group2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
+            var facts = new[] {fact1, fact2, fact3, fact4};
+            Session.InsertAll(facts);
 
             fact4.TestProperty = "Invalid Value";
             Session.Update(fact4);
@@ -157,15 +151,13 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneUpdatedToFirstGroup_FiresThreeTimesWithFactsFromGroupOne()
         {
             //Arrange
-            var fact1 = new FactType1 { TestProperty = "Valid Value Group1" };
-            var fact2 = new FactType1 { TestProperty = "Valid Value Group1" };
-            var fact3 = new FactType1 { TestProperty = "Valid Value Group2" };
-            var fact4 = new FactType1 { TestProperty = "Valid Value Group2" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact3 = new FactType1 {TestProperty = "Valid Value Group2"};
+            var fact4 = new FactType1 {TestProperty = "Valid Value Group2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
+            var facts = new[] {fact1, fact2, fact3, fact4};
+            Session.InsertAll(facts);
 
             fact4.TestProperty = "Valid Value Group1";
             Session.Update(fact4);
@@ -175,24 +167,24 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTimes(3);
-            Assert.AreEqual(fact1, GetFiredFact<FactType1>(0));
-            Assert.AreEqual(fact2, GetFiredFact<FactType1>(1));
-            Assert.AreEqual(fact4, GetFiredFact<FactType1>(2));
+            var firedFacts = new[] {GetFiredFact<FactType1>(0), GetFiredFact<FactType1>(1), GetFiredFact<FactType1>(2)};
+            var valid1 = firedFacts.Any(x => Equals(fact1, x));
+            var valid2 = firedFacts.Any(x => Equals(fact2, x));
+            var valid4 = firedFacts.Any(x => Equals(fact4, x));
+            Assert.IsTrue(valid1 && valid2 && valid4);
         }
 
         [Test]
         public void Fire_TwoFactsForOneGroupAndOneForAnotherAndOneInvalidTheInvalidUpdatedToSecondGroup_FiresWithEachFactFromEachGroup()
         {
             //Arrange
-            var fact1 = new FactType1 { TestProperty = "Valid Value Group1" };
-            var fact2 = new FactType1 { TestProperty = "Valid Value Group1" };
-            var fact3 = new FactType1 { TestProperty = "Valid Value Group2" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact3 = new FactType1 {TestProperty = "Valid Value Group2"};
             var fact4 = new FactType1 { TestProperty = "Invalid Value" };
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
+            var facts = new[] {fact1, fact2, fact3, fact4};
+            Session.InsertAll(facts);
 
             fact4.TestProperty = "Valid Value Group2";
             Session.Update(fact4);
@@ -212,11 +204,11 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsForOneGroupAssertedThenOneRetractedAnotherUpdatedThenOneAssertedBack_FiresTwiceWithFactsFromOneGroup()
         {
             //Arrange
-            var fact1 = new FactType1 { TestProperty = "Valid Value Group1" };
-            var fact2 = new FactType1 { TestProperty = "Valid Value Group1" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value Group1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value Group1"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             Session.Retract(fact2);
             

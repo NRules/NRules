@@ -21,7 +21,7 @@ namespace NRules.Rete
             return true;
         }
 
-        private void AlignEnumerators(IEnumerator<Fact> first, IEnumerator<Fact> second, int firstCount, int secondCount)
+        private static void AlignEnumerators(IEnumerator<Fact> first, IEnumerator<Fact> second, int firstCount, int secondCount)
         {
             IEnumerator<Fact> biggerEnumerator = firstCount > secondCount ? first : second;
             int diff = Math.Abs(firstCount - secondCount);

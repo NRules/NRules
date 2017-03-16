@@ -7,8 +7,8 @@ namespace NRules.Rete
     {
         IEnumerable<Fact> Facts { get; }
         bool Contains(Fact fact);
-        void Add(Fact fact);
-        void Remove(Fact fact);
+        void Add(IEnumerable<Fact> facts);
+        void Remove(IEnumerable<Fact> facts);
     }
 
     internal class AlphaMemory : IAlphaMemory
@@ -30,9 +30,21 @@ namespace NRules.Rete
             _facts.Add(fact);
         }
 
+        public void Add(IEnumerable<Fact> facts)
+        {
+            foreach (var fact in facts)
+                Add(fact);
+        }
+
         public void Remove(Fact fact)
         {
             _facts.Remove(fact);
+        }
+
+        public void Remove(IEnumerable<Fact> facts)
+        {
+            foreach (var fact in facts)
+                Remove(fact);
         }
     }
 }

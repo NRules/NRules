@@ -28,8 +28,8 @@ namespace NRules.IntegrationTests
             //Arrange
             var fact1 = new EquatableFact(1) {TestProperty = "Valid Value 1"};
             var fact2 = new EquatableFact(2) {TestProperty = "Valid Value 2"};
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();

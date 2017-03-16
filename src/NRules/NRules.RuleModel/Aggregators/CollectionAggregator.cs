@@ -15,24 +15,33 @@ namespace NRules.RuleModel.Aggregators
             return new[] {AggregationResult.Added(_items)};
         }
 
-        public IEnumerable<AggregationResult> Add(object fact)
+        public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
         {
-            var item = (TElement) fact;
-            _items.Add(item);
+            foreach (var fact in facts)
+            {
+                var item = (TElement)fact;
+                _items.Add(item);
+            }
             return new[] { AggregationResult.Modified(_items) };
         }
 
-        public IEnumerable<AggregationResult> Modify(object fact)
+        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
         {
-            var item = (TElement)fact;
-            _items.Modify(item);
+            foreach (var fact in facts)
+            {
+                var item = (TElement)fact;
+                _items.Modify(item);
+            }
             return new[] { AggregationResult.Modified(_items) };
         }
 
-        public IEnumerable<AggregationResult> Remove(object fact)
+        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
         {
-            var item = (TElement)fact;
-            _items.Remove(item);
+            foreach (var fact in facts)
+            {
+                var item = (TElement)fact;
+                _items.Remove(item);
+            }
             return new[] {AggregationResult.Modified(_items)};
         }
 

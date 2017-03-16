@@ -54,11 +54,11 @@ namespace NRules.IntegrationTests.TestAssets
             return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Type)).Value;
         }
 
-        protected T GetFiredFact<T>(int instanceNubmer)
+        protected T GetFiredFact<T>(int instanceNumber)
         {
             var rule = _ruleMap.Single().Value;
             var firedRule = _firedRulesMap[rule.Name];
-            var x = firedRule.ElementAt(instanceNubmer);
+            var x = firedRule.ElementAt(instanceNumber);
             return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Type)).Value;
         }
 

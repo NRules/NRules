@@ -6,30 +6,37 @@ namespace NRules.Rete
 {
     [DebuggerDisplay("Tuple ({Count})")]
     [DebuggerTypeProxy(typeof(TupleDebugView))]
-    internal class Tuple
+    internal sealed class Tuple
     {
-        private readonly Dictionary<INode, object> _stateMap = new Dictionary<INode, object>();
-        private readonly Fact _rightFact;
-        private readonly Tuple _leftTuple;
-        private readonly int _count;
+        private const long NoGroup = 0;
+
+        private Dictionary<INode, object> _stateMap;
 
         public Tuple()
         {
-            _count = 0;
+            Id = GetHashCode();
+            GroupId = NoGroup;
+            Count = 0;
+            Level = 0;
         }
 
-        public Tuple(Tuple left, Fact right)
+        public Tuple(Tuple left, Fact right) : this()
         {
-            _rightFact = right;
-            _leftTuple = left;
-            _count = left.Count;
-            if (right != null) _count++;
+            RightFact = right;
+            LeftTuple = left;
+            Count = left.Count;
+            if (right != null) Count++;
+            Level = left.Level + 1;
         }
 
-        public Fact RightFact { get { return _rightFact; } }
-        public Tuple LeftTuple { get { return _leftTuple; } }
-        public int Count { get { return _count; } }
+        public Fact RightFact { get; private set; }
+        public Tuple LeftTuple { get; private set; }
+        public int Count { get; private set; }
+        public long Id { get; private set; }
+        public int Level { get; private set; }
 
+        public long GroupId { get; set; }
+        
         public T GetState<T>(INode node)
         {
             object value;
@@ -42,7 +49,17 @@ namespace NRules.Rete
 
         public void SetState(INode node, object value)
         {
+            if (_stateMap == null) _stateMap = new Dictionary<INode, object>();
             _stateMap[node] = value;
+        }
+
+        public long GetGroupId(int level)
+        {
+            if (level == Level - 1) return GroupId;
+            long groupId = LeftTuple == null 
+                ? NoGroup 
+                : LeftTuple.GetGroupId(level);
+            return groupId;
         }
 
         /// <summary>
@@ -53,13 +70,22 @@ namespace NRules.Rete
         {
             get
             {
-                if (_rightFact != null) yield return _rightFact;
-                if (_leftTuple == null) yield break;
-                foreach (var leftFact in _leftTuple.Facts)
+                if (RightFact != null) yield return RightFact;
+                if (LeftTuple == null) yield break;
+                foreach (var leftFact in LeftTuple.Facts)
                 {
                     yield return leftFact;
                 }
             }
+        }
+
+        /// <summary>
+        /// Facts contained in the tuple in correct order.
+        /// </summary>
+        /// <remarks>This method has to reverse the linked list and is slow.</remarks>
+        public IEnumerable<Fact> OrderedFacts
+        {
+            get { return Facts.Reverse(); }
         }
 
         internal class TupleDebugView

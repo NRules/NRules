@@ -21,7 +21,7 @@ namespace NRules
         /// <seealso cref="IRuleRepository"/>
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
         {
-            var reteBuilder = new ReteBuilder();
+            IReteBuilder reteBuilder = new ReteBuilder();
             foreach (var ruleDefinition in ruleDefinitions)
             {
                 try
@@ -50,7 +50,7 @@ namespace NRules
             return Compile(rules);
         }
 
-        private void CompileRule(ReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
+        private void CompileRule(IReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
         {
             var transformation = new RuleTransformation();
             var transformedRule = transformation.Transform(ruleDefinition);

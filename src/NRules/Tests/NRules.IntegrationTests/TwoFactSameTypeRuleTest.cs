@@ -16,10 +16,8 @@ namespace NRules.IntegrationTests
             var fact3 = new FactType4 {TestProperty = "Invalid Value 3", Parent = fact1};
             var fact4 = new FactType4 {TestProperty = "Valid Value 4", Parent = null};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
+            var facts = new[] {fact1, fact2, fact3, fact4};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Moq;
 using NRules.Diagnostics;
 using NRules.Rete;
@@ -30,13 +31,13 @@ namespace NRules.Tests
             // Arrange
             var fact = new object();
             var target = CreateTarget();
-            _network.Setup(x => x.PropagateAssert(It.IsAny<IExecutionContext>(), fact)).Returns(true);
+            _network.Setup(x => x.PropagateAssert(It.IsAny<IExecutionContext>(), new [] {fact})).Returns(Succeeded());
 
             // Act
             target.Insert(fact);
 
             // Assert
-            _network.Verify(x => x.PropagateAssert(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), fact), Times.Exactly(1));
+            _network.Verify(x => x.PropagateAssert(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
         }
 
         [Test]
@@ -45,13 +46,13 @@ namespace NRules.Tests
             // Arrange
             var fact = new object();
             var target = CreateTarget();
-            _network.Setup(x => x.PropagateUpdate(It.IsAny<IExecutionContext>(), fact)).Returns(true);
+            _network.Setup(x => x.PropagateUpdate(It.IsAny<IExecutionContext>(), new[] { fact })).Returns(Succeeded());
 
             // Act
             target.Update(fact);
 
             // Assert
-            _network.Verify(x => x.PropagateUpdate(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), fact), Times.Exactly(1));
+            _network.Verify(x => x.PropagateUpdate(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
         }
 
         [Test]
@@ -60,18 +61,23 @@ namespace NRules.Tests
             // Arrange
             var fact = new object();
             var target = CreateTarget();
-            _network.Setup(x => x.PropagateRetract(It.IsAny<IExecutionContext>(), fact)).Returns(true);
+            _network.Setup(x => x.PropagateRetract(It.IsAny<IExecutionContext>(), new[] { fact })).Returns(Succeeded());
 
             // Act
             target.Retract(fact);
 
             // Assert
-            _network.Verify(x => x.PropagateRetract(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), fact), Times.Exactly(1));
+            _network.Verify(x => x.PropagateRetract(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
         }
 
         private Session CreateTarget()
         {
             return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, _dependencyResolver.Object);
+        }
+
+        private FactResult Succeeded()
+        {
+            return new FactResult(new List<object>());
         }
     }
 }

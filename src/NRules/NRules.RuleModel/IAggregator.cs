@@ -14,25 +14,25 @@ namespace NRules.RuleModel
         IEnumerable<AggregationResult> Initial();
 
         /// <summary>
-        /// Called by the rules engine when a new fact enters corresponding aggregator.
+        /// Called by the rules engine when new facts enter corresponding aggregator.
         /// </summary>
-        /// <param name="fact">New fact to add to the aggregate.</param>
-        /// <returns>Results of the operation on the aggregate, based on the added fact.</returns>
-        IEnumerable<AggregationResult> Add(object fact);
+        /// <param name="facts">New facts to add to the aggregate.</param>
+        /// <returns>Results of the operation on the aggregate, based on the added facts.</returns>
+        IEnumerable<AggregationResult> Add(IEnumerable<object> facts);
 
         /// <summary>
-        /// Called by the rules engine when an existing fact is modified in the corresponding aggregatosr.
+        /// Called by the rules engine when existing facts are modified in the corresponding aggregator.
         /// </summary>
-        /// <param name="fact">Existing fact to update in the aggregate.</param>
-        /// <returns>Results of the operation on the aggregate, based on the modified fact.</returns>
-        IEnumerable<AggregationResult> Modify(object fact);
+        /// <param name="facts">Existing facts to update in the aggregate.</param>
+        /// <returns>Results of the operation on the aggregate, based on the modified facts.</returns>
+        IEnumerable<AggregationResult> Modify(IEnumerable<object> facts);
 
         /// <summary>
-        /// Called by the rules engine when an existing fact is removed from the corresponding aggregator.
+        /// Called by the rules engine when existing facts are removed from the corresponding aggregator.
         /// </summary>
-        /// <param name="fact">Existing fact to remove from the aggregate.</param>
-        /// <returns>Results of the operation on the aggregate, based on the removed fact.</returns>
-        IEnumerable<AggregationResult> Remove(object fact);
+        /// <param name="facts">Existing facts to remove from the aggregate.</param>
+        /// <returns>Results of the operation on the aggregate, based on the removed facts.</returns>
+        IEnumerable<AggregationResult> Remove(IEnumerable<object> facts);
 
         /// <summary>
         /// Resulting aggregates.

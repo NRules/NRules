@@ -25,8 +25,8 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 {TestProperty = null};
             var fact2 = new FactType1 {TestProperty = null};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -43,8 +43,8 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 {TestProperty = null};
             var fact2 = new FactType1 {TestProperty = null};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             fact2.TestProperty = "Value";
             Session.Update(fact2);
@@ -65,8 +65,8 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 {TestProperty = "Value"};
             var fact2 = new FactType1 {TestProperty = "Value"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             fact2.TestProperty = null;
             Session.Update(fact2);
@@ -87,8 +87,8 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 {TestProperty = "Value"};
             var fact2 = new FactType1 {TestProperty = null};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
             Session.Update(fact2);
 
             //Act
@@ -107,8 +107,8 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 {TestProperty = null};
             var fact2 = new FactType1 {TestProperty = null};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             Session.Retract(fact1);
             Session.Retract(fact2);
@@ -124,7 +124,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneFactInsertedThenUpdatedToAnotherGroup_FiresOnceWithOneFactInSecondGroup()
         {
             //Arrange
-            var fact1 = new FactType1 { TestProperty = "Valid Value Group1" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value Group1"};
             Session.Insert(fact1);
             
             fact1.TestProperty = "Valid Value Group2";

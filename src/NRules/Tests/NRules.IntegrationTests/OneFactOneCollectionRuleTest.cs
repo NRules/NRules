@@ -28,9 +28,8 @@ namespace NRules.IntegrationTests
             var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
             var fact3 = new FactType1 {TestProperty = "Invalid Value 3"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
+            var facts = new[] {fact1, fact2, fact3};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -47,8 +46,8 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
             var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
             Session.Update(fact2);
 
             //Act
@@ -66,8 +65,8 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
             var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
             Session.Retract(fact2);
 
             //Act
@@ -85,8 +84,8 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
             var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
             Session.Retract(fact1);
             Session.Retract(fact2);
 
@@ -102,11 +101,11 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsInsertedOneUpdatedToInvalid_FiresOnceWithOneFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
-            var fact2 = new FactType1 { TestProperty = "Valid Value 2" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             fact2.TestProperty = "Invalid Value";
             Session.Update(fact2);
@@ -123,11 +122,11 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactsAndOneInvalidInsertedTheInvalidUpdatedToValid_FiresOnceWithTwoFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
-            var fact2 = new FactType1 { TestProperty = "Invalid Value" };
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType1 {TestProperty = "Invalid Value"};
 
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             fact2.TestProperty = "Valid Value 2";
             Session.Update(fact2);

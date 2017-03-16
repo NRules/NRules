@@ -28,6 +28,9 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Tuple related to the event.
         /// </summary>
-        public IEnumerable<FactInfo> Facts { get { return _tuple.Facts.Reverse().Select(t => new FactInfo(t)).ToArray(); } }
+        public IEnumerable<FactInfo> Facts
+        {
+            get { return _tuple.OrderedFacts.Select(f => new FactInfo(f)).ToArray(); }
+        }
     }
 }

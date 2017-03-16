@@ -20,10 +20,8 @@ namespace NRules.IntegrationTests
             var fact5 = new FactType2 {TestProperty = "Valid Value 5", JoinProperty = fact1.TestProperty};
 
             Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
-            Session.Insert(fact5);
+            var facts = new[] {fact2, fact3, fact4, fact5};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -69,9 +67,8 @@ namespace NRules.IntegrationTests
             var fact23 = new FactType2 {TestProperty = "Valid Value 23", JoinProperty = fact1.TestProperty};
 
             Session.Insert(fact1);
-            Session.Insert(fact21);
-            Session.Insert(fact22);
-            Session.Insert(fact23);
+            var facts = new[] {fact21, fact22, fact23};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -91,8 +88,8 @@ namespace NRules.IntegrationTests
             var fact3 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
 
             Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
+            var facts = new[] {fact2, fact3};
+            Session.InsertAll(facts);
 
             Session.Retract(fact3);
 
@@ -113,8 +110,8 @@ namespace NRules.IntegrationTests
             var fact3 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
 
             Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
+            var facts = new[] {fact2, fact3};
+            Session.InsertAll(facts);
 
             Session.Retract(fact2);
             Session.Retract(fact3);
@@ -137,9 +134,8 @@ namespace NRules.IntegrationTests
             var fact4 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact1.TestProperty};
 
             Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
+            var facts = new[] {fact2, fact3, fact4};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -158,9 +154,8 @@ namespace NRules.IntegrationTests
             var fact4 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact1.TestProperty};
 
             Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
+            var facts = new[] {fact2, fact3, fact4};
+            Session.InsertAll(facts);
 
             Session.Retract(fact1);
 
@@ -181,9 +176,8 @@ namespace NRules.IntegrationTests
             var fact4 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact1.TestProperty};
 
             Session.Insert(fact1);
-            Session.Insert(fact2);
-            Session.Insert(fact3);
-            Session.Insert(fact4);
+            var facts = new[] {fact2, fact3, fact4};
+            Session.InsertAll(facts);
 
             fact1.TestProperty = "Invalid Value 1";
             Session.Update(fact1);
@@ -230,9 +224,8 @@ namespace NRules.IntegrationTests
 
             Session.Insert(fact11);
             Session.Insert(fact12);
-            Session.Insert(fact21);
-            Session.Insert(fact22);
-            Session.Insert(fact23);
+            var facts = new[] {fact21, fact22, fact23};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();

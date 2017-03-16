@@ -11,6 +11,7 @@ namespace NRules.IntegrationTests.TestAssets
 
         public int Id { get; private set; }
         public string TestProperty { get; set; }
+        public string ValueProperty { get; set; }
 
         public bool Equals(EquatableFact other)
         {

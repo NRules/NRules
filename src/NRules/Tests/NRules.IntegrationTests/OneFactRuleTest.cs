@@ -28,8 +28,8 @@ namespace NRules.IntegrationTests
             //Arrange
             var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
             var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -187,7 +187,7 @@ namespace NRules.IntegrationTests
         public void TryUpdate_UpdateWithoutInsert_False()
         {
             //Arrange
-            var fact = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
 
             //Act
             bool actual = Session.TryUpdate(fact);
@@ -217,7 +217,7 @@ namespace NRules.IntegrationTests
         public void TryRetract_RetractWithoutInsert_False()
         {
             //Arrange
-            var fact = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
 
             //Act
             bool actual = Session.TryRetract(fact);

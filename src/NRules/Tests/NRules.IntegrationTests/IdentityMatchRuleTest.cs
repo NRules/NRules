@@ -26,9 +26,9 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact1 = new FactType1 {TestProperty = "Valid value"};
-            Session.Insert(fact1);
             var fact2 = new FactType1 {TestProperty = "Valid value"};
-            Session.Insert(fact2);
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
