@@ -1,0 +1,16 @@
+version: 0.4.2.{build}
+configuration: Release
+
+nuget:
+  disable_publish_on_pr: true
+
+clone_depth: 1
+
+test: off
+
+build_script:
+- ps: .\build.ps1
+
+artifacts:
+- path: binaries\**\*.*
+  name: Bin
