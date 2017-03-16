@@ -95,14 +95,13 @@ task Merge -depends Compile -precondition { return $component.ContainsKey('merge
 	$attribute_file = "$out_dir\$($component.merge.attr_file)"
 	
 	$keyfile = "$base_dir\..\SigningKey.snk"
-	$keyfileOption = "/keyfile:$keyfile"
 	if (-not (Test-Path $keyfile) ) {
-		$keyfileOption = ""
-		Write-Host "Key file for assembly signing does not exist. Cannot strongly name assembly." -ForegroundColor Yellow
+		Write-Host "Key file for assembly signing does not exist. Signing with a development key." -ForegroundColor Yellow
+		$keyfile = "$base_dir\DevSigningKey.snk"
 	}
 	
 	$output = "$merge_dir\$($component.merge.out_file)"
-	exec { &$script:ilmerge_exec /out:$output /log $keyfileOption $script:ilmerge_target_framework $assemblies /xmldocs /attr:$attribute_file }
+	exec { &$script:ilmerge_exec /out:$output /log /keyfile:$keyfile $script:ilmerge_target_framework $assemblies /xmldocs /attr:$attribute_file }
 }
 
 task Build -depends Compile, Test, Merge, ResetVersion -precondition { return -not $component.ContainsKey('nobuild') } { 
