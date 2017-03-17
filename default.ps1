@@ -83,7 +83,14 @@ task Compile -depends Init, Clean, SetVersion, RestoreTools, RestoreDependencies
 task Test -depends Compile -precondition { return $component.ContainsKey('test') } {
 	$test_files = @()
 	$test_files += Get-ChildItem "$out_dir\*.*" -Include $component.test.include -Exclude $component.test.exclude
-	exec { &$script:nunit_exec $test_files /nologo /framework:$target_framework /config:$configuration }
+	$test_out_file = "$build_dir\TestResult_$($component.name).xml"
+	exec { &$script:nunit_exec $test_files /nologo /framework:$target_framework /config:$configuration /xml:$test_out_file }
+	
+	if (Test-Path env:APPVEYOR_JOB_ID) {
+		Write-Host "Uploading to AppVeyor - $test_out_file"
+		$wc = New-Object 'System.Net.WebClient'
+		$wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $test_out_file))
+	}
 }
 
 task Merge -depends Compile -precondition { return $component.ContainsKey('merge') } {
