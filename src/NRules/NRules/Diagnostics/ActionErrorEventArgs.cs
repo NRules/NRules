@@ -10,7 +10,7 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Information related to error events raised during action execution.
     /// </summary>
-    public class ActionErrorEventArgs : RecoverableErrorEventArgs
+    public class ActionErrorEventArgs : ErrorEventArgs
     {
         private readonly ICompiledRule _rule;
         private readonly Expression _expression;

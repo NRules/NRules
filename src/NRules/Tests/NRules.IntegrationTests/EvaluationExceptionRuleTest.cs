@@ -13,7 +13,7 @@ namespace NRules.IntegrationTests
     public class EvaluationExceptionRuleTest : BaseRuleTestFixture
     {
         [Test]
-        public void Insert_ErrorInCondition_Throws()
+        public void Insert_ErrorInConditionNoErrorHandler_Throws()
         {
             //Arrange
             Expression expression = null;
@@ -29,6 +29,18 @@ namespace NRules.IntegrationTests
             Assert.AreEqual(1, facts.Count());
             Assert.AreSame(fact, facts.First().Value);
             Assert.IsInstanceOf<NullReferenceException>(ex.InnerException);
+        }
+
+        [Test]
+        public void Insert_ErrorInConditionErrorHandler_DoesNotThrow()
+        {
+            //Arrange
+            Session.Events.ConditionFailedEvent += (sender, args) => args.IsHandled = true;
+
+            var fact = new FactType1 { TestProperty = null };
+            
+            //Act - Assert
+            Assert.DoesNotThrow(() => Session.Insert(fact));
         }
 
         [Test]

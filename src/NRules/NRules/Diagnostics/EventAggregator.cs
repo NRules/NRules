@@ -99,7 +99,7 @@ namespace NRules.Diagnostics
         void RaiseFactRetracting(ISession session, Fact fact);
         void RaiseFactRetracted(ISession session, Fact fact);
         void RaiseActionFailed(ISession session, ICompiledRule rule, Exception exception, Expression expression, Tuple tuple, out bool isHandled);
-        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact);
+        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, out bool isHandled);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -299,17 +299,19 @@ namespace NRules.Diagnostics
             }
         }
 
-        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact)
+        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, out bool isHandled)
         {
+            isHandled = false;
             var hanlder = ConditionFailedEvent;
             if (hanlder != null)
             {
                 var @event = new ConditionErrorEventArgs(exception, expression, tuple, fact);
                 hanlder(session, @event);
+                isHandled = @event.IsHandled;
             }
-            if (_parent != null)
+            if (_parent != null && !isHandled)
             {
-                _parent.RaiseConditionFailed(session, exception, expression, tuple, fact);
+                _parent.RaiseConditionFailed(session, exception, expression, tuple, fact, out isHandled);
             }
         }
     }

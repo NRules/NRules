@@ -70,7 +70,6 @@
     <Compile Include="Diagnostics\ISessionSnapshotProvider.cs" />
     <Compile Include="Diagnostics\LinkInfo.cs" />
     <Compile Include="Diagnostics\NodeInfo.cs" />
-    <Compile Include="Diagnostics\RecoverableErrorEventArgs.cs" />
     <Compile Include="Diagnostics\SessionSnapshot.cs" />
     <Compile Include="Diagnostics\SessionSnapshotVisitor.cs" />
     <Compile Include="Diagnostics\SnapshotBuilder.cs" />
