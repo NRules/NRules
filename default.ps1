@@ -86,10 +86,10 @@ task Test -depends Compile -precondition { return $component.ContainsKey('test')
 	$test_out_file = "$build_dir\TestResult_$($component.name).xml"
 	exec { &$script:nunit_exec $test_files /nologo /framework:$target_framework /config:$configuration /xml:$test_out_file }
 	
-	if (Test-Path env:APPVEYOR_JOB_ID) {
-		Write-Host "Uploading to AppVeyor - $test_out_file"
+	if (Test-Path Env:CI) {
+		Write-Host "Uploading to CI - $test_out_file"
 		$wc = New-Object 'System.Net.WebClient'
-		$wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $test_out_file))
+		$wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($Env:APPVEYOR_JOB_ID)", (Resolve-Path $test_out_file))
 	}
 }
 
