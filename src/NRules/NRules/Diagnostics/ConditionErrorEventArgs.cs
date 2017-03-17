@@ -39,7 +39,7 @@ namespace NRules.Diagnostics
                 var wrappedFact = new[] { new FactInfo(_fact) };
                 return _tuple == null
                     ? wrappedFact
-                    : _tuple.Facts.Reverse().Select(x => new FactInfo(x)).Concat(wrappedFact).ToArray();
+                    : _tuple.OrderedFacts.Select(x => new FactInfo(x)).Concat(wrappedFact).ToArray();
             }
         }
     }

@@ -36,6 +36,6 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Facts that caused exception.
         /// </summary>
-        public IEnumerable<FactInfo> Facts { get { return _tuple.Facts.Reverse().Select(x => new FactInfo(x)).ToArray(); } }
+        public IEnumerable<FactInfo> Facts { get { return _tuple.OrderedFacts.Select(x => new FactInfo(x)).ToArray(); } }
     }
 }
