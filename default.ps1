@@ -19,7 +19,7 @@ task Init {
 	Assert ($version -ne $null) 'Version should not be null'
 	Assert ($component -ne $null) 'Component should not be null'
 	
-	Write-Host "Building $($component.name) version $version" -ForegroundColor Green
+	Write-Host "Building $($component.name) version $version ($configuration)" -ForegroundColor Green
 	
 	$comp_name = $component.name
 	$src_root = if ($component.ContainsKey('src_root')) { $component.src_root } else { 'src' }
