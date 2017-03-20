@@ -28,10 +28,10 @@ namespace NRules.Rete
             int index = leftTuple.Count - 1;
             foreach (var fact in leftTuple.Facts)
             {
-                IndexMap.SetElementAt(ref args, _factIndexMap[index], 0, fact.Object);
+                IndexMap.SetElementAt(args, _factIndexMap[index], 0, fact.Object);
                 index--;
             }
-            IndexMap.SetElementAt(ref args, _factIndexMap[leftTuple.Count], 0, rightFact.Object);
+            IndexMap.SetElementAt(args, _factIndexMap[leftTuple.Count], 0, rightFact.Object);
 
             try
             {

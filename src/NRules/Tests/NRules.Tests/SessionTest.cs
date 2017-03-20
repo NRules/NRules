@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Moq;
 using NRules.Diagnostics;
+using NRules.Proxy;
 using NRules.Rete;
 using NUnit.Framework;
 
@@ -14,6 +15,7 @@ namespace NRules.Tests
         private Mock<IWorkingMemory> _workingMemory;
         private Mock<IEventAggregator> _eventAggregator;
         private Mock<IDependencyResolver> _dependencyResolver;
+        private Mock<IActionInterceptor> _actionInterceptor;
             
         [SetUp]
         public void Setup()
@@ -23,6 +25,7 @@ namespace NRules.Tests
             _workingMemory = new Mock<IWorkingMemory>();
             _eventAggregator = new Mock<IEventAggregator>();
             _dependencyResolver = new Mock<IDependencyResolver>();
+            _actionInterceptor = new Mock<IActionInterceptor>();
         }
 
         [Test]
@@ -72,7 +75,7 @@ namespace NRules.Tests
 
         private Session CreateTarget()
         {
-            return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, _dependencyResolver.Object);
+            return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, _dependencyResolver.Object, _actionInterceptor.Object);
         }
 
         private FactResult Succeeded()

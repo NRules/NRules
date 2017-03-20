@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using NRules.Proxy;
 using NRules.Rete;
 using NRules.Utilities;
 using Tuple = NRules.Rete.Tuple;
@@ -34,7 +35,7 @@ namespace NRules
             foreach (var fact in tuple.Facts)
             {
                 var mappedIndex = _factIndexMap[tupleFactMap[index]];
-                IndexMap.SetElementAt(ref args, mappedIndex, 1, fact.Object);
+                IndexMap.SetElementAt(args, mappedIndex, 1, fact.Object);
                 index--;
             }
 
@@ -47,14 +48,23 @@ namespace NRules
                 {
                     var resolutionContext = new ResolutionContext(executionContext.Session, actionContext.Rule);
                     var resolvedDependency = dependency.Factory(dependencyResolver, resolutionContext);
-                    IndexMap.SetElementAt(ref args, mappedIndex, 1, resolvedDependency);
+                    IndexMap.SetElementAt(args, mappedIndex, 1, resolvedDependency);
                 }
                 index++;
             }
 
+            var invocation = new ActionInvocation(actionContext, tuple, args, _compiledAction.Delegate);
             try
             {
-                _compiledAction.Delegate.Invoke(args);
+                var actionInterceptor = executionContext.Session.ActionInterceptor;
+                if (actionInterceptor != null)
+                {
+                    actionInterceptor.Intercept(invocation);
+                }
+                else
+                {
+                    invocation.Invoke();
+                }
             }
             catch (Exception e)
             {

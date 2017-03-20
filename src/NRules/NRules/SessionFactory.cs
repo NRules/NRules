@@ -1,4 +1,5 @@
 ﻿using NRules.Diagnostics;
+using NRules.Proxy;
 using NRules.Rete;
 
 namespace NRules
@@ -45,6 +46,12 @@ namespace NRules
         IDependencyResolver DependencyResolver { get; set; }
 
         /// <summary>
+        /// Action interceptor for all rules sessions.
+        /// If provided, invocation of rule actions is delegated to the interceptor.
+        /// </summary>
+        IActionInterceptor ActionInterceptor { get; set; }
+
+        /// <summary>
         /// Creates a new rules session.
         /// </summary>
         /// <returns>New rules session.</returns>
@@ -64,13 +71,14 @@ namespace NRules
 
         public IEventProvider Events { get { return _eventAggregator; } }
         public IDependencyResolver DependencyResolver { get; set; }
+        public IActionInterceptor ActionInterceptor { get; set; }
 
         public ISession CreateSession()
         {
             var agenda = new Agenda();
             var workingMemory = new WorkingMemory();
             var eventAggregator = new EventAggregator(_eventAggregator);
-            var session = new Session(_network, agenda, workingMemory, eventAggregator, DependencyResolver);
+            var session = new Session(_network, agenda, workingMemory, eventAggregator, DependencyResolver, ActionInterceptor);
             return session;
         }
     }
