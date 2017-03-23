@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NRules.Diagnostics;
@@ -27,6 +27,7 @@ namespace NRules.Proxy
         /// Action arguments.
         /// </summary>
         /// <remarks>Action arguments also include dependencies that are passed to the action method.</remarks>
+        /// <remarks>Action arguments don't include <c>IContext</c>; it is supplied as <see cref="Context"/> property.</remarks>
         object[] Arguments { get; }
 
         /// <summary>
@@ -40,9 +41,9 @@ namespace NRules.Proxy
         private readonly IActionContext _context;
         private readonly Tuple _tuple;
         private readonly object[] _arguments;
-        private readonly Action<object[]> _action;
+        private readonly Action<IContext, object[]> _action;
 
-        public ActionInvocation(IActionContext context, Tuple tuple, object[] arguments, Action<object[]> action)
+        public ActionInvocation(IActionContext context, Tuple tuple, object[] arguments, Action<IContext, object[]> action)
         {
             _context = context;
             _tuple = tuple;
@@ -61,7 +62,7 @@ namespace NRules.Proxy
 
         public void Invoke()
         {
-            _action.Invoke(_arguments);
+            _action.Invoke(_context, _arguments);
         }
     }
 }

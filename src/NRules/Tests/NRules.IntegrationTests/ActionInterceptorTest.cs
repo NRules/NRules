@@ -13,10 +13,12 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact1 = new FactType1 {TestProperty = "Valid Value"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value", JoinProperty = "Valid Value"};
             Session.Insert(fact1);
-
+            Session.Insert(fact2);
+            
             bool actionExecuted = false;
-            GetRuleInstance<OneFactOneCollectionRule>().Action = () => { actionExecuted = true; };
+            GetRuleInstance<TwoFactOneCollectionRule>().Action = () => { actionExecuted = true; };
 
             //Act
             Session.Fire();
@@ -32,11 +34,13 @@ namespace NRules.IntegrationTests
             //Arrange
             Session.ActionInterceptor = new ActionInterceptor(invoke: true);
 
-            var fact1 = new FactType1 {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value", JoinProperty = "Valid Value" };
             Session.Insert(fact1);
+            Session.Insert(fact2);
 
             bool actionExecuted = false;
-            GetRuleInstance<OneFactOneCollectionRule>().Action = () => { actionExecuted = true; };
+            GetRuleInstance<TwoFactOneCollectionRule>().Action = () => { actionExecuted = true; };
 
             //Act
             Session.Fire();
@@ -52,11 +56,13 @@ namespace NRules.IntegrationTests
             //Arrange
             Session.ActionInterceptor = new ActionInterceptor(invoke: false);
 
-            var fact1 = new FactType1 {TestProperty = "Valid Value"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value", JoinProperty = "Valid Value" };
             Session.Insert(fact1);
+            Session.Insert(fact2);
 
             bool actionExecuted = false;
-            GetRuleInstance<OneFactOneCollectionRule>().Action = () => { actionExecuted = true; };
+            GetRuleInstance<TwoFactOneCollectionRule>().Action = () => { actionExecuted = true; };
 
             //Act
             Session.Fire();
@@ -68,7 +74,7 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactOneCollectionRule>();
+            SetUpRule<TwoFactOneCollectionRule>();
         }
 
         private class ActionInterceptor : IActionInterceptor

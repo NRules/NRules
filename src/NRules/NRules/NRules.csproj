@@ -75,8 +75,8 @@
     <Compile Include="Diagnostics\SnapshotBuilder.cs" />
     <Compile Include="Diagnostics\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
+    <Compile Include="Proxy\ActionInvocation.cs" />
     <Compile Include="Proxy\IActionInterceptor.cs" />
-    <Compile Include="Proxy\IActionInvocation.cs" />
     <Compile Include="ResolutionContext.cs" />
     <Compile Include="Rete\Aggregation.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
