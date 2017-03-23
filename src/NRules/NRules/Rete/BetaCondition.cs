@@ -19,19 +19,19 @@ namespace NRules.Rete
         {
             _expression = expression;
             _factIndexMap = factIndexMap;
-            _compiledExpression = FastDelegate.Create<Func<object[], bool>>(expression);
+            _compiledExpression = FastDelegate.BetaCondition(expression);
         }
 
         public bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact)
         {
-            var args = new object[_compiledExpression.ParameterCount];
+            var args = new object[_compiledExpression.ArrayArgumentCount];
             int index = leftTuple.Count - 1;
             foreach (var fact in leftTuple.Facts)
             {
-                IndexMap.SetElementAt(ref args, _factIndexMap[index], 0, fact.Object);
+                IndexMap.SetElementAt(args, _factIndexMap[index], fact.Object);
                 index--;
             }
-            IndexMap.SetElementAt(ref args, _factIndexMap[leftTuple.Count], 0, rightFact.Object);
+            IndexMap.SetElementAt(args, _factIndexMap[leftTuple.Count], rightFact.Object);
 
             try
             {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NRules.Diagnostics;
+using NRules.Proxy;
 using NRules.Rete;
 
 namespace NRules
@@ -43,6 +44,12 @@ namespace NRules
         /// Rules dependency resolver.
         /// </summary>
         IDependencyResolver DependencyResolver { get; set; }
+
+        /// <summary>
+        /// Action interceptor for the current rules session.
+        /// If provided, invocation of rule actions is delegated to the interceptor.
+        /// </summary>
+        IActionInterceptor ActionInterceptor { get; set; }
 
         /// <summary>
         /// Inserts new facts to the rules engine memory.
@@ -140,7 +147,7 @@ namespace NRules
         private readonly IEventAggregator _eventAggregator;
         private readonly IExecutionContext _executionContext;
 
-        internal Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator, IDependencyResolver dependencyResolver)
+        internal Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator, IDependencyResolver dependencyResolver, IActionInterceptor actionInterceptor)
         {
             _network = network;
             _workingMemory = workingMemory;
@@ -148,12 +155,13 @@ namespace NRules
             _eventAggregator = eventAggregator;
             _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator);
             DependencyResolver = dependencyResolver;
+            ActionInterceptor = actionInterceptor;
             _network.Activate(_executionContext);
         }
 
         public IEventProvider Events { get { return _eventAggregator; } }
-
         public IDependencyResolver DependencyResolver { get; set; }
+        public IActionInterceptor ActionInterceptor { get; set; }
 
         public void InsertAll(IEnumerable<object> facts)
         {

@@ -1,6 +1,8 @@
 using System;
 using System.Linq.Expressions;
+using NRules.Proxy;
 using NRules.Rete;
+using NRules.RuleModel;
 using NRules.Utilities;
 using Tuple = NRules.Rete.Tuple;
 
@@ -16,25 +18,24 @@ namespace NRules
         private readonly LambdaExpression _expression;
         private readonly IndexMap _factIndexMap;
         private readonly IndexMap _dependencyIndexMap;
-        private readonly FastDelegate<Action<object[]>> _compiledAction;
+        private readonly FastDelegate<Action<IContext, object[]>> _compiledAction;
 
         public RuleAction(LambdaExpression expression, IndexMap factIndexMap, IndexMap dependencyIndexMap)
         {
             _expression = expression;
             _factIndexMap = factIndexMap;
             _dependencyIndexMap = dependencyIndexMap;
-            _compiledAction = FastDelegate.Create<Action<object[]>>(expression);
+            _compiledAction = FastDelegate.Action(expression);
         }
 
         public void Invoke(IExecutionContext executionContext, IActionContext actionContext, Tuple tuple, IndexMap tupleFactMap)
         {
-            var args = new object[_compiledAction.ParameterCount];
-            args[0] = actionContext;
+            var args = new object[_compiledAction.ArrayArgumentCount];
             int index = tuple.Count - 1;
             foreach (var fact in tuple.Facts)
             {
                 var mappedIndex = _factIndexMap[tupleFactMap[index]];
-                IndexMap.SetElementAt(ref args, mappedIndex, 1, fact.Object);
+                IndexMap.SetElementAt(args, mappedIndex, fact.Object);
                 index--;
             }
 
@@ -47,14 +48,23 @@ namespace NRules
                 {
                     var resolutionContext = new ResolutionContext(executionContext.Session, actionContext.Rule);
                     var resolvedDependency = dependency.Factory(dependencyResolver, resolutionContext);
-                    IndexMap.SetElementAt(ref args, mappedIndex, 1, resolvedDependency);
+                    IndexMap.SetElementAt(args, mappedIndex, resolvedDependency);
                 }
                 index++;
             }
 
+            var invocation = new ActionInvocation(actionContext, tuple, args, _compiledAction.Delegate);
             try
             {
-                _compiledAction.Delegate.Invoke(args);
+                var actionInterceptor = executionContext.Session.ActionInterceptor;
+                if (actionInterceptor != null)
+                {
+                    actionInterceptor.Intercept(invocation);
+                }
+                else
+                {
+                    invocation.Invoke();
+                }
             }
             catch (Exception e)
             {
