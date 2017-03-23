@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Moq;
 using NRules.Diagnostics;
-using NRules.Proxy;
+using NRules.Extensibility;
 using NRules.Rete;
 using NUnit.Framework;
 

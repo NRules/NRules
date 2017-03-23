@@ -1,5 +1,6 @@
 ﻿using System;
 using Autofac;
+using NRules.Extensibility;
 
 namespace NRules.Integration.Autofac
 {

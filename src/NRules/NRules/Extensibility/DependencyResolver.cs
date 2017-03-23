@@ -1,6 +1,6 @@
 using System;
 
-namespace NRules
+namespace NRules.Extensibility
 {
     /// <summary>
     /// Defines a mechanism to resolve rule dependencies at runtime.

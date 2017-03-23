@@ -1,4 +1,4 @@
-﻿namespace NRules.Proxy
+﻿namespace NRules.Extensibility
 {
     /// <summary>
     /// Extension point for rule action interception.

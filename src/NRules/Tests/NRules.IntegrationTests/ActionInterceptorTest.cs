@@ -1,6 +1,6 @@
-﻿using NRules.IntegrationTests.TestAssets;
+﻿using NRules.Extensibility;
+using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
-using NRules.Proxy;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests

@@ -1,5 +1,5 @@
 ﻿using NRules.Diagnostics;
-using NRules.Proxy;
+using NRules.Extensibility;
 using NRules.Rete;
 
 namespace NRules

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NRules.Diagnostics;
-using NRules.Proxy;
+using NRules.Extensibility;
 using NRules.Rete;
 
 namespace NRules

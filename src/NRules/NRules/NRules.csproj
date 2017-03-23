@@ -60,7 +60,6 @@
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
-    <Compile Include="DependencyResolver.cs" />
     <Compile Include="Diagnostics\ActionErrorEventArgs.cs" />
     <Compile Include="Diagnostics\AgendaEventArgs.cs" />
     <Compile Include="Diagnostics\ConditionErrorEventArgs.cs" />
@@ -75,9 +74,10 @@
     <Compile Include="Diagnostics\SnapshotBuilder.cs" />
     <Compile Include="Diagnostics\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
-    <Compile Include="Proxy\ActionInvocation.cs" />
-    <Compile Include="Proxy\IActionInterceptor.cs" />
-    <Compile Include="ResolutionContext.cs" />
+    <Compile Include="Extensibility\ActionInvocation.cs" />
+    <Compile Include="Extensibility\DependencyResolver.cs" />
+    <Compile Include="Extensibility\IActionInterceptor.cs" />
+    <Compile Include="Extensibility\ResolutionContext.cs" />
     <Compile Include="Rete\Aggregation.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\ConditionComparer.cs" />

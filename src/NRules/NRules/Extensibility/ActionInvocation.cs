@@ -5,7 +5,7 @@ using NRules.Diagnostics;
 using NRules.RuleModel;
 using Tuple = NRules.Rete.Tuple;
 
-namespace NRules.Proxy
+namespace NRules.Extensibility
 {
     /// <summary>
     /// Represents invocation of the proxied rule action.

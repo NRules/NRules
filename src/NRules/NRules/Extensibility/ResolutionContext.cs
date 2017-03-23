@@ -1,6 +1,6 @@
 using NRules.RuleModel;
 
-namespace NRules
+namespace NRules.Extensibility
 {
     /// <summary>
     /// Context for dependency resolution.

@@ -1,4 +1,5 @@
 ﻿using System;
+using NRules.Extensibility;
 using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;

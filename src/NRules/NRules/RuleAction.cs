@@ -1,6 +1,6 @@
 using System;
 using System.Linq.Expressions;
-using NRules.Proxy;
+using NRules.Extensibility;
 using NRules.Rete;
 using NRules.RuleModel;
 using NRules.Utilities;
