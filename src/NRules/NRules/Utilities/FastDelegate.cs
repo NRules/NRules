@@ -8,9 +8,18 @@ namespace NRules.Utilities
 {
     internal abstract class FastDelegate
     {
-        public static FastDelegate<Func<object[], bool>> Condition(LambdaExpression expression)
+        public static FastDelegate<Func<object, bool>> AlphaCondition(LambdaExpression expression)
         {
-            var optimizer = new ExpressionOptimizer<Func<object[], bool>>();
+            var optimizer = new ExpressionSingleParameterOptimizer<Func<object, bool>>();
+            var optimizedExpression = optimizer.ConvertParameter(expression);
+            var @delegate = optimizedExpression.Compile();
+            var fastDelegate = Create(@delegate, expression.Parameters.Count);
+            return fastDelegate;
+        }
+
+        public static FastDelegate<Func<object[], bool>> BetaCondition(LambdaExpression expression)
+        {
+            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], bool>>();
             var optimizedExpression = optimizer.CompactParameters(expression, 0);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, expression.Parameters.Count);
@@ -19,7 +28,7 @@ namespace NRules.Utilities
 
         public static FastDelegate<Action<IContext, object[]>> Action(LambdaExpression expression)
         {
-            var optimizer = new ExpressionOptimizer<Action<IContext, object[]>>();
+            var optimizer = new ExpressionMultiParameterOptimizer<Action<IContext, object[]>>();
             var optimizedExpression = optimizer.CompactParameters(expression, 1);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, expression.Parameters.Count - 1);
@@ -31,7 +40,39 @@ namespace NRules.Utilities
             return new FastDelegate<TDelegate>(@delegate, parameterCount);
         }
 
-        private class ExpressionOptimizer<TDelegate> : ExpressionVisitor
+        private class ExpressionSingleParameterOptimizer<TDelegate> : ExpressionVisitor
+        {
+            private ParameterExpression _objectParameter;
+            private ParameterExpression _typedParameter;
+
+            /// <summary>
+            /// Transforms expression from single typed parameter to single object parameter,
+            /// which allows execution w/o reflection.
+            /// </summary>
+            /// <param name="expression">Expression to transform.</param>
+            /// <returns>Transformed expression.</returns>
+            public Expression<TDelegate> ConvertParameter(LambdaExpression expression)
+            {
+                _objectParameter = Expression.Parameter(typeof (object));
+                _typedParameter = expression.Parameters.Single();
+
+                Expression body = Visit(expression.Body);
+                Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(body, _objectParameter);
+                return optimizedLambda;
+            }
+
+            protected override Expression VisitParameter(ParameterExpression node)
+            {
+                if (node == _typedParameter)
+                {
+                    UnaryExpression parameterValue = Expression.Convert(_objectParameter, node.Type);
+                    return parameterValue;
+                }
+                return node;
+            }
+        }
+
+        private class ExpressionMultiParameterOptimizer<TDelegate> : ExpressionVisitor
         {
             private ParameterExpression _arrayParameter;
             private Dictionary<ParameterExpression, int> _indexMap;
@@ -45,7 +86,7 @@ namespace NRules.Utilities
             /// <returns>Transformed expression.</returns>
             public Expression<TDelegate> CompactParameters(LambdaExpression expression, int startIndex)
             {
-                _arrayParameter = Expression.Parameter(typeof (object[]));
+                _arrayParameter = Expression.Parameter(typeof(object[]));
                 _indexMap = expression.Parameters.Skip(startIndex).ToIndexMap();
 
                 var parameters = expression.Parameters.Take(startIndex).ToList();
