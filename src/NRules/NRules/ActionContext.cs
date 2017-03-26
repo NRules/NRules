@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.Extensibility;
 using NRules.RuleModel;
 
 namespace NRules
@@ -68,6 +69,13 @@ namespace NRules
         public bool TryRetract(object fact)
         {
             return _session.TryRetract(fact);
+        }
+
+        public TService Resove<TService>()
+        {
+            var resolutionContext = new ResolutionContext(_session, _compiledRule.Definition);
+            var service = _session.DependencyResolver.Resolve(resolutionContext, typeof (TService));
+            return (TService) service;
         }
 
         public void Halt()

@@ -81,5 +81,10 @@ namespace NRules.RuleModel
         /// <param name="fact">Fact to remove.</param>
         /// <returns>Whether the fact was retracted or not.</returns>
         bool TryRetract(object fact);
+
+        /// <summary>
+        /// Resolves a registered service (normally via an IoC container).
+        /// </summary>
+        TService Resove<TService>();
     }
 }
