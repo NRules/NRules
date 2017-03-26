@@ -55,6 +55,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ActionContext.cs" />
+    <Compile Include="Activation.cs" />
     <Compile Include="ActivationQueue.cs" />
     <Compile Include="Collections\OrderedHashSet.cs" />
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
@@ -108,7 +109,6 @@
     <Compile Include="Rete\ReteBuilderContext.cs" />
     <Compile Include="Rete\RootNode.cs" />
     <Compile Include="Rete\SelectionNode.cs" />
-    <Compile Include="Rete\Activation.cs" />
     <Compile Include="Rete\BetaCondition.cs" />
     <Compile Include="Agenda.cs" />
     <Compile Include="Rete\AlphaMemoryNode.cs" />

@@ -39,6 +39,11 @@ namespace NRules.Collections
             get { return _priorityQueue.IsEmpty; }
         }
 
+        public void Clear()
+        {
+            _priorityQueue.Clear();
+        }
+
         private class OrderedKey<T>
         {
             public T Key { get; private set; }

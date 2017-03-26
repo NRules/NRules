@@ -12,21 +12,21 @@ namespace NRules.Diagnostics
     /// </summary>
     public class ActionErrorEventArgs : ErrorEventArgs
     {
-        private readonly ICompiledRule _rule;
+        private readonly ICompiledRule _compiledRule;
         private readonly Expression _expression;
         private readonly Tuple _tuple;
 
-        internal ActionErrorEventArgs(Exception exception, ICompiledRule rule, Expression expression, Tuple tuple) : base(exception)
+        internal ActionErrorEventArgs(Exception exception, ICompiledRule compiledRule, Expression expression, Tuple tuple) : base(exception)
         {
-            _rule = rule;
+            _compiledRule = compiledRule;
             _expression = expression;
             _tuple = tuple;
         }
 
         /// <summary>
-        /// Rule related to the event.
+        /// CompiledRule related to the event.
         /// </summary>
-        public IRuleDefinition Rule { get { return _rule.Definition; } }
+        public IRuleDefinition Rule { get { return _compiledRule.Definition; } }
 
         /// <summary>
         /// Action that caused exception.

@@ -35,6 +35,11 @@ namespace NRules
     public interface ISession
     {
         /// <summary>
+        /// Agenda, which represents a store for rule matches.
+        /// </summary>
+        IAgenda Agenda { get; }
+
+        /// <summary>
         /// Provider of events from the current rule session.
         /// Use it to subscribe to various rules engine lifecycle events.
         /// </summary>
@@ -136,18 +141,23 @@ namespace NRules
         IQueryable<TFact> Query<TFact>();
     }
 
+    internal interface ISessionInternal : ISession
+    {
+        new IAgendaInternal Agenda { get; }
+    }
+
     /// <summary>
     /// See <see cref="ISession"/>.
     /// </summary>
-    public sealed class Session : ISession, ISessionSnapshotProvider
+    public sealed class Session : ISessionInternal, ISessionSnapshotProvider
     {
-        private readonly IAgenda _agenda;
+        private readonly IAgendaInternal _agenda;
         private readonly INetwork _network;
         private readonly IWorkingMemory _workingMemory;
         private readonly IEventAggregator _eventAggregator;
         private readonly IExecutionContext _executionContext;
 
-        internal Session(INetwork network, IAgenda agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator, IDependencyResolver dependencyResolver, IActionInterceptor actionInterceptor)
+        internal Session(INetwork network, IAgendaInternal agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator, IDependencyResolver dependencyResolver, IActionInterceptor actionInterceptor)
         {
             _network = network;
             _workingMemory = workingMemory;
@@ -159,9 +169,12 @@ namespace NRules
             _network.Activate(_executionContext);
         }
 
+        public IAgenda Agenda { get { return _agenda; } }
         public IEventProvider Events { get { return _eventAggregator; } }
         public IDependencyResolver DependencyResolver { get; set; }
         public IActionInterceptor ActionInterceptor { get; set; }
+
+        IAgendaInternal ISessionInternal.Agenda { get { return _agenda;} }
 
         public void InsertAll(IEnumerable<object> facts)
         {
@@ -225,14 +238,14 @@ namespace NRules
 
         public void Fire()
         {
-            while (_agenda.HasActiveRules())
+            while (!_agenda.IsEmpty())
             {
-                Activation activation = _agenda.NextActivation();
-                ICompiledRule rule = activation.Rule;
-                var actionContext = new ActionContext(rule, this);
+                Activation activation = _agenda.Pop();
+                ICompiledRule compiledRule = activation.CompiledRule;
+                var actionContext = new ActionContext(compiledRule, this);
 
                 _eventAggregator.RaiseRuleFiring(this, activation);
-                foreach (IRuleAction action in rule.Actions)
+                foreach (IRuleAction action in compiledRule.Actions)
                 {
                     action.Invoke(_executionContext, actionContext, activation.Tuple, activation.TupleFactMap);
                 }

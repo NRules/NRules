@@ -4,15 +4,15 @@ namespace NRules
 {
     internal interface IExecutionContext
     {
-        ISession Session { get; }
+        ISessionInternal Session { get; }
         IWorkingMemory WorkingMemory { get; }
-        IAgenda Agenda { get; }
+        IAgendaInternal Agenda { get; }
         IEventAggregator EventAggregator { get; }
     }
 
     internal class ExecutionContext : IExecutionContext
     {
-        public ExecutionContext(ISession session, IWorkingMemory workingMemory, IAgenda agenda, IEventAggregator eventAggregator)
+        public ExecutionContext(ISessionInternal session, IWorkingMemory workingMemory, IAgendaInternal agenda, IEventAggregator eventAggregator)
         {
             Session = session;
             WorkingMemory = workingMemory;
@@ -20,9 +20,9 @@ namespace NRules
             EventAggregator = eventAggregator;
         }
 
-        public ISession Session { get; private set; }
+        public ISessionInternal Session { get; private set; }
         public IWorkingMemory WorkingMemory { get; private set; }
-        public IAgenda Agenda { get; private set; }
+        public IAgendaInternal Agenda { get; private set; }
         public IEventAggregator EventAggregator { get; private set; }
     }
 }

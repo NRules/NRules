@@ -93,7 +93,7 @@ namespace NRules.Diagnostics
 
         internal static NodeInfo Create(RuleNode node)
         {
-            return new NodeInfo(NodeType.Rule, node.Rule.Definition.Name);
+            return new NodeInfo(NodeType.Rule, node.CompiledRule.Definition.Name);
         }
 
         internal NodeInfo(NodeType nodeType, string details)

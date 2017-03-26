@@ -98,7 +98,7 @@ namespace NRules.Diagnostics
         void RaiseFactUpdated(ISession session, Fact fact);
         void RaiseFactRetracting(ISession session, Fact fact);
         void RaiseFactRetracted(ISession session, Fact fact);
-        void RaiseActionFailed(ISession session, ICompiledRule rule, Exception exception, Expression expression, Tuple tuple, out bool isHandled);
+        void RaiseActionFailed(ISession session, ICompiledRule compiledRule, Exception exception, Expression expression, Tuple tuple, out bool isHandled);
         void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, out bool isHandled);
     }
 
@@ -134,7 +134,7 @@ namespace NRules.Diagnostics
             var handler = ActivationCreatedEvent;
             if (handler != null)
             {
-                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                var @event = new AgendaEventArgs(activation.CompiledRule, activation.Tuple);
                 handler(session, @event);
             }
             if (_parent != null)
@@ -148,7 +148,7 @@ namespace NRules.Diagnostics
             var handler = ActivationUpdatedEvent;
             if (handler != null)
             {
-                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                var @event = new AgendaEventArgs(activation.CompiledRule, activation.Tuple);
                 handler(session, @event);
             }
             if (_parent != null)
@@ -162,7 +162,7 @@ namespace NRules.Diagnostics
             var handler = ActivationDeletedEvent;
             if (handler != null)
             {
-                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                var @event = new AgendaEventArgs(activation.CompiledRule, activation.Tuple);
                 handler(session, @event);
             }
             if (_parent != null)
@@ -176,7 +176,7 @@ namespace NRules.Diagnostics
             var handler = RuleFiringEvent;
             if (handler != null)
             {
-                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                var @event = new AgendaEventArgs(activation.CompiledRule, activation.Tuple);
                 handler(session, @event);
             }
             if (_parent != null)
@@ -190,7 +190,7 @@ namespace NRules.Diagnostics
             var handler = RuleFiredEvent;
             if (handler != null)
             {
-                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                var @event = new AgendaEventArgs(activation.CompiledRule, activation.Tuple);
                 handler(session, @event);
             }
             if (_parent != null)
@@ -283,19 +283,19 @@ namespace NRules.Diagnostics
             }
         }
 
-        public void RaiseActionFailed(ISession session, ICompiledRule rule, Exception exception, Expression expression, Tuple tuple, out bool isHandled)
+        public void RaiseActionFailed(ISession session, ICompiledRule compiledRule, Exception exception, Expression expression, Tuple tuple, out bool isHandled)
         {
             isHandled = false;
             var handler = ActionFailedEvent;
             if (handler != null)
             {
-                var @event = new ActionErrorEventArgs(exception, rule, expression, tuple);
+                var @event = new ActionErrorEventArgs(exception, compiledRule, expression, tuple);
                 handler(session, @event);
                 isHandled = @event.IsHandled;
             }
             if (_parent != null && !isHandled)
             {
-                _parent.RaiseActionFailed(session, rule, exception, expression, tuple, out isHandled);
+                _parent.RaiseActionFailed(session, compiledRule, exception, expression, tuple, out isHandled);
             }
         }
 

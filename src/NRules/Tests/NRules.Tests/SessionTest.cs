@@ -10,7 +10,7 @@ namespace NRules.Tests
     [TestFixture]
     public class SessionTest
     {
-        private Mock<IAgenda> _agenda;
+        private Mock<IAgendaInternal> _agenda;
         private Mock<INetwork> _network;
         private Mock<IWorkingMemory> _workingMemory;
         private Mock<IEventAggregator> _eventAggregator;
@@ -20,7 +20,7 @@ namespace NRules.Tests
         [SetUp]
         public void Setup()
         {
-            _agenda = new Mock<IAgenda>();
+            _agenda = new Mock<IAgendaInternal>();
             _network = new Mock<INetwork>();
             _workingMemory = new Mock<IWorkingMemory>();
             _eventAggregator = new Mock<IEventAggregator>();

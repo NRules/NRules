@@ -10,19 +10,19 @@ namespace NRules
 
     internal class ActionContext : IActionContext
     {
-        private readonly ICompiledRule _rule;
+        private readonly ICompiledRule _compiledRule;
         private readonly ISession _session;
         private bool _isHalted;
 
-        public ActionContext(ICompiledRule rule, ISession session)
+        public ActionContext(ICompiledRule compiledRule, ISession session)
         {
-            _rule = rule;
+            _compiledRule = compiledRule;
             _session = session;
             _isHalted = false;
         }
 
-        public ICompiledRule CompiledRule { get { return _rule; } }
-        public IRuleDefinition Rule { get { return _rule.Definition; } }
+        public ICompiledRule CompiledRule { get { return _compiledRule; } }
+        public IRuleDefinition Rule { get { return _compiledRule.Definition; } }
         public bool IsHalted { get { return _isHalted; } }
 
         public void Insert(object fact)

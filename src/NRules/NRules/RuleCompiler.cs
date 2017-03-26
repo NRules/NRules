@@ -83,9 +83,9 @@ namespace NRules
             }
         }
 
-        private void BuildRuleNode(ICompiledRule rule, IEnumerable<ITerminalNode> terminalNodes)
+        private void BuildRuleNode(ICompiledRule compiledRule, IEnumerable<ITerminalNode> terminalNodes)
         {
-            var ruleNode = new RuleNode(rule);
+            var ruleNode = new RuleNode(compiledRule);
             foreach (var terminalNode in terminalNodes)
             {
                 terminalNode.Attach(ruleNode);

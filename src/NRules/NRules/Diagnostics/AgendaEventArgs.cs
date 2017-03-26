@@ -11,19 +11,19 @@ namespace NRules.Diagnostics
     /// </summary>
     public class AgendaEventArgs : EventArgs
     {
-        private readonly ICompiledRule _rule;
+        private readonly ICompiledRule _compiledRule;
         private readonly Tuple _tuple;
 
-        internal AgendaEventArgs(ICompiledRule rule, Tuple tuple)
+        internal AgendaEventArgs(ICompiledRule compiledRule, Tuple tuple)
         {
-            _rule = rule;
+            _compiledRule = compiledRule;
             _tuple = tuple;
         }
 
         /// <summary>
-        /// Rule related to the event.
+        /// CompiledRule related to the event.
         /// </summary>
-        public IRuleDefinition Rule { get { return _rule.Definition; } }
+        public IRuleDefinition Rule { get { return _compiledRule.Definition; } }
 
         /// <summary>
         /// Tuple related to the event.

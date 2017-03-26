@@ -31,7 +31,7 @@ namespace NRules
                 throw new ArgumentNullException("info");
             }
             base.GetObjectData(info, context);
-            info.AddValue("RuleName", RuleName, typeof(String));
+            info.AddValue("RuleName", RuleName, typeof(string));
         }
 
         /// <summary>
