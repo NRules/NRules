@@ -131,7 +131,16 @@ namespace NRules
         /// Starts rules execution cycle.
         /// This method blocks until there are no more rules to fire.
         /// </summary>
-        void Fire();
+        /// <returns>Number of rules that fired.</returns>
+        int Fire();
+
+        /// <summary>
+        /// Starts rules execution cycle.
+        /// This method blocks until maximum number of rules fired or there are no more rules to fire.
+        /// </summary>
+        /// <param name="maxRulesNumber">Maximum number of rules to fire.</param>
+        /// <returns>Number of rules that fired.</returns>
+        int Fire(int maxRulesNumber);
 
         /// <summary>
         /// Creates a LINQ query to retrieve facts of a given type from the rules engine's memory.
@@ -236,9 +245,15 @@ namespace NRules
             return result.FailedCount == 0;
         }
 
-        public void Fire()
+        public int Fire()
         {
-            while (!_agenda.IsEmpty())
+            return Fire(Int32.MaxValue);
+        }
+
+        public int Fire(int maxRulesNumber)
+        {
+            int ruleFiredCount = 0;
+            while (!_agenda.IsEmpty() && ruleFiredCount < maxRulesNumber)
             {
                 Activation activation = _agenda.Pop();
                 ICompiledRule compiledRule = activation.CompiledRule;
@@ -251,8 +266,10 @@ namespace NRules
                 }
                 _eventAggregator.RaiseRuleFired(this, activation);
 
+                ruleFiredCount++;
                 if (actionContext.IsHalted) break;
             }
+            return ruleFiredCount;
         }
 
         public IQueryable<TFact> Query<TFact>()

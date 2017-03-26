@@ -73,6 +73,52 @@ namespace NRules.Tests
             _network.Verify(x => x.PropagateRetract(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
         }
 
+        [Test]
+        public void Fire_NoActiveRules_ReturnsZero()
+        {
+            // Arrange
+            var target = CreateTarget();
+            _agenda.Setup(x => x.IsEmpty()).Returns(true);
+
+            // Act
+            var actual = target.Fire();
+
+            // Assert
+            Assert.AreEqual(0, actual);
+        }
+
+        [Test]
+        public void Fire_ActiveRules_ReturnsNumberOfRulesFired()
+        {
+            // Arrange
+            var target = CreateTarget();
+            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+            _agenda.SetupSequence(x => x.IsEmpty())
+                .Returns(false).Returns(false).Returns(true);
+
+            // Act
+            var actual = target.Fire();
+
+            // Assert
+            Assert.AreEqual(2, actual);
+        }
+
+        [Test]
+        public void Fire_ActiveRulesMoreThanMax_FiresMaxRules()
+        {
+            // Arrange
+            var target = CreateTarget();
+            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+            _agenda.SetupSequence(x => x.IsEmpty())
+                .Returns(false).Returns(false).Returns(true);
+
+            // Act
+            var actual = target.Fire(1);
+
+            // Assert
+            Assert.AreEqual(1, actual);
+        }
+
         private Session CreateTarget()
         {
             return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, _dependencyResolver.Object, _actionInterceptor.Object);
@@ -81,6 +127,14 @@ namespace NRules.Tests
         private FactResult Succeeded()
         {
             return new FactResult(new List<object>());
+        }
+
+        private static Activation StubActivation()
+        {
+            var rule = new Mock<ICompiledRule>();
+            rule.Setup(x => x.Actions).Returns(new IRuleAction[0]);
+            var activation = new Activation(rule.Object, null, null);
+            return activation;
         }
     }
 }
