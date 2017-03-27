@@ -24,7 +24,7 @@ namespace NRules.Diagnostics
         }
 
         /// <summary>
-        /// CompiledRule related to the event.
+        /// Rule related to the event.
         /// </summary>
         public IRuleDefinition Rule { get { return _compiledRule.Definition; } }
 
