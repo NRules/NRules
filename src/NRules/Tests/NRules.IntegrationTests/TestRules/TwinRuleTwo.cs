@@ -27,7 +27,7 @@ namespace NRules.IntegrationTests.TestRules
                     .Where(c => c.Any()));
 
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

@@ -41,6 +41,30 @@ namespace NRules.IntegrationTests
             Assert.AreEqual(true, serviceCalled);
         }
 
+        [Test]
+        public void Fire_OneMatchingFact_CanResolveDependencyFromContext()
+        {
+            //Arrange
+            var service = new TestService();
+            Session.DependencyResolver = new TestDependencyResolver(service);
+
+            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            Session.Insert(fact);
+
+            ITestService resolvedService = null;
+            GetRuleInstance<OneFactRuleWithDependency>().Action = ctx =>
+            {
+                resolvedService = ctx.Resove<ITestService>();
+            };
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreSame(service, resolvedService);
+        }
+
         protected override void SetUpRules()
         {
             SetUpRule<OneFactRuleWithDependency>();

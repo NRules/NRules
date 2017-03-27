@@ -60,6 +60,7 @@
     <Compile Include="IdentityMatchRuleTest.cs" />
     <Compile Include="CollectionWithConditionsRuleTest.cs" />
     <Compile Include="LifecycleEventTest.cs" />
+    <Compile Include="OneFactNoBindingRuleTest.cs" />
     <Compile Include="OneFactNonRepeatableRuleTest.cs" />
     <Compile Include="OneEquatableFactOneCollectionRuleTest.cs" />
     <Compile Include="OneFactOneGroupByFlattenRuleTest.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="TestAssets\FactType6.cs" />
     <Compile Include="TestAssets\FactType7.cs" />
     <Compile Include="TestAssets\ITestService.cs" />
+    <Compile Include="TestRules\OneFactNoBindingRule.cs" />
     <Compile Include="TestRules\OneFactOneGroupByFlattenRuleWithIdentityRule.cs" />
     <Compile Include="TestRules\CannotActivateRule.cs" />
     <Compile Include="TestRules\IdentityMatchRule.cs" />

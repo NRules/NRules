@@ -1,5 +1,7 @@
-﻿using NRules.IntegrationTests.TestAssets;
+﻿using System.Linq;
+using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
+using NRules.RuleModel;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -37,6 +39,68 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
+        }
+
+        [Test]
+        public void Fire_MatchingFactsFirstPart_FactsInContext()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            IFactMatch[] matches = null;
+            GetRuleInstance<ThreeFactOrGroupRule>().Action = ctx =>
+            {
+                matches = ctx.Facts.ToArray();
+            };
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreEqual(3, matches.Length);
+            Assert.AreEqual("fact1", matches[0].Declaration.Name);
+            Assert.AreSame(fact1, matches[0].Value);
+            Assert.AreEqual("fact2", matches[1].Declaration.Name);
+            Assert.AreSame(fact2, matches[1].Value);
+            Assert.AreEqual("fact3", matches[2].Declaration.Name);
+            Assert.Null(matches[2].Value);
+        }
+
+        [Test]
+        public void Fire_MatchingFactsSecondPart_FactsInContext()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType2 { TestProperty = "Invalid Value 2", JoinProperty = fact1.TestProperty };
+            var fact3 = new FactType3 { TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty };
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+            Session.Insert(fact3);
+
+            IFactMatch[] matches = null;
+            GetRuleInstance<ThreeFactOrGroupRule>().Action = ctx =>
+            {
+                matches = ctx.Facts.ToArray();
+            };
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreEqual(3, matches.Length);
+            Assert.AreEqual("fact1", matches[0].Declaration.Name);
+            Assert.AreSame(fact1, matches[0].Value);
+            Assert.AreEqual("fact2", matches[1].Declaration.Name);
+            Assert.AreSame(fact2, matches[1].Value);
+            Assert.AreEqual("fact3", matches[2].Declaration.Name);
+            Assert.AreSame(fact3, matches[2].Value);
         }
 
         [Test]

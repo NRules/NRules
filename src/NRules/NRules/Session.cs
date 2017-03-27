@@ -257,7 +257,7 @@ namespace NRules
             {
                 Activation activation = _agenda.Pop();
                 ICompiledRule compiledRule = activation.CompiledRule;
-                var actionContext = new ActionContext(compiledRule, this);
+                IActionContext actionContext = new ActionContext(this, compiledRule, activation);
 
                 _eventAggregator.RaiseRuleFiring(this, activation);
                 foreach (IRuleAction action in compiledRule.Actions)

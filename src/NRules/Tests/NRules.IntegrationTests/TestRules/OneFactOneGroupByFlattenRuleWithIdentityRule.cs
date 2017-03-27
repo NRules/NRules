@@ -19,7 +19,7 @@ namespace NRules.IntegrationTests.TestRules
                     .SelectMany(x => x)
                     .GroupBy(x => x.GroupingProperty2));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

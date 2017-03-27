@@ -16,7 +16,7 @@ namespace NRules.IntegrationTests.TestRules
                     .GroupBy(f => f.TestProperty, f => f.TestProperty)
                     .Where(g => g.Count() > 1));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

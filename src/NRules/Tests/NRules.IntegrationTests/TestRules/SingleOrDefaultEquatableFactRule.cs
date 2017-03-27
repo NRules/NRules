@@ -16,7 +16,7 @@ namespace NRules.IntegrationTests.TestRules
                     .Collect()
                     .Select(x => x.OrderBy(f => f.Id).FirstOrDefault() ?? new EquatableFact(0)));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

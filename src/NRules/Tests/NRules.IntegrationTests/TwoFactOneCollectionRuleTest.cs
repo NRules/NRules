@@ -2,6 +2,7 @@
 using System.Linq;
 using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
+using NRules.RuleModel;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -29,6 +30,34 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredOnce();
             Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType2>>().Count());
+        }
+
+        [Test]
+        public void Fire_OneMatchingSetOfFacts_FactsInContext()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            IFactMatch[] matches = null;
+            GetRuleInstance<TwoFactOneCollectionRule>().Action = ctx =>
+            {
+                matches = ctx.Facts.ToArray();
+            };
+            
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreEqual(2, matches.Length);
+            Assert.AreEqual("fact1", matches[0].Declaration.Name);
+            Assert.AreSame(fact1, matches[0].Value);
+            Assert.AreEqual("collection2", matches[1].Declaration.Name);
+            CollectionAssert.AreEqual(new [] {fact2}, (IEnumerable<FactType2>)matches[1].Value);
         }
 
         [Test]

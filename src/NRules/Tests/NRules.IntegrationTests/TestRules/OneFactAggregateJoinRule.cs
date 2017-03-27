@@ -19,7 +19,7 @@ namespace NRules.IntegrationTests.TestRules
                     .Collect()
                     .Where(c => c.Contains(fact1)));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

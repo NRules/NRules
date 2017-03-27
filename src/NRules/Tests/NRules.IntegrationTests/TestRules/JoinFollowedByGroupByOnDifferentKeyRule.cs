@@ -19,7 +19,7 @@ namespace NRules.IntegrationTests.TestRules
                         f => f.JoinProperty == fact2.JoinProperty)
                     .GroupBy(f => f.GroupProperty));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

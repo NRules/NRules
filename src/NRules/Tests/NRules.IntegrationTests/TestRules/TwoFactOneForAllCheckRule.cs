@@ -13,7 +13,7 @@ namespace NRules.IntegrationTests.TestRules
                 .All<FactType2>(f => f.JoinProperty == fact1.TestProperty,
                     f => f.TestProperty.StartsWith("Valid"));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

@@ -53,17 +53,17 @@ namespace NRules
                 index++;
             }
 
-            var invocation = new ActionInvocation(actionContext, tuple, args, _compiledAction.Delegate);
             try
             {
                 var actionInterceptor = executionContext.Session.ActionInterceptor;
                 if (actionInterceptor != null)
                 {
+                    var invocation = new ActionInvocation(actionContext, args, _compiledAction.Delegate);
                     actionInterceptor.Intercept(invocation);
                 }
                 else
                 {
-                    invocation.Invoke();
+                    _compiledAction.Delegate.Invoke(actionContext, args);
                 }
             }
             catch (Exception e)

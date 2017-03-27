@@ -70,7 +70,7 @@ namespace NRules
                 actions.Add(ruleAction);
             }
 
-            var rule = new CompiledRule(ruleDefinition, actions, dependencies);
+            var rule = new CompiledRule(ruleDefinition, ruleDeclarations, actions, dependencies);
             BuildRuleNode(rule, terminals);
         }
 

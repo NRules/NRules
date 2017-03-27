@@ -9,7 +9,7 @@ namespace NRules.IntegrationTests.TestRules
             When()
                 .Not<FactType1>(f => f.TestProperty.StartsWith("Valid"));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

@@ -15,7 +15,7 @@ namespace NRules.IntegrationTests.TestRules
                     .Match<FactType1>()
                     .GroupBy(f => f.TestProperty));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

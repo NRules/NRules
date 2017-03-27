@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NRules.Diagnostics;
 using NRules.Rete;
 using NRules.RuleModel;
 using Tuple = NRules.Rete.Tuple;
@@ -9,19 +8,19 @@ using Tuple = NRules.Rete.Tuple;
 namespace NRules
 {
     /// <summary>
-    /// Rule activation, which represents a match of all rule's conditions.
+    /// Represents a match of all rule's conditions.
     /// </summary>
     public interface IActivation
     {
         /// <summary>
-        /// Rule related to the event.
+        /// Rule that got activated.
         /// </summary>
         IRuleDefinition Rule { get; }
 
         /// <summary>
-        /// Tuple related to the event.
+        /// Facts matched by the rule.
         /// </summary>
-        IEnumerable<FactInfo> Facts { get; }
+        IEnumerable<IFactMatch> Facts { get; }
     }
 
     internal class Activation : IActivation, IEquatable<Activation>
@@ -29,12 +28,14 @@ namespace NRules
         private readonly ICompiledRule _compiledRule;
         private readonly Tuple _tuple;
         private readonly IndexMap _tupleFactMap;
+        private readonly Lazy<FactMatch[]> _matchedFacts;
 
         internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap tupleFactMap)
         {
             _compiledRule = compiledRule;
             _tuple = tuple;
             _tupleFactMap = tupleFactMap;
+            _matchedFacts = new Lazy<FactMatch[]>(CreateMatchedFacts);
         }
 
         public IRuleDefinition Rule
@@ -42,9 +43,9 @@ namespace NRules
             get { return _compiledRule.Definition; }
         }
 
-        public IEnumerable<FactInfo> Facts
+        public IEnumerable<IFactMatch> Facts
         {
-            get { return _tuple.OrderedFacts.Select(f => new FactInfo(f)).ToArray(); }
+            get { return _matchedFacts.Value; }
         }
 
         public ICompiledRule CompiledRule
@@ -83,6 +84,19 @@ namespace NRules
             {
                 return (CompiledRule.GetHashCode()*397) ^ Tuple.GetHashCode();
             }
+        }
+
+        private FactMatch[] CreateMatchedFacts()
+        {
+            var matches = _compiledRule.Declarations.Select(x => new FactMatch(x)).ToArray();
+            int index = _tuple.Count - 1;
+            foreach (var fact in _tuple.Facts)
+            {
+                int factIndex = _tupleFactMap[index];
+                matches[factIndex].Value = fact.Object;
+                index--;
+            }
+            return matches;
         }
     }
 }

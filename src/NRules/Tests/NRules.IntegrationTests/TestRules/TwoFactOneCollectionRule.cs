@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.RuleModel;
 
 namespace NRules.IntegrationTests.TestRules
 {
@@ -19,12 +20,12 @@ namespace NRules.IntegrationTests.TestRules
                         f => f.JoinProperty == fact1.TestProperty)
                     .Collect());
             Then()
-                .Do(ctx => CallAction(fact1, collection2));
+                .Do(ctx => CallAction(ctx, fact1, collection2));
         }
 
-        private void CallAction(FactType1 fact1, IEnumerable<FactType2> collection2)
+        private void CallAction(IContext context, FactType1 fact1, IEnumerable<FactType2> collection2)
         {
-            Action();
+            Action(context);
         }
     }
 }

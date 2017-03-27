@@ -11,7 +11,7 @@ namespace NRules.IntegrationTests.TestRules
             When()
                 .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
             Then()
-                .Do(ctx => Action())
+                .Do(ctx => Action(ctx))
                 .Do(ctx => ctx.Insert(new FactType3()
                     {
                         TestProperty = fact2.JoinProperty,

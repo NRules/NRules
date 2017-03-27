@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using NRules.Diagnostics;
 using NRules.RuleModel;
-using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Extensibility
 {
@@ -16,12 +12,6 @@ namespace NRules.Extensibility
         /// Rules engine context.
         /// </summary>
         IContext Context { get; }
-
-        /// <summary>
-        /// Facts matched by the rule.
-        /// </summary>
-        /// <remarks>Not all facts matched by the rule are necessarily passed to every action.</remarks>
-        IEnumerable<FactInfo> Facts { get; }
 
         /// <summary>
         /// Action arguments.
@@ -39,26 +29,18 @@ namespace NRules.Extensibility
     internal class ActionInvocation : IActionInvocation
     {
         private readonly IActionContext _context;
-        private readonly Tuple _tuple;
         private readonly object[] _arguments;
         private readonly Action<IContext, object[]> _action;
 
-        public ActionInvocation(IActionContext context, Tuple tuple, object[] arguments, Action<IContext, object[]> action)
+        public ActionInvocation(IActionContext context, object[] arguments, Action<IContext, object[]> action)
         {
             _context = context;
-            _tuple = tuple;
             _arguments = arguments;
             _action = action;
         }
 
         public IContext Context { get { return _context; } }
-
         public object[] Arguments { get { return _arguments; } }
-
-        public IEnumerable<FactInfo> Facts
-        {
-            get { return _tuple.OrderedFacts.Select(f => new FactInfo(f)).ToArray(); }
-        }
 
         public void Invoke()
         {

@@ -17,7 +17,7 @@ namespace NRules.IntegrationTests.TestRules
                     .Collect()
                     .Where(c => c.Count() > 2));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

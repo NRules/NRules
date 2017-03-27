@@ -14,7 +14,7 @@ namespace NRules.IntegrationTests.TestRules
                 .Match<FactType1>(() => fact2, f => ReferenceEquals(f, fact1));
 
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

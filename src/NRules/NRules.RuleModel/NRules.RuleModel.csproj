@@ -89,6 +89,7 @@
     <Compile Include="IContext.cs" />
     <Compile Include="IRuleRepository.cs" />
     <Compile Include="IRuleSet.cs" />
+    <Compile Include="IFactMatch.cs" />
     <Compile Include="NamedExpression.cs" />
     <Compile Include="NotElement.cs" />
     <Compile Include="OrElement.cs" />

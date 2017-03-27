@@ -1,5 +1,6 @@
 ﻿using System;
 using NRules.Fluent.Dsl;
+using NRules.RuleModel;
 
 namespace NRules.IntegrationTests.TestAssets
 {
@@ -7,9 +8,9 @@ namespace NRules.IntegrationTests.TestAssets
     {
         protected BaseRule()
         {
-            Action = () => { };
+            Action = ctx => { };
         }
 
-        public Action Action { get; set; }
+        public Action<IContext> Action { get; set; }
     }
 }

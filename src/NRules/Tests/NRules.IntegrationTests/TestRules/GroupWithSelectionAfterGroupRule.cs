@@ -15,7 +15,7 @@ namespace NRules.IntegrationTests.TestRules
                     .Match<FactType6>(f => f.TestProperty.StartsWith("Valid"))
                     .GroupBy(f => f.GroupProperty).Where(z => HasCorrectValue(z)));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
 
         private static bool HasCorrectValue(IGrouping<string, FactType6> factType6s)

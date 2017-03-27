@@ -13,14 +13,14 @@
         bool IsEmpty();
 
         /// <summary>
-        /// Retrieves the next activation.
+        /// Retrieves the next match.
         /// </summary>
         /// <remarks>Throws <c>InvalidOperationException</c> if agenda is empty.</remarks>
-        /// <returns>Next activation.</returns>
+        /// <returns>Next match.</returns>
         IActivation Peek();
 
         /// <summary>
-        /// Removes all activations from agenda.
+        /// Removes all matches from agenda.
         /// </summary>
         void Clear();
     }

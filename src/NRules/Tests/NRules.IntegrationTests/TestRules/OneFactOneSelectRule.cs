@@ -15,7 +15,7 @@ namespace NRules.IntegrationTests.TestRules
                     .Select(f => new FactType1Projection(f))
                     .Where(p => p.Value.StartsWith("Valid")));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

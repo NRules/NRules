@@ -16,7 +16,7 @@ namespace NRules.IntegrationTests.TestRules
             Then()
                 .Do(ctx => fact.IncrementCount())
                 .Do(ctx => ctx.Update(fact))
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

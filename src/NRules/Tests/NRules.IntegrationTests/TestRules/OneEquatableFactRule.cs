@@ -11,7 +11,7 @@ namespace NRules.IntegrationTests.TestRules
             When()
                 .Match<EquatableFact>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

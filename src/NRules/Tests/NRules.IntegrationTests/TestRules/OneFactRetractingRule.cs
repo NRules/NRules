@@ -12,7 +12,7 @@ namespace NRules.IntegrationTests.TestRules
                 .Match<FactType5>(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.Retract(fact))
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

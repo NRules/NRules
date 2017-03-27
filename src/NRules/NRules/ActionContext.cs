@@ -7,23 +7,30 @@ namespace NRules
     internal interface IActionContext : IContext
     {
         ICompiledRule CompiledRule { get; }
+        IActivation Activation { get; }
+        bool IsHalted { get; }
     }
 
     internal class ActionContext : IActionContext
     {
-        private readonly ICompiledRule _compiledRule;
         private readonly ISession _session;
+        private readonly ICompiledRule _compiledRule;
+        private readonly IActivation _activation;
         private bool _isHalted;
 
-        public ActionContext(ICompiledRule compiledRule, ISession session)
+        public ActionContext(ISession session, ICompiledRule compiledRule, IActivation activation)
         {
-            _compiledRule = compiledRule;
             _session = session;
+            _compiledRule = compiledRule;
+            _activation = activation;
             _isHalted = false;
         }
 
-        public ICompiledRule CompiledRule { get { return _compiledRule; } }
         public IRuleDefinition Rule { get { return _compiledRule.Definition; } }
+        public IEnumerable<IFactMatch> Facts { get { return _activation.Facts; } }
+
+        public ICompiledRule CompiledRule { get { return _compiledRule; } }
+        public IActivation Activation { get { return _activation; } }
         public bool IsHalted { get { return _isHalted; } }
 
         public void Insert(object fact)

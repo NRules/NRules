@@ -17,7 +17,7 @@ namespace NRules.IntegrationTests.TestRules
                     .Where(g => g.Count() > 1)
                     .SelectMany(x => x));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
     }
 }

@@ -27,7 +27,7 @@ namespace NRules.IntegrationTests.TestRules
                     .Collect()
                     .Where(x => IsMatch(fact1, collection2, collection3, x)));
             Then()
-                .Do(ctx => Action());
+                .Do(ctx => Action(ctx));
         }
 
         private bool IsMatch(FactType1 fact1, IEnumerable<FactType2> collection2, IEnumerable<FactType3> collection3, IEnumerable<FactType4> collection4)

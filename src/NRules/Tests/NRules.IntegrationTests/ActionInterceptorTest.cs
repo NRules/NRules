@@ -18,7 +18,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
             
             bool actionExecuted = false;
-            GetRuleInstance<TwoFactOneCollectionRule>().Action = () => { actionExecuted = true; };
+            GetRuleInstance<TwoFactOneCollectionRule>().Action = ctx => { actionExecuted = true; };
 
             //Act
             Session.Fire();
@@ -40,7 +40,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             bool actionExecuted = false;
-            GetRuleInstance<TwoFactOneCollectionRule>().Action = () => { actionExecuted = true; };
+            GetRuleInstance<TwoFactOneCollectionRule>().Action = ctx => { actionExecuted = true; };
 
             //Act
             Session.Fire();
@@ -62,7 +62,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             bool actionExecuted = false;
-            GetRuleInstance<TwoFactOneCollectionRule>().Action = () => { actionExecuted = true; };
+            GetRuleInstance<TwoFactOneCollectionRule>().Action = ctx => { actionExecuted = true; };
 
             //Act
             Session.Fire();
