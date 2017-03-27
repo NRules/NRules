@@ -93,7 +93,8 @@ namespace NRules
             foreach (var fact in _tuple.Facts)
             {
                 int factIndex = _tupleFactMap[index];
-                matches[factIndex].Value = fact.Object;
+                var factMatch = matches[factIndex];
+                factMatch.SetFact(fact);
                 index--;
             }
             return matches;

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using NRules.Diagnostics;
 using NRules.IntegrationTests.TestAssets;
 using NRules.IntegrationTests.TestRules;
+using NRules.RuleModel;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -48,7 +49,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             Expression expression = null;
-            IList<FactInfo> facts = null;
+            IList<IFactMatch> facts = null;
             Session.Events.ActionFailedEvent += (sender, args) => expression = args.Action;
             Session.Events.ActionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
