@@ -4,13 +4,18 @@ namespace NRules.Rete
 {
     internal class JoinNode : BetaNode
     {
-        public JoinNode(ITupleSource leftSource, IObjectSource rightSource)
+        private readonly bool _isSubnetJoin;
+
+        public JoinNode(ITupleSource leftSource, IObjectSource rightSource, bool isSubnetJoin)
             : base(leftSource, rightSource)
         {
+            _isSubnetJoin = isSubnetJoin;
         }
 
         public override void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
         {
+            if (_isSubnetJoin) return;
+
             var joinedSets = JoinedSets(context, tuples);
             var toAssert = new TupleFactList();
             foreach (var set in joinedSets)
@@ -26,6 +31,8 @@ namespace NRules.Rete
 
         public override void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
         {
+            if (_isSubnetJoin) return;
+
             var joinedSets = JoinedSets(context, tuples);
             var toUpdate = new TupleFactList();
             var toRetract = new TupleFactList();
@@ -47,6 +54,8 @@ namespace NRules.Rete
 
         public override void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
         {
+            if (_isSubnetJoin) return;
+
             var joinedSets = JoinedSets(context, tuples);
             var toRetract = new TupleFactList();
             foreach (var set in joinedSets)
