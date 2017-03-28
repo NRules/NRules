@@ -8,41 +8,60 @@ namespace NRules.RuleModel.Aggregators
     /// <typeparam name="TElement">Type of elements to collect.</typeparam>
     internal class CollectionAggregator<TElement> : IAggregator
     {
-        private readonly FactCollection<TElement> _items = new FactCollection<TElement>(); 
-
-        public IEnumerable<AggregationResult> Initial()
-        {
-            return new[] {AggregationResult.Added(_items)};
-        }
+        private FactCollection<TElement> _items; 
 
         public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
+        {
+            if (_items == null)
+            {
+                _items = new FactCollection<TElement>();
+                AddFacts(facts);
+                return new[] {AggregationResult.Added(_items)};
+            }
+            else
+            {
+                AddFacts(facts);
+                return new[] {AggregationResult.Modified(_items)};
+            }
+        }
+
+        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
+        {
+            ModifyFacts(facts);
+            return new[] { AggregationResult.Modified(_items) };
+        }
+
+        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
+        {
+            RemoveFacts(facts);
+            return new[] {AggregationResult.Modified(_items)};
+        }
+
+        private void AddFacts(IEnumerable<object> facts)
         {
             foreach (var fact in facts)
             {
                 var item = (TElement)fact;
                 _items.Add(item);
             }
-            return new[] { AggregationResult.Modified(_items) };
         }
 
-        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
+        private void ModifyFacts(IEnumerable<object> facts)
         {
             foreach (var fact in facts)
             {
                 var item = (TElement)fact;
                 _items.Modify(item);
             }
-            return new[] { AggregationResult.Modified(_items) };
         }
 
-        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
+        private void RemoveFacts(IEnumerable<object> facts)
         {
             foreach (var fact in facts)
             {
-                var item = (TElement)fact;
+                var item = (TElement) fact;
                 _items.Remove(item);
             }
-            return new[] {AggregationResult.Modified(_items)};
         }
 
         public IEnumerable<object> Aggregates { get { return new[] {_items}; } }

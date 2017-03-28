@@ -33,6 +33,22 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_OneMatchingFactOfOneKindAndNoneOfAnother_FiresOnceWithEmptyCollection()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+
+            Session.Insert(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType2>>().Count());
+        }
+
+        [Test]
         public void Fire_OneMatchingSetOfFacts_FactsInContext()
         {
             //Arrange

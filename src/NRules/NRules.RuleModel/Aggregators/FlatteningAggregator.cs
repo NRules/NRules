@@ -19,11 +19,6 @@ namespace NRules.RuleModel.Aggregators
             _selector = selector;
         }
 
-        public IEnumerable<AggregationResult> Initial()
-        {
-            return AggregationResult.Empty;
-        }
-
         public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
         {
             return facts.SelectMany(AddSingle);

@@ -30,19 +30,15 @@ namespace NRules.Rete
             var aggregation = new Aggregation();
             foreach (var set in joinedSets)
             {
-                IAggregator aggregator = CreateAggregator(set.Tuple, aggregation);
-                if (set.Facts.Count == 0) continue;
                 var factObjects = new List<object>();
                 foreach (var fact in set.Facts)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
                         factObjects.Add(fact.Object);
                 }
-                if (factObjects.Count > 0)
-                {
-                    var results = aggregator.Add(factObjects);
-                    aggregation.Add(set.Tuple, results);
-                }
+                IAggregator aggregator = CreateAggregator(set.Tuple);
+                var results = aggregator.Add(factObjects);
+                aggregation.Add(set.Tuple, results);
             }
             PropagateAggregation(context, aggregation);
         }
@@ -84,7 +80,6 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                IAggregator aggregator = GetAggregator(set.Tuple);
                 var factObjects = new List<object>();
                 foreach (var fact in set.Facts)
                 {
@@ -93,6 +88,7 @@ namespace NRules.Rete
                 }
                 if (factObjects.Count > 0)
                 {
+                    IAggregator aggregator = GetAggregator(set.Tuple);
                     var results = aggregator.Add(factObjects);
                     aggregation.Add(set.Tuple, results);
                 }
@@ -107,7 +103,6 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                IAggregator aggregator = GetAggregator(set.Tuple);
                 var factObjects = new List<object>();
                 foreach (var fact in set.Facts)
                 {
@@ -116,6 +111,7 @@ namespace NRules.Rete
                 }
                 if (factObjects.Count > 0)
                 {
+                    IAggregator aggregator = GetAggregator(set.Tuple);
                     var results = aggregator.Modify(factObjects);
                     aggregation.Add(set.Tuple, results);
                 }
@@ -130,7 +126,6 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                IAggregator aggregator = GetAggregator(set.Tuple);
                 var factObjects = new List<object>();
                 foreach (var fact in set.Facts)
                 {
@@ -139,6 +134,7 @@ namespace NRules.Rete
                 }
                 if (factObjects.Count > 0)
                 {
+                    IAggregator aggregator = GetAggregator(set.Tuple);
                     var results = aggregator.Remove(factObjects);
                     aggregation.Add(set.Tuple, results);
                 }
@@ -211,12 +207,10 @@ namespace NRules.Rete
             return aggregator;
         }
 
-        private IAggregator CreateAggregator(Tuple tuple, Aggregation aggregation)
+        private IAggregator CreateAggregator(Tuple tuple)
         {
             var aggregator = _aggregatorFactory.Create();
             tuple.SetState(this, aggregator);
-            var results = aggregator.Initial();
-            aggregation.Add(tuple, results);
             return aggregator;
         }
 

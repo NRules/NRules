@@ -8,12 +8,6 @@ namespace NRules.RuleModel
     public interface IAggregator
     {
         /// <summary>
-        /// Called when the new aggregator is initialized.
-        /// </summary>
-        /// <returns>Results of the operation on the aggregate.</returns>
-        IEnumerable<AggregationResult> Initial();
-
-        /// <summary>
         /// Called by the rules engine when new facts enter corresponding aggregator.
         /// </summary>
         /// <param name="facts">New facts to add to the aggregate.</param>

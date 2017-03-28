@@ -32,6 +32,21 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_OneMatchingFactOfOneKindAndNoneOfAnother_DoesNotFire()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+
+            Session.Insert(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+
+        [Test]
         public void Fire_OneMatchingFactOfOneKindAndTwoOfAnotherInsertedInOppositeOrder_FiresTwiceWithOneFactInEachGroup()
         {
             //Arrange

@@ -29,11 +29,6 @@ namespace NRules.RuleModel.Aggregators
             _elementSelector = elementSelector;
         }
 
-        public IEnumerable<AggregationResult> Initial()
-        {
-            return AggregationResult.Empty;
-        }
-
         public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
         {
             var keyElements = new List<KeyValuePair<TKey, TElement>>();
