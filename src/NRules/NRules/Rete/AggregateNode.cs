@@ -45,17 +45,7 @@ namespace NRules.Rete
 
         public override void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
         {
-            var toUpdate = new TupleFactList();
-            foreach (var tuple in tuples)
-            {
-                IAggregator aggregator = GetAggregator(tuple);
-                foreach (var aggregate in aggregator.Aggregates)
-                {
-                    Fact aggregateFact = ToAggregateFact(context, aggregate);
-                    toUpdate.Add(tuple, aggregateFact);
-                }
-            }
-            MemoryNode.PropagateUpdate(context, toUpdate);
+            //Do nothing
         }
 
         public override void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
