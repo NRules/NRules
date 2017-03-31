@@ -8,6 +8,7 @@ namespace NRules.Rete
         private readonly string _name;
         private readonly ExpressionMap _expressionMap;
         private readonly IAggregatorFactory _aggregatorFactory;
+        private readonly bool _isSubnetJoin;
 
         public string Name { get { return _name; } }
 
@@ -16,12 +17,13 @@ namespace NRules.Rete
             get { return _expressionMap; }
         }
 
-        public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, string name, ExpressionMap expressionMap, IAggregatorFactory aggregatorFactory)
+        public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, string name, ExpressionMap expressionMap, IAggregatorFactory aggregatorFactory, bool isSubnetJoin)
             : base(leftSource, rightSource)
         {
             _name = name;
             _expressionMap = expressionMap;
             _aggregatorFactory = aggregatorFactory;
+            _isSubnetJoin = isSubnetJoin;
         }
 
         public override void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
@@ -45,7 +47,19 @@ namespace NRules.Rete
 
         public override void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
         {
-            //Do nothing
+            if (_isSubnetJoin) return;
+
+            var toUpdate = new TupleFactList();
+            foreach (var tuple in tuples)
+            {
+                IAggregator aggregator = GetAggregator(tuple);
+                foreach (var aggregate in aggregator.Aggregates)
+                {
+                    Fact aggregateFact = ToAggregateFact(context, aggregate);
+                    toUpdate.Add(tuple, aggregateFact);
+                }
+            }
+            MemoryNode.PropagateUpdate(context, toUpdate);
         }
 
         public override void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)

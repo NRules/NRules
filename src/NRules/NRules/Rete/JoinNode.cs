@@ -14,8 +14,6 @@ namespace NRules.Rete
 
         public override void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
         {
-            if (_isSubnetJoin) return;
-
             var joinedSets = JoinedSets(context, tuples);
             var toAssert = new TupleFactList();
             foreach (var set in joinedSets)
@@ -54,8 +52,6 @@ namespace NRules.Rete
 
         public override void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
         {
-            if (_isSubnetJoin) return;
-
             var joinedSets = JoinedSets(context, tuples);
             var toRetract = new TupleFactList();
             foreach (var set in joinedSets)

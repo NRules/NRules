@@ -225,7 +225,8 @@ namespace NRules.Rete
                     ExpressionMapComparer.AreEqual(x.ExpressionMap, element.ExpressionMap));
             if (node == null)
             {
-                node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name, element.ExpressionMap, element.AggregatorFactory);
+                node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name, 
+                    element.ExpressionMap, element.AggregatorFactory, context.HasSubnet);
                 if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
             }
             BuildBetaMemoryNode(context, node);
