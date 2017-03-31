@@ -20,12 +20,7 @@ namespace NRules.RuleModel.Aggregators
             var node = _nodeLookup[fact];
             if (!ReferenceEquals(node.Value, fact))
             {
-                var previous = node.Previous;
-                _elements.Remove(node);
-                node = new LinkedListNode<TFact>(fact);
-                _nodeLookup[fact] = node;
-                if (previous == null) _elements.AddFirst(node);
-                else _elements.AddAfter(previous, node);
+                node.Value = fact;
             }
         }
 

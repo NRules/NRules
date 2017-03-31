@@ -64,6 +64,7 @@
     <Compile Include="Aggregators\FlatteningAggregatorFactory.cs" />
     <Compile Include="Aggregators\GroupByAggregator.cs" />
     <Compile Include="Aggregators\GroupByAggregatorFactory.cs" />
+    <Compile Include="Aggregators\DefaultKeyMap.cs" />
     <Compile Include="Aggregators\ProjectionAggregator.cs" />
     <Compile Include="Aggregators\ProjectionAggregatorFactory.cs" />
     <Compile Include="AndElement.cs" />

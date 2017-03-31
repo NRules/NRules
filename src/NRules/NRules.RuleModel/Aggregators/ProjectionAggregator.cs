@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.RuleModel.Aggregators
 {
@@ -21,22 +20,20 @@ namespace NRules.RuleModel.Aggregators
 
         public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
         {
-            var values = new HashSet<TResult>();
+            var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
                 var source = (TSource)fact;
                 var value = _selector(source);
                 _sourceToValue[source] = value;
-                values.Add(value);
+                results.Add(AggregationResult.Added(value));
             }
-            return values.Select(value => AggregationResult.Added(value));
+            return results;
         }
 
         public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
         {
-            var valuesToModify = new HashSet<TResult>();
-            var valuesToRemove = new HashSet<TResult>();
-            var valuesToInsert = new HashSet<TResult>();
+            var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
                 var source = (TSource)fact;
@@ -45,30 +42,29 @@ namespace NRules.RuleModel.Aggregators
                 _sourceToValue[source] = value;
 
                 if (Equals(oldValue, value))
-                    valuesToModify.Add(value);
+                {
+                    results.Add(AggregationResult.Modified(value));
+                }
                 else
                 {
-                    valuesToRemove.Add(oldValue);
-                    valuesToInsert.Add(value);
+                    results.Add(AggregationResult.Removed(oldValue));
+                    results.Add(AggregationResult.Added(value));
                 }
             }
-            var results = valuesToModify.Select(x=>AggregationResult.Modified(x)).ToList();
-            results.AddRange(valuesToRemove.Select(x => AggregationResult.Removed(x)));
-            results.AddRange(valuesToInsert.Select(x => AggregationResult.Added(x)));
             return results;
         }
 
         public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
         {
-            var oldValues = new List<object>();
+            var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
                 var source = (TSource)fact;
                 var oldValue = _sourceToValue[source];
                 _sourceToValue.Remove(source);
-                oldValues.Add(oldValue);
+                results.Add(AggregationResult.Removed(oldValue));
             }
-            return oldValues.Select(AggregationResult.Removed);
+            return results;
         }
 
         public IEnumerable<object> Aggregates { get { return _sourceToValue.Values; } }

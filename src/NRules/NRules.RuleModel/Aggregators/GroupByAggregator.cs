@@ -18,10 +18,7 @@ namespace NRules.RuleModel.Aggregators
         private readonly Dictionary<object, TKey> _sourceToKey = new Dictionary<object, TKey>();
         private readonly Dictionary<object, TElement> _sourceToElement = new Dictionary<object, TElement>();
 
-        private readonly Dictionary<TKey, Grouping> _groups = new Dictionary<TKey, Grouping>();
-
-        private readonly TKey _defaultKey = default(TKey);
-        private Grouping _defaultGroup;
+        private readonly DefaultKeyMap<TKey, Grouping> _groups = new DefaultKeyMap<TKey, Grouping>();
 
         public GroupByAggregator(Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
         {
@@ -31,7 +28,8 @@ namespace NRules.RuleModel.Aggregators
 
         public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
         {
-            var keyElements = new List<KeyValuePair<TKey, TElement>>();
+            var keys = new List<TKey>();
+            var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
                 var source = (TSource)fact;
@@ -39,17 +37,21 @@ namespace NRules.RuleModel.Aggregators
                 var element = _elementSelector(source);
                 _sourceToKey[fact] = key;
                 _sourceToElement[fact] = element;
-                var keyElement = new KeyValuePair<TKey, TElement>(key, element);
-                keyElements.Add(keyElement);
+                var result = Add(key, element);
+                if (!resultLookup.ContainsKey(key))
+                {
+                    keys.Add(key);
+                    resultLookup[key] = result;
+                }
             }
-            return Add(keyElements);
+            var results = GetResults(keys, resultLookup);
+            return results;
         }
 
         public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
         {
-            var keyElementsToUpdate = new List<KeyValuePair<TKey, TElement>>();
-            var keyElementsToAdd = new List<KeyValuePair<TKey, TElement>>();
-            var keyElementsToRemove = new List<KeyValuePair<TKey, TElement>>();
+            var keys = new List<TKey>();
+            var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
                 var source = (TSource)fact;
@@ -59,156 +61,113 @@ namespace NRules.RuleModel.Aggregators
                 var oldElement = _sourceToElement[fact];
                 _sourceToKey[fact] = key;
                 _sourceToElement[fact] = element;
-
+        
                 if (Equals(key, oldKey))
                 {
-                    var keyElementToModify = new KeyValuePair<TKey, TElement>(key, element);
-                    keyElementsToUpdate.Add(keyElementToModify);
-                    continue;
+                    var result = Modify(key, element);
+                    if (!resultLookup.ContainsKey(key))
+                    {
+                        keys.Add(key);
+                        resultLookup[key] = result;
+                    }
                 }
+                else
+                {
+                    var result1 = Remove(oldKey, oldElement);
+                    if (!resultLookup.ContainsKey(oldKey))
+                    {
+                        keys.Add(oldKey);
+                    }
+                    resultLookup[oldKey] = result1;
 
-                var keyElementToRemove = new KeyValuePair<TKey, TElement>(oldKey, oldElement);
-                keyElementsToRemove.Add(keyElementToRemove);
-
-                var keyElementToInsert = new KeyValuePair<TKey, TElement>(key, element);
-                keyElementsToAdd.Add(keyElementToInsert);
+                    var result2 = Add(key, element);
+                    AggregationResult previousResult;
+                    if (!resultLookup.TryGetValue(key, out previousResult))
+                    {
+                        keys.Add(key);
+                        resultLookup[key] = result2;
+                    }
+                    else if (previousResult.Action == AggregationAction.Removed ||
+                             result2.Action == AggregationAction.Added)
+                    {
+                        resultLookup[key] = AggregationResult.Modified(previousResult.Aggregate);
+                    }
+                }
             }
-            var results = new List<AggregationResult>();
-            var additionResults = Add(keyElementsToAdd);
-            var modifiedResults = Modify(keyElementsToUpdate);
-            var removeResults = Remove(keyElementsToRemove);
-            results.AddRange(modifiedResults);
-            results.AddRange(additionResults);
-            results.AddRange(removeResults);
+            var results = GetResults(keys, resultLookup);
             return results;
         }
 
         public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
         {
-            var keyElementsToRemove = new List<KeyValuePair<TKey, TElement>>();
+            var keys = new List<TKey>();
+            var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
                 var oldKey = _sourceToKey[fact];
                 var oldElement = _sourceToElement[fact];
                 _sourceToKey.Remove(fact);
                 _sourceToElement.Remove(fact);
-                keyElementsToRemove.Add(new KeyValuePair<TKey, TElement>(oldKey, oldElement));
+                var result = Remove(oldKey, oldElement);
+                if (!resultLookup.ContainsKey(oldKey))
+                {
+                    keys.Add(oldKey);
+                }
+                resultLookup[oldKey] = result;
             }
-            return Remove(keyElementsToRemove);
+            var results = GetResults(keys, resultLookup);
+            return results;
         }
 
-        private IEnumerable<AggregationResult> Add(List<KeyValuePair<TKey, TElement>> keyElements)
+        private AggregationResult Add(TKey key, TElement element)
         {
-            var groupsToAdd = new HashSet<Grouping>();
-            var groupsToModify = new HashSet<Grouping>();
-            foreach (var keyElement in keyElements)
+            Grouping group;
+            if (!_groups.TryGetValue(key, out group))
             {
-                var key = keyElement.Key;
-                var element = keyElement.Value;
-                if (Equals(key, _defaultKey))
-                {
-                    if (_defaultGroup == null)
-                    {
-                        _defaultGroup = new Grouping(key);
-                        _defaultGroup.Add(element);
-                        groupsToAdd.Add(_defaultGroup);
-                        continue;
-                    }
-                    _defaultGroup.Add(element);
-                    groupsToModify.Add(_defaultGroup);
-                    continue;
-                }
-
-                Grouping group;
-                if (!_groups.TryGetValue(key, out group))
-                {
-                    group = new Grouping(key);
-                    _groups[key] = group;
-
-                    group.Add(element);
-                    groupsToAdd.Add(group);
-                    continue;
-                }
+                group = new Grouping(key);
+                _groups[key] = group;
 
                 group.Add(element);
-                groupsToModify.Add(group);
-                continue;
+                return AggregationResult.Added(group);
             }
-            var actualGroupsToModify = groupsToModify.Except(groupsToAdd);
-            var aggregationResults = groupsToAdd.Select(AggregationResult.Added).ToList();
-            aggregationResults.AddRange(actualGroupsToModify.Select(AggregationResult.Modified));
-            return aggregationResults;
+
+            group.Add(element);
+            return AggregationResult.Modified(group);
         }
 
-        private IEnumerable<AggregationResult> Modify(List<KeyValuePair<TKey, TElement>> keyElements)
+        private AggregationResult Modify(TKey key, TElement element)
         {
-            var groupsToModify = new HashSet<Grouping>();
-            foreach (var keyElement in keyElements)
-            {
-                var key = keyElement.Key;
-                var element = keyElement.Value;
-                if (Equals(key, _defaultKey))
-                {
-                    _defaultGroup.Modify(element);
-                    groupsToModify.Add(_defaultGroup);
-                    continue;
-                }
-
-                var group = _groups[key];
-                group.Modify(element);
-                groupsToModify.Add(group);
-            }
-            return groupsToModify.Select(AggregationResult.Modified);
+            var group = _groups[key];
+            group.Modify(element);
+            return AggregationResult.Modified(group);
         }
 
-        private IEnumerable<AggregationResult> Remove(List<KeyValuePair<TKey, TElement>> keyElements)
+        private AggregationResult Remove(TKey key, TElement element)
         {
-            var groupsToRemove = new HashSet<Grouping>();
-            var groupsToModify = new HashSet<Grouping>();
-            foreach (var keyElement in keyElements)
+            var group = _groups[key];
+            group.Remove(element);
+            if (group.Count == 0)
             {
-                var key = keyElement.Key;
-                var element = keyElement.Value;
-                if (Equals(key, _defaultKey))
-                {
-                    _defaultGroup.Remove(element);
-                    if (_defaultGroup.Count == 0)
-                    {
-                        var removedGroup = _defaultGroup;
-                        _defaultGroup = null;
-                        groupsToRemove.Add(removedGroup);
-                        continue;
-                    }
-                    groupsToModify.Add(_defaultGroup);
-                    continue;
-                }
-
-                var group = _groups[key];
-                group.Remove(element);
-                if (group.Count == 0)
-                {
-                    _groups.Remove(key);
-                    groupsToRemove.Add(group);
-                    continue;
-                }
-                groupsToModify.Add(group);
-                continue;
+                _groups.Remove(key);
+                return AggregationResult.Removed(group);
             }
-            var actualGroupsToModify = groupsToModify.Except(groupsToRemove);
-            var aggregationResults = groupsToRemove.Select(AggregationResult.Removed).ToList();
-            aggregationResults.AddRange(actualGroupsToModify.Select(AggregationResult.Modified));
-            return aggregationResults;
+            return AggregationResult.Modified(group);
+        }
+
+        private static IEnumerable<AggregationResult> GetResults(IEnumerable<TKey> keys, DefaultKeyMap<TKey, AggregationResult> lookup)
+        {
+            var results = new List<AggregationResult>();
+            foreach (var key in keys)
+            {
+                var result = lookup[key];
+                results.Add(result);
+            }
+            return results;
         }
 
         public IEnumerable<object> Aggregates
         {
-            get
-            {
-                var aggregates = _defaultGroup == null
-                    ? _groups.Values
-                    : new[] {_defaultGroup}.Concat(_groups.Values);
-                return aggregates;
-            }
+            get { return _groups.Values; }
         }
 
         private class Grouping : FactCollection<TElement>, IGrouping<TKey, TElement>

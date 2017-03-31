@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.RuleModel.Aggregators
 {
@@ -21,7 +20,19 @@ namespace NRules.RuleModel.Aggregators
 
         public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
         {
-            return facts.SelectMany(AddSingle);
+            var results = new List<AggregationResult>();
+            foreach (var fact in facts)
+            {
+                var source = (TSource)fact;
+                var value = _selector(source);
+                var list = new List<TResult>(value);
+                _sourceToList[source] = list;
+                foreach (var item in list)
+                {
+                    results.Add(AggregationResult.Added(item));
+                }
+            }
+            return results;
         }
 
         public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
@@ -31,39 +42,49 @@ namespace NRules.RuleModel.Aggregators
             {
                 var source = (TSource)fact;
                 var value = _selector(source);
-                var list = value.ToList();
+                var list = new List<TResult>(value);
                 var oldList = _sourceToList[source];
                 _sourceToList[source] = list;
-                var result = oldList.Select(x => AggregationResult.Removed(x)).Concat(
-                    list.Select(x => AggregationResult.Added(x)));
-                results.AddRange(result);
+                foreach (var item in oldList)
+                {
+                    results.Add(AggregationResult.Removed(item));
+                }
+                foreach (var item in list)
+                {
+                    results.Add(AggregationResult.Added(item));
+                }
             }
             return results;
         }
 
         public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
         {
-            var oldLists = new List<TResult>();
+            var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
                 var source = (TSource)fact;
                 var oldList = _sourceToList[source];
                 _sourceToList.Remove(source);
-                oldLists.AddRange(oldList);
+                foreach (var item in oldList)
+                {
+                    results.Add(AggregationResult.Removed(item));
+                }
             }
-            return oldLists.Select(x => AggregationResult.Removed(x));
+            return results;
         }
 
-        private IEnumerable<AggregationResult> AddSingle(object fact)
+        public IEnumerable<object> Aggregates
         {
-            var source = (TSource)fact;
-            var value = _selector(source);
-            var list = value.ToList();
-            _sourceToList[source] = list;
-
-            return list.Select(x => AggregationResult.Added(x)).ToArray();
+            get
+            {
+                foreach (var itemList in _sourceToList)
+                {
+                    foreach (var item in itemList.Value)
+                    {
+                        yield return item;
+                    }
+                }
+            }
         }
-
-        public IEnumerable<object> Aggregates { get { return _sourceToList.Values.SelectMany(x => x).Cast<object>(); } }
     }
 }
