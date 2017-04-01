@@ -70,11 +70,13 @@ namespace NRules.Rete
         {
             get
             {
-                if (RightFact != null) yield return RightFact;
-                if (LeftTuple == null) yield break;
-                foreach (var leftFact in LeftTuple.Facts)
+                var tuple = this;
+                while (tuple != null)
                 {
-                    yield return leftFact;
+                    if (tuple.RightFact != null)
+                        yield return tuple.RightFact;
+
+                    tuple = tuple.LeftTuple;
                 }
             }
         }

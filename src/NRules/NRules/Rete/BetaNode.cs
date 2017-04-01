@@ -38,7 +38,11 @@ namespace NRules.Rete
 
         protected bool MatchesConditions(IExecutionContext context, Tuple left, Fact right)
         {
-            return Conditions.All(joinCondition => joinCondition.IsSatisfiedBy(context, left, right));
+            foreach (var condition in Conditions)
+            {
+                if (!condition.IsSatisfiedBy(context, left, right)) return false;
+            }
+            return true;
         }
 
         protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, IList<Tuple> tuples)
