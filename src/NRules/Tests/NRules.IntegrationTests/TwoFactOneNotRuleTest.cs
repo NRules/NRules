@@ -1,5 +1,4 @@
 ﻿using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -131,7 +130,32 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<TwoFactOneNotRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactType1 fact = null;
+
+                When()
+                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Not<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact.TestProperty);
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
         }
     }
 }

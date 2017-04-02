@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -23,7 +23,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresOnceWithOneFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact1);
 
             //Act
@@ -31,15 +31,15 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType1>>().Count());
+            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
         [Test]
         public void Fire_OneMatchingFactTwoFactsToAggregate_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Invalid Value 2"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType {TestProperty = "Invalid Value 2"};
             var facts = new[] {fact1, fact2};
             Session.InsertAll(facts);
 
@@ -48,15 +48,15 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType1>>().Count());
+            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
         [Test]
         public void Fire_TwoMatchingFactsTwoFactsToAggregate_FiresTwiceWithTwoFactsInEachCollection()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType {TestProperty = "Valid Value 2"};
             var facts = new[] {fact1, fact2};
             Session.InsertAll(facts);
 
@@ -65,13 +65,36 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType1>>(0).Count());
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType1>>(1).Count());
+            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType>>(0).Count());
+            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType>>(1).Count());
         }
 
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactAggregateJoinRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactType fact = null;
+                IEnumerable<FactType> collection = null;
+
+                When()
+                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Query(() => collection, x => x
+                        .Match<FactType>()
+                        .Collect()
+                        .Where(c => c.Contains(fact)));
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
         }
     }
 }

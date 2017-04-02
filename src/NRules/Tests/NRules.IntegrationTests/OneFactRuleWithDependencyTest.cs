@@ -1,7 +1,6 @@
 ﻿using System;
 using NRules.Extensibility;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -13,7 +12,7 @@ namespace NRules.IntegrationTests
         public void Fire_DefaultResolver_Throws()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             //Act - Assert
@@ -30,7 +29,7 @@ namespace NRules.IntegrationTests
 
             Session.DependencyResolver = new TestDependencyResolver(service);
 
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             //Act
@@ -48,11 +47,11 @@ namespace NRules.IntegrationTests
             var service = new TestService();
             Session.DependencyResolver = new TestDependencyResolver(service);
 
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             ITestService resolvedService = null;
-            GetRuleInstance<OneFactRuleWithDependency>().Action = ctx =>
+            GetRuleInstance<TestRule>().Action = ctx =>
             {
                 resolvedService = ctx.Resove<ITestService>();
             };
@@ -67,7 +66,12 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactRuleWithDependency>();
+            SetUpRule<TestRule>();
+        }
+
+        public interface ITestService
+        {
+            void Action(string value);
         }
 
         private class TestService : ITestService
@@ -96,6 +100,29 @@ namespace NRules.IntegrationTests
             public object Resolve(IResolutionContext context, Type serviceType)
             {
                 return _service;
+            }
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactType fact = null;
+                ITestService service = null;
+
+                Dependency()
+                    .Resolve(() => service);
+
+                When()
+                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                Then()
+                    .Do(ctx => Action(ctx))
+                    .Do(ctx => service.Action(fact.TestProperty));
             }
         }
     }

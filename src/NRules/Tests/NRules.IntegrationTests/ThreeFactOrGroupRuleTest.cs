@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NRules.RuleModel;
 using NUnit.Framework;
 
@@ -52,7 +51,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             IFactMatch[] matches = null;
-            GetRuleInstance<ThreeFactOrGroupRule>().Action = ctx =>
+            GetRuleInstance<TestRule>().Action = ctx =>
             {
                 matches = ctx.Facts.ToArray();
             };
@@ -84,7 +83,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact3);
 
             IFactMatch[] matches = null;
-            GetRuleInstance<ThreeFactOrGroupRule>().Action = ctx =>
+            GetRuleInstance<TestRule>().Action = ctx =>
             {
                 matches = ctx.Facts.ToArray();
             };
@@ -223,7 +222,45 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<ThreeFactOrGroupRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class FactType3
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactType1 fact1 = null;
+                FactType2 fact2 = null;
+                FactType3 fact3 = null;
+
+                When()
+                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                    .Or(x => x
+                        .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
+                        .And(xx => xx
+                            .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Invalid"), f => f.JoinProperty == fact1.TestProperty)
+                            .Match<FactType3>(() => fact3, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)));
+
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
         }
     }
 }

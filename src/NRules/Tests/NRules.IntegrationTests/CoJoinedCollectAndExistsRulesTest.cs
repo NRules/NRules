@@ -1,5 +1,6 @@
-﻿using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
+﻿using System.Collections.Generic;
+using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -19,8 +20,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce<TwoFactOneCollectionRule>();
-            AssertDidNotFire<TwoFactOneExistsCheckRule>();
+            AssertFiredOnce<CollectionRule>();
+            AssertDidNotFire<ExistsRule>();
         }
 
         [Test]
@@ -37,14 +38,59 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce<TwoFactOneCollectionRule>();
-            AssertFiredOnce<TwoFactOneExistsCheckRule>();
+            AssertFiredOnce<CollectionRule>();
+            AssertFiredOnce<ExistsRule>();
         }
 
         protected override void SetUpRules()
         {
-            SetUpRule<TwoFactOneExistsCheckRule>();
-            SetUpRule<TwoFactOneCollectionRule>();
+            SetUpRule<ExistsRule>();
+            SetUpRule<CollectionRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class ExistsRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactType1 fact = null;
+
+                When()
+                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Exists<FactType2>(f => f.TestProperty.StartsWith("Valid"),
+                        f => f.JoinProperty == fact.TestProperty);
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
+        }
+
+        public class CollectionRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactType1 fact = null;
+                IEnumerable<FactType2> collection = null;
+
+                When()
+                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Query(() => collection, x => x
+                        .Match<FactType2>(
+                            f => f.TestProperty.StartsWith("Valid"),
+                            f => f.JoinProperty == fact.TestProperty)
+                        .Collect());
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NRules.RuleModel;
 using NUnit.Framework;
 
@@ -13,7 +12,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             //Act
@@ -27,11 +26,11 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FactInContext()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             IFactMatch[] matches = null;
-            GetRuleInstance<OneFactNoBindingRule>().Action = ctx =>
+            GetRuleInstance<TestRule>().Action = ctx =>
             {
                 matches = ctx.Facts.ToArray();
             };
@@ -47,7 +46,23 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactNoBindingRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                When()
+                    .Match<FactType>(f => f.TestProperty.StartsWith("Valid"));
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
         }
     }
 }

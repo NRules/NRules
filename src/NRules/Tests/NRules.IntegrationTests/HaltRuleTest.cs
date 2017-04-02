@@ -1,5 +1,4 @@
 ﻿using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -11,8 +10,8 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFacts_FiresOnceAndHalts()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType {TestProperty = "Valid Value 2"};
             var facts = new[] {fact1, fact2};
             Session.InsertAll(facts);
 
@@ -27,8 +26,8 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsFireCalledTwice_FiresOnceThenHaltsThenResumesAndFiresAgain()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType {TestProperty = "Valid Value 2"};
             var facts = new[] {fact1, fact2};
             Session.InsertAll(facts);
 
@@ -42,7 +41,26 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<HaltRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactType fact = null;
+
+                When()
+                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                Then()
+                    .Do(ctx => Action(ctx))
+                    .Do(ctx => ctx.Halt());
+            }
         }
     }
 }

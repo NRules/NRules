@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using NRules.Diagnostics;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NRules.RuleModel;
 using NUnit.Framework;
 
@@ -22,7 +21,7 @@ namespace NRules.IntegrationTests
             Session.Events.ConditionFailedEvent += (sender, args) => expression = args.Condition;
             Session.Events.ConditionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
-            var fact = new FactType1 {TestProperty = null};
+            var fact = new FactType {TestProperty = null};
 
             //Act - Assert
             var ex = Assert.Throws<RuleConditionEvaluationException>(() => Session.Insert(fact));
@@ -38,7 +37,7 @@ namespace NRules.IntegrationTests
             //Arrange
             Session.Events.ConditionFailedEvent += (sender, args) => args.IsHandled = true;
 
-            var fact = new FactType1 { TestProperty = null };
+            var fact = new FactType { TestProperty = null };
             
             //Act - Assert
             Assert.DoesNotThrow(() => Session.Insert(fact));
@@ -53,10 +52,10 @@ namespace NRules.IntegrationTests
             Session.Events.ActionFailedEvent += (sender, args) => expression = args.Action;
             Session.Events.ActionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
-            var fact = new FactType1 { TestProperty = "Valid value" };
+            var fact = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact);
 
-            GetRuleInstance<OneFactRule>().Action = null;
+            GetRuleInstance<TestRule>().Action = null;
 
             //Act - Assert
             var ex = Assert.Throws<RuleActionEvaluationException>(() => Session.Fire());
@@ -72,10 +71,10 @@ namespace NRules.IntegrationTests
             //Arrange
             Session.Events.ActionFailedEvent += (sender, args) => args.IsHandled = true;
 
-            var fact = new FactType1 { TestProperty = "Valid value" };
+            var fact = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact);
 
-            GetRuleInstance<OneFactRule>().Action = null;
+            GetRuleInstance<TestRule>().Action = null;
 
             //Act - Assert
             Assert.DoesNotThrow(() => Session.Fire());
@@ -83,7 +82,25 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactType fact = null;
+
+                When()
+                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
         }
     }
 }

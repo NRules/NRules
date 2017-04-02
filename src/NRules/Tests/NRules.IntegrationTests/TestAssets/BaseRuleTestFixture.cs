@@ -38,7 +38,10 @@ namespace NRules.IntegrationTests.TestAssets
             var metadata = new RuleMetadata(typeof (T));
             _ruleMap[typeof (T)] = metadata;
             _firedRulesMap[metadata.Name] = new List<AgendaEventArgs>();
-            Repository.Load(x => x.From(typeof(T)));
+            Repository.Load(x => x
+                .PrivateTypes()
+                .NestedTypes()
+                .From(typeof (T)));
         }
 
         protected T GetRuleInstance<T>() where T : BaseRule

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -13,8 +13,8 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFacts_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType {TestProperty = "Valid Value 2"};
 
             var facts = new[] {fact1, fact2};
             Session.InsertAll(facts);
@@ -30,9 +30,9 @@ namespace NRules.IntegrationTests
         public void Fire_ThreeMatchingFacts_FiresOnceWithThreeFacts()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
-            var fact3 = new FactType1 {TestProperty = "Valid Value 3"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType {TestProperty = "Valid Value 2"};
+            var fact3 = new FactType {TestProperty = "Valid Value 3"};
 
             var facts = new[] {fact1, fact2, fact3};
             Session.InsertAll(facts);
@@ -42,16 +42,16 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(3, GetFiredFact<IEnumerable<FactType1>>().Count());
+            Assert.AreEqual(3, GetFiredFact<IEnumerable<FactType>>().Count());
         }
         
         [Test]
         public void Fire_ThreeMatchingFactsOneRetracted_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
-            var fact3 = new FactType1 {TestProperty = "Valid Value 3"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType {TestProperty = "Valid Value 2"};
+            var fact3 = new FactType {TestProperty = "Valid Value 3"};
 
             var facts = new[] {fact1, fact2};
             Session.InsertAll(facts);
@@ -67,7 +67,28 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<CollectionWithConditionsRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                IEnumerable<FactType> collection = null;
+
+                When()
+                    .Query(() => collection, x => x
+                        .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                        .Collect()
+                        .Where(c => c.Count() > 2));
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
         }
     }
 }

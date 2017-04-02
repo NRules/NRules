@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NRules.RuleModel;
 using NUnit.Framework;
 
@@ -59,7 +59,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             IFactMatch[] matches = null;
-            GetRuleInstance<TwoFactOneCollectionRule>().Action = ctx =>
+            GetRuleInstance<TestRule>().Action = ctx =>
             {
                 matches = ctx.Facts.ToArray();
             };
@@ -70,9 +70,9 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredOnce();
             Assert.AreEqual(2, matches.Length);
-            Assert.AreEqual("fact1", matches[0].Declaration.Name);
+            Assert.AreEqual("fact", matches[0].Declaration.Name);
             Assert.AreSame(fact1, matches[0].Value);
-            Assert.AreEqual("collection2", matches[1].Declaration.Name);
+            Assert.AreEqual("collection", matches[1].Declaration.Name);
             CollectionAssert.AreEqual(new [] {fact2}, (IEnumerable<FactType2>)matches[1].Value);
         }
 
@@ -283,7 +283,37 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<TwoFactOneCollectionRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactType1 fact = null;
+                IEnumerable<FactType2> collection = null;
+
+                When()
+                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Query(() => collection, x => x
+                        .Match<FactType2>(
+                            f => f.TestProperty.StartsWith("Valid"),
+                            f => f.JoinProperty == fact.TestProperty)
+                        .Collect());
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
         }
     }
 }

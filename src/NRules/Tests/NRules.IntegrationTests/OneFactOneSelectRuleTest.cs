@@ -1,5 +1,6 @@
-﻿using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
+﻿using System;
+using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -11,7 +12,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             //Act
@@ -19,14 +20,14 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactType1Projection>().Value);
+            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactProjection>().Value);
         }
         
         [Test]
         public void Fire_OneMatchingFactInsertedThenUpdated_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
             Session.Update(fact);
 
@@ -35,15 +36,15 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactType1Projection>().Value);
+            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactProjection>().Value);
         }
 
         [Test]
         public void Fire_TwoMatchingFacts_FiresTwice()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType {TestProperty = "Valid Value 2"};
             var facts = new[] {fact1, fact2};
             Session.InsertAll(facts);
 
@@ -52,15 +53,15 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(fact1.TestProperty, GetFiredFact<FactType1Projection>(0).Value);
-            Assert.AreEqual(fact2.TestProperty, GetFiredFact<FactType1Projection>(1).Value);
+            Assert.AreEqual(fact1.TestProperty, GetFiredFact<FactProjection>(0).Value);
+            Assert.AreEqual(fact2.TestProperty, GetFiredFact<FactProjection>(1).Value);
         }
 
         [Test]
         public void Fire_ConditionDoesNotMatch_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Invalid Value 1"};
+            var fact = new FactType {TestProperty = "Invalid Value 1"};
             Session.Insert(fact);
 
             //Act
@@ -74,7 +75,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
             Session.Retract(fact);
 
@@ -89,7 +90,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneFactUpdatedFromInvalidToMatching_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Invalid Value 1"};
+            var fact = new FactType {TestProperty = "Invalid Value 1"};
             Session.Insert(fact);
 
             fact.TestProperty = "Valid Value 1";
@@ -100,14 +101,14 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactType1Projection>().Value);
+            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactProjection>().Value);
         }
 
         [Test]
         public void Fire_OneMatchingFactAssertedAndRetractedAndAssertedAgain_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
             Session.Retract(fact);
             Session.Insert(fact);
@@ -117,14 +118,14 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactType1Projection>().Value);
+            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactProjection>().Value);
         }
 
         [Test]
         public void Fire_OneMatchingFactAssertedAndUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             fact.TestProperty = "Invalid Value 1";
@@ -139,7 +140,58 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactOneSelectRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactProjection : IEquatable<FactProjection>
+        {
+            public FactProjection(FactType fact)
+            {
+                Value = fact.TestProperty;
+            }
+
+            public string Value { get; private set; }
+
+            public bool Equals(FactProjection other)
+            {
+                if (ReferenceEquals(null, other)) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return string.Equals(Value, other.Value);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != this.GetType()) return false;
+                return Equals((FactProjection)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return (Value != null ? Value.GetHashCode() : 0);
+            }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactProjection projection = null;
+
+                When()
+                    .Query(() => projection, x => x
+                        .Match<FactType>()
+                        .Select(f => new FactProjection(f))
+                        .Where(p => p.Value.StartsWith("Valid")));
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NRules.RuleModel;
 using NUnit.Framework;
 
@@ -54,7 +53,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             IFactMatch[] matches = null;
-            GetRuleInstance<TwoFactOneExistsCheckRule>().Action = ctx =>
+            GetRuleInstance<TestRule>().Action = ctx =>
             {
                 matches = ctx.Facts.ToArray();
             };
@@ -65,7 +64,7 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredOnce();
             Assert.AreEqual(1, matches.Length);
-            Assert.AreEqual("fact1", matches[0].Declaration.Name);
+            Assert.AreEqual("fact", matches[0].Declaration.Name);
             Assert.AreSame(fact1, matches[0].Value);
         }
 
@@ -221,7 +220,32 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<TwoFactOneExistsCheckRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class TestRule : BaseRule
+        {
+            public override void Define()
+            {
+                FactType1 fact = null;
+
+                When()
+                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Exists<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact.TestProperty);
+                Then()
+                    .Do(ctx => Action(ctx));
+            }
         }
     }
 }
