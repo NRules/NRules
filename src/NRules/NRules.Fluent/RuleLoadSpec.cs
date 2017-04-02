@@ -13,6 +13,22 @@ namespace NRules.Fluent
     public interface IRuleLoadSpec
     {
         /// <summary>
+        /// Enables/disables discovery of private rule classes.
+        /// Default is off.
+        /// </summary>
+        /// <param name="include">Include private types if <c>true</c>, don't include otherwise.</param>
+        /// <returns>Spec to continue fluent configuration.</returns>
+        IRuleLoadSpec PrivateTypes(bool include = true);
+
+        /// <summary>
+        /// Enables/disables discovery of nested rule classes.
+        /// Default is off.
+        /// </summary>
+        /// <param name="include">Include nested types if <c>true</c>, don't include otherwise.</param>
+        /// <returns>Spec to continue fluent configuration.</returns>
+        IRuleLoadSpec NestedTypes(bool include = true);
+
+        /// <summary>
         /// Specifies to load all rule definitions from a given collection of assemblies.
         /// </summary>
         /// <param name="assemblies">Assemblies to load from.</param>
@@ -78,6 +94,18 @@ namespace NRules.Fluent
         public string RuleSetName
         {
             get { return _ruleSetName; }
+        }
+
+        public IRuleLoadSpec PrivateTypes(bool include = true)
+        {
+            _typeScanner.PrivateTypes(include);
+            return this;
+        }
+
+        public IRuleLoadSpec NestedTypes(bool include = true)
+        {
+            _typeScanner.NestedTypes(include);
+            return this;
         }
 
         public IRuleLoadSpec From(params Assembly[] assemblies)
