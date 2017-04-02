@@ -76,7 +76,7 @@ namespace NRules.IntegrationTests
             //Arrange
             var fact1 = new FactType(1) { TestProperty = "Valid Value 1", ValueProperty = "Original 1"};
 
-            var facts = new[] { fact1 };
+            var facts = new[] {fact1};
             Session.InsertAll(facts);
 
             var fact11 = new FactType(1) { TestProperty = "Valid Value 1", ValueProperty = "Updated 1" };
@@ -90,6 +90,30 @@ namespace NRules.IntegrationTests
             var firedFact = GetFiredFact<FactType>();
             Assert.AreEqual(1, firedFact.Id);
             Assert.AreEqual("Updated 1", firedFact.ValueProperty);
+        }
+                
+        [Test]
+        public void Fire_TwoValidFactsInsertedThenUpdated_FiresOnceThenFiresOnceAgain()
+        {
+            //Arrange
+            var fact1 = new FactType(1) { TestProperty = "Valid Value 1"};
+            var fact2 = new FactType(1) { TestProperty = "Valid Value 2"};
+
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
+
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredOnce();
+
+            //Act - 2
+            Session.Update(fact1);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTwice();
         }
 
         protected override void SetUpRules()

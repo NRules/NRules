@@ -281,6 +281,64 @@ namespace NRules.IntegrationTests
             Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType2>>(1).Count());
         }
 
+        [Test]
+        public void Fire_TwoMatchedSetsThenOneFactOfFirstKindUpdated_FiresTwiceThenFiresOnce()
+        {
+            //Arrange
+            var fact11 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact12 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact21 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact11.TestProperty};
+            var fact22 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact11.TestProperty};
+            var fact23 = new FactType2 {TestProperty = "Valid Value 5", JoinProperty = fact12.TestProperty};
+
+            Session.Insert(fact11);
+            Session.Insert(fact12);
+            var facts = new[] {fact21, fact22, fact23};
+            Session.InsertAll(facts);
+
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredTwice();
+
+            //Act - 2
+            Session.Update(fact11);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTimes(3);
+        }
+
+        [Test]
+        public void Fire_TwoMatchedSetsThenOneFactOfSecondKindUpdated_FiresTwiceThenFiresOnce()
+        {
+            //Arrange
+            var fact11 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact12 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact21 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact11.TestProperty};
+            var fact22 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact11.TestProperty};
+            var fact23 = new FactType2 {TestProperty = "Valid Value 5", JoinProperty = fact12.TestProperty};
+
+            Session.Insert(fact11);
+            Session.Insert(fact12);
+            var facts = new[] {fact21, fact22, fact23};
+            Session.InsertAll(facts);
+
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredTwice();
+
+            //Act - 2
+            Session.Update(fact21);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTimes(3);
+        }
+
         protected override void SetUpRules()
         {
             SetUpRule<TestRule>();

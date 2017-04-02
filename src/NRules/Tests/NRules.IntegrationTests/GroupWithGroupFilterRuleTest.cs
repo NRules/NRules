@@ -6,16 +6,35 @@ using NUnit.Framework;
 namespace NRules.IntegrationTests
 {
     [TestFixture]
-    public class GroupWithSelectionAfterGroupRuleTest : BaseRuleTestFixture
+    public class GroupWithGroupFilterRuleTest : BaseRuleTestFixture
     {
+        [Test]
+        public void Fire_TwoMatchingGroups_FiresTwice()
+        {
+            //Arrange
+            var fact11 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good"};
+            var fact12 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good" };
+            var fact13 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP2", GroupTestProperty = "Bad" };
+            var fact14 = new FactType {TestProperty = "Valid Test Property 2", GroupProperty = "GP2", GroupTestProperty = "Good" };
+
+            var facts = new object[] {fact11, fact12, fact13, fact14};
+            Session.InsertAll(facts);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredTwice();
+        }
+
         [Test]
         public void Fire_MakeAllFactsInelligible_DoesNotFire()
         {
             //Arrange
-            var fact11 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP1", JoinProperty = "Good"};
-            var fact12 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP1", JoinProperty = "Good" };
-            var fact13 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP2", JoinProperty = "Bad" };
-            var fact14 = new FactType {TestProperty = "Valid Test Property 2", GroupProperty = "GP2", JoinProperty = "Good" };
+            var fact11 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good"};
+            var fact12 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good" };
+            var fact13 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP2", GroupTestProperty = "Bad" };
+            var fact14 = new FactType {TestProperty = "Valid Test Property 2", GroupProperty = "GP2", GroupTestProperty = "Good" };
 
             var facts = new object[] {fact11, fact12, fact13, fact14};
             Session.InsertAll(facts);
@@ -42,7 +61,7 @@ namespace NRules.IntegrationTests
         public class FactType
         {
             public string TestProperty { get; set; }
-            public string JoinProperty { get; set; }
+            public string GroupTestProperty { get; set; }
             public string GroupProperty { get; set; }
         }
 
@@ -63,7 +82,7 @@ namespace NRules.IntegrationTests
 
             private static bool HasCorrectValue(IGrouping<string, FactType> group)
             {
-                return group.Any(x => x.JoinProperty.Contains("Good"));
+                return group.Any(x => x.GroupTestProperty.Contains("Good"));
             }
         }
     }

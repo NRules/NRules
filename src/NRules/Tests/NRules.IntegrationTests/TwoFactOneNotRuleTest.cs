@@ -128,6 +128,56 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
+        [Test]
+        public void Fire_TwoMatchingSetsFactOfSecondKindInsertedThenRetracted_FiresTwiceThenFiresTwice()
+        {
+            //Arrange
+            var fact11 = new FactType1 { TestProperty = "Valid Value" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value" };
+            var fact21 = new FactType2 { TestProperty = "Valid Value", JoinProperty = "Valid Value" };
+
+            var facts = new[] { fact11, fact12 };
+            Session.InsertAll(facts);
+
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredTwice();
+
+            //Act - 2
+            Session.Insert(fact21);
+            Session.Retract(fact21);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTimes(4);
+        }
+
+        [Test]
+        public void Fire_TwoMatchingSetsFactOfFirstKindUpdated_FiresTwiceThenFiresOnce()
+        {
+            //Arrange
+            var fact11 = new FactType1 { TestProperty = "Valid Value" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value" };
+
+            var facts = new[] { fact11, fact12 };
+            Session.InsertAll(facts);
+
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredTwice();
+
+            //Act - 2
+            Session.Update(fact11);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTimes(3);
+        }
+
         protected override void SetUpRules()
         {
             SetUpRule<TestRule>();

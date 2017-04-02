@@ -12,18 +12,18 @@ namespace NRules.IntegrationTests
         public void Fire_BulkInsertForMultipleTypes_InsertsOnly_FiresThreeTimesWithCorrectCounts()
         {
             //Arrange
-            var fact21 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Join 1" };
-            var fact22 = new FactType1 { TestProperty = "Valid Value 2", JoinProperty = "Join 2" };
+            var fact11 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Join 1" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value 2", JoinProperty = "Join 2" };
 
-            var fact61 = new FactType2 { TestProperty = "Valid Group1", JoinProperty = fact21.JoinProperty, GroupProperty = "Group1" };
-            var fact62 = new FactType2 { TestProperty = "Valid Group2", JoinProperty = fact21.JoinProperty, GroupProperty = "Group1" };
-            var fact63 = new FactType2 { TestProperty = "Valid Group3", JoinProperty = fact21.JoinProperty, GroupProperty = "Group2" };
+            var fact21 = new FactType2 { TestProperty = "Valid Group1", JoinProperty = fact11.JoinProperty, GroupProperty = "Group1" };
+            var fact22 = new FactType2 { TestProperty = "Valid Group2", JoinProperty = fact11.JoinProperty, GroupProperty = "Group1" };
+            var fact23 = new FactType2 { TestProperty = "Valid Group3", JoinProperty = fact11.JoinProperty, GroupProperty = "Group2" };
 
-            var fact64 = new FactType2 { TestProperty = "Valid Group4", JoinProperty = fact22.JoinProperty, GroupProperty = "Group2" };
-            var fact65 = new FactType2 { TestProperty = "Valid Group5", JoinProperty = fact22.JoinProperty, GroupProperty = "Group2" };
-            var fact66 = new FactType2 { TestProperty = "Valid Group6", JoinProperty = fact22.JoinProperty, GroupProperty = "Group2" };
+            var fact24 = new FactType2 { TestProperty = "Valid Group4", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
+            var fact25 = new FactType2 { TestProperty = "Valid Group5", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
+            var fact26 = new FactType2 { TestProperty = "Valid Group6", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
 
-            var facts = new object[] { fact21, fact22, fact61, fact62, fact63, fact64, fact65, fact66 };
+            var facts = new object[] { fact11, fact12, fact21, fact22, fact23, fact24, fact25, fact26 };
             Session.InsertAll(facts);
 
             //Act
@@ -48,24 +48,24 @@ namespace NRules.IntegrationTests
         public void Fire_BulkInsertForMultipleTypes_WithUpdates_FiresThreeTimesWithCorrectCounts()
         {
             //Arrange
-            var fact21 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Join 1" };
-            var fact22 = new FactType1 { TestProperty = "Valid Value 2", JoinProperty = "Join 2" };
+            var fact11 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Join 1" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value 2", JoinProperty = "Join 2" };
 
-            var fact61 = new FactType2 { TestProperty = "Valid Group1", JoinProperty = fact21.JoinProperty, GroupProperty = "Group1" };
-            var fact62 = new FactType2 { TestProperty = "Valid Group2", JoinProperty = fact21.JoinProperty, GroupProperty = "Group1" };
-            var fact63 = new FactType2 { TestProperty = "Valid Group3", JoinProperty = fact21.JoinProperty, GroupProperty = "Group2" };
+            var fact21 = new FactType2 { TestProperty = "Valid Group1", JoinProperty = fact11.JoinProperty, GroupProperty = "Group1" };
+            var fact22 = new FactType2 { TestProperty = "Valid Group2", JoinProperty = fact11.JoinProperty, GroupProperty = "Group1" };
+            var fact23 = new FactType2 { TestProperty = "Valid Group3", JoinProperty = fact11.JoinProperty, GroupProperty = "Group2" };
 
-            var fact64 = new FactType2 { TestProperty = "Valid Group4", JoinProperty = fact22.JoinProperty, GroupProperty = "Group2" };
-            var fact65 = new FactType2 { TestProperty = "Valid Group5", JoinProperty = fact22.JoinProperty, GroupProperty = "Group2" };
-            var fact66 = new FactType2 { TestProperty = "Valid Group6", JoinProperty = fact22.JoinProperty, GroupProperty = "Group2" };
+            var fact24 = new FactType2 { TestProperty = "Valid Group4", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
+            var fact25 = new FactType2 { TestProperty = "Valid Group5", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
+            var fact26 = new FactType2 { TestProperty = "Valid Group6", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
 
-            var facts = new object[] { fact21, fact22, fact61, fact62, fact63, fact64, fact65, fact66 };
+            var facts = new object[] { fact11, fact12, fact21, fact22, fact23, fact24, fact25, fact26 };
             Session.InsertAll(facts);
 
-            fact61.GroupProperty = "Group3";
-            fact62.GroupProperty = "Group3";
-            fact63.GroupProperty = "Group3";
-            var factsForUpdate = new[] { fact61, fact62, fact63 };
+            fact21.GroupProperty = "Group3";
+            fact22.GroupProperty = "Group3";
+            fact23.GroupProperty = "Group3";
+            var factsForUpdate = new[] { fact21, fact22, fact23 };
             Session.UpdateAll(factsForUpdate);
 
             //Act
@@ -87,21 +87,21 @@ namespace NRules.IntegrationTests
         public void Fire_BulkInsertForMultipleTypes_WithRetracts_FiresThreeTimesWithCorrectCounts()
         {
             //Arrange
-            var fact21 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Join 1" };
-            var fact22 = new FactType1 { TestProperty = "Valid Value 2", JoinProperty = "Join 2" };
+            var fact11 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Join 1" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value 2", JoinProperty = "Join 2" };
 
-            var fact61 = new FactType2 { TestProperty = "Valid Group1", JoinProperty = fact21.JoinProperty, GroupProperty = "Group1" };
-            var fact62 = new FactType2 { TestProperty = "Valid Group2", JoinProperty = fact21.JoinProperty, GroupProperty = "Group1" };
-            var fact63 = new FactType2 { TestProperty = "Valid Group3", JoinProperty = fact21.JoinProperty, GroupProperty = "Group2" };
+            var fact21 = new FactType2 { TestProperty = "Valid Group1", JoinProperty = fact11.JoinProperty, GroupProperty = "Group1" };
+            var fact22 = new FactType2 { TestProperty = "Valid Group2", JoinProperty = fact11.JoinProperty, GroupProperty = "Group1" };
+            var fact23 = new FactType2 { TestProperty = "Valid Group3", JoinProperty = fact11.JoinProperty, GroupProperty = "Group2" };
 
-            var fact64 = new FactType2 { TestProperty = "Valid Group4", JoinProperty = fact22.JoinProperty, GroupProperty = "Group2" };
-            var fact65 = new FactType2 { TestProperty = "Valid Group5", JoinProperty = fact22.JoinProperty, GroupProperty = "Group2" };
-            var fact66 = new FactType2 { TestProperty = "Valid Group6", JoinProperty = fact22.JoinProperty, GroupProperty = "Group2" };
+            var fact24 = new FactType2 { TestProperty = "Valid Group4", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
+            var fact25 = new FactType2 { TestProperty = "Valid Group5", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
+            var fact26 = new FactType2 { TestProperty = "Valid Group6", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
 
-            var facts = new object[] { fact21, fact22, fact61, fact62, fact63, fact64, fact65, fact66 };
+            var facts = new object[] { fact11, fact12, fact21, fact22, fact23, fact24, fact25, fact26 };
             Session.InsertAll(facts);
             
-            var factsForRetract = new[] { fact61, fact62, fact63 };
+            var factsForRetract = new[] { fact21, fact22, fact23 };
             Session.RetractAll(factsForRetract);
 
             //Act
@@ -116,6 +116,66 @@ namespace NRules.IntegrationTests
 
             var correctNumberofFactsPerGroup = firedFacts.Count(x => x.Count() == 3) == 1;
             Assert.IsTrue(correctNumberofFactsPerGroup);
+        }
+
+        [Test]
+        public void Fire_TwoMatchingSetsFactOfFirstKindUpdated_FiresTwiceThenFiresOnce()
+        {
+            //Arrange
+            var fact11 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Join 1" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value 2", JoinProperty = "Join 2" };
+
+            var fact61 = new FactType2 { TestProperty = "Valid Group1", JoinProperty = fact11.JoinProperty, GroupProperty = "Group1" };
+            var fact62 = new FactType2 { TestProperty = "Valid Group2", JoinProperty = fact11.JoinProperty, GroupProperty = "Group1" };
+
+            var fact63 = new FactType2 { TestProperty = "Valid Group3", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
+            var fact64 = new FactType2 { TestProperty = "Valid Group4", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
+
+            var facts = new object[] { fact11, fact12, fact61, fact62, fact63, fact64 };
+            Session.InsertAll(facts);
+            
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredTimes(2);
+
+            //Act - 2
+            Session.Update(fact11);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTimes(3);
+        }
+
+        [Test]
+        public void Fire_TwoMatchingSetsFactOfSecondKindUpdated_FiresTwiceThenFiresOnce()
+        {
+            //Arrange
+            var fact11 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Join 1" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value 2", JoinProperty = "Join 2" };
+
+            var fact61 = new FactType2 { TestProperty = "Valid Group1", JoinProperty = fact11.JoinProperty, GroupProperty = "Group1" };
+            var fact62 = new FactType2 { TestProperty = "Valid Group2", JoinProperty = fact11.JoinProperty, GroupProperty = "Group1" };
+
+            var fact63 = new FactType2 { TestProperty = "Valid Group3", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
+            var fact64 = new FactType2 { TestProperty = "Valid Group4", JoinProperty = fact12.JoinProperty, GroupProperty = "Group2" };
+
+            var facts = new object[] { fact11, fact12, fact61, fact62, fact63, fact64 };
+            Session.InsertAll(facts);
+            
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredTimes(2);
+
+            //Act - 2
+            Session.Update(fact61);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTimes(3);
         }
 
         protected override void SetUpRules()

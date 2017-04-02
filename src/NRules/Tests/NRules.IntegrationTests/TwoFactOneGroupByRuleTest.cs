@@ -385,6 +385,34 @@ namespace NRules.IntegrationTests
             AssertFiredTimes(3);
         }
 
+        [Test]
+        public void Fire_TwoMatchingCombinationsThenOneFactOfSecondKindUpdated_FiresTwiceBeforeUpdateAndOnceAfter()
+        {
+            //Arrange
+            var fact11 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact12 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact21 = new FactType2 {TestProperty = "Valid Value Group 1", JoinProperty = fact11.TestProperty};
+            var fact22 = new FactType2 {TestProperty = "Valid Value Group 1", JoinProperty = fact12.TestProperty};
+
+            Session.Insert(fact11);
+            Session.Insert(fact12);
+            Session.Insert(fact21);
+            Session.Insert(fact22);
+
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredTimes(2);
+
+            //Act - 2
+            Session.Update(fact21);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTimes(3);
+        }
+
         protected override void SetUpRules()
         {
             SetUpRule<TestRule>();

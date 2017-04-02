@@ -57,6 +57,7 @@
     <Compile Include="ActionInterceptorTest.cs" />
     <Compile Include="CoJoinedCollectAndExistsRulesTest.cs" />
     <Compile Include="EvaluationExceptionRuleTest.cs" />
+    <Compile Include="GroupJoinSeveralQueriesTest.cs" />
     <Compile Include="IdentityMatchRuleTest.cs" />
     <Compile Include="CollectionWithConditionsRuleTest.cs" />
     <Compile Include="LifecycleEventTest.cs" />
@@ -66,7 +67,7 @@
     <Compile Include="OneFactOneGroupByFlattenRuleTest.cs" />
     <Compile Include="OneFactOneGroupByFlattenRuleWithIdentityRuleTest.cs" />
     <Compile Include="OneFactOneGroupByRuleTest.cs" />
-    <Compile Include="GroupWithSelectionAfterGroupRuleTest.cs" />
+    <Compile Include="GroupWithGroupFilterRuleTest.cs" />
     <Compile Include="OneFactRetractingRuleTest.cs" />
     <Compile Include="OneFactRepeatableRuleTest.cs" />
     <Compile Include="OneEquatableFactRuleTest.cs" />
