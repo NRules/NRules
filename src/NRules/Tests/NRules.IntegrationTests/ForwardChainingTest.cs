@@ -1,4 +1,5 @@
-﻿using NRules.IntegrationTests.TestAssets;
+﻿using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -70,7 +71,7 @@ namespace NRules.IntegrationTests
             public string JoinProperty { get; set; }
         }
 
-        public class ForwardChainingFirstRule : BaseRule
+        public class ForwardChainingFirstRule : Rule
         {
             public override void Define()
             {
@@ -79,7 +80,6 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Action(ctx))
                     .Do(ctx => ctx.Insert(new FactType2
                     {
                         TestProperty = fact1.JoinProperty,
@@ -88,7 +88,7 @@ namespace NRules.IntegrationTests
             }
         }
 
-        public class ForwardChainingSecondRule : BaseRule
+        public class ForwardChainingSecondRule : Rule
         {
             public override void Define()
             {
@@ -97,7 +97,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

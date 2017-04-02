@@ -234,7 +234,7 @@ namespace NRules.IntegrationTests
             public string TestProperty { get; set; }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -247,7 +247,7 @@ namespace NRules.IntegrationTests
                         .Where(g => g.Count() > 1)
                         .SelectMany(x => x));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

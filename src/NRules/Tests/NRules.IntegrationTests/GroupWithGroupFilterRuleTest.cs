@@ -65,7 +65,7 @@ namespace NRules.IntegrationTests
             public string GroupProperty { get; set; }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -77,7 +77,7 @@ namespace NRules.IntegrationTests
                         .GroupBy(f => f.GroupProperty)
                         .Where(z => HasCorrectValue(z)));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
 
             private static bool HasCorrectValue(IGrouping<string, FactType> group)

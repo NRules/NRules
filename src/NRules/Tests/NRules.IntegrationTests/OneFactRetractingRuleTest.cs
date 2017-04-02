@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NUnit.Framework;
 
@@ -38,7 +39,7 @@ namespace NRules.IntegrationTests
             }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -47,8 +48,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => ctx.Retract(fact))
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.Retract(fact));
             }
         }
     }

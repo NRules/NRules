@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NRules.Extensibility;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -20,7 +21,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             bool actionExecuted = false;
-            GetRuleInstance<TestRule>().Action = ctx => { actionExecuted = true; };
+            GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
             //Act
             Session.Fire();
@@ -42,7 +43,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             bool actionExecuted = false;
-            GetRuleInstance<TestRule>().Action = ctx => { actionExecuted = true; };
+            GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
             //Act
             Session.Fire();
@@ -64,7 +65,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             bool actionExecuted = false;
-            GetRuleInstance<TestRule>().Action = ctx => { actionExecuted = true; };
+            GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
             //Act
             Session.Fire();
@@ -103,8 +104,10 @@ namespace NRules.IntegrationTests
         {
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
+            public Action Action = () => { };
+
             public override void Define()
             {
                 FactType1 fact = null;
@@ -121,7 +124,7 @@ namespace NRules.IntegrationTests
 
             private void CallAction(IContext context, FactType1 fact1, IEnumerable<FactType2> collection2)
             {
-                Action(context);
+                Action();
             }
         }
     }

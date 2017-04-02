@@ -107,7 +107,7 @@ namespace NRules.IntegrationTests
             public string TestProperty { get; set; }
         }
 
-        public class TwinRuleOne : BaseRule
+        public class TwinRuleOne : Rule
         {
             public override void Define()
             {
@@ -129,11 +129,11 @@ namespace NRules.IntegrationTests
                         .Where(c => c.Any()));
 
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
 
-        public class TwinRuleTwo : BaseRule
+        public class TwinRuleTwo : Rule
         {
             public override void Define()
             {
@@ -155,7 +155,7 @@ namespace NRules.IntegrationTests
                         .Where(c => c.Any()));
 
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

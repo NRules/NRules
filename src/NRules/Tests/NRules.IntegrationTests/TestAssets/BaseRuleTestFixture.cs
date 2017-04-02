@@ -33,7 +33,7 @@ namespace NRules.IntegrationTests.TestAssets
 
         protected abstract void SetUpRules();
 
-        protected void SetUpRule<T>() where T : BaseRule, new()
+        protected void SetUpRule<T>() where T : Rule, new()
         {
             var metadata = new RuleMetadata(typeof (T));
             _ruleMap[typeof (T)] = metadata;
@@ -44,7 +44,7 @@ namespace NRules.IntegrationTests.TestAssets
                 .From(typeof (T)));
         }
 
-        protected T GetRuleInstance<T>() where T : BaseRule
+        protected T GetRuleInstance<T>() where T : Rule
         {
             return (T)Repository.Activator.Activate(typeof(T)).Single();
         }

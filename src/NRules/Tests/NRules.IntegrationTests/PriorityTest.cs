@@ -54,7 +54,7 @@ namespace NRules.IntegrationTests
 
         [Name("PriorityLowRule")]
         [Priority(10)]
-        public class PriorityLowRule : BaseRule
+        public class PriorityLowRule : Rule
         {
             public override void Define()
             {
@@ -63,7 +63,6 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Action(ctx))
                     .Do(ctx => ctx.Insert(new FactType2()
                     {
                         TestProperty = "Valid Value",
@@ -74,7 +73,7 @@ namespace NRules.IntegrationTests
 
         [Name("PriorityHighRule")]
         [Priority(100)]
-        public class PriorityHighRule : BaseRule
+        public class PriorityHighRule : Rule
         {
             public override void Define()
             {
@@ -83,7 +82,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

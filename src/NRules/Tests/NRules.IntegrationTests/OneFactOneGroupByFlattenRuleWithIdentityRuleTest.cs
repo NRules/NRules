@@ -80,7 +80,7 @@ namespace NRules.IntegrationTests
             }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -94,7 +94,7 @@ namespace NRules.IntegrationTests
                         .SelectMany(x => x)
                         .GroupBy(x => x.GroupingProperty2));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

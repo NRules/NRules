@@ -178,7 +178,7 @@ namespace NRules.IntegrationTests
             }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -190,7 +190,7 @@ namespace NRules.IntegrationTests
                         .Select(f => new FactProjection(f))
                         .Where(p => p.Value.StartsWith("Valid")));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

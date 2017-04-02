@@ -59,7 +59,7 @@ namespace NRules.IntegrationTests
             public string JoinProperty { get; set; }
         }
 
-        public class ExistsRule : BaseRule
+        public class ExistsRule : Rule
         {
             public override void Define()
             {
@@ -70,11 +70,11 @@ namespace NRules.IntegrationTests
                     .Exists<FactType2>(f => f.TestProperty.StartsWith("Valid"),
                         f => f.JoinProperty == fact.TestProperty);
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
 
-        public class CollectionRule : BaseRule
+        public class CollectionRule : Rule
         {
             public override void Define()
             {
@@ -89,7 +89,7 @@ namespace NRules.IntegrationTests
                             f => f.JoinProperty == fact.TestProperty)
                         .Collect());
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

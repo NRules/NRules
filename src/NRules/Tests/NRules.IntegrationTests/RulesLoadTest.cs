@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
 using NUnit.Framework;
 
@@ -172,11 +173,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType>();
                 Then()
-                    .Do(ctx => Action());
-            }
-
-            private void Action()
-            {
+                    .Do(ctx => ctx.NoOp());
             }
         }
 
@@ -189,11 +186,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType>();
                 Then()
-                    .Do(ctx => Action());
-            }
-
-            private void Action()
-            {
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

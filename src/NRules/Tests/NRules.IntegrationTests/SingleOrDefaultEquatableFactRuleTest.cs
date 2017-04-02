@@ -153,7 +153,7 @@ namespace NRules.IntegrationTests
             }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -165,7 +165,7 @@ namespace NRules.IntegrationTests
                         .Collect()
                         .Select(x => x.OrderBy(f => f.Id).FirstOrDefault() ?? new FactType(0)));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

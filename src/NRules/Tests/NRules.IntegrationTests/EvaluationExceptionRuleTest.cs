@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.Diagnostics;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
 using NUnit.Framework;
@@ -90,8 +91,10 @@ namespace NRules.IntegrationTests
             public string TestProperty { get; set; }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
+            public Action Action = () => { };
+
             public override void Define()
             {
                 FactType fact = null;
@@ -99,7 +102,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => Action());
             }
         }
     }

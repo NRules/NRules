@@ -1,3 +1,4 @@
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NUnit.Framework;
 
@@ -88,7 +89,7 @@ namespace NRules.IntegrationTests
             public string TestProperty { get; set; }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -100,7 +101,7 @@ namespace NRules.IntegrationTests
                     .Match<FactType>(() => fact2, f => ReferenceEquals(f, fact1));
 
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

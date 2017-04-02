@@ -211,7 +211,7 @@ namespace NRules.IntegrationTests
             public string TestProperty { get; set; }
         }
 
-        public class RuleWithoutMetadata : BaseRule
+        public class RuleWithoutMetadata : Rule
         {
             public override void Define()
             {
@@ -220,20 +220,20 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
 
         [Tag("ParentTag"), Tag("ParentMetadata")]
         [Priority(200)]
-        public abstract class ParentRuleWithMetadata : BaseRule
+        public abstract class ParentRuleWithMetadata : Rule
         {
         }
 
         [Name("Rule with metadata"), Fluent.Dsl.Description("Rule description")]
         [Tag("Test"), Tag("Metadata")]
         [Priority(100)]
-        public class RuleWithMetadata : BaseRule
+        public class RuleWithMetadata : Rule
         {
             public override void Define()
             {
@@ -242,7 +242,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
 
@@ -260,7 +260,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
 
@@ -275,7 +275,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
 
@@ -291,7 +291,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

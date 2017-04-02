@@ -161,7 +161,7 @@ namespace NRules.IntegrationTests
             public string TestProperty { get; set; }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -173,7 +173,7 @@ namespace NRules.IntegrationTests
                         .GroupBy(f => f.TestProperty, f => f.TestProperty)
                         .Where(g => g.Count() > 1));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

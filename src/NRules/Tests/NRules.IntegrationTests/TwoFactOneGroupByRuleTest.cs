@@ -429,7 +429,7 @@ namespace NRules.IntegrationTests
             public string JoinProperty { get; set; }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -444,7 +444,7 @@ namespace NRules.IntegrationTests
                             f => f.JoinProperty == fact.TestProperty)
                         .GroupBy(f => f.TestProperty));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }

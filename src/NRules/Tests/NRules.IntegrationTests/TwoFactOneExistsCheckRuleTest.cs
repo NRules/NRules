@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
 using NUnit.Framework;
@@ -313,8 +315,10 @@ namespace NRules.IntegrationTests
             public string JoinProperty { get; set; }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
+            public Action<IContext> Action = ctx => { };
+
             public override void Define()
             {
                 FactType1 fact = null;

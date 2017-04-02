@@ -96,7 +96,7 @@ namespace NRules.IntegrationTests
             public FactType4 Parent { get; set; }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -118,7 +118,7 @@ namespace NRules.IntegrationTests
                         .Collect()
                         .Where(x => IsMatch(fact1, collection2, collection3, x)));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
 
             private bool IsMatch(FactType1 fact1, IEnumerable<FactType2> collection2, IEnumerable<FactType3> collection3, IEnumerable<FactType4> collection4)

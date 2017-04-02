@@ -53,7 +53,7 @@ namespace NRules.IntegrationTests
         }
 
         [Repeatability(RuleRepeatability.NonRepeatable)]
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -63,8 +63,7 @@ namespace NRules.IntegrationTests
                     .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"), f => f.TestCount <= 2);
                 Then()
                     .Do(ctx => fact.IncrementCount())
-                    .Do(ctx => ctx.Update(fact))
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.Update(fact));
             }
         }
     }

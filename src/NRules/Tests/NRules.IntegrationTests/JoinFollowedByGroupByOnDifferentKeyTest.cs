@@ -196,7 +196,7 @@ namespace NRules.IntegrationTests
             public string GroupProperty { get; set; }
         }
 
-        public class TestRule : BaseRule
+        public class TestRule : Rule
         {
             public override void Define()
             {
@@ -211,7 +211,7 @@ namespace NRules.IntegrationTests
                             f => f.JoinProperty == fact.JoinProperty)
                         .GroupBy(f => f.GroupProperty));
                 Then()
-                    .Do(ctx => Action(ctx));
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }
