@@ -68,8 +68,8 @@ namespace NRules
             }
             catch (Exception e)
             {
-                bool isHandled;
-                executionContext.EventAggregator.RaiseActionFailed(executionContext.Session, e, _expression, actionContext.Activation, out isHandled);
+                bool isHandled = false;
+                executionContext.EventAggregator.RaiseActionFailed(executionContext.Session, e, _expression, actionContext.Activation, ref isHandled);
                 if (!isHandled)
                 {
                     throw new RuleActionEvaluationException("Failed to evaluate rule action",

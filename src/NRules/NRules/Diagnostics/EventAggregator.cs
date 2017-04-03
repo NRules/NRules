@@ -98,8 +98,8 @@ namespace NRules.Diagnostics
         void RaiseFactUpdated(ISession session, Fact fact);
         void RaiseFactRetracting(ISession session, Fact fact);
         void RaiseFactRetracted(ISession session, Fact fact);
-        void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, out bool isHandled);
-        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, out bool isHandled);
+        void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, ref bool isHandled);
+        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -283,35 +283,33 @@ namespace NRules.Diagnostics
             }
         }
 
-        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, out bool isHandled)
+        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, ref bool isHandled)
         {
-            isHandled = false;
             var handler = ActionFailedEvent;
             if (handler != null)
             {
                 var @event = new ActionErrorEventArgs(exception, expression, activation);
                 handler(session, @event);
-                isHandled = @event.IsHandled;
+                isHandled |= @event.IsHandled;
             }
-            if (_parent != null && !isHandled)
+            if (_parent != null)
             {
-                _parent.RaiseActionFailed(session, exception, expression, activation, out isHandled);
+                _parent.RaiseActionFailed(session, exception, expression, activation, ref isHandled);
             }
         }
 
-        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, out bool isHandled)
+        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled)
         {
-            isHandled = false;
             var hanlder = ConditionFailedEvent;
             if (hanlder != null)
             {
                 var @event = new ConditionErrorEventArgs(exception, expression, tuple, fact);
                 hanlder(session, @event);
-                isHandled = @event.IsHandled;
+                isHandled |= @event.IsHandled;
             }
-            if (_parent != null && !isHandled)
+            if (_parent != null)
             {
-                _parent.RaiseConditionFailed(session, exception, expression, tuple, fact, out isHandled);
+                _parent.RaiseConditionFailed(session, exception, expression, tuple, fact, ref isHandled);
             }
         }
     }

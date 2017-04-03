@@ -28,8 +28,8 @@ namespace NRules.Rete
             }
             catch (Exception e)
             {
-                bool isHandled;
-                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, null, fact, out isHandled);
+                bool isHandled = false;
+                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, null, fact, ref isHandled);
                 if (!isHandled)
                 {
                     throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
