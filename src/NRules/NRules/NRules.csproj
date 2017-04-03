@@ -79,6 +79,7 @@
     <Compile Include="Extensibility\IActionInterceptor.cs" />
     <Compile Include="Extensibility\ResolutionContext.cs" />
     <Compile Include="FactMatch.cs" />
+    <Compile Include="IFactResult.cs" />
     <Compile Include="Rete\Aggregation.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\ConditionComparer.cs" />

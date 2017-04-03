@@ -60,22 +60,31 @@ namespace NRules
         /// Inserts new facts to the rules engine memory.
         /// </summary>
         /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
-        /// <param name="facts">Facts to add.</param>
+        /// <param name="facts">Facts to insert.</param>
         /// <exception cref="ArgumentException">If any fact already exists in working memory.</exception>
         void InsertAll(IEnumerable<object> facts);
+
+        /// <summary>
+        /// Inserts new facts to the rules engine memory if the facts don't exist.
+        /// If any of the facts exists in the engine, none of the facts are inserted.
+        /// </summary>
+        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <param name="facts">Facts to insert.</param>
+        /// <returns>Result of facts insertion.</returns>
+        IFactResult TryInsertAll(IEnumerable<object> facts);
 
         /// <summary>
         /// Inserts new fact to the rules engine memory.
         /// </summary>
         /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
-        /// <param name="fact">Facts to add.</param>
+        /// <param name="fact">Facts to insert.</param>
         /// <exception cref="ArgumentException">If fact already exists in working memory.</exception>
         void Insert(object fact);
 
         /// <summary>
         /// Inserts a fact to the rules engine memory if the fact does not exist.
         /// </summary>
-        /// <param name="fact">Fact to add.</param>
+        /// <param name="fact">Fact to insert.</param>
         /// <returns>Whether the fact was inserted or not.</returns>
         bool TryInsert(object fact);
 
@@ -86,6 +95,15 @@ namespace NRules
         /// <param name="facts">Facts to update.</param>
         /// <exception cref="ArgumentException">If any fact does not exist in working memory.</exception>
         void UpdateAll(IEnumerable<object> facts);
+
+        /// <summary>
+        /// Updates existing facts in the rules engine memory if the facts exist.
+        /// If any of the facts don't exist in the engine, none of the facts are updated.
+        /// </summary>
+        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <param name="facts">Facts to update.</param>
+        /// <returns>Result of facts update.</returns>
+        IFactResult TryUpdateAll(IEnumerable<object> facts);
 
         /// <summary>
         /// Updates existing fact in the rules engine memory.
@@ -110,6 +128,15 @@ namespace NRules
         /// <param name="facts">Facts to remove.</param>
         /// <exception cref="ArgumentException">If any fact does not exist in working memory.</exception>
         void RetractAll(IEnumerable<object> facts);
+
+        /// <summary>
+        /// Removes existing facts from the rules engine memory if the facts exist.
+        /// If any of the facts don't exist in the engine, none of the facts are removed.
+        /// </summary>
+        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <param name="facts">Facts to remove.</param>
+        /// <returns>Result of facts removal.</returns>
+        IFactResult TryRetractAll(IEnumerable<object> facts);
 
         /// <summary>
         /// Removes existing fact from the rules engine memory.
@@ -194,6 +221,12 @@ namespace NRules
             }
         }
 
+        public IFactResult TryInsertAll(IEnumerable<object> facts)
+        {
+            var result = _network.PropagateAssert(_executionContext, facts);
+            return result;
+        }
+
         public void Insert(object fact)
         {
             InsertAll(new[] { fact });
@@ -214,6 +247,12 @@ namespace NRules
             }
         }
 
+        public IFactResult TryUpdateAll(IEnumerable<object> facts)
+        {
+            var result = _network.PropagateUpdate(_executionContext, facts);
+            return result;
+        }
+
         public void Update(object fact)
         {
             UpdateAll(new[] {fact});
@@ -232,6 +271,12 @@ namespace NRules
             {
                 throw new ArgumentException("Facts for retract do not exist", "facts");
             }
+        }
+
+        public IFactResult TryRetractAll(IEnumerable<object> facts)
+        {
+            var result = _network.PropagateRetract(_executionContext, facts);
+            return result;
         }
 
         public void Retract(object fact)

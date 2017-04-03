@@ -2,7 +2,7 @@
 
 namespace NRules.Rete
 {
-    internal class FactResult
+    internal class FactResult : IFactResult
     {
         private readonly List<object> _failed;
 
