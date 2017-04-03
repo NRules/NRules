@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using NRules.RuleModel;
 
 namespace NRules.Rete
 {
     [DebuggerDisplay("Fact {Object}")]
-    internal class Fact
+    internal class Fact : IFact
     {
         private readonly Type _factType;
         private object _object;
@@ -38,6 +39,16 @@ namespace NRules.Rete
         public virtual bool IsWrapperFact
         {
             get { return false; }
+        }
+
+        Type IFact.Type
+        {
+            get { return FactType; }
+        }
+
+        object IFact.Value
+        {
+            get { return Object; }
         }
     }
 

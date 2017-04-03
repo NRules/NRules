@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NRules.Diagnostics;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
@@ -18,7 +17,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             Expression expression = null;
-            IList<FactInfo> facts = null; 
+            IList<IFact> facts = null; 
             Session.Events.ConditionFailedEvent += (sender, args) => expression = args.Condition;
             Session.Events.ConditionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 

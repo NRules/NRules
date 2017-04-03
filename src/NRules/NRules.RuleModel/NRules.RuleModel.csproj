@@ -88,6 +88,7 @@
     <Compile Include="ForAllElement.cs" />
     <Compile Include="IAggregatorFactory.cs" />
     <Compile Include="IContext.cs" />
+    <Compile Include="IFact.cs" />
     <Compile Include="IRuleRepository.cs" />
     <Compile Include="IRuleSet.cs" />
     <Compile Include="IFactMatch.cs" />

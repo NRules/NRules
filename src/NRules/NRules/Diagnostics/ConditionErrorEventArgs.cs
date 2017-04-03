@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.Rete;
+using NRules.RuleModel;
 using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Diagnostics
@@ -32,14 +33,14 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Facts that caused exception.
         /// </summary>
-        public IEnumerable<FactInfo> Facts
+        public IEnumerable<IFact> Facts
         {
             get
             {
-                var wrappedFact = new[] { new FactInfo(_fact) };
+                var wrappedFact = new[] {_fact};
                 return _tuple == null
                     ? wrappedFact
-                    : _tuple.OrderedFacts.Select(x => new FactInfo(x)).Concat(wrappedFact).ToArray();
+                    : _tuple.OrderedFacts.Concat(wrappedFact).ToArray();
             }
         }
     }

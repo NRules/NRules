@@ -66,7 +66,6 @@
     <Compile Include="Diagnostics\ConditionErrorEventArgs.cs" />
     <Compile Include="Diagnostics\ErrorEventArgs.cs" />
     <Compile Include="Diagnostics\EventAggregator.cs" />
-    <Compile Include="Diagnostics\FactInfo.cs" />
     <Compile Include="Diagnostics\ISessionSnapshotProvider.cs" />
     <Compile Include="Diagnostics\LinkInfo.cs" />
     <Compile Include="Diagnostics\NodeInfo.cs" />
