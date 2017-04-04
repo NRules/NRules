@@ -46,7 +46,7 @@ namespace NRules
         IEventProvider Events { get; }
 
         /// <summary>
-        /// Rules dependency resolver.
+        /// Rules dependency resolver for the current rules session.
         /// </summary>
         IDependencyResolver DependencyResolver { get; set; }
 

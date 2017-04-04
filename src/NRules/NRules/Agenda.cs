@@ -13,7 +13,7 @@
         bool IsEmpty();
 
         /// <summary>
-        /// Retrieves the next match.
+        /// Retrieves the next match, without removing it from agenda.
         /// </summary>
         /// <remarks>Throws <c>InvalidOperationException</c> if agenda is empty.</remarks>
         /// <returns>Next match.</returns>
