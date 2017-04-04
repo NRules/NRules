@@ -78,7 +78,8 @@ namespace NRules
             var agenda = new Agenda();
             var workingMemory = new WorkingMemory();
             var eventAggregator = new EventAggregator(_eventAggregator);
-            var session = new Session(_network, agenda, workingMemory, eventAggregator, DependencyResolver, ActionInterceptor);
+            var actionExecutor = new ActionExecutor();
+            var session = new Session(_network, agenda, workingMemory, eventAggregator, actionExecutor, DependencyResolver, ActionInterceptor);
             return session;
         }
     }

@@ -191,14 +191,23 @@ namespace NRules
         private readonly INetwork _network;
         private readonly IWorkingMemory _workingMemory;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IActionExecutor _actionExecutor;
         private readonly IExecutionContext _executionContext;
 
-        internal Session(INetwork network, IAgendaInternal agenda, IWorkingMemory workingMemory, IEventAggregator eventAggregator, IDependencyResolver dependencyResolver, IActionInterceptor actionInterceptor)
+        internal Session(
+            INetwork network,
+            IAgendaInternal agenda,
+            IWorkingMemory workingMemory,
+            IEventAggregator eventAggregator,
+            IActionExecutor actionExecutor,
+            IDependencyResolver dependencyResolver,
+            IActionInterceptor actionInterceptor)
         {
             _network = network;
             _workingMemory = workingMemory;
             _agenda = agenda;
             _eventAggregator = eventAggregator;
+            _actionExecutor = actionExecutor;
             _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator);
             DependencyResolver = dependencyResolver;
             ActionInterceptor = actionInterceptor;
@@ -301,15 +310,9 @@ namespace NRules
             while (!_agenda.IsEmpty() && ruleFiredCount < maxRulesNumber)
             {
                 Activation activation = _agenda.Pop();
-                ICompiledRule compiledRule = activation.CompiledRule;
-                IActionContext actionContext = new ActionContext(this, compiledRule, activation);
+                IActionContext actionContext = new ActionContext(this, activation);
 
-                _eventAggregator.RaiseRuleFiring(this, activation);
-                foreach (IRuleAction action in compiledRule.Actions)
-                {
-                    action.Invoke(_executionContext, actionContext, activation.Tuple, activation.TupleFactMap);
-                }
-                _eventAggregator.RaiseRuleFired(this, activation);
+                _actionExecutor.Execute(_executionContext, actionContext);
 
                 ruleFiredCount++;
                 if (actionContext.IsHalted) break;

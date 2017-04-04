@@ -14,6 +14,7 @@ namespace NRules.Tests
         private Mock<INetwork> _network;
         private Mock<IWorkingMemory> _workingMemory;
         private Mock<IEventAggregator> _eventAggregator;
+        private Mock<IActionExecutor> _actionExecutor;
         private Mock<IDependencyResolver> _dependencyResolver;
         private Mock<IActionInterceptor> _actionInterceptor;
             
@@ -24,6 +25,7 @@ namespace NRules.Tests
             _network = new Mock<INetwork>();
             _workingMemory = new Mock<IWorkingMemory>();
             _eventAggregator = new Mock<IEventAggregator>();
+            _actionExecutor = new Mock<IActionExecutor>();
             _dependencyResolver = new Mock<IDependencyResolver>();
             _actionInterceptor = new Mock<IActionInterceptor>();
         }
@@ -121,7 +123,7 @@ namespace NRules.Tests
 
         private Session CreateTarget()
         {
-            return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, _dependencyResolver.Object, _actionInterceptor.Object);
+            return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, _actionExecutor.Object, _dependencyResolver.Object, _actionInterceptor.Object);
         }
 
         private FactResult Succeeded()

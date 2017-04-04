@@ -7,30 +7,28 @@ namespace NRules
     internal interface IActionContext : IContext
     {
         ICompiledRule CompiledRule { get; }
-        IActivation Activation { get; }
+        Activation Activation { get; }
         bool IsHalted { get; }
     }
 
     internal class ActionContext : IActionContext
     {
         private readonly ISession _session;
-        private readonly ICompiledRule _compiledRule;
-        private readonly IActivation _activation;
+        private readonly Activation _activation;
         private bool _isHalted;
 
-        public ActionContext(ISession session, ICompiledRule compiledRule, IActivation activation)
+        public ActionContext(ISession session, Activation activation)
         {
             _session = session;
-            _compiledRule = compiledRule;
             _activation = activation;
             _isHalted = false;
         }
 
-        public IRuleDefinition Rule { get { return _compiledRule.Definition; } }
+        public IRuleDefinition Rule { get { return CompiledRule.Definition; } }
         public IEnumerable<IFactMatch> Facts { get { return _activation.Facts; } }
 
-        public ICompiledRule CompiledRule { get { return _compiledRule; } }
-        public IActivation Activation { get { return _activation; } }
+        public ICompiledRule CompiledRule { get { return _activation.CompiledRule; } }
+        public Activation Activation { get { return _activation; } }
         public bool IsHalted { get { return _isHalted; } }
 
         public void Insert(object fact)
@@ -80,7 +78,7 @@ namespace NRules
 
         public TService Resove<TService>()
         {
-            var resolutionContext = new ResolutionContext(_session, _compiledRule.Definition);
+            var resolutionContext = new ResolutionContext(_session, Rule);
             var service = _session.DependencyResolver.Resolve(resolutionContext, typeof (TService));
             return (TService) service;
         }

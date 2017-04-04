@@ -55,6 +55,8 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ActionContext.cs" />
+    <Compile Include="ActionExecutor.cs" />
+    <Compile Include="ActionInvocation.cs" />
     <Compile Include="Activation.cs" />
     <Compile Include="ActivationQueue.cs" />
     <Compile Include="Collections\OrderedHashSet.cs" />
@@ -74,9 +76,9 @@
     <Compile Include="Diagnostics\SnapshotBuilder.cs" />
     <Compile Include="Diagnostics\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
-    <Compile Include="Extensibility\ActionInvocation.cs" />
     <Compile Include="Extensibility\DependencyResolver.cs" />
     <Compile Include="Extensibility\IActionInterceptor.cs" />
+    <Compile Include="Extensibility\IActionInvocation.cs" />
     <Compile Include="Extensibility\ResolutionContext.cs" />
     <Compile Include="FactMatch.cs" />
     <Compile Include="IFactResult.cs" />

@@ -89,10 +89,15 @@ namespace NRules.IntegrationTests
                 _invoke = invoke;
             }
 
-            public void Intercept(IActionInvocation action)
+            public void Intercept(IContext context, IEnumerable<IActionInvocation> actions)
             {
                 if (_invoke)
-                    action.Invoke();
+                {
+                    foreach (var action in actions)
+                    {
+                        action.Invoke();
+                    }
+                }
             }
         }
 

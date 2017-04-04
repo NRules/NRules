@@ -4,13 +4,13 @@ using NRules.Extensibility;
 using NRules.Rete;
 using NRules.RuleModel;
 using NRules.Utilities;
-using Tuple = NRules.Rete.Tuple;
 
 namespace NRules
 {
     internal interface IRuleAction
     {
-        void Invoke(IExecutionContext executionContext, IActionContext actionContext, Tuple tuple, IndexMap tupleFactMap);
+        object[] GetArguments(IExecutionContext executionContext, IActionContext actionContext);
+        void Invoke(IExecutionContext executionContext, IActionContext actionContext, object[] arguments);
     }
 
     internal class RuleAction : IRuleAction
@@ -28,43 +28,47 @@ namespace NRules
             _compiledAction = FastDelegate.Action(expression);
         }
 
-        public void Invoke(IExecutionContext executionContext, IActionContext actionContext, Tuple tuple, IndexMap tupleFactMap)
+        public object[] GetArguments(IExecutionContext executionContext, IActionContext actionContext)
         {
+            var compiledRule = actionContext.CompiledRule;
+            var activation = actionContext.Activation;
+            var tuple = activation.Tuple;
+            var tupleFactMap = activation.TupleFactMap;
+
             var args = new object[_compiledAction.ArrayArgumentCount];
+
             int index = tuple.Count - 1;
+            var factIndexMap = _factIndexMap;
             foreach (var fact in tuple.Facts)
             {
-                var mappedIndex = _factIndexMap[tupleFactMap[index]];
+                var mappedIndex = factIndexMap[tupleFactMap[index]];
                 IndexMap.SetElementAt(args, mappedIndex, fact.Object);
                 index--;
             }
 
             index = 0;
+            var dependencyIndexMap = _dependencyIndexMap;
             var dependencyResolver = executionContext.Session.DependencyResolver;
-            foreach (var dependency in actionContext.CompiledRule.Dependencies)
+            var resolutionContext = new ResolutionContext(executionContext.Session, compiledRule.Definition);
+            foreach (var dependency in compiledRule.Dependencies)
             {
-                var mappedIndex = _dependencyIndexMap[index];
+                var mappedIndex = dependencyIndexMap[index];
                 if (mappedIndex >= 0)
                 {
-                    var resolutionContext = new ResolutionContext(executionContext.Session, actionContext.Rule);
                     var resolvedDependency = dependency.Factory(dependencyResolver, resolutionContext);
                     IndexMap.SetElementAt(args, mappedIndex, resolvedDependency);
                 }
                 index++;
             }
 
+            return args;
+        }
+
+        public void Invoke(IExecutionContext executionContext, IActionContext actionContext, object[] arguments)
+        {
             try
             {
-                var actionInterceptor = executionContext.Session.ActionInterceptor;
-                if (actionInterceptor != null)
-                {
-                    var invocation = new ActionInvocation(actionContext, args, _compiledAction.Delegate);
-                    actionInterceptor.Intercept(invocation);
-                }
-                else
-                {
-                    _compiledAction.Delegate.Invoke(actionContext, args);
-                }
+                _compiledAction.Delegate.Invoke(actionContext, arguments);
             }
             catch (Exception e)
             {
