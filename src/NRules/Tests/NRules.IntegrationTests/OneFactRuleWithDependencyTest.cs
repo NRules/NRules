@@ -25,11 +25,15 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresOnceAndCallsDependency()
         {
             //Arrange
-            bool serviceCalled = false;
-            var service = new TestService();
-            service.ServiceCalled += (sender, args) => serviceCalled = true;
+            var service1 = new TestService1();
+            bool service1Called = false;
+            service1.ServiceCalled += (sender, args) => service1Called = true;
 
-            Session.DependencyResolver = new TestDependencyResolver(service);
+            var service2 = new TestService2();
+            bool service2Called = false;
+            service2.ServiceCalled += (sender, args) => service2Called = true;
+
+            Session.DependencyResolver = new TestDependencyResolver(service1, service2);
 
             var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
@@ -39,23 +43,25 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(true, serviceCalled);
+            Assert.AreEqual(true, service1Called);
+            Assert.AreEqual(true, service2Called);
         }
 
         [Test]
         public void Fire_OneMatchingFact_CanResolveDependencyFromContext()
         {
             //Arrange
-            var service = new TestService();
-            Session.DependencyResolver = new TestDependencyResolver(service);
+            var service1 = new TestService1();
+            var service2 = new TestService2();
+            Session.DependencyResolver = new TestDependencyResolver(service1, service2);
 
             var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
-            ITestService resolvedService = null;
+            ITestService1 resolvedService1 = null;
             GetRuleInstance<TestRule>().Action = ctx =>
             {
-                resolvedService = ctx.Resove<ITestService>();
+                resolvedService1 = ctx.Resove<ITestService1>();
             };
 
             //Act
@@ -63,7 +69,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreSame(service, resolvedService);
+            Assert.AreSame(service1, resolvedService1);
         }
 
         protected override void SetUpRules()
@@ -71,12 +77,31 @@ namespace NRules.IntegrationTests
             SetUpRule<TestRule>();
         }
 
-        public interface ITestService
+        public interface ITestService1
         {
             void Action(string value);
         }
 
-        private class TestService : ITestService
+        private class TestService1 : ITestService1
+        {
+            public event EventHandler ServiceCalled;
+
+            public void Action(string value)
+            {
+                var handler = ServiceCalled;
+                if (handler != null)
+                {
+                    handler(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        public interface ITestService2
+        {
+            void Action(string value);
+        }
+
+        private class TestService2 : ITestService2
         {
             public event EventHandler ServiceCalled;
 
@@ -92,16 +117,22 @@ namespace NRules.IntegrationTests
 
         private class TestDependencyResolver : IDependencyResolver
         {
-            private readonly TestService _service;
+            private readonly TestService1 _service1;
+            private readonly TestService2 _service2;
 
-            public TestDependencyResolver(TestService service)
+            public TestDependencyResolver(TestService1 service1, TestService2 service2)
             {
-                _service = service;
+                _service1 = service1;
+                _service2 = service2;
             }
 
             public object Resolve(IResolutionContext context, Type serviceType)
             {
-                return _service;
+                if (serviceType == typeof(ITestService1))
+                    return _service1;
+                if (serviceType == typeof(ITestService2))
+                    return _service2;
+                throw new ArgumentException();
             }
         }
 
@@ -117,16 +148,26 @@ namespace NRules.IntegrationTests
             public override void Define()
             {
                 FactType fact = null;
-                ITestService service = null;
+                ITestService1 service1 = null;
+                ITestService2 service2 = null;
 
                 Dependency()
-                    .Resolve(() => service);
+                    .Resolve(() => service1)
+                    .Resolve(() => service2);
 
                 When()
                     .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
                     .Do(ctx => Action(ctx))
-                    .Do(ctx => service.Action(fact.TestProperty));
+                    .Do(ctx => service1.Action(fact.TestProperty))
+                    .Do(ctx => service2.Action(fact.TestProperty))
+                    .Do(ctx => SomeAction(fact, service1, service2));
+            }
+
+            private void SomeAction(FactType fact, ITestService1 service1, ITestService2 service2)
+            {
+                service1.Action(fact.TestProperty);
+                service2.Action(fact.TestProperty);
             }
         }
     }
