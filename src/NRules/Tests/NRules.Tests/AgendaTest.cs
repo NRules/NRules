@@ -32,6 +32,24 @@ namespace NRules.Tests
         }
 
         [Test]
+        public void Peek_AgendaHasOneActivation_ReturnsActivationAgendaEmpty()
+        {
+            // Arrange
+            var ruleMock1 = new Mock<ICompiledRule>();
+            var activation1 = new Activation(ruleMock1.Object, new Tuple(), null);
+            var target = CreateTarget();
+
+            target.Add(activation1);
+
+            // Act
+            var actualActivation = target.Pop();
+
+            // Assert
+            Assert.True(target.IsEmpty());
+            Assert.AreSame(activation1, actualActivation);
+        }
+
+        [Test]
         public void Add_Called_ActivationEndsUpInAgenda()
         {
             // Arrange

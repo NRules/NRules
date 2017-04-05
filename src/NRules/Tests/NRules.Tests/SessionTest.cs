@@ -46,6 +46,21 @@ namespace NRules.Tests
         }
 
         [Test]
+        public void InsertAll_Called_PropagatesAssert()
+        {
+            // Arrange
+            var facts = new[] {new object(), new object()};
+            var target = CreateTarget();
+            _network.Setup(x => x.PropagateAssert(It.IsAny<IExecutionContext>(), facts)).Returns(Succeeded());
+
+            // Act
+            target.InsertAll(facts);
+
+            // Assert
+            _network.Verify(x => x.PropagateAssert(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), facts), Times.Exactly(1));
+        }
+
+        [Test]
         public void Update_Called_PropagatesUpdate()
         {
             // Arrange
@@ -61,6 +76,21 @@ namespace NRules.Tests
         }
 
         [Test]
+        public void UpdateAll_Called_PropagatesUpdate()
+        {
+            // Arrange
+            var facts = new[] {new object(), new object()};
+            var target = CreateTarget();
+            _network.Setup(x => x.PropagateUpdate(It.IsAny<IExecutionContext>(), facts)).Returns(Succeeded());
+
+            // Act
+            target.UpdateAll(facts);
+
+            // Assert
+            _network.Verify(x => x.PropagateUpdate(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), facts), Times.Exactly(1));
+        }
+
+        [Test]
         public void Retract_Called_PropagatesRetract()
         {
             // Arrange
@@ -73,6 +103,21 @@ namespace NRules.Tests
 
             // Assert
             _network.Verify(x => x.PropagateRetract(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
+        }
+
+        [Test]
+        public void RetractAll_Called_PropagatesRetract()
+        {
+            // Arrange
+            var facts = new[] {new object(), new object()};
+            var target = CreateTarget();
+            _network.Setup(x => x.PropagateRetract(It.IsAny<IExecutionContext>(), facts)).Returns(Succeeded());
+
+            // Act
+            target.RetractAll(facts);
+
+            // Assert
+            _network.Verify(x => x.PropagateRetract(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), facts), Times.Exactly(1));
         }
 
         [Test]
