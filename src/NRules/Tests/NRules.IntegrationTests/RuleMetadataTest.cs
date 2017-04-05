@@ -19,6 +19,20 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Property_RuleClrType_Same()
+        {
+            //Arrange
+            _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadata)));
+            IRuleDefinition rule = _repository.GetRules().Single();
+
+            //Act
+            var actual = rule.Properties[RuleProperties.ClrType];
+
+            //Assert
+            Assert.AreEqual(typeof(RuleWithMetadata), actual);
+        }
+
+        [Test]
         public void Name_NameAttributePresent_CustomValue()
         {
             //Arrange

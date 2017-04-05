@@ -81,6 +81,7 @@
     <Compile Include="RuleDefinitionException.cs" />
     <Compile Include="RuleMetadata.cs" />
     <Compile Include="RuleMetadataExtensions.cs" />
+    <Compile Include="RuleProperties.cs" />
     <Compile Include="RuleRepository.cs" />
     <Compile Include="RuleActivator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

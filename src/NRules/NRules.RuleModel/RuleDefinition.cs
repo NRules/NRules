@@ -49,6 +49,11 @@ namespace NRules.RuleModel
         IEnumerable<string> Tags { get; }
 
         /// <summary>
+        /// Properties attached to the rule.
+        /// </summary>
+        PropertyMap Properties { get; }
+
+            /// <summary>
         /// Rule's dependencies.
         /// </summary>
         DependencyGroupElement DependencyGroup { get; }
@@ -66,10 +71,11 @@ namespace NRules.RuleModel
 
     internal class RuleDefinition : IRuleDefinition
     {
-        private readonly List<string> _tags;
         private readonly string _name;
         private readonly string _description;
         private readonly int _priority;
+        private readonly List<string> _tags;
+        private readonly PropertyMap _properties;
         private readonly RuleRepeatability _repeatability;
         private readonly DependencyGroupElement _dependencies;
         private readonly GroupElement _leftHandSide;
@@ -85,7 +91,8 @@ namespace NRules.RuleModel
             get { return RuleRepeatability.Repeatable; }
         }
 
-        public RuleDefinition(string name, string description, int priority, RuleRepeatability repeatability, IEnumerable<string> tags, 
+        public RuleDefinition(string name, string description, int priority, 
+            RuleRepeatability repeatability, IEnumerable<string> tags, IEnumerable<RuleProperty> properties,
             DependencyGroupElement dependencies, GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
             _name = name;
@@ -93,6 +100,7 @@ namespace NRules.RuleModel
             _repeatability = repeatability;
             _priority = priority;
             _tags = new List<string>(tags);
+            _properties = new PropertyMap(properties);
 
             _dependencies = dependencies;
             _leftHandSide = leftHandSide;
@@ -122,6 +130,11 @@ namespace NRules.RuleModel
         public IEnumerable<string> Tags
         {
             get { return _tags; }
+        }
+
+        public PropertyMap Properties
+        {
+            get { return _properties; }
         }
 
         public DependencyGroupElement DependencyGroup

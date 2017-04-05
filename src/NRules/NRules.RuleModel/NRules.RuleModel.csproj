@@ -84,6 +84,7 @@
     <Compile Include="DependencyElement.cs" />
     <Compile Include="DependencyGroupElement.cs" />
     <Compile Include="ExistsElement.cs" />
+    <Compile Include="PropertyMap.cs" />
     <Compile Include="ExpressionMap.cs" />
     <Compile Include="ForAllElement.cs" />
     <Compile Include="IAggregatorFactory.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="NotElement.cs" />
     <Compile Include="OrElement.cs" />
     <Compile Include="RuleLeftElement.cs" />
+    <Compile Include="RuleProperty.cs" />
     <Compile Include="RuleRightElement.cs" />
     <Compile Include="RuleDefinition.cs" />
     <Compile Include="ConditionElement.cs" />
