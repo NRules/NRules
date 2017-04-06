@@ -12,24 +12,29 @@ namespace NRules.Rete
     internal class AlphaCondition : IAlphaCondition, IEquatable<AlphaCondition>
     {
         private readonly LambdaExpression _expression;
-        private readonly FastDelegate<Func<object[], bool>> _compiledExpression;
+        private readonly FastDelegate<Func<object, bool>> _compiledExpression;
 
         public AlphaCondition(LambdaExpression expression)
         {
             _expression = expression;
-            _compiledExpression = FastDelegate.Create<Func<object[], bool>>(expression);
+            _compiledExpression = FastDelegate.AlphaCondition(expression);
         }
 
         public bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
             try
             {
-                return _compiledExpression.Delegate(new[] {fact.Object});
+                return _compiledExpression.Delegate(fact.Object);
             }
             catch (Exception e)
             {
-                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, null, fact);
-                throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
+                bool isHandled = false;
+                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, null, fact, ref isHandled);
+                if (!isHandled)
+                {
+                    throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
+                }
+                return false;
             }
         }
 

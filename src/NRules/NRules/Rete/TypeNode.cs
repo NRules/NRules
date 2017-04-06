@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace NRules.Rete
@@ -19,7 +20,7 @@ namespace NRules.Rete
             return isMatchingType;
         }
 
-        protected override void UnsatisfiedFactUpdate(IExecutionContext context, Fact fact)
+        protected override void UnsatisfiedFactUpdate(IExecutionContext context, IList<Fact> facts)
         {
             //Do nothing, since fact type will never change
         }

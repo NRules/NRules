@@ -21,7 +21,7 @@ namespace NRules
         /// <seealso cref="IRuleRepository"/>
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
         {
-            var reteBuilder = new ReteBuilder();
+            IReteBuilder reteBuilder = new ReteBuilder();
             foreach (var ruleDefinition in ruleDefinitions)
             {
                 try
@@ -50,7 +50,7 @@ namespace NRules
             return Compile(rules);
         }
 
-        private void CompileRule(ReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
+        private void CompileRule(IReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
         {
             var transformation = new RuleTransformation();
             var transformedRule = transformation.Transform(ruleDefinition);
@@ -70,7 +70,7 @@ namespace NRules
                 actions.Add(ruleAction);
             }
 
-            var rule = new CompiledRule(ruleDefinition, actions, dependencies);
+            var rule = new CompiledRule(ruleDefinition, ruleDeclarations, actions, dependencies);
             BuildRuleNode(rule, terminals);
         }
 
@@ -83,9 +83,9 @@ namespace NRules
             }
         }
 
-        private void BuildRuleNode(ICompiledRule rule, IEnumerable<ITerminalNode> terminalNodes)
+        private void BuildRuleNode(ICompiledRule compiledRule, IEnumerable<ITerminalNode> terminalNodes)
         {
-            var ruleNode = new RuleNode(rule);
+            var ruleNode = new RuleNode(compiledRule);
             foreach (var terminalNode in terminalNodes)
             {
                 terminalNode.Attach(ruleNode);

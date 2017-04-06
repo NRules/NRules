@@ -9,6 +9,7 @@ namespace NRules.Collections
         TValue Dequeue();
         TValue Peek();
         bool IsEmpty { get; }
+        void Clear();
     }
 
     internal class PriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TValue>
@@ -58,6 +59,11 @@ namespace NRules.Collections
         public bool IsEmpty
         {
             get { return _baseHeap.Count == 0; }
+        }
+
+        public void Clear()
+        {
+            _baseHeap.Clear();
         }
 
         private void ExchangeElements(int pos1, int pos2)

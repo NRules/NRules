@@ -31,7 +31,7 @@ namespace NRules
                 throw new ArgumentNullException("info");
             }
             base.GetObjectData(info, context);
-            info.AddValue("Expression", Expression, typeof(String));
+            info.AddValue("Expression", Expression, typeof(string));
         }
 
         /// <summary>

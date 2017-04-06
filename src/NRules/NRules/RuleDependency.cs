@@ -1,4 +1,5 @@
 using System;
+using NRules.Extensibility;
 using NRules.RuleModel;
 
 namespace NRules

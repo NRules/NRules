@@ -37,6 +37,12 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\..\DevSigningKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,31 +55,39 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ActionContext.cs" />
+    <Compile Include="ActionExecutor.cs" />
+    <Compile Include="ActionInvocation.cs" />
+    <Compile Include="Activation.cs" />
     <Compile Include="ActivationQueue.cs" />
     <Compile Include="Collections\OrderedHashSet.cs" />
     <Compile Include="Collections\OrderedPriorityQueue.cs" />
     <Compile Include="CompiledRule.cs" />
     <Compile Include="Collections\PriorityQueue.cs" />
-    <Compile Include="DependencyResolver.cs" />
     <Compile Include="Diagnostics\ActionErrorEventArgs.cs" />
     <Compile Include="Diagnostics\AgendaEventArgs.cs" />
     <Compile Include="Diagnostics\ConditionErrorEventArgs.cs" />
     <Compile Include="Diagnostics\ErrorEventArgs.cs" />
     <Compile Include="Diagnostics\EventAggregator.cs" />
-    <Compile Include="Diagnostics\FactInfo.cs" />
     <Compile Include="Diagnostics\ISessionSnapshotProvider.cs" />
     <Compile Include="Diagnostics\LinkInfo.cs" />
     <Compile Include="Diagnostics\NodeInfo.cs" />
-    <Compile Include="Diagnostics\RecoverableErrorEventArgs.cs" />
     <Compile Include="Diagnostics\SessionSnapshot.cs" />
     <Compile Include="Diagnostics\SessionSnapshotVisitor.cs" />
     <Compile Include="Diagnostics\SnapshotBuilder.cs" />
     <Compile Include="Diagnostics\WorkingMemoryEventArgs.cs" />
     <Compile Include="ExecutionContext.cs" />
-    <Compile Include="ResolutionContext.cs" />
+    <Compile Include="Extensibility\DependencyResolver.cs" />
+    <Compile Include="Extensibility\IActionInterceptor.cs" />
+    <Compile Include="Extensibility\IActionInvocation.cs" />
+    <Compile Include="Extensibility\ResolutionContext.cs" />
+    <Compile Include="FactMatch.cs" />
+    <Compile Include="IFactResult.cs" />
+    <Compile Include="Rete\Aggregation.cs" />
     <Compile Include="Rete\AlphaCondition.cs" />
     <Compile Include="Rete\ConditionComparer.cs" />
     <Compile Include="Rete\ExpressionMapComparer.cs" />
+    <Compile Include="Rete\FactResult.cs" />
+    <Compile Include="Rete\TupleFactSet.cs" />
     <Compile Include="Rete\INode.cs" />
     <Compile Include="Rete\NotNode.cs" />
     <Compile Include="Rete\IObjectSource.cs" />
@@ -85,6 +99,7 @@
     <Compile Include="Rete\TerminalNode.cs" />
     <Compile Include="Rete\TupleExtensions.cs" />
     <Compile Include="Rete\IndexMap.cs" />
+    <Compile Include="Rete\TupleFactList.cs" />
     <Compile Include="RuleAction.cs" />
     <Compile Include="RuleCompilationException.cs" />
     <Compile Include="RuleCompiler.cs" />
@@ -97,7 +112,6 @@
     <Compile Include="Rete\ReteBuilderContext.cs" />
     <Compile Include="Rete\RootNode.cs" />
     <Compile Include="Rete\SelectionNode.cs" />
-    <Compile Include="Rete\Activation.cs" />
     <Compile Include="Rete\BetaCondition.cs" />
     <Compile Include="Agenda.cs" />
     <Compile Include="Rete\AlphaMemoryNode.cs" />
@@ -132,7 +146,6 @@
       <Name>NRules.RuleModel</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,27 +1,78 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using NRules.RuleModel;
 
 namespace NRules.Utilities
 {
     internal abstract class FastDelegate
     {
-        public static FastDelegate<TDelegate> Create<TDelegate>(LambdaExpression expression) where TDelegate : class 
+        public static FastDelegate<Func<object, bool>> AlphaCondition(LambdaExpression expression)
         {
-            if (!typeof(TDelegate).IsSubclassOf(typeof(Delegate)))
-            {
-                throw new InvalidOperationException(
-                    string.Format("Type {0} is not a delegate", typeof(TDelegate).FullName));
-            }
-
-            var optimizer = new ExpressionOptimizer<TDelegate>();
-            Expression<TDelegate> optimizedExpression = optimizer.CompactParameters(expression);
-            TDelegate @delegate = optimizedExpression.Compile();
-            var fastDelegate = new FastDelegate<TDelegate>(@delegate, expression.Parameters.Count);
+            var optimizer = new ExpressionSingleParameterOptimizer<Func<object, bool>>();
+            var optimizedExpression = optimizer.ConvertParameter(expression);
+            var @delegate = optimizedExpression.Compile();
+            var fastDelegate = Create(@delegate, expression.Parameters.Count);
             return fastDelegate;
         }
 
-        private class ExpressionOptimizer<TDelegate> : ExpressionVisitor
+        public static FastDelegate<Func<object[], bool>> BetaCondition(LambdaExpression expression)
+        {
+            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], bool>>();
+            var optimizedExpression = optimizer.CompactParameters(expression, 0);
+            var @delegate = optimizedExpression.Compile();
+            var fastDelegate = Create(@delegate, expression.Parameters.Count);
+            return fastDelegate;
+        }
+
+        public static FastDelegate<Action<IContext, object[]>> Action(LambdaExpression expression)
+        {
+            var optimizer = new ExpressionMultiParameterOptimizer<Action<IContext, object[]>>();
+            var optimizedExpression = optimizer.CompactParameters(expression, 1);
+            var @delegate = optimizedExpression.Compile();
+            var fastDelegate = Create(@delegate, expression.Parameters.Count - 1);
+            return fastDelegate;
+        }
+
+        private static FastDelegate<TDelegate> Create<TDelegate>(TDelegate @delegate, int parameterCount) where TDelegate : class
+        {
+            return new FastDelegate<TDelegate>(@delegate, parameterCount);
+        }
+
+        private class ExpressionSingleParameterOptimizer<TDelegate> : ExpressionVisitor
+        {
+            private ParameterExpression _objectParameter;
+            private ParameterExpression _typedParameter;
+
+            /// <summary>
+            /// Transforms expression from single typed parameter to single object parameter,
+            /// which allows execution w/o reflection.
+            /// </summary>
+            /// <param name="expression">Expression to transform.</param>
+            /// <returns>Transformed expression.</returns>
+            public Expression<TDelegate> ConvertParameter(LambdaExpression expression)
+            {
+                _objectParameter = Expression.Parameter(typeof (object));
+                _typedParameter = expression.Parameters.Single();
+
+                Expression body = Visit(expression.Body);
+                Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(body, _objectParameter);
+                return optimizedLambda;
+            }
+
+            protected override Expression VisitParameter(ParameterExpression node)
+            {
+                if (node == _typedParameter)
+                {
+                    UnaryExpression parameterValue = Expression.Convert(_objectParameter, node.Type);
+                    return parameterValue;
+                }
+                return node;
+            }
+        }
+
+        private class ExpressionMultiParameterOptimizer<TDelegate> : ExpressionVisitor
         {
             private ParameterExpression _arrayParameter;
             private Dictionary<ParameterExpression, int> _indexMap;
@@ -31,13 +82,18 @@ namespace NRules.Utilities
             /// which allows execution w/o reflection.
             /// </summary>
             /// <param name="expression">Expression to transform.</param>
+            /// <param name="startIndex">Index of the first parameter to compact into an array.</param>
             /// <returns>Transformed expression.</returns>
-            public Expression<TDelegate> CompactParameters(LambdaExpression expression)
+            public Expression<TDelegate> CompactParameters(LambdaExpression expression, int startIndex)
             {
-                _arrayParameter = Expression.Parameter(typeof (object[]));
-                _indexMap = expression.Parameters.ToIndexMap();
+                _arrayParameter = Expression.Parameter(typeof(object[]));
+                _indexMap = expression.Parameters.Skip(startIndex).ToIndexMap();
+
+                var parameters = expression.Parameters.Take(startIndex).ToList();
+                parameters.Add(_arrayParameter);
+
                 Expression body = Visit(expression.Body);
-                Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(body, _arrayParameter);
+                Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(body, parameters);
                 return optimizedLambda;
             }
 
@@ -58,22 +114,22 @@ namespace NRules.Utilities
     internal class FastDelegate<TDelegate> : FastDelegate where TDelegate : class
     {
         private readonly TDelegate _delegate;
-        private readonly int _parameterCount;
+        private readonly int _arrayArgumentCount;
 
         public TDelegate Delegate
         {
             get { return _delegate; }
         }
 
-        public int ParameterCount
+        public int ArrayArgumentCount
         {
-            get { return _parameterCount; }
+            get { return _arrayArgumentCount; }
         }
 
-        internal FastDelegate(TDelegate @delegate, int parameterCount)
+        internal FastDelegate(TDelegate @delegate, int arrayArgumentCount)
         {
             _delegate = @delegate;
-            _parameterCount = parameterCount;
+            _arrayArgumentCount = arrayArgumentCount;
         }
     }
 }

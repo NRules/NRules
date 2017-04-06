@@ -82,6 +82,44 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
+        public void AreEqual_StaticFieldVsCapturedVariable_False()
+        {
+            //Arrange
+            var variable = StaticField;
+            Expression<Func<SomeFact, bool>> first = f => f.Value == variable;
+            Expression<Func<SomeFact, bool>> second = f => f.Value == StaticField;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Test]
+        public void AreEqual_CapturedVariablesPointingToSameValue_True()
+        {
+            //Arrange
+            var variable1 = 1;
+            var variable2 = 1;
+            Expression<Func<SomeFact, bool>> first = f => f.Value == variable1;
+            Expression<Func<SomeFact, bool>> second = f => f.Value == variable2;
+
+            //Act - Assert
+            AssertEqual(second, first);
+        }
+
+        [Test]
+        public void AreEqual_CapturedVariablesPointingToDifferentValues_True()
+        {
+            //Arrange
+            var variable1 = 1;
+            var variable2 = 2;
+            Expression<Func<SomeFact, bool>> first = f => f.Value == variable1;
+            Expression<Func<SomeFact, bool>> second = f => f.Value == variable2;
+
+            //Act - Assert
+            AssertNotEqual(second, first);
+        }
+
+        [Test]
         public void AreEqual_EquivalentStaticProperty_True()
         {
             //Arrange
@@ -120,6 +158,17 @@ namespace NRules.Tests.Utilities
             //Arrange
             Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod("one");
             Expression<Func<SomeFact, bool>> second = f => f.Value == StaticMethod("two");
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Test]
+        public void AreEqual_NonEquivalentMethods_False()
+        {
+            //Arrange
+            Expression<Func<SomeFact, bool>> first = f => f.Value == StaticMethod("one");
+            Expression<Func<SomeFact, bool>> second = f => f.Value == OtherStaticMethod("one");
 
             //Act - Assert
             AssertNotEqual(first, second);
@@ -296,7 +345,7 @@ namespace NRules.Tests.Utilities
             Assert.That(result, Is.False);
         }
 
-        public static int StaticField = 1;
+        public static readonly int StaticField = 1;
 
         public static int StaticProperty
         {

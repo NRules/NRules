@@ -1,16 +1,16 @@
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
+using NRules.Extensibility;
 using NRules.Rete;
 using NRules.RuleModel;
 using NRules.Utilities;
-using Tuple = NRules.Rete.Tuple;
 
 namespace NRules
 {
     internal interface IRuleAction
     {
-        void Invoke(IExecutionContext executionContext, IContext actionContext, Tuple tuple, IndexMap tupleFactMap, IEnumerable<IRuleDependency> dependencies);
+        object[] GetArguments(IExecutionContext executionContext, IActionContext actionContext);
+        void Invoke(IExecutionContext executionContext, IActionContext actionContext, object[] arguments);
     }
 
     internal class RuleAction : IRuleAction
@@ -18,52 +18,66 @@ namespace NRules
         private readonly LambdaExpression _expression;
         private readonly IndexMap _factIndexMap;
         private readonly IndexMap _dependencyIndexMap;
-        private readonly FastDelegate<Action<object[]>> _compiledAction;
+        private readonly FastDelegate<Action<IContext, object[]>> _compiledAction;
 
         public RuleAction(LambdaExpression expression, IndexMap factIndexMap, IndexMap dependencyIndexMap)
         {
             _expression = expression;
             _factIndexMap = factIndexMap;
             _dependencyIndexMap = dependencyIndexMap;
-            _compiledAction = FastDelegate.Create<Action<object[]>>(expression);
+            _compiledAction = FastDelegate.Action(expression);
         }
 
-        public void Invoke(IExecutionContext context, IContext actionContext, Tuple tuple, IndexMap tupleFactMap, IEnumerable<IRuleDependency> dependencies)
+        public object[] GetArguments(IExecutionContext executionContext, IActionContext actionContext)
         {
-            var args = new object[_compiledAction.ParameterCount];
-            args[0] = actionContext;
+            var compiledRule = actionContext.CompiledRule;
+            var activation = actionContext.Activation;
+            var tuple = activation.Tuple;
+            var tupleFactMap = activation.TupleFactMap;
+
+            var args = new object[_compiledAction.ArrayArgumentCount];
+
             int index = tuple.Count - 1;
+            var factIndexMap = _factIndexMap;
             foreach (var fact in tuple.Facts)
             {
-                var mappedIndex = _factIndexMap[tupleFactMap[index]];
-                IndexMap.SetElementAt(ref args, mappedIndex, 1, fact.Object);
+                var mappedIndex = factIndexMap[tupleFactMap[index]];
+                IndexMap.SetElementAt(args, mappedIndex, fact.Object);
                 index--;
             }
 
             index = 0;
-            var dependencyResolver = context.Session.DependencyResolver;
-            foreach (var dependency in dependencies)
+            var dependencyIndexMap = _dependencyIndexMap;
+            var dependencyResolver = executionContext.Session.DependencyResolver;
+            var resolutionContext = new ResolutionContext(executionContext.Session, compiledRule.Definition);
+            foreach (var dependency in compiledRule.Dependencies)
             {
-                var mappedIndex = _dependencyIndexMap[index];
+                var mappedIndex = dependencyIndexMap[index];
                 if (mappedIndex >= 0)
                 {
-                    var resolvedDependency = dependency.Factory(dependencyResolver, new ResolutionContext(context.Session, actionContext.Rule));
-                    IndexMap.SetElementAt(ref args, mappedIndex, 1, resolvedDependency);
+                    var resolvedDependency = dependency.Factory(dependencyResolver, resolutionContext);
+                    IndexMap.SetElementAt(args, mappedIndex, resolvedDependency);
                 }
                 index++;
             }
 
+            return args;
+        }
+
+        public void Invoke(IExecutionContext executionContext, IActionContext actionContext, object[] arguments)
+        {
             try
             {
-                _compiledAction.Delegate.Invoke(args);
+                _compiledAction.Delegate.Invoke(actionContext, arguments);
             }
             catch (Exception e)
             {
-                bool isHandled;
-                context.EventAggregator.RaiseActionFailed(context.Session, e, _expression, tuple, out isHandled);
+                bool isHandled = false;
+                executionContext.EventAggregator.RaiseActionFailed(executionContext.Session, e, _expression, actionContext.Activation, ref isHandled);
                 if (!isHandled)
                 {
-                    throw new RuleActionEvaluationException("Failed to evaluate rule action", _expression.ToString(), e);
+                    throw new RuleActionEvaluationException("Failed to evaluate rule action",
+                        actionContext.Rule.Name, _expression.ToString(), e);
                 }
             }
         }

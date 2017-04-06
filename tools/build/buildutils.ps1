@@ -24,7 +24,8 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $assemblyInfoFile
 	if ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}") {
 		Write-Error "Version number incorrect format: $version"
 	}
-
+	Write-Host Patching AssemblyInfo files with version $version
+	
 	$versionPattern = 'AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
 	$versionAssembly = 'AssemblyVersion("' + $version + '")';
 	$versionFilePattern = 'AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
@@ -36,21 +37,16 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $assemblyInfoFile
 		$tmp = ($filename + ".tmp")
 		Delete-File $tmp
 
-		(Get-Content $filename) | % {$_ -replace $versionFilePattern, $versionAssemblyFile } | % {$_ -replace $versionPattern, $versionAssembly }  > $tmp
-		Write-Host Updating file AssemblyInfo and AssemblyFileInfo: $filename --> $versionAssembly / $versionAssemblyFile
-
-		Delete-File $filename
+		(Get-Content $filename) | % {$_ -replace $versionFilePattern, $versionAssemblyFile } | % {$_ -replace $versionPattern, $versionAssembly }  | out-file $tmp -encoding ASCII
 		Move-Item $tmp $filename -Force
 	}
 }
 
 function Update-AssemblyVersion([string] $version){
 	Update-AssemblyInfoFiles $version "GlobalAssemblyInfo.cs"
-	Update-AssemblyInfoFiles $version "CommonAssemblyInfo.cs"
 }
 
 function Reset-AssemblyVersion(){
-	Update-AssemblyInfoFiles "1.0.0.0" "CommonAssemblyInfo.cs"
 	Update-AssemblyInfoFiles "1.0.0.0" "GlobalAssemblyInfo.cs"
 }
 

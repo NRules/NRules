@@ -1,5 +1,6 @@
 using System;
 using NRules.Rete;
+using NRules.RuleModel;
 
 namespace NRules.Diagnostics
 {
@@ -18,6 +19,6 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Fact related to the event.
         /// </summary>
-        public FactInfo Fact { get { return new FactInfo(_fact); } }
+        public IFact Fact { get { return _fact; } }
     }
 }

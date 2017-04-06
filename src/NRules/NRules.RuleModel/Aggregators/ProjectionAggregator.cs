@@ -18,38 +18,53 @@ namespace NRules.RuleModel.Aggregators
             _selector = selector;
         }
 
-        public IEnumerable<AggregationResult> Initial()
+        public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
         {
-            return AggregationResult.Empty;
+            var results = new List<AggregationResult>();
+            foreach (var fact in facts)
+            {
+                var source = (TSource)fact;
+                var value = _selector(source);
+                _sourceToValue[source] = value;
+                results.Add(AggregationResult.Added(value));
+            }
+            return results;
         }
 
-        public IEnumerable<AggregationResult> Add(object fact)
+        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
         {
-            var source = (TSource) fact;
-            var value = _selector(source);
-            _sourceToValue[source] = value;
-            return new[] { AggregationResult.Added(value) };
+            var results = new List<AggregationResult>();
+            foreach (var fact in facts)
+            {
+                var source = (TSource)fact;
+                var value = _selector(source);
+                var oldValue = (TResult)_sourceToValue[source];
+                _sourceToValue[source] = value;
+
+                if (Equals(oldValue, value))
+                {
+                    results.Add(AggregationResult.Modified(value));
+                }
+                else
+                {
+                    results.Add(AggregationResult.Removed(oldValue));
+                    results.Add(AggregationResult.Added(value));
+                }
+            }
+            return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(object fact)
+        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
         {
-            var source = (TSource)fact;
-            var value = _selector(source);
-            var oldValue = _sourceToValue[source];
-            _sourceToValue[source] = value;
-
-            if (Equals(oldValue, value))
-                return new[] { AggregationResult.Modified(value) };
-
-            return new[] {AggregationResult.Removed(oldValue), AggregationResult.Added(value)};
-        }
-
-        public IEnumerable<AggregationResult> Remove(object fact)
-        {
-            var source = (TSource)fact;
-            var oldValue = _sourceToValue[source];
-            _sourceToValue.Remove(source);
-            return new[] {AggregationResult.Removed(oldValue)};
+            var results = new List<AggregationResult>();
+            foreach (var fact in facts)
+            {
+                var source = (TSource)fact;
+                var oldValue = _sourceToValue[source];
+                _sourceToValue.Remove(source);
+                results.Add(AggregationResult.Removed(oldValue));
+            }
+            return results;
         }
 
         public IEnumerable<object> Aggregates { get { return _sourceToValue.Values; } }

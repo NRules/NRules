@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using NRules.Collections;
-using NRules.Rete;
 using NRules.RuleModel;
 
 namespace NRules
@@ -14,7 +13,7 @@ namespace NRules
         public void Enqueue(int priority, Activation activation)
         {
             bool isRefracted = !_refractions.Add(activation);
-            if (isRefracted && activation.Rule.Repeatability == RuleRepeatability.NonRepeatable)
+            if (isRefracted && activation.CompiledRule.Repeatability == RuleRepeatability.NonRepeatable)
             {
                 return;
             }
@@ -24,6 +23,12 @@ namespace NRules
             {
                 _queue.Enqueue(priority, activation);
             }
+        }
+
+        public Activation Peek()
+        {
+            Activation activation = _queue.Peek();
+            return activation;
         }
 
         public Activation Dequeue()
@@ -62,6 +67,13 @@ namespace NRules
         private bool QueueHasElements()
         {
             return !_queue.IsEmpty;
+        }
+
+        public void Clear()
+        {
+            _queue.Clear();
+            _activations.Clear();
+            _refractions.Clear();
         }
     }
 }

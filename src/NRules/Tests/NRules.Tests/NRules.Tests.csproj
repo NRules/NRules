@@ -30,6 +30,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\..\..\DevSigningKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq.4.1.1309.1617\lib\net40\Moq.dll</HintPath>
@@ -49,6 +55,10 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AgendaTest.cs" />
+    <Compile Include="Aggregators\CollectionAggregatorTest.cs" />
+    <Compile Include="Aggregators\GroupByAggregatorTest.cs" />
+    <Compile Include="Aggregators\FlatteningAggregatorTest.cs" />
+    <Compile Include="Aggregators\ProjectionAggregatorTest.cs" />
     <Compile Include="Collections\OrderedPriorityQueueTest.cs" />
     <Compile Include="ExceptionSerializationTest.cs" />
     <Compile Include="Rete\FactTest.cs" />

@@ -19,7 +19,7 @@ task Init {
 	Assert ($version -ne $null) 'Version should not be null'
 	Assert ($component -ne $null) 'Component should not be null'
 	
-	Write-Host "Building $($component.name) version $version" -ForegroundColor Green
+	Write-Host "Building $($component.name) version $version ($configuration)" -ForegroundColor Green
 	
 	$comp_name = $component.name
 	$src_root = if ($component.ContainsKey('src_root')) { $component.src_root } else { 'src' }
@@ -83,7 +83,14 @@ task Compile -depends Init, Clean, SetVersion, RestoreTools, RestoreDependencies
 task Test -depends Compile -precondition { return $component.ContainsKey('test') } {
 	$test_files = @()
 	$test_files += Get-ChildItem "$out_dir\*.*" -Include $component.test.include -Exclude $component.test.exclude
-	exec { &$script:nunit_exec $test_files /nologo /framework:$target_framework /config:$configuration }
+	$test_out_file = "$build_dir\TestResult_$($component.name).xml"
+	exec { &$script:nunit_exec $test_files /nologo /framework:$target_framework /config:$configuration /xml:$test_out_file }
+	
+	if (Test-Path Env:CI) {
+		Write-Host "Uploading to CI - $test_out_file"
+		$wc = New-Object 'System.Net.WebClient'
+		$wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($Env:APPVEYOR_JOB_ID)", (Resolve-Path $test_out_file))
+	}
 }
 
 task Merge -depends Compile -precondition { return $component.ContainsKey('merge') } {
@@ -95,14 +102,13 @@ task Merge -depends Compile -precondition { return $component.ContainsKey('merge
 	$attribute_file = "$out_dir\$($component.merge.attr_file)"
 	
 	$keyfile = "$base_dir\..\SigningKey.snk"
-	$keyfileOption = "/keyfile:$keyfile"
 	if (-not (Test-Path $keyfile) ) {
-		$keyfileOption = ""
-		Write-Host "Key file for assembly signing does not exist. Cannot strongly name assembly." -ForegroundColor Yellow
+		Write-Host "Key file for assembly signing does not exist. Signing with a development key." -ForegroundColor Yellow
+		$keyfile = "$base_dir\DevSigningKey.snk"
 	}
 	
 	$output = "$merge_dir\$($component.merge.out_file)"
-	exec { &$script:ilmerge_exec /out:$output /log $keyfileOption $script:ilmerge_target_framework $assemblies /xmldocs /attr:$attribute_file }
+	exec { &$script:ilmerge_exec /out:$output /log /keyfile:$keyfile $script:ilmerge_target_framework $assemblies /xmldocs /attr:$attribute_file }
 }
 
 task Build -depends Compile, Test, Merge, ResetVersion -precondition { return -not $component.ContainsKey('nobuild') } { 

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using NRules.RuleModel;
 
 namespace NRules.Rete
 {
     [DebuggerDisplay("Fact {Object}")]
-    internal class Fact
+    internal class Fact : IFact
     {
         private readonly Type _factType;
         private object _object;
@@ -34,13 +35,32 @@ namespace NRules.Rete
         {
             get { return _object; }
         }
+
+        public virtual bool IsWrapperFact
+        {
+            get { return false; }
+        }
+
+        Type IFact.Type
+        {
+            get { return FactType; }
+        }
+
+        object IFact.Value
+        {
+            get { return Object; }
+        }
     }
 
+    [DebuggerDisplay("Wrapper Tuple({WrappedTuple.Count})")]
     internal class WrapperFact : Fact
     {
+        private readonly long _groupId;
+
         public WrapperFact(Tuple tuple)
             : base(tuple)
         {
+            _groupId = tuple.GroupId;
         }
 
         public override Type FactType
@@ -56,6 +76,11 @@ namespace NRules.Rete
         public Tuple WrappedTuple
         {
             get { return (Tuple) RawObject; }
+        }
+
+        public override bool IsWrapperFact
+        {
+            get { return true; }
         }
     }
 }

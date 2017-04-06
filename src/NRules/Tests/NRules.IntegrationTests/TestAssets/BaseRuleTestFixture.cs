@@ -33,15 +33,18 @@ namespace NRules.IntegrationTests.TestAssets
 
         protected abstract void SetUpRules();
 
-        protected void SetUpRule<T>() where T : BaseRule, new()
+        protected void SetUpRule<T>() where T : Rule, new()
         {
             var metadata = new RuleMetadata(typeof (T));
             _ruleMap[typeof (T)] = metadata;
             _firedRulesMap[metadata.Name] = new List<AgendaEventArgs>();
-            Repository.Load(x => x.From(typeof(T)));
+            Repository.Load(x => x
+                .PrivateTypes()
+                .NestedTypes()
+                .From(typeof (T)));
         }
 
-        protected T GetRuleInstance<T>() where T : BaseRule
+        protected T GetRuleInstance<T>() where T : Rule
         {
             return (T)Repository.Activator.Activate(typeof(T)).Single();
         }
@@ -54,11 +57,11 @@ namespace NRules.IntegrationTests.TestAssets
             return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Type)).Value;
         }
 
-        protected T GetFiredFact<T>(int instanceNubmer)
+        protected T GetFiredFact<T>(int instanceNumber)
         {
             var rule = _ruleMap.Single().Value;
             var firedRule = _firedRulesMap[rule.Name];
-            var x = firedRule.ElementAt(instanceNubmer);
+            var x = firedRule.ElementAt(instanceNumber);
             return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Type)).Value;
         }
 

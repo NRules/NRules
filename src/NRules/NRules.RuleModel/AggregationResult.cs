@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace NRules.RuleModel
 {
     /// <summary>
@@ -29,6 +31,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Result of the aggregation.
     /// </summary>
+    [DebuggerDisplay("{_action}")]
     public struct AggregationResult
     {
         private readonly AggregationAction _action;

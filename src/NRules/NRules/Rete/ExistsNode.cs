@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace NRules.Rete
 {
@@ -8,81 +8,108 @@ namespace NRules.Rete
         {
         }
 
-        public override void PropagateAssert(IExecutionContext context, Tuple tuple)
+        public override void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
         {
-            var matchingFacts = MatchingFacts(context, tuple);
-            tuple.Quantifier(this).Value = matchingFacts.Count();
-            if (tuple.Quantifier(this).Value > 0)
+            var joinedSets = JoinedSets(context, tuples);
+            var toAssert = new TupleFactList();
+            foreach (var set in joinedSets)
             {
-                AssertTuple(context, tuple);
-            }
-        }
-
-        public override void PropagateUpdate(IExecutionContext context, Tuple tuple)
-        {
-            if (tuple.Quantifier(this).Value > 0)
-            {
-                UpdateTuple(context, tuple);
-            }
-        }
-
-        public override void PropagateRetract(IExecutionContext context, Tuple tuple)
-        {
-            if (tuple.Quantifier(this).Value > 0)
-            {
-                RetractTuple(context, tuple);
-            }
-        }
-
-        public override void PropagateAssert(IExecutionContext context, Fact fact)
-        {
-            var matchingTuples = MatchingTuples(context, fact);
-            foreach (var tuple in matchingTuples)
-            {
-                tuple.Quantifier(this).Value++;
-                if (tuple.Quantifier(this).Value == 1)
+                var quantifier = set.Tuple.Quantifier(this);
+                foreach (var fact in set.Facts)
                 {
-                    AssertTuple(context, tuple);
+                    if (MatchesConditions(context, set.Tuple, fact))
+                    {
+                        quantifier.Value++;
+                    }
+                }
+                if (quantifier.Value > 0)
+                {
+                    toAssert.Add(set.Tuple, null);
                 }
             }
+            MemoryNode.PropagateAssert(context, toAssert);
         }
 
-        public override void PropagateUpdate(IExecutionContext context, Fact fact)
+        public override void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
+        {
+            var toUpdate = new TupleFactList();
+            foreach (var tuple in tuples)
+            {
+                if (tuple.Quantifier(this).Value > 0)
+                {
+                    toUpdate.Add(tuple, null);
+                }
+            }
+            MemoryNode.PropagateUpdate(context, toUpdate);
+        }
+
+        public override void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
+        {
+            var toRetract = new TupleFactList();
+            foreach (var tuple in tuples)
+            {
+                if (tuple.Quantifier(this).Value > 0)
+                {
+                    toRetract.Add(tuple, null);
+                }
+            }
+            MemoryNode.PropagateRetract(context, toRetract);
+        }
+
+        public override void PropagateAssert(IExecutionContext context, IList<Fact> facts)
+        {
+            var joinedSets = JoinedSets(context, facts);
+            var toAssert = new TupleFactList();
+            foreach (var set in joinedSets)
+            {
+                var quantifier = set.Tuple.Quantifier(this);
+                int startingCount = quantifier.Value;
+                foreach (var fact in set.Facts)
+                {
+                    if (MatchesConditions(context, set.Tuple, fact))
+                    {
+                        quantifier.Value++;
+                    }
+                }
+                if (startingCount == 0 && quantifier.Value > 0)
+                {
+                    toAssert.Add(set.Tuple, null);
+                }
+            }
+            MemoryNode.PropagateAssert(context, toAssert);
+        }
+
+        public override void PropagateUpdate(IExecutionContext context, IList<Fact> facts)
         {
             //Do nothing
         }
 
-        public override void PropagateRetract(IExecutionContext context, Fact fact)
+        public override void PropagateRetract(IExecutionContext context, IList<Fact> facts)
         {
-            var matchingTuples = MatchingTuples(context, fact);
-            foreach (var tuple in matchingTuples)
+            var joinedSets = JoinedSets(context, facts);
+            var toRetract = new TupleFactList();
+            foreach (var set in joinedSets)
             {
-                tuple.Quantifier(this).Value--;
-                if (tuple.Quantifier(this).Value == 0)
+                var quantifier = set.Tuple.Quantifier(this);
+                int startingCount = quantifier.Value;
+                foreach (var fact in set.Facts)
                 {
-                    RetractTuple(context, tuple);
+                    if (MatchesConditions(context, set.Tuple, fact))
+                    {
+                        quantifier.Value--;
+                    }
+                }
+                if (startingCount > 0 && quantifier.Value == 0)
+                {
+                    toRetract.Add(set.Tuple, null);
                 }
             }
+            MemoryNode.PropagateRetract(context, toRetract);
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.VisitExistsNode(context, this);
-        }
-
-        private void AssertTuple(IExecutionContext context, Tuple tuple)
-        {
-            MemoryNode.PropagateAssert(context, tuple, null);
-        }
-
-        private void UpdateTuple(IExecutionContext context, Tuple tuple)
-        {
-            MemoryNode.PropagateUpdate(context, tuple, null);
-        }
-
-        private void RetractTuple(IExecutionContext context, Tuple tuple)
-        {
-            MemoryNode.PropagateRetract(context, tuple, null);
         }
     }
 }

@@ -37,6 +37,12 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\..\DevSigningKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -50,7 +56,6 @@
     </Compile>
     <Compile Include="Dsl\ContextExtensions.cs" />
     <Compile Include="Dsl\DescriptionAttribute.cs" />
-    <Compile Include="Dsl\ICollectPatternExpression.cs" />
     <Compile Include="Dsl\QueryExtensions.cs" />
     <Compile Include="Dsl\IDependencyExpression.cs" />
     <Compile Include="Dsl\IQuery.cs" />
@@ -61,7 +66,6 @@
     <Compile Include="Dsl\TagAttribute.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Expressions\BuilderExtensions.cs" />
-    <Compile Include="Expressions\CollectPatternExpression.cs" />
     <Compile Include="Expressions\DependencyExpression.cs" />
     <Compile Include="Expressions\ExpressionExtensions.cs" />
     <Compile Include="Expressions\QueryExpression.cs" />
@@ -77,6 +81,7 @@
     <Compile Include="RuleDefinitionException.cs" />
     <Compile Include="RuleMetadata.cs" />
     <Compile Include="RuleMetadataExtensions.cs" />
+    <Compile Include="RuleProperties.cs" />
     <Compile Include="RuleRepository.cs" />
     <Compile Include="RuleActivator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

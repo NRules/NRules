@@ -37,6 +37,12 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\..\DevSigningKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,6 +64,7 @@
     <Compile Include="Aggregators\FlatteningAggregatorFactory.cs" />
     <Compile Include="Aggregators\GroupByAggregator.cs" />
     <Compile Include="Aggregators\GroupByAggregatorFactory.cs" />
+    <Compile Include="Aggregators\DefaultKeyMap.cs" />
     <Compile Include="Aggregators\ProjectionAggregator.cs" />
     <Compile Include="Aggregators\ProjectionAggregatorFactory.cs" />
     <Compile Include="AndElement.cs" />
@@ -77,16 +84,20 @@
     <Compile Include="DependencyElement.cs" />
     <Compile Include="DependencyGroupElement.cs" />
     <Compile Include="ExistsElement.cs" />
+    <Compile Include="PropertyMap.cs" />
     <Compile Include="ExpressionMap.cs" />
     <Compile Include="ForAllElement.cs" />
     <Compile Include="IAggregatorFactory.cs" />
     <Compile Include="IContext.cs" />
+    <Compile Include="IFact.cs" />
     <Compile Include="IRuleRepository.cs" />
     <Compile Include="IRuleSet.cs" />
+    <Compile Include="IFactMatch.cs" />
     <Compile Include="NamedExpression.cs" />
     <Compile Include="NotElement.cs" />
     <Compile Include="OrElement.cs" />
     <Compile Include="RuleLeftElement.cs" />
+    <Compile Include="RuleProperty.cs" />
     <Compile Include="RuleRightElement.cs" />
     <Compile Include="RuleDefinition.cs" />
     <Compile Include="ConditionElement.cs" />

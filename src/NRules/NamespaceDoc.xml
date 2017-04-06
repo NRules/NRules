@@ -14,6 +14,11 @@
         Contains types that facilitate troubleshooting and monitoring rules engine execution.
       </summary>
     </member>
+    <member name="N:NRules.Extensibility">
+      <summary>
+        Contains types that enable extensibility of the rules engine.
+      </summary>
+    </member>
     <member name="N:NRules.RuleModel">
       <summary>
         Contains types that represent rules in the canonical model form.

@@ -3,12 +3,12 @@ param (
 	[string]$component_name = 'Core'
 )
 
-$product_version = '0.4'
-$build_number = '3'
+$version = '0.5.1'
 $target_framework = 'net-4.0'
 $configuration = 'Release'
 
-$version = "$product_version.$build_number"
+if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
+if (Test-Path Env:CI) { $configuration = $Env:CONFIGURATION }
 
 $components = @{
 	'NRules' = @{
@@ -115,7 +115,7 @@ if ($component_name -eq "Core") {
 
 Import-Module .\tools\build\psake.psm1
 $component_list | % {
-	Invoke-psake .\default.ps1 $target -properties @{version=$version} -parameters @{component=$components[$_]}
+	Invoke-psake .\default.ps1 $target -properties @{version=$version;configuration=$configuration} -parameters @{component=$components[$_]}
 	if (-not $psake.build_success) {
 		break
 	}

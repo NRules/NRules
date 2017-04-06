@@ -1,6 +1,6 @@
 ﻿using System;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -12,7 +12,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             //Act
@@ -26,10 +26,10 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFacts_FiresTwice()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
-            Session.Insert(fact1);
-            Session.Insert(fact2);
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType {TestProperty = "Valid Value 2"};
+            var facts = new[] {fact1, fact2};
+            Session.InsertAll(facts);
 
             //Act
             Session.Fire();
@@ -42,7 +42,7 @@ namespace NRules.IntegrationTests
         public void Fire_ConditionDoesNotMatch_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Invalid Value 1"};
+            var fact = new FactType {TestProperty = "Invalid Value 1"};
             Session.Insert(fact);
 
             //Act
@@ -56,7 +56,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
             Session.Retract(fact);
 
@@ -71,7 +71,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneFactUpdatedFromInvalidToMatching_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Invalid Value 1"};
+            var fact = new FactType {TestProperty = "Invalid Value 1"};
             Session.Insert(fact);
 
             fact.TestProperty = "Valid Value 1";
@@ -88,7 +88,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactAssertedAndRetractedAndAssertedAgain_FiresOnce()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
             Session.Retract(fact);
             Session.Insert(fact);
@@ -104,7 +104,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactAssertedAndUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             fact.TestProperty = "Invalid Value 1";
@@ -121,7 +121,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactAssertedAndModifiedAndRetracted_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             fact.TestProperty = "Invalid Value 1";
@@ -145,7 +145,7 @@ namespace NRules.IntegrationTests
         public void Insert_DuplicateInsert_Throws()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
 
             //Act - Assert
             Session.Insert(fact);
@@ -156,7 +156,7 @@ namespace NRules.IntegrationTests
         public void TryInsert_DuplicateInsert_False()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
 
             //Act
             Session.Insert(fact);
@@ -177,7 +177,7 @@ namespace NRules.IntegrationTests
         public void Update_UpdateWithoutInsert_Throws()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
 
             //Act - Assert
             Assert.Throws<ArgumentException>(() => Session.Update(fact));
@@ -187,7 +187,7 @@ namespace NRules.IntegrationTests
         public void TryUpdate_UpdateWithoutInsert_False()
         {
             //Arrange
-            var fact = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact = new FactType {TestProperty = "Valid Value 1"};
 
             //Act
             bool actual = Session.TryUpdate(fact);
@@ -207,7 +207,7 @@ namespace NRules.IntegrationTests
         public void Retract_RetractWithoutInsert_Throws()
         {
             //Arrange
-            var fact = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
 
             //Act - Assert
             Assert.Throws<ArgumentException>(() => Session.Retract(fact));
@@ -217,7 +217,7 @@ namespace NRules.IntegrationTests
         public void TryRetract_RetractWithoutInsert_False()
         {
             //Arrange
-            var fact = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact = new FactType {TestProperty = "Valid Value 1"};
 
             //Act
             bool actual = Session.TryRetract(fact);
@@ -228,7 +228,25 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                FactType fact = null;
+
+                When()
+                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                Then()
+                    .Do(ctx => ctx.NoOp());
+            }
         }
     }
 }

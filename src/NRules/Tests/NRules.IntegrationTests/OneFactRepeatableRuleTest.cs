@@ -1,5 +1,6 @@
-﻿using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
+﻿using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
+using NRules.RuleModel;
 using NUnit.Framework;
 
 namespace NRules.IntegrationTests
@@ -11,7 +12,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactEligibleForOneIncrement_FiresOnce()
         {
             //Arrange
-            var fact = new FactType5 {TestProperty = "Valid Value 1", TestCount = 2};
+            var fact = new FactType {TestProperty = "Valid Value 1", TestCount = 2};
             Session.Insert(fact);
 
             //Act
@@ -25,7 +26,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactEligibleForTwoIncrements_FiresTwice()
         {
             //Arrange
-            var fact = new FactType5 {TestProperty = "Valid Value 1", TestCount = 1};
+            var fact = new FactType {TestProperty = "Valid Value 1", TestCount = 1};
             Session.Insert(fact);
 
             //Act
@@ -37,7 +38,33 @@ namespace NRules.IntegrationTests
         
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactRepeatableRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+            public int TestCount { get; set; }
+
+            public void IncrementCount()
+            {
+                TestCount++;
+            }
+        }
+
+        [Repeatability(RuleRepeatability.Repeatable)]
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                FactType fact = null;
+
+                When()
+                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"), f => f.TestCount <= 2);
+                Then()
+                    .Do(ctx => fact.IncrementCount())
+                    .Do(ctx => ctx.Update(fact));
+            }
         }
     }
 }

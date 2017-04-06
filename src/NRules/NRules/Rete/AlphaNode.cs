@@ -17,55 +17,72 @@ namespace NRules.Rete
 
         public abstract bool IsSatisfiedBy(IExecutionContext context, Fact fact);
 
-        public void PropagateAssert(IExecutionContext context, Fact fact)
+        public void PropagateAssert(IExecutionContext context, IList<Fact> facts)
         {
-            if (IsSatisfiedBy(context, fact))
+            var toAssert = new List<Fact>();
+            foreach (var fact in facts)
+            {
+                if (IsSatisfiedBy(context, fact))
+                    toAssert.Add(fact);
+            }
+
+            if (toAssert.Count > 0)
             {
                 foreach (var childNode in ChildNodes)
                 {
-                    childNode.PropagateAssert(context, fact);
+                    childNode.PropagateAssert(context, toAssert);
                 }
                 if (MemoryNode != null)
                 {
-                    MemoryNode.PropagateAssert(context, fact);
+                    MemoryNode.PropagateAssert(context, toAssert);
                 }
             }
         }
 
-        public void PropagateUpdate(IExecutionContext context, Fact fact)
+        public void PropagateUpdate(IExecutionContext context, IList<Fact> facts)
         {
-            if (IsSatisfiedBy(context, fact))
+            var toUpdate = new List<Fact>();
+            var toRetract = new List<Fact>();
+            foreach (var fact in facts)
+            {
+                if (IsSatisfiedBy(context, fact))
+                    toUpdate.Add(fact);
+                else
+                    toRetract.Add(fact);
+            }
+
+            if (toUpdate.Count > 0)
             {
                 foreach (var childNode in ChildNodes)
                 {
-                    childNode.PropagateUpdate(context, fact);
+                    childNode.PropagateUpdate(context, toUpdate);
                 }
                 if (MemoryNode != null)
                 {
-                    MemoryNode.PropagateUpdate(context, fact);
+                    MemoryNode.PropagateUpdate(context, toUpdate);
                 }
             }
-            else
+            if (toRetract.Count > 0)
             {
-                UnsatisfiedFactUpdate(context, fact);
+                UnsatisfiedFactUpdate(context, toRetract);
             }
         }
 
-        public void PropagateRetract(IExecutionContext context, Fact fact)
+        public void PropagateRetract(IExecutionContext context, IList<Fact> facts)
         {
             foreach (var childNode in ChildNodes)
             {
-                childNode.PropagateRetract(context, fact);
+                childNode.PropagateRetract(context, facts);
             }
             if (MemoryNode != null)
             {
-                MemoryNode.PropagateRetract(context, fact);
+                MemoryNode.PropagateRetract(context, facts);
             }
         }
 
-        protected virtual void UnsatisfiedFactUpdate(IExecutionContext context, Fact fact)
+        protected virtual void UnsatisfiedFactUpdate(IExecutionContext context, IList<Fact> facts)
         {
-            PropagateRetract(context, fact);
+            PropagateRetract(context, facts);
         }
 
         public abstract void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);
