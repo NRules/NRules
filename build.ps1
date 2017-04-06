@@ -48,9 +48,15 @@ $components = @{
 	'NRules.Integration.Autofac' = @{
 		name = 'NRules.Integration.Autofac'
 		src_root = 'src/NRules.Integration'
+		merge = @{
+			include = @('NRules.Integration.*.dll')
+			exclude = @('**Tests.dll')
+			attr_file = 'NRules.Integration.Autofac.dll'
+			out_file = 'NRules.Integration.Autofac.dll'
+		}
 		bin = @{
-			out_include = @('*.dll','*.pdb','*.xml')
-			out_exclude = @('**Tests**','nunit**','Moq**')
+			merge_include = @('NRules.Integration.*')
+			out_include = @('NRules.dll','NRules.pdb','NRules.xml','Autofac.*')
 		}
 		package = @{
 			nuget = @{
