@@ -38,6 +38,7 @@ Unit tests are written in NUnit and Moq.
 
 ### Coding Standards
 
+- NRules uses standard Microsoft .NET coding guidelines. See the [Framework Design Guidelines](https://msdn.microsoft.com/en-us/library/ms229042.aspx) for suggestions. 
 - Use four spaces for code indentation (no tabs).
 - For private fields, use a camelCase notation, prefixing field names with an underscore.
 - Generally, use comment-free coding approach, where code is self-explanatory. Comments may be added for complex areas of code, and should explain "why" not "how".
