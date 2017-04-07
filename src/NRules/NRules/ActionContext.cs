@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NRules.Extensibility;
 using NRules.RuleModel;
 
@@ -76,11 +77,17 @@ namespace NRules
             return _session.TryRetract(fact);
         }
 
-        public TService Resove<TService>()
+        public TService Resolve<TService>()
+        {
+            var service = Resolve(typeof (TService));
+            return (TService) service;
+        }
+
+        public object Resolve(Type serviceType)
         {
             var resolutionContext = new ResolutionContext(_session, Rule);
-            var service = _session.DependencyResolver.Resolve(resolutionContext, typeof (TService));
-            return (TService) service;
+            var service = _session.DependencyResolver.Resolve(resolutionContext, serviceType);
+            return service;
         }
 
         public void Halt()

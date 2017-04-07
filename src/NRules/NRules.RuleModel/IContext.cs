@@ -90,6 +90,11 @@ namespace NRules.RuleModel
         /// <summary>
         /// Resolves a registered service (normally via an IoC container).
         /// </summary>
-        TService Resove<TService>();
+        TService Resolve<TService>();
+
+        /// <summary>
+        /// Resolves a registered service (normally via an IoC container).
+        /// </summary>
+        object Resolve(Type serviceType);
     }
 }
