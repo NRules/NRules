@@ -17,7 +17,15 @@ namespace NRules
             _arguments = arguments;
         }
 
-        public object[] Arguments { get { return _arguments; } }
+        public object[] Arguments
+        {
+            get { return _arguments; }
+        }
+
+        public IRuleAction RuleAction
+        {
+            get { return _action; }
+        }
 
         public void Invoke()
         {

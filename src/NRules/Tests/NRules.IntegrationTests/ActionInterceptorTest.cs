@@ -54,6 +54,24 @@ namespace NRules.IntegrationTests
         }
 
         [Test]
+        public void Fire_InterceptorInvokesActionThatThrows_ExceptionNotWrapped()
+        {
+            //Arrange
+            Session.ActionInterceptor = new ActionInterceptor(invoke: true);
+
+            var fact1 = new FactType1();
+            var fact2 = new FactType2();
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            GetRuleInstance<TestRule>().Action = () => { throw new InvalidOperationException("Test"); };
+
+            //Act - Assert
+            var ex = Assert.Throws<InvalidOperationException>(() => Session.Fire());
+            Assert.AreEqual("Test", ex.Message);
+        }
+
+        [Test]
         public void Fire_ConditionsMatchInterceptorDoesNotInvoke_DoesNotExecuteAction()
         {
             //Arrange

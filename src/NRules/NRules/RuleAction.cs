@@ -9,6 +9,7 @@ namespace NRules
 {
     internal interface IRuleAction
     {
+        Expression Expression { get; }
         object[] GetArguments(IExecutionContext executionContext, IActionContext actionContext);
         void Invoke(IExecutionContext executionContext, IActionContext actionContext, object[] arguments);
     }
@@ -26,6 +27,11 @@ namespace NRules
             _factIndexMap = factIndexMap;
             _dependencyIndexMap = dependencyIndexMap;
             _compiledAction = FastDelegate.Action(expression);
+        }
+
+        public Expression Expression
+        {
+            get { return _expression; }
         }
 
         public object[] GetArguments(IExecutionContext executionContext, IActionContext actionContext)
@@ -66,20 +72,7 @@ namespace NRules
 
         public void Invoke(IExecutionContext executionContext, IActionContext actionContext, object[] arguments)
         {
-            try
-            {
-                _compiledAction.Delegate.Invoke(actionContext, arguments);
-            }
-            catch (Exception e)
-            {
-                bool isHandled = false;
-                executionContext.EventAggregator.RaiseActionFailed(executionContext.Session, e, _expression, actionContext.Activation, ref isHandled);
-                if (!isHandled)
-                {
-                    throw new RuleActionEvaluationException("Failed to evaluate rule action",
-                        actionContext.Rule.Name, _expression.ToString(), e);
-                }
-            }
+            _compiledAction.Delegate.Invoke(actionContext, arguments);
         }
     }
 }

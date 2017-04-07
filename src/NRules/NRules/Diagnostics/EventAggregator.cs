@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using NRules.Extensibility;
 using NRules.Rete;
 using Tuple = NRules.Rete.Tuple;
 
@@ -76,6 +77,7 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Raised when action execution threw an exception.
         /// Gives observer of the event control over handling of the exception.
+        /// <remarks>This event is not raised when actions are invoked via <see cref="IActionInterceptor"/>.</remarks>
         /// </summary>
         event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
 
