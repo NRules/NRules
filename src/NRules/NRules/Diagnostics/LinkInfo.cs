@@ -5,7 +5,7 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Link between nodes in the rete network graph.
     /// </summary>
-    [Serializable]
+    //[Serializable]
     public class LinkInfo
     {
         /// <summary>

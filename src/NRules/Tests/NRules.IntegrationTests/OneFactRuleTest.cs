@@ -1,14 +1,13 @@
 ﻿using System;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
@@ -22,7 +21,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFacts_FiresTwice()
         {
             //Arrange
@@ -38,7 +37,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        [Test]
+        [Fact]
         public void Fire_ConditionDoesNotMatch_DoesNotFire()
         {
             //Arrange
@@ -52,7 +51,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
@@ -67,7 +66,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneFactUpdatedFromInvalidToMatching_FiresOnce()
         {
             //Arrange
@@ -84,7 +83,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactAssertedAndRetractedAndAssertedAgain_FiresOnce()
         {
             //Arrange
@@ -100,7 +99,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactAssertedAndUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
@@ -117,7 +116,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactAssertedAndModifiedAndRetracted_DoesNotFire()
         {
             //Arrange
@@ -134,14 +133,14 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Insert_Null_Throws()
         {
             //Arrange - Act - Assert
             Assert.Throws<ArgumentNullException>(() => Session.Insert(null));
         }
 
-        [Test]
+        [Fact]
         public void Insert_DuplicateInsert_Throws()
         {
             //Arrange
@@ -152,7 +151,7 @@ namespace NRules.IntegrationTests
             Assert.Throws<ArgumentException>(() => Session.Insert(fact));
         }
 
-        [Test]
+        [Fact]
         public void TryInsert_DuplicateInsert_False()
         {
             //Arrange
@@ -166,14 +165,14 @@ namespace NRules.IntegrationTests
             Assert.False(actual);
         }
 
-        [Test]
+        [Fact]
         public void Update_Null_Throws()
         {
             //Arrange - Act - Assert
             Assert.Throws<ArgumentNullException>(() => Session.Update(null));
         }
 
-        [Test]
+        [Fact]
         public void Update_UpdateWithoutInsert_Throws()
         {
             //Arrange
@@ -183,7 +182,7 @@ namespace NRules.IntegrationTests
             Assert.Throws<ArgumentException>(() => Session.Update(fact));
         }
 
-        [Test]
+        [Fact]
         public void TryUpdate_UpdateWithoutInsert_False()
         {
             //Arrange
@@ -196,14 +195,14 @@ namespace NRules.IntegrationTests
             Assert.False(actual);
         }
 
-        [Test]
+        [Fact]
         public void Retract_Null_Throws()
         {
             //Arrange - Act - Assert
             Assert.Throws<ArgumentNullException>(() => Session.Retract(null));
         }
 
-        [Test]
+        [Fact]
         public void Retract_RetractWithoutInsert_Throws()
         {
             //Arrange
@@ -213,7 +212,7 @@ namespace NRules.IntegrationTests
             Assert.Throws<ArgumentException>(() => Session.Retract(fact));
         }
 
-        [Test]
+        [Fact]
         public void TryRetract_RetractWithoutInsert_False()
         {
             //Arrange

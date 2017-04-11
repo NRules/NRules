@@ -3,22 +3,20 @@ using NRules.Fluent;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class RuleMetadataTest
     {
         private RuleRepository _repository;
 
-        [SetUp]
-        public void SetUp()
+        public RuleMetadataTest()
         {
             _repository = new RuleRepository();
         }
 
-        [Test]
+        [Fact]
         public void Property_RuleClrType_Same()
         {
             //Arrange
@@ -29,10 +27,10 @@ namespace NRules.IntegrationTests
             var actual = rule.Properties[RuleProperties.ClrType];
 
             //Assert
-            Assert.AreEqual(typeof(RuleWithMetadata), actual);
+            Assert.Equal(typeof(RuleWithMetadata), actual);
         }
 
-        [Test]
+        [Fact]
         public void Name_NameAttributePresent_CustomValue()
         {
             //Arrange
@@ -43,10 +41,10 @@ namespace NRules.IntegrationTests
             string actual = rule.Name;
 
             //Assert
-            Assert.AreEqual("Rule with metadata", actual);
+            Assert.Equal("Rule with metadata", actual);
         }
 
-        [Test]
+        [Fact]
         public void Name_NameAttributeOverriden_CustomValue()
         {
             //Arrange
@@ -57,10 +55,10 @@ namespace NRules.IntegrationTests
             string actual = rule.Name;
 
             //Assert
-            Assert.AreEqual("Programmatic name", actual);
+            Assert.Equal("Programmatic name", actual);
         }
 
-        [Test]
+        [Fact]
         public void Description_DescriptionAttributePresent_CustomValue()
         {
             //Arrange
@@ -71,10 +69,10 @@ namespace NRules.IntegrationTests
             string actual = rule.Description;
 
             //Assert
-            Assert.AreEqual("Rule description", actual);
+            Assert.Equal("Rule description", actual);
         }
 
-        [Test]
+        [Fact]
         public void Tags_TagAttributesPresent_CustomValues()
         {
             //Arrange
@@ -85,12 +83,12 @@ namespace NRules.IntegrationTests
             string[] actual = rule.Tags.ToArray();
 
             //Assert
-            Assert.AreEqual(2, actual.Length);
+            Assert.Equal(2, actual.Length);
             Assert.Contains("Test", actual);
             Assert.Contains("Metadata", actual);
         }
 
-        [Test]
+        [Fact]
         public void Priority_PriorityAttributePresent_CustomValue()
         {
             //Arrange
@@ -101,10 +99,10 @@ namespace NRules.IntegrationTests
             int actual = rule.Priority;
 
             //Assert
-            Assert.AreEqual(100, actual);
+            Assert.Equal(100, actual);
         }
 
-        [Test]
+        [Fact]
         public void Tags_TagAttributesAndParentAttributesPresent_CustomValues()
         {
             //Arrange
@@ -115,14 +113,14 @@ namespace NRules.IntegrationTests
             string[] actual = rule.Tags.ToArray();
 
             //Assert
-            Assert.AreEqual(4, actual.Length);
+            Assert.Equal(4, actual.Length);
             Assert.Contains("ChildTag", actual);
             Assert.Contains("ChildMetadata", actual);
             Assert.Contains("ParentTag", actual);
             Assert.Contains("ParentMetadata", actual);
         }
 
-        [Test]
+        [Fact]
         public void Priority_PriorityParentAttributePresent_CustomValue()
         {
             //Arrange
@@ -133,10 +131,10 @@ namespace NRules.IntegrationTests
             int actual = rule.Priority;
 
             //Assert
-            Assert.AreEqual(200, actual);
+            Assert.Equal(200, actual);
         }
 
-        [Test]
+        [Fact]
         public void Priority_PriorityAttributeOverriden_CustomValue()
         {
             //Arrange
@@ -147,10 +145,10 @@ namespace NRules.IntegrationTests
             int actual = rule.Priority;
 
             //Assert
-            Assert.AreEqual(500, actual);
+            Assert.Equal(500, actual);
         }
 
-        [Test]
+        [Fact]
         public void Priority_PriorityAttributeOverridenProgrammatically_CustomValue()
         {
             //Arrange
@@ -161,10 +159,10 @@ namespace NRules.IntegrationTests
             int actual = rule.Priority;
 
             //Assert
-            Assert.AreEqual(1000, actual);
+            Assert.Equal(1000, actual);
         }
 
-        [Test]
+        [Fact]
         public void Name_NoAttributes_TypeName()
         {
             //Arrange
@@ -175,10 +173,10 @@ namespace NRules.IntegrationTests
             string actual = rule.Name;
 
             //Assert
-            Assert.AreEqual(typeof(RuleWithoutMetadata).FullName, actual);
+            Assert.Equal(typeof(RuleWithoutMetadata).FullName, actual);
         }
 
-        [Test]
+        [Fact]
         public void Description_NoAttributes_Empty()
         {
             //Arrange
@@ -189,10 +187,10 @@ namespace NRules.IntegrationTests
             string actual = rule.Description;
 
             //Assert
-            Assert.AreEqual(string.Empty, actual);
+            Assert.Equal(string.Empty, actual);
         }
 
-        [Test]
+        [Fact]
         public void Tags_NoAttributes_Empty()
         {
             //Arrange
@@ -203,10 +201,10 @@ namespace NRules.IntegrationTests
             string[] actual = rule.Tags.ToArray();
 
             //Assert
-            Assert.AreEqual(0, actual.Length);
+            Assert.Equal(0, actual.Length);
         }
 
-        [Test]
+        [Fact]
         public void Priority_NoAttribute_Default()
         {
             //Arrange
@@ -217,7 +215,7 @@ namespace NRules.IntegrationTests
             int actual = rule.Priority;
 
             //Assert
-            Assert.AreEqual(0, actual);
+            Assert.Equal(0, actual);
         }
 
         public class FactType

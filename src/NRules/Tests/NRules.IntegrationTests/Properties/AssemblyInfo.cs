@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("NRules.IntegrationTests")]
-[assembly: AssemblyDescription("")]
+/*[assembly: AssemblyTitle("NRules")]
+[assembly: AssemblyDescription("Rules engine for .NET")]*/
 [assembly: ComVisible(false)]

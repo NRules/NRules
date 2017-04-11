@@ -1,14 +1,13 @@
 ﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class SessionQueryTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Query_NoFacts_Empty()
         {
             //Arrange
@@ -17,10 +16,10 @@ namespace NRules.IntegrationTests
             var facts = query.ToList();
 
             //Assert
-            Assert.AreEqual(0, facts.Count);
+            Assert.Equal(0, facts.Count);
         }
 
-        [Test]
+        [Fact]
         public void Query_OneFact_RetrievesFactFromQuery()
         {
             //Arrange
@@ -32,11 +31,11 @@ namespace NRules.IntegrationTests
             var facts = query.ToList();
 
             //Assert
-            Assert.AreEqual(1, facts.Count);
-            Assert.AreSame(fact1, facts[0]);
+            Assert.Equal(1, facts.Count);
+            Assert.Same(fact1, facts[0]);
         }
 
-        [Test]
+        [Fact]
         public void Query_RuleInsertsSecondFact_TwoFactsInMemory()
         {
             //Arrange
@@ -49,10 +48,10 @@ namespace NRules.IntegrationTests
             var facts = query.ToList();
 
             //Assert
-            Assert.AreEqual(2, facts.Count);
+            Assert.Equal(2, facts.Count);
         }
 
-        [Test]
+        [Fact]
         public void Query_QueryFactsByType_OnlyReturnsFactsOfThatType()
         {
             //Arrange
@@ -65,8 +64,8 @@ namespace NRules.IntegrationTests
             var facts = query.ToList();
 
             //Assert
-            Assert.AreEqual(1, facts.Count);
-            Assert.AreEqual(fact1.TestProperty, facts[0].JoinProperty);
+            Assert.Equal(1, facts.Count);
+            Assert.Equal(fact1.TestProperty, facts[0].JoinProperty);
         }
 
         protected override void SetUpRules()

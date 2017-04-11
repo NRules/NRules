@@ -2,14 +2,13 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class SingleOrDefaultEquatableFactRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactsAndOneInvalid_FiresOnceWithValidFact()
         {
             //Arrange
@@ -25,11 +24,11 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredOnce();
             var firedFact = GetFiredFact<FactType>();
-            Assert.AreEqual(2, firedFact.Id);
-            Assert.AreEqual("Original 2", firedFact.ValueProperty);
+            Assert.Equal(2, firedFact.Id);
+            Assert.Equal("Original 2", firedFact.ValueProperty);
         }
         
-        [Test]
+        [Fact]
         public void Fire_NoValidFacts_FiresOnceWithDefault()
         {
             //Arrange
@@ -44,11 +43,11 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredOnce();
             var firedFact = GetFiredFact<FactType>();
-            Assert.AreEqual(0, firedFact.Id);
+            Assert.Equal(0, firedFact.Id);
             Assert.Null(firedFact.ValueProperty);
         }
         
-        [Test]
+        [Fact]
         public void Fire_NoValidFactsUpdatedToValid_FiresOnceWithValidFact()
         {
             //Arrange
@@ -66,11 +65,11 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredOnce();
             var firedFact = GetFiredFact<FactType>();
-            Assert.AreEqual(1, firedFact.Id);
-            Assert.AreEqual("Original 1", firedFact.ValueProperty);
+            Assert.Equal(1, firedFact.Id);
+            Assert.Equal("Original 1", firedFact.ValueProperty);
         }
         
-        [Test]
+        [Fact]
         public void Fire_ValidFactInsertedThenUpdated_FiresOnceWithUpdatedValue()
         {
             //Arrange
@@ -88,11 +87,11 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredOnce();
             var firedFact = GetFiredFact<FactType>();
-            Assert.AreEqual(1, firedFact.Id);
-            Assert.AreEqual("Updated 1", firedFact.ValueProperty);
+            Assert.Equal(1, firedFact.Id);
+            Assert.Equal("Updated 1", firedFact.ValueProperty);
         }
                 
-        [Test]
+        [Fact]
         public void Fire_TwoValidFactsInsertedThenUpdated_FiresOnceThenFiresOnceAgain()
         {
             //Arrange

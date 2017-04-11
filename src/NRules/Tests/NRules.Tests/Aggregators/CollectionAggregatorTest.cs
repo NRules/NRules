@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.RuleModel;
 using NRules.RuleModel.Aggregators;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.Tests.Aggregators
 {
-    [TestFixture]
     public class CollectionAggregatorTest
     {
-        [Test]
+        [Fact]
         public void Aggregates_NewInstance_OneEmptyCollection()
         {
             //Arrange
@@ -20,12 +19,12 @@ namespace NRules.Tests.Aggregators
             var result = target.Aggregates.ToArray();
 
             //Assert
-            Assert.AreEqual(1, result.Length);
+            Assert.Equal(1, result.Length);
             var aggregate = (IEnumerable<TestFact>)result[0];
-            Assert.AreEqual(0, aggregate.Count());
+            Assert.Equal(0, aggregate.Count());
         }
 
-        [Test]
+        [Fact]
         public void Aggregates_HasElements_OneCollectionWithElements()
         {
             //Arrange
@@ -36,12 +35,12 @@ namespace NRules.Tests.Aggregators
             var result = target.Aggregates.ToArray();
 
             //Assert
-            Assert.AreEqual(1, result.Length);
+            Assert.Equal(1, result.Length);
             var aggregate = (IEnumerable<TestFact>)result[0];
-            Assert.AreEqual(2, aggregate.Count());
+            Assert.Equal(2, aggregate.Count());
         }
 
-        [Test]
+        [Fact]
         public void Add_NewInstance_AddedResult()
         {
             //Arrange
@@ -51,13 +50,13 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(new[] {new TestFact(1), new TestFact(2)}).ToArray();
 
             //Assert
-            Assert.AreEqual(1, result.Length);
-            Assert.AreEqual(AggregationAction.Added, result[0].Action);
+            Assert.Equal(1, result.Length);
+            Assert.Equal(AggregationAction.Added, result[0].Action);
             var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
-            Assert.AreEqual(2, aggregate.Count());
+            Assert.Equal(2, aggregate.Count());
         }
 
-        [Test]
+        [Fact]
         public void Add_NewInstanceNoFacts_AddedResultEmptyCollection()
         {
             //Arrange
@@ -67,13 +66,13 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(new TestFact[0]).ToArray();
 
             //Assert
-            Assert.AreEqual(1, result.Length);
-            Assert.AreEqual(AggregationAction.Added, result[0].Action);
+            Assert.Equal(1, result.Length);
+            Assert.Equal(AggregationAction.Added, result[0].Action);
             var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
-            Assert.AreEqual(0, aggregate.Count());
+            Assert.Equal(0, aggregate.Count());
         }
 
-        [Test]
+        [Fact]
         public void Add_OldInstance_ModifiedResult()
         {
             //Arrange
@@ -84,13 +83,13 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(new[] {new TestFact(2), new TestFact(3)}).ToArray();
 
             //Assert
-            Assert.AreEqual(1, result.Length);
-            Assert.AreEqual(AggregationAction.Modified, result[0].Action);
+            Assert.Equal(1, result.Length);
+            Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
-            Assert.AreEqual(3, aggregate.Count());
+            Assert.Equal(3, aggregate.Count());
         }
 
-        [Test]
+        [Fact]
         public void Modify_ExistingFacts_ModifiedResult()
         {
             //Arrange
@@ -101,13 +100,13 @@ namespace NRules.Tests.Aggregators
             var result = target.Modify(new[] {new TestFact(1), new TestFact(2)}).ToArray();
 
             //Assert
-            Assert.AreEqual(1, result.Length);
-            Assert.AreEqual(AggregationAction.Modified, result[0].Action);
+            Assert.Equal(1, result.Length);
+            Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
-            Assert.AreEqual(2, aggregate.Count());
+            Assert.Equal(2, aggregate.Count());
         }
 
-        [Test]
+        [Fact]
         public void Modify_NonExistent_Throws()
         {
             //Arrange
@@ -119,7 +118,7 @@ namespace NRules.Tests.Aggregators
                 () => target.Modify(new[] {new TestFact(3), new TestFact(4)}));
         }
 
-        [Test]
+        [Fact]
         public void Remove_ExistingFacts_ModifiedResult()
         {
             //Arrange
@@ -130,14 +129,14 @@ namespace NRules.Tests.Aggregators
             var result = target.Remove(new[] {new TestFact(1), new TestFact(2)}).ToArray();
 
             //Assert
-            Assert.AreEqual(1, result.Length);
-            Assert.AreEqual(AggregationAction.Modified, result[0].Action);
+            Assert.Equal(1, result.Length);
+            Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
-            Assert.AreEqual(1, aggregate.Count());
-            Assert.AreEqual(3, aggregate.ElementAt(0).Id);
+            Assert.Equal(1, aggregate.Count());
+            Assert.Equal(3, aggregate.ElementAt(0).Id);
         }
 
-        [Test]
+        [Fact]
         public void Remove_NonExistent_Throws()
         {
             //Arrange

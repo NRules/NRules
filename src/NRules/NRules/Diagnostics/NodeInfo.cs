@@ -28,7 +28,7 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Node in the rete network graph.
     /// </summary>
-    [Serializable]
+    //[Serializable]
     public class NodeInfo
     {
         private static readonly string[] Empty = {};

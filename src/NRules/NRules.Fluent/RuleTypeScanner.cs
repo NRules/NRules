@@ -96,8 +96,8 @@ namespace NRules.Fluent
         /// <returns>Rule type scanner to continue scanning specification.</returns>
         public IRuleTypeScanner Assembly(params Assembly[] assemblies)
         {
-            var ruleTypes = assemblies.SelectMany(a => a.GetTypes().Where(IsRuleType));
-            _ruleTypes.AddRange(ruleTypes);
+            var ruleTypes = assemblies.SelectMany(a => a.DefinedTypes.Where(IsRuleType));
+            _ruleTypes.AddRange(ruleTypes.Select(x => x.AsType()));
             return this;
         }
 
@@ -118,7 +118,7 @@ namespace NRules.Fluent
         /// <returns>Rule type scanner to continue scanning specification.</returns>
         public IRuleTypeScanner AssemblyOf(Type type)
         {
-            return Assembly(type.Assembly);
+            return Assembly(type.GetTypeInfo().Assembly);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace NRules.Fluent
         /// <returns>Rule type scanner to continue scanning specification.</returns>
         public IRuleTypeScanner Type(params Type[] types)
         {
-            var ruleTypes = types.Where(IsRuleType);
+            var ruleTypes = types.Where(x => IsRuleType(x.GetTypeInfo()));
             _ruleTypes.AddRange(ruleTypes);
             return this;
         }
@@ -140,7 +140,7 @@ namespace NRules.Fluent
         public Type[] GetRuleTypes()
         {
             var ruleTypes = _ruleTypes
-                .Where(t => _privateTypes || !t.IsNotPublic)
+                .Where(t => _privateTypes || !t.GetTypeInfo().IsNotPublic)
                 .Where(t => _nestedTypes || !t.IsNested);
             return ruleTypes.ToArray();
         }
@@ -148,21 +148,21 @@ namespace NRules.Fluent
         /// <summary>
         /// Determines if a given CLR type is a rule type.
         /// </summary>
-        /// <param name="type">Type.</param>
+        /// <param name="typeInfo">Type.</param>
         /// <returns>Result of the check.</returns>
-        public static bool IsRuleType(Type type)
+        public static bool IsRuleType(TypeInfo typeInfo)
         {
-            if (IsConcrete(type) &&
-                typeof(Rule).IsAssignableFrom(type)) return true;
+            if (IsConcrete(typeInfo) &&
+                typeof(Rule).GetTypeInfo().IsAssignableFrom(typeInfo)) return true;
 
             return false;
         }
 
-        private static bool IsConcrete(Type type)
+        private static bool IsConcrete(TypeInfo typeInfo)
         {
-            if (type.IsAbstract) return false;
-            if (type.IsInterface) return false;
-            if (type.IsGenericTypeDefinition) return false;
+            if (typeInfo.IsAbstract) return false;
+            if (typeInfo.IsInterface) return false;
+            if (typeInfo.IsGenericTypeDefinition) return false;
 
             return true;
         }

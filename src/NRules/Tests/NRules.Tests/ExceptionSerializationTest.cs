@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+//using System.Runtime.Serialization.Formatters.Binary;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
-using NUnit.Framework;
 
 namespace NRules.Tests
 {
-    [TestFixture]
+    /*[TestFixture]
     public class ExceptionSerializationTest
     {
         [Test]
@@ -107,5 +106,5 @@ namespace NRules.Tests
                 return newObject;
             }
         }
-    }
+    }*/
 }

@@ -1,13 +1,12 @@
 ﻿using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class TwoFactRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsInsertAndFireThenUpdateAndFire_FiresTwice()
         {
             //Arrange
@@ -26,7 +25,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
         
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsInsertThenUpdateThenFire_FiresOnce()
         {
             //Arrange
@@ -44,7 +43,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
         
-        [Test]
+        [Fact]
         public void Fire_MatchingFacts_FiresOnce()
         {
             //Arrange
@@ -61,7 +60,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsReverseOrder_FiresOnce()
         {
             //Arrange
@@ -78,7 +77,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingPairsOfFacts_FiresTwice()
         {
             //Arrange
@@ -100,7 +99,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsOfOneKindOneMatchingFactOfAnotherKind_FiresTwice()
         {
             //Arrange
@@ -119,7 +118,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        [Test]
+        [Fact]
         public void Fire_FirstMatchingFactSecondInvalidFact_DoesNotFire()
         {
             //Arrange
@@ -136,7 +135,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_FirstInvalidFactSecondMatchingFact_DoesNotFire()
         {
             //Arrange
@@ -153,7 +152,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsUnsatisfiedJoin_DoesNotFire()
         {
             //Arrange
@@ -170,7 +169,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsFirstRetracted_DoesNotFire()
         {
             //Arrange
@@ -188,7 +187,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsSecondRetracted_DoesNotFire()
         {
             //Arrange
@@ -206,7 +205,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsFirstUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
@@ -226,7 +225,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneInvalidFactAndSecondMatchingFactFirstUpdatedToValid_FiresOnce()
         {
             //Arrange
@@ -246,7 +245,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsSecondUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
@@ -266,7 +265,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactSecondInvalidThenUpdatedToValid_FiresOnce()
         {
             //Arrange
@@ -286,7 +285,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactSecondInvalidThenUpdatedToValidJoin_FiresOnce()
         {
             //Arrange

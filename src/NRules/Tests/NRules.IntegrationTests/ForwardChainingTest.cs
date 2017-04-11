@@ -1,13 +1,12 @@
 ﻿using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class ForwardChainingTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactErrorInSecondCondition_FiresFirstRuleAndChainsSecond()
         {
             //Arrange
@@ -22,7 +21,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce<ForwardChainingSecondRule>();
         }
         
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFact_FiresFirstRuleAndChainsSecond()
         {
             //Arrange
@@ -32,10 +31,10 @@ namespace NRules.IntegrationTests
             //Act - Assert
             var ex = Assert.Throws<RuleActionEvaluationException>(() => Session.Fire());
             Assert.NotNull(ex.InnerException);
-            Assert.IsInstanceOf<RuleConditionEvaluationException>(ex.InnerException);
+            Assert.IsType<RuleConditionEvaluationException>(ex.InnerException);
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactOfOneKindAndOneOfAnotherKind_FiresSecondRuleDirectlyAndChained()
         {
             //Arrange
