@@ -1,13 +1,13 @@
 ﻿using System;
-/*using System.Runtime.Serialization;
-using System.Security;*/
+using System.Runtime.Serialization;
+using System.Security;
 
 namespace NRules.Fluent
 {
     /// <summary>
     /// Represents errors that occur when instantiating rule classes.
     /// </summary>
-    //[Serializable]
+    [Serializable]
     public class RuleActivationException : Exception
     {
         internal RuleActivationException(string message, Type ruleType, Exception innerException)
@@ -16,14 +16,14 @@ namespace NRules.Fluent
             RuleType = ruleType;
         }
 
-        /*[SecuritySafeCritical]
+        [SecuritySafeCritical]
         protected RuleActivationException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             RuleType = (Type)info.GetValue("RuleType", typeof(Type));
-        }*/
+        }
 
-        /*[SecurityCritical]
+        [SecurityCritical]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
@@ -32,7 +32,7 @@ namespace NRules.Fluent
             }
             base.GetObjectData(info, context);
             info.AddValue("RuleType", RuleType, typeof(Type));
-        }*/
+        }
 
         /// <summary>
         /// Rule .NET type that caused exception.
