@@ -6,7 +6,7 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Snapshot of rules session state.
     /// </summary>
-    //[Serializable]
+    [Serializable]
     public class SessionSnapshot
     {
         private readonly List<NodeInfo> _nodes;

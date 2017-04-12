@@ -1,5 +1,5 @@
 using System;
-//using System.Runtime.Serialization;
+using System.Runtime.Serialization;
 using System.Security;
 
 namespace NRules
@@ -7,7 +7,7 @@ namespace NRules
     /// <summary>
     /// Represents errors that occur while evaluating rule condition.
     /// </summary>
-    //[Serializable]
+    [Serializable]
     public class RuleConditionEvaluationException : RuleExpressionEvaluationException
     {
         internal RuleConditionEvaluationException(string message, string expression, Exception innerException)
@@ -15,10 +15,10 @@ namespace NRules
         {
         }
 
-        /*[SecuritySafeCritical]
+        [SecuritySafeCritical]
         protected RuleConditionEvaluationException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-        }*/
+        }
     }
 }
