@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NRules.Extensibility;
 
 namespace NRules
@@ -27,16 +28,30 @@ namespace NRules
             {
                 foreach (var invocation in invocations)
                 {
-                    invocation.Invoke();
+                    try
+                    {
+                        invocation.Invoke();
+                    }
+                    catch (Exception e)
+                    {
+                        bool isHandled = false;
+                        var expression = invocation.RuleAction.Expression;
+                        executionContext.EventAggregator.RaiseActionFailed(executionContext.Session, e, expression, actionContext.Activation, ref isHandled);
+                        if (!isHandled)
+                        {
+                            throw new RuleActionEvaluationException("Failed to evaluate rule action",
+                                actionContext.Rule.Name, expression.ToString(), e);
+                        }
+                    }
                 }
             }
             executionContext.EventAggregator.RaiseRuleFired(session, activation);
         }
 
-        private IEnumerable<IActionInvocation> CreateInvocations(IExecutionContext executionContext, IActionContext actionContext)
+        private IEnumerable<ActionInvocation> CreateInvocations(IExecutionContext executionContext, IActionContext actionContext)
         {
             ICompiledRule compiledRule = actionContext.CompiledRule;
-            var invocations = new List<IActionInvocation>();
+            var invocations = new List<ActionInvocation>();
             foreach (IRuleAction action in compiledRule.Actions)
             {
                 var args = action.GetArguments(executionContext, actionContext);

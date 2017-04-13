@@ -3,7 +3,7 @@ param (
 	[string]$component_name = 'Core'
 )
 
-$version = '0.5.1'
+$version = '0.5.2'
 $target_framework = 'net-4.0'
 $configuration = 'Release'
 
