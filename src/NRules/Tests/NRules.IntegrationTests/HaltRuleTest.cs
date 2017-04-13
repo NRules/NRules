@@ -1,13 +1,12 @@
 ﻿using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class HaltRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFacts_FiresOnceAndHalts()
         {
             //Arrange
@@ -23,7 +22,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
         
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsFireCalledTwice_FiresOnceThenHaltsThenResumesAndFiresAgain()
         {
             //Arrange

@@ -2,14 +2,13 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class CollectionWithConditionsRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFacts_DoesNotFire()
         {
             //Arrange
@@ -26,7 +25,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
         
-        [Test]
+        [Fact]
         public void Fire_ThreeMatchingFacts_FiresOnceWithThreeFacts()
         {
             //Arrange
@@ -42,10 +41,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(3, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Equal(3, GetFiredFact<IEnumerable<FactType>>().Count());
         }
         
-        [Test]
+        [Fact]
         public void Fire_ThreeMatchingFactsOneRetracted_DoesNotFire()
         {
             //Arrange

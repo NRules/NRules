@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.RuleModel;
 using NRules.RuleModel.Aggregators;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.Tests.Aggregators
 {
-    [TestFixture]
     public class ProjectionAggregatorTest
     {
-        [Test]
+        [Fact]
         public void Aggregates_NewInstance_Empty()
         {
             //Arrange
@@ -20,10 +19,10 @@ namespace NRules.Tests.Aggregators
             var result = target.Aggregates.ToArray();
 
             //Assert
-            Assert.AreEqual(0, result.Length);
+            Assert.Equal(0, result.Length);
         }
 
-        [Test]
+        [Fact]
         public void Aggregates_HasElements_AllElements()
         {
             //Arrange
@@ -34,10 +33,10 @@ namespace NRules.Tests.Aggregators
             var result = target.Aggregates.ToArray();
 
             //Assert
-            Assert.AreEqual(2, result.Length);
+            Assert.Equal(2, result.Length);
         }
 
-        [Test]
+        [Fact]
         public void Add_Facts_AddedResult()
         {
             //Arrange
@@ -47,14 +46,14 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(new[] { new TestFact(1, "value1"), new TestFact(2, "value2") }).ToArray();
 
             //Assert
-            Assert.AreEqual(2, result.Length);
-            Assert.AreEqual(AggregationAction.Added, result[0].Action);
-            Assert.AreEqual("value1", result[0].Aggregate);
-            Assert.AreEqual(AggregationAction.Added, result[1].Action);
-            Assert.AreEqual("value2", result[1].Aggregate);
+            Assert.Equal(2, result.Length);
+            Assert.Equal(AggregationAction.Added, result[0].Action);
+            Assert.Equal("value1", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[1].Action);
+            Assert.Equal("value2", result[1].Aggregate);
         }
 
-        [Test]
+        [Fact]
         public void Add_NoFacts_EmptyResult()
         {
             //Arrange
@@ -64,10 +63,10 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(new TestFact[0]).ToArray();
 
             //Assert
-            Assert.AreEqual(0, result.Length);
+            Assert.Equal(0, result.Length);
         }
 
-        [Test]
+        [Fact]
         public void Modify_Existing_ModifiedResult()
         {
             //Arrange
@@ -78,14 +77,14 @@ namespace NRules.Tests.Aggregators
             var result = target.Modify(new[] {new TestFact(1, "value1"), new TestFact(2, "value2")}).ToArray();
 
             //Assert
-            Assert.AreEqual(2, result.Length);
-            Assert.AreEqual(AggregationAction.Modified, result[0].Action);
-            Assert.AreEqual("value1", result[0].Aggregate);
-            Assert.AreEqual(AggregationAction.Modified, result[1].Action);
-            Assert.AreEqual("value2", result[1].Aggregate);
+            Assert.Equal(2, result.Length);
+            Assert.Equal(AggregationAction.Modified, result[0].Action);
+            Assert.Equal("value1", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Modified, result[1].Action);
+            Assert.Equal("value2", result[1].Aggregate);
         }
 
-        [Test]
+        [Fact]
         public void Modify_ProjectionChanged_RemovedAddedResult()
         {
             //Arrange
@@ -96,18 +95,18 @@ namespace NRules.Tests.Aggregators
             var result = target.Modify(new[] {new TestFact(1, "value1x"), new TestFact(2, "value2x")}).ToArray();
 
             //Assert
-            Assert.AreEqual(4, result.Length);
-            Assert.AreEqual(AggregationAction.Removed, result[0].Action);
-            Assert.AreEqual("value1", result[0].Aggregate);
-            Assert.AreEqual(AggregationAction.Added, result[1].Action);
-            Assert.AreEqual("value1x", result[1].Aggregate);
-            Assert.AreEqual(AggregationAction.Removed, result[2].Action);
-            Assert.AreEqual("value2", result[2].Aggregate);
-            Assert.AreEqual(AggregationAction.Added, result[3].Action);
-            Assert.AreEqual("value2x", result[3].Aggregate);
+            Assert.Equal(4, result.Length);
+            Assert.Equal(AggregationAction.Removed, result[0].Action);
+            Assert.Equal("value1", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[1].Action);
+            Assert.Equal("value1x", result[1].Aggregate);
+            Assert.Equal(AggregationAction.Removed, result[2].Action);
+            Assert.Equal("value2", result[2].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[3].Action);
+            Assert.Equal("value2x", result[3].Aggregate);
         }
 
-        [Test]
+        [Fact]
         public void Modify_NonExistent_Throws()
         {
             //Arrange
@@ -118,7 +117,7 @@ namespace NRules.Tests.Aggregators
                 () => target.Modify(new[] {new TestFact(1, "value1"), new TestFact(2, "value2")}));
         }
 
-        [Test]
+        [Fact]
         public void Remove_Existing_RemovedResult()
         {
             //Arrange
@@ -129,14 +128,14 @@ namespace NRules.Tests.Aggregators
             var result = target.Remove(new[] {new TestFact(1, "value1"), new TestFact(2, "value2")}).ToArray();
 
             //Assert
-            Assert.AreEqual(2, result.Length);
-            Assert.AreEqual(AggregationAction.Removed, result[0].Action);
-            Assert.AreEqual("value1", result[0].Aggregate);
-            Assert.AreEqual(AggregationAction.Removed, result[1].Action);
-            Assert.AreEqual("value2", result[1].Aggregate);
+            Assert.Equal(2, result.Length);
+            Assert.Equal(AggregationAction.Removed, result[0].Action);
+            Assert.Equal("value1", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Removed, result[1].Action);
+            Assert.Equal("value2", result[1].Aggregate);
         }
 
-        [Test]
+        [Fact]
         public void Remove_NonExistent_Throws()
         {
             //Arrange

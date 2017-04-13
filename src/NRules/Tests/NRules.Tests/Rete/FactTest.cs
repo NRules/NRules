@@ -1,13 +1,12 @@
 ﻿using System;
 using NRules.Rete;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.Tests.Rete
 {
-    [TestFixture]
     public class FactTest
     {
-        [Test]
+        [Fact]
         public void FactType_WhenObjectPassed_ReturnsItsType()
         {
             //Arrange
@@ -19,7 +18,7 @@ namespace NRules.Tests.Rete
             var expected = typeof (DateTime);
 
             //Assert
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
     }
 }

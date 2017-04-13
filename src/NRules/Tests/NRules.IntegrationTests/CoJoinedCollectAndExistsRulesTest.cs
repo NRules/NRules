@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class CoJoinedCollectAndExistsRulesTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_MatchingFactOfFirstKindNoFactsOfOtherKind_FiresCollect()
         {
             //Arrange
@@ -24,7 +23,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire<ExistsRule>();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactOfFirstKindAndMatchingFactOfOtherKind_EachFiresOnce()
         {
             //Arrange

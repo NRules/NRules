@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NRules.Diagnostics;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests.TestAssets
 {
@@ -16,8 +17,7 @@ namespace NRules.IntegrationTests.TestAssets
         private Dictionary<string, List<AgendaEventArgs>> _firedRulesMap;
         private Dictionary<Type, IRuleMetadata> _ruleMap;
 
-        [SetUp]
-        public void SetUp()
+        protected BaseRuleTestFixture()
         {
             _firedRulesMap = new Dictionary<string, List<AgendaEventArgs>>();
             _ruleMap = new Dictionary<Type, IRuleMetadata>();
@@ -54,7 +54,7 @@ namespace NRules.IntegrationTests.TestAssets
             var rule = _ruleMap.Single().Value;
             var firedRule = _firedRulesMap[rule.Name];
             var x = firedRule.Last();
-            return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Type)).Value;
+            return (T)x.Facts.First(f => typeof(T).GetTypeInfo().IsAssignableFrom(f.Type)).Value;
         }
 
         protected T GetFiredFact<T>(int instanceNumber)
@@ -62,45 +62,45 @@ namespace NRules.IntegrationTests.TestAssets
             var rule = _ruleMap.Single().Value;
             var firedRule = _firedRulesMap[rule.Name];
             var x = firedRule.ElementAt(instanceNumber);
-            return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Type)).Value;
+            return (T)x.Facts.First(f => typeof(T).GetTypeInfo().IsAssignableFrom(f.Type)).Value;
         }
 
         protected void AssertFiredOnce()
         {
-            Assert.AreEqual(1, _firedRulesMap.First().Value.Count);
+            Assert.Equal(1, _firedRulesMap.First().Value.Count);
         }
 
         protected void AssertFiredTwice()
         {
-            Assert.AreEqual(2, _firedRulesMap.First().Value.Count);
+            Assert.Equal(2, _firedRulesMap.First().Value.Count);
         }
 
         protected void AssertFiredTimes(int value)
         {
-            Assert.AreEqual(value, _firedRulesMap.First().Value.Count);
+            Assert.Equal(value, _firedRulesMap.First().Value.Count);
         }
 
         protected void AssertDidNotFire()
         {
-            Assert.AreEqual(0, _firedRulesMap.First().Value.Count);
+            Assert.Equal(0, _firedRulesMap.First().Value.Count);
         }
 
         protected void AssertFiredOnce<T>()
         {
             var rule = _ruleMap[typeof (T)];
-            Assert.AreEqual(1, _firedRulesMap[rule.Name].Count);
+            Assert.Equal(1, _firedRulesMap[rule.Name].Count);
         }
 
         protected void AssertFiredTwice<T>()
         {
             var rule = _ruleMap[typeof(T)];
-            Assert.AreEqual(2, _firedRulesMap[rule.Name].Count);
+            Assert.Equal(2, _firedRulesMap[rule.Name].Count);
         }
 
         protected void AssertDidNotFire<T>()
         {
             var rule = _ruleMap[typeof(T)];
-            Assert.AreEqual(0, _firedRulesMap[rule.Name].Count);
+            Assert.Equal(0, _firedRulesMap[rule.Name].Count);
         }
 
         private class InstanceActivator : IRuleActivator

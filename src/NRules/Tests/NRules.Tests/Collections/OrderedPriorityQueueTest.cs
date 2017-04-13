@@ -1,12 +1,11 @@
 ﻿using NRules.Collections;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.Tests.Collections
 {
-    [TestFixture]
     public class OrderedPriorityQueueTest
     {
-        [Test]
+        [Fact]
         public void Queue_Enqueue_DequeueReturnsByPriority()
         {
             //Arrange
@@ -20,14 +19,14 @@ namespace NRules.Tests.Collections
             queue.Enqueue(4, "b");
 
             //Assert
-            Assert.AreEqual("a", queue.Dequeue());
-            Assert.AreEqual("b", queue.Dequeue());
-            Assert.AreEqual("c", queue.Dequeue());
-            Assert.AreEqual("d", queue.Dequeue());
-            Assert.AreEqual("e", queue.Dequeue());
+            Assert.Equal("a", queue.Dequeue());
+            Assert.Equal("b", queue.Dequeue());
+            Assert.Equal("c", queue.Dequeue());
+            Assert.Equal("d", queue.Dequeue());
+            Assert.Equal("e", queue.Dequeue());
         }
 
-        [Test]
+        [Fact]
         public void Queue_EnqueueWithDupPriorities_DequeueReturnsByPriorityThenByOrderOfInsertion()
         {
             //Arrange
@@ -44,14 +43,14 @@ namespace NRules.Tests.Collections
             queue.Enqueue(4, "c");
 
             //Assert
-            Assert.AreEqual("a", queue.Dequeue());
-            Assert.AreEqual("b", queue.Dequeue());
-            Assert.AreEqual("c", queue.Dequeue());
-            Assert.AreEqual("d", queue.Dequeue());
-            Assert.AreEqual("e", queue.Dequeue());
-            Assert.AreEqual("f", queue.Dequeue());
-            Assert.AreEqual("g", queue.Dequeue());
-            Assert.AreEqual("h", queue.Dequeue());
+            Assert.Equal("a", queue.Dequeue());
+            Assert.Equal("b", queue.Dequeue());
+            Assert.Equal("c", queue.Dequeue());
+            Assert.Equal("d", queue.Dequeue());
+            Assert.Equal("e", queue.Dequeue());
+            Assert.Equal("f", queue.Dequeue());
+            Assert.Equal("g", queue.Dequeue());
+            Assert.Equal("h", queue.Dequeue());
         }
     }
 }

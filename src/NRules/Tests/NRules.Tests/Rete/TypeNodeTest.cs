@@ -1,13 +1,12 @@
 ﻿using System;
 using NRules.Rete;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.Tests.Rete
 {
-    [TestFixture]
     public class TypeNodeTest
     {
-        [Test]
+        [Fact]
         public void FilterType_PassedToCtor_Returns()
         {
             //Arrange
@@ -18,7 +17,7 @@ namespace NRules.Tests.Rete
             var expected = typeof (DateTime);
 
             //Assert
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
     }
 }

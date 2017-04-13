@@ -3,14 +3,13 @@ using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class ThreeFactOrGroupRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_MatchingMainFactAndNoneOfOrGroup_DoesNotFire()
         {
             //Arrange
@@ -25,7 +24,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingMainFactAndFirstPartOfOrGroup_FiresOnce()
         {
             //Arrange
@@ -42,7 +41,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsFirstPart_FactsInContext()
         {
             //Arrange
@@ -63,16 +62,16 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(3, matches.Length);
-            Assert.AreEqual("fact1", matches[0].Declaration.Name);
-            Assert.AreSame(fact1, matches[0].Value);
-            Assert.AreEqual("fact2", matches[1].Declaration.Name);
-            Assert.AreSame(fact2, matches[1].Value);
-            Assert.AreEqual("fact3", matches[2].Declaration.Name);
+            Assert.Equal(3, matches.Length);
+            Assert.Equal("fact1", matches[0].Declaration.Name);
+            Assert.Same(fact1, matches[0].Value);
+            Assert.Equal("fact2", matches[1].Declaration.Name);
+            Assert.Same(fact2, matches[1].Value);
+            Assert.Equal("fact3", matches[2].Declaration.Name);
             Assert.Null(matches[2].Value);
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsSecondPart_FactsInContext()
         {
             //Arrange
@@ -95,16 +94,16 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(3, matches.Length);
-            Assert.AreEqual("fact1", matches[0].Declaration.Name);
-            Assert.AreSame(fact1, matches[0].Value);
-            Assert.AreEqual("fact2", matches[1].Declaration.Name);
-            Assert.AreSame(fact2, matches[1].Value);
-            Assert.AreEqual("fact3", matches[2].Declaration.Name);
-            Assert.AreSame(fact3, matches[2].Value);
+            Assert.Equal(3, matches.Length);
+            Assert.Equal("fact1", matches[0].Declaration.Name);
+            Assert.Same(fact1, matches[0].Value);
+            Assert.Equal("fact2", matches[1].Declaration.Name);
+            Assert.Same(fact2, matches[1].Value);
+            Assert.Equal("fact3", matches[2].Declaration.Name);
+            Assert.Same(fact3, matches[2].Value);
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingMainFactAndSecondPartOfOrGroup_FiresOnce()
         {
             //Arrange
@@ -123,7 +122,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingMainFactAndBothPartsOfOrGroup_FiresTwice()
         {
             //Arrange
@@ -144,7 +143,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingMainFactAndOnePartOfOrGroupAndMainFactRetracted_DoesNotFire()
         {
             //Arrange
@@ -163,7 +162,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingMainFactAndOnePartOfOrGroupAndMainFactUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
@@ -183,7 +182,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingMainFactAndOnePartOfOrGroupAndGroupFactRetracted_DoesNotFire()
         {
             //Arrange
@@ -202,7 +201,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingMainFactAndOnePartOfOrGroupAndGroupFactUpdatedToInvalid_DoesNotFire()
         {
             //Arrange

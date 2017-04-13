@@ -3,14 +3,13 @@ using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactNoBindingRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
@@ -24,7 +23,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFact_FactInContext()
         {
             //Arrange
@@ -42,8 +41,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(1, matches.Length);
-            Assert.AreSame(fact, matches[0].Value);
+            Assert.Equal(1, matches.Length);
+            Assert.Same(fact, matches[0].Value);
         }
 
         protected override void SetUpRules()

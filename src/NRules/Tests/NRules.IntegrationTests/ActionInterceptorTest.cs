@@ -4,14 +4,13 @@ using NRules.Extensibility;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class ActionInterceptorTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_ConditionsMatchNoInterceptor_ExecutesAction()
         {
             //Arrange
@@ -31,7 +30,7 @@ namespace NRules.IntegrationTests
             Assert.True(actionExecuted);
         }
 
-        [Test]
+        [Fact]
         public void Fire_ConditionsMatchInterceptorInvokes_ExecutesAction()
         {
             //Arrange
@@ -53,7 +52,7 @@ namespace NRules.IntegrationTests
             Assert.True(actionExecuted);
         }
 
-        [Test]
+        [Fact]
         public void Fire_InterceptorInvokesActionThatThrows_ExceptionNotWrapped()
         {
             //Arrange
@@ -68,10 +67,10 @@ namespace NRules.IntegrationTests
 
             //Act - Assert
             var ex = Assert.Throws<InvalidOperationException>(() => Session.Fire());
-            Assert.AreEqual("Test", ex.Message);
+            Assert.Equal("Test", ex.Message);
         }
 
-        [Test]
+        [Fact]
         public void Fire_ConditionsMatchInterceptorDoesNotInvoke_DoesNotExecuteAction()
         {
             //Arrange

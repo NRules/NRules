@@ -1,15 +1,14 @@
 using System;
 using Moq;
 using NRules.Rete;
-using NUnit.Framework;
+using Xunit;
 using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Tests
 {
-    [TestFixture]
     public class AgendaTest
     {
-        [Test]
+        [Fact]
         public void Agenda_Created_Empty()
         {
             // Arrange
@@ -21,7 +20,7 @@ namespace NRules.Tests
         }
 
 
-        [Test]
+        [Fact]
         public void Pop_AgendaEmpty_Throws()
         {
             // Arrange
@@ -31,7 +30,7 @@ namespace NRules.Tests
             Assert.Throws<InvalidOperationException>(() => target.Pop());
         }
 
-        [Test]
+        [Fact]
         public void Peek_AgendaHasOneActivation_ReturnsActivationAgendaEmpty()
         {
             // Arrange
@@ -46,10 +45,10 @@ namespace NRules.Tests
 
             // Assert
             Assert.True(target.IsEmpty());
-            Assert.AreSame(activation1, actualActivation);
+            Assert.Same(activation1, actualActivation);
         }
 
-        [Test]
+        [Fact]
         public void Add_Called_ActivationEndsUpInAgenda()
         {
             // Arrange
@@ -65,12 +64,12 @@ namespace NRules.Tests
             // Assert
             Assert.False(target.IsEmpty());
             var actualActivation = target.Pop();
-            Assert.AreEqual(ruleMock.Object, actualActivation.CompiledRule);
-            Assert.AreEqual(factObject, actualActivation.Tuple.RightFact.Object);
+            Assert.Equal(ruleMock.Object, actualActivation.CompiledRule);
+            Assert.Equal(factObject, actualActivation.Tuple.RightFact.Object);
             Assert.True(target.IsEmpty());
         }
 
-        [Test]
+        [Fact]
         public void Modify_Called_ActivationUpdatedInQueue()
         {
             // Arrange
@@ -88,12 +87,12 @@ namespace NRules.Tests
 
             // Assert
             var actualActivation = target.Pop();
-            Assert.AreEqual(ruleMock.Object, actualActivation.CompiledRule);
-            Assert.AreEqual(factObject, actualActivation.Tuple.RightFact.Object);
+            Assert.Equal(ruleMock.Object, actualActivation.CompiledRule);
+            Assert.Equal(factObject, actualActivation.Tuple.RightFact.Object);
             Assert.True(target.IsEmpty());
         }
         
-        [Test]
+        [Fact]
         public void Remove_CalledAfterAdd_AgendaEmpty()
         {
             // Arrange
@@ -112,7 +111,7 @@ namespace NRules.Tests
             Assert.True(target.IsEmpty());
         }
 
-        [Test]
+        [Fact]
         public void Add_CalledWithMultipleRules_RulesAreQueuedInOrder()
         {
             // Arrange
@@ -128,12 +127,12 @@ namespace NRules.Tests
 
             // Assert
             Assert.False(target.IsEmpty());
-            Assert.AreEqual(ruleMock1.Object, target.Pop().CompiledRule);
+            Assert.Equal(ruleMock1.Object, target.Pop().CompiledRule);
             Assert.False(target.IsEmpty());
-            Assert.AreEqual(ruleMock2.Object, target.Pop().CompiledRule);
+            Assert.Equal(ruleMock2.Object, target.Pop().CompiledRule);
         }
 
-        [Test]
+        [Fact]
         public void Peek_AgendaHasActivations_ReturnsActivationAgendaRamainsNonEmpty()
         {
             // Arrange
@@ -148,10 +147,10 @@ namespace NRules.Tests
 
             // Assert
             Assert.False(target.IsEmpty());
-            Assert.AreSame(activation1, actualActivation);
+            Assert.Same(activation1, actualActivation);
         }
 
-        [Test]
+        [Fact]
         public void Peek_AgendaEmpty_Throws()
         {
             // Arrange
@@ -161,7 +160,7 @@ namespace NRules.Tests
             Assert.Throws<InvalidOperationException>(() => target.Peek());
         }
 
-        [Test]
+        [Fact]
         public void Clear_CalledAfterActivation_AgendaEmpty()
         {
             // Arrange

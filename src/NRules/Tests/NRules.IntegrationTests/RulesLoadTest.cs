@@ -5,28 +5,27 @@ using NRules.Fluent;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class RulesLoadTest
     {
-        [Test]
+        [Fact]
         public void Load_AssemblyWithoutRules_Empty()
         {
             //Arrange
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load(x => x.From(typeof (string).Assembly));
+            target.Load(x => x.From(typeof(string).GetTypeInfo().Assembly));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual(0, ruleSet.Rules.Count());
+            Assert.Equal(0, ruleSet.Rules.Count());
         }
 
-        [Test]
+        [Fact]
         public void Load_InvalidTypes_Empty()
         {
             //Arrange
@@ -37,10 +36,10 @@ namespace NRules.IntegrationTests
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual(0, ruleSet.Rules.Count());
+            Assert.Equal(0, ruleSet.Rules.Count());
         }
 
-        [Test]
+        [Fact]
         public void Load_EmptyRule_Throws()
         {
             //Arrange
@@ -48,10 +47,10 @@ namespace NRules.IntegrationTests
 
             //Act - Assert
             var ex = Assert.Throws<RuleDefinitionException>(() => target.Load(x => x.NestedTypes().From(typeof (EmptyRule))));
-            Assert.AreEqual(typeof (EmptyRule), ex.RuleType);
+            Assert.Equal(typeof (EmptyRule), ex.RuleType);
         }
 
-        [Test]
+        [Fact]
         public void Load_CannotActivateRule_Throws()
         {
             //Arrange
@@ -59,10 +58,10 @@ namespace NRules.IntegrationTests
 
             //Act - Assert
             var ex = Assert.Throws<RuleActivationException>(() => target.Load(x => x.NestedTypes().From(typeof (CannotActivateRule))));
-            Assert.AreEqual(typeof (CannotActivateRule), ex.RuleType);
+            Assert.Equal(typeof (CannotActivateRule), ex.RuleType);
         }
 
-        [Test]
+        [Fact]
         public void Load_AssemblyWithRulesToNamedRuleSet_RuleSetNameMatches()
         {
             //Arrange
@@ -77,10 +76,10 @@ namespace NRules.IntegrationTests
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual("Test", ruleSet.Name);
+            Assert.Equal("Test", ruleSet.Name);
         }
 
-        [Test]
+        [Fact]
         public void Load_AssemblyWithRulesToDefaultRuleSet_DefaultRuleSetName()
         {
             //Arrange
@@ -94,10 +93,10 @@ namespace NRules.IntegrationTests
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual("default", ruleSet.Name);
+            Assert.Equal("default", ruleSet.Name);
         }
 
-        [Test]
+        [Fact]
         public void Load_FilterRuleByName_MatchingRule()
         {
             //Arrange
@@ -111,11 +110,11 @@ namespace NRules.IntegrationTests
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual(1, ruleSet.Rules.Count());
-            Assert.AreEqual(typeof (ValidRule).FullName, ruleSet.Rules.First().Name);
+            Assert.Equal(1, ruleSet.Rules.Count());
+            Assert.Equal(typeof (ValidRule).FullName, ruleSet.Rules.First().Name);
         }
 
-        [Test]
+        [Fact]
         public void Load_FilterRuleByTag_MatchingRule()
         {
             //Arrange
@@ -129,13 +128,13 @@ namespace NRules.IntegrationTests
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual(1, ruleSet.Rules.Count());
-            Assert.AreEqual("Rule with metadata", ruleSet.Rules.First().Name);
+            Assert.Equal(1, ruleSet.Rules.Count());
+            Assert.Equal("Rule with metadata", ruleSet.Rules.First().Name);
         }
 
-        private static Assembly ThisAssembly
+        private Assembly ThisAssembly
         {
-            get { return Assembly.GetExecutingAssembly(); }
+            get { return GetType().GetTypeInfo().Assembly; }
         }
 
         public RuleRepository CreateTarget()

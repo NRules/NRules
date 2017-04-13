@@ -1,14 +1,13 @@
 ﻿using System;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactOneSelectRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
@@ -20,10 +19,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+            Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
         }
         
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactInsertedThenUpdated_FiresOnce()
         {
             //Arrange
@@ -36,10 +35,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+            Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFacts_FiresTwice()
         {
             //Arrange
@@ -53,11 +52,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(fact1.TestProperty, GetFiredFact<FactProjection>(0).Value);
-            Assert.AreEqual(fact2.TestProperty, GetFiredFact<FactProjection>(1).Value);
+            Assert.Equal(fact1.TestProperty, GetFiredFact<FactProjection>(0).Value);
+            Assert.Equal(fact2.TestProperty, GetFiredFact<FactProjection>(1).Value);
         }
 
-        [Test]
+        [Fact]
         public void Fire_ConditionDoesNotMatch_DoesNotFire()
         {
             //Arrange
@@ -71,7 +70,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
@@ -86,7 +85,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneFactUpdatedFromInvalidToMatching_FiresOnce()
         {
             //Arrange
@@ -101,10 +100,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+            Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactAssertedAndRetractedAndAssertedAgain_FiresOnce()
         {
             //Arrange
@@ -118,10 +117,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+            Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactAssertedAndUpdatedToInvalid_DoesNotFire()
         {
             //Arrange

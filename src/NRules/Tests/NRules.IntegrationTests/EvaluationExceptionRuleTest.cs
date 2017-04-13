@@ -5,14 +5,13 @@ using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class EvaluationExceptionRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Insert_ErrorInConditionNoErrorHandler_Throws()
         {
             //Arrange
@@ -25,13 +24,13 @@ namespace NRules.IntegrationTests
 
             //Act - Assert
             var ex = Assert.Throws<RuleConditionEvaluationException>(() => Session.Insert(fact));
-            Assert.IsNotNull(expression);
-            Assert.AreEqual(1, facts.Count());
-            Assert.AreSame(fact, facts.First().Value);
-            Assert.IsInstanceOf<NullReferenceException>(ex.InnerException);
+            Assert.NotNull(expression);
+            Assert.Equal(1, facts.Count());
+            Assert.Same(fact, facts.First().Value);
+            Assert.IsType<NullReferenceException>(ex.InnerException);
         }
 
-        [Test]
+        [Fact]
         public void Insert_ErrorInConditionErrorHandler_DoesNotThrow()
         {
             //Arrange
@@ -40,10 +39,10 @@ namespace NRules.IntegrationTests
             var fact = new FactType { TestProperty = null };
             
             //Act - Assert
-            Assert.DoesNotThrow(() => Session.Insert(fact));
+            Session.Insert(fact);
         }
 
-        [Test]
+        [Fact]
         public void Fire_ErrorInActionNoErrorHandler_Throws()
         {
             //Arrange
@@ -59,13 +58,13 @@ namespace NRules.IntegrationTests
 
             //Act - Assert
             var ex = Assert.Throws<RuleActionEvaluationException>(() => Session.Fire());
-            Assert.IsNotNull(expression);
-            Assert.AreEqual(1, facts.Count());
-            Assert.AreSame(fact, facts.First().Value);
-            Assert.IsInstanceOf<NullReferenceException>(ex.InnerException);
+            Assert.NotNull(expression);
+            Assert.Equal(1, facts.Count());
+            Assert.Same(fact, facts.First().Value);
+            Assert.IsType<NullReferenceException>(ex.InnerException);
         }
 
-        [Test]
+        [Fact]
         public void Fire_ErrorInActionErrorHandler_DoesNotThrow()
         {
             //Arrange
@@ -77,7 +76,7 @@ namespace NRules.IntegrationTests
             GetRuleInstance<TestRule>().Action = null;
 
             //Act - Assert
-            Assert.DoesNotThrow(() => Session.Fire());
+            Session.Fire();
         }
 
         protected override void SetUpRules()

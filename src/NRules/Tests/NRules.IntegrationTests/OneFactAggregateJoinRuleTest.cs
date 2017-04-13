@@ -2,14 +2,13 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactAggregateJoinRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_NoMatchingFacts_DoesNotFire()
         {
             //Arrange - Act
@@ -19,7 +18,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFact_FiresOnceWithOneFactInCollection()
         {
             //Arrange
@@ -31,10 +30,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Equal(1, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactTwoFactsToAggregate_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
@@ -48,10 +47,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsTwoFactsToAggregate_FiresTwiceWithTwoFactsInEachCollection()
         {
             //Arrange
@@ -65,8 +64,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType>>(0).Count());
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType>>(1).Count());
+            Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>(0).Count());
+            Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>(1).Count());
         }
 
         protected override void SetUpRules()
