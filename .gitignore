@@ -2,6 +2,7 @@
 binaries
 
 ## Visual Studio temporary files, build results, etc.
+.vs
 
 # User-specific files
 *.suo

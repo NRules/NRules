@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET45
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NRules.Fluent;
@@ -108,3 +109,4 @@ namespace NRules.Tests
         }
     }
 }
+#endif

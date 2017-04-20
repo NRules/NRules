@@ -266,7 +266,7 @@ namespace NRules.Tests.Utilities
         public void AreEqual_EquivalentInvocationExpression_True()
         {
             //Arrange
-            var methodInfo = GetType().GetTypeInfo().GetMethods()
+            var methodInfo = GetType().GetTypeInfo().DeclaredMethods
                 .First(info => info.IsStatic && info.Name == "StaticMethod" 
                     && info.GetParameters().Length == 1);
 
