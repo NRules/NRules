@@ -21,12 +21,11 @@
     <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
     <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\NRules.Fluent\NRules.Fluent.csproj" />
     <ProjectReference Include="..\NRules.RuleModel\NRules.RuleModel.csproj" />
   </ItemGroup>
 
