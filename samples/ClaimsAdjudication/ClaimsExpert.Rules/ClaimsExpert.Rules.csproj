@@ -31,14 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NRules">
-      <HintPath>..\..\..\binaries\NRules.dll</HintPath>
-    </Reference>
     <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\binaries\NRules.Fluent.dll</HintPath>
+      <HintPath>..\..\..\binaries\NRules\net45\NRules.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\binaries\NRules.RuleModel.dll</HintPath>
+      <HintPath>..\..\..\binaries\NRules\net45\NRules.RuleModel.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

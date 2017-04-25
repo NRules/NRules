@@ -4,7 +4,6 @@ param (
 )
 
 $version = '0.5.2'
-$target_framework = 'net-4.0'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -13,17 +12,28 @@ if (Test-Path Env:CI) { $configuration = $Env:CONFIGURATION }
 $components = @{
 	'NRules' = @{
 		name = 'NRules'
-		test = @{
-			include = @('*Tests.dll')
+		build = @{
+			solution = 'NRules.sln'
 		}
-		merge = @{
-			include = @('NRules*.dll')
-			exclude = @('**Tests.dll')
-			attr_file = 'NRules.dll'
-			out_file = 'NRules.dll'
+		test = @{
+			location = 'Tests'
 		}
 		bin = @{
-			merge_include = @('NRules.*')
+			frameworks = @('net45', 'netstandard1.0')
+			'net45' = @{
+				include = @(
+					"NRules\bin\$configuration\net45",
+					"NRules.Fluent\bin\$configuration\net45",
+					"NRules.RuleModel\bin\$configuration\net45"
+				)
+			}
+			'netstandard1.0' = @{
+				include = @(
+					"NRules\bin\$configuration\netstandard1.0",
+					"NRules.Fluent\bin\$configuration\netstandard1.0",
+					"NRules.RuleModel\bin\$configuration\netstandard1.0"
+				)
+			}
 		}
 		package = @{
 			nuget = @{
@@ -36,8 +46,12 @@ $components = @{
 	'NRules.Debugger.Visualizer' = @{
 		name = 'NRules.Debugger.Visualizer'
 		bin = @{
-			out_include = @('*.dll','*.pdb','*.xml')
-			out_exclude = @('**Tests**','nunit**','Moq**')
+			frameworks = @('net46')
+			'net46' = @{
+				include = @(
+					"NRules.Debugger.Visualizer\bin\$configuration"
+				)
+			}
 		}
 		package = @{
 			zip = @{
@@ -48,15 +62,13 @@ $components = @{
 	'NRules.Integration.Autofac' = @{
 		name = 'NRules.Integration.Autofac'
 		src_root = 'src/NRules.Integration'
-		merge = @{
-			include = @('NRules.Integration.*.dll')
-			exclude = @('**Tests.dll')
-			attr_file = 'NRules.Integration.Autofac.dll'
-			out_file = 'NRules.Integration.Autofac.dll'
-		}
 		bin = @{
-			merge_include = @('NRules.Integration.*')
-			out_include = @('NRules.dll','NRules.pdb','NRules.xml','Autofac.*')
+			frameworks = @('net45')
+			'net45' = @{
+				include = @(
+					"NRules.Integration.Autofac\bin\$configuration"
+				)
+			}
 		}
 		package = @{
 			nuget = @{
@@ -73,30 +85,18 @@ $components = @{
 	'Samples.SimpleRules' = @{
 		name = 'SimpleRules'
 		src_root = 'samples'
-		bin = @{
-			out_include = @('*.*')
-		}
 	};
 	'Samples.MissManners' = @{
 		name = 'MissManners'
 		src_root = 'samples'
-		bin = @{
-			out_include = @('*.*')
-		}
 	};
 	'Samples.RuleBuilder' = @{
 		name = 'RuleBuilder'
 		src_root = 'samples'
-		bin = @{
-			out_include = @('*.*')
-		}
 	};
 	'Samples.ClaimsAdjudication' = @{
 		name = 'ClaimsAdjudication'
 		src_root = 'samples'
-		bin = @{
-			out_include = @('*.*')
-		}
 	};
 }
 

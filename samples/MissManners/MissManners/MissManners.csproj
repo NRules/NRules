@@ -37,17 +37,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NRules, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4130915df9c157aa, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\binaries\NRules.dll</HintPath>
+    <Reference Include="NRules">
+      <HintPath>..\..\..\binaries\NRules\net45\NRules.dll</HintPath>
     </Reference>
-    <Reference Include="NRules.Fluent, Version=0.5.1.0, Culture=neutral, PublicKeyToken=4130915df9c157aa, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\binaries\NRules.Fluent.dll</HintPath>
+    <Reference Include="NRules.Fluent">
+      <HintPath>..\..\..\binaries\NRules\net45\NRules.Fluent.dll</HintPath>
     </Reference>
-    <Reference Include="NRules.RuleModel, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4130915df9c157aa, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\binaries\NRules.RuleModel.dll</HintPath>
+    <Reference Include="NRules.RuleModel">
+      <HintPath>..\..\..\binaries\NRules\net45\NRules.RuleModel.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

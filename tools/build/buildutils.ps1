@@ -50,3 +50,34 @@ function Reset-AssemblyVersion(){
 	Update-AssemblyInfoFiles "1.0.0.0" "GlobalAssemblyInfo.cs"
 }
 
+function Get-DotNetProjects([string] $path)
+{
+	Get-ChildItem -Path $path -Recurse -Include "*.csproj" | Select-Object @{ Name="ParentFolder"; Expression={ $_.Directory.FullName.TrimEnd("\") } } | Select-Object -ExpandProperty ParentFolder
+}
+
+function Install-DotNetCli([string] $location, [string] $version = "Latest"){
+	if ((Get-Command "dotnet.exe" -ErrorAction SilentlyContinue) -ne $null)
+	{
+		$installedVersion = dotnet --version
+		if ($installedVersion -eq $version)
+		{
+			Write-Host ".NET Core SDK version $version is already installed"
+			return;
+		}
+	}
+
+	$installDir = Join-Path -Path $location -ChildPath "cli"
+	if (!(Test-Path $installDir))
+	{
+		New-Item -ItemType Directory -Path "$installDir" | Out-Null
+	}
+
+	if (!(Test-Path $location\dotnet-install.ps1))
+	{
+		Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.1/scripts/obtain/dotnet-install.ps1" -OutFile "$location\dotnet-install.ps1"
+	}
+
+	Write-Host "Installing .NET Core SDK"
+	& $location\dotnet-install.ps1 -InstallDir "$installDir" -Version $version
+	$env:PATH = "$installDir;$env:PATH"
+}

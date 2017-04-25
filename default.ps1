@@ -5,6 +5,7 @@ param (
 properties {
 	$version = $null
 	$target_framework = "net-4.0"
+	$sdkVersion = "1.0.1"
 	$configuration = "Release"
 }
 
@@ -45,6 +46,8 @@ task Init {
 		$script:msbuild_exec = $framework_root + "\msbuild.exe"
 		$script:ilmerge_target_framework  = "/targetplatform:v4," + $framework_root
 	}
+	
+	Install-DotNetCli $tools_dir\.dotnet $sdkVersion
 }
 
 task Clean -depends Init {
@@ -68,28 +71,24 @@ task RestoreTools {
 }
 
 task RestoreDependencies { 
-	exec { &$script:nuget_exec restore $src_dir -NonInteractive }
+	exec { dotnet restore $src_dir --verbosity minimal }
 }
 
 task Compile -depends Init, Clean, SetVersion, RestoreTools, RestoreDependencies { 
 	Create-Directory $build_dir
 	Create-Directory $out_dir
 	
-	$solution_file = "$src_dir\$($component.name).sln"
-	$output = "$out_dir\"
-	exec { &$script:msbuild_exec $solution_file /p:OutDir=$output /p:Configuration=$configuration /v:m /nologo }
+	$solution_file = "$src_dir\$($component.build.solution)"
+	exec { dotnet build $solution_file --configuration $configuration --verbosity minimal }
 }
 
 task Test -depends Compile -precondition { return $component.ContainsKey('test') } {
-	$test_files = @()
-	$test_files += Get-ChildItem "$out_dir\*.*" -Include $component.test.include -Exclude $component.test.exclude
-	$test_out_file = "$build_dir\TestResult_$($component.name).xml"
-	exec { &$script:nunit_exec $test_files /nologo /framework:$target_framework /config:$configuration /xml:$test_out_file }
-	
-	if (Test-Path Env:CI) {
-		Write-Host "Uploading to CI - $test_out_file"
-		$wc = New-Object 'System.Net.WebClient'
-		$wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($Env:APPVEYOR_JOB_ID)", (Resolve-Path $test_out_file))
+	$tests_dir = "$src_dir\$($component.test.location)"
+	$projects = Get-DotNetProjects $tests_dir
+	foreach($project in $projects) {
+		Push-Location $project
+		exec { dotnet test --no-build --configuration $configuration --framework net46 --verbosity minimal }
+		Pop-Location
 	}
 }
 
@@ -111,14 +110,19 @@ task Merge -depends Compile -precondition { return $component.ContainsKey('merge
 	exec { &$script:ilmerge_exec /out:$output /log /keyfile:$keyfile $script:ilmerge_target_framework $assemblies /xmldocs /attr:$attribute_file }
 }
 
-task Build -depends Compile, Test, Merge, ResetVersion -precondition { return -not $component.ContainsKey('nobuild') } { 
-	Create-Directory $binaries_dir
-	
-	if ($component.ContainsKey('merge') -and $component.bin.merge_include) {
-		Get-ChildItem "$merge_dir\**" -Include $component.bin.merge_include -Exclude $component.bin.merge_exclude | Copy-Item -Destination $binaries_dir -Force
+task Build -depends Compile, Test, Merge, ResetVersion -precondition { return -not $component.ContainsKey('nobuild') } {
+    if (-not $component.ContainsKey('bin'))
+	{
+		return
 	}
-	if ($component.ContainsKey('bin') -and $component.bin.out_include) {
-		Get-ChildItem "$out_dir\**" -Include $component.bin.out_include -Exclude $component.bin.out_exclude | Copy-Item -Destination $binaries_dir -Force
+	Create-Directory $binaries_dir
+	foreach ($framework in $component.bin.frameworks) {
+		$dest_dir = "$binaries_dir\$framework"
+		Create-Directory $dest_dir
+		foreach ($include_dir in $component.bin.$framework.include) {
+			$source_dir = "$src_dir\$include_dir"
+			Get-ChildItem "$source_dir\**" | Copy-Item -Destination $dest_dir -Force
+		}
 	}
 }
 
