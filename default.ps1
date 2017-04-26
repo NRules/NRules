@@ -4,7 +4,6 @@ param (
 
 properties {
 	$version = $null
-	$target_framework = "net-4.0"
 	$sdkVersion = "1.0.1"
 	$configuration = "Release"
 }
@@ -33,19 +32,9 @@ task Init {
 	$script:pkg_out_dir = "$build_dir\packages\$comp_name"
 	$script:packages_dir = "$base_dir\packages"
 	$script:help_dir = "$base_dir\help"
-	$script:tools_restore_dir = "$tools_dir\packages"
 	
 	$script:nuget_exec = "$tools_dir\.nuget\nuget.exe"
-	$script:zip_exec = "$tools_restore_dir\7-Zip.CommandLine.9.20.0\tools\7za.exe"
 	$script:ilmerge_exec = "$tools_restore_dir\ilmerge.2.14.1203\content\ilmerge.exe"
-	$script:nunit_exec = "$tools_restore_dir\NUnit.Runners.2.6.3\tools\nunit-console.exe"
-	
-	if ($target_framework -eq "net-4.0") {
-		$framework_root = Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
-		$framework_root = $framework_root + "v4.0.30319"
-		$script:msbuild_exec = $framework_root + "\msbuild.exe"
-		$script:ilmerge_target_framework  = "/targetplatform:v4," + $framework_root
-	}
 	
 	Install-DotNetCli $tools_dir\.dotnet $sdkVersion
 }
@@ -66,15 +55,11 @@ task ResetVersion {
 	Reset-AssemblyVersion
 }
 
-task RestoreTools { 
-	exec { &$script:nuget_exec restore $tools_dir -NonInteractive }
-}
-
 task RestoreDependencies { 
 	exec { dotnet restore $src_dir --verbosity minimal }
 }
 
-task Compile -depends Init, Clean, SetVersion, RestoreTools, RestoreDependencies { 
+task Compile -depends Init, Clean, SetVersion, RestoreDependencies { 
 	Create-Directory $build_dir
 	Create-Directory $out_dir
 	
@@ -146,15 +131,7 @@ task PackageNuGet -depends Build -precondition { return $component.ContainsKey('
 	exec { &$script:nuget_exec pack $package -OutputDirectory $pkg_out_dir }
 }
 
-task PackageZip -depends Build -precondition { $component.ContainsKey('package') -and $component.package.ContainsKey('zip') } {
-	$zip = $component.package.zip
-	Create-Directory $pkg_out_dir
-	$file = "$pkg_out_dir\$($zip.name)"
-	Delete-File $file
-	exec { &$script:zip_exec a -tzip $file $binaries_dir }
-}
-
-task Package -depends Build, PackageNuGet, PackageZip {
+task Package -depends Build, PackageNuGet {
 }
 
 task PublishNuGet -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {

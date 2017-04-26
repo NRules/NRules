@@ -46,16 +46,11 @@ $components = @{
 	'NRules.Debugger.Visualizer' = @{
 		name = 'NRules.Debugger.Visualizer'
 		bin = @{
-			frameworks = @('net46')
-			'net46' = @{
+			frameworks = @('net45')
+			'net45' = @{
 				include = @(
-					"NRules.Debugger.Visualizer\bin\$configuration"
+					"NRules.Debugger.Visualizer\bin\$configuration\net45"
 				)
-			}
-		}
-		package = @{
-			zip = @{
-				name = "NRules.Debugger.Visualizer.$version.zip"
 			}
 		}
 	};
