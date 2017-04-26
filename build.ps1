@@ -61,7 +61,7 @@ $components = @{
 			frameworks = @('net45')
 			'net45' = @{
 				include = @(
-					"NRules.Integration.Autofac\bin\$configuration"
+					"NRules.Integration.Autofac\bin\$configuration\net45"
 				)
 			}
 		}
