@@ -65,12 +65,15 @@ task RestoreDependencies -precondition { return $component.ContainsKey('restore'
 	}
 }
 
-task Compile -depends Init, Clean, SetVersion, RestoreDependencies { 
+task Compile -depends Init, Clean, SetVersion, RestoreDependencies -precondition { return $component.ContainsKey('build') } { 
 	Create-Directory $build_dir
 	
 	$solution_file = "$src_dir\$($component.name).sln"
 	if ($component.build.tool -eq 'msbuild') {
-		exec { dotnet msbuild $solution_file /p:Configuration=$configuration /v:m /nologo }
+		$framework_root = Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
+		$framework_root = $framework_root + "v4.0.30319"
+		$msbuild_exec = $framework_root + "\msbuild.exe"
+		exec { &$msbuild_exec $solution_file /p:Configuration=$configuration /v:m /nologo }
 	}
 	if ($component.build.tool -eq 'dotnet') {
 		exec { dotnet build $solution_file --configuration $configuration --verbosity minimal }
