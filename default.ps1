@@ -5,6 +5,7 @@ param (
 properties {
 	$version = $null
 	$sdkVersion = "1.0.1"
+	$nugetVersion = "4.1.0"
 	$configuration = "Release"
 }
 
@@ -33,10 +34,10 @@ task Init {
 	$script:packages_dir = "$base_dir\packages"
 	$script:help_dir = "$base_dir\help"
 	
-	$script:nuget_exec = "$tools_dir\.nuget\nuget.exe"
 	$script:ilmerge_exec = "$tools_restore_dir\ilmerge.2.14.1203\content\ilmerge.exe"
 	
 	Install-DotNetCli $tools_dir\.dotnet $sdkVersion
+	Install-NuGet $tools_dir\.nuget $nugetVersion
 }
 
 task Clean -depends Init {
@@ -55,16 +56,25 @@ task ResetVersion {
 	Reset-AssemblyVersion
 }
 
-task RestoreDependencies { 
-	exec { dotnet restore $src_dir --verbosity minimal }
+task RestoreDependencies -precondition { return $component.ContainsKey('restore') } {
+	if ($component.restore.tool -eq 'nuget') {
+		exec { nuget restore $src_dir -NonInteractive }
+	}
+	if ($component.restore.tool -eq 'dotnet') {
+		exec { dotnet restore $src_dir --verbosity minimal }
+	}
 }
 
 task Compile -depends Init, Clean, SetVersion, RestoreDependencies { 
 	Create-Directory $build_dir
-	Create-Directory $out_dir
 	
-	$solution_file = "$src_dir\$($component.build.solution)"
-	exec { dotnet build $solution_file --configuration $configuration --verbosity minimal }
+	$solution_file = "$src_dir\$($component.name).sln"
+	if ($component.build.tool -eq 'msbuild') {
+		exec { dotnet msbuild $solution_file /p:Configuration=$configuration /v:m /nologo }
+	}
+	if ($component.build.tool -eq 'dotnet') {
+		exec { dotnet build $solution_file --configuration $configuration --verbosity minimal }
+	}
 }
 
 task Test -depends Compile -precondition { return $component.ContainsKey('test') } {
@@ -95,9 +105,8 @@ task Merge -depends Compile -precondition { return $component.ContainsKey('merge
 	exec { &$script:ilmerge_exec /out:$output /log /keyfile:$keyfile $script:ilmerge_target_framework $assemblies /xmldocs /attr:$attribute_file }
 }
 
-task Build -depends Compile, Test, Merge, ResetVersion -precondition { return -not $component.ContainsKey('nobuild') } {
-    if (-not $component.ContainsKey('bin'))
-	{
+task Build -depends Compile, Test, Merge, ResetVersion -precondition { return $component.ContainsKey('build') } {
+    if (-not $component.ContainsKey('bin'))	{
 		return
 	}
 	Create-Directory $binaries_dir

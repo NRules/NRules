@@ -62,7 +62,7 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
 
 	$installDir = Join-Path -Path $location -ChildPath "cli"
 	if (!(Test-Path $installDir)) {
-		New-Item -ItemType Directory -Path "$installDir" | Out-Null
+		Create-Directory $installDir
 	}
 
 	if (!(Test-Path $location\dotnet-install.ps1)) {
@@ -71,5 +71,27 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
 
 	Write-Host "Installing .NET Core SDK"
 	& $location\dotnet-install.ps1 -InstallDir "$installDir" -Version $version
+	$env:PATH = "$installDir;$env:PATH"
+}
+
+function Install-NuGet([string] $location, [string] $version = "latest") {
+	if ((Get-Command "nuget.exe" -ErrorAction SilentlyContinue) -ne $null) {
+		Write-Host "NuGet is already installed"
+		return;
+	}
+
+	$installDir = $location
+	if (!(Test-Path $installDir)) {
+		Create-Directory $installDir
+	}
+
+	if (!(Test-Path $location\nuget.exe)) {
+		$url = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+		if ($version -ne "latest") {
+			$url = "https://dist.nuget.org/win-x86-commandline/v$version/nuget.exe"
+		}
+		Invoke-WebRequest $url -OutFile "$location\nuget.exe"
+	}
+
 	$env:PATH = "$installDir;$env:PATH"
 }

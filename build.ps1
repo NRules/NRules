@@ -12,8 +12,11 @@ if (Test-Path Env:CI) { $configuration = $Env:CONFIGURATION }
 $components = @{
 	'NRules' = @{
 		name = 'NRules'
+		restore = @{
+			tool = 'dotnet'
+		}
 		build = @{
-			solution = 'NRules.sln'
+			tool = 'dotnet'
 		}
 		test = @{
 			location = 'Tests'
@@ -45,6 +48,12 @@ $components = @{
 	};
 	'NRules.Debugger.Visualizer' = @{
 		name = 'NRules.Debugger.Visualizer'
+		restore = @{
+			tool = 'dotnet'
+		}
+		build = @{
+			tool = 'dotnet'
+		}
 		bin = @{
 			frameworks = @('net45')
 			'net45' = @{
@@ -57,6 +66,12 @@ $components = @{
 	'NRules.Integration.Autofac' = @{
 		name = 'NRules.Integration.Autofac'
 		src_root = 'src/NRules.Integration'
+		restore = @{
+			tool = 'dotnet'
+		}
+		build = @{
+			tool = 'dotnet'
+		}
 		bin = @{
 			frameworks = @('net45')
 			'net45' = @{
@@ -74,24 +89,38 @@ $components = @{
 	};
 	'NRules.Integration' = @{
 		name = 'NRules.Integration'
-		nobuild = $true
 		help = 'NRules.Integration.shfbproj'
 	};
 	'Samples.SimpleRules' = @{
 		name = 'SimpleRules'
 		src_root = 'samples'
+		build = @{
+			tool = 'msbuild'
+		}
 	};
 	'Samples.MissManners' = @{
 		name = 'MissManners'
 		src_root = 'samples'
+		build = @{
+			tool = 'msbuild'
+		}
 	};
 	'Samples.RuleBuilder' = @{
 		name = 'RuleBuilder'
 		src_root = 'samples'
+		build = @{
+			tool = 'msbuild'
+		}
 	};
 	'Samples.ClaimsAdjudication' = @{
 		name = 'ClaimsAdjudication'
 		src_root = 'samples'
+		restore = @{
+			tool = 'nuget'
+		}
+		build = @{
+			tool = 'msbuild'
+		}
 	};
 }
 
