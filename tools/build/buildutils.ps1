@@ -56,10 +56,13 @@ function Get-DotNetProjects([string] $path) {
 
 function Install-DotNetCli([string] $location, [string] $version = "Latest") {
 	if ((Get-Command "dotnet.exe" -ErrorAction SilentlyContinue) -ne $null) {
-		Write-Host ".NET Core SDK is already installed"
-		return;
+		$installedVersion = dotnet --version
+		if ($installedVersion -eq $Version) {
+			Write-Message ".NET Core SDK version $Version is already installed"
+			return;
+		}
 	}
-
+  
 	$installDir = Join-Path -Path $location -ChildPath "cli"
 	if (!(Test-Path $installDir)) {
 		Create-Directory $installDir
