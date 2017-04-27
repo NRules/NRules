@@ -28,21 +28,15 @@ task Init {
 	$script:binaries_dir = "$base_dir\binaries\$comp_name"
 	$script:src_dir = "$base_dir\$src_root\$comp_name"
 	$script:build_dir = "$base_dir\build"
-	$script:out_dir =  "$build_dir\output\$comp_name"
-	$script:merge_dir = "$build_dir\merge\$comp_name"
 	$script:pkg_out_dir = "$build_dir\packages\$comp_name"
 	$script:packages_dir = "$base_dir\packages"
 	$script:help_dir = "$base_dir\help"
-	
-	$script:ilmerge_exec = "$tools_restore_dir\ilmerge.2.14.1203\content\ilmerge.exe"
 	
 	Install-DotNetCli $tools_dir\.dotnet $sdkVersion
 	Install-NuGet $tools_dir\.nuget $nugetVersion
 }
 
 task Clean -depends Init {
-	Delete-Directory $out_dir
-	Delete-Directory $merge_dir
 	Delete-Directory $pkg_out_dir
 	Delete-Directory $binaries_dir
 }
@@ -90,25 +84,7 @@ task Test -depends Compile -precondition { return $component.ContainsKey('test')
 	}
 }
 
-task Merge -depends Compile -precondition { return $component.ContainsKey('merge') } {
-	Create-Directory $merge_dir
-	
-	$assemblies = @()
-	$assemblies += Get-ChildItem "$out_dir\*.*" -Include $component.merge.include -Exclude $component.merge.exclude
-	
-	$attribute_file = "$out_dir\$($component.merge.attr_file)"
-	
-	$keyfile = "$base_dir\..\SigningKey.snk"
-	if (-not (Test-Path $keyfile) ) {
-		Write-Host "Key file for assembly signing does not exist. Signing with a development key." -ForegroundColor Yellow
-		$keyfile = "$base_dir\DevSigningKey.snk"
-	}
-	
-	$output = "$merge_dir\$($component.merge.out_file)"
-	exec { &$script:ilmerge_exec /out:$output /log /keyfile:$keyfile $script:ilmerge_target_framework $assemblies /xmldocs /attr:$attribute_file }
-}
-
-task Build -depends Compile, Test, Merge, ResetVersion -precondition { return $component.ContainsKey('build') } {
+task Build -depends Compile, Test, ResetVersion -precondition { return $component.ContainsKey('build') } {
     if (-not $component.ContainsKey('bin'))	{
 		return
 	}
