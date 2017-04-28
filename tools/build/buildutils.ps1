@@ -26,10 +26,12 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $assemblyInfoFile
 	}
 	Write-Host Patching AssemblyInfo files with version $version
 	
-	$versionPattern = 'AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
-	$versionAssembly = 'AssemblyVersion("' + $version + '")';
-	$versionFilePattern = 'AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
-	$versionAssemblyFile = 'AssemblyFileVersion("' + $version + '")';
+	$assemblyVersionPattern = 'AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
+	$assemblyVersion = 'AssemblyVersion("' + $version + '")';
+	$assemblyFileVersionPattern = 'AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
+	$assemblyFileVersion = 'AssemblyFileVersion("' + $version + '")';
+	$assemblyInfoVersionPattern = 'AssemblyInformationalVersionAttribute\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
+	$assemblyInfoVersion = 'AssemblyInformationalVersionAttribute("' + $version + '")';
 
 	Get-ChildItem -r -filter $assemblyInfoFileName | % {
 		$filename = $_.fullname
@@ -37,7 +39,11 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $assemblyInfoFile
 		$tmp = ($filename + ".tmp")
 		Delete-File $tmp
 
-		(Get-Content $filename) | % {$_ -replace $versionFilePattern, $versionAssemblyFile } | % {$_ -replace $versionPattern, $versionAssembly }  | out-file $tmp -encoding ASCII
+		(Get-Content $filename) |
+			% {$_ -replace $assemblyVersionPattern, $assemblyVersion } |
+			% {$_ -replace $assemblyFileVersionPattern, $assemblyFileVersion } | 
+			% {$_ -replace $assemblyInfoVersionPattern, $assemblyInfoVersion } |
+			out-file $tmp -encoding ASCII
 		Move-Item $tmp $filename -Force
 	}
 }
