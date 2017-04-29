@@ -20,7 +20,29 @@ function Get-RegistryValue($key, $value) {
 	(Get-ItemProperty $key $value -ErrorAction SilentlyContinue).$value
 }
 
-function Update-AssemblyInfoFiles ([string] $version, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
+function Update-Properties([string] $version, [string] $propsFileName = "Common.props") {
+	if ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}") {
+		Write-Error "Version number incorrect format: $version"
+	}
+	Write-Host Patching project properties files with version $version
+	
+	$versionPrefixPattern = '<VersionPrefix>[0-9]+(\.([0-9]+|\*)){1,3}<\/VersionPrefix>'
+	$versionPrefix = '<VersionPrefix>' + $version + '</VersionPrefix>';
+
+	Get-ChildItem -r -filter $propsFileName | % {
+		$filename = $_.fullname
+
+		$tmp = ($filename + ".tmp")
+		Delete-File $tmp
+
+		(Get-Content $filename) |
+			% {$_ -replace $versionPrefixPattern, $versionPrefix } |
+			out-file $tmp -encoding ASCII
+		Move-Item $tmp $filename -Force
+	}
+}
+
+function Update-AssemblyInfoFiles([string] $version, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
 	if ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}") {
 		Write-Error "Version number incorrect format: $version"
 	}
@@ -48,12 +70,14 @@ function Update-AssemblyInfoFiles ([string] $version, [string] $assemblyInfoFile
 	}
 }
 
-function Update-AssemblyVersion([string] $version) {
+function Update-Version([string] $version) {
 	Update-AssemblyInfoFiles $version "GlobalAssemblyInfo.cs"
+	Update-Properties $version "Common.props"
 }
 
-function Reset-AssemblyVersion() {
+function Reset-Version() {
 	Update-AssemblyInfoFiles "1.0.0.0" "GlobalAssemblyInfo.cs"
+	Update-Properties "1.0.0" "Common.props"
 }
 
 function Get-DotNetProjects([string] $path) {

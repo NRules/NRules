@@ -43,11 +43,11 @@ task Clean -depends Init {
 
 task SetVersion {
 	Write-Host Build Version: $version
-	Update-AssemblyVersion $version
+	Update-Version $version
 }
 
 task ResetVersion {
-	Reset-AssemblyVersion
+	Reset-Version
 }
 
 task RestoreDependencies -precondition { return $component.ContainsKey('restore') } {
