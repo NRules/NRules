@@ -100,38 +100,26 @@ task Build -depends Compile, Test, ResetVersion -precondition { return $componen
 }
 
 task PackageNuGet -depends Build -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
-	$nuget = $component.package.nuget
-	
 	Create-Directory $pkg_out_dir
-	Create-Directory $pkg_out_dir\$($nuget.id)\lib\net40
-	
-	Copy-Item $packages_dir\$($nuget.id).dll.nuspec $pkg_out_dir\$($nuget.id)\$($nuget.id).nuspec -Force
-	Get-ChildItem "$binaries_dir\**" -Include $nuget.include -Exclude $nuget.exclude | Copy-Item -Destination $pkg_out_dir\$($nuget.id)\lib\net40 -Force
-
-	# Set the package version
-	$package = "$pkg_out_dir\$($nuget.id)\$($nuget.id).nuspec"
-	$nuspec = [xml](Get-Content $package)
-	$nuspec.package.metadata.version = $version
-	$nuspec | Select-Xml '//dependency' |% {
-		$_.Node.Version = $_.Node.Version -replace '\$version\$', "$version"
+	foreach ($package in $component.package.nuget) {
+		$nuspec = "$packages_dir\$($package).nuspec"
+		exec { nuget pack $nuspec -Version $version -OutputDirectory $pkg_out_dir }
 	}
-	$nuspec.Save($package);
-	exec { &$script:nuget_exec pack $package -OutputDirectory $pkg_out_dir }
 }
 
 task Package -depends Build, PackageNuGet {
 }
 
 task PublishNuGet -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
-	$nuget = $component.package.nuget
-	# Upload packages
 	$accessKeyFile = "$base_dir\..\Nuget-Access-Key.txt"
 	if ( (Test-Path $accessKeyFile) ) {
 		$accessKey = Get-Content $accessKeyFile
 		$accessKey = $accessKey.Trim()
 		
-		# Push to nuget repository
-		exec { &$script:nuget_exec push "$pkg_out_dir\$($nuget.id).$version.nupkg" $accessKey }
+		foreach ($package in $component.package.nuget) {
+			$nupkg = "$pkg_out_dir\$($package).$($version).nupkg"
+			exec { nuget push $nupkg $accessKey }
+		}
 	} else {
 		Write-Host "Nuget-Access-Key.txt does not exist. Cannot publish the nuget package." -ForegroundColor Yellow
 	}

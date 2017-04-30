@@ -39,10 +39,12 @@ $components = @{
 			}
 		}
 		package = @{
-			nuget = @{
-				id = 'NRules'
-				include = @('NRules.*')
-			}
+			nuget = @(
+				'NRules.RuleModel',
+				'NRules.Fluent',
+				'NRules.Runtime',
+				'NRules'
+			)
 		}
 		help = 'NRules.shfbproj'
 	};
@@ -81,10 +83,9 @@ $components = @{
 			}
 		}
 		package = @{
-			nuget = @{
-				id = 'NRules.Integration.Autofac'
-				include = @('NRules.Integration.Autofac.*')
-			}
+			nuget = @(
+				'NRules.Integration.Autofac'
+			)
 		}
 	};
 	'NRules.Integration' = @{

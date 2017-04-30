@@ -105,6 +105,7 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
 	Write-Host "Installing .NET Core SDK"
 	& $location\dotnet-install.ps1 -InstallDir "$installDir" -Version $version
 	$env:PATH = "$installDir;$env:PATH"
+	$env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
 }
 
 function Install-NuGet([string] $location, [string] $version = "latest") {
