@@ -88,7 +88,7 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
     if ((Get-Command "dotnet.exe" -ErrorAction SilentlyContinue) -ne $null) {
         $installedVersion = dotnet --version
         if ($installedVersion -eq $Version) {
-            Write-Message ".NET Core SDK version $Version is already installed"
+            Write-Host ".NET Core SDK version $Version is already installed"
             return;
         }
     }
