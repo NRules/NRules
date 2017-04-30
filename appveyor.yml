@@ -1,0 +1,18 @@
+version: 0.5.2.{build}
+configuration: Release
+
+skip_tags: true
+
+nuget:
+  disable_publish_on_pr: true
+
+clone_depth: 1
+
+test: off
+
+build_script:
+- ps: .\build.ps1 Package All
+
+artifacts:
+- path: build\packages\**\*.nupkg
+  name: NuGet
