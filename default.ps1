@@ -77,11 +77,20 @@ task Compile -depends Init, Clean, SetVersion, RestoreDependencies -precondition
 task Test -depends Compile -precondition { return $component.ContainsKey('test') } {
     $tests_dir = "$src_dir\$($component.test.location)"
     $projects = Get-DotNetProjects $tests_dir
-    foreach($project in $projects) {
+    foreach ($project in $projects) {
         Push-Location $project
-        exec { dotnet test --no-build --configuration $configuration --framework net46 --verbosity minimal --logger:trx }
+        exec { dotnet test --no-build --configuration $configuration --framework net46 --verbosity minimal --logger "trx;LogFileName=TestResult.trx" }
         Pop-Location
     }
+	
+	if (Test-Path Env:CI) {
+		Write-Host "Uploading test results to CI server"
+		$wc = New-Object 'System.Net.WebClient'
+		Get-ChildItem $tests_dir -recurse -filter "*.trx" | % {
+			$test_file = $_.fullname
+			$wc.UploadFile("https://ci.appveyor.com/api/testresults/mstest/$($Env:APPVEYOR_JOB_ID)", (Resolve-Path $test_file))
+		}
+	}
 }
 
 task Build -depends Compile, Test, ResetVersion -precondition { return $component.ContainsKey('build') } {
