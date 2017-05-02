@@ -41,13 +41,35 @@ task Clean -depends Init {
     Delete-Directory $binaries_dir
 }
 
-task SetVersion {
-    Write-Host Build Version: $version
+task PatchFiles {
     Update-Version $version
+    
+    $signingKey = "$base_dir\SigningKey.snk"
+    $secureKey = "$base_dir\..\SecureSigningKey.snk"
+    $secureHash = "$base_dir\..\SecureSigningKey.sha1"
+    
+    if ((Test-Path $secureKey) -and (Test-Path $secureHash)) {
+        Write-Host "Using secure signing key." -ForegroundColor Magenta
+        $publicKey = Get-Content $secureHash
+        $publicKey = $publicKey.Trim()
+        Update-InternalsVisible $src_dir $publicKey
+        Copy-Item $secureKey -Destination $signingKey -Force
+    } else {
+        Write-Host "Secure signing key does not exist. Using development key." -ForegroundColor Yellow
+    }
 }
 
-task ResetVersion {
+task ResetPatch {
     Reset-Version
+    
+    $signingKey = "$base_dir\SigningKey.snk"
+    $devKey = "$base_dir\DevSigningKey.snk"
+    $devHash = "$base_dir\DevSigningKey.sha1"
+    
+    $publicKey = Get-Content $devHash
+    $publicKey = $publicKey.Trim()
+    Update-InternalsVisible $src_dir $publicKey
+    Copy-Item $devKey -Destination $signingKey -Force
 }
 
 task RestoreDependencies -precondition { return $component.ContainsKey('restore') } {
@@ -59,7 +81,7 @@ task RestoreDependencies -precondition { return $component.ContainsKey('restore'
     }
 }
 
-task Compile -depends Init, Clean, SetVersion, RestoreDependencies -precondition { return $component.ContainsKey('build') } { 
+task Compile -depends Init, Clean, PatchFiles, RestoreDependencies -precondition { return $component.ContainsKey('build') } { 
     Create-Directory $build_dir
     
     $solution_file = "$src_dir\$($component.name).sln"
@@ -93,7 +115,7 @@ task Test -depends Compile -precondition { return $component.ContainsKey('test')
     }
 }
 
-task Build -depends Compile, Test, ResetVersion -precondition { return $component.ContainsKey('build') } {
+task Build -depends Compile, Test, ResetPatch -precondition { return $component.ContainsKey('build') } {
     if (-not $component.ContainsKey('bin')) {
         return
     }

@@ -20,6 +20,25 @@ function Get-RegistryValue($key, $value) {
     (Get-ItemProperty $key $value -ErrorAction SilentlyContinue).$value
 }
 
+function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
+    Write-Host Patching AssemblyInfo files with public key
+    
+    $internalsVisibleToPattern = '\[assembly\:\s*InternalsVisibleTo\(\"(NRules.+?),PublicKey=.*?\"\)\]'
+    $internalsVisibleTo = '[assembly: InternalsVisibleTo("$1,PublicKey=' + $publicKey + '")]';
+
+    Get-ChildItem -Path $path -Recurse -Filter $assemblyInfoFileName | % {
+        $filename = $_.fullname
+
+        $tmp = ($filename + ".tmp")
+        Delete-File $tmp
+
+        (Get-Content $filename) |
+            % {$_ -replace $internalsVisibleToPattern, $internalsVisibleTo } |
+            out-file $tmp -Encoding ASCII
+        Move-Item $tmp $filename -Force
+    }
+}
+
 function Update-Properties([string] $version, [string] $propsFileName = "Common.props") {
     if ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}") {
         Write-Error "Version number incorrect format: $version"
@@ -29,7 +48,7 @@ function Update-Properties([string] $version, [string] $propsFileName = "Common.
     $versionPrefixPattern = '<VersionPrefix>[0-9]+(\.([0-9]+|\*)){1,3}<\/VersionPrefix>'
     $versionPrefix = '<VersionPrefix>' + $version + '</VersionPrefix>';
 
-    Get-ChildItem -r -filter $propsFileName | % {
+    Get-ChildItem -Recurse -Filter $propsFileName | % {
         $filename = $_.fullname
 
         $tmp = ($filename + ".tmp")
@@ -37,7 +56,7 @@ function Update-Properties([string] $version, [string] $propsFileName = "Common.
 
         (Get-Content $filename) |
             % {$_ -replace $versionPrefixPattern, $versionPrefix } |
-            out-file $tmp -encoding ASCII
+            out-file $tmp -Encoding ASCII
         Move-Item $tmp $filename -Force
     }
 }
@@ -55,7 +74,7 @@ function Update-AssemblyInfoFiles([string] $version, [string] $assemblyInfoFileN
     $assemblyInfoVersionPattern = 'AssemblyInformationalVersionAttribute\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
     $assemblyInfoVersion = 'AssemblyInformationalVersionAttribute("' + $version + '")';
 
-    Get-ChildItem -r -filter $assemblyInfoFileName | % {
+    Get-ChildItem -Recurse -Filter $assemblyInfoFileName | % {
         $filename = $_.fullname
 
         $tmp = ($filename + ".tmp")
@@ -65,7 +84,7 @@ function Update-AssemblyInfoFiles([string] $version, [string] $assemblyInfoFileN
             % {$_ -replace $assemblyVersionPattern, $assemblyVersion } |
             % {$_ -replace $assemblyFileVersionPattern, $assemblyFileVersion } | 
             % {$_ -replace $assemblyInfoVersionPattern, $assemblyInfoVersion } |
-            out-file $tmp -encoding ASCII
+            out-file $tmp -Encoding ASCII
         Move-Item $tmp $filename -Force
     }
 }
