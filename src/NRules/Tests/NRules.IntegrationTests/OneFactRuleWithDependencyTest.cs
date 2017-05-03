@@ -61,7 +61,7 @@ namespace NRules.IntegrationTests
             ITestService1 resolvedService1 = null;
             GetRuleInstance<TestRule>().Action = ctx =>
             {
-                resolvedService1 = ctx.Resove<ITestService1>();
+                resolvedService1 = ctx.Resolve<ITestService1>();
             };
 
             //Act
