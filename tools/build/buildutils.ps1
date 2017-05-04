@@ -104,6 +104,7 @@ function Get-DotNetProjects([string] $path) {
 }
 
 function Install-DotNetCli([string] $location, [string] $version = "Latest") {
+    (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     if ((Get-Command "dotnet.exe" -ErrorAction SilentlyContinue) -ne $null) {
         $installedVersion = dotnet --version
         if ($installedVersion -eq $Version) {
@@ -128,6 +129,7 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
 }
 
 function Install-NuGet([string] $location, [string] $version = "latest") {
+    (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     if ((Get-Command "nuget.exe" -ErrorAction SilentlyContinue) -ne $null) {
         Write-Host "NuGet is already installed"
         return;
