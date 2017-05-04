@@ -13,7 +13,7 @@ $components = @{
     'NRules' = @{
         name = 'NRules'
         restore = @{
-            tool = 'nuget'
+            tool = 'dotnet'
         }
         build = @{
             tool = 'dotnet'
@@ -51,7 +51,7 @@ $components = @{
     'NRules.Debugger.Visualizer' = @{
         name = 'NRules.Debugger.Visualizer'
         restore = @{
-            tool = 'nuget'
+            tool = 'dotnet'
         }
         build = @{
             tool = 'dotnet'
@@ -69,7 +69,7 @@ $components = @{
         name = 'NRules.Integration.Autofac'
         src_root = 'src/NRules.Integration'
         restore = @{
-            tool = 'nuget'
+            tool = 'dotnet'
         }
         build = @{
             tool = 'dotnet'
