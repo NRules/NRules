@@ -104,7 +104,8 @@ namespace NRules.Fluent
 
         private T[] GetAttributes<T>() where T : Attribute
         {
-            return _ruleType.GetTypeInfo().GetCustomAttributes(true).OfType<T>().ToArray();
+            var typeInfo = _ruleType.GetTypeInfo();
+            return typeInfo.GetCustomAttributes(true).OfType<T>().ToArray();
         }
     }
 }

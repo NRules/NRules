@@ -14,7 +14,7 @@ namespace NRules.Tests.Rete
             var target = new Fact(obj);
 
             //Act
-            var actual = target.FactType;
+            var actual = target.FactType.AsType();
             var expected = typeof (DateTime);
 
             //Assert

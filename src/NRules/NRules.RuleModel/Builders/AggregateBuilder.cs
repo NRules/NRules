@@ -36,12 +36,14 @@ namespace NRules.RuleModel.Builders
         /// <param name="aggregatorType">Type that implements <see cref="IAggregator"/> that aggregates facts.</param>
         public void Aggregator(string name, Type aggregatorType)
         {
-            if (!typeof(IAggregator).GetTypeInfo().IsAssignableFrom(aggregatorType.GetTypeInfo()))
+            var aggregatorTypeInfo = aggregatorType.GetTypeInfo();
+            var interfaceType = typeof(IAggregator).GetTypeInfo();
+            if (!interfaceType.IsAssignableFrom(aggregatorTypeInfo))
             {
                 throw new InvalidOperationException(
                     "Aggregator type must implement IAggregator interface");
             }
-            if (aggregatorType.GetTypeInfo().DeclaredConstructors.All(x => x.GetParameters().Length != 0))
+            if (aggregatorTypeInfo.DeclaredConstructors.All(x => x.GetParameters().Length != 0))
             {
                 throw new InvalidOperationException(
                     "Aggregator type must have a parameterless constructor to be used directly. Provide aggregator factory instead.");

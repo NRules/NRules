@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using NRules.RuleModel;
 
 namespace NRules.Rete
@@ -7,7 +8,7 @@ namespace NRules.Rete
     [DebuggerDisplay("Fact {Object}")]
     internal class Fact : IFact
     {
-        private readonly Type _factType;
+        private readonly TypeInfo _factType;
         private object _object;
 
         public Fact()
@@ -17,10 +18,11 @@ namespace NRules.Rete
         public Fact(object @object)
         {
             _object = @object;
-            _factType = @object.GetType();
+            var factType = @object.GetType();
+            _factType = factType.GetTypeInfo();
         }
 
-        public virtual Type FactType
+        public virtual TypeInfo FactType
         {
             get { return _factType; }
         }
@@ -43,7 +45,7 @@ namespace NRules.Rete
 
         Type IFact.Type
         {
-            get { return FactType; }
+            get { return FactType.AsType(); }
         }
 
         object IFact.Value
@@ -55,15 +57,12 @@ namespace NRules.Rete
     [DebuggerDisplay("Wrapper Tuple({WrappedTuple.Count})")]
     internal class WrapperFact : Fact
     {
-        private readonly long _groupId;
-
         public WrapperFact(Tuple tuple)
             : base(tuple)
         {
-            _groupId = tuple.GroupId;
         }
 
-        public override Type FactType
+        public override TypeInfo FactType
         {
             get { return WrappedTuple.RightFact.FactType; }
         }
