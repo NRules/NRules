@@ -107,8 +107,8 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
     (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     if ((Get-Command "dotnet.exe" -ErrorAction SilentlyContinue) -ne $null) {
         $installedVersion = dotnet --version
-        if ($installedVersion -eq $Version) {
-            Write-Host ".NET Core SDK version $Version is already installed"
+        if ($installedVersion -eq $version) {
+            Write-Host ".NET Core SDK version $version is already installed"
             return;
         }
     }
@@ -124,23 +124,22 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
 
     Write-Host "Installing .NET Core SDK"
     & $location\dotnet-install.ps1 -InstallDir "$installDir" -Version $version
-    $env:PATH = "$installDir;$env:PATH"
-    $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
+
+    if (!($env:PATH -contains $installDir)) {
+        $env:PATH = "$installDir;$env:PATH"
+        $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
+    }
 }
 
 function Install-NuGet([string] $location, [string] $version = "latest") {
     (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
-    if ((Get-Command "nuget.exe" -ErrorAction SilentlyContinue) -ne $null) {
-        Write-Host "NuGet is already installed"
-        return;
-    }
-
     $installDir = $location
     if (!(Test-Path $installDir)) {
         Create-Directory $installDir
     }
 
     if (!(Test-Path $location\nuget.exe)) {
+        Write-Host "Downloading NuGet version $version"
         $url = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
         if ($version -ne "latest") {
             $url = "https://dist.nuget.org/win-x86-commandline/v$version/nuget.exe"
@@ -148,5 +147,7 @@ function Install-NuGet([string] $location, [string] $version = "latest") {
         Invoke-WebRequest $url -OutFile "$location\nuget.exe"
     }
 
-    $env:PATH = "$installDir;$env:PATH"
+    if (!($env:PATH -contains $installDir)) {
+        $env:PATH = "$installDir;$env:PATH"
+    }
 }
