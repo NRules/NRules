@@ -2,14 +2,13 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_NoMatchingFacts_FiresOnceWithEmptyCollection()
         {
             //Arrange - Act
@@ -17,10 +16,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Equal(0, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsAndOneInvalid_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
@@ -36,10 +35,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsInsertedOneUpdated_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
@@ -55,10 +54,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsInsertedOneRetracted_FiresOnceWithOneFactInCollection()
         {
             //Arrange
@@ -74,10 +73,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Equal(1, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsInsertedTwoRetracted_FiresOnceWithEmptyCollection()
         {
             //Arrange
@@ -94,10 +93,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Equal(0, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsInsertedOneUpdatedToInvalid_FiresOnceWithOneFactInCollection()
         {
             //Arrange
@@ -115,10 +114,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Equal(1, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactsAndOneInvalidInsertedTheInvalidUpdatedToValid_FiresOnceWithTwoFactInCollection()
         {
             //Arrange
@@ -136,7 +135,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
         protected override void SetUpRules()

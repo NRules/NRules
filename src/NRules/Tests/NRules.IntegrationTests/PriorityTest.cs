@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class PriorityTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_LowPriorityActivatesTwiceTriggersHighPriority_HighPriorityPreemptsLowPriority()
         {
             //Arrange
@@ -28,11 +27,11 @@ namespace NRules.IntegrationTests
                 //low priority activates twice
                 //it runs once, activates high priority rule, which preempts low priority and fires once
                 //low priority fires second time, which activates high priority which also fires second time
-            Assert.AreEqual(4, invokedRules.Count);
-            Assert.AreEqual("PriorityLowRule", invokedRules[0]);
-            Assert.AreEqual("PriorityHighRule", invokedRules[1]);
-            Assert.AreEqual("PriorityLowRule", invokedRules[2]);
-            Assert.AreEqual("PriorityHighRule", invokedRules[3]);
+            Assert.Equal(4, invokedRules.Count);
+            Assert.Equal("PriorityLowRule", invokedRules[0]);
+            Assert.Equal("PriorityHighRule", invokedRules[1]);
+            Assert.Equal("PriorityLowRule", invokedRules[2]);
+            Assert.Equal("PriorityHighRule", invokedRules[3]);
         }
 
         protected override void SetUpRules()

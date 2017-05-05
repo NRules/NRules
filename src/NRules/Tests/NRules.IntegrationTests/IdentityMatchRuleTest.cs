@@ -1,13 +1,12 @@
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class IdentityMatchRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_MatchingFact_FiresOnce()
         {
             //Arrange
@@ -21,7 +20,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFacts_FiresTwice()
         {
             //Arrange
@@ -37,7 +36,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactInsertedAndRetracted_DoesNotFire()
         {
             //Arrange
@@ -52,7 +51,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactInsertedAndUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
@@ -68,7 +67,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_NoMatchingFact_DoesNotFire()
         {
             //Arrange

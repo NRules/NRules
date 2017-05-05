@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NRules.RuleModel.Aggregators;
 
 namespace NRules.RuleModel.Builders
@@ -35,12 +36,14 @@ namespace NRules.RuleModel.Builders
         /// <param name="aggregatorType">Type that implements <see cref="IAggregator"/> that aggregates facts.</param>
         public void Aggregator(string name, Type aggregatorType)
         {
-            if (!typeof(IAggregator).IsAssignableFrom(aggregatorType))
+            var aggregatorTypeInfo = aggregatorType.GetTypeInfo();
+            var interfaceType = typeof(IAggregator).GetTypeInfo();
+            if (!interfaceType.IsAssignableFrom(aggregatorTypeInfo))
             {
                 throw new InvalidOperationException(
                     "Aggregator type must implement IAggregator interface");
             }
-            if (aggregatorType.GetConstructor(Type.EmptyTypes) == null)
+            if (aggregatorTypeInfo.DeclaredConstructors.All(x => x.GetParameters().Length != 0))
             {
                 throw new InvalidOperationException(
                     "Aggregator type must have a parameterless constructor to be used directly. Provide aggregator factory instead.");

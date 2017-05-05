@@ -1,14 +1,13 @@
 ﻿using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactRepeatableRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactEligibleForOneIncrement_FiresOnce()
         {
             //Arrange
@@ -22,7 +21,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
         
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactEligibleForTwoIncrements_FiresTwice()
         {
             //Arrange

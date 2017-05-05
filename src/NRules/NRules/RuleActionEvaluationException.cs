@@ -1,13 +1,13 @@
 using System;
-using System.Runtime.Serialization;
-using System.Security;
 
 namespace NRules
 {
     /// <summary>
     /// Represents errors that occur while evaluating rule action.
     /// </summary>
-    [Serializable]
+#if NET45
+    [System.Serializable]
+#endif
     public class RuleActionEvaluationException : RuleExpressionEvaluationException
     {
         internal RuleActionEvaluationException(string message, string ruleName, string expression, Exception innerException)
@@ -16,15 +16,16 @@ namespace NRules
             RuleName = ruleName;
         }
 
-        [SecuritySafeCritical]
-        protected RuleActionEvaluationException(SerializationInfo info, StreamingContext context)
+#if NET45
+        [System.Security.SecuritySafeCritical]
+        protected RuleActionEvaluationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)
         {
             RuleName = info.GetString("RuleName");
         }
 
-        [SecurityCritical]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        [System.Security.SecurityCritical]
+        public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
         {
             if (info == null)
             {
@@ -33,6 +34,7 @@ namespace NRules
             base.GetObjectData(info, context);
             info.AddValue("RuleName", RuleName, typeof(string));
         }
+#endif
 
         /// <summary>
         /// Rule that caused exception.

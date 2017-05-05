@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactOneGroupByFlattenRuleWithIdentityRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_UpdatesWithSameIdButDifferentCount_FiresWithNewCount2()
         {
             //Arrange
@@ -37,10 +36,10 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredOnce();
             var firedFacts = GetFiredFact<IGrouping<string, FactType>>();
-            Assert.AreEqual(4, firedFacts.Count());
-            Assert.AreEqual(1, firedFacts.Count(x => x.TestCount == 3));
-            Assert.AreEqual(1, firedFacts.Count(x => x.TestCount == 2));
-            Assert.AreEqual(2, firedFacts.Count(x => x.TestCount == 1));
+            Assert.Equal(4, firedFacts.Count());
+            Assert.Equal(1, firedFacts.Count(x => x.TestCount == 3));
+            Assert.Equal(1, firedFacts.Count(x => x.TestCount == 2));
+            Assert.Equal(2, firedFacts.Count(x => x.TestCount == 1));
         }
 
         protected override void SetUpRules()

@@ -1,14 +1,13 @@
 ﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_BulkInsertForMultipleTypes_InsertsOnly_FiresThreeTimesWithCorrectCounts()
         {
             //Arrange
@@ -41,10 +40,10 @@ namespace NRules.IntegrationTests
             var correctNumberofFactsPerGroup = firedFacts.Count(x => x.Count() == 1) == 1 &&
                                                firedFacts.Count(x => x.Count() == 2) == 1 &&
                                                firedFacts.Count(x => x.Count() == 3) == 1;
-            Assert.IsTrue(correctNumberofFactsPerGroup);
+            Assert.True(correctNumberofFactsPerGroup);
         }
 
-        [Test]
+        [Fact]
         public void Fire_BulkInsertForMultipleTypes_WithUpdates_FiresThreeTimesWithCorrectCounts()
         {
             //Arrange
@@ -80,10 +79,10 @@ namespace NRules.IntegrationTests
             };
 
             var correctNumberofFactsPerGroup = firedFacts.Count(x => x.Count() == 3) == 2;
-            Assert.IsTrue(correctNumberofFactsPerGroup);
+            Assert.True(correctNumberofFactsPerGroup);
         }
 
-        [Test]
+        [Fact]
         public void Fire_BulkInsertForMultipleTypes_WithRetracts_FiresThreeTimesWithCorrectCounts()
         {
             //Arrange
@@ -115,10 +114,10 @@ namespace NRules.IntegrationTests
             };
 
             var correctNumberofFactsPerGroup = firedFacts.Count(x => x.Count() == 3) == 1;
-            Assert.IsTrue(correctNumberofFactsPerGroup);
+            Assert.True(correctNumberofFactsPerGroup);
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingSetsFactOfFirstKindUpdated_FiresTwiceThenFiresOnce()
         {
             //Arrange
@@ -148,7 +147,7 @@ namespace NRules.IntegrationTests
             AssertFiredTimes(3);
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingSetsFactOfSecondKindUpdated_FiresTwiceThenFiresOnce()
         {
             //Arrange

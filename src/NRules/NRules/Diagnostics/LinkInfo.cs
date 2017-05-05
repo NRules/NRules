@@ -1,11 +1,11 @@
-using System;
-
 namespace NRules.Diagnostics
 {
     /// <summary>
     /// Link between nodes in the rete network graph.
     /// </summary>
-    [Serializable]
+#if NET45
+    [System.Serializable]
+#endif
     public class LinkInfo
     {
         /// <summary>

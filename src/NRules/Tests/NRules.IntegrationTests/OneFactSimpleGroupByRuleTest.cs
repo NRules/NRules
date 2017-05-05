@@ -1,14 +1,13 @@
 ﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_NoMatchingFacts_DoesNotFire()
         {
             //Arrange - Act
@@ -18,7 +17,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsWithNullKey_FiresOnceWithBothFactsInOneGroup()
         {
             //Arrange
@@ -33,10 +32,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetFiredFact<IGrouping<string, FactType>>().Count());
+            Assert.Equal(2, GetFiredFact<IGrouping<string, FactType>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsWithNullKeyOneKeyUpdatedToValue_FiresTwiceWithOneFactInEachGroup()
         {
             //Arrange
@@ -54,11 +53,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType>>(0).Count());
-            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType>>(1).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(0).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(1).Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsWithValueKeyOneKeyUpdatedToNull_FiresTwiceWithOneFactInEachGroup()
         {
             //Arrange
@@ -76,11 +75,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType>>(0).Count());
-            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType>>(1).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(0).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(1).Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneFactWithValueAnotherWithNullThenNullUpdated_FiresTwiceWithOneFactInEachGroup()
         {
             //Arrange
@@ -96,11 +95,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType>>(0).Count());
-            Assert.AreEqual(1, GetFiredFact<IGrouping<string, FactType>>(1).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(0).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(1).Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsWithNullBothRetracted_DoesNotFire()
         {
             //Arrange
@@ -120,7 +119,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneFactInsertedThenUpdatedToAnotherGroup_FiresOnceWithOneFactInSecondGroup()
         {
             //Arrange
@@ -136,8 +135,8 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredOnce();
             var firedGroup = GetFiredFact<IGrouping<string, FactType>>();
-            Assert.AreEqual(1, firedGroup.Count());
-            Assert.AreEqual("Valid Value Group2", firedGroup.Key);
+            Assert.Equal(1, firedGroup.Count());
+            Assert.Equal("Valid Value Group2", firedGroup.Key);
         }
 
         protected override void SetUpRules()

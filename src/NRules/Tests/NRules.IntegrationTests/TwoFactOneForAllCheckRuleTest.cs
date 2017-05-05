@@ -1,13 +1,12 @@
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class TwoFactOneForAllCheckRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_MatchingFactOfTypeOneNothigOfTypeTwo_FiresOnce()
         {
             //Arrange
@@ -22,7 +21,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFacts_FiresOnce()
         {
             //Arrange
@@ -39,7 +38,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactOfTypeOneMultipleOfTypeTwo_FiresOnce()
         {
             //Arrange
@@ -58,7 +57,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsOfTypeOneMultipleOfTypeTwo_FiresTwice()
         {
             //Arrange
@@ -79,7 +78,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsOfTypeOneOnlyOneOfTypeTwo_FiresOnce()
         {
             //Arrange
@@ -102,7 +101,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactOfTypeOneNotAllMatchingOfTypeTwo_DoesNotFire()
         {
             //Arrange
@@ -122,7 +121,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsInvalidFactOfTypeTwoInsertedRetracted_FiresOnce()
         {
             //Arrange
@@ -144,7 +143,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsInvalidFactOfTypeTwoInsertedUpdatedToValid_FiresOnce()
         {
             //Arrange

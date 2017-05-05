@@ -2,14 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class GroupJoinSeveralQueriesTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsOfOneKindAndJoinedGroups_FiresTwice()
         {
             //Arrange
@@ -30,10 +29,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(2, fact11.EvalCount);
+            Assert.Equal(2, fact11.EvalCount);
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingSetFactOfFirstKindUpdated_FiresOnceThenFiresOnceAgain()
         {
             //Arrange
@@ -50,7 +49,7 @@ namespace NRules.IntegrationTests
 
             //Assert - 1
             AssertFiredOnce();
-            Assert.AreEqual(1, fact11.EvalCount);
+            Assert.Equal(1, fact11.EvalCount);
 
             //Act - 2
             Session.Update(fact11);
@@ -58,10 +57,10 @@ namespace NRules.IntegrationTests
 
             //Assert - 2
             AssertFiredTwice();
-            Assert.AreEqual(2, fact11.EvalCount);
+            Assert.Equal(2, fact11.EvalCount);
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingSetFactOfSecondKindUpdated_FiresOnceThenFiresOnceAgain()
         {
             //Arrange
@@ -78,7 +77,7 @@ namespace NRules.IntegrationTests
 
             //Assert - 1
             AssertFiredOnce();
-            Assert.AreEqual(1, fact11.EvalCount);
+            Assert.Equal(1, fact11.EvalCount);
 
             //Act - 2
             Session.Update(fact21);
@@ -86,10 +85,10 @@ namespace NRules.IntegrationTests
 
             //Assert - 2
             AssertFiredTwice();
-            Assert.AreEqual(2, fact11.EvalCount);
+            Assert.Equal(2, fact11.EvalCount);
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingSetFactOfThirdKindUpdated_FiresOnceThenFiresOnceAgain()
         {
             //Arrange
@@ -106,7 +105,7 @@ namespace NRules.IntegrationTests
 
             //Assert - 1
             AssertFiredOnce();
-            Assert.AreEqual(1, fact11.EvalCount);
+            Assert.Equal(1, fact11.EvalCount);
 
             //Act - 2
             Session.Update(fact31);
@@ -114,7 +113,7 @@ namespace NRules.IntegrationTests
 
             //Assert - 2
             AssertFiredTwice();
-            Assert.AreEqual(2, fact11.EvalCount);
+            Assert.Equal(2, fact11.EvalCount);
         }
 
         protected override void SetUpRules()
