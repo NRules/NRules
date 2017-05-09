@@ -32,6 +32,10 @@ task Init {
     $script:packages_dir = "$base_dir\packages"
     $script:help_dir = "$base_dir\help"
     
+    $framework_root = Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
+    $framework_root = $framework_root + "v4.0.30319"
+    $script:msbuild_exec = $framework_root + "\msbuild.exe"
+    
     Install-DotNetCli $tools_dir\.dotnet $sdkVersion
     Install-NuGet $tools_dir\.nuget $nugetVersion
 }
@@ -86,9 +90,6 @@ task Compile -depends Init, Clean, PatchFiles, RestoreDependencies -precondition
     
     $solution_file = "$src_dir\$($component.name).sln"
     if ($component.build.tool -eq 'msbuild') {
-        $framework_root = Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
-        $framework_root = $framework_root + "v4.0.30319"
-        $msbuild_exec = $framework_root + "\msbuild.exe"
         exec { &$msbuild_exec $solution_file /p:Configuration=$configuration /v:m /nologo }
     }
     if ($component.build.tool -eq 'dotnet') {
@@ -165,5 +166,5 @@ task Help -depends Init, Build -precondition { return $component.ContainsKey('he
     Create-Directory $build_dir
     
     $help_proj_file = "$help_dir\$($component.help)"
-    exec { &$script:msbuild_exec $help_proj_file /v:m /nologo }
+    exec { &$msbuild_exec $help_proj_file /v:m /nologo }
 }
