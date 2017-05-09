@@ -19,7 +19,7 @@ This package installs the fluent DSL for authoring rules in C# with NRules. Thes
     <tags>rules engine inference rete business dsl</tags>
     <dependencies>
       <group targetFramework="net45">
-        <dependency id="NRules.RuleModel" version="$version$" />
+        <dependency id="NRules.RuleModel" version="[$version$]" />
       </group>
       <group targetFramework="netstandard1.0">
         <dependency id="NETStandard.Library" version="1.6.0" />

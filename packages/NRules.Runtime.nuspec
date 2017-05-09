@@ -19,11 +19,11 @@ This package installs the execution engine (runtime) for the NRules rules engine
     <tags>rules engine inference rete business dsl</tags>
     <dependencies>
       <group targetFramework="net45">
-        <dependency id="NRules.RuleModel" version="$version$" />
+        <dependency id="NRules.RuleModel" version="[$version$]" />
       </group>
       <group targetFramework="netstandard1.0">
         <dependency id="NETStandard.Library" version="1.6.0" />
-        <dependency id="System.Linq.Queryable" version="4.3.0" />
+        <dependency id="System.Linq.Queryable" version="4.0.1" />
         <dependency id="NRules.RuleModel" version="[$version$]" />
       </group>
     </dependencies>
