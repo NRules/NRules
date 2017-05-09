@@ -17,7 +17,7 @@ namespace NRules
 
         public void SetFact(Fact fact)
         {
-            Type = fact.FactType;
+            Type = fact.FactType.AsType();
             Value = fact.Object;
         }
     }

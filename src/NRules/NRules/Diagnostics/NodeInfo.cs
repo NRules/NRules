@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using NRules.Rete;
@@ -28,7 +27,9 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Node in the rete network graph.
     /// </summary>
-    [Serializable]
+#if NET45
+    [System.Serializable]
+#endif
     public class NodeInfo
     {
         private static readonly string[] Empty = {};

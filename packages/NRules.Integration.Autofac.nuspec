@@ -11,11 +11,19 @@
     <iconUrl>https://raw.githubusercontent.com/NRules/NRules/master/content/NRules_Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Autofac IoC container integration for NRules.</description>
+    <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
     <copyright>Copyright 2012-2017 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>nrules autofac</tags>
     <dependencies>
-      <dependency id="NRules" version="[$version$]" />
-      <dependency id="Autofac" version="[3.2.0, 4.0.0)" />
+      <group targetFramework="net45">
+        <dependency id="NRules" version="[$version$]" />
+        <dependency id="Autofac" version="3.2.0" />
+      </group>
     </dependencies>
   </metadata>
+  <files>
+    <file src="..\binaries\NRules.Integration.Autofac\net45\NRules.Integration.Autofac.dll" target="lib\net45" />
+    <file src="..\binaries\NRules.Integration.Autofac\net45\NRules.Integration.Autofac.xml" target="lib\net45" />
+    <file src="..\binaries\NRules.Integration.Autofac\net45\NRules.Integration.Autofac.pdb" target="lib\net45" />
+  </files>
 </package>

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace NRules.Diagnostics
@@ -6,7 +5,9 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Snapshot of rules session state.
     /// </summary>
-    [Serializable]
+#if NET45
+    [System.Serializable]
+#endif
     public class SessionSnapshot
     {
         private readonly List<NodeInfo> _nodes;

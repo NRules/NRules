@@ -1,14 +1,13 @@
 ﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class GroupWithGroupFilterRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingGroups_FiresTwice()
         {
             //Arrange
@@ -27,7 +26,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MakeAllFactsInelligible_DoesNotFire()
         {
             //Arrange

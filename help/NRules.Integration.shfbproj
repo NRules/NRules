@@ -25,8 +25,8 @@
     <CleanIntermediates>True</CleanIntermediates>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\src\NRules.Integration\NamespaceDoc.xml" />
-      <DocumentationSource sourceFile="..\binaries\NRules.Integration.Autofac\NRules.Integration.Autofac.dll" />
-      <DocumentationSource sourceFile="..\binaries\NRules.Integration.Autofac\NRules.Integration.Autofac.xml" />
+      <DocumentationSource sourceFile="..\binaries\NRules.Integration.Autofac\net45\NRules.Integration.Autofac.dll" />
+      <DocumentationSource sourceFile="..\binaries\NRules.Integration.Autofac\net45\NRules.Integration.Autofac.xml" />
     </DocumentationSources>
     <MaximumGroupParts>20</MaximumGroupParts>
     <NamespaceGrouping>True</NamespaceGrouping>

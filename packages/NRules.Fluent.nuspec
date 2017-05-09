@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>NRules.Fluent</id>
+    <version>$version$</version>
+    <title>NRules.Fluent, Fluent DSL for NRules</title>
+    <authors>Sergiy Nikolayev</authors>
+    <owners>Sergiy Nikolayev</owners>
+    <licenseUrl>https://github.com/NRules/NRules/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>http://nrules.net</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/NRules/NRules/master/content/NRules_Logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Fluent DSL for authoring rules in C# with the NRules rules engine.</summary>
+    <description>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm. NRules is an inference engine that, among other features, supports forward chaining, negative, existential and universal quantifiers. Rules are authored in C# using internal DSL.
+
+This package installs the fluent DSL for authoring rules in C# with NRules. These rules can be then compiled to the canonical rules model, recognized by the NRules rules engine.</description>
+    <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
+    <copyright>Copyright 2012-2017 Sergiy Nikolayev. All rights reserved.</copyright>
+    <tags>rules engine inference rete business dsl</tags>
+    <dependencies>
+      <group targetFramework="net45">
+        <dependency id="NRules.RuleModel" version="[$version$]" />
+      </group>
+      <group targetFramework="netstandard1.0">
+        <dependency id="NETStandard.Library" version="1.6.0" />
+        <dependency id="NRules.RuleModel" version="[$version$]" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\binaries\NRules\net45\NRules.Fluent.dll" target="lib\net45" />
+    <file src="..\binaries\NRules\net45\NRules.Fluent.xml" target="lib\net45" />
+    <file src="..\binaries\NRules\net45\NRules.Fluent.pdb" target="lib\net45" />
+    <file src="..\binaries\NRules\netstandard1.0\NRules.Fluent.dll" target="lib\netstandard1.0" />
+    <file src="..\binaries\NRules\netstandard1.0\NRules.Fluent.xml" target="lib\netstandard1.0" />
+    <file src="..\binaries\NRules\netstandard1.0\NRules.Fluent.pdb" target="lib\netstandard1.0" />
+  </files>
+</package>

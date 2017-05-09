@@ -1,13 +1,12 @@
 ﻿using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class TwoFactOrGroupRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_NoMatchingFacts_DoesNotFire()
         {
             //Arrange
@@ -18,7 +17,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_FactMatchingFirstPartOfOrGroup_FiresOnce()
         {
             //Arrange
@@ -33,7 +32,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_FactsMatchingSecondPartOfOrGroup_FiresOnce()
         {
             //Arrange
@@ -50,7 +49,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_FactsMatchingBothPartsOfOrGroup_FiresTwice()
         {
             //Arrange

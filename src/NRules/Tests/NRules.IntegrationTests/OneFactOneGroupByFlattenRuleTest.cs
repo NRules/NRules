@@ -1,14 +1,13 @@
 ﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_NoMatchingFacts_DoesNotFire()
         {
             //Arrange - Act
@@ -18,7 +17,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsForOneGroup_FiresTwiceWithFactsFromGroupOne()
         {
             //Arrange
@@ -33,11 +32,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(fact1, GetFiredFact<FactType>(0));
-            Assert.AreEqual(fact2, GetFiredFact<FactType>(1));
+            Assert.Equal(fact1, GetFiredFact<FactType>(0));
+            Assert.Equal(fact2, GetFiredFact<FactType>(1));
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsForOneGroupInsertedThenOneUpdated_FiresTwiceWithFactsFromGroupOne()
         {
             //Arrange
@@ -53,11 +52,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(fact1, GetFiredFact<FactType>(0));
-            Assert.AreEqual(fact2, GetFiredFact<FactType>(1));
+            Assert.Equal(fact1, GetFiredFact<FactType>(0));
+            Assert.Equal(fact2, GetFiredFact<FactType>(1));
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsForOneGroupAndOneForAnother_FiresTwiceWithFactsFromGroupOne()
         {
             //Arrange
@@ -73,11 +72,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(fact1, GetFiredFact<FactType>(0));
-            Assert.AreEqual(fact2, GetFiredFact<FactType>(1));
+            Assert.Equal(fact1, GetFiredFact<FactType>(0));
+            Assert.Equal(fact2, GetFiredFact<FactType>(1));
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsForOneGroupAndTwoForAnother_FiresWithEachFactFromEachGroup()
         {
             //Arrange
@@ -94,13 +93,13 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTimes(4);
-            Assert.AreEqual(fact1, GetFiredFact<FactType>(0));
-            Assert.AreEqual(fact2, GetFiredFact<FactType>(1));
-            Assert.AreEqual(fact3, GetFiredFact<FactType>(2));
-            Assert.AreEqual(fact4, GetFiredFact<FactType>(3));
+            Assert.Equal(fact1, GetFiredFact<FactType>(0));
+            Assert.Equal(fact2, GetFiredFact<FactType>(1));
+            Assert.Equal(fact3, GetFiredFact<FactType>(2));
+            Assert.Equal(fact4, GetFiredFact<FactType>(3));
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneRetracted_FiresTwiceWithFactsFromGroupOne()
         {
             //Arrange
@@ -119,11 +118,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(fact1, GetFiredFact<FactType>(0));
-            Assert.AreEqual(fact2, GetFiredFact<FactType>(1));
+            Assert.Equal(fact1, GetFiredFact<FactType>(0));
+            Assert.Equal(fact2, GetFiredFact<FactType>(1));
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneUpdatedToInvalid_FiresTwiceWithFactsFromGroupOne()
         {
             //Arrange
@@ -143,11 +142,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(fact1, GetFiredFact<FactType>(0));
-            Assert.AreEqual(fact2, GetFiredFact<FactType>(1));
+            Assert.Equal(fact1, GetFiredFact<FactType>(0));
+            Assert.Equal(fact2, GetFiredFact<FactType>(1));
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneUpdatedToFirstGroup_FiresThreeTimesWithFactsFromGroupOne()
         {
             //Arrange
@@ -171,10 +170,10 @@ namespace NRules.IntegrationTests
             var valid1 = firedFacts.Any(x => Equals(fact1, x));
             var valid2 = firedFacts.Any(x => Equals(fact2, x));
             var valid4 = firedFacts.Any(x => Equals(fact4, x));
-            Assert.IsTrue(valid1 && valid2 && valid4);
+            Assert.True(valid1 && valid2 && valid4);
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsForOneGroupAndOneForAnotherAndOneInvalidTheInvalidUpdatedToSecondGroup_FiresWithEachFactFromEachGroup()
         {
             //Arrange
@@ -194,13 +193,13 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTimes(4);
-            Assert.AreEqual(fact1, GetFiredFact<FactType>(0));
-            Assert.AreEqual(fact2, GetFiredFact<FactType>(1));
-            Assert.AreEqual(fact3, GetFiredFact<FactType>(2));
-            Assert.AreEqual(fact4, GetFiredFact<FactType>(3));
+            Assert.Equal(fact1, GetFiredFact<FactType>(0));
+            Assert.Equal(fact2, GetFiredFact<FactType>(1));
+            Assert.Equal(fact3, GetFiredFact<FactType>(2));
+            Assert.Equal(fact4, GetFiredFact<FactType>(3));
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsForOneGroupAssertedThenOneRetractedAnotherUpdatedThenOneAssertedBack_FiresTwiceWithFactsFromOneGroup()
         {
             //Arrange
@@ -220,8 +219,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTimes(2);
-            Assert.AreEqual(fact1, GetFiredFact<FactType>(0));
-            Assert.AreEqual(fact2, GetFiredFact<FactType>(1));
+            Assert.Equal(fact1, GetFiredFact<FactType>(0));
+            Assert.Equal(fact2, GetFiredFact<FactType>(1));
         }
 
         protected override void SetUpRules()

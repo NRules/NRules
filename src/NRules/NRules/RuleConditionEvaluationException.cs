@@ -1,13 +1,13 @@
 using System;
-using System.Runtime.Serialization;
-using System.Security;
 
 namespace NRules
 {
     /// <summary>
     /// Represents errors that occur while evaluating rule condition.
     /// </summary>
+#if NET45
     [Serializable]
+#endif
     public class RuleConditionEvaluationException : RuleExpressionEvaluationException
     {
         internal RuleConditionEvaluationException(string message, string expression, Exception innerException)
@@ -15,10 +15,12 @@ namespace NRules
         {
         }
 
-        [SecuritySafeCritical]
-        protected RuleConditionEvaluationException(SerializationInfo info, StreamingContext context)
+#if NET45
+        [System.Security.SecuritySafeCritical]
+        protected RuleConditionEvaluationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)
         {
         }
+#endif
     }
 }

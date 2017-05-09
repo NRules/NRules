@@ -3,11 +3,10 @@ using Moq;
 using NRules.Diagnostics;
 using NRules.Extensibility;
 using NRules.Rete;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.Tests
 {
-    [TestFixture]
     public class SessionTest
     {
         private Mock<IAgendaInternal> _agenda;
@@ -18,8 +17,7 @@ namespace NRules.Tests
         private Mock<IDependencyResolver> _dependencyResolver;
         private Mock<IActionInterceptor> _actionInterceptor;
             
-        [SetUp]
-        public void Setup()
+        public SessionTest()
         {
             _agenda = new Mock<IAgendaInternal>();
             _network = new Mock<INetwork>();
@@ -30,7 +28,7 @@ namespace NRules.Tests
             _actionInterceptor = new Mock<IActionInterceptor>();
         }
 
-        [Test]
+        [Fact]
         public void Insert_Called_PropagatesAssert()
         {
             // Arrange
@@ -45,7 +43,7 @@ namespace NRules.Tests
             _network.Verify(x => x.PropagateAssert(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
         }
 
-        [Test]
+        [Fact]
         public void InsertAll_Called_PropagatesAssert()
         {
             // Arrange
@@ -60,7 +58,7 @@ namespace NRules.Tests
             _network.Verify(x => x.PropagateAssert(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), facts), Times.Exactly(1));
         }
 
-        [Test]
+        [Fact]
         public void Update_Called_PropagatesUpdate()
         {
             // Arrange
@@ -75,7 +73,7 @@ namespace NRules.Tests
             _network.Verify(x => x.PropagateUpdate(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
         }
 
-        [Test]
+        [Fact]
         public void UpdateAll_Called_PropagatesUpdate()
         {
             // Arrange
@@ -90,7 +88,7 @@ namespace NRules.Tests
             _network.Verify(x => x.PropagateUpdate(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), facts), Times.Exactly(1));
         }
 
-        [Test]
+        [Fact]
         public void Retract_Called_PropagatesRetract()
         {
             // Arrange
@@ -105,7 +103,7 @@ namespace NRules.Tests
             _network.Verify(x => x.PropagateRetract(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
         }
 
-        [Test]
+        [Fact]
         public void RetractAll_Called_PropagatesRetract()
         {
             // Arrange
@@ -120,7 +118,7 @@ namespace NRules.Tests
             _network.Verify(x => x.PropagateRetract(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), facts), Times.Exactly(1));
         }
 
-        [Test]
+        [Fact]
         public void Fire_NoActiveRules_ReturnsZero()
         {
             // Arrange
@@ -131,10 +129,10 @@ namespace NRules.Tests
             var actual = target.Fire();
 
             // Assert
-            Assert.AreEqual(0, actual);
+            Assert.Equal(0, actual);
         }
 
-        [Test]
+        [Fact]
         public void Fire_ActiveRules_ReturnsNumberOfRulesFired()
         {
             // Arrange
@@ -147,10 +145,10 @@ namespace NRules.Tests
             var actual = target.Fire();
 
             // Assert
-            Assert.AreEqual(2, actual);
+            Assert.Equal(2, actual);
         }
 
-        [Test]
+        [Fact]
         public void Fire_ActiveRulesMoreThanMax_FiresMaxRules()
         {
             // Arrange
@@ -163,7 +161,7 @@ namespace NRules.Tests
             var actual = target.Fire(1);
 
             // Assert
-            Assert.AreEqual(1, actual);
+            Assert.Equal(1, actual);
         }
 
         private Session CreateTarget()

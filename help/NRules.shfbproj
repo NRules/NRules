@@ -25,8 +25,12 @@
     <CleanIntermediates>True</CleanIntermediates>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\src\NRules\NamespaceDoc.xml" />
-      <DocumentationSource sourceFile="..\binaries\NRules\NRules.dll" />
-      <DocumentationSource sourceFile="..\binaries\NRules\NRules.xml" />
+      <DocumentationSource sourceFile="..\binaries\NRules\net45\NRules.dll" />
+      <DocumentationSource sourceFile="..\binaries\NRules\net45\NRules.xml" />
+      <DocumentationSource sourceFile="..\binaries\NRules\net45\NRules.Fluent.dll" />
+      <DocumentationSource sourceFile="..\binaries\NRules\net45\NRules.Fluent.xml" />
+      <DocumentationSource sourceFile="..\binaries\NRules\net45\NRules.RuleModel.dll" />
+      <DocumentationSource sourceFile="..\binaries\NRules\net45\NRules.RuleModel.xml" />
     </DocumentationSources>
     <MaximumGroupParts>20</MaximumGroupParts>
     <NamespaceGrouping>True</NamespaceGrouping>

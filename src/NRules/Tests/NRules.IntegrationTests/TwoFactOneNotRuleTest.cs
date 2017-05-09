@@ -1,13 +1,12 @@
 ﻿using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class TwoFactOneNotRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFacts_DoesNotFire()
         {
             //Arrange
@@ -24,7 +23,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
         
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenRetracted_FiresOnce()
         {
             //Arrange
@@ -42,7 +41,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
         
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenUpdatedToInvalid_FiresOnce()
         {
             //Arrange
@@ -62,7 +61,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactAndNoFactsMatchingNotPattern_FiresOnce()
         {
             //Arrange
@@ -77,7 +76,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactInsertedThenUpdatedAndNoFactsMatchingNotPattern_FiresOnce()
         {
             //Arrange
@@ -93,7 +92,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsAndNoFactsMatchingNotPattern_FiresTwice()
         {
             //Arrange
@@ -110,7 +109,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsAndOneFactMatchingNotPattern_FiresOnce()
         {
             //Arrange
@@ -129,7 +128,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingSetsFactOfSecondKindInsertedThenRetracted_FiresTwiceThenFiresTwice()
         {
             //Arrange
@@ -155,7 +154,7 @@ namespace NRules.IntegrationTests
             AssertFiredTimes(4);
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingSetsFactOfFirstKindUpdated_FiresTwiceThenFiresOnce()
         {
             //Arrange

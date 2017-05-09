@@ -4,14 +4,13 @@ using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class TwoFactOneCollectionRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactOfOneKindAndTwoOfAnother_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
@@ -30,10 +29,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType2>>().Count());
+            Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactOfOneKindAndNoneOfAnother_FiresOnceWithEmptyCollection()
         {
             //Arrange
@@ -46,10 +45,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType2>>().Count());
+            Assert.Equal(0, GetFiredFact<IEnumerable<FactType2>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingSetOfFacts_FactsInContext()
         {
             //Arrange
@@ -70,14 +69,15 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(2, matches.Length);
-            Assert.AreEqual("fact", matches[0].Declaration.Name);
-            Assert.AreSame(fact1, matches[0].Value);
-            Assert.AreEqual("collection", matches[1].Declaration.Name);
-            CollectionAssert.AreEqual(new [] {fact2}, (IEnumerable<FactType2>)matches[1].Value);
+            Assert.Equal(2, matches.Length);
+            Assert.Equal("fact", matches[0].Declaration.Name);
+            Assert.Same(fact1, matches[0].Value);
+            Assert.Equal("collection", matches[1].Declaration.Name);
+            Assert.Equal(new[] { fact2 }, (IEnumerable<FactType2>)matches[1].Value);
+            //CollectionAssert.AreEqual(new [] {fact2}, (IEnumerable<FactType2>)matches[1].Value);
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactOfOneKindAndTwoOfAnotherThenFireThenAnotherMatchingFactThenFire_FiresOnceWithTwoFactsInCollectionThenFiresAgainWithThreeFacts()
         {
             //Arrange
@@ -99,11 +99,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(2, actualCount1);
-            Assert.AreEqual(3, actualCount2);
+            Assert.Equal(2, actualCount1);
+            Assert.Equal(3, actualCount2);
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactOfOneKindAndTwoOfAnotherThenAnotherMatchingFactThenFire_FiresOnceWithThreeFactsInCollection()
         {
             //Arrange
@@ -122,10 +122,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(3, actualCount);
+            Assert.Equal(3, actualCount);
         }
 
-        [Test]
+        [Fact]
         public void Fire_FactOfOneKindIsValidAndTwoOfAnotherKindAreAssertedThenOneRetracted_FiresOnceWithOneFactInCollection()
         {
             //Arrange
@@ -144,10 +144,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType2>>().Count());
+            Assert.Equal(1, GetFiredFact<IEnumerable<FactType2>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_FactOfOneKindIsValidAndTwoOfAnotherKindAreAssertedThenRetracted_FiresOnceWithEmptyCollection()
         {
             //Arrange
@@ -167,10 +167,10 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType2>>().Count());
+            Assert.Equal(0, GetFiredFact<IEnumerable<FactType2>>().Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_FactOfOneKindIsInvalidAndTwoOfAnotherKindAreValid_DoesNotFire()
         {
             //Arrange
@@ -190,7 +190,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_FactOfOneKindIsAssertedThenRetractedAndTwoOfAnotherKindAreValid_DoesNotFire()
         {
             //Arrange
@@ -212,7 +212,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_FactOfOneKindIsAssertedThenUpdatedToInvalidAndTwoOfAnotherKindAreValid_DoesNotFire()
         {
             //Arrange
@@ -235,7 +235,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsOfOneKindAndAggregatedFactsMatchingOneOfTheFacts_FiresOnceWithTwoFactsAndOnceWithEmptyCollection()
         {
             //Arrange
@@ -254,11 +254,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType2>>(0).Count());
-            Assert.AreEqual(0, GetFiredFact<IEnumerable<FactType2>>(1).Count());
+            Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>(0).Count());
+            Assert.Equal(0, GetFiredFact<IEnumerable<FactType2>>(1).Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoFactsOfOneKindAndAggregatedFactsMatchingBothOfTheFacts_FiresTwiceWithCorrectCounts()
         {
             //Arrange
@@ -278,11 +278,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.AreEqual(2, GetFiredFact<IEnumerable<FactType2>>(0).Count());
-            Assert.AreEqual(1, GetFiredFact<IEnumerable<FactType2>>(1).Count());
+            Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>(0).Count());
+            Assert.Equal(1, GetFiredFact<IEnumerable<FactType2>>(1).Count());
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchedSetsThenOneFactOfFirstKindUpdated_FiresTwiceThenFiresOnce()
         {
             //Arrange
@@ -311,7 +311,7 @@ namespace NRules.IntegrationTests
             AssertFiredTimes(3);
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchedSetsThenOneFactOfSecondKindUpdated_FiresTwiceThenFiresOnce()
         {
             //Arrange

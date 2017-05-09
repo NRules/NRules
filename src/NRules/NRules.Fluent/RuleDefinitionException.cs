@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Runtime.Serialization;
-using System.Security;
 
 namespace NRules.Fluent
 {
     /// <summary>
     /// Represents errors that occur while building rule definition using fluent DSL.
     /// </summary>
-    [Serializable]
+#if NET45
+    [System.Serializable]
+#endif
     public class RuleDefinitionException : Exception
     {
         internal RuleDefinitionException(string message, Type ruleType, Exception innerException)
@@ -16,15 +16,16 @@ namespace NRules.Fluent
             RuleType = ruleType;
         }
 
-        [SecuritySafeCritical]
-        protected RuleDefinitionException(SerializationInfo info, StreamingContext context)
+#if NET45
+        [System.Security.SecuritySafeCritical]
+        protected RuleDefinitionException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)
         {
             RuleType = (Type)info.GetValue("RuleType", typeof(Type));
         }
 
-        [SecurityCritical]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        [System.Security.SecurityCritical]
+        public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
         {
             if (info == null)
             {
@@ -33,6 +34,7 @@ namespace NRules.Fluent
             base.GetObjectData(info, context);
             info.AddValue("RuleType", RuleType, typeof(Type));
         }
+#endif
 
         /// <summary>
         /// Rule .NET type that caused exception.

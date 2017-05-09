@@ -1,16 +1,16 @@
-﻿using System;
+﻿#if NET45 || NET46
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.Tests
 {
-    [TestFixture]
     public class ExceptionSerializationTest
     {
-        [Test]
+        [Fact]
         public void RuleActionEvaluationException_SerializedDeserialized_Equals()
         {
             //Arrange
@@ -20,15 +20,15 @@ namespace NRules.Tests
             var newException = SerializeDeserialize(exception);
 
             //Assert
-            Assert.IsNotNull(newException);
-            Assert.AreNotSame(exception, newException);
-            Assert.AreEqual(exception.Message, newException.Message);
-            Assert.AreEqual(exception.RuleName, newException.RuleName);
-            Assert.AreEqual(exception.Expression, newException.Expression);
-            Assert.AreEqual(exception.InnerException.Message, newException.InnerException.Message);
+            Assert.NotNull(newException);
+            Assert.NotSame(exception, newException);
+            Assert.Equal(exception.Message, newException.Message);
+            Assert.Equal(exception.RuleName, newException.RuleName);
+            Assert.Equal(exception.Expression, newException.Expression);
+            Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
         }
 
-        [Test]
+        [Fact]
         public void RuleConditionEvaluationException_SerializedDeserialized_Equals()
         {
             //Arrange
@@ -38,14 +38,14 @@ namespace NRules.Tests
             var newException = SerializeDeserialize(exception);
 
             //Assert
-            Assert.IsNotNull(newException);
-            Assert.AreNotSame(exception, newException);
-            Assert.AreEqual(exception.Message, newException.Message);
-            Assert.AreEqual(exception.Expression, newException.Expression);
-            Assert.AreEqual(exception.InnerException.Message, newException.InnerException.Message);
+            Assert.NotNull(newException);
+            Assert.NotSame(exception, newException);
+            Assert.Equal(exception.Message, newException.Message);
+            Assert.Equal(exception.Expression, newException.Expression);
+            Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
         }
 
-        [Test]
+        [Fact]
         public void RuleCompilationEvaluationException_SerializedDeserialized_Equals()
         {
             //Arrange
@@ -55,14 +55,14 @@ namespace NRules.Tests
             var newException = SerializeDeserialize(exception);
 
             //Assert
-            Assert.IsNotNull(newException);
-            Assert.AreNotSame(exception, newException);
-            Assert.AreEqual(exception.Message, newException.Message);
-            Assert.AreEqual(exception.RuleName, newException.RuleName);
-            Assert.AreEqual(exception.InnerException.Message, newException.InnerException.Message);
+            Assert.NotNull(newException);
+            Assert.NotSame(exception, newException);
+            Assert.Equal(exception.Message, newException.Message);
+            Assert.Equal(exception.RuleName, newException.RuleName);
+            Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
         }
 
-        [Test]
+        [Fact]
         public void RuleDefinitionException_SerializedDeserialized_Equals()
         {
             //Arrange
@@ -72,14 +72,14 @@ namespace NRules.Tests
             var newException = SerializeDeserialize(exception);
 
             //Assert
-            Assert.IsNotNull(newException);
-            Assert.AreNotSame(exception, newException);
-            Assert.AreEqual(exception.Message, newException.Message);
-            Assert.AreEqual(exception.RuleType, newException.RuleType);
-            Assert.AreEqual(exception.InnerException.Message, newException.InnerException.Message);
+            Assert.NotNull(newException);
+            Assert.NotSame(exception, newException);
+            Assert.Equal(exception.Message, newException.Message);
+            Assert.Equal(exception.RuleType, newException.RuleType);
+            Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
         }
 
-        [Test]
+        [Fact]
         public void RuleActivationException_SerializedDeserialized_Equals()
         {
             //Arrange
@@ -89,11 +89,11 @@ namespace NRules.Tests
             var newException = SerializeDeserialize(exception);
 
             //Assert
-            Assert.IsNotNull(newException);
-            Assert.AreNotSame(exception, newException);
-            Assert.AreEqual(exception.Message, newException.Message);
-            Assert.AreEqual(exception.RuleType, newException.RuleType);
-            Assert.AreEqual(exception.InnerException.Message, newException.InnerException.Message);
+            Assert.NotNull(newException);
+            Assert.NotSame(exception, newException);
+            Assert.Equal(exception.Message, newException.Message);
+            Assert.Equal(exception.RuleType, newException.RuleType);
+            Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
         }
 
         private T SerializeDeserialize<T>(T originalObject)
@@ -109,3 +109,4 @@ namespace NRules.Tests
         }
     }
 }
+#endif

@@ -3,14 +3,13 @@ using NRules.Extensibility;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactRuleWithDependencyTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_DefaultResolver_Throws()
         {
             //Arrange
@@ -21,7 +20,7 @@ namespace NRules.IntegrationTests
             Assert.Throws<InvalidOperationException>(() => Session.Fire());
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFact_FiresOnceAndCallsDependency()
         {
             //Arrange
@@ -43,11 +42,11 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(true, service1Called);
-            Assert.AreEqual(true, service2Called);
+            Assert.Equal(true, service1Called);
+            Assert.Equal(true, service2Called);
         }
 
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFact_CanResolveDependencyFromContext()
         {
             //Arrange
@@ -69,7 +68,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreSame(service1, resolvedService1);
+            Assert.Same(service1, resolvedService1);
         }
 
         protected override void SetUpRules()
