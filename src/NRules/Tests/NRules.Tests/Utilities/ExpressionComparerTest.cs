@@ -263,6 +263,28 @@ namespace NRules.Tests.Utilities
         }
 
         [Test]
+        public void AreEqual_EquivalentTypeBinaryExpression_True()
+        {
+            //Arrange
+            Expression<Func<SomeClass, bool>> first = x => x is SomeClass;
+            Expression<Func<SomeClass, bool>> second = x => x is SomeClass;
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Test]
+        public void AreEqual_NonEquivalentTypeBinaryExpression_False()
+        {
+            //Arrange
+            Expression<Func<SomeClass, bool>> first = x => x is SomeClass;
+            Expression<Func<SomeClass, bool>> second = x => x is object;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Test]
         public void AreEqual_EquivalentInvocationExpression_True()
         {
             //Arrange
