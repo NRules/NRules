@@ -46,7 +46,6 @@ $components = @{
                 'NRules'
             )
         }
-        help = 'NRules.shfbproj'
     };
     'NRules.Debugger.Visualizer' = @{
         name = 'NRules.Debugger.Visualizer'
@@ -88,10 +87,6 @@ $components = @{
             )
         }
     };
-    'NRules.Integration' = @{
-        name = 'NRules.Integration'
-        help = 'NRules.Integration.shfbproj'
-    };
     'Samples.SimpleRules' = @{
         name = 'SimpleRules'
         src_root = 'samples'
@@ -122,6 +117,10 @@ $components = @{
         build = @{
             tool = 'msbuild'
         }
+    };
+    'Documentation' = @{
+        name = 'NRules.Documentation'
+        help = 'NRules.shfbproj'
     };
 }
 

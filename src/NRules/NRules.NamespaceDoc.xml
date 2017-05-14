@@ -6,12 +6,12 @@
   <members>
     <member name="N:NRules">
       <summary>
-        Contains types that implement executable part of the rules engine.
+        Contains types that implement runtime components of the rules engine.
       </summary>
     </member>
     <member name="N:NRules.Diagnostics">
       <summary>
-        Contains types that facilitate troubleshooting and monitoring rules engine execution.
+        Contains types that facilitate troubleshooting and monitoring of the rules engine execution.
       </summary>
     </member>
     <member name="N:NRules.Extensibility">
