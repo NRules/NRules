@@ -25,7 +25,7 @@ By contributing to NRules, you assert that:
 
 ### Development Environment
 
-- Visual Studio 2015 (with latest patches/updates).
+- Visual Studio 2017 (with latest patches/updates).
 - [Sandcastle Help File Builder](https://github.com/EWSoftware/SHFB)
 
 ### Dependencies
@@ -34,7 +34,7 @@ NRules core assemblies depend *only* on the .NET Base Class Library (BCL). It sh
 
 Integration and extension projects may have additional dependencies, consistent with the nature of the project.
 
-Unit tests are written in NUnit and Moq.
+Unit tests are written in xUnit and Moq.
 
 ### Coding Standards
 
@@ -49,4 +49,4 @@ Unit tests are written in NUnit and Moq.
 
 ### Documentation
 
-Public types and methods must have XML documentation.
+Public types and members must have XML documentation.
