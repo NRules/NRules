@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>NRules.Fluent</id>
+    <id>NRules.FluentDsl</id>
     <version>$version$</version>
-    <title>NRules.Fluent, Fluent DSL for NRules</title>
+    <title>NRules.FluentDsl, Fluent DSL for NRules</title>
     <authors>Sergiy Nikolayev</authors>
     <owners>Sergiy Nikolayev</owners>
     <licenseUrl>https://github.com/NRules/NRules/blob/master/LICENSE.txt</licenseUrl>

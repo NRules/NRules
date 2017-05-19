@@ -3,7 +3,7 @@ param (
     [string]$component_name = 'Core'
 )
 
-$version = '0.6.1'
+$version = '0.6.2'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -41,12 +41,11 @@ $components = @{
         package = @{
             nuget = @(
                 'NRules.RuleModel',
-                'NRules.Fluent',
+                'NRules.FluentDsl',
                 'NRules.Runtime',
                 'NRules'
             )
         }
-        help = 'NRules.shfbproj'
     };
     'NRules.Debugger.Visualizer' = @{
         name = 'NRules.Debugger.Visualizer'
@@ -88,10 +87,6 @@ $components = @{
             )
         }
     };
-    'NRules.Integration' = @{
-        name = 'NRules.Integration'
-        help = 'NRules.Integration.shfbproj'
-    };
     'Samples.SimpleRules' = @{
         name = 'SimpleRules'
         src_root = 'samples'
@@ -122,6 +117,10 @@ $components = @{
         build = @{
             tool = 'msbuild'
         }
+    };
+    'Documentation' = @{
+        name = 'NRules.Documentation'
+        help = 'NRules.shfbproj'
     };
 }
 
