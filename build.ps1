@@ -41,7 +41,7 @@ $components = @{
         package = @{
             nuget = @(
                 'NRules.RuleModel',
-                'NRules.Fluent',
+                'NRules.FluentDsl',
                 'NRules.Runtime',
                 'NRules'
             )
