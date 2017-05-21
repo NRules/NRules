@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregate that folds matching facts into a collection.

@@ -1,6 +1,7 @@
 using System;
+using System.Linq.Expressions;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator factory for group by aggregator.
@@ -13,10 +14,10 @@ namespace NRules.RuleModel.Aggregators
         private readonly Func<TSource, TKey> _keySelector;
         private readonly Func<TSource, TElement> _elementSelector;
 
-        public GroupByAggregatorFactory(Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
+        public GroupByAggregatorFactory(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
         {
-            _keySelector = keySelector;
-            _elementSelector = elementSelector;
+            _keySelector = keySelector.Compile();
+            _elementSelector = elementSelector.Compile();
         }
 
         public IAggregator Create()

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator factory for flattening aggregator.
@@ -12,9 +13,9 @@ namespace NRules.RuleModel.Aggregators
     {
         private readonly Func<TSource, IEnumerable<TResult>> _selector;
 
-        public FlatteningAggregatorFactory(Func<TSource, IEnumerable<TResult>> selector)
+        public FlatteningAggregatorFactory(Expression<Func<TSource, IEnumerable<TResult>>> selector)
         {
-            _selector = selector;
+            _selector = selector.Compile();
         }
 
         public IAggregator Create()

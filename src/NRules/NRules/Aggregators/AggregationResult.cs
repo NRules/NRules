@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace NRules.RuleModel
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Action that aggregation performed on the aggregate, based on added/modified/removed facts.

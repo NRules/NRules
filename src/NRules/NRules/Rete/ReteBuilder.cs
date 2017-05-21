@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NRules.Aggregators;
 using NRules.RuleModel;
 
 namespace NRules.Rete
@@ -225,8 +226,9 @@ namespace NRules.Rete
                     ExpressionMapComparer.AreEqual(x.ExpressionMap, element.ExpressionMap));
             if (node == null)
             {
+                var aggregatorFactory = BuildAggregatorFactory(element);
                 node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name, 
-                    element.ExpressionMap, element.AggregatorFactory, context.HasSubnet);
+                    element.ExpressionMap, aggregatorFactory, context.HasSubnet);
                 if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
             }
             BuildBetaMemoryNode(context, node);
@@ -283,7 +285,68 @@ namespace NRules.Rete
 
             context.AlphaSource = memoryNode;
         }
-        
+
+        private IAggregatorFactory BuildAggregatorFactory(AggregateElement element)
+        {
+            switch (element.Name)
+            {
+                case AggregateElement.CollectName:
+                    return BuildCollectionFactory(element);
+                case AggregateElement.GroupByName:
+                    return BuildGroupByFactory(element);
+                case AggregateElement.ProjectName:
+                    return BuildProjectFactory(element);
+                case AggregateElement.FlattenName:
+                    return BuildFlattenFactory(element);
+                default:
+                    throw new ArgumentException(
+                        string.Format("Unrecognized aggregate element. Name={0}", element.Name));
+            }
+        }
+
+        private IAggregatorFactory BuildCollectionFactory(AggregateElement element)
+        {
+            var sourceType = element.Source.ValueType;
+            var aggregatorType = typeof(CollectionAggregator<>).MakeGenericType(sourceType);
+            Type factoryType = typeof(DefaultAggregatorFactory<>).MakeGenericType(aggregatorType);
+            var factory = (IAggregatorFactory)Activator.CreateInstance(factoryType);
+            return factory;
+        }
+
+        private IAggregatorFactory BuildGroupByFactory(AggregateElement element)
+        {
+            var keySelector = element.ExpressionMap["KeySelector"];
+            var elementSelector = element.ExpressionMap["ElementSelector"];
+            var sourceType = element.Source.ValueType;
+            var keyType = keySelector.ReturnType;
+            var elementType = elementSelector.ReturnType;
+            Type factoryType = typeof(GroupByAggregatorFactory<,,>).MakeGenericType(sourceType, keyType, elementType);
+            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, new object[] {keySelector, elementSelector});
+            return factory;
+        }
+
+        private IAggregatorFactory BuildProjectFactory(AggregateElement element)
+        {
+            var selector = element.ExpressionMap["Selector"];
+            var sourceType = element.Source.ValueType;
+            var resultType = selector.ReturnType;
+            Type factoryType = typeof(ProjectionAggregatorFactory<,>).MakeGenericType(sourceType, resultType);
+            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, new object[] {selector});
+            return factory;
+        }
+
+        private IAggregatorFactory BuildFlattenFactory(AggregateElement element)
+        {
+            var selector = element.ExpressionMap["Selector"];
+            var sourceType = element.Source.ValueType;
+            //Flatten slector is X -> IEnumerable<Y>
+            var resultType = selector.ReturnType;
+            var resultElementType = resultType.GenericTypeArguments[0];
+            Type factoryType = typeof(FlatteningAggregatorFactory<,>).MakeGenericType(sourceType, resultElementType);
+            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, new object[] {selector});
+            return factory;
+        }
+
         public INetwork Build()
         {
             INetwork network = new Network(_root, _dummyNode);

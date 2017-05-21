@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NRules.RuleModel;
-using NRules.RuleModel.Aggregators;
+using NRules.Aggregators;
 using Xunit;
 
 namespace NRules.Tests.Aggregators

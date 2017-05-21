@@ -1,6 +1,7 @@
 using System;
+using System.Linq.Expressions;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator factory for projection aggregator.
@@ -11,9 +12,9 @@ namespace NRules.RuleModel.Aggregators
     {
         private readonly Func<TSource, TResult> _selector;
 
-        public ProjectionAggregatorFactory(Func<TSource, TResult> selector)
+        public ProjectionAggregatorFactory(Expression<Func<TSource, TResult>> selector)
         {
-            _selector = selector;
+            _selector = selector.Compile();
         }
 
         public IAggregator Create()

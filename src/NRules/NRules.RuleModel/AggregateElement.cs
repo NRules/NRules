@@ -8,19 +8,14 @@ namespace NRules.RuleModel
     /// </summary>
     public class AggregateElement : PatternSourceElement
     {
+        public const string CollectName = "Collect";
+        public const string GroupByName = "GroupBy";
+        public const string ProjectName = "Project";
+        public const string FlattenName = "Flatten";
+
         private readonly string _name;
         private readonly ExpressionMap _expressionMap;
-
-        private readonly IAggregatorFactory _factory;
         private readonly PatternElement _source;
-
-        /// <summary>
-        /// Factory to create aggregators of this type.
-        /// </summary>
-        public IAggregatorFactory AggregatorFactory
-        {
-            get { return _factory; }
-        }
 
         /// <summary>
         /// Fact source of the aggregate.
@@ -46,12 +41,11 @@ namespace NRules.RuleModel
             get { return _expressionMap; }
         }
 
-        internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, string name, ExpressionMap expressionMap, IAggregatorFactory factory, PatternElement source) 
+        internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, string name, ExpressionMap expressionMap, PatternElement source) 
             : base(declarations, resultType) 
         {
             _name = name;
             _expressionMap = expressionMap;
-            _factory = factory;
             _source = source;
         }
 

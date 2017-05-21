@@ -1,4 +1,4 @@
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator factory that creates new instances of the aggregator via a default constructor.

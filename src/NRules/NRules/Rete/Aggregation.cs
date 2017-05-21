@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using NRules.RuleModel;
+using NRules.Aggregators;
 
 namespace NRules.Rete
 {

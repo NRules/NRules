@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Map (dictionary) that supports mapping using a default value for the key type 

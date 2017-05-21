@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator that projects matching facts into new elements.

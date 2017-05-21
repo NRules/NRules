@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using NRules.RuleModel.Aggregators;
 
 namespace NRules.RuleModel.Builders
 {
@@ -12,16 +10,10 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
     {
-        private const string CollectName = "Collect";
-        private const string GroupByName = "GroupBy";
-        private const string ProjectName = "Project";
-        private const string FlattenName = "Flatten";
-
-        private readonly Type _resultType;
-        private IAggregatorFactory _aggregatorFactory; 
-        private PatternBuilder _sourceBuilder;
         private string _name;
         private readonly Dictionary<string, LambdaExpression> _expressions = new Dictionary<string, LambdaExpression>();
+        private readonly Type _resultType;
+        private PatternBuilder _sourceBuilder;
 
         internal AggregateBuilder(Type resultType, SymbolTable scope) 
             : base(scope.New("Aggregate"))
@@ -30,52 +22,30 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Sets aggregator.
+        /// Configure a custom aggregator.
         /// </summary>
         /// <param name="name">Name of the aggregator.</param>
-        /// <param name="aggregatorType">Type that implements <see cref="IAggregator"/> that aggregates facts.</param>
-        public void Aggregator(string name, Type aggregatorType)
-        {
-            var aggregatorTypeInfo = aggregatorType.GetTypeInfo();
-            var interfaceType = typeof(IAggregator).GetTypeInfo();
-            if (!interfaceType.IsAssignableFrom(aggregatorTypeInfo))
-            {
-                throw new InvalidOperationException(
-                    "Aggregator type must implement IAggregator interface");
-            }
-            if (aggregatorTypeInfo.DeclaredConstructors.All(x => x.GetParameters().Length != 0))
-            {
-                throw new InvalidOperationException(
-                    "Aggregator type must have a parameterless constructor to be used directly. Provide aggregator factory instead.");
-            }
-            Type factoryType = typeof(DefaultAggregatorFactory<>).MakeGenericType(aggregatorType);
-            var aggregatorFactory = (IAggregatorFactory) Activator.CreateInstance(factoryType);
-            AggregatorFactory(name, aggregatorFactory);
-        }
-
-        /// <summary>
-        /// Sets aggregator factory.
-        /// </summary>
-        /// <param name="name">Name of the aggregator.</param>
-        /// <param name="aggregatorFactory">Factory to create new aggregators.</param>
-        public void AggregatorFactory(string name, IAggregatorFactory aggregatorFactory)
+        /// <param name="expressions">Named expressions used by the aggregator.</param>
+        public void Aggregator(string name, IDictionary<string, LambdaExpression> expressions)
         {
             _name = name;
-            _aggregatorFactory = aggregatorFactory;
+            foreach (var item in expressions)
+            {
+                _expressions[item.Key] = item.Value;
+            }
         }
-
+        
         /// <summary>
         /// Configure a collection aggregator.
         /// </summary>
         /// <param name="elementType">Type of elements to aggregate.</param>
         public void CollectionOf(Type elementType)
         {
-            Type aggregateType = typeof (CollectionAggregator<>).MakeGenericType(elementType);
-            Aggregator(CollectName, aggregateType);
+            _name = AggregateElement.CollectName;
         }
 
         /// <summary>
-        /// Configure a collection aggregate.
+        /// Configure a collection aggregator.
         /// </summary>
         /// <typeparam name="TElement">Type of elements to aggregate.</typeparam>
         public void CollectionOf<TElement>()
@@ -93,10 +63,9 @@ namespace NRules.RuleModel.Builders
         /// <typeparam name="TElement">Type of grouping element.</typeparam>
         public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
         {
-            var aggregateFactory = new GroupByAggregatorFactory<TSource, TKey, TElement>(keySelector.Compile(), elementSelector.Compile());
+            _name = AggregateElement.GroupByName;
             _expressions["KeySelector"] = keySelector;
-            _expressions["ElementSelector"] = keySelector;
-            AggregatorFactory(GroupByName, aggregateFactory);
+            _expressions["ElementSelector"] = elementSelector;
         }
 
         /// <summary>
@@ -107,9 +76,8 @@ namespace NRules.RuleModel.Builders
         /// <typeparam name="TResult">Type of result elements to aggregate.</typeparam>
         public void Project<TSource, TResult>(Expression<Func<TSource, TResult>> selector)
         {
-            var aggregateFactory = new ProjectionAggregatorFactory<TSource, TResult>(selector.Compile());
+            _name = AggregateElement.ProjectName;
             _expressions["Selector"] = selector;
-            AggregatorFactory(ProjectName, aggregateFactory);
         }
 
         /// <summary>
@@ -120,9 +88,8 @@ namespace NRules.RuleModel.Builders
         /// <typeparam name="TResult">Type of result elements to aggregate.</typeparam>
         public void Flatten<TSource, TResult>(Expression<Func<TSource, IEnumerable<TResult>>> selector)
         {
-            var aggregateFactory = new FlatteningAggregatorFactory<TSource, TResult>(selector.Compile());
+            _name = AggregateElement.FlattenName;
             _expressions["Selector"] = selector;
-            AggregatorFactory(FlattenName, aggregateFactory);
         }
 
         /// <summary>
@@ -157,15 +124,15 @@ namespace NRules.RuleModel.Builders
             PatternElement sourceElement = sourceBuilder.Build();
             var namedExpressions = _expressions.Select(x => new NamedExpression(x.Key, x.Value));
             var expressionMap = new ExpressionMap(namedExpressions);
-            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _name, expressionMap, _aggregatorFactory, sourceElement);
+            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _name, expressionMap, sourceElement);
             return aggregateElement;
         }
 
         private void Validate()
         {
-            if (_aggregatorFactory == null)
+            if (_name == null)
             {
-                throw new InvalidOperationException("Aggregator factory is not provided");
+                throw new InvalidOperationException("Aggregator name is not provided");
             }
             if (_sourceBuilder == null)
             {

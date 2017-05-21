@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NRules.RuleModel
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Base interface for fact aggregators.

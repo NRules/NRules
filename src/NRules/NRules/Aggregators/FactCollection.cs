@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     internal class FactCollection<TFact> : IEnumerable<TFact>
     {

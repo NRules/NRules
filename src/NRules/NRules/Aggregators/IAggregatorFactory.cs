@@ -1,4 +1,4 @@
-namespace NRules.RuleModel
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Base interface for aggregator factories.
