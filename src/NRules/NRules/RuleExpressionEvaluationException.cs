@@ -29,7 +29,7 @@ namespace NRules
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             base.GetObjectData(info, context);
             info.AddValue("Expression", Expression, typeof(string));
@@ -39,7 +39,7 @@ namespace NRules
         /// <summary>
         /// Expression that caused exception.
         /// </summary>
-        public string Expression { get; private set; }
+        public string Expression { get; }
 
         public override string Message
         {

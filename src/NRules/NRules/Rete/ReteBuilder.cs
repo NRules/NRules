@@ -300,7 +300,7 @@ namespace NRules.Rete
                     return BuildFlattenFactory(element);
                 default:
                     throw new ArgumentException(
-                        string.Format("Unrecognized aggregate element. Name={0}", element.Name));
+                        $"Unrecognized aggregate element. Name={element.Name}");
             }
         }
 
@@ -321,7 +321,7 @@ namespace NRules.Rete
             var keyType = keySelector.ReturnType;
             var elementType = elementSelector.ReturnType;
             Type factoryType = typeof(GroupByAggregatorFactory<,,>).MakeGenericType(sourceType, keyType, elementType);
-            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, new object[] {keySelector, elementSelector});
+            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, keySelector, elementSelector);
             return factory;
         }
 
@@ -331,7 +331,7 @@ namespace NRules.Rete
             var sourceType = element.Source.ValueType;
             var resultType = selector.ReturnType;
             Type factoryType = typeof(ProjectionAggregatorFactory<,>).MakeGenericType(sourceType, resultType);
-            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, new object[] {selector});
+            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, selector);
             return factory;
         }
 
@@ -343,7 +343,7 @@ namespace NRules.Rete
             var resultType = selector.ReturnType;
             var resultElementType = resultType.GenericTypeArguments[0];
             Type factoryType = typeof(FlatteningAggregatorFactory<,>).MakeGenericType(sourceType, resultElementType);
-            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, new object[] {selector});
+            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, selector);
             return factory;
         }
 

@@ -11,7 +11,7 @@ namespace NRules.Rete
     {
         private readonly List<IObjectSink> _sinks = new List<IObjectSink>();
 
-        public IEnumerable<IObjectSink> Sinks { get { return _sinks; } }
+        public IEnumerable<IObjectSink> Sinks => _sinks;
 
         public void PropagateAssert(IExecutionContext context, IList<Fact> facts)
         {

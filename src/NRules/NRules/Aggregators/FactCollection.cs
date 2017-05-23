@@ -31,7 +31,7 @@ namespace NRules.Aggregators
             _nodeLookup.Remove(fact);
         }
 
-        public int Count { get { return _elements.Count; } }
+        public int Count => _elements.Count;
 
         public IEnumerator<TFact> GetEnumerator()
         {

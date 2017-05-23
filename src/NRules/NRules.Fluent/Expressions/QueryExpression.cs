@@ -20,7 +20,7 @@ namespace NRules.Fluent.Expressions
             Builder = this;
         }
 
-        public IQueryBuilder Builder { get; private set; }
+        public IQueryBuilder Builder { get; }
 
         public void FactQuery<TSource>(Expression<Func<TSource, bool>>[] conditions)
         {
@@ -111,13 +111,11 @@ namespace NRules.Fluent.Expressions
 
     internal class QueryExpression<TSource> : IQuery<TSource>
     {
-        private readonly IQueryBuilder _builder;
-
         public QueryExpression(IQueryBuilder builder)
         {
-            _builder = builder;
+            Builder = builder;
         }
 
-        public IQueryBuilder Builder { get { return _builder; } }
+        public IQueryBuilder Builder { get; }
     }
 }

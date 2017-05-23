@@ -18,10 +18,7 @@ namespace NRules.Rete
         private readonly OrderedHashSet<Tuple> _tuples = new OrderedHashSet<Tuple>();
         private readonly Dictionary<Tuple, Dictionary<Fact, Tuple>> _parentToChildMap = new Dictionary<Tuple, Dictionary<Fact, Tuple>>(); 
 
-        public IEnumerable<Tuple> Tuples
-        {
-            get { return _tuples; }
-        }
+        public IEnumerable<Tuple> Tuples => _tuples;
 
         public void Add(Tuple tuple)
         {

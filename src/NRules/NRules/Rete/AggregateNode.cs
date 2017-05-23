@@ -6,23 +6,17 @@ namespace NRules.Rete
 {
     internal class AggregateNode : BetaNode
     {
-        private readonly string _name;
-        private readonly ExpressionMap _expressionMap;
         private readonly IAggregatorFactory _aggregatorFactory;
         private readonly bool _isSubnetJoin;
 
-        public string Name { get { return _name; } }
-
-        public ExpressionMap ExpressionMap
-        {
-            get { return _expressionMap; }
-        }
+        public string Name { get; }
+        public ExpressionMap ExpressionMap { get; }
 
         public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, string name, ExpressionMap expressionMap, IAggregatorFactory aggregatorFactory, bool isSubnetJoin)
             : base(leftSource, rightSource)
         {
-            _name = name;
-            _expressionMap = expressionMap;
+            Name = name;
+            ExpressionMap = expressionMap;
             _aggregatorFactory = aggregatorFactory;
             _isSubnetJoin = isSubnetJoin;
         }

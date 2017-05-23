@@ -58,7 +58,7 @@ namespace NRules.Fluent.Expressions
 
         public ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> condition)
         {
-            return All(x => true, new[] { condition });
+            return All(x => true, condition);
         }
 
         public ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> baseCondition, params Expression<Func<TFact, bool>>[] conditions)

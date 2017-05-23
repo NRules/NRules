@@ -13,10 +13,7 @@ namespace NRules.Aggregators
         private TValue _defaultValue;
         private bool _hasDefault = false;
 
-        public int Count
-        {
-            get { return _map.Count + (_hasDefault ? 1 : 0); }
-        }
+        public int Count => _map.Count + (_hasDefault ? 1 : 0);
 
         public bool ContainsKey(TKey key)
         {

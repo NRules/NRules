@@ -31,17 +31,15 @@ namespace NRules.Aggregators
     /// <summary>
     /// Result of the aggregation.
     /// </summary>
-    [DebuggerDisplay("{_action}")]
+    [DebuggerDisplay("{Action}")]
     public struct AggregationResult
     {
-        private readonly AggregationAction _action;
-        private readonly object _aggregate;
         public static AggregationResult[] Empty = new AggregationResult[0];
 
         private AggregationResult(AggregationAction action, object aggregate)
         {
-            _action = action;
-            _aggregate = aggregate;
+            Action = action;
+            Aggregate = aggregate;
         }
 
         /// <summary>
@@ -87,11 +85,11 @@ namespace NRules.Aggregators
         /// <summary>
         /// Action that aggregation performed on the aggregate.
         /// </summary>
-        public AggregationAction Action { get { return _action; } }
+        public AggregationAction Action { get; }
 
         /// <summary>
         /// Resulting aggregate.
         /// </summary>
-        public object Aggregate { get { return _aggregate; } }
+        public object Aggregate { get; }
     }
 }

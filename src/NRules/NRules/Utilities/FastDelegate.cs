@@ -113,23 +113,13 @@ namespace NRules.Utilities
 
     internal class FastDelegate<TDelegate> : FastDelegate where TDelegate : class
     {
-        private readonly TDelegate _delegate;
-        private readonly int _arrayArgumentCount;
-
-        public TDelegate Delegate
-        {
-            get { return _delegate; }
-        }
-
-        public int ArrayArgumentCount
-        {
-            get { return _arrayArgumentCount; }
-        }
+        public TDelegate Delegate { get; }
+        public int ArrayArgumentCount { get; }
 
         internal FastDelegate(TDelegate @delegate, int arrayArgumentCount)
         {
-            _delegate = @delegate;
-            _arrayArgumentCount = arrayArgumentCount;
+            Delegate = @delegate;
+            ArrayArgumentCount = arrayArgumentCount;
         }
     }
 }

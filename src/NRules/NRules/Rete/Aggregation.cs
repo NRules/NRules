@@ -9,20 +9,9 @@ namespace NRules.Rete
         private readonly List<AggregationEntry> _updates = new List<AggregationEntry>();
         private readonly List<AggregationEntry> _retracts = new List<AggregationEntry>();
 
-        public IList<AggregationEntry> Asserts
-        {
-            get { return _asserts; }
-        }
-
-        public IList<AggregationEntry> Updates
-        {
-            get { return _updates; }
-        }
-
-        public IList<AggregationEntry> Retracts
-        {
-            get { return _retracts; }
-        }
+        public IList<AggregationEntry> Asserts => _asserts;
+        public IList<AggregationEntry> Updates => _updates;
+        public IList<AggregationEntry> Retracts => _retracts;
 
         public void Add(Tuple tuple, IEnumerable<AggregationResult> results)
         {
@@ -51,8 +40,8 @@ namespace NRules.Rete
 
     internal class AggregationEntry
     {
-        public Tuple Tuple { get; private set; }
-        public object ResultObject { get; private set; }
+        public Tuple Tuple { get; }
+        public object ResultObject { get; }
 
         public AggregationEntry(Tuple tuple, object resultObject)
         {

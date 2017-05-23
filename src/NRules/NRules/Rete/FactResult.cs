@@ -11,7 +11,7 @@ namespace NRules.Rete
             _failed = failed;
         }
 
-        public int FailedCount { get { return _failed.Count; } }
-        public IEnumerable<object> Failed { get { return _failed; } }
+        public int FailedCount => _failed.Count;
+        public IEnumerable<object> Failed => _failed;
     }
 }

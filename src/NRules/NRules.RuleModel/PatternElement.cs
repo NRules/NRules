@@ -9,55 +9,40 @@ namespace NRules.RuleModel
     public class PatternElement : RuleLeftElement
     {
         private readonly List<ConditionElement> _conditions;
-        private readonly Declaration _declaration;
-        private readonly PatternSourceElement _source;
-        private readonly Type _valueType;
 
         internal PatternElement(Declaration declaration, IEnumerable<Declaration> declarations, IEnumerable<ConditionElement> conditions)
             : base(declarations)
         {
-            _declaration = declaration;
-            _valueType = declaration.Type;
+            Declaration = declaration;
+            ValueType = declaration.Type;
             _conditions = new List<ConditionElement>(conditions);
         }
 
         internal PatternElement(Declaration declaration, IEnumerable<Declaration> declarations, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
             : this(declaration, declarations, conditions)
         {
-            _source = source;
+            Source = source;
         }
 
         /// <summary>
         /// Declaration that references the pattern.
         /// </summary>
-        public Declaration Declaration
-        {
-            get { return _declaration; }
-        }
+        public Declaration Declaration { get; }
 
         /// <summary>
         /// Optional pattern source element.
         /// </summary>
-        public PatternSourceElement Source
-        {
-            get { return _source; }
-        }
+        public PatternSourceElement Source { get; }
 
         /// <summary>
         /// Type of the values that the pattern matches.
         /// </summary>
-        public Type ValueType
-        {
-            get { return _valueType; }
-        }
+        public Type ValueType { get; }
 
         /// <summary>
         /// List of conditions the pattern checks.
         /// </summary>
-        public IEnumerable<ConditionElement> Conditions
-        {
-            get { return _conditions; }
-        }
+        public IEnumerable<ConditionElement> Conditions => _conditions;
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
         {

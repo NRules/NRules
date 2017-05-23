@@ -22,10 +22,7 @@ namespace NRules.RuleModel
         /// <summary>
         /// Number of properties in the map.
         /// </summary>
-        public int Count
-        {
-            get { return _properties.Count; }
-        }
+        public int Count => _properties.Count;
 
         /// <summary>
         /// Retrieves property by name.
@@ -41,7 +38,7 @@ namespace NRules.RuleModel
                 if (!found)
                 {
                     throw new ArgumentException(
-                        string.Format("Property with the given name not found. Name={0}", name), "name");
+                        $"Property with the given name not found. Name={name}", nameof(name));
                 }
                 return result.Value;
             }

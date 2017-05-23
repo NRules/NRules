@@ -19,6 +19,6 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Fact related to the event.
         /// </summary>
-        public IFact Fact { get { return _fact; } }
+        public IFact Fact => _fact;
     }
 }

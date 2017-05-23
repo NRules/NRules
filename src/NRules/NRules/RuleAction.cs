@@ -29,10 +29,7 @@ namespace NRules
             _compiledAction = FastDelegate.Action(expression);
         }
 
-        public Expression Expression
-        {
-            get { return _expression; }
-        }
+        public Expression Expression => _expression;
 
         public object[] GetArguments(IExecutionContext executionContext, IActionContext actionContext)
         {

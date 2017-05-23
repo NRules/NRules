@@ -94,7 +94,6 @@ namespace NRules.Rete
 
         protected internal virtual void VisitDummyNode(TContext context, DummyNode node)
         {
-            
         }
     }
 }

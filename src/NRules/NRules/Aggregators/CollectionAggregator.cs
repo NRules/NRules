@@ -67,6 +67,6 @@ namespace NRules.Aggregators
             }
         }
 
-        public IEnumerable<object> Aggregates { get { return _container; } }
+        public IEnumerable<object> Aggregates => _container;
     }
 }

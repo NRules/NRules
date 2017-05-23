@@ -21,10 +21,7 @@ namespace NRules.RuleModel
         /// <summary>
         /// Number of expressions in the map.
         /// </summary>
-        public int Count
-        {
-            get { return _expressions.Count; }
-        }
+        public int Count => _expressions.Count;
 
         /// <summary>
         /// Retrieves expression by name.
@@ -40,7 +37,7 @@ namespace NRules.RuleModel
                 if (!found)
                 {
                     throw new ArgumentException(
-                        string.Format("Expression with the given name not found. Name={0}", name), "name");
+                        $"Expression with the given name not found. Name={name}", nameof(name));
                 }
                 return result.Expression;
             }

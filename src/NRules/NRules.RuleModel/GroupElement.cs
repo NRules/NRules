@@ -18,9 +18,6 @@ namespace NRules.RuleModel
         /// <summary>
         /// List of child elements in the grouping.
         /// </summary>
-        public IEnumerable<RuleLeftElement> ChildElements
-        {
-            get { return _childElements; }
-        }
+        public IEnumerable<RuleLeftElement> ChildElements => _childElements;
     }
 }

@@ -165,21 +165,16 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<object> Aggregates
-        {
-            get { return _groups.Values; }
-        }
+        public IEnumerable<object> Aggregates => _groups.Values;
 
         private class Grouping : FactCollection<TElement>, IGrouping<TKey, TElement>
         {
-            private readonly TKey _key;
-
             public Grouping(TKey key)
             {
-                _key = key;
+                Key = key;
             }
 
-            public TKey Key { get { return _key; } }
+            public TKey Key { get; }
         }
     }
 }

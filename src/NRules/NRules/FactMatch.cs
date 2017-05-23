@@ -11,7 +11,7 @@ namespace NRules
             Declaration = declaration;
         }
 
-        public Declaration Declaration { get; private set; }
+        public Declaration Declaration { get; }
         public Type Type { get; private set; }
         public object Value { get; private set; }
 

@@ -20,16 +20,13 @@ namespace NRules.Extensibility
 
     internal class ResolutionContext : IResolutionContext
     {
-        private readonly ISession _session;
-        private readonly IRuleDefinition _rule;
-
         public ResolutionContext(ISession session, IRuleDefinition rule)
         {
-            _session = session;
-            _rule = rule;
+            Session = session;
+            Rule = rule;
         }
 
-        public ISession Session { get { return _session; } }
-        public IRuleDefinition Rule { get { return _rule; } }
+        public ISession Session { get; }
+        public IRuleDefinition Rule { get; }
     }
 }

@@ -13,40 +13,27 @@ namespace NRules.RuleModel
         public const string ProjectName = "Project";
         public const string FlattenName = "Flatten";
 
-        private readonly string _name;
-        private readonly ExpressionMap _expressionMap;
-        private readonly PatternElement _source;
-
         /// <summary>
         /// Fact source of the aggregate.
         /// </summary>
-        public PatternElement Source
-        {
-            get { return _source; }
-        }
+        public PatternElement Source { get; }
 
         /// <summary>
         /// Aggregate name.
         /// </summary>
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Expressions used by the aggregate.
         /// </summary>
-        public ExpressionMap ExpressionMap
-        {
-            get { return _expressionMap; }
-        }
+        public ExpressionMap ExpressionMap { get; }
 
         internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, string name, ExpressionMap expressionMap, PatternElement source) 
             : base(declarations, resultType) 
         {
-            _name = name;
-            _expressionMap = expressionMap;
-            _source = source;
+            Name = name;
+            ExpressionMap = expressionMap;
+            Source = source;
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

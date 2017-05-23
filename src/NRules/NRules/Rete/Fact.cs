@@ -8,7 +8,6 @@ namespace NRules.Rete
     [DebuggerDisplay("Fact {Object}")]
     internal class Fact : IFact
     {
-        private readonly TypeInfo _factType;
         private object _object;
 
         public Fact()
@@ -19,39 +18,21 @@ namespace NRules.Rete
         {
             _object = @object;
             var factType = @object.GetType();
-            _factType = factType.GetTypeInfo();
+            FactType = factType.GetTypeInfo();
         }
 
-        public virtual TypeInfo FactType
-        {
-            get { return _factType; }
-        }
+        public virtual TypeInfo FactType { get; }
 
         public object RawObject
         {
-            get { return _object; }
-            set { _object = value; }
+            get => _object;
+            set => _object = value;
         }
 
-        public virtual object Object
-        {
-            get { return _object; }
-        }
-
-        public virtual bool IsWrapperFact
-        {
-            get { return false; }
-        }
-
-        Type IFact.Type
-        {
-            get { return FactType.AsType(); }
-        }
-
-        object IFact.Value
-        {
-            get { return Object; }
-        }
+        public virtual object Object => _object;
+        public virtual bool IsWrapperFact => false;
+        Type IFact.Type => FactType.AsType();
+        object IFact.Value => Object;
     }
 
     [DebuggerDisplay("Wrapper Tuple({WrappedTuple.Count})")]
@@ -62,24 +43,9 @@ namespace NRules.Rete
         {
         }
 
-        public override TypeInfo FactType
-        {
-            get { return WrappedTuple.RightFact.FactType; }
-        }
-
-        public override object Object
-        {
-            get { return WrappedTuple.RightFact.Object; }
-        }
-
-        public Tuple WrappedTuple
-        {
-            get { return (Tuple) RawObject; }
-        }
-
-        public override bool IsWrapperFact
-        {
-            get { return true; }
-        }
+        public override TypeInfo FactType => WrappedTuple.RightFact.FactType;
+        public override object Object => WrappedTuple.RightFact.Object;
+        public Tuple WrappedTuple => (Tuple) RawObject;
+        public override bool IsWrapperFact => true;
     }
 }

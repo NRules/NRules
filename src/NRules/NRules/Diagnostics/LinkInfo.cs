@@ -11,12 +11,12 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Source node.
         /// </summary>
-        public NodeInfo Source { get; private set; }
+        public NodeInfo Source { get; }
 
         /// <summary>
         /// Target node.
         /// </summary>
-        public NodeInfo Target { get; private set; }
+        public NodeInfo Target { get; }
 
         internal LinkInfo(NodeInfo source, NodeInfo target)
         {

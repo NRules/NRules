@@ -67,6 +67,6 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<object> Aggregates { get { return _sourceToValue.Values; } }
+        public IEnumerable<object> Aggregates => _sourceToValue.Values;
     }
 }
