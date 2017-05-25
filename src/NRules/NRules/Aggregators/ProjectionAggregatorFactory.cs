@@ -1,25 +1,34 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using NRules.RuleModel;
 
 namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator factory for projection aggregator.
     /// </summary>
-    /// <typeparam name="TSource">Type of source element.</typeparam>
-    /// <typeparam name="TResult">Type of result element.</typeparam>
-    internal class ProjectionAggregatorFactory<TSource, TResult> : IAggregatorFactory
+    internal class ProjectionAggregatorFactory : IAggregatorFactory
     {
-        private readonly Func<TSource, TResult> _selector;
+        private readonly Func<IAggregator> _factory;
 
-        public ProjectionAggregatorFactory(Expression<Func<TSource, TResult>> selector)
+        public ProjectionAggregatorFactory(AggregateElement element)
         {
-            _selector = selector.Compile();
+            var selector = element.ExpressionMap["Selector"];
+            var sourceType = element.Source.ValueType;
+            var resultType = selector.ReturnType;
+            Type aggregatorType = typeof(ProjectionAggregator<,>).MakeGenericType(sourceType, resultType);
+
+            var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
+            var factoryExpression = Expression.Lambda<Func<IAggregator>>(
+                Expression.New(ctor, selector));
+            _factory = factoryExpression.Compile();
         }
 
         public IAggregator Create()
         {
-            return new ProjectionAggregator<TSource, TResult>(_selector);
+            return _factory();
         }
     }
 }

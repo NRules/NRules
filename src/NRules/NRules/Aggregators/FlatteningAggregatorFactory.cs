@@ -1,26 +1,36 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using NRules.RuleModel;
+using System.Reflection;
 
 namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator factory for flattening aggregator.
     /// </summary>
-    /// <typeparam name="TSource">Type of source element.</typeparam>
-    /// <typeparam name="TResult">Type of result element.</typeparam>
-    internal class FlatteningAggregatorFactory<TSource, TResult> : IAggregatorFactory
+    internal class FlatteningAggregatorFactory : IAggregatorFactory
     {
-        private readonly Func<TSource, IEnumerable<TResult>> _selector;
+        private readonly Func<IAggregator> _factory;
 
-        public FlatteningAggregatorFactory(Expression<Func<TSource, IEnumerable<TResult>>> selector)
+        public FlatteningAggregatorFactory(AggregateElement element)
         {
-            _selector = selector.Compile();
+            var selector = element.ExpressionMap["Selector"];
+            var sourceType = element.Source.ValueType;
+            //Flatten slector is X -> IEnumerable<Y>
+            var resultType = selector.ReturnType;
+            var resultElementType = resultType.GenericTypeArguments[0];
+            Type aggregatorType = typeof(FlatteningAggregator<,>).MakeGenericType(sourceType, resultElementType);
+
+            var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
+            var factoryExpression = Expression.Lambda<Func<IAggregator>>(
+                Expression.New(ctor, selector));
+            _factory = factoryExpression.Compile();
         }
 
         public IAggregator Create()
         {
-            return new FlatteningAggregator<TSource, TResult>(_selector);
+            return _factory();
         }
     }
 }

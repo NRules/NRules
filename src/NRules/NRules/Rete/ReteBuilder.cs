@@ -291,60 +291,17 @@ namespace NRules.Rete
             switch (element.Name)
             {
                 case AggregateElement.CollectName:
-                    return BuildCollectionFactory(element);
+                    return new CollectionAggregatorFactory(element);
                 case AggregateElement.GroupByName:
-                    return BuildGroupByFactory(element);
+                    return new GroupByAggregatorFactory(element);
                 case AggregateElement.ProjectName:
-                    return BuildProjectFactory(element);
+                    return new ProjectionAggregatorFactory(element);
                 case AggregateElement.FlattenName:
-                    return BuildFlattenFactory(element);
+                    return new FlatteningAggregatorFactory(element);
                 default:
                     throw new ArgumentException(
                         $"Unrecognized aggregate element. Name={element.Name}");
             }
-        }
-
-        private IAggregatorFactory BuildCollectionFactory(AggregateElement element)
-        {
-            var sourceType = element.Source.ValueType;
-            var aggregatorType = typeof(CollectionAggregator<>).MakeGenericType(sourceType);
-            Type factoryType = typeof(DefaultAggregatorFactory<>).MakeGenericType(aggregatorType);
-            var factory = (IAggregatorFactory)Activator.CreateInstance(factoryType);
-            return factory;
-        }
-
-        private IAggregatorFactory BuildGroupByFactory(AggregateElement element)
-        {
-            var keySelector = element.ExpressionMap["KeySelector"];
-            var elementSelector = element.ExpressionMap["ElementSelector"];
-            var sourceType = element.Source.ValueType;
-            var keyType = keySelector.ReturnType;
-            var elementType = elementSelector.ReturnType;
-            Type factoryType = typeof(GroupByAggregatorFactory<,,>).MakeGenericType(sourceType, keyType, elementType);
-            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, keySelector, elementSelector);
-            return factory;
-        }
-
-        private IAggregatorFactory BuildProjectFactory(AggregateElement element)
-        {
-            var selector = element.ExpressionMap["Selector"];
-            var sourceType = element.Source.ValueType;
-            var resultType = selector.ReturnType;
-            Type factoryType = typeof(ProjectionAggregatorFactory<,>).MakeGenericType(sourceType, resultType);
-            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, selector);
-            return factory;
-        }
-
-        private IAggregatorFactory BuildFlattenFactory(AggregateElement element)
-        {
-            var selector = element.ExpressionMap["Selector"];
-            var sourceType = element.Source.ValueType;
-            //Flatten slector is X -> IEnumerable<Y>
-            var resultType = selector.ReturnType;
-            var resultElementType = resultType.GenericTypeArguments[0];
-            Type factoryType = typeof(FlatteningAggregatorFactory<,>).MakeGenericType(sourceType, resultElementType);
-            var factory = (IAggregatorFactory) Activator.CreateInstance(factoryType, selector);
-            return factory;
         }
 
         public INetwork Build()

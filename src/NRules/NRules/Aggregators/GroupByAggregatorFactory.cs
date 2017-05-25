@@ -1,28 +1,37 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using NRules.RuleModel;
 
 namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator factory for group by aggregator.
     /// </summary>
-    /// <typeparam name="TSource">Type of source elements to group.</typeparam>
-    /// <typeparam name="TKey">Type of grouping key.</typeparam>
-    /// <typeparam name="TElement">Type of elements to group.</typeparam>
-    internal class GroupByAggregatorFactory<TSource, TKey, TElement> : IAggregatorFactory
+    internal class GroupByAggregatorFactory : IAggregatorFactory
     {
-        private readonly Func<TSource, TKey> _keySelector;
-        private readonly Func<TSource, TElement> _elementSelector;
+        private readonly Func<IAggregator> _factory;
 
-        public GroupByAggregatorFactory(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        public GroupByAggregatorFactory(AggregateElement element)
         {
-            _keySelector = keySelector.Compile();
-            _elementSelector = elementSelector.Compile();
+            var keySelector = element.ExpressionMap["KeySelector"];
+            var elementSelector = element.ExpressionMap["ElementSelector"];
+
+            var sourceType = element.Source.ValueType;
+            var keyType = keySelector.ReturnType;
+            var elementType = elementSelector.ReturnType;
+            Type aggregatorType = typeof(GroupByAggregator<,,>).MakeGenericType(sourceType, keyType, elementType);
+
+            var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
+            var factoryExpression = Expression.Lambda<Func<IAggregator>>(
+                Expression.New(ctor, keySelector, elementSelector));
+            _factory = factoryExpression.Compile();
         }
 
         public IAggregator Create()
         {
-            return new GroupByAggregator<TSource, TKey, TElement>(_keySelector, _elementSelector);
+            return _factory();
         }
     }
 }
