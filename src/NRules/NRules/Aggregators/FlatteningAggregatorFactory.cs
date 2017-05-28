@@ -18,13 +18,12 @@ namespace NRules.Aggregators
             var selector = element.ExpressionMap["Selector"];
             var sourceType = element.Source.ValueType;
             //Flatten slector is X -> IEnumerable<Y>
-            var resultType = selector.ReturnType;
-            var resultElementType = resultType.GenericTypeArguments[0];
-            Type aggregatorType = typeof(FlatteningAggregator<,>).MakeGenericType(sourceType, resultElementType);
+            var resultType = element.ResultType;
+            Type aggregatorType = typeof(FlatteningAggregator<,>).MakeGenericType(sourceType, resultType);
 
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
-                Expression.New(ctor, selector));
+                Expression.New(ctor, selector.Expression));
             _factory = factoryExpression.Compile();
         }
 

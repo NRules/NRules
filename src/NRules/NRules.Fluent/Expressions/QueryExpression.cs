@@ -49,11 +49,10 @@ namespace NRules.Fluent.Expressions
             _buildAction = (b, n) =>
             {
                 var aggregatePatternBuilder = b.Pattern(typeof(TResult), n);
-
                 var aggregateBuilder = aggregatePatternBuilder.Aggregate();
-                aggregateBuilder.Project(selector);
-
-                previousBuildAction(aggregateBuilder, null);
+                var sourceBuilder = previousBuildAction(aggregateBuilder, null);
+                var selectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, selector);
+                aggregateBuilder.Project(selectorExpression);
                 return aggregatePatternBuilder;
             };
         }
@@ -64,11 +63,10 @@ namespace NRules.Fluent.Expressions
             _buildAction = (b, n) =>
             {
                 var aggregatePatternBuilder = b.Pattern(typeof(TResult), n);
-
                 var aggregateBuilder = aggregatePatternBuilder.Aggregate();
-                aggregateBuilder.Flatten(selector);
-
-                previousBuildAction(aggregateBuilder, null);
+                var sourceBuilder = previousBuildAction(aggregateBuilder, null);
+                var selectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, selector);
+                aggregateBuilder.Flatten(selectorExpression);
                 return aggregatePatternBuilder;
             };
         }
@@ -79,11 +77,11 @@ namespace NRules.Fluent.Expressions
             _buildAction = (b, n) =>
             {
                 var aggregatePatternBuilder = b.Pattern(typeof(IGrouping<TKey, TElement>), n);
-
                 var aggregateBuilder = aggregatePatternBuilder.Aggregate();
-                aggregateBuilder.GroupBy(keySelector, elementSelector);
-
-                previousBuildAction(aggregateBuilder, null);
+                var sourceBuilder = previousBuildAction(aggregateBuilder, null);
+                var keySelectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, keySelector);
+                var elementSelectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, elementSelector);
+                aggregateBuilder.GroupBy(keySelectorExpression, elementSelectorExpression);
                 return aggregatePatternBuilder;
             };
         }
@@ -94,11 +92,9 @@ namespace NRules.Fluent.Expressions
             _buildAction = (b, n) =>
             {
                 var aggregatePatternBuilder = b.Pattern(typeof(IEnumerable<TSource>), n);
-
                 var aggregateBuilder = aggregatePatternBuilder.Aggregate();
-                aggregateBuilder.CollectionOf<TSource>();
-
                 previousBuildAction(aggregateBuilder, null);
+                aggregateBuilder.Collect(typeof(TSource));
                 return aggregatePatternBuilder;
             };
         }

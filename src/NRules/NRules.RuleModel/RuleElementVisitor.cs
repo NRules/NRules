@@ -26,7 +26,15 @@
 
         protected internal virtual void VisitAggregate(TContext context, AggregateElement element)
         {
+            foreach (var expression in element.ExpressionMap)
+            {
+                expression.Accept(context, this);
+            }
             element.Source?.Accept(context, this);
+        }
+
+        protected internal virtual void VisitNamedExpression(TContext context, NamedExpressionElement element)
+        {
         }
 
         protected internal virtual void VisitNot(TContext context, NotElement element)

@@ -5,13 +5,13 @@ using NRules.RuleModel;
 
 namespace NRules.Fluent.Expressions
 {
-    internal class ConditionRewriter : ExpressionRewriter
+    internal class PatternExpressionRewriter : ExpressionRewriter
     {
         private readonly Declaration _patternDeclaration;
         private ParameterExpression _originalParameter;
         private ParameterExpression _normalizedParameter;
 
-        public ConditionRewriter(Declaration patternDeclaration, IEnumerable<Declaration> declarations)
+        public PatternExpressionRewriter(Declaration patternDeclaration, IEnumerable<Declaration> declarations)
             : base(declarations)
         {
             _patternDeclaration = patternDeclaration;

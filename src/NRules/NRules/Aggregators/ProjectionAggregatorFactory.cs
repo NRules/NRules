@@ -17,12 +17,12 @@ namespace NRules.Aggregators
         {
             var selector = element.ExpressionMap["Selector"];
             var sourceType = element.Source.ValueType;
-            var resultType = selector.ReturnType;
+            var resultType = selector.Expression.ReturnType;
             Type aggregatorType = typeof(ProjectionAggregator<,>).MakeGenericType(sourceType, resultType);
 
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
-                Expression.New(ctor, selector));
+                Expression.New(ctor, selector.Expression));
             _factory = factoryExpression.Compile();
         }
 

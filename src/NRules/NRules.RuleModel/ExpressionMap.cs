@@ -2,20 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace NRules.RuleModel
 {
     /// <summary>
     /// Sorted readonly map of named expressions.
     /// </summary>
-    public class ExpressionMap : IEnumerable<NamedExpression>
+    public class ExpressionMap : IEnumerable<NamedExpressionElement>
     {
-        private readonly SortedDictionary<string, NamedExpression> _expressions;
+        private readonly SortedDictionary<string, NamedExpressionElement> _expressions;
 
-        public ExpressionMap(IEnumerable<NamedExpression> expressions)
+        public ExpressionMap(IEnumerable<NamedExpressionElement> expressions)
         {
-            _expressions = new SortedDictionary<string, NamedExpression>(expressions.ToDictionary(x => x.Name));
+            _expressions = new SortedDictionary<string, NamedExpressionElement>(expressions.ToDictionary(x => x.Name));
         }
 
         /// <summary>
@@ -28,22 +27,22 @@ namespace NRules.RuleModel
         /// </summary>
         /// <param name="name">Expression name.</param>
         /// <returns>Matching expression.</returns>
-        public LambdaExpression this[string name]
+        public NamedExpressionElement this[string name]
         {
             get
             {
-                NamedExpression result;
+                NamedExpressionElement result;
                 var found = _expressions.TryGetValue(name, out result);
                 if (!found)
                 {
                     throw new ArgumentException(
                         $"Expression with the given name not found. Name={name}", nameof(name));
                 }
-                return result.Expression;
+                return result;
             }
         }
 
-        public IEnumerator<NamedExpression> GetEnumerator()
+        public IEnumerator<NamedExpressionElement> GetEnumerator()
         {
             return _expressions.Values.GetEnumerator();
         }

@@ -6,10 +6,10 @@ using NRules.RuleModel;
 
 namespace NRules.Fluent.Expressions
 {
-    internal abstract class ExpressionRewriter : ExpressionVisitor
+    internal class ExpressionRewriter : ExpressionVisitor
     {
         protected IDictionary<string, Declaration> Declarations { get; }
-        protected IList<ParameterExpression> Parameters { get; }
+        protected List<ParameterExpression> Parameters { get; }
 
         public ExpressionRewriter(IEnumerable<Declaration> declarations)
         {
@@ -25,8 +25,12 @@ namespace NRules.Fluent.Expressions
             return Expression.Lambda(body, expression.TailCall, Parameters);
         }
 
-        protected abstract void InitParameters(LambdaExpression expression);
-        
+        protected virtual void InitParameters(LambdaExpression expression)
+        {
+            Parameters.Clear();
+            Parameters.AddRange(expression.Parameters);
+        }
+
         protected override Expression VisitMember(MemberExpression member)
         {
             Declaration declaration;

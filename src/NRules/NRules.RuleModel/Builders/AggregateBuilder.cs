@@ -39,18 +39,9 @@ namespace NRules.RuleModel.Builders
         /// Configure a collection aggregator.
         /// </summary>
         /// <param name="elementType">Type of elements to aggregate.</param>
-        public void CollectionOf(Type elementType)
+        public void Collect(Type elementType)
         {
             _name = AggregateElement.CollectName;
-        }
-
-        /// <summary>
-        /// Configure a collection aggregator.
-        /// </summary>
-        /// <typeparam name="TElement">Type of elements to aggregate.</typeparam>
-        public void CollectionOf<TElement>()
-        {
-            CollectionOf(typeof(TElement));
         }
 
         /// <summary>
@@ -58,10 +49,7 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="keySelector">Key selection expressions.</param>
         /// <param name="elementSelector">Element selection expression.</param>
-        /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
-        /// <typeparam name="TKey">Type of grouping key.</typeparam>
-        /// <typeparam name="TElement">Type of grouping element.</typeparam>
-        public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        public void GroupBy(LambdaExpression keySelector, LambdaExpression elementSelector)
         {
             _name = AggregateElement.GroupByName;
             _expressions["KeySelector"] = keySelector;
@@ -72,9 +60,7 @@ namespace NRules.RuleModel.Builders
         /// Configure projection aggregator.
         /// </summary>
         /// <param name="selector">Projection expression.</param>
-        /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
-        /// <typeparam name="TResult">Type of result elements to aggregate.</typeparam>
-        public void Project<TSource, TResult>(Expression<Func<TSource, TResult>> selector)
+        public void Project(LambdaExpression selector)
         {
             _name = AggregateElement.ProjectName;
             _expressions["Selector"] = selector;
@@ -84,9 +70,7 @@ namespace NRules.RuleModel.Builders
         /// Configure flattening aggregator.
         /// </summary>
         /// <param name="selector">Projection expression.</param>
-        /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
-        /// <typeparam name="TResult">Type of result elements to aggregate.</typeparam>
-        public void Flatten<TSource, TResult>(Expression<Func<TSource, IEnumerable<TResult>>> selector)
+        public void Flatten(LambdaExpression selector)
         {
             _name = AggregateElement.FlattenName;
             _expressions["Selector"] = selector;
@@ -122,10 +106,17 @@ namespace NRules.RuleModel.Builders
             Validate();
             IBuilder<PatternElement> sourceBuilder = _sourceBuilder;
             PatternElement sourceElement = sourceBuilder.Build();
-            var namedExpressions = _expressions.Select(x => new NamedExpression(x.Key, x.Value));
-            var expressionMap = new ExpressionMap(namedExpressions);
+            var elements = _expressions.Select(x => ToNamedExpression(x.Key, x.Value));
+            var expressionMap = new ExpressionMap(elements);
             var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _name, expressionMap, sourceElement);
             return aggregateElement;
+        }
+
+        private NamedExpressionElement ToNamedExpression(string name, LambdaExpression expression)
+        {
+            IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
+            var element = new NamedExpressionElement(name, Scope.VisibleDeclarations, references, expression);
+            return element;
         }
 
         private void Validate()
