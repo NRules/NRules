@@ -27,14 +27,14 @@ namespace NRules.Rete
             var aggregation = new Aggregation();
             foreach (var set in joinedSets)
             {
-                var factObjects = new List<object>();
+                var matchingFacts = new List<Fact>();
                 foreach (var fact in set.Facts)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
-                        factObjects.Add(fact.Object);
+                        matchingFacts.Add(fact);
                 }
                 IAggregator aggregator = CreateAggregator(set.Tuple);
-                var results = aggregator.Add(factObjects);
+                var results = aggregator.Add(set.Tuple, matchingFacts);
                 aggregation.Add(set.Tuple, results);
             }
             PropagateAggregation(context, aggregation);
@@ -79,16 +79,16 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                var factObjects = new List<object>();
+                var matchingFacts = new List<Fact>();
                 foreach (var fact in set.Facts)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
-                        factObjects.Add(fact.Object);
+                        matchingFacts.Add(fact);
                 }
-                if (factObjects.Count > 0)
+                if (matchingFacts.Count > 0)
                 {
                     IAggregator aggregator = GetAggregator(set.Tuple);
-                    var results = aggregator.Add(factObjects);
+                    var results = aggregator.Add(set.Tuple, matchingFacts);
                     aggregation.Add(set.Tuple, results);
                 }
             }
@@ -102,16 +102,16 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                var factObjects = new List<object>();
+                var matchingFacts = new List<Fact>();
                 foreach (var fact in set.Facts)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
-                        factObjects.Add(fact.Object);
+                        matchingFacts.Add(fact);
                 }
-                if (factObjects.Count > 0)
+                if (matchingFacts.Count > 0)
                 {
                     IAggregator aggregator = GetAggregator(set.Tuple);
-                    var results = aggregator.Modify(factObjects);
+                    var results = aggregator.Modify(set.Tuple, matchingFacts);
                     aggregation.Add(set.Tuple, results);
                 }
             }
@@ -125,16 +125,16 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                var factObjects = new List<object>();
+                var matchingFacts = new List<Fact>();
                 foreach (var fact in set.Facts)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
-                        factObjects.Add(fact.Object);
+                        matchingFacts.Add(fact);
                 }
-                if (factObjects.Count > 0)
+                if (matchingFacts.Count > 0)
                 {
                     IAggregator aggregator = GetAggregator(set.Tuple);
-                    var results = aggregator.Remove(factObjects);
+                    var results = aggregator.Remove(set.Tuple, matchingFacts);
                     aggregation.Add(set.Tuple, results);
                 }
             }

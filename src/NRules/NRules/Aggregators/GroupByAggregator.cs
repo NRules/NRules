@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NRules.Rete;
+using NRules.RuleModel;
 
 namespace NRules.Aggregators
 {
@@ -26,17 +28,17 @@ namespace NRules.Aggregators
             _elementSelector = elementSelector;
         }
 
-        public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
+                var source = (TSource)fact.Value;
                 var key = _keySelector(source);
                 var element = _elementSelector(source);
-                _sourceToKey[fact] = key;
-                _sourceToElement[fact] = element;
+                _sourceToKey[source] = key;
+                _sourceToElement[source] = element;
                 var result = Add(key, element);
                 if (!resultLookup.ContainsKey(key))
                 {
@@ -48,19 +50,19 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
+                var source = (TSource)fact.Value;
                 var key = _keySelector(source);
                 var element = _elementSelector(source);
-                var oldKey = _sourceToKey[fact];
-                var oldElement = _sourceToElement[fact];
-                _sourceToKey[fact] = key;
-                _sourceToElement[fact] = element;
+                var oldKey = _sourceToKey[source];
+                var oldElement = _sourceToElement[source];
+                _sourceToKey[source] = key;
+                _sourceToElement[source] = element;
         
                 if (Equals(key, oldKey))
                 {
@@ -98,16 +100,17 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var oldKey = _sourceToKey[fact];
-                var oldElement = _sourceToElement[fact];
-                _sourceToKey.Remove(fact);
-                _sourceToElement.Remove(fact);
+                var source = (TSource)fact.Value;
+                var oldKey = _sourceToKey[source];
+                var oldElement = _sourceToElement[source];
+                _sourceToKey.Remove(source);
+                _sourceToElement.Remove(source);
                 var result = Remove(oldKey, oldElement);
                 if (!resultLookup.ContainsKey(oldKey))
                 {

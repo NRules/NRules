@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.Tests.Aggregators
 {
-    public class FlatteningAggregatorTest
+    public class FlatteningAggregatorTest : AggregatorTest
     {
         [Fact]
         public void Aggregates_NewInstance_Empty()
@@ -26,7 +26,7 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(new[] { new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22") });
+            target.Add(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")));
 
             //Act
             var result = target.Aggregates.ToArray();
@@ -42,7 +42,7 @@ namespace NRules.Tests.Aggregators
             var target = CreateTarget();
 
             //Act
-            var result = target.Add(new[] {new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")}).ToArray();
+            var result = target.Add(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))).ToArray();
 
             //Assert
             Assert.Equal(4, result.Length);
@@ -63,7 +63,7 @@ namespace NRules.Tests.Aggregators
             var target = CreateTarget();
 
             //Act
-            var result = target.Add(new TestFact[0]).ToArray();
+            var result = target.Add(EmptyTuple(), AsFact(new TestFact[0])).ToArray();
 
             //Assert
             Assert.Equal(0, result.Length);
@@ -74,10 +74,10 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(new[] {new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")});
+            target.Add(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")));
 
             //Act
-            var result = target.Modify(new[] {new TestFact(1, "value11", "value12")}).ToArray();
+            var result = target.Modify(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"))).ToArray();
 
             //Assert
             Assert.Equal(4, result.Length);
@@ -99,7 +99,7 @@ namespace NRules.Tests.Aggregators
 
             //Act - Assert
             Assert.Throws<KeyNotFoundException>(
-                () => target.Modify(new[] {new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")}));
+                () => target.Modify(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))));
         }
 
         [Fact]
@@ -107,10 +107,10 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(new[] {new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")});
+            target.Add(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")));
 
             //Act
-            var result = target.Remove(new[] {new TestFact(1, "value11", "value12")}).ToArray();
+            var result = target.Remove(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"))).ToArray();
 
             //Assert
             Assert.Equal(2, result.Length);
@@ -128,7 +128,7 @@ namespace NRules.Tests.Aggregators
 
             //Act - Assert
             Assert.Throws<KeyNotFoundException>(
-                () => target.Remove(new[] {new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")}));
+                () => target.Remove(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))));
         }
 
         private FlatteningAggregator<TestFact, string> CreateTarget()
@@ -138,23 +138,20 @@ namespace NRules.Tests.Aggregators
 
         private class TestFact : IEquatable<TestFact>
         {
-            private readonly int _id;
-            private readonly string[] _values;
-
             public TestFact(int id, params string[] values)
             {
-                _id = id;
-                _values = values;
+                Id = id;
+                Values = values;
             }
 
-            public int Id { get { return _id; } }
-            public string[] Values { get { return _values; } }
+            public int Id { get; }
+            public string[] Values { get; }
 
             public bool Equals(TestFact other)
             {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
-                return _id == other._id;
+                return Id == other.Id;
             }
 
             public override bool Equals(object obj)
@@ -167,7 +164,7 @@ namespace NRules.Tests.Aggregators
 
             public override int GetHashCode()
             {
-                return _id;
+                return Id;
             }
         }
     }

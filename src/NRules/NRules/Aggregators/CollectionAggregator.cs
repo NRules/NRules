@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using NRules.Rete;
+using NRules.RuleModel;
 
 namespace NRules.Aggregators
 {
@@ -17,7 +19,7 @@ namespace NRules.Aggregators
             _container = new object[] {_items};
         } 
 
-        public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
         {
             AddFacts(facts);
             if (!_created)
@@ -28,41 +30,41 @@ namespace NRules.Aggregators
             return new[] {AggregationResult.Modified(_items)};
         }
 
-        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
         {
             ModifyFacts(facts);
             return new[] {AggregationResult.Modified(_items)};
         }
 
-        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
         {
             RemoveFacts(facts);
             return new[] {AggregationResult.Modified(_items)};
         }
 
-        private void AddFacts(IEnumerable<object> facts)
+        private void AddFacts(IEnumerable<IFact> facts)
         {
             foreach (var fact in facts)
             {
-                var item = (TElement)fact;
+                var item = (TElement)fact.Value;
                 _items.Add(item);
             }
         }
 
-        private void ModifyFacts(IEnumerable<object> facts)
+        private void ModifyFacts(IEnumerable<IFact> facts)
         {
             foreach (var fact in facts)
             {
-                var item = (TElement)fact;
+                var item = (TElement)fact.Value;
                 _items.Modify(item);
             }
         }
 
-        private void RemoveFacts(IEnumerable<object> facts)
+        private void RemoveFacts(IEnumerable<IFact> facts)
         {
             foreach (var fact in facts)
             {
-                var item = (TElement) fact;
+                var item = (TElement) fact.Value;
                 _items.Remove(item);
             }
         }

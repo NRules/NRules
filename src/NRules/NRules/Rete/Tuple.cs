@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using NRules.RuleModel;
 
 namespace NRules.Rete
 {
     [DebuggerDisplay("Tuple ({Count})")]
     [DebuggerTypeProxy(typeof(TupleDebugView))]
-    internal sealed class Tuple
+    internal sealed class Tuple : ITuple
     {
         private const long NoGroup = 0;
 
@@ -84,6 +86,8 @@ namespace NRules.Rete
         /// </summary>
         /// <remarks>This method has to reverse the linked list and is slow.</remarks>
         public IEnumerable<Fact> OrderedFacts => Facts.Reverse();
+
+        IEnumerable<IFact> ITuple.Facts => Facts;
 
         internal class TupleDebugView
         {

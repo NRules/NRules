@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using NRules.Rete;
+using NRules.RuleModel;
 
 namespace NRules.Aggregators
 {
@@ -18,12 +20,12 @@ namespace NRules.Aggregators
             _selector = selector;
         }
 
-        public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
+                var source = (TSource)fact.Value;
                 var value = _selector(source);
                 var list = new List<TResult>(value);
                 _sourceToList[source] = list;
@@ -35,12 +37,12 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
+                var source = (TSource)fact.Value;
                 var value = _selector(source);
                 var list = new List<TResult>(value);
                 var oldList = _sourceToList[source];
@@ -57,12 +59,12 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
+                var source = (TSource)fact.Value;
                 var oldList = _sourceToList[source];
                 _sourceToList.Remove(source);
                 foreach (var item in oldList)
