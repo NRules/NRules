@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace NRules.RuleModel.Builders
 {
@@ -128,6 +129,100 @@ namespace NRules.RuleModel.Builders
             if (_sourceBuilder == null)
             {
                 throw new InvalidOperationException("Aggregate element source is not provided");
+            }
+            switch (_name)
+            {
+                case AggregateElement.GroupByName:
+                    ValidateGroupBy();
+                    break;
+                case AggregateElement.ProjectName:
+                    ValidateProject();
+                    break;
+                case AggregateElement.FlattenName:
+                    ValidateFlatten();
+                    break;
+            }
+        }
+
+        private void ValidateGroupBy()
+        {
+            var keySelector = _expressions["KeySelector"];
+            if (keySelector.Parameters.Count != 1)
+            {
+                throw new ArgumentException(
+                    $"GroupBy key selector must have a single parameter. KeySelector={keySelector}");
+            }
+            if (keySelector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
+            {
+                throw new ArgumentException(
+                    "GroupBy key selector must have a parameter type that matches the aggregate source. " +
+                    $"KeySelector={keySelector}, ExpectedType={_sourceBuilder.Declaration.Type}, ActualType={keySelector.Parameters[0].Type}");
+            }
+
+            var elementSelector = _expressions["ElementSelector"];
+            if (elementSelector.Parameters.Count != 1)
+            {
+                throw new ArgumentException(
+                    $"GroupBy element selector must have a single parameter. ElementSelector={elementSelector}");
+            }
+            if (elementSelector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
+            {
+                throw new ArgumentException(
+                    "GroupBy element selector must have a parameter type that matches the aggregate source. " +
+                    $"ElementSelector={elementSelector}, ExpectedType={_sourceBuilder.Declaration.Type}, ActualType={elementSelector.Parameters[0].Type}");
+            }
+
+            var groupType = typeof(IGrouping<,>).MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
+            if (!_resultType.GetTypeInfo().IsAssignableFrom(groupType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    "GroupBy key/element selectors must produce a grouping assignable to the aggregation result. " +
+                    $"ElementSelector={elementSelector}, ResultType={_resultType}, GroupingType={groupType}");
+            }
+        }
+
+        private void ValidateProject()
+        {
+            var selector = _expressions["Selector"];
+            if (selector.Parameters.Count != 1)
+            {
+                throw new ArgumentException(
+                    $"Projection selector must have a single parameter. Selector={selector}");
+            }
+            if (selector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
+            {
+                throw new ArgumentException(
+                    "Projection selector must have a parameter type that matches the aggregate source. " +
+                    $"Selector={selector}, ExpectedType={_sourceBuilder.Declaration.Type}, ActualType={selector.Parameters[0].Type}");
+            }
+            if (!_resultType.GetTypeInfo().IsAssignableFrom(selector.ReturnType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    "Projection selector must produce a value assignable to the aggregation result. " +
+                    $"Selector={selector}, ResultType={_resultType}, SelectorReturnType={selector.ReturnType}");
+            }
+        }
+
+        private void ValidateFlatten()
+        {
+            var selector = _expressions["Selector"];
+            if (selector.Parameters.Count != 1)
+            {
+                throw new ArgumentException(
+                    $"Flattening selector must have a single parameter. Selector={selector}");
+            }
+            if (selector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
+            {
+                throw new ArgumentException(
+                    "Flattening selector must have a parameter type that matches the aggregate source. " +
+                    $"Selector={selector}, ExpectedType={_sourceBuilder.Declaration.Type}, ActualType={selector.Parameters[0].Type}");
+            }
+            var resultCollectionType = typeof(IEnumerable<>).MakeGenericType(_resultType);
+            if (!resultCollectionType.GetTypeInfo().IsAssignableFrom(selector.ReturnType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    "Flattening selector must produce a collection of values that are assignable to the aggregation result. " +
+                    $"Selector={selector}, ResultType={_resultType}, SelectorReturnType={selector.ReturnType}");
             }
         }
 
