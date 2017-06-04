@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using NRules.Rete;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators
@@ -12,10 +10,10 @@ namespace NRules.Aggregators
     /// <typeparam name="TResult">Type of result element.</typeparam>
     internal class ProjectionAggregator<TSource, TResult> : IAggregator
     {
-        private readonly Func<TSource, TResult> _selector;
+        private readonly IAggregateExpression _selector;
         private readonly Dictionary<TSource, object> _sourceToValue = new Dictionary<TSource, object>();
 
-        public ProjectionAggregator(Func<TSource, TResult> selector)
+        public ProjectionAggregator(IAggregateExpression selector)
         {
             _selector = selector;
         }
@@ -26,7 +24,7 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var source = (TSource)fact.Value;
-                var value = _selector(source);
+                var value = _selector.Invoke(tuple, fact);
                 _sourceToValue[source] = value;
                 results.Add(AggregationResult.Added(value));
             }
@@ -39,7 +37,7 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var source = (TSource)fact.Value;
-                var value = _selector(source);
+                var value = _selector.Invoke(tuple, fact);
                 var oldValue = (TResult)_sourceToValue[source];
                 _sourceToValue[source] = value;
 

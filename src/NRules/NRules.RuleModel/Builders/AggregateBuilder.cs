@@ -184,15 +184,15 @@ namespace NRules.RuleModel.Builders
         private void ValidateProject()
         {
             var selector = _expressions["Selector"];
-            if (selector.Parameters.Count != 1)
+            if (selector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
-                    $"Projection selector must have a single parameter. Selector={selector}");
+                    $"Projection selector must have at least one parameter. Selector={selector}");
             }
             if (selector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
             {
                 throw new ArgumentException(
-                    "Projection selector must have a parameter type that matches the aggregate source. " +
+                    "Projection selector must have its first parameter type that matches the aggregate source. " +
                     $"Selector={selector}, ExpectedType={_sourceBuilder.Declaration.Type}, ActualType={selector.Parameters[0].Type}");
             }
             if (!_resultType.GetTypeInfo().IsAssignableFrom(selector.ReturnType.GetTypeInfo()))

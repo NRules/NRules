@@ -26,7 +26,7 @@ namespace NRules
             _expression = expression;
             _factIndexMap = factIndexMap;
             _dependencyIndexMap = dependencyIndexMap;
-            _compiledAction = FastDelegate.Action(expression);
+            _compiledAction = ExpressionCompiler.CompileAction(expression);
         }
 
         public Expression Expression => _expression;

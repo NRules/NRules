@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.RuleModel;
@@ -11,9 +12,9 @@ namespace NRules.Aggregators
     /// </summary>
     internal class FlatteningAggregatorFactory : IAggregatorFactory
     {
-        private readonly Func<IAggregator> _factory;
+        private Func<IAggregator> _factory;
 
-        public FlatteningAggregatorFactory(AggregateElement element)
+        public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
         {
             var selector = element.ExpressionMap["Selector"];
             var sourceType = element.Source.ValueType;

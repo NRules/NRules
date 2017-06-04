@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NRules.RuleModel;
 using System.Linq.Expressions;
 
@@ -6,9 +7,9 @@ namespace NRules.Aggregators
 {
     internal class CollectionAggregatorFactory : IAggregatorFactory
     {
-        private readonly Func<IAggregator> _factory;
+        private Func<IAggregator> _factory;
 
-        public CollectionAggregatorFactory(AggregateElement element)
+        public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
         {
             var sourceType = element.Source.ValueType;
             var aggregatorType = typeof(CollectionAggregator<>).MakeGenericType(sourceType);

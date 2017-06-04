@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NRules.Rete;
+using NRules.Aggregators;
 using NRules.RuleModel;
 
 namespace NRules.Tests.Aggregators
@@ -20,9 +20,8 @@ namespace NRules.Tests.Aggregators
 
         private class NullTuple : ITuple
         {
-            public IFact RightFact => null;
-            public ITuple LeftTuple => null;
             public IEnumerable<IFact> Facts => new IFact[0];
+            public int Count => 0;
         }
 
         private class Fact : IFact
@@ -35,6 +34,21 @@ namespace NRules.Tests.Aggregators
 
             public Type Type { get; }
             public object Value { get; }
+        }
+    }
+
+    public class FactExpression<TFact, TResult> : IAggregateExpression
+    {
+        private readonly Func<TFact, TResult> _func;
+
+        public FactExpression(Func<TFact, TResult> func)
+        {
+            _func = func;
+        }
+
+        public object Invoke(ITuple tuple, IFact fact)
+        {
+            return _func((TFact) fact.Value);
         }
     }
 }

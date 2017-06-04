@@ -147,7 +147,8 @@ namespace NRules.Tests.Aggregators
 
         private ProjectionAggregator<TestFact, string> CreateTarget()
         {
-            return new ProjectionAggregator<TestFact, string>(x => x.Value);
+            var expression = new FactExpression<TestFact, string>(x => x.Value);
+            return new ProjectionAggregator<TestFact, string>(expression);
         }
 
         private class TestFact : IEquatable<TestFact>

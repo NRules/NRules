@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.Aggregators;
 using NRules.RuleModel;
+using NRules.Utilities;
 
 namespace NRules.Rete
 {
@@ -226,7 +227,7 @@ namespace NRules.Rete
                     ExpressionMapComparer.AreEqual(x.ExpressionMap, element.ExpressionMap));
             if (node == null)
             {
-                var aggregatorFactory = BuildAggregatorFactory(element);
+                var aggregatorFactory = BuildAggregatorFactory(context, element);
                 node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name, 
                     element.ExpressionMap, aggregatorFactory, context.HasSubnet);
                 if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
@@ -286,22 +287,43 @@ namespace NRules.Rete
             context.AlphaSource = memoryNode;
         }
 
-        private IAggregatorFactory BuildAggregatorFactory(AggregateElement element)
+        private IAggregatorFactory BuildAggregatorFactory(ReteBuilderContext context, AggregateElement element)
         {
+            IAggregatorFactory factory;
             switch (element.Name)
             {
                 case AggregateElement.CollectName:
-                    return new CollectionAggregatorFactory(element);
+                    factory = new CollectionAggregatorFactory();
+                    break;
                 case AggregateElement.GroupByName:
-                    return new GroupByAggregatorFactory(element);
+                    factory = new GroupByAggregatorFactory();
+                    break;
                 case AggregateElement.ProjectName:
-                    return new ProjectionAggregatorFactory(element);
+                    factory = new ProjectionAggregatorFactory();
+                    break;
                 case AggregateElement.FlattenName:
-                    return new FlatteningAggregatorFactory(element);
+                    factory = new FlatteningAggregatorFactory();
+                    break;
                 default:
                     throw new ArgumentException(
                         $"Unrecognized aggregate element. Name={element.Name}");
             }
+            var compiledExpressions = CompileExpressions(context, element);
+            factory.Compile(element, compiledExpressions);
+            return factory;
+        }
+
+        private static Dictionary<string, IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
+        {
+            var declarations = context.Declarations.Concat(element.Source.Declaration).ToList();
+            var result = new Dictionary<string, IAggregateExpression>();
+            foreach (var expression in element.ExpressionMap)
+            {
+                var indexMap = IndexMap.CreateMap(expression.References, declarations);
+                var aggregateExpression = new AggregateExpression(expression.Expression, indexMap);
+                result[expression.Name] = aggregateExpression;
+            }
+            return result;
         }
 
         public INetwork Build()

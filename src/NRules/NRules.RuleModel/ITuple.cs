@@ -12,5 +12,10 @@ namespace NRules.RuleModel
         /// </summary>
         /// <remarks>Facts in the tuple are stored in the reverse order.</remarks>
         IEnumerable<IFact> Facts { get; }
+
+        /// <summary>
+        /// Number of facts in the tuple.
+        /// </summary>
+        int Count { get; }
     }
 }

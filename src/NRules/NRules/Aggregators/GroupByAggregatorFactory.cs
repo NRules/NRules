@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -11,9 +12,9 @@ namespace NRules.Aggregators
     /// </summary>
     internal class GroupByAggregatorFactory : IAggregatorFactory
     {
-        private readonly Func<IAggregator> _factory;
+        private Func<IAggregator> _factory;
 
-        public GroupByAggregatorFactory(AggregateElement element)
+        public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
         {
             var keySelector = element.ExpressionMap["KeySelector"];
             var elementSelector = element.ExpressionMap["ElementSelector"];

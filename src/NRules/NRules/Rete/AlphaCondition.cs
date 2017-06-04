@@ -17,7 +17,7 @@ namespace NRules.Rete
         public AlphaCondition(LambdaExpression expression)
         {
             _expression = expression;
-            _compiledExpression = FastDelegate.AlphaCondition(expression);
+            _compiledExpression = ExpressionCompiler.CompileAlphaCondition(expression);
         }
 
         public bool IsSatisfiedBy(IExecutionContext context, Fact fact)

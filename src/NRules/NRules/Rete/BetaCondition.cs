@@ -19,7 +19,7 @@ namespace NRules.Rete
         {
             _expression = expression;
             _factIndexMap = factIndexMap;
-            _compiledExpression = FastDelegate.BetaCondition(expression);
+            _compiledExpression = ExpressionCompiler.CompileBetaCondition(expression);
         }
 
         public bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact)
