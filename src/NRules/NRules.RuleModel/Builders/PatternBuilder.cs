@@ -83,6 +83,12 @@ namespace NRules.RuleModel.Builders
                     var message = $"Pattern element cannot reference injected dependency. Condition={condition.Expression}, Dependency={names}";
                     throw new InvalidOperationException(message);
                 }
+
+                if (condition.Expression.ReturnType != typeof(bool))
+                {
+                    var message = $"Pattern condition must return a Boolean result. Condition={condition.Expression}";
+                    throw new ArgumentException(message);
+                }
             }
         }
     }
