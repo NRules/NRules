@@ -26,11 +26,11 @@ namespace NRules.Aggregators
         private readonly IndexMap _factIndexMap;
         private readonly FastDelegate<Func<object[], object>> _compiledExpression;
 
-        public AggregateExpression(LambdaExpression expression, IndexMap factIndexMap)
+        public AggregateExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap factIndexMap)
         {
             _expression = expression;
             _factIndexMap = factIndexMap;
-            _compiledExpression = ExpressionCompiler.CompileAggregateExpression(expression);
+            _compiledExpression = compiledExpression;
         }
 
         public object Invoke(ITuple tuple, IFact fact)

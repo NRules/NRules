@@ -15,11 +15,11 @@ namespace NRules.Rete
         private readonly IndexMap _factIndexMap;
         private readonly FastDelegate<Func<object[], bool>> _compiledExpression;
 
-        public BetaCondition(LambdaExpression expression, IndexMap factIndexMap)
+        public BetaCondition(LambdaExpression expression, FastDelegate<Func<object[], bool>> compiledExpression, IndexMap factIndexMap)
         {
             _expression = expression;
             _factIndexMap = factIndexMap;
-            _compiledExpression = ExpressionCompiler.CompileBetaCondition(expression);
+            _compiledExpression = compiledExpression;
         }
 
         public bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact)

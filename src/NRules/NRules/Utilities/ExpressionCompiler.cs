@@ -2,46 +2,56 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NRules.Aggregators;
+using NRules.Rete;
 using NRules.RuleModel;
 
 namespace NRules.Utilities
 {
     internal abstract class ExpressionCompiler
     {
-        public static FastDelegate<Func<object, bool>> CompileAlphaCondition(LambdaExpression expression)
+        public static IAlphaCondition CompileAlphaCondition(ConditionElement element)
         {
             var optimizer = new ExpressionSingleParameterOptimizer<Func<object, bool>>();
-            var optimizedExpression = optimizer.ConvertParameter(expression);
+            var optimizedExpression = optimizer.ConvertParameter(element.Expression);
             var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, expression.Parameters.Count);
-            return fastDelegate;
+            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+            var condition = new AlphaCondition(element.Expression, fastDelegate);
+            return condition;
         }
 
-        public static FastDelegate<Func<object[], bool>> CompileBetaCondition(LambdaExpression expression)
+        public static IBetaCondition CompileBetaCondition(ConditionElement element, IEnumerable<Declaration> declarations)
         {
             var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], bool>>();
-            var optimizedExpression = optimizer.CompactParameters(expression, 0);
+            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, expression.Parameters.Count);
-            return fastDelegate;
+            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
+            var condition = new BetaCondition(element.Expression, fastDelegate, factIndexMap);
+            return condition;
         }
 
-        public static FastDelegate<Action<IContext, object[]>> CompileAction(LambdaExpression expression)
+        public static IRuleAction CompileAction(ActionElement element, IEnumerable<Declaration> declarations, IEnumerable<Declaration> dependencies)
         {
             var optimizer = new ExpressionMultiParameterOptimizer<Action<IContext, object[]>>();
-            var optimizedExpression = optimizer.CompactParameters(expression, 1);
+            var optimizedExpression = optimizer.CompactParameters(element.Expression, 1);
             var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, expression.Parameters.Count - 1);
-            return fastDelegate;
+            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count - 1);
+            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
+            var dependencyIndexMap = IndexMap.CreateMap(element.References, dependencies);
+            var action = new RuleAction(element.Expression, fastDelegate, factIndexMap, dependencyIndexMap);
+            return action;
         }
 
-        public static FastDelegate<Func<object[], object>> CompileAggregateExpression(LambdaExpression expression)
+        public static IAggregateExpression CompileAggregateExpression(NamedExpressionElement element, IEnumerable<Declaration> declarations)
         {
             var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], object>>();
-            var optimizedExpression = optimizer.CompactParameters(expression, 0);
+            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, expression.Parameters.Count);
-            return fastDelegate;
+            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new AggregateExpression(element.Expression, fastDelegate, factIndexMap);
+            return expression;
         }
 
         private static FastDelegate<TDelegate> Create<TDelegate>(TDelegate @delegate, int parameterCount) where TDelegate : class

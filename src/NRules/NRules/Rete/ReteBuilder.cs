@@ -154,13 +154,12 @@ namespace NRules.Rete
 
         private void BuildJoinNode(ReteBuilderContext context, IEnumerable<ConditionElement> conditions = null)
         {
-            var betaConditions = new List<BetaCondition>();
+            var betaConditions = new List<IBetaCondition>();
             if (conditions != null)
             {
                 foreach (var condition in conditions)
                 {
-                    var factIndexMap = IndexMap.CreateMap(condition.References, context.Declarations);
-                    var betaCondition = new BetaCondition(condition.Expression, factIndexMap);
+                    var betaCondition = ExpressionCompiler.CompileBetaCondition(condition, context.Declarations);
                     betaConditions.Add(betaCondition);
                 }
             }
@@ -261,7 +260,7 @@ namespace NRules.Rete
 
         private void BuildSelectionNode(ReteBuilderContext context, ConditionElement condition)
         {
-            var alphaCondition = new AlphaCondition(condition.Expression);
+            var alphaCondition = ExpressionCompiler.CompileAlphaCondition(condition);
             SelectionNode selectionNode = context.CurrentAlphaNode
                 .ChildNodes.OfType<SelectionNode>()
                 .FirstOrDefault(sn => sn.Condition.Equals(alphaCondition));
@@ -319,8 +318,7 @@ namespace NRules.Rete
             var result = new Dictionary<string, IAggregateExpression>();
             foreach (var expression in element.ExpressionMap)
             {
-                var indexMap = IndexMap.CreateMap(expression.References, declarations);
-                var aggregateExpression = new AggregateExpression(expression.Expression, indexMap);
+                var aggregateExpression = ExpressionCompiler.CompileAggregateExpression(expression, declarations);
                 result[expression.Name] = aggregateExpression;
             }
             return result;

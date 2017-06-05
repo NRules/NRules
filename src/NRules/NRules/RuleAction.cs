@@ -19,14 +19,14 @@ namespace NRules
         private readonly LambdaExpression _expression;
         private readonly IndexMap _factIndexMap;
         private readonly IndexMap _dependencyIndexMap;
-        private readonly FastDelegate<Action<IContext, object[]>> _compiledAction;
+        private readonly FastDelegate<Action<IContext, object[]>> _compiledExpression;
 
-        public RuleAction(LambdaExpression expression, IndexMap factIndexMap, IndexMap dependencyIndexMap)
+        public RuleAction(LambdaExpression expression, FastDelegate<Action<IContext, object[]>> compiledExpression, IndexMap factIndexMap, IndexMap dependencyIndexMap)
         {
             _expression = expression;
             _factIndexMap = factIndexMap;
             _dependencyIndexMap = dependencyIndexMap;
-            _compiledAction = ExpressionCompiler.CompileAction(expression);
+            _compiledExpression = compiledExpression;
         }
 
         public Expression Expression => _expression;
@@ -38,7 +38,7 @@ namespace NRules
             var tuple = activation.Tuple;
             var tupleFactMap = activation.TupleFactMap;
 
-            var args = new object[_compiledAction.ArrayArgumentCount];
+            var args = new object[_compiledExpression.ArrayArgumentCount];
 
             int index = tuple.Count - 1;
             var factIndexMap = _factIndexMap;
@@ -69,7 +69,7 @@ namespace NRules
 
         public void Invoke(IExecutionContext executionContext, IActionContext actionContext, object[] arguments)
         {
-            _compiledAction.Delegate.Invoke(actionContext, arguments);
+            _compiledExpression.Delegate.Invoke(actionContext, arguments);
         }
     }
 }
