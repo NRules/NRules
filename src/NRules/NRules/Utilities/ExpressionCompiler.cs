@@ -45,13 +45,27 @@ namespace NRules.Utilities
 
         public static IAggregateExpression CompileAggregateExpression(NamedExpressionElement element, IEnumerable<Declaration> declarations)
         {
-            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], object>>();
-            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
-            var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
-            var expression = new AggregateExpression(element.Expression, fastDelegate, factIndexMap);
-            return expression;
+            var declarationsList = declarations.ToList();
+            if (element.References.Count() == 1 &&
+                Equals(element.References.Single(), declarationsList.Last()))
+            {
+                var optimizer = new ExpressionSingleParameterOptimizer<Func<object, object>>();
+                var optimizedExpression = optimizer.ConvertParameter(element.Expression);
+                var @delegate = optimizedExpression.Compile();
+                var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+                var expression = new AggregateFactExpression(element.Expression, fastDelegate);
+                return expression;
+            }
+            else
+            {
+                var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], object>>();
+                var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
+                var @delegate = optimizedExpression.Compile();
+                var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+                var factIndexMap = IndexMap.CreateMap(element.References, declarationsList);
+                var expression = new AggregateExpression(element.Expression, fastDelegate, factIndexMap);
+                return expression;
+            }
         }
 
         private static FastDelegate<TDelegate> Create<TDelegate>(TDelegate @delegate, int parameterCount) where TDelegate : class

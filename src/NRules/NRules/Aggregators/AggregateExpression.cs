@@ -20,6 +20,32 @@ namespace NRules.Aggregators
         object Invoke(ITuple tuple, IFact fact);
     }
 
+    internal class AggregateFactExpression : IAggregateExpression
+    {
+        private readonly LambdaExpression _expression;
+        private readonly FastDelegate<Func<object, object>> _compiledExpression;
+
+        public AggregateFactExpression(LambdaExpression expression, FastDelegate<Func<object, object>> compiledExpression)
+        {
+            _expression = expression;
+            _compiledExpression = compiledExpression;
+        }
+
+        public object Invoke(ITuple tuple, IFact fact)
+        {
+            try
+            {
+                var factValue = fact.Value;
+                var result = _compiledExpression.Delegate(factValue);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new RuleExpressionEvaluationException("Failed to evaluate expression", _expression.ToString(), e);
+            }
+        }
+    }
+
     internal class AggregateExpression : IAggregateExpression
     {
         private readonly LambdaExpression _expression;
