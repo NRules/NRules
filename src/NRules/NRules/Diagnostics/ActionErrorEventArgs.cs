@@ -10,28 +10,27 @@ namespace NRules.Diagnostics
     /// </summary>
     public class ActionErrorEventArgs : ErrorEventArgs
     {
-        private readonly Expression _expression;
         private readonly IActivation _activation;
 
         internal ActionErrorEventArgs(Exception exception, Expression expression, IActivation activation) : base(exception)
         {
-            _expression = expression;
+            Action = expression;
             _activation = activation;
         }
 
         /// <summary>
         /// Rule related to the event.
         /// </summary>
-        public IRuleDefinition Rule { get { return _activation.Rule; } }
+        public IRuleDefinition Rule => _activation.Rule;
 
         /// <summary>
         /// Action that caused exception.
         /// </summary>
-        public Expression Action { get { return _expression; } }
+        public Expression Action { get; }
 
         /// <summary>
         /// Facts that caused exception.
         /// </summary>
-        public IEnumerable<IFactMatch> Facts { get { return _activation.Facts; } }
+        public IEnumerable<IFactMatch> Facts => _activation.Facts;
     }
 }

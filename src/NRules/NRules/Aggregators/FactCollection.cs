@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     internal class FactCollection<TFact> : IEnumerable<TFact>
     {
@@ -31,7 +31,7 @@ namespace NRules.RuleModel.Aggregators
             _nodeLookup.Remove(fact);
         }
 
-        public int Count { get { return _elements.Count; } }
+        public int Count => _elements.Count;
 
         public IEnumerator<TFact> GetEnumerator()
         {

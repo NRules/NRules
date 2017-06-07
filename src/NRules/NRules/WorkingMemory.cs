@@ -32,7 +32,7 @@ namespace NRules
 
         private static readonly Fact[] EmptyList = new Fact[0];
 
-        public IEnumerable<Fact> Facts { get { return _factMap.Values; } }
+        public IEnumerable<Fact> Facts => _factMap.Values;
 
         public Fact GetFact(object factObject)
         {

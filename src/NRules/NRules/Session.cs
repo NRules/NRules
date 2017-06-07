@@ -214,19 +214,19 @@ namespace NRules
             _network.Activate(_executionContext);
         }
 
-        public IAgenda Agenda { get { return _agenda; } }
-        public IEventProvider Events { get { return _eventAggregator; } }
+        public IAgenda Agenda => _agenda;
+        public IEventProvider Events => _eventAggregator;
         public IDependencyResolver DependencyResolver { get; set; }
         public IActionInterceptor ActionInterceptor { get; set; }
 
-        IAgendaInternal ISessionInternal.Agenda { get { return _agenda;} }
+        IAgendaInternal ISessionInternal.Agenda => _agenda;
 
         public void InsertAll(IEnumerable<object> facts)
         {
             var result = _network.PropagateAssert(_executionContext, facts);
             if (result.FailedCount > 0)
             {
-                throw new ArgumentException("Facts for insert already exist", "facts");
+                throw new ArgumentException("Facts for insert already exist", nameof(facts));
             }
         }
 
@@ -252,7 +252,7 @@ namespace NRules
             var result = _network.PropagateUpdate(_executionContext, facts);
             if (result.FailedCount > 0)
             {
-                throw new ArgumentException("Facts for update do not exist", "facts");
+                throw new ArgumentException("Facts for update do not exist", nameof(facts));
             }
         }
 
@@ -278,7 +278,7 @@ namespace NRules
             var result = _network.PropagateRetract(_executionContext, facts);
             if (result.FailedCount > 0)
             {
-                throw new ArgumentException("Facts for retract do not exist", "facts");
+                throw new ArgumentException("Facts for retract do not exist", nameof(facts));
             }
         }
 

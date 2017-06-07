@@ -29,7 +29,7 @@ namespace NRules.Fluent
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             base.GetObjectData(info, context);
             info.AddValue("RuleType", RuleType, typeof(Type));
@@ -39,7 +39,7 @@ namespace NRules.Fluent
         /// <summary>
         /// Rule .NET type that caused exception.
         /// </summary>
-        public Type RuleType { get; private set; }
+        public Type RuleType { get; }
 
         public override string Message
         {

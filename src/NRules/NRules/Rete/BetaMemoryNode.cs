@@ -14,7 +14,7 @@ namespace NRules.Rete
     {
         private readonly List<ITupleSink> _sinks = new List<ITupleSink>();
 
-        public IEnumerable<ITupleSink> Sinks { get { return _sinks; } }
+        public IEnumerable<ITupleSink> Sinks => _sinks;
 
         public void PropagateAssert(IExecutionContext context, ITupleFactList tupleFactList)
         {

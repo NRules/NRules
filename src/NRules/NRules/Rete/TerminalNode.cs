@@ -9,22 +9,12 @@ namespace NRules.Rete
 
     internal class TerminalNode : ITerminalNode, ITupleSink
     {
-        private readonly IndexMap _factIndexMap;
-        private IRuleNode _ruleNode;
-
-        public IndexMap FactIndexMap
-        {
-            get { return _factIndexMap; }
-        }
-
-        public IRuleNode RuleNode
-        {
-            get { return _ruleNode; }
-        }
+        public IndexMap FactIndexMap { get; }
+        public IRuleNode RuleNode { get; private set; }
 
         public TerminalNode(ITupleSource source, IndexMap factIndexMap)
         {
-            _factIndexMap = factIndexMap;
+            FactIndexMap = factIndexMap;
             source.Attach(this);
         }
 
@@ -32,7 +22,7 @@ namespace NRules.Rete
         {
             foreach (var tuple in tuples)
             {
-                RuleNode.Activate(context, tuple, _factIndexMap);
+                RuleNode.Activate(context, tuple, FactIndexMap);
             }
         }
 
@@ -40,7 +30,7 @@ namespace NRules.Rete
         {
             foreach (var tuple in tuples)
             {
-                RuleNode.Reactivate(context, tuple, _factIndexMap);
+                RuleNode.Reactivate(context, tuple, FactIndexMap);
             }
         }
 
@@ -48,13 +38,13 @@ namespace NRules.Rete
         {
             foreach (var tuple in tuples)
             {
-                RuleNode.Deactivate(context, tuple, _factIndexMap);
+                RuleNode.Deactivate(context, tuple, FactIndexMap);
             }
         }
 
         public void Attach(IRuleNode ruleNode)
         {
-            _ruleNode = ruleNode;
+            RuleNode = ruleNode;
         }
 
         public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)

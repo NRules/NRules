@@ -9,7 +9,7 @@
 
     internal class RuleNode : IRuleNode
     {
-        public ICompiledRule CompiledRule { get; private set; }
+        public ICompiledRule CompiledRule { get; }
 
         public RuleNode(ICompiledRule compiledRule)
         {

@@ -23,7 +23,7 @@ namespace NRules.Rete
         private readonly List<Tuple> _tuples = new List<Tuple>(); 
         private readonly List<Fact> _facts = new List<Fact>();
 
-        public int Count { get { return _tuples.Count; } }
+        public int Count => _tuples.Count;
 
         public void Add(Tuple tuple, Fact fact)
         {
@@ -42,8 +42,8 @@ namespace NRules.Rete
                 _factEnumerator = factEnumerator;
             }
 
-            public Tuple CurrentTuple { get { return _tupleEnumerator.Current; } }
-            public Fact CurrentFact { get { return _factEnumerator.Current; } }
+            public Tuple CurrentTuple => _tupleEnumerator.Current;
+            public Fact CurrentFact => _factEnumerator.Current;
 
             public bool MoveNext()
             {

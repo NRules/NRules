@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using Xunit;
@@ -164,7 +165,7 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                IGrouping<string, string> group = null;
+                IEnumerable<string> group = null;
 
                 When()
                     .Query(() => group, x => x

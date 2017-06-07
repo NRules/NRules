@@ -4,6 +4,7 @@ using System.Linq;
 using NRules.Rete;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
+using NRules.Utilities;
 
 namespace NRules
 {
@@ -64,9 +65,7 @@ namespace NRules
             var actions = new List<IRuleAction>();
             foreach (var action in rightHandSide.Actions)
             {
-                var factIndexMap = IndexMap.CreateMap(action.References, ruleDeclarations);
-                var dependencyIndexMap = IndexMap.CreateMap(action.References, ruleDependencies);
-                var ruleAction = new RuleAction(action.Expression, factIndexMap, dependencyIndexMap);
+                var ruleAction = ExpressionCompiler.CompileAction(action, ruleDeclarations, ruleDependencies);
                 actions.Add(ruleAction);
             }
 

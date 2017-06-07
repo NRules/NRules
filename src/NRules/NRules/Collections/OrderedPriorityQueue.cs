@@ -34,10 +34,7 @@ namespace NRules.Collections
             return _priorityQueue.Peek();
         }
 
-        public bool IsEmpty
-        {
-            get { return _priorityQueue.IsEmpty; }
-        }
+        public bool IsEmpty => _priorityQueue.IsEmpty;
 
         public void Clear()
         {
@@ -46,8 +43,8 @@ namespace NRules.Collections
 
         private class OrderedKey<T>
         {
-            public T Key { get; private set; }
-            public int Order { get; private set; }
+            public T Key { get; }
+            public int Order { get; }
 
             public OrderedKey(T key, int order)
             {

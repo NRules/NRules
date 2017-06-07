@@ -9,12 +9,12 @@ namespace NRules.Rete
         private static readonly TupleFactSet[] EmptySetList = new TupleFactSet[0];
         private static readonly Dictionary<long, List<Fact>> EmptyGroups = new Dictionary<long, List<Fact>>();
 
-        public ITupleSource LeftSource { get; private set; }
-        public IObjectSource RightSource { get; private set; }
+        public ITupleSource LeftSource { get; }
+        public IObjectSource RightSource { get; }
         public IBetaMemoryNode MemoryNode { get; set; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public IList<IBetaCondition> Conditions { get; private set; }
+        public IList<IBetaCondition> Conditions { get; }
 
         protected BetaNode(ITupleSource leftSource, IObjectSource rightSource)
         {

@@ -1,27 +1,22 @@
 ﻿using System.Collections.Generic;
+using NRules.Aggregators;
 using NRules.RuleModel;
 
 namespace NRules.Rete
 {
     internal class AggregateNode : BetaNode
     {
-        private readonly string _name;
-        private readonly ExpressionMap _expressionMap;
         private readonly IAggregatorFactory _aggregatorFactory;
         private readonly bool _isSubnetJoin;
 
-        public string Name { get { return _name; } }
-
-        public ExpressionMap ExpressionMap
-        {
-            get { return _expressionMap; }
-        }
+        public string Name { get; }
+        public ExpressionMap ExpressionMap { get; }
 
         public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, string name, ExpressionMap expressionMap, IAggregatorFactory aggregatorFactory, bool isSubnetJoin)
             : base(leftSource, rightSource)
         {
-            _name = name;
-            _expressionMap = expressionMap;
+            Name = name;
+            ExpressionMap = expressionMap;
             _aggregatorFactory = aggregatorFactory;
             _isSubnetJoin = isSubnetJoin;
         }
@@ -32,14 +27,14 @@ namespace NRules.Rete
             var aggregation = new Aggregation();
             foreach (var set in joinedSets)
             {
-                var factObjects = new List<object>();
+                var matchingFacts = new List<Fact>();
                 foreach (var fact in set.Facts)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
-                        factObjects.Add(fact.Object);
+                        matchingFacts.Add(fact);
                 }
                 IAggregator aggregator = CreateAggregator(set.Tuple);
-                var results = aggregator.Add(factObjects);
+                var results = aggregator.Add(set.Tuple, matchingFacts);
                 aggregation.Add(set.Tuple, results);
             }
             PropagateAggregation(context, aggregation);
@@ -84,16 +79,16 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                var factObjects = new List<object>();
+                var matchingFacts = new List<Fact>();
                 foreach (var fact in set.Facts)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
-                        factObjects.Add(fact.Object);
+                        matchingFacts.Add(fact);
                 }
-                if (factObjects.Count > 0)
+                if (matchingFacts.Count > 0)
                 {
                     IAggregator aggregator = GetAggregator(set.Tuple);
-                    var results = aggregator.Add(factObjects);
+                    var results = aggregator.Add(set.Tuple, matchingFacts);
                     aggregation.Add(set.Tuple, results);
                 }
             }
@@ -107,16 +102,16 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                var factObjects = new List<object>();
+                var matchingFacts = new List<Fact>();
                 foreach (var fact in set.Facts)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
-                        factObjects.Add(fact.Object);
+                        matchingFacts.Add(fact);
                 }
-                if (factObjects.Count > 0)
+                if (matchingFacts.Count > 0)
                 {
                     IAggregator aggregator = GetAggregator(set.Tuple);
-                    var results = aggregator.Modify(factObjects);
+                    var results = aggregator.Modify(set.Tuple, matchingFacts);
                     aggregation.Add(set.Tuple, results);
                 }
             }
@@ -130,16 +125,16 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                var factObjects = new List<object>();
+                var matchingFacts = new List<Fact>();
                 foreach (var fact in set.Facts)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
-                        factObjects.Add(fact.Object);
+                        matchingFacts.Add(fact);
                 }
-                if (factObjects.Count > 0)
+                if (matchingFacts.Count > 0)
                 {
                     IAggregator aggregator = GetAggregator(set.Tuple);
-                    var results = aggregator.Remove(factObjects);
+                    var results = aggregator.Remove(set.Tuple, matchingFacts);
                     aggregation.Add(set.Tuple, results);
                 }
             }

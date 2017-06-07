@@ -12,7 +12,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public abstract class RuleElementBuilder
     {
-        internal SymbolTable Scope { get; private set; }
+        internal SymbolTable Scope { get; }
 
         internal RuleElementBuilder(SymbolTable scope)
         {
@@ -22,9 +22,6 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Pattern declarations visible by the element being built.
         /// </summary>
-        public IEnumerable<Declaration> Declarations
-        {
-            get { return Scope.VisibleDeclarations; }
-        }
+        public IEnumerable<Declaration> Declarations => Scope.VisibleDeclarations;
     }
 }

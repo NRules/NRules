@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using NRules.RuleModel;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator that groups matching facts into collections of elements with the same key.
@@ -12,31 +12,31 @@ namespace NRules.RuleModel.Aggregators
     /// <typeparam name="TElement">Type of elements to group.</typeparam>
     internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
     {
-        private readonly Func<TSource, TKey> _keySelector;
-        private readonly Func<TSource, TElement> _elementSelector;
+        private readonly IAggregateExpression _keySelector;
+        private readonly IAggregateExpression _elementSelector;
         
         private readonly Dictionary<object, TKey> _sourceToKey = new Dictionary<object, TKey>();
         private readonly Dictionary<object, TElement> _sourceToElement = new Dictionary<object, TElement>();
 
         private readonly DefaultKeyMap<TKey, Grouping> _groups = new DefaultKeyMap<TKey, Grouping>();
 
-        public GroupByAggregator(Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
+        public GroupByAggregator(IAggregateExpression keySelector, IAggregateExpression elementSelector)
         {
             _keySelector = keySelector;
             _elementSelector = elementSelector;
         }
 
-        public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
-                var key = _keySelector(source);
-                var element = _elementSelector(source);
-                _sourceToKey[fact] = key;
-                _sourceToElement[fact] = element;
+                var source = (TSource)fact.Value;
+                var key = (TKey)_keySelector.Invoke(tuple, fact);
+                var element = (TElement)_elementSelector.Invoke(tuple, fact);
+                _sourceToKey[source] = key;
+                _sourceToElement[source] = element;
                 var result = Add(key, element);
                 if (!resultLookup.ContainsKey(key))
                 {
@@ -48,19 +48,19 @@ namespace NRules.RuleModel.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
-                var key = _keySelector(source);
-                var element = _elementSelector(source);
-                var oldKey = _sourceToKey[fact];
-                var oldElement = _sourceToElement[fact];
-                _sourceToKey[fact] = key;
-                _sourceToElement[fact] = element;
+                var source = (TSource)fact.Value;
+                var key = (TKey)_keySelector.Invoke(tuple, fact);
+                var element = (TElement)_elementSelector.Invoke(tuple, fact);
+                var oldKey = _sourceToKey[source];
+                var oldElement = _sourceToElement[source];
+                _sourceToKey[source] = key;
+                _sourceToElement[source] = element;
         
                 if (Equals(key, oldKey))
                 {
@@ -98,16 +98,17 @@ namespace NRules.RuleModel.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var oldKey = _sourceToKey[fact];
-                var oldElement = _sourceToElement[fact];
-                _sourceToKey.Remove(fact);
-                _sourceToElement.Remove(fact);
+                var source = (TSource)fact.Value;
+                var oldKey = _sourceToKey[source];
+                var oldElement = _sourceToElement[source];
+                _sourceToKey.Remove(source);
+                _sourceToElement.Remove(source);
                 var result = Remove(oldKey, oldElement);
                 if (!resultLookup.ContainsKey(oldKey))
                 {
@@ -165,21 +166,16 @@ namespace NRules.RuleModel.Aggregators
             return results;
         }
 
-        public IEnumerable<object> Aggregates
-        {
-            get { return _groups.Values; }
-        }
+        public IEnumerable<object> Aggregates => _groups.Values;
 
         private class Grouping : FactCollection<TElement>, IGrouping<TKey, TElement>
         {
-            private readonly TKey _key;
-
             public Grouping(TKey key)
             {
-                _key = key;
+                Key = key;
             }
 
-            public TKey Key { get { return _key; } }
+            public TKey Key { get; }
         }
     }
 }

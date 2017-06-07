@@ -17,10 +17,7 @@
             {
                 condition.Accept(context, this);
             }
-            if (element.Source != null)
-            {
-                element.Source.Accept(context, this);
-            }
+            element.Source?.Accept(context, this);
         }
 
         protected internal virtual void VisitCondition(TContext context, ConditionElement element)
@@ -29,10 +26,15 @@
 
         protected internal virtual void VisitAggregate(TContext context, AggregateElement element)
         {
-            if (element.Source != null)
+            foreach (var expression in element.ExpressionMap)
             {
-                element.Source.Accept(context, this);
+                expression.Accept(context, this);
             }
+            element.Source?.Accept(context, this);
+        }
+
+        protected internal virtual void VisitNamedExpression(TContext context, NamedExpressionElement element)
+        {
         }
 
         protected internal virtual void VisitNot(TContext context, NotElement element)

@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
+using NRules.RuleModel;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator that projects each matching fact into a collection and creates a new fact for each element in that collection.
@@ -10,21 +10,21 @@ namespace NRules.RuleModel.Aggregators
     /// <typeparam name="TResult">Type of result element.</typeparam>
     internal class FlatteningAggregator<TSource, TResult> : IAggregator
     {
-        private readonly Func<TSource, IEnumerable<TResult>> _selector;
+        private readonly IAggregateExpression _selector;
         private readonly Dictionary<TSource, IList<TResult>> _sourceToList = new Dictionary<TSource, IList<TResult>>();
 
-        public FlatteningAggregator(Func<TSource, IEnumerable<TResult>> selector)
+        public FlatteningAggregator(IAggregateExpression selector)
         {
             _selector = selector;
         }
 
-        public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
-                var value = _selector(source);
+                var source = (TSource)fact.Value;
+                var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
                 var list = new List<TResult>(value);
                 _sourceToList[source] = list;
                 foreach (var item in list)
@@ -35,13 +35,13 @@ namespace NRules.RuleModel.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
-                var value = _selector(source);
+                var source = (TSource)fact.Value;
+                var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
                 var list = new List<TResult>(value);
                 var oldList = _sourceToList[source];
                 _sourceToList[source] = list;
@@ -57,12 +57,12 @@ namespace NRules.RuleModel.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
+                var source = (TSource)fact.Value;
                 var oldList = _sourceToList[source];
                 _sourceToList.Remove(source);
                 foreach (var item in oldList)

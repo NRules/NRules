@@ -16,10 +16,7 @@ namespace NRules.Rete
             _map = map;
         }
 
-        public int this[int index]
-        {
-            get { return (index >= 0 && index < _map.Length) ? _map[index] : -1; }
-        }
+        public int this[int index] => (index >= 0 && index < _map.Length) ? _map[index] : -1;
 
         public static void SetElementAt(object[] target, int index, object value)
         {

@@ -6,30 +6,21 @@ namespace NRules
     {
         private readonly IExecutionContext _executionContext;
         private readonly IActionContext _actionContext;
-        private readonly IRuleAction _action;
-        private readonly object[] _arguments;
 
         public ActionInvocation(IExecutionContext executionContext, IActionContext actionContext, IRuleAction action, object[] arguments)
         {
             _executionContext = executionContext;
             _actionContext = actionContext;
-            _action = action;
-            _arguments = arguments;
+            RuleAction = action;
+            Arguments = arguments;
         }
 
-        public object[] Arguments
-        {
-            get { return _arguments; }
-        }
-
-        public IRuleAction RuleAction
-        {
-            get { return _action; }
-        }
+        public object[] Arguments { get; }
+        public IRuleAction RuleAction { get; }
 
         public void Invoke()
         {
-            _action.Invoke(_executionContext, _actionContext, _arguments);
+            RuleAction.Invoke(_executionContext, _actionContext, Arguments);
         }
     }
 }

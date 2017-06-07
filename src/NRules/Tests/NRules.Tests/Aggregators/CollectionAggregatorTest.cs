@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NRules.RuleModel;
-using NRules.RuleModel.Aggregators;
+using NRules.Aggregators;
 using Xunit;
 
 namespace NRules.Tests.Aggregators
 {
-    public class CollectionAggregatorTest
+    public class CollectionAggregatorTest : AggregatorTest
     {
         [Fact]
         public void Aggregates_NewInstance_OneEmptyCollection()
@@ -29,7 +28,7 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(new[] {new TestFact(1), new TestFact(2)});
+            target.Add(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2)));
 
             //Act
             var result = target.Aggregates.ToArray();
@@ -47,7 +46,7 @@ namespace NRules.Tests.Aggregators
             var target = CreateTarget();
 
             //Act
-            var result = target.Add(new[] {new TestFact(1), new TestFact(2)}).ToArray();
+            var result = target.Add(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -63,7 +62,7 @@ namespace NRules.Tests.Aggregators
             var target = CreateTarget();
 
             //Act
-            var result = target.Add(new TestFact[0]).ToArray();
+            var result = target.Add(EmptyTuple(), AsFact(new TestFact[0])).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -77,10 +76,10 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(new[] {new TestFact(1)});
+            target.Add(EmptyTuple(), AsFact(new TestFact(1)));
 
             //Act
-            var result = target.Add(new[] {new TestFact(2), new TestFact(3)}).ToArray();
+            var result = target.Add(EmptyTuple(), AsFact(new TestFact(2), new TestFact(3))).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -94,10 +93,10 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(new[] {new TestFact(1), new TestFact(2)});
+            target.Add(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2)));
 
             //Act
-            var result = target.Modify(new[] {new TestFact(1), new TestFact(2)}).ToArray();
+            var result = target.Modify(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -111,11 +110,11 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(new[] {new TestFact(1), new TestFact(2)});
+            target.Add(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2)));
 
             //Act - Assert
             Assert.Throws<KeyNotFoundException>(
-                () => target.Modify(new[] {new TestFact(3), new TestFact(4)}));
+                () => target.Modify(EmptyTuple(), AsFact(new TestFact(3), new TestFact(4))));
         }
 
         [Fact]
@@ -123,10 +122,10 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(new[] {new TestFact(1), new TestFact(2), new TestFact(3)});
+            target.Add(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2), new TestFact(3)));
 
             //Act
-            var result = target.Remove(new[] {new TestFact(1), new TestFact(2)}).ToArray();
+            var result = target.Remove(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -141,11 +140,11 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(new[] {new TestFact(1), new TestFact(2)});
+            target.Add(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2)));
 
             //Act - Assert
             Assert.Throws<KeyNotFoundException>(
-                () => target.Remove(new[] {new TestFact(3), new TestFact(4)}));
+                () => target.Remove(EmptyTuple(), AsFact(new TestFact(3), new TestFact(4))));
         }
 
         private CollectionAggregator<TestFact> CreateTarget()
@@ -155,20 +154,18 @@ namespace NRules.Tests.Aggregators
 
         private class TestFact : IEquatable<TestFact>
         {
-            private readonly int _id;
-
             public TestFact(int id)
             {
-                _id = id;
+                Id = id;
             }
 
-            public int Id { get { return _id; } }
+            public int Id { get; }
 
             public bool Equals(TestFact other)
             {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
-                return _id == other._id;
+                return Id == other.Id;
             }
 
             public override bool Equals(object obj)
@@ -181,7 +178,7 @@ namespace NRules.Tests.Aggregators
 
             public override int GetHashCode()
             {
-                return _id;
+                return Id;
             }
         }
     }

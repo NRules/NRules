@@ -18,10 +18,7 @@ namespace NRules.RuleModel
         /// <summary>
         /// List of actions the group element contains.
         /// </summary>
-        public IEnumerable<ActionElement> Actions
-        {
-            get { return _actions; }
-        }
+        public IEnumerable<ActionElement> Actions => _actions;
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
         {

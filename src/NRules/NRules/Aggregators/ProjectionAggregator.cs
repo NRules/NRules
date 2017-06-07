@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
+using NRules.RuleModel;
 
-namespace NRules.RuleModel.Aggregators
+namespace NRules.Aggregators
 {
     /// <summary>
     /// Aggregator that projects matching facts into new elements.
@@ -10,34 +10,34 @@ namespace NRules.RuleModel.Aggregators
     /// <typeparam name="TResult">Type of result element.</typeparam>
     internal class ProjectionAggregator<TSource, TResult> : IAggregator
     {
-        private readonly Func<TSource, TResult> _selector;
+        private readonly IAggregateExpression _selector;
         private readonly Dictionary<TSource, object> _sourceToValue = new Dictionary<TSource, object>();
 
-        public ProjectionAggregator(Func<TSource, TResult> selector)
+        public ProjectionAggregator(IAggregateExpression selector)
         {
             _selector = selector;
         }
 
-        public IEnumerable<AggregationResult> Add(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
-                var value = _selector(source);
+                var source = (TSource)fact.Value;
+                var value = _selector.Invoke(tuple, fact);
                 _sourceToValue[source] = value;
                 results.Add(AggregationResult.Added(value));
             }
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
-                var value = _selector(source);
+                var source = (TSource)fact.Value;
+                var value = _selector.Invoke(tuple, fact);
                 var oldValue = (TResult)_sourceToValue[source];
                 _sourceToValue[source] = value;
 
@@ -54,12 +54,12 @@ namespace NRules.RuleModel.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(IEnumerable<object> facts)
+        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact;
+                var source = (TSource)fact.Value;
                 var oldValue = _sourceToValue[source];
                 _sourceToValue.Remove(source);
                 results.Add(AggregationResult.Removed(oldValue));
@@ -67,6 +67,6 @@ namespace NRules.RuleModel.Aggregators
             return results;
         }
 
-        public IEnumerable<object> Aggregates { get { return _sourceToValue.Values; } }
+        public IEnumerable<object> Aggregates => _sourceToValue.Values;
     }
 }

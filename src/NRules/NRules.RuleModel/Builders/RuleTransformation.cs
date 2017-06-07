@@ -77,8 +77,8 @@ namespace NRules.RuleModel.Builders
             var source = Transform<PatternElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = new AggregateElement(element.Declarations, element.ResultType,
-                    element.Name, element.ExpressionMap, element.AggregatorFactory, source);
+                var newElement = new AggregateElement(element.Declarations, 
+                    element.ResultType, element.Name, element.ExpressionMap, source);
                 Result(context, newElement);
             }
         }
