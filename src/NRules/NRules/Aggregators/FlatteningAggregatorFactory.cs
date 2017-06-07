@@ -16,15 +16,15 @@ namespace NRules.Aggregators
 
         public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
         {
-            var selector = element.ExpressionMap["Selector"];
             var sourceType = element.Source.ValueType;
             //Flatten slector is X -> IEnumerable<Y>
             var resultType = element.ResultType;
             Type aggregatorType = typeof(FlatteningAggregator<,>).MakeGenericType(sourceType, resultType);
 
+            var compiledSelector = compiledExpressions["Selector"];
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
-                Expression.New(ctor, selector.Expression));
+                Expression.New(ctor, Expression.Constant(compiledSelector)));
             _factory = factoryExpression.Compile();
         }
 

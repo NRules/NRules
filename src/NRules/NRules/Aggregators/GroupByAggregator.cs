@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using NRules.RuleModel;
@@ -13,15 +12,15 @@ namespace NRules.Aggregators
     /// <typeparam name="TElement">Type of elements to group.</typeparam>
     internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
     {
-        private readonly Func<TSource, TKey> _keySelector;
-        private readonly Func<TSource, TElement> _elementSelector;
+        private readonly IAggregateExpression _keySelector;
+        private readonly IAggregateExpression _elementSelector;
         
         private readonly Dictionary<object, TKey> _sourceToKey = new Dictionary<object, TKey>();
         private readonly Dictionary<object, TElement> _sourceToElement = new Dictionary<object, TElement>();
 
         private readonly DefaultKeyMap<TKey, Grouping> _groups = new DefaultKeyMap<TKey, Grouping>();
 
-        public GroupByAggregator(Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
+        public GroupByAggregator(IAggregateExpression keySelector, IAggregateExpression elementSelector)
         {
             _keySelector = keySelector;
             _elementSelector = elementSelector;
@@ -34,8 +33,8 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var source = (TSource)fact.Value;
-                var key = _keySelector(source);
-                var element = _elementSelector(source);
+                var key = (TKey)_keySelector.Invoke(tuple, fact);
+                var element = (TElement)_elementSelector.Invoke(tuple, fact);
                 _sourceToKey[source] = key;
                 _sourceToElement[source] = element;
                 var result = Add(key, element);
@@ -56,8 +55,8 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var source = (TSource)fact.Value;
-                var key = _keySelector(source);
-                var element = _elementSelector(source);
+                var key = (TKey)_keySelector.Invoke(tuple, fact);
+                var element = (TElement)_elementSelector.Invoke(tuple, fact);
                 var oldKey = _sourceToKey[source];
                 var oldElement = _sourceToElement[source];
                 _sourceToKey[source] = key;

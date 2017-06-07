@@ -24,9 +24,11 @@ namespace NRules.Aggregators
             var elementType = elementSelector.Expression.ReturnType;
             Type aggregatorType = typeof(GroupByAggregator<,,>).MakeGenericType(sourceType, keyType, elementType);
 
+            var compiledKeySelector = compiledExpressions["KeySelector"];
+            var compiledElementSelector = compiledExpressions["ElementSelector"];
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
-                Expression.New(ctor, keySelector.Expression, elementSelector.Expression));
+                Expression.New(ctor, Expression.Constant(compiledKeySelector), Expression.Constant(compiledElementSelector)));
             _factory = factoryExpression.Compile();
         }
 

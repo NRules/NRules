@@ -404,7 +404,9 @@ namespace NRules.Tests.Aggregators
 
         private GroupByAggregator<TestFact, string, TestFact> CreateTarget()
         {
-            return new GroupByAggregator<TestFact, string, TestFact>(x => x.Key, x => x);
+            var keyExpression = new FactExpression<TestFact, string>(x => x.Key);
+            var elementExpression = new FactExpression<TestFact, TestFact>(x => x);
+            return new GroupByAggregator<TestFact, string, TestFact>(keyExpression, elementExpression);
         }
 
         private class TestFact : IEquatable<TestFact>

@@ -133,7 +133,8 @@ namespace NRules.Tests.Aggregators
 
         private FlatteningAggregator<TestFact, string> CreateTarget()
         {
-            return new FlatteningAggregator<TestFact, string>(x => x.Values);
+            var expression = new FactExpression<TestFact, IEnumerable<string>>(x => x.Values);
+            return new FlatteningAggregator<TestFact, string>(expression);
         }
 
         private class TestFact : IEquatable<TestFact>
