@@ -135,7 +135,7 @@ namespace NRules.IntegrationTests
                 Id = id;
             }
 
-            public int Id { get; private set; }
+            public int Id { get; }
             public string TestProperty { get; set; }
         }
 

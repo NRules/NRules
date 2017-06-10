@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    public class OneFactOneGroupByFlattenRuleWithIdentityRuleTest : BaseRuleTestFixture
+    public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRuleTestFixture
     {
         [Fact]
         public void Fire_UpdatesWithSameIdButDifferentCount_FiresWithNewCount2()
@@ -54,14 +54,10 @@ namespace NRules.IntegrationTests
             public string GroupingProperty { get; set; }
             public string GroupingProperty2 { get; set; }
 
-            public FactType IncrementCount()
-            {
-                TestCount++;
-                return this;
-            }
-
             public bool Equals(FactType other)
             {
+                if (ReferenceEquals(null, other)) return false;
+                if (ReferenceEquals(this, other)) return true;
                 return Id == other.Id;
             }
 
@@ -70,7 +66,7 @@ namespace NRules.IntegrationTests
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
                 if (obj.GetType() != this.GetType()) return false;
-                return Equals((FactType)obj);
+                return Equals((FactType) obj);
             }
 
             public override int GetHashCode()

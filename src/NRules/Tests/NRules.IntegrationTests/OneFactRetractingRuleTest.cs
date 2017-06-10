@@ -30,12 +30,6 @@ namespace NRules.IntegrationTests
         public class FactType
         {
             public string TestProperty { get; set; }
-            public int TestCount { get; set; }
-
-            public void IncrementCount()
-            {
-                TestCount++;
-            }
         }
 
         public class TestRule : Rule

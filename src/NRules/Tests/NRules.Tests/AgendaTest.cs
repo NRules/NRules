@@ -19,7 +19,6 @@ namespace NRules.Tests
             Assert.True(target.IsEmpty());
         }
 
-
         [Fact]
         public void Pop_AgendaEmpty_Throws()
         {

@@ -369,10 +369,7 @@ namespace NRules.Tests.Utilities
 
         public static readonly int StaticField = 1;
 
-        public static int StaticProperty
-        {
-            get { return 1; }
-        }
+        public static int StaticProperty => 1;
 
         public static int StaticMethod()
         {
@@ -393,12 +390,12 @@ namespace NRules.Tests.Utilities
         {
             public int Value = 1;
 
-            public SomeClass Child = new SomeClass();
+            public readonly SomeClass Child = new SomeClass();
         }
 
         public class SomeClass
         {
-            public string[] Values = { "blop" };
+            public readonly string[] Values = { "blop" };
 
             public SomeClass NestedValue1()
             {

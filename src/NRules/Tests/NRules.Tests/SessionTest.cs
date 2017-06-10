@@ -9,13 +9,13 @@ namespace NRules.Tests
 {
     public class SessionTest
     {
-        private Mock<IAgendaInternal> _agenda;
-        private Mock<INetwork> _network;
-        private Mock<IWorkingMemory> _workingMemory;
-        private Mock<IEventAggregator> _eventAggregator;
-        private Mock<IActionExecutor> _actionExecutor;
-        private Mock<IDependencyResolver> _dependencyResolver;
-        private Mock<IActionInterceptor> _actionInterceptor;
+        private readonly Mock<IAgendaInternal> _agenda;
+        private readonly Mock<INetwork> _network;
+        private readonly Mock<IWorkingMemory> _workingMemory;
+        private readonly Mock<IEventAggregator> _eventAggregator;
+        private readonly Mock<IActionExecutor> _actionExecutor;
+        private readonly Mock<IDependencyResolver> _dependencyResolver;
+        private readonly Mock<IActionInterceptor> _actionInterceptor;
             
         public SessionTest()
         {

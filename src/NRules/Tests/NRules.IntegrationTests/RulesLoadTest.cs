@@ -132,10 +132,7 @@ namespace NRules.IntegrationTests
             Assert.Equal("Rule with metadata", ruleSet.Rules.First().Name);
         }
 
-        private Assembly ThisAssembly
-        {
-            get { return GetType().GetTypeInfo().Assembly; }
-        }
+        private Assembly ThisAssembly => GetType().GetTypeInfo().Assembly;
 
         public RuleRepository CreateTarget()
         {
