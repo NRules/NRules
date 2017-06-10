@@ -8,15 +8,20 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a rule pattern.
     /// </summary>
-    public class PatternBuilder : RuleElementBuilder, IBuilder<PatternElement>
+    public class PatternBuilder : RuleLeftElementBuilder, IBuilder<PatternElement>
     {
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
-        private IBuilder<PatternSourceElement> _sourceBuilder;
+        private PatternSourceElementBuilder _sourceBuilder;
 
         internal PatternBuilder(SymbolTable scope, Declaration declaration) : base(scope)
         {
             Declaration = declaration;
         }
+
+        /// <summary>
+        /// Builder for the source of this element.
+        /// </summary>
+        public PatternSourceElementBuilder SourceBuilder => _sourceBuilder;
 
         /// <summary>
         /// Adds a condition expression to the pattern.
@@ -53,7 +58,8 @@ namespace NRules.RuleModel.Builders
             PatternElement patternElement;
             if (_sourceBuilder != null)
             {
-                var source = _sourceBuilder.Build();
+                var builder = (IBuilder<PatternSourceElement>)_sourceBuilder;
+                var source = builder.Build();
                 patternElement = new PatternElement(Declaration, Scope.VisibleDeclarations, _conditions, source);
             }
             else

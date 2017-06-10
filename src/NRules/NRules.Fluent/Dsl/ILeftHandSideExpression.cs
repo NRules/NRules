@@ -84,5 +84,12 @@ namespace NRules.Fluent.Dsl
         /// <param name="builder">Group expression builder.</param>
         /// <returns>Left hand side expression builder.</returns>
         ILeftHandSideExpression Or(Action<ILeftHandSideExpression> builder);
+
+        /// <summary>
+        /// Adds match conditions to existing rule patterns.
+        /// </summary>
+        /// <param name="conditions">Additional match conditions.</param>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSideExpression Having(params Expression<Func<bool>>[] conditions);
     }
 }

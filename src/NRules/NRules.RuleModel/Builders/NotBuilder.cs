@@ -5,14 +5,19 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a negative existential element.
     /// </summary>
-    public class NotBuilder : RuleElementBuilder, IBuilder<NotElement>
+    public class NotBuilder : RuleLeftElementBuilder, IBuilder<NotElement>
     {
-        private IBuilder<RuleLeftElement> _sourceBuilder;
+        private RuleLeftElementBuilder _sourceBuilder;
 
         internal NotBuilder(SymbolTable scope)
             : base(scope.New("Not"))
         {
         }
+
+        /// <summary>
+        /// Builder for the source of this element.
+        /// </summary>
+        public RuleLeftElementBuilder SourceBuilder => _sourceBuilder;
 
         /// <summary>
         /// Creates a pattern builder that builds the source of the negative existential element.
@@ -67,7 +72,8 @@ namespace NRules.RuleModel.Builders
         NotElement IBuilder<NotElement>.Build()
         {
             Validate();
-            RuleLeftElement sourceElement = _sourceBuilder.Build();
+            var builder = (IBuilder<RuleLeftElement>)_sourceBuilder;
+            RuleLeftElement sourceElement = builder.Build();
             var notElement = new NotElement(Scope.VisibleDeclarations, sourceElement);
             return notElement;
         }

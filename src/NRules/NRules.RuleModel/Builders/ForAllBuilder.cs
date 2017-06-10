@@ -6,7 +6,7 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a forall element (universal quantifier).
     /// </summary>
-    public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
+    public class ForAllBuilder : RuleLeftElementBuilder, IBuilder<ForAllElement>
     {
         private PatternBuilder _basePatternBuilder;
         private readonly List<PatternBuilder> _patternBuilders = new List<PatternBuilder>();
@@ -15,6 +15,16 @@ namespace NRules.RuleModel.Builders
             : base(scope.New("ForAll"))
         {
         }
+
+        /// <summary>
+        /// Builder for the base pattern of this forall element.
+        /// </summary>
+        public PatternBuilder BasePatternBuilder => _basePatternBuilder;
+
+        /// <summary>
+        /// Pattern builders for this forall element.
+        /// </summary>
+        public IEnumerable<PatternBuilder> PatternBuilders => _patternBuilders;
 
         /// <summary>
         /// Creates a pattern builder that builds the base pattern of the forall element.
