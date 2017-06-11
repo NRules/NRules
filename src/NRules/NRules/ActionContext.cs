@@ -75,12 +75,6 @@ namespace NRules
             return _session.TryRetract(fact);
         }
 
-        public TService Resolve<TService>()
-        {
-            var service = Resolve(typeof (TService));
-            return (TService) service;
-        }
-
         public object Resolve(Type serviceType)
         {
             var resolutionContext = new ResolutionContext(_session, Rule);
