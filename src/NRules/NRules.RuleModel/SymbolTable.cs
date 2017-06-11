@@ -9,7 +9,6 @@ namespace NRules.RuleModel
         public const string ScopeSeparator = ":";
 
         private readonly HashSet<Declaration> _symbolTable;
-        private readonly string _name;
         private int _declarationCounter = 0;
 
         public SymbolTable ParentScope { get; }
@@ -21,13 +20,13 @@ namespace NRules.RuleModel
 
         internal SymbolTable(string name)
         {
-            _name = name;
+            Name = name;
             _symbolTable = new HashSet<Declaration>();
         }
 
         internal SymbolTable(string name, SymbolTable parentScope)
         {
-            _name = name;
+            Name = name;
             _symbolTable = new HashSet<Declaration>();
             ParentScope = parentScope;
         }
@@ -43,7 +42,8 @@ namespace NRules.RuleModel
             return childScope;
         }
 
-        public string FullName => ParentScope?.FullName == null ? _name : ParentScope.FullName + ScopeSeparator + _name;
+        public string Name { get; }
+        public string FullName => ParentScope?.FullName == null ? Name : ParentScope.FullName + ScopeSeparator + Name;
         public IEnumerable<Declaration> Declarations => _symbolTable;
         public IEnumerable<Declaration> VisibleDeclarations => ParentScope?.VisibleDeclarations.Concat(Declarations) ?? Declarations;
 

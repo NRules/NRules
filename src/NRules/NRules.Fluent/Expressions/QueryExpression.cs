@@ -94,7 +94,7 @@ namespace NRules.Fluent.Expressions
                 var aggregatePatternBuilder = b.Pattern(typeof(IEnumerable<TSource>), n);
                 var aggregateBuilder = aggregatePatternBuilder.Aggregate();
                 previousBuildAction(aggregateBuilder, null);
-                aggregateBuilder.Collect(typeof(TSource));
+                aggregateBuilder.Collect();
                 return aggregatePatternBuilder;
             };
         }
