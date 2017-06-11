@@ -1,14 +1,13 @@
 ﻿using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class SessionQueryTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Query_NoFacts_Empty()
         {
             //Arrange
@@ -17,14 +16,14 @@ namespace NRules.IntegrationTests
             var facts = query.ToList();
 
             //Assert
-            Assert.AreEqual(0, facts.Count);
+            Assert.Equal(0, facts.Count);
         }
 
-        [Test]
+        [Fact]
         public void Query_OneFact_RetrievesFactFromQuery()
         {
             //Arrange
-            var fact1 = new FactType2 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
             Session.Insert(fact1);
 
             //Act
@@ -32,15 +31,15 @@ namespace NRules.IntegrationTests
             var facts = query.ToList();
 
             //Assert
-            Assert.AreEqual(1, facts.Count);
-            Assert.AreSame(fact1, facts[0]);
+            Assert.Equal(1, facts.Count);
+            Assert.Same(fact1, facts[0]);
         }
 
-        [Test]
+        [Fact]
         public void Query_RuleInsertsSecondFact_TwoFactsInMemory()
         {
             //Arrange
-            var fact1 = new FactType2 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
             Session.Insert(fact1);
             Session.Fire();
 
@@ -49,29 +48,58 @@ namespace NRules.IntegrationTests
             var facts = query.ToList();
 
             //Assert
-            Assert.AreEqual(2, facts.Count);
+            Assert.Equal(2, facts.Count);
         }
 
-        [Test]
+        [Fact]
         public void Query_QueryFactsByType_OnlyReturnsFactsOfThatType()
         {
             //Arrange
-            var fact1 = new FactType2 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
             Session.Insert(fact1);
             Session.Fire();
 
             //Act
-            var query = Session.Query<FactType3>();
+            var query = Session.Query<FactType2>();
             var facts = query.ToList();
 
             //Assert
-            Assert.AreEqual(1, facts.Count);
-            Assert.AreEqual(fact1.TestProperty, facts[0].JoinProperty);
+            Assert.Equal(1, facts.Count);
+            Assert.Equal(fact1.TestProperty, facts[0].JoinProperty);
         }
 
         protected override void SetUpRules()
         {
-            SetUpRule<ForwardChainingFirstRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                FactType1 fact1 = null;
+
+                When()
+                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
+                Then()
+                    .Do(ctx => ctx.Insert(new FactType2()
+                    {
+                        TestProperty = fact1.JoinProperty,
+                        JoinProperty = fact1.TestProperty
+                    }));
+            }
         }
     }
 }

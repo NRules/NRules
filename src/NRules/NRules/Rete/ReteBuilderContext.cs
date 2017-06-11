@@ -19,11 +19,8 @@ namespace NRules.Rete
             _declarations = new List<Declaration>(context._declarations);
         }
 
-        public IEnumerable<Declaration> Declarations
-        {
-            get { return _declarations; }
-        }
- 
+        public IEnumerable<Declaration> Declarations => _declarations;
+
         public AlphaNode CurrentAlphaNode { get; set; }
         public IAlphaMemoryNode AlphaSource { get; set; }
         public IBetaMemoryNode BetaSource { get; set; }

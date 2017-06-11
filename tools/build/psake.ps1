@@ -1,12 +1,12 @@
 # Helper script for those who want to run psake without importing the module.
-# Example:
+# Example run from PowerShell:
 # .\psake.ps1 "default.ps1" "BuildHelloWord" "4.0" 
 
 # Must match parameter definitions for psake.psm1/invoke-psake 
 # otherwise named parameter binding fails
 param(
     [Parameter(Position=0,Mandatory=0)]
-    [string]$buildFile = 'default.ps1',
+    [string]$buildFile,
     [Parameter(Position=1,Mandatory=0)]
     [string[]]$taskList = @(),
     [Parameter(Position=2,Mandatory=0)]
@@ -25,8 +25,15 @@ param(
     [Parameter(Position=8, Mandatory=0)]
     [switch]$help = $false,
     [Parameter(Position=9, Mandatory=0)]
-    [string]$scriptPath = $(Split-Path -parent $MyInvocation.MyCommand.path)
+    [string]$scriptPath,
+    [Parameter(Position=10,Mandatory=0)]
+    [switch]$detailedDocs = $false
 )
+
+# setting $scriptPath here, not as default argument, to support calling as "powershell -File psake.ps1"
+if (!$scriptPath) {
+  $scriptPath = $(Split-Path -parent $MyInvocation.MyCommand.path)
+}
 
 # '[p]sake' is the same as 'psake' but $Error is not polluted
 remove-module [p]sake
@@ -36,11 +43,11 @@ if ($help) {
   return
 }
 
-if (-not(test-path $buildFile)) {
+if ($buildFile -and (-not(test-path $buildFile))) {
     $absoluteBuildFile = (join-path $scriptPath $buildFile)
     if (test-path $absoluteBuildFile) {
         $buildFile = $absoluteBuildFile
     }
 } 
 
-invoke-psake $buildFile $taskList $framework $docs $parameters $properties $initialization $nologo
+Invoke-psake $buildFile $taskList $framework $docs $parameters $properties $initialization $nologo $detailedDocs

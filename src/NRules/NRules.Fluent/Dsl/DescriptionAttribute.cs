@@ -13,6 +13,6 @@ namespace NRules.Fluent.Dsl
             Value = value;
         }
 
-        internal string Value { get; private set; }
+        internal string Value { get; }
     }
 }

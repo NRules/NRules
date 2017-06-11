@@ -17,5 +17,17 @@ namespace NRules.Fluent.Dsl
             updateAction(fact);
             context.Update(fact);
         }
+
+        /// <summary>
+        /// Resolves a registered service (normally via an IoC container).
+        /// </summary>
+        /// <typeparam name="TService">Type of service to resolve.</typeparam>
+        /// <param name="context">Context instance.</param>
+        /// <returns>Service instance.</returns>
+        public static TService Resolve<TService>(this IContext context)
+        {
+            var service = context.Resolve(typeof(TService));
+            return (TService)service;
+        }
     }
 }

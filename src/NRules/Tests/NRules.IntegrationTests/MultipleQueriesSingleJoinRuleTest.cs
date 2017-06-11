@@ -1,13 +1,14 @@
-﻿using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
-using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class MultipleQueriesSingleJoinRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactSet_FiresOnce()
         {
             //Arrange
@@ -24,7 +25,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
         
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFactSetOneNotMatching_FiresOnce()
         {
             //Arrange
@@ -45,7 +46,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
         
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactSets_FiresTwice()
         {
             //Arrange
@@ -68,7 +69,58 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<MultipleQueriesSingleJoinRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType3
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType4
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                FactType1 fact1 = null;
+                IEnumerable<FactType2> collection2 = null;
+                IEnumerable<FactType3> collection3 = null;
+                IEnumerable<FactType4> collection4 = null;
+
+                When()
+                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                    .Query(() => collection2, q => q
+                        .Match<FactType2>(f => f.TestProperty.StartsWith("Valid"))
+                        .Collect())
+                    .Query(() => collection3, q => q
+                        .Match<FactType3>(f => f.TestProperty.StartsWith("Valid"))
+                        .Collect())
+                    .Query(() => collection4, q => q
+                        .Match<FactType4>(f => f.TestProperty.StartsWith("Valid"))
+                        .Collect()
+                        .Where(x => IsMatch(fact1, collection2, collection3, x)));
+                Then()
+                    .Do(ctx => ctx.NoOp());
+            }
+
+            private bool IsMatch(FactType1 fact1, IEnumerable<FactType2> collection2, IEnumerable<FactType3> collection3, IEnumerable<FactType4> collection4)
+            {
+                return collection4.Any(x => x.TestProperty == fact1.TestProperty);
+            }
         }
     }
 }

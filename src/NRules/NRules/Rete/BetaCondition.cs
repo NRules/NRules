@@ -15,23 +15,23 @@ namespace NRules.Rete
         private readonly IndexMap _factIndexMap;
         private readonly FastDelegate<Func<object[], bool>> _compiledExpression;
 
-        public BetaCondition(LambdaExpression expression, IndexMap factIndexMap)
+        public BetaCondition(LambdaExpression expression, FastDelegate<Func<object[], bool>> compiledExpression, IndexMap factIndexMap)
         {
             _expression = expression;
             _factIndexMap = factIndexMap;
-            _compiledExpression = FastDelegate.Create<Func<object[], bool>>(expression);
+            _compiledExpression = compiledExpression;
         }
 
         public bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact)
         {
-            var args = new object[_compiledExpression.ParameterCount];
+            var args = new object[_compiledExpression.ArrayArgumentCount];
             int index = leftTuple.Count - 1;
             foreach (var fact in leftTuple.Facts)
             {
-                IndexMap.SetElementAt(ref args, _factIndexMap[index], 0, fact.Object);
+                IndexMap.SetElementAt(args, _factIndexMap[index], fact.Object);
                 index--;
             }
-            IndexMap.SetElementAt(ref args, _factIndexMap[leftTuple.Count], 0, rightFact.Object);
+            IndexMap.SetElementAt(args, _factIndexMap[leftTuple.Count], rightFact.Object);
 
             try
             {
@@ -39,8 +39,8 @@ namespace NRules.Rete
             }
             catch (Exception e)
             {
-                bool isHandled;
-                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, leftTuple, rightFact, out isHandled);
+                bool isHandled = false;
+                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, leftTuple, rightFact, ref isHandled);
                 if (!isHandled)
                 {
                     throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
@@ -66,7 +66,7 @@ namespace NRules.Rete
 
         public override int GetHashCode()
         {
-            return (_expression != null ? _expression.GetHashCode() : 0);
+            return _expression != null ? _expression.GetHashCode() : 0;
         }
 
         public override string ToString()

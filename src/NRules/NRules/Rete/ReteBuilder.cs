@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NRules.Aggregators;
 using NRules.RuleModel;
+using NRules.Utilities;
 
 namespace NRules.Rete
 {
@@ -152,13 +154,12 @@ namespace NRules.Rete
 
         private void BuildJoinNode(ReteBuilderContext context, IEnumerable<ConditionElement> conditions = null)
         {
-            var betaConditions = new List<BetaCondition>();
+            var betaConditions = new List<IBetaCondition>();
             if (conditions != null)
             {
                 foreach (var condition in conditions)
                 {
-                    var factIndexMap = IndexMap.CreateMap(condition.References, context.Declarations);
-                    var betaCondition = new BetaCondition(condition.Expression, factIndexMap);
+                    var betaCondition = ExpressionCompiler.CompileBetaCondition(condition, context.Declarations);
                     betaConditions.Add(betaCondition);
                 }
             }
@@ -171,7 +172,7 @@ namespace NRules.Rete
                     ConditionComparer.AreEqual(x.Conditions, betaConditions));
             if (node == null)
             {
-                node = new JoinNode(context.BetaSource, context.AlphaSource);
+                node = new JoinNode(context.BetaSource, context.AlphaSource, context.HasSubnet);
                 if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
                 foreach (var betaCondition in betaConditions)
                 {
@@ -225,7 +226,9 @@ namespace NRules.Rete
                     ExpressionMapComparer.AreEqual(x.ExpressionMap, element.ExpressionMap));
             if (node == null)
             {
-                node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name, element.ExpressionMap, element.AggregatorFactory);
+                var aggregatorFactory = BuildAggregatorFactory(context, element);
+                node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name, 
+                    element.ExpressionMap, aggregatorFactory, context.HasSubnet);
                 if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
             }
             BuildBetaMemoryNode(context, node);
@@ -245,7 +248,7 @@ namespace NRules.Rete
         {
             TypeNode typeNode = context.CurrentAlphaNode
                 .ChildNodes.OfType<TypeNode>()
-                .FirstOrDefault(tn => tn.FilterType == declarationType);
+                .FirstOrDefault(tn => tn.FilterType.AsType() == declarationType);
 
             if (typeNode == null)
             {
@@ -257,7 +260,7 @@ namespace NRules.Rete
 
         private void BuildSelectionNode(ReteBuilderContext context, ConditionElement condition)
         {
-            var alphaCondition = new AlphaCondition(condition.Expression);
+            var alphaCondition = ExpressionCompiler.CompileAlphaCondition(condition);
             SelectionNode selectionNode = context.CurrentAlphaNode
                 .ChildNodes.OfType<SelectionNode>()
                 .FirstOrDefault(sn => sn.Condition.Equals(alphaCondition));
@@ -282,7 +285,45 @@ namespace NRules.Rete
 
             context.AlphaSource = memoryNode;
         }
-        
+
+        private IAggregatorFactory BuildAggregatorFactory(ReteBuilderContext context, AggregateElement element)
+        {
+            IAggregatorFactory factory;
+            switch (element.Name)
+            {
+                case AggregateElement.CollectName:
+                    factory = new CollectionAggregatorFactory();
+                    break;
+                case AggregateElement.GroupByName:
+                    factory = new GroupByAggregatorFactory();
+                    break;
+                case AggregateElement.ProjectName:
+                    factory = new ProjectionAggregatorFactory();
+                    break;
+                case AggregateElement.FlattenName:
+                    factory = new FlatteningAggregatorFactory();
+                    break;
+                default:
+                    throw new ArgumentException(
+                        $"Unrecognized aggregate element. Name={element.Name}");
+            }
+            var compiledExpressions = CompileExpressions(context, element);
+            factory.Compile(element, compiledExpressions);
+            return factory;
+        }
+
+        private static Dictionary<string, IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
+        {
+            var declarations = context.Declarations.Concat(element.Source.Declaration).ToList();
+            var result = new Dictionary<string, IAggregateExpression>();
+            foreach (var expression in element.ExpressionMap)
+            {
+                var aggregateExpression = ExpressionCompiler.CompileAggregateExpression(expression, declarations);
+                result[expression.Name] = aggregateExpression;
+            }
+            return result;
+        }
+
         public INetwork Build()
         {
             INetwork network = new Network(_root, _dummyNode);

@@ -1,13 +1,12 @@
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class TwoFactOneForAllCheckRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_MatchingFactOfTypeOneNothigOfTypeTwo_FiresOnce()
         {
             //Arrange
@@ -22,7 +21,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFacts_FiresOnce()
         {
             //Arrange
@@ -39,7 +38,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactOfTypeOneMultipleOfTypeTwo_FiresOnce()
         {
             //Arrange
@@ -58,7 +57,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsOfTypeOneMultipleOfTypeTwo_FiresTwice()
         {
             //Arrange
@@ -79,7 +78,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsOfTypeOneOnlyOneOfTypeTwo_FiresOnce()
         {
             //Arrange
@@ -102,7 +101,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactOfTypeOneNotAllMatchingOfTypeTwo_DoesNotFire()
         {
             //Arrange
@@ -122,7 +121,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsInvalidFactOfTypeTwoInsertedRetracted_FiresOnce()
         {
             //Arrange
@@ -144,7 +143,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsInvalidFactOfTypeTwoInsertedUpdatedToValid_FiresOnce()
         {
             //Arrange
@@ -169,7 +168,33 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<TwoFactOneForAllCheckRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                FactType1 fact = null;
+
+                When()
+                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .All<FactType2>(f => f.JoinProperty == fact.TestProperty,
+                        f => f.TestProperty.StartsWith("Valid"));
+                Then()
+                    .Do(ctx => ctx.NoOp());
+            }
         }
     }
 }

@@ -1,7 +1,9 @@
 # Build Folders
-binaries
+/binaries
+/build
 
 ## Visual Studio temporary files, build results, etc.
+.vs
 
 # User-specific files
 *.suo
@@ -12,7 +14,6 @@ binaries
 [Dd]ebug/
 [Rr]elease/
 x64/
-build/
 [Bb]in/
 [Oo]bj/
 

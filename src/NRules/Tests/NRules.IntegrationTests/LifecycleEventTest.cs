@@ -1,23 +1,22 @@
 ﻿using System.Linq;
 using NRules.Diagnostics;
 using NRules.Fluent;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class LifecycleEventTest
     {
-        [Test]
+        [Fact]
         public void Insert_Fact_RaisesFactInsertingEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
 
             object factorySender = null;
             WorkingMemoryEventArgs factoryArgs = null;
@@ -38,20 +37,20 @@ namespace NRules.IntegrationTests
             session.Insert(fact);
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Fact.Value);
-            Assert.AreSame(fact, sessionArgs.Fact.Value);
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Fact.Value);
+            Assert.Same(fact, sessionArgs.Fact.Value);
         }
 
-        [Test]
+        [Fact]
         public void Insert_Fact_RaisesFactInsertedEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
 
             object factorySender = null;
             WorkingMemoryEventArgs factoryArgs = null;
@@ -72,20 +71,20 @@ namespace NRules.IntegrationTests
             session.Insert(fact);
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Fact.Value);
-            Assert.AreSame(fact, sessionArgs.Fact.Value);
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Fact.Value);
+            Assert.Same(fact, sessionArgs.Fact.Value);
         }
 
-        [Test]
+        [Fact]
         public void Update_Fact_RaisesFactUpdatingEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
             session.Insert(fact);
 
             object factorySender = null;
@@ -107,20 +106,20 @@ namespace NRules.IntegrationTests
             session.Update(fact);
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Fact.Value);
-            Assert.AreSame(fact, sessionArgs.Fact.Value);
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Fact.Value);
+            Assert.Same(fact, sessionArgs.Fact.Value);
         }
 
-        [Test]
+        [Fact]
         public void Update_Fact_RaisesFactUpdatedEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
             session.Insert(fact);
 
             object factorySender = null;
@@ -142,20 +141,20 @@ namespace NRules.IntegrationTests
             session.Update(fact);
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Fact.Value);
-            Assert.AreSame(fact, sessionArgs.Fact.Value);
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Fact.Value);
+            Assert.Same(fact, sessionArgs.Fact.Value);
         }
 
-        [Test]
+        [Fact]
         public void Retract_Fact_RaisesFactRetractingEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
             session.Insert(fact);
 
             object factorySender = null;
@@ -177,20 +176,20 @@ namespace NRules.IntegrationTests
             session.Retract(fact);
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Fact.Value);
-            Assert.AreSame(fact, sessionArgs.Fact.Value);
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Fact.Value);
+            Assert.Same(fact, sessionArgs.Fact.Value);
         }
 
-        [Test]
+        [Fact]
         public void Retract_Fact_RaisesFactRetractedEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
             session.Insert(fact);
 
             object factorySender = null;
@@ -212,20 +211,20 @@ namespace NRules.IntegrationTests
             session.Retract(fact);
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Fact.Value);
-            Assert.AreSame(fact, sessionArgs.Fact.Value);
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Fact.Value);
+            Assert.Same(fact, sessionArgs.Fact.Value);
         }
 
-        [Test]
+        [Fact]
         public void Insert_RuleActivated_RaisesActivationCreatedEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
 
             object factorySender = null;
             AgendaEventArgs factoryArgs = null;
@@ -246,22 +245,22 @@ namespace NRules.IntegrationTests
             session.Insert(fact);
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Facts.Single().Value);
-            Assert.AreSame(fact, sessionArgs.Facts.Single().Value);
-            Assert.That(factoryArgs.Rule.Name.Contains("OneFactRule"));
-            Assert.That(sessionArgs.Rule.Name.Contains("OneFactRule"));
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Facts.Single().Value);
+            Assert.Same(fact, sessionArgs.Facts.Single().Value);
+            Assert.Contains("TestRule", factoryArgs.Rule.Name);
+            Assert.Contains("TestRule", sessionArgs.Rule.Name);
         }
 
-        [Test]
+        [Fact]
         public void Update_RuleReactivated_RaisesActivationUpatedEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
             session.Insert(fact);
 
             object factorySender = null;
@@ -283,22 +282,22 @@ namespace NRules.IntegrationTests
             session.Update(fact);
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Facts.Single().Value);
-            Assert.AreSame(fact, sessionArgs.Facts.Single().Value);
-            Assert.That(factoryArgs.Rule.Name.Contains("OneFactRule"));
-            Assert.That(sessionArgs.Rule.Name.Contains("OneFactRule"));
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Facts.Single().Value);
+            Assert.Same(fact, sessionArgs.Facts.Single().Value);
+            Assert.Contains("TestRule", factoryArgs.Rule.Name);
+            Assert.Contains("TestRule", sessionArgs.Rule.Name);
         }
 
-        [Test]
+        [Fact]
         public void Retract_RuleDeactivated_RaisesActivationDeletedEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
             session.Insert(fact);
 
             object factorySender = null;
@@ -320,22 +319,22 @@ namespace NRules.IntegrationTests
             session.Retract(fact);
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Facts.Single().Value);
-            Assert.AreSame(fact, sessionArgs.Facts.Single().Value);
-            Assert.That(factoryArgs.Rule.Name.Contains("OneFactRule"));
-            Assert.That(sessionArgs.Rule.Name.Contains("OneFactRule"));
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Facts.Single().Value);
+            Assert.Same(fact, sessionArgs.Facts.Single().Value);
+            Assert.Contains("TestRule", factoryArgs.Rule.Name);
+            Assert.Contains("TestRule", sessionArgs.Rule.Name);
         }
 
-        [Test]
+        [Fact]
         public void Fire_RuleFires_RaisesRuleFiringEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
             session.Insert(fact);
 
             object factorySender = null;
@@ -357,22 +356,22 @@ namespace NRules.IntegrationTests
             session.Fire();
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Facts.Single().Value);
-            Assert.AreSame(fact, sessionArgs.Facts.Single().Value);
-            Assert.That(factoryArgs.Rule.Name.Contains("OneFactRule"));
-            Assert.That(sessionArgs.Rule.Name.Contains("OneFactRule"));
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Facts.Single().Value);
+            Assert.Same(fact, sessionArgs.Facts.Single().Value);
+            Assert.Contains("TestRule", factoryArgs.Rule.Name);
+            Assert.Contains("TestRule", sessionArgs.Rule.Name);
         }
 
-        [Test]
+        [Fact]
         public void Fire_RuleFires_RaisesRuleFiredEvent()
         {
             //Arrange
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var fact = new FactType1 { TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
             session.Insert(fact);
 
             object factorySender = null;
@@ -394,19 +393,37 @@ namespace NRules.IntegrationTests
             session.Fire();
 
             //Assert
-            Assert.AreSame(session, factorySender);
-            Assert.AreSame(session, sessionSender);
-            Assert.AreSame(fact, factoryArgs.Facts.Single().Value);
-            Assert.AreSame(fact, sessionArgs.Facts.Single().Value);
-            Assert.That(factoryArgs.Rule.Name.Contains("OneFactRule"));
-            Assert.That(sessionArgs.Rule.Name.Contains("OneFactRule"));
+            Assert.Same(session, factorySender);
+            Assert.Same(session, sessionSender);
+            Assert.Same(fact, factoryArgs.Facts.Single().Value);
+            Assert.Same(fact, sessionArgs.Facts.Single().Value);
+            Assert.Contains("TestRule", factoryArgs.Rule.Name);
+            Assert.Contains("TestRule", sessionArgs.Rule.Name);
         }
 
         private ISessionFactory CreateTarget()
         {
             var repository = new RuleRepository();
-            repository.Load(x => x.From(typeof(OneFactRule)));
+            repository.Load(x => x.NestedTypes().From(typeof(TestRule)));
             return repository.Compile();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                FactType fact = null;
+
+                When()
+                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                Then()
+                    .Do(ctx => ctx.NoOp());
+            }
         }
     }
 }

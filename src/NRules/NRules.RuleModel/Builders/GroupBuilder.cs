@@ -22,15 +22,20 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a group element.
     /// </summary>
-    public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>, IPatternContainerBuilder
+    public class GroupBuilder : RuleLeftElementBuilder, IBuilder<GroupElement>, IPatternContainerBuilder
     {
         private readonly GroupType _groupType;
-        private readonly List<IBuilder<RuleLeftElement>> _nestedBuilders = new List<IBuilder<RuleLeftElement>>();
+        private readonly List<RuleLeftElementBuilder> _nestedBuilders = new List<RuleLeftElementBuilder>();
 
         internal GroupBuilder(SymbolTable scope, GroupType groupType) : base(scope)
         {
             _groupType = groupType;
         }
+
+        /// <summary>
+        /// Builders for elements nested in this group.
+        /// </summary>
+        public IEnumerable<RuleLeftElementBuilder> NestedBuilders => _nestedBuilders;
 
         /// <summary>
         /// Creates a pattern builder that builds a pattern as part of the current group.
@@ -107,7 +112,8 @@ namespace NRules.RuleModel.Builders
             var childElements = new List<RuleLeftElement>();
             foreach (var nestedBuilder in _nestedBuilders)
             {
-                RuleLeftElement childElement = nestedBuilder.Build();
+                var builder = (IBuilder<RuleLeftElement>) nestedBuilder;
+                RuleLeftElement childElement = builder.Build();
                 childElements.Add(childElement);
             }
             GroupElement groupElement;
@@ -120,7 +126,7 @@ namespace NRules.RuleModel.Builders
                     groupElement = new OrElement(Scope.VisibleDeclarations, childElements);
                     break;
                 default:
-                    throw new InvalidOperationException(string.Format("Unrecognized group type. GroupType={0}", _groupType));
+                    throw new InvalidOperationException($"Unrecognized group type. GroupType={_groupType}");
             }
             return groupElement;
         }

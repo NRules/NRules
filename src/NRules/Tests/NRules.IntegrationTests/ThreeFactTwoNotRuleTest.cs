@@ -1,13 +1,12 @@
-﻿using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
-using NUnit.Framework;
+﻿using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class ThreeFactTwoNotRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_NotMatchingNotPatternFacts_FiresOnce()
         {
             //Arrange
@@ -22,7 +21,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
         
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsBothKind_DoesNotFire()
         {
             //Arrange
@@ -41,7 +40,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
         
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsFirst_DoesNotFire()
         {
             //Arrange
@@ -58,7 +57,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsSecondKind_DoesNotFire()
         {
             //Arrange
@@ -75,7 +74,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsInsertedThenRetracted_FiresOnce()
         {
             //Arrange
@@ -95,7 +94,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsTwoInsertedThenFirstRetracted_DoesNotFire()
         {
             //Arrange
@@ -115,7 +114,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsTwoInsertedThenSecondRetracted_DoesNotFire()
         {
             //Arrange
@@ -135,7 +134,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_InvalidNotPatternFactsInsertedThenUpdated_DoesNotFire()
         {
             //Arrange
@@ -160,7 +159,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsInsertedThenUpdated_FiresOnce()
         {
             //Arrange
@@ -185,7 +184,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsTwoInsertedThenFirstUpdated_DoesNotFire()
         {
             //Arrange
@@ -207,7 +206,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsTwoInsertedThenSecondUpdated_DoesNotFire()
         {
             //Arrange
@@ -229,7 +228,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsInsertedThenRetractSomeOfThemButNotAll_StillDoesNotFire()
         {
             //Arrange
@@ -253,7 +252,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactsInsertedTheUpdatesSomeOfThemButNotAll_StillDoesNotFire()
         {
             //Arrange
@@ -284,7 +283,39 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<ThreeFactTwoNotRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class FactType3
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                FactType1 fact1 = null;
+
+                When()
+                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                    .Not<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
+                    .Not<FactType3>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty);
+                Then()
+                    .Do(ctx => ctx.NoOp());
+            }
         }
     }
 }

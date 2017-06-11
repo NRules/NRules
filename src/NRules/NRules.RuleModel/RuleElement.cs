@@ -12,8 +12,8 @@ namespace NRules.RuleModel
         /// <summary>
         /// Declarations visible from this rule element.
         /// </summary>
-        public IEnumerable<Declaration> Declarations { get { return _declarations; } }
-        
+        public IEnumerable<Declaration> Declarations => _declarations;
+
         internal RuleElement(IEnumerable<Declaration> declarations)
         {
             _declarations = new List<Declaration>(declarations);

@@ -1,42 +1,75 @@
-﻿using NRules.Rete;
-
-namespace NRules
+﻿namespace NRules
 {
-    internal interface IAgenda
+    /// <summary>
+    /// Agenda stores matches between rules and facts. These matches are called activations.
+    /// Multiple activations are ordered according to the conflict resolution strategy.
+    /// </summary>
+    public interface IAgenda
     {
-        bool HasActiveRules();
-        Activation NextActivation();
-        void Activate(Activation activation);
-        void Reactivate(Activation activation);
-        void Deactivate(Activation activation);
+        /// <summary>
+        /// Indicates whether there are any activations in the agenda.
+        /// </summary>
+        /// <returns>If agenda is empty then <c>true</c> otherwise <c>false</c>.</returns>
+        bool IsEmpty();
+
+        /// <summary>
+        /// Retrieves the next match, without removing it from agenda.
+        /// </summary>
+        /// <remarks>Throws <c>InvalidOperationException</c> if agenda is empty.</remarks>
+        /// <returns>Next match.</returns>
+        IActivation Peek();
+
+        /// <summary>
+        /// Removes all matches from agenda.
+        /// </summary>
+        void Clear();
     }
 
-    internal class Agenda : IAgenda
+    internal interface IAgendaInternal : IAgenda
+    {
+        Activation Pop();
+        void Add(Activation activation);
+        void Modify(Activation activation);
+        void Remove(Activation activation);
+    }
+
+    internal class Agenda : IAgendaInternal
     {
         private readonly ActivationQueue _activationQueue = new ActivationQueue();
 
-        public bool HasActiveRules()
+        public bool IsEmpty()
         {
-            return _activationQueue.HasActive();
+            return !_activationQueue.HasActive();
         }
 
-        public Activation NextActivation()
+        public IActivation Peek()
+        {
+            Activation activation = _activationQueue.Peek();
+            return activation;
+        }
+
+        public void Clear()
+        {
+            _activationQueue.Clear();
+        }
+
+        public Activation Pop()
         {
             Activation activation = _activationQueue.Dequeue();
             return activation;
         }
 
-        public void Activate(Activation activation)
+        public void Add(Activation activation)
         {
-            _activationQueue.Enqueue(activation.Rule.Priority, activation);
+            _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
 
-        public void Reactivate(Activation activation)
+        public void Modify(Activation activation)
         {
-            _activationQueue.Enqueue(activation.Rule.Priority, activation);
+            _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
 
-        public void Deactivate(Activation activation)
+        public void Remove(Activation activation)
         {
             _activationQueue.Remove(activation);
         }

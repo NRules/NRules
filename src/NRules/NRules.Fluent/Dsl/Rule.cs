@@ -92,6 +92,7 @@ namespace NRules.Fluent.Dsl
             _builder.Name(metadata.Name);
             _builder.Description(metadata.Description);
             _builder.Tags(metadata.Tags);
+            _builder.Property(RuleProperties.ClrType, GetType());
 
             if (metadata.Priority.HasValue)
             {

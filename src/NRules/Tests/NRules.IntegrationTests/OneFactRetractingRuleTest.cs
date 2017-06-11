@@ -1,18 +1,17 @@
 ﻿using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactRetractingRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_OneMatchingFact_FiresOnceAndRetractsFact()
         {
             //Arrange
-            var fact = new FactType5 {TestProperty = "Valid Value 1"};
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             //Act
@@ -20,12 +19,30 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.AreEqual(0, Session.Query<FactType5>().Count());
+            Assert.Equal(0, Session.Query<FactType>().Count());
         }
         
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactRetractingRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                FactType fact = null;
+
+                When()
+                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                Then()
+                    .Do(ctx => ctx.Retract(fact));
+            }
         }
     }
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>NRules.RuleModel</id>
+    <version>$version$</version>
+    <title>NRules.RuleModel, Canonical Rules Model for NRules</title>
+    <authors>Sergiy Nikolayev</authors>
+    <owners>Sergiy Nikolayev</owners>
+    <licenseUrl>https://github.com/NRules/NRules/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>http://nrules.net</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/NRules/NRules/master/content/NRules_Logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Canonical rules model to define rules for the NRules rules engine.</summary>
+    <description>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm. NRules is an inference engine that, among other features, supports forward chaining, negative, existential and universal quantifiers. Rules are authored in C# using internal DSL.
+
+This package installs the canonical rules model to define rules that can be compiled into executable model used by the NRules rules engine.</description>
+    <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
+    <copyright>Copyright 2012-2017 Sergiy Nikolayev. All rights reserved.</copyright>
+    <tags>rules engine inference rete business dsl</tags>
+    <dependencies>
+      <group targetFramework="net45">
+      </group>
+      <group targetFramework="netstandard1.0">
+        <dependency id="NETStandard.Library" version="1.6.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\binaries\NRules\net45\NRules.RuleModel.dll" target="lib\net45" />
+    <file src="..\binaries\NRules\net45\NRules.RuleModel.xml" target="lib\net45" />
+    <file src="..\binaries\NRules\net45\NRules.RuleModel.pdb" target="lib\net45" />
+    <file src="..\binaries\NRules\netstandard1.0\NRules.RuleModel.dll" target="lib\netstandard1.0" />
+    <file src="..\binaries\NRules\netstandard1.0\NRules.RuleModel.xml" target="lib\netstandard1.0" />
+    <file src="..\binaries\NRules\netstandard1.0\NRules.RuleModel.pdb" target="lib\netstandard1.0" />
+  </files>
+</package>

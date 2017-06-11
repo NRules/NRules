@@ -1,30 +1,31 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using NRules.Fluent;
-using NRules.IntegrationTests.TestRules;
+using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
-using NUnit.Framework;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class RulesLoadTest
     {
-        [Test]
+        [Fact]
         public void Load_AssemblyWithoutRules_Empty()
         {
             //Arrange
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load(x => x.From(typeof (string).Assembly));
+            target.Load(x => x.From(typeof(string).GetTypeInfo().Assembly));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual(0, ruleSet.Rules.Count());
+            Assert.Equal(0, ruleSet.Rules.Count());
         }
 
-        [Test]
+        [Fact]
         public void Load_InvalidTypes_Empty()
         {
             //Arrange
@@ -35,32 +36,32 @@ namespace NRules.IntegrationTests
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual(0, ruleSet.Rules.Count());
+            Assert.Equal(0, ruleSet.Rules.Count());
         }
 
-        [Test]
+        [Fact]
         public void Load_EmptyRule_Throws()
         {
             //Arrange
             RuleRepository target = CreateTarget();
 
             //Act - Assert
-            var ex = Assert.Throws<RuleDefinitionException>(() => target.Load(x => x.From(typeof(EmptyRule))));
-            Assert.AreEqual(typeof(EmptyRule), ex.RuleType);
+            var ex = Assert.Throws<RuleDefinitionException>(() => target.Load(x => x.NestedTypes().From(typeof (EmptyRule))));
+            Assert.Equal(typeof (EmptyRule), ex.RuleType);
         }
 
-        [Test]
+        [Fact]
         public void Load_CannotActivateRule_Throws()
         {
             //Arrange
             RuleRepository target = CreateTarget();
 
             //Act - Assert
-            var ex = Assert.Throws<RuleActivationException>(() => target.Load(x => x.From(typeof(CannotActivateRule))));
-            Assert.AreEqual(typeof(CannotActivateRule), ex.RuleType);
+            var ex = Assert.Throws<RuleActivationException>(() => target.Load(x => x.NestedTypes().From(typeof (CannotActivateRule))));
+            Assert.Equal(typeof (CannotActivateRule), ex.RuleType);
         }
 
-        [Test]
+        [Fact]
         public void Load_AssemblyWithRulesToNamedRuleSet_RuleSetNameMatches()
         {
             //Arrange
@@ -68,16 +69,17 @@ namespace NRules.IntegrationTests
 
             //Act
             target.Load(x => x
+                .NestedTypes()
                 .From(ThisAssembly)
-                .Where(r => r.RuleType == typeof(OneFactRule))
+                .Where(r => r.RuleType == typeof (ValidRule))
                 .To("Test"));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual("Test", ruleSet.Name);
+            Assert.Equal("Test", ruleSet.Name);
         }
 
-        [Test]
+        [Fact]
         public void Load_AssemblyWithRulesToDefaultRuleSet_DefaultRuleSetName()
         {
             //Arrange
@@ -85,52 +87,103 @@ namespace NRules.IntegrationTests
 
             //Act
             target.Load(x => x
+                .NestedTypes()
                 .From(ThisAssembly)
-                .Where(r => r.RuleType == typeof(OneFactRule)));
+                .Where(r => r.RuleType == typeof (ValidRule)));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual("default", ruleSet.Name);
+            Assert.Equal("default", ruleSet.Name);
         }
 
-        [Test]
+        [Fact]
         public void Load_FilterRuleByName_MatchingRule()
         {
             //Arrange
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load(x => x.From(ThisAssembly).Where(r => r.Name.Contains("PriorityLowRule")));
+            target.Load(x => x
+                .NestedTypes()
+                .From(ThisAssembly)
+                .Where(r => r.Name.Contains("Valid")));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual(1, ruleSet.Rules.Count());
-            Assert.AreEqual(typeof (PriorityLowRule).FullName, ruleSet.Rules.First().Name);
+            Assert.Equal(1, ruleSet.Rules.Count());
+            Assert.Equal(typeof (ValidRule).FullName, ruleSet.Rules.First().Name);
         }
 
-        [Test]
+        [Fact]
         public void Load_FilterRuleByTag_MatchingRule()
         {
             //Arrange
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load(x => x.From(ThisAssembly).Where(r => r.IsTagged("Test")));
+            target.Load(x => x
+                .NestedTypes()
+                .From(ThisAssembly)
+                .Where(r => r.IsTagged("LoadTest")));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.AreEqual(1, ruleSet.Rules.Count());
-            Assert.AreEqual("Rule with metadata", ruleSet.Rules.First().Name);
+            Assert.Equal(1, ruleSet.Rules.Count());
+            Assert.Equal("Rule with metadata", ruleSet.Rules.First().Name);
         }
 
-        private static Assembly ThisAssembly
-        {
-            get { return Assembly.GetExecutingAssembly(); }
-        }
+        private Assembly ThisAssembly => GetType().GetTypeInfo().Assembly;
 
         public RuleRepository CreateTarget()
         {
             return new RuleRepository();
+        }
+
+        public class FactType
+        {
+        }
+
+        public class CannotActivateRule : Rule
+        {
+            public CannotActivateRule()
+            {
+                throw new InvalidOperationException("Failed in ctor");
+            }
+
+            public override void Define()
+            {
+            }
+        }
+
+        public class EmptyRule : Rule
+        {
+            public override void Define()
+            {
+            }
+        }
+
+        public class ValidRule : Rule
+        {
+            public override void Define()
+            {
+                When()
+                    .Match<FactType>();
+                Then()
+                    .Do(ctx => ctx.NoOp());
+            }
+        }
+
+        [Name("Rule with metadata")]
+        [Tag("LoadTest")]
+        public class TaggedRule : Rule
+        {
+            public override void Define()
+            {
+                When()
+                    .Match<FactType>();
+                Then()
+                    .Do(ctx => ctx.NoOp());
+            }
         }
     }
 }

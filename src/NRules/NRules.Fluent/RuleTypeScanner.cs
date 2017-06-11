@@ -12,6 +12,22 @@ namespace NRules.Fluent
     public interface IRuleTypeScanner
     {
         /// <summary>
+        /// Enables/disables discovery of private rule classes.
+        /// Default is off.
+        /// </summary>
+        /// <param name="include">Include private types if <c>true</c>, don't include otherwise.</param>
+        /// <returns>Rule type scanner to continue scanning specification.</returns>
+        IRuleTypeScanner PrivateTypes(bool include = true);
+
+        /// <summary>
+        /// Enables/disables discovery of nested rule classes.
+        /// Default is off.
+        /// </summary>
+        /// <param name="include">Include nested types if <c>true</c>, don't include otherwise.</param>
+        /// <returns>Rule type scanner to continue scanning specification.</returns>
+        IRuleTypeScanner NestedTypes(bool include = true);
+
+        /// <summary>
         /// Finds rule types in the specified assemblies.
         /// </summary>
         /// <param name="assemblies">Assemblies to scan.</param>
@@ -45,7 +61,33 @@ namespace NRules.Fluent
     /// </summary>
     public class RuleTypeScanner : IRuleTypeScanner
     {
-        private readonly List<Type> _ruleTypes = new List<Type>();
+        private readonly List<TypeInfo> _ruleTypes = new List<TypeInfo>();
+        private bool _nestedTypes = false;
+        private bool _privateTypes = false;
+
+        /// <summary>
+        /// Enables/disables discovery of private rule classes.
+        /// Default is off.
+        /// </summary>
+        /// <param name="include">Include private types if <c>true</c>, don't include otherwise.</param>
+        /// <returns>Rule type scanner to continue scanning specification.</returns>
+        public IRuleTypeScanner PrivateTypes(bool include = true)
+        {
+            _privateTypes = include;
+            return this;
+        }
+
+        /// <summary>
+        /// Enables/disables discovery of nested rule classes.
+        /// Default is off.
+        /// </summary>
+        /// <param name="include">Include nested types if <c>true</c>, don't include otherwise.</param>
+        /// <returns>Rule type scanner to continue scanning specification.</returns>
+        public IRuleTypeScanner NestedTypes(bool include = true)
+        {
+            _nestedTypes = include;
+            return this;
+        }
 
         /// <summary>
         /// Finds rule types in the specified assemblies.
@@ -54,7 +96,7 @@ namespace NRules.Fluent
         /// <returns>Rule type scanner to continue scanning specification.</returns>
         public IRuleTypeScanner Assembly(params Assembly[] assemblies)
         {
-            var ruleTypes = assemblies.SelectMany(a => a.GetTypes().Where(IsRuleType));
+            var ruleTypes = assemblies.SelectMany(a => a.DefinedTypes.Where(IsRuleType));
             _ruleTypes.AddRange(ruleTypes);
             return this;
         }
@@ -76,7 +118,8 @@ namespace NRules.Fluent
         /// <returns>Rule type scanner to continue scanning specification.</returns>
         public IRuleTypeScanner AssemblyOf(Type type)
         {
-            return Assembly(type.Assembly);
+            var typeInfo = type.GetTypeInfo();
+            return Assembly(typeInfo.Assembly);
         }
 
         /// <summary>
@@ -86,7 +129,9 @@ namespace NRules.Fluent
         /// <returns>Rule type scanner to continue scanning specification.</returns>
         public IRuleTypeScanner Type(params Type[] types)
         {
-            var ruleTypes = types.Where(IsRuleType);
+            var ruleTypes = types
+                .Select(x => x.GetTypeInfo())
+                .Where(IsRuleType);
             _ruleTypes.AddRange(ruleTypes);
             return this;
         }
@@ -97,8 +142,10 @@ namespace NRules.Fluent
         /// <returns>Rule types.</returns>
         public Type[] GetRuleTypes()
         {
-            var ruleTypes = _ruleTypes;
-            return ruleTypes.ToArray();
+            var ruleTypes = _ruleTypes
+                .Where(t => _privateTypes || !t.IsNotPublic)
+                .Where(t => _nestedTypes || !t.IsNested);
+            return ruleTypes.Select(x => x.AsType()).ToArray();
         }
 
         /// <summary>
@@ -108,18 +155,24 @@ namespace NRules.Fluent
         /// <returns>Result of the check.</returns>
         public static bool IsRuleType(Type type)
         {
-            if (IsPublicConcrete(type) &&
-                typeof(Rule).IsAssignableFrom(type)) return true;
+            return IsRuleType(type.GetTypeInfo());
+        }
+
+        private static bool IsRuleType(TypeInfo typeInfo)
+        {
+            var ruleType = typeof(Rule).GetTypeInfo();
+            if (IsConcrete(typeInfo) &&
+                ruleType.IsAssignableFrom(typeInfo))
+                return true;
 
             return false;
         }
 
-        private static bool IsPublicConcrete(Type type)
+        private static bool IsConcrete(TypeInfo typeInfo)
         {
-            if (!type.IsPublic) return false;
-            if (type.IsAbstract) return false;
-            if (type.IsInterface) return false;
-            if (type.IsGenericTypeDefinition) return false;
+            if (typeInfo.IsAbstract) return false;
+            if (typeInfo.IsInterface) return false;
+            if (typeInfo.IsGenericTypeDefinition) return false;
 
             return true;
         }

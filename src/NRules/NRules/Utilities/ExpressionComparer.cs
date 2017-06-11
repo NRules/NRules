@@ -80,6 +80,12 @@ namespace NRules.Utilities
                 var cy = (ConstantExpression)y;
                 return Equals(cx.Value, cy.Value);
             }
+            if (x is TypeBinaryExpression)
+            {
+                var tbx = (TypeBinaryExpression)x;
+                var tby = (TypeBinaryExpression)y;
+                return Equals(tbx.TypeOperand, tby.TypeOperand);
+            }
 
             throw new NotImplementedException(x.ToString());
         }

@@ -1,13 +1,12 @@
-﻿using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
-using NUnit.Framework;
+﻿using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class ThreeFactTwoExistsRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_MatchingFacts_FiresOnce()
         {
             //Arrange
@@ -26,7 +25,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
         
-        [Test]
+        [Fact]
         public void Fire_NoMatchingFactsBothKind_DoesNotFire()
         {
             //Arrange
@@ -41,7 +40,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_NoMatchingFactsFirstKind_DoesNotFire()
         {
             //Arrange
@@ -58,7 +57,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
         
-        [Test]
+        [Fact]
         public void Fire_NoMatchingFactsSecondKind_DoesNotFire()
         {
             //Arrange
@@ -75,7 +74,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsInsertedThenRetracted_DoesNotFire()
         {
             //Arrange
@@ -96,7 +95,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsTwoInsertedThenFirstRetracted_DoesNotFire()
         {
             //Arrange
@@ -116,7 +115,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsTwoInsertedThenSecondRetracted_DoesNotFire()
         {
             //Arrange
@@ -136,7 +135,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_InvalidFactsInsertedThenUpdated_FiresOnce()
         {
             //Arrange
@@ -161,7 +160,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsInsertedThenUpdated_DoesNotFire()
         {
             //Arrange
@@ -186,7 +185,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsTwoInsertedThenFirstUpdated_DoesNotFire()
         {
             //Arrange
@@ -208,7 +207,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsTwoInsertedThenSecondUpdated_DoesNotFire()
         {
             //Arrange
@@ -230,7 +229,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactsInsertedThenSomeRetractedRetracted_StillFires()
         {
             //Arrange
@@ -252,7 +251,39 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<ThreeFactTwoExistsRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class FactType3
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                FactType1 fact1 = null;
+
+                When()
+                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                    .Exists<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
+                    .Exists<FactType3>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty);
+                Then()
+                    .Do(ctx => ctx.NoOp());
+            }
         }
     }
 }

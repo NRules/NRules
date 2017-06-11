@@ -4,6 +4,7 @@ using System.Linq;
 using NRules.Rete;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
+using NRules.Utilities;
 
 namespace NRules
 {
@@ -64,13 +65,11 @@ namespace NRules
             var actions = new List<IRuleAction>();
             foreach (var action in rightHandSide.Actions)
             {
-                var factIndexMap = IndexMap.CreateMap(action.References, ruleDeclarations);
-                var dependencyIndexMap = IndexMap.CreateMap(action.References, ruleDependencies);
-                var ruleAction = new RuleAction(action.Expression, factIndexMap, dependencyIndexMap);
+                var ruleAction = ExpressionCompiler.CompileAction(action, ruleDeclarations, ruleDependencies);
                 actions.Add(ruleAction);
             }
 
-            var rule = new CompiledRule(ruleDefinition, actions, dependencies);
+            var rule = new CompiledRule(ruleDefinition, ruleDeclarations, actions, dependencies);
             BuildRuleNode(rule, terminals);
         }
 
@@ -83,9 +82,9 @@ namespace NRules
             }
         }
 
-        private void BuildRuleNode(ICompiledRule rule, IEnumerable<ITerminalNode> terminalNodes)
+        private void BuildRuleNode(ICompiledRule compiledRule, IEnumerable<ITerminalNode> terminalNodes)
         {
-            var ruleNode = new RuleNode(rule);
+            var ruleNode = new RuleNode(compiledRule);
             foreach (var terminalNode in terminalNodes)
             {
                 terminalNode.Attach(ruleNode);

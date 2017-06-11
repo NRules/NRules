@@ -1,13 +1,12 @@
-﻿using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
-using NUnit.Framework;
+﻿using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class TwoFactOneNotRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFacts_DoesNotFire()
         {
             //Arrange
@@ -24,7 +23,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
         
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenRetracted_FiresOnce()
         {
             //Arrange
@@ -42,7 +41,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
         
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenUpdatedToInvalid_FiresOnce()
         {
             //Arrange
@@ -62,7 +61,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactAndNoFactsMatchingNotPattern_FiresOnce()
         {
             //Arrange
@@ -77,7 +76,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_MatchingFactInsertedThenUpdatedAndNoFactsMatchingNotPattern_FiresOnce()
         {
             //Arrange
@@ -93,7 +92,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsAndNoFactsMatchingNotPattern_FiresTwice()
         {
             //Arrange
@@ -110,7 +109,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        [Test]
+        [Fact]
         public void Fire_TwoMatchingFactsAndOneFactMatchingNotPattern_FiresOnce()
         {
             //Arrange
@@ -129,9 +128,84 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
+        [Fact]
+        public void Fire_TwoMatchingSetsFactOfSecondKindInsertedThenRetracted_FiresTwiceThenFiresTwice()
+        {
+            //Arrange
+            var fact11 = new FactType1 { TestProperty = "Valid Value" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value" };
+            var fact21 = new FactType2 { TestProperty = "Valid Value", JoinProperty = "Valid Value" };
+
+            var facts = new[] { fact11, fact12 };
+            Session.InsertAll(facts);
+
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredTwice();
+
+            //Act - 2
+            Session.Insert(fact21);
+            Session.Retract(fact21);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTimes(4);
+        }
+
+        [Fact]
+        public void Fire_TwoMatchingSetsFactOfFirstKindUpdated_FiresTwiceThenFiresOnce()
+        {
+            //Arrange
+            var fact11 = new FactType1 { TestProperty = "Valid Value" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value" };
+
+            var facts = new[] { fact11, fact12 };
+            Session.InsertAll(facts);
+
+            //Act - 1
+            Session.Fire();
+
+            //Assert - 1
+            AssertFiredTwice();
+
+            //Act - 2
+            Session.Update(fact11);
+            Session.Fire();
+
+            //Assert - 2
+            AssertFiredTimes(3);
+        }
+
         protected override void SetUpRules()
         {
-            SetUpRule<TwoFactOneNotRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType1
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class FactType2
+        {
+            public string TestProperty { get; set; }
+            public string JoinProperty { get; set; }
+        }
+
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                FactType1 fact = null;
+
+                When()
+                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Not<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact.TestProperty);
+                Then()
+                    .Do(ctx => ctx.NoOp());
+            }
         }
     }
 }

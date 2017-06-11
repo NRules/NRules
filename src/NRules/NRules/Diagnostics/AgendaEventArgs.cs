@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using NRules.RuleModel;
-using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Diagnostics
 {
@@ -11,26 +9,21 @@ namespace NRules.Diagnostics
     /// </summary>
     public class AgendaEventArgs : EventArgs
     {
-        private readonly ICompiledRule _rule;
-        private readonly Tuple _tuple;
+        private readonly IActivation _activation;
 
-        internal AgendaEventArgs(ICompiledRule rule, Tuple tuple)
+        internal AgendaEventArgs(IActivation activation)
         {
-            _rule = rule;
-            _tuple = tuple;
+            _activation = activation;
         }
 
         /// <summary>
         /// Rule related to the event.
         /// </summary>
-        public IRuleDefinition Rule { get { return _rule.Definition; } }
+        public IRuleDefinition Rule => _activation.Rule;
 
         /// <summary>
-        /// Tuple related to the event.
+        /// Facts related to the event.
         /// </summary>
-        public IEnumerable<FactInfo> Facts
-        {
-            get { return _tuple.OrderedFacts.Select(f => new FactInfo(f)).ToArray(); }
-        }
+        public IEnumerable<IFactMatch> Facts => _activation.Facts;
     }
 }

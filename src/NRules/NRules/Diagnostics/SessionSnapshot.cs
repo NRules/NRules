@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace NRules.Diagnostics
@@ -6,7 +5,9 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Snapshot of rules session state.
     /// </summary>
-    [Serializable]
+#if NET45
+    [System.Serializable]
+#endif
     public class SessionSnapshot
     {
         private readonly List<NodeInfo> _nodes;
@@ -21,17 +22,11 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Nodes of the rete network graph.
         /// </summary>
-        public IEnumerable<NodeInfo> Nodes
-        {
-            get { return _nodes; }
-        }
+        public IEnumerable<NodeInfo> Nodes => _nodes;
 
         /// <summary>
         /// Links between nodes of the rete network graph.
         /// </summary>
-        public IEnumerable<LinkInfo> Links
-        {
-            get { return _links; }
-        }
+        public IEnumerable<LinkInfo> Links => _links;
     }
 }

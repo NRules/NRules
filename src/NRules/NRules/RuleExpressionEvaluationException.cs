@@ -1,13 +1,13 @@
 using System;
-using System.Runtime.Serialization;
-using System.Security;
 
 namespace NRules
 {
     /// <summary>
     /// Represents errors that occur while evaluating expressions as part of rules execution.
     /// </summary>
-    [Serializable]
+#if NET45
+    [System.Serializable]
+#endif
     public class RuleExpressionEvaluationException : RuleExecutionException
     {
         internal RuleExpressionEvaluationException(string message, string expression, Exception innerException)
@@ -15,29 +15,31 @@ namespace NRules
         {
             Expression = expression;
         }
-        
-        [SecuritySafeCritical]
-        protected RuleExpressionEvaluationException(SerializationInfo info, StreamingContext context)
+
+#if NET45
+        [System.Security.SecuritySafeCritical]
+        protected RuleExpressionEvaluationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)
         {
             Expression = info.GetString("Expression");
         }
 
-        [SecurityCritical]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        [System.Security.SecurityCritical]
+        public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
         {
             if (info == null)
             {
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             }
             base.GetObjectData(info, context);
-            info.AddValue("Expression", Expression, typeof(String));
+            info.AddValue("Expression", Expression, typeof(string));
         }
+#endif
 
         /// <summary>
         /// Expression that caused exception.
         /// </summary>
-        public string Expression { get; private set; }
+        public string Expression { get; }
 
         public override string Message
         {

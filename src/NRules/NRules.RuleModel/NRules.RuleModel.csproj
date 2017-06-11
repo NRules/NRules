@@ -1,119 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\..\Common.props" />
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{898356F3-1B5A-4D70-A20A-544997E30AB7}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NRules.RuleModel</RootNamespace>
-    <AssemblyName>NRules.RuleModel</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFrameworks>net45;netstandard1.0</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\SigningKey.snk</AssemblyOriginatorKeyFile>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.0' ">1.6.0</NetStandardImplicitPackageVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\NRules.RuleModel.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\NRules.RuleModel.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\..\..\DevSigningKey.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <Compile Include="..\..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="ActionGroupElement.cs" />
-    <Compile Include="AggregateElement.cs" />
-    <Compile Include="AggregationResult.cs" />
-    <Compile Include="Aggregators\CollectionAggregator.cs" />
-    <Compile Include="Aggregators\DefaultAggregatorFactory.cs" />
-    <Compile Include="Aggregators\FactCollection.cs" />
-    <Compile Include="Aggregators\FlatteningAggregator.cs" />
-    <Compile Include="Aggregators\FlatteningAggregatorFactory.cs" />
-    <Compile Include="Aggregators\GroupByAggregator.cs" />
-    <Compile Include="Aggregators\GroupByAggregatorFactory.cs" />
-    <Compile Include="Aggregators\ProjectionAggregator.cs" />
-    <Compile Include="Aggregators\ProjectionAggregatorFactory.cs" />
-    <Compile Include="AndElement.cs" />
-    <Compile Include="Builders\ActionGroupBuilder.cs" />
-    <Compile Include="Builders\AggregateBuilder.cs" />
-    <Compile Include="Builders\DependencyGroupBuilder.cs" />
-    <Compile Include="Builders\IPatternContainerBuilder.cs" />
-    <Compile Include="Builders\RuleTransformation.cs" />
-    <Compile Include="Builders\ForAllBuilder.cs" />
-    <Compile Include="Builders\GroupBuilder.cs" />
-    <Compile Include="Builders\NotBuilder.cs" />
-    <Compile Include="Builders\PatternBuilder.cs" />
-    <Compile Include="Builders\ExistsBuilder.cs" />
-    <Compile Include="Builders\RuleBuilder.cs" />
-    <Compile Include="Builders\RuleElementBuilder.cs" />
-    <Compile Include="DeclarationExtensions.cs" />
-    <Compile Include="DependencyElement.cs" />
-    <Compile Include="DependencyGroupElement.cs" />
-    <Compile Include="ExistsElement.cs" />
-    <Compile Include="ExpressionMap.cs" />
-    <Compile Include="ForAllElement.cs" />
-    <Compile Include="IAggregatorFactory.cs" />
-    <Compile Include="IContext.cs" />
-    <Compile Include="IRuleRepository.cs" />
-    <Compile Include="IRuleSet.cs" />
-    <Compile Include="NamedExpression.cs" />
-    <Compile Include="NotElement.cs" />
-    <Compile Include="OrElement.cs" />
-    <Compile Include="RuleLeftElement.cs" />
-    <Compile Include="RuleRightElement.cs" />
-    <Compile Include="RuleDefinition.cs" />
-    <Compile Include="ConditionElement.cs" />
-    <Compile Include="RuleElementVisitor.cs" />
-    <Compile Include="RuleElementExtensions.cs" />
-    <Compile Include="PatternElement.cs" />
-    <Compile Include="Declaration.cs" />
-    <Compile Include="GroupElement.cs" />
-    <Compile Include="IAggregator.cs" />
-    <Compile Include="PatternSourceElement.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ActionElement.cs" />
-    <Compile Include="RuleElement.cs" />
-    <Compile Include="SymbolTable.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  
 </Project>

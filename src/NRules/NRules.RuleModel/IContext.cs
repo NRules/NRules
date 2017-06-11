@@ -15,6 +15,11 @@ namespace NRules.RuleModel
         IRuleDefinition Rule { get; }
 
         /// <summary>
+        /// Retrieves matched facts.
+        /// </summary>
+        IEnumerable<IFactMatch> Facts { get; }
+
+        /// <summary>
         /// Halts rules execution. The engine continues execution of the current rule and exits the execution cycle.
         /// </summary>
         void Halt();
@@ -81,5 +86,12 @@ namespace NRules.RuleModel
         /// <param name="fact">Fact to remove.</param>
         /// <returns>Whether the fact was retracted or not.</returns>
         bool TryRetract(object fact);
+
+        /// <summary>
+        /// Resolves a registered service (normally via an IoC container).
+        /// </summary>
+        /// <param name="serviceType">Type of service to resolve.</param>
+        /// <returns>Service instance.</returns>
+        object Resolve(Type serviceType);
     }
 }

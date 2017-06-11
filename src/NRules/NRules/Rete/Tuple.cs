@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using NRules.RuleModel;
 
 namespace NRules.Rete
 {
     [DebuggerDisplay("Tuple ({Count})")]
     [DebuggerTypeProxy(typeof(TupleDebugView))]
-    internal sealed class Tuple
+    internal sealed class Tuple : ITuple
     {
         private const long NoGroup = 0;
 
@@ -29,11 +31,11 @@ namespace NRules.Rete
             Level = left.Level + 1;
         }
 
-        public Fact RightFact { get; private set; }
-        public Tuple LeftTuple { get; private set; }
-        public int Count { get; private set; }
-        public long Id { get; private set; }
-        public int Level { get; private set; }
+        public Fact RightFact { get; }
+        public Tuple LeftTuple { get; }
+        public int Count { get; }
+        public long Id { get; }
+        public int Level { get; }
 
         public long GroupId { get; set; }
         
@@ -56,9 +58,7 @@ namespace NRules.Rete
         public long GetGroupId(int level)
         {
             if (level == Level - 1) return GroupId;
-            long groupId = LeftTuple == null 
-                ? NoGroup 
-                : LeftTuple.GetGroupId(level);
+            long groupId = LeftTuple?.GetGroupId(level) ?? NoGroup;
             return groupId;
         }
 
@@ -70,11 +70,13 @@ namespace NRules.Rete
         {
             get
             {
-                if (RightFact != null) yield return RightFact;
-                if (LeftTuple == null) yield break;
-                foreach (var leftFact in LeftTuple.Facts)
+                var tuple = this;
+                while (tuple != null)
                 {
-                    yield return leftFact;
+                    if (tuple.RightFact != null)
+                        yield return tuple.RightFact;
+
+                    tuple = tuple.LeftTuple;
                 }
             }
         }
@@ -83,10 +85,9 @@ namespace NRules.Rete
         /// Facts contained in the tuple in correct order.
         /// </summary>
         /// <remarks>This method has to reverse the linked list and is slow.</remarks>
-        public IEnumerable<Fact> OrderedFacts
-        {
-            get { return Facts.Reverse(); }
-        }
+        public IEnumerable<Fact> OrderedFacts => Facts.Reverse();
+
+        IEnumerable<IFact> ITuple.Facts => Facts;
 
         internal class TupleDebugView
         {
@@ -94,7 +95,8 @@ namespace NRules.Rete
 
             public TupleDebugView(Tuple tuple)
             {
-                Facts = string.Format("[{0}]", string.Join(" || ", tuple.Facts.Reverse().Select(f => f.Object).ToArray()));
+                var facts = string.Join(" || ", tuple.Facts.Reverse().Select(f => f.Object).ToArray());
+                Facts = $"[{facts}]";
             }
         }
     }

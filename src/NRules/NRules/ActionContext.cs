@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using NRules.Extensibility;
 using NRules.RuleModel;
 
 namespace NRules
@@ -6,24 +8,27 @@ namespace NRules
     internal interface IActionContext : IContext
     {
         ICompiledRule CompiledRule { get; }
+        Activation Activation { get; }
+        bool IsHalted { get; }
     }
 
     internal class ActionContext : IActionContext
     {
-        private readonly ICompiledRule _rule;
         private readonly ISession _session;
-        private bool _isHalted;
 
-        public ActionContext(ICompiledRule rule, ISession session)
+        public ActionContext(ISession session, Activation activation)
         {
-            _rule = rule;
             _session = session;
-            _isHalted = false;
+            Activation = activation;
+            IsHalted = false;
         }
 
-        public ICompiledRule CompiledRule { get { return _rule; } }
-        public IRuleDefinition Rule { get { return _rule.Definition; } }
-        public bool IsHalted { get { return _isHalted; } }
+        public IRuleDefinition Rule => CompiledRule.Definition;
+        public IEnumerable<IFactMatch> Facts => Activation.Facts;
+        public ICompiledRule CompiledRule => Activation.CompiledRule;
+
+        public Activation Activation { get; }
+        public bool IsHalted { get; private set; }
 
         public void Insert(object fact)
         {
@@ -70,9 +75,16 @@ namespace NRules
             return _session.TryRetract(fact);
         }
 
+        public object Resolve(Type serviceType)
+        {
+            var resolutionContext = new ResolutionContext(_session, Rule);
+            var service = _session.DependencyResolver.Resolve(resolutionContext, serviceType);
+            return service;
+        }
+
         public void Halt()
         {
-            _isHalted = true;
+            IsHalted = true;
         }
     }
 }

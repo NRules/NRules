@@ -9,14 +9,13 @@ namespace NRules.Fluent.Expressions
         {
             if (alias == null)
             {
-                throw new ArgumentNullException("alias", "Pattern alias is null");
+                throw new ArgumentNullException(nameof(alias), "Pattern alias is null");
             }
             var fieldMember = alias.Body as MemberExpression;
             if (fieldMember == null)
             {
                 throw new ArgumentException(
-                    string.Format("Invalid pattern alias expression. Expected={0}, Actual={1}",
-                        typeof(MemberExpression), alias.Body.GetType()));
+                    $"Invalid pattern alias expression. Expected={typeof(MemberExpression)}, Actual={alias.Body.GetType()}");
             }
             return Expression.Parameter(fieldMember.Type, fieldMember.Member.Name);
         }

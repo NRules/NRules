@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using NRules.Fluent.Dsl;
 using NRules.RuleModel;
 
@@ -36,74 +37,50 @@ namespace NRules.Fluent
     /// </summary>
     public class RuleMetadata : IRuleMetadata
     {
-        private readonly Type _ruleType;
-        private readonly string _name;
-        private readonly string _description;
-        private readonly string[] _tags;
-        private readonly int? _priority;
-        private readonly RuleRepeatability? _repeatability;
-
         public RuleMetadata(Type ruleType)
         {
-            _ruleType = ruleType;
-            _name = GetAttributes<NameAttribute>().Select(a => a.Value).SingleOrDefault() ?? RuleType.FullName;
-            _description = GetAttributes<DescriptionAttribute>().Select(a => a.Value).SingleOrDefault() ?? string.Empty;
-            _tags = GetAttributes<TagAttribute>().Select(a => a.Value).ToArray();
-            _priority = GetAttributes<PriorityAttribute>().SingleNullable(a => a.Value);
-            _repeatability = GetAttributes<RepeatabilityAttribute>().SingleNullable(a => a.Value);
+            RuleType = ruleType;
+            Name = GetAttributes<NameAttribute>().Select(a => a.Value).SingleOrDefault() ?? RuleType.FullName;
+            Description = GetAttributes<DescriptionAttribute>().Select(a => a.Value).SingleOrDefault() ?? string.Empty;
+            Tags = GetAttributes<TagAttribute>().Select(a => a.Value).ToArray();
+            Priority = GetAttributes<PriorityAttribute>().SingleNullable(a => a.Value);
+            Repeatability = GetAttributes<RepeatabilityAttribute>().SingleNullable(a => a.Value);
         }
 
         /// <summary>
         /// Rule's .NET type.
         /// </summary>
-        public Type RuleType
-        {
-            get { return _ruleType; }
-        }
+        public Type RuleType { get; }
 
         /// <summary>
         /// Rule's name.
         /// </summary>
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Rule's description.
         /// </summary>
-        public string Description
-        {
-            get { return _description; }
-        }
+        public string Description { get; }
 
         /// <summary>
         /// Tags applied to the rule.
         /// </summary>
-        public string[] Tags
-        {
-            get { return _tags; }
-        }
+        public string[] Tags { get; }
 
         /// <summary>
         /// Rule's priority.
         /// </summary>
-        public int? Priority
-        {
-            get { return _priority; }
-        }
+        public int? Priority { get; }
 
         /// <summary>
         /// Rule's repeatability.
         /// </summary>
-        public RuleRepeatability? Repeatability
-        {
-            get { return _repeatability; }
-        }
+        public RuleRepeatability? Repeatability { get; }
 
         private T[] GetAttributes<T>() where T : Attribute
         {
-            return _ruleType.GetCustomAttributes(true).OfType<T>().ToArray();
+            var typeInfo = RuleType.GetTypeInfo();
+            return typeInfo.GetCustomAttributes(true).OfType<T>().ToArray();
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using NRules.Extensibility;
 using NRules.Rete;
 using Tuple = NRules.Rete.Tuple;
 
@@ -76,6 +77,7 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Raised when action execution threw an exception.
         /// Gives observer of the event control over handling of the exception.
+        /// <remarks>This event is not raised when actions are invoked via <see cref="IActionInterceptor"/>.</remarks>
         /// </summary>
         event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
 
@@ -87,19 +89,19 @@ namespace NRules.Diagnostics
 
     internal interface IEventAggregator : IEventProvider
     {
-        void RaiseActivationCreated(ISession session, Activation activation);
-        void RaiseActivationUpdated(ISession session, Activation activation);
-        void RaiseActivationDeleted(ISession session, Activation activation);
-        void RaiseRuleFiring(ISession session, Activation activation);
-        void RaiseRuleFired(ISession session, Activation activation);
+        void RaiseActivationCreated(ISession session, IActivation activation);
+        void RaiseActivationUpdated(ISession session, IActivation activation);
+        void RaiseActivationDeleted(ISession session, IActivation activation);
+        void RaiseRuleFiring(ISession session, IActivation activation);
+        void RaiseRuleFired(ISession session, IActivation activation);
         void RaiseFactInserting(ISession session, Fact fact);
         void RaiseFactInserted(ISession session, Fact fact);
         void RaiseFactUpdating(ISession session, Fact fact);
         void RaiseFactUpdated(ISession session, Fact fact);
         void RaiseFactRetracting(ISession session, Fact fact);
         void RaiseFactRetracted(ISession session, Fact fact);
-        void RaiseActionFailed(ISession session, ICompiledRule rule, Exception exception, Expression expression, Tuple tuple, out bool isHandled);
-        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, out bool isHandled);
+        void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, ref bool isHandled);
+        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -129,74 +131,59 @@ namespace NRules.Diagnostics
             _parent = eventAggregator;
         }
 
-        public void RaiseActivationCreated(ISession session, Activation activation)
+        public void RaiseActivationCreated(ISession session, IActivation activation)
         {
             var handler = ActivationCreatedEvent;
             if (handler != null)
             {
-                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                var @event = new AgendaEventArgs(activation);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseActivationCreated(session, activation);
-            }
+            _parent?.RaiseActivationCreated(session, activation);
         }
 
-        public void RaiseActivationUpdated(ISession session, Activation activation)
+        public void RaiseActivationUpdated(ISession session, IActivation activation)
         {
             var handler = ActivationUpdatedEvent;
             if (handler != null)
             {
-                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                var @event = new AgendaEventArgs(activation);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseActivationUpdated(session, activation);
-            }
+            _parent?.RaiseActivationUpdated(session, activation);
         }
 
-        public void RaiseActivationDeleted(ISession session, Activation activation)
+        public void RaiseActivationDeleted(ISession session, IActivation activation)
         {
             var handler = ActivationDeletedEvent;
             if (handler != null)
             {
-                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                var @event = new AgendaEventArgs(activation);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseActivationDeleted(session, activation);
-            }
+            _parent?.RaiseActivationDeleted(session, activation);
         }
 
-        public void RaiseRuleFiring(ISession session, Activation activation)
+        public void RaiseRuleFiring(ISession session, IActivation activation)
         {
             var handler = RuleFiringEvent;
             if (handler != null)
             {
-                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                var @event = new AgendaEventArgs(activation);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseRuleFiring(session, activation);
-            }
+            _parent?.RaiseRuleFiring(session, activation);
         }
 
-        public void RaiseRuleFired(ISession session, Activation activation)
+        public void RaiseRuleFired(ISession session, IActivation activation)
         {
             var handler = RuleFiredEvent;
             if (handler != null)
             {
-                var @event = new AgendaEventArgs(activation.Rule, activation.Tuple);
+                var @event = new AgendaEventArgs(activation);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseRuleFired(session, activation);
-            }
+            _parent?.RaiseRuleFired(session, activation);
         }
 
         public void RaiseFactInserting(ISession session, Fact fact)
@@ -207,10 +194,7 @@ namespace NRules.Diagnostics
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseFactInserting(session, fact);
-            }
+            _parent?.RaiseFactInserting(session, fact);
         }
 
         public void RaiseFactInserted(ISession session, Fact fact)
@@ -221,10 +205,7 @@ namespace NRules.Diagnostics
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseFactInserted(session, fact);
-            }
+            _parent?.RaiseFactInserted(session, fact);
         }
 
         public void RaiseFactUpdating(ISession session, Fact fact)
@@ -235,10 +216,7 @@ namespace NRules.Diagnostics
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseFactUpdating(session, fact);
-            }
+            _parent?.RaiseFactUpdating(session, fact);
         }
 
         public void RaiseFactUpdated(ISession session, Fact fact)
@@ -249,10 +227,7 @@ namespace NRules.Diagnostics
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseFactUpdated(session, fact);
-            }
+            _parent?.RaiseFactUpdated(session, fact);
         }
 
         public void RaiseFactRetracting(ISession session, Fact fact)
@@ -263,10 +238,7 @@ namespace NRules.Diagnostics
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseFactRetracting(session, fact);
-            }
+            _parent?.RaiseFactRetracting(session, fact);
         }
 
         public void RaiseFactRetracted(ISession session, Fact fact)
@@ -277,42 +249,31 @@ namespace NRules.Diagnostics
                 var @event = new WorkingMemoryEventArgs(fact);
                 handler(session, @event);
             }
-            if (_parent != null)
-            {
-                _parent.RaiseFactRetracted(session, fact);
-            }
+            _parent?.RaiseFactRetracted(session, fact);
         }
 
-        public void RaiseActionFailed(ISession session, ICompiledRule rule, Exception exception, Expression expression, Tuple tuple, out bool isHandled)
+        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, ref bool isHandled)
         {
-            isHandled = false;
             var handler = ActionFailedEvent;
             if (handler != null)
             {
-                var @event = new ActionErrorEventArgs(exception, rule, expression, tuple);
+                var @event = new ActionErrorEventArgs(exception, expression, activation);
                 handler(session, @event);
-                isHandled = @event.IsHandled;
+                isHandled |= @event.IsHandled;
             }
-            if (_parent != null && !isHandled)
-            {
-                _parent.RaiseActionFailed(session, rule, exception, expression, tuple, out isHandled);
-            }
+            _parent?.RaiseActionFailed(session, exception, expression, activation, ref isHandled);
         }
 
-        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, out bool isHandled)
+        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled)
         {
-            isHandled = false;
             var hanlder = ConditionFailedEvent;
             if (hanlder != null)
             {
                 var @event = new ConditionErrorEventArgs(exception, expression, tuple, fact);
                 hanlder(session, @event);
-                isHandled = @event.IsHandled;
+                isHandled |= @event.IsHandled;
             }
-            if (_parent != null && !isHandled)
-            {
-                _parent.RaiseConditionFailed(session, exception, expression, tuple, fact, out isHandled);
-            }
+            _parent?.RaiseConditionFailed(session, exception, expression, tuple, fact, ref isHandled);
         }
     }
 }

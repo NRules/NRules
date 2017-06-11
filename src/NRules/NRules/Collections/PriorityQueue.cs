@@ -9,6 +9,7 @@ namespace NRules.Collections
         TValue Dequeue();
         TValue Peek();
         bool IsEmpty { get; }
+        void Clear();
     }
 
     internal class PriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TValue>
@@ -24,7 +25,7 @@ namespace NRules.Collections
         public PriorityQueue(IComparer<TPriority> comparer)
         {
             if (comparer == null)
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
 
             _baseHeap = new List<KeyValuePair<TPriority, TValue>>();
             _comparer = comparer;
@@ -55,9 +56,11 @@ namespace NRules.Collections
             throw new InvalidOperationException("Priority queue is empty");
         }
 
-        public bool IsEmpty
+        public bool IsEmpty => _baseHeap.Count == 0;
+
+        public void Clear()
         {
-            get { return _baseHeap.Count == 0; }
+            _baseHeap.Clear();
         }
 
         private void ExchangeElements(int pos1, int pos2)

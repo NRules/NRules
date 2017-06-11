@@ -1,6 +1,7 @@
 ﻿using System;
 using Autofac;
 using Autofac.Builder;
+using NRules.Extensibility;
 using NRules.Fluent;
 using NRules.RuleModel;
 

@@ -1,17 +1,16 @@
-﻿using NRules.IntegrationTests.TestAssets;
-using NRules.IntegrationTests.TestRules;
-using NUnit.Framework;
+﻿using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
+using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    [TestFixture]
     public class OneFactOneNotRuleTest : BaseRuleTestFixture
     {
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFact_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
 
             Session.Insert(fact1);
 
@@ -22,11 +21,11 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
         
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenRetracted_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
 
             Session.Insert(fact1);
             Session.Retract(fact1);
@@ -38,11 +37,11 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
         
-        [Test]
+        [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenUpdatedToInvalid_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType {TestProperty = "Valid Value 1"};
 
             Session.Insert(fact1);
 
@@ -56,7 +55,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
-        [Test]
+        [Fact]
         public void Fire_NoFactMatchingNotPattern_FiresOnce()
         {
             //Arrange
@@ -69,7 +68,23 @@ namespace NRules.IntegrationTests
 
         protected override void SetUpRules()
         {
-            SetUpRule<OneFactOneNotRule>();
+            SetUpRule<TestRule>();
+        }
+
+        public class FactType
+        {
+            public string TestProperty { get; set; }
+        }
+
+        public class TestRule : Rule
+        {
+            public override void Define()
+            {
+                When()
+                    .Not<FactType>(f => f.TestProperty.StartsWith("Valid"));
+                Then()
+                    .Do(ctx => ctx.NoOp());
+            }
         }
     }
 }

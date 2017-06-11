@@ -2,25 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using NRules.RuleModel.Aggregators;
+using System.Reflection;
 
 namespace NRules.RuleModel.Builders
 {
     /// <summary>
     /// Builder to compose an aggregate element.
     /// </summary>
-    public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
+    public class AggregateBuilder : PatternSourceElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
     {
-        private const string CollectName = "Collect";
-        private const string GroupByName = "GroupBy";
-        private const string ProjectName = "Project";
-        private const string FlattenName = "Flatten";
-
-        private readonly Type _resultType;
-        private IAggregatorFactory _aggregatorFactory; 
-        private PatternBuilder _sourceBuilder;
         private string _name;
         private readonly Dictionary<string, LambdaExpression> _expressions = new Dictionary<string, LambdaExpression>();
+        private readonly Type _resultType;
+        private PatternBuilder _sourceBuilder;
 
         internal AggregateBuilder(Type resultType, SymbolTable scope) 
             : base(scope.New("Aggregate"))
@@ -29,55 +23,30 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Sets aggregator.
+        /// Builder for the source of this element.
         /// </summary>
-        /// <param name="name">Name of the aggregator.</param>
-        /// <param name="aggregatorType">Type that implements <see cref="IAggregator"/> that aggregates facts.</param>
-        public void Aggregator(string name, Type aggregatorType)
-        {
-            if (!typeof(IAggregator).IsAssignableFrom(aggregatorType))
-            {
-                throw new InvalidOperationException(
-                    "Aggregator type must implement IAggregator interface");
-            }
-            if (aggregatorType.GetConstructor(Type.EmptyTypes) == null)
-            {
-                throw new InvalidOperationException(
-                    "Aggregator type must have a parameterless constructor to be used directly. Provide aggregator factory instead.");
-            }
-            Type factoryType = typeof(DefaultAggregatorFactory<>).MakeGenericType(aggregatorType);
-            var aggregatorFactory = (IAggregatorFactory) Activator.CreateInstance(factoryType);
-            AggregatorFactory(name, aggregatorFactory);
-        }
+        public PatternBuilder SourceBuilder => _sourceBuilder;
 
         /// <summary>
-        /// Sets aggregator factory.
+        /// Configure a custom aggregator.
         /// </summary>
         /// <param name="name">Name of the aggregator.</param>
-        /// <param name="aggregatorFactory">Factory to create new aggregators.</param>
-        public void AggregatorFactory(string name, IAggregatorFactory aggregatorFactory)
+        /// <param name="expressions">Named expressions used by the aggregator.</param>
+        public void Aggregator(string name, IDictionary<string, LambdaExpression> expressions)
         {
             _name = name;
-            _aggregatorFactory = aggregatorFactory;
+            foreach (var item in expressions)
+            {
+                _expressions[item.Key] = item.Value;
+            }
         }
-
+        
         /// <summary>
         /// Configure a collection aggregator.
         /// </summary>
-        /// <param name="elementType">Type of elements to aggregate.</param>
-        public void CollectionOf(Type elementType)
+        public void Collect()
         {
-            Type aggregateType = typeof (CollectionAggregator<>).MakeGenericType(elementType);
-            Aggregator(CollectName, aggregateType);
-        }
-
-        /// <summary>
-        /// Configure a collection aggregate.
-        /// </summary>
-        /// <typeparam name="TElement">Type of elements to aggregate.</typeparam>
-        public void CollectionOf<TElement>()
-        {
-            CollectionOf(typeof(TElement));
+            _name = AggregateElement.CollectName;
         }
 
         /// <summary>
@@ -85,41 +54,31 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="keySelector">Key selection expressions.</param>
         /// <param name="elementSelector">Element selection expression.</param>
-        /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
-        /// <typeparam name="TKey">Type of grouping key.</typeparam>
-        /// <typeparam name="TElement">Type of grouping element.</typeparam>
-        public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        public void GroupBy(LambdaExpression keySelector, LambdaExpression elementSelector)
         {
-            var aggregateFactory = new GroupByAggregatorFactory<TSource, TKey, TElement>(keySelector.Compile(), elementSelector.Compile());
+            _name = AggregateElement.GroupByName;
             _expressions["KeySelector"] = keySelector;
-            _expressions["ElementSelector"] = keySelector;
-            AggregatorFactory(GroupByName, aggregateFactory);
+            _expressions["ElementSelector"] = elementSelector;
         }
 
         /// <summary>
         /// Configure projection aggregator.
         /// </summary>
         /// <param name="selector">Projection expression.</param>
-        /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
-        /// <typeparam name="TResult">Type of result elements to aggregate.</typeparam>
-        public void Project<TSource, TResult>(Expression<Func<TSource, TResult>> selector)
+        public void Project(LambdaExpression selector)
         {
-            var aggregateFactory = new ProjectionAggregatorFactory<TSource, TResult>(selector.Compile());
+            _name = AggregateElement.ProjectName;
             _expressions["Selector"] = selector;
-            AggregatorFactory(ProjectName, aggregateFactory);
         }
 
         /// <summary>
         /// Configure flattening aggregator.
         /// </summary>
         /// <param name="selector">Projection expression.</param>
-        /// <typeparam name="TSource">Type of source elements to aggregate.</typeparam>
-        /// <typeparam name="TResult">Type of result elements to aggregate.</typeparam>
-        public void Flatten<TSource, TResult>(Expression<Func<TSource, IEnumerable<TResult>>> selector)
+        public void Flatten(LambdaExpression selector)
         {
-            var aggregateFactory = new FlatteningAggregatorFactory<TSource, TResult>(selector.Compile());
+            _name = AggregateElement.FlattenName;
             _expressions["Selector"] = selector;
-            AggregatorFactory(FlattenName, aggregateFactory);
         }
 
         /// <summary>
@@ -152,21 +111,136 @@ namespace NRules.RuleModel.Builders
             Validate();
             IBuilder<PatternElement> sourceBuilder = _sourceBuilder;
             PatternElement sourceElement = sourceBuilder.Build();
-            var namedExpressions = _expressions.Select(x => new NamedExpression(x.Key, x.Value));
-            var expressionMap = new ExpressionMap(namedExpressions);
-            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _name, expressionMap, _aggregatorFactory, sourceElement);
+            var elements = _expressions.Select(x => ToNamedExpression(x.Key, x.Value));
+            var expressionMap = new ExpressionMap(elements);
+            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _name, expressionMap, sourceElement);
             return aggregateElement;
+        }
+
+        private NamedExpressionElement ToNamedExpression(string name, LambdaExpression expression)
+        {
+            IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
+            var element = new NamedExpressionElement(name, Scope.VisibleDeclarations, references, expression);
+            return element;
         }
 
         private void Validate()
         {
-            if (_aggregatorFactory == null)
+            if (_name == null)
             {
-                throw new InvalidOperationException("Aggregator factory is not provided");
+                throw new InvalidOperationException("Aggregator name is not provided");
             }
             if (_sourceBuilder == null)
             {
                 throw new InvalidOperationException("Aggregate element source is not provided");
+            }
+            switch (_name)
+            {
+                case AggregateElement.CollectName:
+                    ValidateCollect();
+                    break;
+                case AggregateElement.GroupByName:
+                    ValidateGroupBy();
+                    break;
+                case AggregateElement.ProjectName:
+                    ValidateProject();
+                    break;
+                case AggregateElement.FlattenName:
+                    ValidateFlatten();
+                    break;
+            }
+        }
+
+        private void ValidateCollect()
+        {
+            var elementType = _sourceBuilder.Declaration.Type;
+            var expectedResultType = typeof(IEnumerable<>).MakeGenericType(elementType);
+            if (!expectedResultType.GetTypeInfo().IsAssignableFrom(_resultType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    $"Collect result must be a collection of source elements. ElementType={elementType}, ResultType={_resultType}");
+            }
+        }
+
+        private void ValidateGroupBy()
+        {
+            var keySelector = _expressions["KeySelector"];
+            if (keySelector.Parameters.Count != 1)
+            {
+                throw new ArgumentException(
+                    $"GroupBy key selector must have a single parameter. KeySelector={keySelector}");
+            }
+            if (keySelector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
+            {
+                throw new ArgumentException(
+                    "GroupBy key selector must have a parameter type that matches the aggregate source. " +
+                    $"KeySelector={keySelector}, ExpectedType={_sourceBuilder.Declaration.Type}, ActualType={keySelector.Parameters[0].Type}");
+            }
+
+            var elementSelector = _expressions["ElementSelector"];
+            if (elementSelector.Parameters.Count == 0)
+            {
+                throw new ArgumentException(
+                    $"GroupBy element selector must have at least one parameter. ElementSelector={elementSelector}");
+            }
+            if (elementSelector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
+            {
+                throw new ArgumentException(
+                    "GroupBy element selector must have a parameter type that matches the aggregate source. " +
+                    $"ElementSelector={elementSelector}, ExpectedType={_sourceBuilder.Declaration.Type}, ActualType={elementSelector.Parameters[0].Type}");
+            }
+
+            var groupType = typeof(IGrouping<,>).MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
+            if (!_resultType.GetTypeInfo().IsAssignableFrom(groupType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    "GroupBy key/element selectors must produce a grouping assignable to the aggregation result. " +
+                    $"ElementSelector={elementSelector}, ResultType={_resultType}, GroupingType={groupType}");
+            }
+        }
+
+        private void ValidateProject()
+        {
+            var selector = _expressions["Selector"];
+            if (selector.Parameters.Count == 0)
+            {
+                throw new ArgumentException(
+                    $"Projection selector must have at least one parameter. Selector={selector}");
+            }
+            if (selector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
+            {
+                throw new ArgumentException(
+                    "Projection selector must have its first parameter type that matches the aggregate source. " +
+                    $"Selector={selector}, ExpectedType={_sourceBuilder.Declaration.Type}, ActualType={selector.Parameters[0].Type}");
+            }
+            if (!_resultType.GetTypeInfo().IsAssignableFrom(selector.ReturnType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    "Projection selector must produce a value assignable to the aggregation result. " +
+                    $"Selector={selector}, ResultType={_resultType}, SelectorReturnType={selector.ReturnType}");
+            }
+        }
+
+        private void ValidateFlatten()
+        {
+            var selector = _expressions["Selector"];
+            if (selector.Parameters.Count != 1)
+            {
+                throw new ArgumentException(
+                    $"Flattening selector must have a single parameter. Selector={selector}");
+            }
+            if (selector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
+            {
+                throw new ArgumentException(
+                    "Flattening selector must have a parameter type that matches the aggregate source. " +
+                    $"Selector={selector}, ExpectedType={_sourceBuilder.Declaration.Type}, ActualType={selector.Parameters[0].Type}");
+            }
+            var resultCollectionType = typeof(IEnumerable<>).MakeGenericType(_resultType);
+            if (!resultCollectionType.GetTypeInfo().IsAssignableFrom(selector.ReturnType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    "Flattening selector must produce a collection of values that are assignable to the aggregation result. " +
+                    $"Selector={selector}, ResultType={_resultType}, SelectorReturnType={selector.ReturnType}");
             }
         }
 

@@ -13,6 +13,22 @@ namespace NRules.Fluent
     public interface IRuleLoadSpec
     {
         /// <summary>
+        /// Enables/disables discovery of private rule classes.
+        /// Default is off.
+        /// </summary>
+        /// <param name="include">Include private types if <c>true</c>, don't include otherwise.</param>
+        /// <returns>Spec to continue fluent configuration.</returns>
+        IRuleLoadSpec PrivateTypes(bool include = true);
+
+        /// <summary>
+        /// Enables/disables discovery of nested rule classes.
+        /// Default is off.
+        /// </summary>
+        /// <param name="include">Include nested types if <c>true</c>, don't include otherwise.</param>
+        /// <returns>Spec to continue fluent configuration.</returns>
+        IRuleLoadSpec NestedTypes(bool include = true);
+
+        /// <summary>
         /// Specifies to load all rule definitions from a given collection of assemblies.
         /// </summary>
         /// <param name="assemblies">Assemblies to load from.</param>
@@ -68,16 +84,24 @@ namespace NRules.Fluent
         private readonly IRuleActivator _activator;
         private readonly RuleTypeScanner _typeScanner = new RuleTypeScanner();
         private Func<IRuleMetadata, bool> _filter;
-        private string _ruleSetName;
 
         public RuleLoadSpec(IRuleActivator activator)
         {
             _activator = activator;
         }
 
-        public string RuleSetName
+        public string RuleSetName { get; private set; }
+
+        public IRuleLoadSpec PrivateTypes(bool include = true)
         {
-            get { return _ruleSetName; }
+            _typeScanner.PrivateTypes(include);
+            return this;
+        }
+
+        public IRuleLoadSpec NestedTypes(bool include = true)
+        {
+            _typeScanner.NestedTypes(include);
+            return this;
         }
 
         public IRuleLoadSpec From(params Assembly[] assemblies)
@@ -122,11 +146,11 @@ namespace NRules.Fluent
 
         public IRuleLoadSpec To(string ruleSetName)
         {
-            if (_ruleSetName != null)
+            if (RuleSetName != null)
             {
                 throw new InvalidOperationException("Rule load specification can only have a single 'To' clause");
             }
-            _ruleSetName = ruleSetName;
+            RuleSetName = ruleSetName;
             return this;
         }
 
