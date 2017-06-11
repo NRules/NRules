@@ -64,7 +64,7 @@ namespace NRules.Aggregators
         
                 if (Equals(key, oldKey))
                 {
-                    var result = Modify(key, element);
+                    var result = Modify(key, oldElement, element);
                     if (!resultLookup.ContainsKey(key))
                     {
                         keys.Add(key);
@@ -136,10 +136,18 @@ namespace NRules.Aggregators
             return AggregationResult.Modified(group);
         }
 
-        private AggregationResult Modify(TKey key, TElement element)
+        private AggregationResult Modify(TKey key, TElement oldElement, TElement element)
         {
             var group = _groups[key];
-            group.Modify(element);
+            if (Equals(oldElement, element))
+            {
+                group.Modify(element);
+            }
+            else
+            {
+                group.Remove(oldElement);
+                group.Add(element);
+            }
             return AggregationResult.Modified(group);
         }
 

@@ -47,11 +47,11 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(2, result.Length);
             Assert.Equal(AggregationAction.Added, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key1", aggregate1.Key);
             Assert.Equal(2, aggregate1.Count());
             Assert.Equal(AggregationAction.Added, result[1].Action);
-            var aggregate2 = (IGrouping<string, TestFact>)result[1].Aggregate;
+            var aggregate2 = (IGrouping<string, GroupElement>)result[1].Aggregate;
             Assert.Equal("key2", aggregate2.Key);
             Assert.Equal(1, aggregate2.Count());
         }
@@ -68,11 +68,11 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(2, result.Length);
             Assert.Equal(AggregationAction.Added, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key1", aggregate1.Key);
             Assert.Equal(1, aggregate1.Count());
             Assert.Equal(AggregationAction.Added, result[1].Action);
-            var aggregate2 = (IGrouping<string, TestFact>)result[1].Aggregate;
+            var aggregate2 = (IGrouping<string, GroupElement>)result[1].Aggregate;
             Assert.Equal(null, aggregate2.Key);
             Assert.Equal(1, aggregate2.Count());
         }
@@ -90,7 +90,7 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(1, result.Length);
             Assert.Equal(AggregationAction.Added, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key2", aggregate1.Key);
             Assert.Equal(2, aggregate1.Count());
         }
@@ -108,11 +108,11 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(2, result.Length);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key1", aggregate1.Key);
             Assert.Equal(2, aggregate1.Count());
             Assert.Equal(AggregationAction.Modified, result[1].Action);
-            var aggregate2 = (IGrouping<string, TestFact>)result[1].Aggregate;
+            var aggregate2 = (IGrouping<string, GroupElement>)result[1].Aggregate;
             Assert.Equal("key2", aggregate2.Key);
             Assert.Equal(2, aggregate2.Count());
         }
@@ -130,11 +130,11 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(2, result.Length);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key1", aggregate1.Key);
             Assert.Equal(2, aggregate1.Count());
             Assert.Equal(AggregationAction.Modified, result[1].Action);
-            var aggregate2 = (IGrouping<string, TestFact>)result[1].Aggregate;
+            var aggregate2 = (IGrouping<string, GroupElement>)result[1].Aggregate;
             Assert.Equal(null, aggregate2.Key);
             Assert.Equal(2, aggregate2.Count());
         }
@@ -152,11 +152,11 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(2, result.Length);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key1", aggregate1.Key);
             Assert.Equal(2, aggregate1.Count());
             Assert.Equal(AggregationAction.Added, result[1].Action);
-            var aggregate2 = (IGrouping<string, TestFact>)result[1].Aggregate;
+            var aggregate2 = (IGrouping<string, GroupElement>)result[1].Aggregate;
             Assert.Equal("key2", aggregate2.Key);
             Assert.Equal(2, aggregate2.Count());
         }
@@ -233,11 +233,11 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(2, result.Length);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key1", aggregate1.Key);
             Assert.Equal(1, aggregate1.Count());
             Assert.Equal(AggregationAction.Added, result[1].Action);
-            var aggregate2 = (IGrouping<string, TestFact>)result[1].Aggregate;
+            var aggregate2 = (IGrouping<string, GroupElement>)result[1].Aggregate;
             Assert.Equal("key2", aggregate2.Key);
             Assert.Equal(1, aggregate2.Count());
         }
@@ -255,11 +255,11 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(2, result.Length);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key1", aggregate1.Key);
             Assert.Equal(1, aggregate1.Count());
             Assert.Equal(AggregationAction.Added, result[1].Action);
-            var aggregate2 = (IGrouping<string, TestFact>)result[1].Aggregate;
+            var aggregate2 = (IGrouping<string, GroupElement>)result[1].Aggregate;
             Assert.Equal(null, aggregate2.Key);
             Assert.Equal(1, aggregate2.Count());
         }
@@ -277,11 +277,11 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(2, result.Length);
             Assert.Equal(AggregationAction.Removed, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key1", aggregate1.Key);
             Assert.Equal(0, aggregate1.Count());
             Assert.Equal(AggregationAction.Added, result[1].Action);
-            var aggregate2 = (IGrouping<string, TestFact>)result[1].Aggregate;
+            var aggregate2 = (IGrouping<string, GroupElement>)result[1].Aggregate;
             Assert.Equal("key2", aggregate2.Key);
             Assert.Equal(2, aggregate2.Count());
         }
@@ -321,7 +321,7 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(1, result.Length);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key1", aggregate1.Key);
             Assert.Equal(1, aggregate1.Count());
         }
@@ -339,7 +339,7 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(1, result.Length);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal(null, aggregate1.Key);
             Assert.Equal(1, aggregate1.Count());
         }
@@ -357,7 +357,7 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(1, result.Length);
             Assert.Equal(AggregationAction.Removed, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal("key1", aggregate1.Key);
             Assert.Equal(0, aggregate1.Count());
         }
@@ -375,7 +375,7 @@ namespace NRules.Tests.Aggregators
             //Assert
             Assert.Equal(1, result.Length);
             Assert.Equal(AggregationAction.Removed, result[0].Action);
-            var aggregate1 = (IGrouping<string, TestFact>)result[0].Aggregate;
+            var aggregate1 = (IGrouping<string, GroupElement>)result[0].Aggregate;
             Assert.Equal(null, aggregate1.Key);
             Assert.Equal(0, aggregate1.Count());
         }
@@ -402,11 +402,11 @@ namespace NRules.Tests.Aggregators
                 () => target.Remove(EmptyTuple(), AsFact(new TestFact(1, null))));
         }
 
-        private GroupByAggregator<TestFact, string, TestFact> CreateTarget()
+        private GroupByAggregator<TestFact, string, GroupElement> CreateTarget()
         {
             var keyExpression = new FactExpression<TestFact, string>(x => x.Key);
-            var elementExpression = new FactExpression<TestFact, TestFact>(x => x);
-            return new GroupByAggregator<TestFact, string, TestFact>(keyExpression, elementExpression);
+            var elementExpression = new FactExpression<TestFact, GroupElement>(x => new GroupElement(x));
+            return new GroupByAggregator<TestFact, string, GroupElement>(keyExpression, elementExpression);
         }
 
         private class TestFact : IEquatable<TestFact>
@@ -439,6 +439,18 @@ namespace NRules.Tests.Aggregators
             {
                 return Id;
             }
+        }
+
+        private class GroupElement
+        {
+            public GroupElement(TestFact fact)
+            {
+                Id = fact.Id;
+                Key = fact.Key;
+            }
+
+            public int Id { get; }
+            public string Key { get; }
         }
     }
 }

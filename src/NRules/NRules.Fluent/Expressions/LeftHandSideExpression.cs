@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
 using NRules.RuleModel.Builders;
@@ -96,6 +97,17 @@ namespace NRules.Fluent.Expressions
         {
             var expressionBuilder = new LeftHandSideExpression(_builder, _groupBuilder.Group(GroupType.Or));
             builderAction(expressionBuilder);
+            return this;
+        }
+
+        public ILeftHandSideExpression Having(params Expression<Func<bool>>[] conditions)
+        {
+            var patternBuilder = _groupBuilder.NestedBuilders.OfType<PatternBuilder>().LastOrDefault();
+            if (patternBuilder == null)
+            {
+                throw new ArgumentException("HAVING clause can only be used on existing rule patterns");
+            }
+            patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
             return this;
         }
     }

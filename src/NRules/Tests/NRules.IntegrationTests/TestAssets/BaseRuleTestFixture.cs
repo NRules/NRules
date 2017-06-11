@@ -11,11 +11,11 @@ namespace NRules.IntegrationTests.TestAssets
 {
     public abstract class BaseRuleTestFixture
     {
-        protected ISession Session;
-        protected RuleRepository Repository;
+        protected readonly ISession Session;
+        protected readonly RuleRepository Repository;
 
-        private Dictionary<string, List<AgendaEventArgs>> _firedRulesMap;
-        private Dictionary<Type, IRuleMetadata> _ruleMap;
+        private readonly Dictionary<string, List<AgendaEventArgs>> _firedRulesMap;
+        private readonly Dictionary<Type, IRuleMetadata> _ruleMap;
 
         protected BaseRuleTestFixture()
         {

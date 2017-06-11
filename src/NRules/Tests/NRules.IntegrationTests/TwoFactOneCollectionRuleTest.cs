@@ -74,7 +74,6 @@ namespace NRules.IntegrationTests
             Assert.Same(fact1, matches[0].Value);
             Assert.Equal("collection", matches[1].Declaration.Name);
             Assert.Equal(new[] { fact2 }, (IEnumerable<FactType2>)matches[1].Value);
-            //CollectionAssert.AreEqual(new [] {fact2}, (IEnumerable<FactType2>)matches[1].Value);
         }
 
         [Fact]

@@ -154,7 +154,7 @@ namespace NRules.IntegrationTests
                 Value = fact.TestProperty;
             }
 
-            public string Value { get; private set; }
+            public string Value { get; }
 
             public bool Equals(FactProjection other)
             {

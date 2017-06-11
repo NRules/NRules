@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
@@ -11,7 +10,17 @@ namespace NRules.Fluent.Expressions
     {
         public static void DslConditions<TFact>(this PatternBuilder builder, IEnumerable<Declaration> declarations, params Expression<Func<TFact, bool>>[] conditions)
         {
-            var rewriter = new PatternExpressionRewriter(builder.Declaration, declarations.ToArray());
+            var rewriter = new PatternExpressionRewriter(builder.Declaration, declarations);
+            foreach (var condition in conditions)
+            {
+                var rewrittenCondition = rewriter.Rewrite(condition);
+                builder.Condition(rewrittenCondition);
+            }
+        }
+
+        public static void DslConditions(this PatternBuilder builder, IEnumerable<Declaration> declarations, params Expression<Func<bool>>[] conditions)
+        {
+            var rewriter = new ExpressionRewriter(declarations);
             foreach (var condition in conditions)
             {
                 var rewrittenCondition = rewriter.Rewrite(condition);

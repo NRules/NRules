@@ -2,11 +2,6 @@ using System.Collections.Generic;
 
 namespace NRules.RuleModel.Builders
 {
-    internal interface IBuilder<out TElement> where TElement : RuleElement
-    {
-        TElement Build();
-    }
-
     /// <summary>
     /// Base class for rule element builders.
     /// </summary>

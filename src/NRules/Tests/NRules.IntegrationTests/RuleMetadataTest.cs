@@ -9,7 +9,7 @@ namespace NRules.IntegrationTests
 {
     public class RuleMetadataTest
     {
-        private RuleRepository _repository;
+        private readonly RuleRepository _repository;
 
         public RuleMetadataTest()
         {

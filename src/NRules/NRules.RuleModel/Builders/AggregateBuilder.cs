@@ -9,7 +9,7 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose an aggregate element.
     /// </summary>
-    public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
+    public class AggregateBuilder : PatternSourceElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
     {
         private string _name;
         private readonly Dictionary<string, LambdaExpression> _expressions = new Dictionary<string, LambdaExpression>();
@@ -21,6 +21,11 @@ namespace NRules.RuleModel.Builders
         {
             _resultType = resultType;
         }
+
+        /// <summary>
+        /// Builder for the source of this element.
+        /// </summary>
+        public PatternBuilder SourceBuilder => _sourceBuilder;
 
         /// <summary>
         /// Configure a custom aggregator.
@@ -39,8 +44,7 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Configure a collection aggregator.
         /// </summary>
-        /// <param name="elementType">Type of elements to aggregate.</param>
-        public void Collect(Type elementType)
+        public void Collect()
         {
             _name = AggregateElement.CollectName;
         }
@@ -132,6 +136,9 @@ namespace NRules.RuleModel.Builders
             }
             switch (_name)
             {
+                case AggregateElement.CollectName:
+                    ValidateCollect();
+                    break;
                 case AggregateElement.GroupByName:
                     ValidateGroupBy();
                     break;
@@ -141,6 +148,17 @@ namespace NRules.RuleModel.Builders
                 case AggregateElement.FlattenName:
                     ValidateFlatten();
                     break;
+            }
+        }
+
+        private void ValidateCollect()
+        {
+            var elementType = _sourceBuilder.Declaration.Type;
+            var expectedResultType = typeof(IEnumerable<>).MakeGenericType(elementType);
+            if (!expectedResultType.GetTypeInfo().IsAssignableFrom(_resultType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    $"Collect result must be a collection of source elements. ElementType={elementType}, ResultType={_resultType}");
             }
         }
 
@@ -160,10 +178,10 @@ namespace NRules.RuleModel.Builders
             }
 
             var elementSelector = _expressions["ElementSelector"];
-            if (elementSelector.Parameters.Count != 1)
+            if (elementSelector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
-                    $"GroupBy element selector must have a single parameter. ElementSelector={elementSelector}");
+                    $"GroupBy element selector must have at least one parameter. ElementSelector={elementSelector}");
             }
             if (elementSelector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
             {

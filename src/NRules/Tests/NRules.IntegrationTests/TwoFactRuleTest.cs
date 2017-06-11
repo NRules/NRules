@@ -330,7 +330,8 @@ namespace NRules.IntegrationTests
             {
                 When()
                     .Match<FactType1>(() => Fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Match<FactType2>(() => Fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == Fact1.TestProperty);
+                    .Match<FactType2>(() => Fact2, f => f.TestProperty.StartsWith("Valid"))
+                    .Having(() => Fact2.JoinProperty == Fact1.TestProperty);
 
                 Then()
                     .Do(ctx => ctx.NoOp());

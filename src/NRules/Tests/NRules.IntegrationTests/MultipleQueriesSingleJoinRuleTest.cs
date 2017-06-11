@@ -80,19 +80,16 @@ namespace NRules.IntegrationTests
         public class FactType2
         {
             public string TestProperty { get; set; }
-            public string JoinProperty { get; set; }
         }
 
         public class FactType3
         {
             public string TestProperty { get; set; }
-            public string JoinProperty { get; set; }
         }
 
         public class FactType4
         {
             public string TestProperty { get; set; }
-            public FactType4 Parent { get; set; }
         }
 
         public class TestRule : Rule
