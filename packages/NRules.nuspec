@@ -17,7 +17,7 @@
     <tags>rules engine inference rete business dsl</tags>
     <dependencies>
       <dependency id="NRules.Runtime" version="[$version$]" />
-      <dependency id="NRules.FluentDsl" version="[$version$]" />
+      <dependency id="NRules.Fluent" version="[$version$]" />
     </dependencies>
   </metadata>
 </package>
