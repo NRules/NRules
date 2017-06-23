@@ -3,7 +3,7 @@ param (
     [string]$component_name = 'Core'
 )
 
-$version = '0.6.2'
+$version = '0.6.3'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -41,7 +41,7 @@ $components = @{
         package = @{
             nuget = @(
                 'NRules.RuleModel',
-                'NRules.FluentDsl',
+                'NRules.Fluent',
                 'NRules.Runtime',
                 'NRules'
             )
