@@ -86,6 +86,15 @@ namespace NRules.Fluent.Dsl
         ILeftHandSideExpression Or(Action<ILeftHandSideExpression> builder);
 
         /// <summary>
+        /// Calculates a value based on existing rule patterns.
+        /// </summary>
+        /// <typeparam name="TResult">Type of the calculated value.</typeparam>
+        /// <param name="alias">Alias for the calculation result.</param>
+        /// <param name="expression">Calculation expression.</param>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSideExpression Calculate<TResult>(Expression<Func<TResult>> alias, Expression<Func<TResult>> expression);
+
+        /// <summary>
         /// Adds match conditions to existing rule patterns.
         /// </summary>
         /// <param name="conditions">Additional match conditions.</param>

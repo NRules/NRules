@@ -66,7 +66,7 @@ namespace NRules.Rete
 
         public override int GetHashCode()
         {
-            return _expression != null ? _expression.GetHashCode() : 0;
+            return _expression.GetHashCode();
         }
 
         public override string ToString()

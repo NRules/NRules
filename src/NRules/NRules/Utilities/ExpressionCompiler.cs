@@ -68,6 +68,17 @@ namespace NRules.Utilities
             }
         }
 
+        public static IBindingExpression CompileBindingExpression(BindingElement element, IEnumerable<Declaration> declarations)
+        {
+            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], object>>();
+            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
+            var @delegate = optimizedExpression.Compile();
+            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new BindingExpression(element.Expression, fastDelegate, factIndexMap);
+            return expression;
+        }
+
         private static FastDelegate<TDelegate> Create<TDelegate>(TDelegate @delegate, int parameterCount) where TDelegate : class
         {
             return new FastDelegate<TDelegate>(@delegate, parameterCount);

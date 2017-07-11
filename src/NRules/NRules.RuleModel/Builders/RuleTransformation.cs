@@ -72,6 +72,10 @@ namespace NRules.RuleModel.Builders
             }
         }
 
+        protected internal override void VisitBinding(Context context, BindingElement element)
+        {
+        }
+
         protected internal override void VisitAggregate(Context context, AggregateElement element)
         {
             var source = Transform<PatternElement>(context, element.Source);

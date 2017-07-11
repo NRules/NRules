@@ -4,7 +4,12 @@ using System.Linq;
 
 namespace NRules.Rete
 {
-    internal abstract class BetaNode : ITupleSink, IObjectSink
+    internal interface IBetaNode
+    {
+        IBetaMemoryNode MemoryNode { get; set; }
+    }
+
+    internal abstract class BetaNode : IBetaNode, ITupleSink, IObjectSink
     {
         private static readonly TupleFactSet[] EmptySetList = new TupleFactSet[0];
         private static readonly Dictionary<long, List<Fact>> EmptyGroups = new Dictionary<long, List<Fact>>();

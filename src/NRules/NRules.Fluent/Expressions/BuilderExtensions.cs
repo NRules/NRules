@@ -28,6 +28,13 @@ namespace NRules.Fluent.Expressions
             }
         }
 
+        public static void DslBindingExpression(this BindingBuilder builder, IEnumerable<Declaration> declarations, LambdaExpression expression)
+        {
+            var rewriter = new ExpressionRewriter(declarations);
+            var rewrittenExpression = rewriter.Rewrite(expression);
+            builder.BindingExpression(rewrittenExpression);
+        }
+
         public static void DslAction(this ActionGroupBuilder builder, IEnumerable<Declaration> declarations, Expression<Action<IContext>> action)
         {
             var rewriter = new ExpressionRewriter(declarations);
