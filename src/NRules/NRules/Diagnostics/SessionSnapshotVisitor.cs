@@ -90,6 +90,7 @@ namespace NRules.Diagnostics
         {
             if (builder.IsVisited(node)) return;
             builder.AddNode(node, NodeInfo.Create);
+            builder.AddLink(node, node.MemoryNode);
             base.VisitBindingNode(builder, node);
         }
 

@@ -97,14 +97,15 @@ namespace NRules.Debugger.Visualizer
             categories.Add(Category(NodeType.Type, "Orange"));
             categories.Add(Category(NodeType.Selection, "Blue"));
             categories.Add(Category(NodeType.AlphaMemory, "Red"));
-            categories.Add(Category(NodeType.Dummy, "Grey"));
+            categories.Add(Category(NodeType.Dummy, "Silver"));
             categories.Add(Category(NodeType.Join, "Blue"));
             categories.Add(Category(NodeType.Not, "Brown"));
             categories.Add(Category(NodeType.Exists, "Brown"));
             categories.Add(Category(NodeType.Aggregate, "Brown"));
             categories.Add(Category(NodeType.BetaMemory, "Green"));
-            categories.Add(Category(NodeType.Adapter, "Grey"));
-            categories.Add(Category(NodeType.Terminal, "Grey"));
+            categories.Add(Category(NodeType.Adapter, "Silver"));
+            categories.Add(Category(NodeType.Binding, "Silver"));
+            categories.Add(Category(NodeType.Terminal, "Silver"));
             categories.Add(Category(NodeType.Rule, "Purple"));
         }
 
@@ -128,7 +129,7 @@ namespace NRules.Debugger.Visualizer
 
         private string SubNodeId(NodeInfo nodeInfo, int itemIndex)
         {
-            return string.Format("{0}_{1}", Id(nodeInfo), itemIndex);
+            return $"{Id(nodeInfo)}_{itemIndex}";
         }
     }
 }
