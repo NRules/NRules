@@ -77,7 +77,7 @@ namespace NRules.Rete
 
         protected internal virtual void VisitBindingNode(TContext context, BindingNode node)
         {
-            Visit(context, node.MemoryNode);
+            VisitBetaNode(context, node);
         }
 
         protected internal virtual void VisitBetaMemoryNode(TContext context, BetaMemoryNode node)

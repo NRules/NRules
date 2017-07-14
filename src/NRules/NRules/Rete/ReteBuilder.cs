@@ -256,7 +256,7 @@ namespace NRules.Rete
             context.ResetAlphaSource();
         }
 
-        private void BuildBetaMemoryNode(ReteBuilderContext context, IBetaNode betaNode)
+        private void BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
         {
             if (betaNode.MemoryNode == null)
             {

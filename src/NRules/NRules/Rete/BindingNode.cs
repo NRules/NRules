@@ -2,11 +2,10 @@
 
 namespace NRules.Rete
 {
-    internal class BindingNode : IBetaNode, ITupleSink
+    internal class BindingNode : BetaNode
     {
         public IBindingExpression BindingExpression { get; }
         public ITupleSource Source { get; }
-        public IBetaMemoryNode MemoryNode { get; set; }
 
         public BindingNode(IBindingExpression bindingExpression, ITupleSource source)
         {
@@ -16,7 +15,7 @@ namespace NRules.Rete
             Source.Attach(this);
         }
 
-        public void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
+        public override void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
         {
             var toAssert = new TupleFactList();
             foreach (var tuple in tuples)
@@ -33,7 +32,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
+        public override void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
         {
             var toUpdate = new TupleFactList();
             foreach (var tuple in tuples)
@@ -62,7 +61,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
+        public override void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
         {
             var toRetract = new TupleFactList();
             foreach (var tuple in tuples)
@@ -81,7 +80,7 @@ namespace NRules.Rete
             }
         }
 
-        public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+        public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.VisitBindingNode(context, this);
         }
