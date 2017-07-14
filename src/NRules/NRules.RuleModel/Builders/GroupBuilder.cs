@@ -62,6 +62,20 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
+        /// Creates a binding builder as part of the current group.
+        /// </summary>
+        /// <param name="type">Binding type.</param>
+        /// <param name="name">Binding name.</param>
+        /// <returns>Binding builder.</returns>
+        public BindingBuilder Binding(Type type, string name)
+        {
+            var declaration = Scope.Declare(type, name);
+            var builder = new BindingBuilder(Scope, declaration);
+            _nestedBuilders.Add(builder);
+            return builder;
+        }
+
+        /// <summary>
         /// Creates a group builder that builds a group as part of the current group.
         /// </summary>
         /// <param name="groupType">Group type.</param>

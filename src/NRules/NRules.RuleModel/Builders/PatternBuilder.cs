@@ -31,7 +31,7 @@ namespace NRules.RuleModel.Builders
         public void Condition(LambdaExpression expression)
         {
             IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var condition = new ConditionElement(Scope.Declarations, references, expression);
+            var condition = new ConditionElement(Scope.VisibleDeclarations, references, expression);
             _conditions.Add(condition);
         }
 

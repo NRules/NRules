@@ -16,7 +16,7 @@ namespace NRules.Debugger.Visualizer.Tests
             ISessionFactory factory = repository.Compile();
             ISession session = factory.CreateSession();
 
-            session.Insert(new Fact1 { Value = "TestValue" });
+            session.Insert(new Fact1 { TestProperty = "Valid Value" });
 
             VisualizerHost.Visualize(session);
         }

@@ -80,5 +80,10 @@ namespace NRules.Aggregators
                 throw new RuleExpressionEvaluationException("Failed to evaluate expression", _expression.ToString(), e);
             }
         }
+
+        public override string ToString()
+        {
+            return _expression.ToString();
+        }
     }
 }

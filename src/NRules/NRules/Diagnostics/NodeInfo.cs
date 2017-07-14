@@ -19,6 +19,7 @@ namespace NRules.Diagnostics
         Exists,
         Aggregate,
         Not,
+        Binding,
         BetaMemory,
         Terminal,
         Rule,
@@ -78,6 +79,12 @@ namespace NRules.Diagnostics
         internal static NodeInfo Create(ObjectInputAdapter node)
         {
             return new NodeInfo(NodeType.Adapter, string.Empty);
+        }
+
+        internal static NodeInfo Create(BindingNode node)
+        {
+            var expression = new[] {$"{node.BindingExpression}"};
+            return new NodeInfo(NodeType.Binding, string.Empty, Empty, expression, Empty);
         }
 
         internal static NodeInfo Create(BetaMemoryNode node, IBetaMemory memory)

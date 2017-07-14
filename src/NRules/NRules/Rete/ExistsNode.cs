@@ -2,7 +2,7 @@
 
 namespace NRules.Rete
 {
-    internal class ExistsNode : BetaNode
+    internal class ExistsNode : BinaryBetaNode
     {
         public ExistsNode(ITupleSource leftSource, IObjectSource rightSource) : base(leftSource, rightSource)
         {

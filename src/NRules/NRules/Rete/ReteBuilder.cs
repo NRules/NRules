@@ -132,6 +132,12 @@ namespace NRules.Rete
             }
         }
 
+        protected override void VisitBinding(ReteBuilderContext context, BindingElement element)
+        {
+            BuildBindingNode(context, element);
+            context.RegisterDeclaration(element.Declaration);
+        }
+
         private void BuildSubnet(ReteBuilderContext context, RuleElement element)
         {
             var subnetContext = new ReteBuilderContext(context);
@@ -230,6 +236,21 @@ namespace NRules.Rete
                 node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name, 
                     element.ExpressionMap, aggregatorFactory, context.HasSubnet);
                 if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
+            }
+            BuildBetaMemoryNode(context, node);
+            context.ResetAlphaSource();
+        }
+
+        private void BuildBindingNode(ReteBuilderContext context, BindingElement element)
+        {
+            var node = context.BetaSource
+                .Sinks.OfType<BindingNode>()
+                .FirstOrDefault(x =>
+                    ExpressionComparer.AreEqual(x.BindingExpression.Expression, element.Expression));
+            if (node == null)
+            {
+                var bindingExpression = ExpressionCompiler.CompileBindingExpression(element, context.Declarations);
+                node = new BindingNode(bindingExpression, context.BetaSource);
             }
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();

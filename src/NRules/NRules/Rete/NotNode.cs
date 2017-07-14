@@ -2,7 +2,7 @@
 
 namespace NRules.Rete
 {
-    internal class NotNode : BetaNode
+    internal class NotNode : BinaryBetaNode
     {
         public NotNode(ITupleSource leftSource, IObjectSource rightSource) : base(leftSource, rightSource)
         {
