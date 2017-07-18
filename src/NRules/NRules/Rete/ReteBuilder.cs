@@ -135,7 +135,6 @@ namespace NRules.Rete
         protected override void VisitBinding(ReteBuilderContext context, BindingElement element)
         {
             BuildBindingNode(context, element);
-            context.RegisterDeclaration(element.Declaration);
         }
 
         private void BuildSubnet(ReteBuilderContext context, RuleElement element)

@@ -20,7 +20,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact>().Value);
+            Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>().Value);
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact>().Value);
+            Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>().Value);
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace NRules.IntegrationTests
 
             //Assert - 1
             AssertFiredOnce();
-            Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact>(0).Value);
+            Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>(0).Value);
 
             //Arrange - 2
             fact2.TestProperty = "Valid Value 22";
@@ -68,7 +68,26 @@ namespace NRules.IntegrationTests
 
             //Assert - 2
             AssertFiredTwice();
-            Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact>(1).Value);
+            Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>(1).Value);
+        }
+
+        [Fact]
+        public void Fire_OneMatchingFactOfEachKindSecondFactUpdatedToInvalidateBindingCondition_DoesNotFire()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = "Valid Value 1" };
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            fact2.Counter = 1;
+            Session.Update(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
         }
 
         [Fact]
@@ -105,8 +124,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.Equal("Valid Value 11|Valid Value 21", GetFiredFact<CalculatedFact>(0).Value);
-            Assert.Equal("Valid Value 12|Valid Value 22", GetFiredFact<CalculatedFact>(1).Value);
+            Assert.Equal("Valid Value 11|Valid Value 21", GetFiredFact<CalculatedFact3>(0).Value);
+            Assert.Equal("Valid Value 12|Valid Value 22", GetFiredFact<CalculatedFact3>(1).Value);
         }
 
         protected override void SetUpRules()
@@ -117,22 +136,34 @@ namespace NRules.IntegrationTests
         public class FactType1
         {
             public string TestProperty { get; set; }
+            public int Counter { get; set; }
         }
 
         public class FactType2
         {
             public string TestProperty { get; set; }
+            public int Counter { get; set; }
             public string JoinProperty { get; set; }
         }
 
-        public class CalculatedFact
+        public class CalculatedFact3
         {
-            public CalculatedFact(FactType1 fact1, FactType2 fact2)
+            public CalculatedFact3(FactType1 fact1, FactType2 fact2)
             {
                 Value = $"{fact1.TestProperty}|{fact2.TestProperty}";
             }
 
             public string Value { get; }
+        }
+
+        public class CalculatedFact4
+        {
+            public CalculatedFact4(FactType1 fact1, FactType2 fact2)
+            {
+                Value = fact1.Counter + fact2.Counter;
+            }
+
+            public long Value { get; }
         }
 
         public class TestRule : Rule
@@ -141,12 +172,15 @@ namespace NRules.IntegrationTests
             {
                 FactType1 fact1 = null;
                 FactType2 fact2 = null;
-                CalculatedFact fact3 = null;
+                CalculatedFact3 fact3 = null;
+                CalculatedFact4 fact4 = null;
 
                 When()
                     .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
                     .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
-                    .Calculate(() => fact3, () => new CalculatedFact(fact1, fact2));
+                    .Calculate(() => fact3, () => new CalculatedFact3(fact1, fact2))
+                    .Calculate(() => fact4, () => new CalculatedFact4(fact1, fact2))
+                    .Having(() => fact4.Value == 0);
 
                 Then()
                     .Do(ctx => ctx.NoOp());

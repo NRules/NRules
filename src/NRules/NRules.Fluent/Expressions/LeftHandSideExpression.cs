@@ -103,7 +103,8 @@ namespace NRules.Fluent.Expressions
         public ILeftHandSideExpression Calculate<TResult>(Expression<Func<TResult>> alias, Expression<Func<TResult>> expression)
         {
             var symbol = alias.ToParameterExpression();
-            var bindingBuilder = _groupBuilder.Binding(symbol.Type, symbol.Name);
+            var patternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
+            var bindingBuilder = patternBuilder.Binding();
             bindingBuilder.DslBindingExpression(_groupBuilder.Declarations, expression);
             return this;
         }

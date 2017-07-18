@@ -52,6 +52,17 @@ namespace NRules.RuleModel.Builders
             return builder;
         }
 
+        /// <summary>
+        /// Creates a binding builder that builds the source of the pattern.
+        /// </summary>
+        /// <returns>Binding builder.</returns>
+        public BindingBuilder Binding()
+        {
+            var builder = new BindingBuilder(Scope, Declaration.Type);
+            _sourceBuilder = builder;
+            return builder;
+        }
+
         PatternElement IBuilder<PatternElement>.Build()
         {
             Validate();
