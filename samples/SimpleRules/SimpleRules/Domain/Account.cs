@@ -2,8 +2,8 @@
 {
     public class Account
     {
-        public string AccountNumber { get; private set; }
-        public Customer Owner { get; private set; }
+        public string AccountNumber { get; }
+        public Customer Owner { get; }
         public bool IsActive { get; set; }
         public bool IsDelinquent { get; set; }
 

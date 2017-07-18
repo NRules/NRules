@@ -15,7 +15,7 @@ namespace NRules.Samples.SimpleRules.Rules
                 .Match<Customer>(() => customer, c => c.IsPreferred)
                 .And(xx => xx
                     .Match<Customer>(() => customer, c => !c.IsPreferred)
-                    .Exists<Order>(o => o.Customer == customer, o => o.Price >= 1000.00)));
+                    .Exists<Order>(o => o.Customer == customer, o => o.Amount >= 1000.00)));
 
             Then()
                 .Do(ctx => Console.WriteLine("Customer {0} is important", customer.Name));
