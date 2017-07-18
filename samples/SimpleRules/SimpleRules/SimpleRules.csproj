@@ -65,7 +65,6 @@
     <Compile Include="Rules\AllActiveAccountsRule.cs" />
     <Compile Include="Rules\ActiveDelinquentAccountRule.cs" />
     <Compile Include="Rules\ImportantCustomerRule.cs" />
-    <Compile Include="Rules\LargeTotalRule.cs" />
     <Compile Include="Rules\OrdersByCustomerRule.cs" />
     <Compile Include="Rules\MultipleOrdersRule.cs" />
     <Compile Include="Rules\NoActiveDelinquentAccountsRule.cs" />
