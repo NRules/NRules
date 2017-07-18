@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Rule element that represents a a binding of a calculated expression to a declaration.
+    /// Rule element that represents a binding of a calculated expression to a declaration.
     /// </summary>
     public class BindingElement : RuleLeftElement
     {

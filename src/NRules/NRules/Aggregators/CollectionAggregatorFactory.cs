@@ -5,6 +5,9 @@ using System.Linq.Expressions;
 
 namespace NRules.Aggregators
 {
+    /// <summary>
+    /// Aggregator factory for collection aggregator.
+    /// </summary>
     internal class CollectionAggregatorFactory : IAggregatorFactory
     {
         private Func<IAggregator> _factory;
