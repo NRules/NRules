@@ -21,6 +21,13 @@ namespace NRules.Rete
             FactType = factType.GetTypeInfo();
         }
 
+        public Fact(object @object, Type declaredType)
+        {
+            _object = @object;
+            var factType = @object?.GetType() ?? declaredType;
+            FactType = factType.GetTypeInfo();
+        }
+
         public virtual TypeInfo FactType { get; }
 
         public object RawObject

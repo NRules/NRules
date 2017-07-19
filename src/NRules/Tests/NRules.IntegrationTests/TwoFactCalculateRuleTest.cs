@@ -24,6 +24,40 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
+        public void Fire_OneMatchingFactOfEachKindNullFact_FiresOnce()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", ShouldProduceNull3 = true };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = "Valid Value 1" };
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.Null(GetFiredFact<CalculatedFact3>());
+            Assert.NotNull(GetFiredFact<CalculatedFact4>());
+        }
+
+        [Fact]
+        public void Fire_OneMatchingFactOfEachKindNullFactFilteredOut_DoesNotFire()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", ShouldProduceNull4 = true };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = "Valid Value 1" };
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+
+        [Fact]
         public void Fire_OneMatchingFactOfEachKindSecondFactUpdated_FiresOnce()
         {
             //Arrange
@@ -137,6 +171,8 @@ namespace NRules.IntegrationTests
         {
             public string TestProperty { get; set; }
             public int Counter { get; set; }
+            public bool ShouldProduceNull3 { get; set; }
+            public bool ShouldProduceNull4 { get; set; }
         }
 
         public class FactType2
@@ -178,12 +214,24 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
                     .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
-                    .Calculate(() => fact3, () => new CalculatedFact3(fact1, fact2))
-                    .Calculate(() => fact4, () => new CalculatedFact4(fact1, fact2))
-                    .Having(() => fact4.Value == 0);
+                    .Calculate(() => fact3, () => CreateFact3(fact1, fact2))
+                    .Calculate(() => fact4, () => CreateFact4(fact1, fact2))
+                    .Having(() => fact4 != null && fact4.Value == 0);
 
                 Then()
                     .Do(ctx => ctx.NoOp());
+            }
+
+            private static CalculatedFact3 CreateFact3(FactType1 fact1, FactType2 fact2)
+            {
+                if (fact1.ShouldProduceNull3) return null;
+                return new CalculatedFact3(fact1, fact2);
+            }
+
+            private static CalculatedFact4 CreateFact4(FactType1 fact1, FactType2 fact2)
+            {
+                if (fact1.ShouldProduceNull4) return null;
+                return new CalculatedFact4(fact1, fact2);
             }
         }
     }

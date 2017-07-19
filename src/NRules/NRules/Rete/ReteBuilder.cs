@@ -249,7 +249,7 @@ namespace NRules.Rete
             if (node == null)
             {
                 var bindingExpression = ExpressionCompiler.CompileBindingExpression(element, context.Declarations);
-                node = new BindingNode(bindingExpression, context.BetaSource);
+                node = new BindingNode(bindingExpression, element.ResultType, context.BetaSource);
             }
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();

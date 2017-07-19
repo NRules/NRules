@@ -1,15 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NRules.Rete
 {
     internal class BindingNode : BetaNode
     {
         public IBindingExpression BindingExpression { get; }
+        public Type ResultType { get; }
         public ITupleSource Source { get; }
 
-        public BindingNode(IBindingExpression bindingExpression, ITupleSource source)
+        public BindingNode(IBindingExpression bindingExpression, Type resultType, ITupleSource source)
         {
             BindingExpression = bindingExpression;
+            ResultType = resultType;
             Source = source;
 
             Source.Attach(this);
@@ -21,15 +24,11 @@ namespace NRules.Rete
             foreach (var tuple in tuples)
             {
                 var value = BindingExpression.Invoke(context, tuple);
-                var fact = new Fact(value);
+                var fact = new Fact(value, ResultType);
                 tuple.SetState(this, fact);
-                context.WorkingMemory.AddInternalFact(this, fact);
                 toAssert.Add(tuple, fact);
             }
-            if (toAssert.Count > 0)
-            {
-                MemoryNode.PropagateAssert(context, toAssert);
-            }
+            MemoryNode.PropagateAssert(context, toAssert);
         }
 
         public override void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
@@ -41,24 +40,13 @@ namespace NRules.Rete
                 var oldValue = fact.RawObject;
                 var newValue = BindingExpression.Invoke(context, tuple);
 
-                if (!Equals(oldValue, newValue))
-                {
-                    context.WorkingMemory.RemoveInternalFact(this, fact);
-                    fact.RawObject = newValue;
-                    context.WorkingMemory.AddInternalFact(this, fact);
-                }
                 if (!ReferenceEquals(oldValue, newValue))
                 {
                     fact.RawObject = newValue;
-                    context.WorkingMemory.UpdateInternalFact(this, fact);
                 }
-
                 toUpdate.Add(tuple, fact);
             }
-            if (toUpdate.Count > 0)
-            {
-                MemoryNode.PropagateUpdate(context, toUpdate);
-            }
+            MemoryNode.PropagateUpdate(context, toUpdate);
         }
 
         public override void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
@@ -69,15 +57,7 @@ namespace NRules.Rete
                 var fact = tuple.GetState<Fact>(this);
                 toRetract.Add(tuple, fact);
             }
-            if (toRetract.Count > 0)
-            {
-                MemoryNode.PropagateRetract(context, toRetract);
-                var enumerator = toRetract.GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    context.WorkingMemory.RemoveInternalFact(this, enumerator.CurrentFact);
-                }
-            }
+            MemoryNode.PropagateRetract(context, toRetract);
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
