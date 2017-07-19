@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
@@ -58,20 +57,20 @@ namespace NRules.Fluent.Expressions
 
         public ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> condition)
         {
-            return All(x => true, new[] { condition });
+            return ForAll(x => true, condition);
         }
 
         public ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> baseCondition, params Expression<Func<TFact, bool>>[] conditions)
         {
-            return All(baseCondition, conditions.AsEnumerable());
+            return ForAll(baseCondition, conditions);
         }
 
-        private ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> baseCondition, IEnumerable<Expression<Func<TFact, bool>>> conditions)
+        private ILeftHandSideExpression ForAll<TFact>(Expression<Func<TFact, bool>> baseCondition, params Expression<Func<TFact, bool>>[] conditions)
         {
             var forallBuilder = _groupBuilder.ForAll();
 
             var basePatternBuilder = forallBuilder.BasePattern(typeof(TFact));
-            basePatternBuilder.DslCondition(_groupBuilder.Declarations, baseCondition);
+            basePatternBuilder.DslConditions(_groupBuilder.Declarations, baseCondition);
 
             var patternBuilder = forallBuilder.Pattern(typeof(TFact));
             patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
@@ -98,6 +97,26 @@ namespace NRules.Fluent.Expressions
         {
             var expressionBuilder = new LeftHandSideExpression(_builder, _groupBuilder.Group(GroupType.Or));
             builderAction(expressionBuilder);
+            return this;
+        }
+
+        public ILeftHandSideExpression Calculate<TResult>(Expression<Func<TResult>> alias, Expression<Func<TResult>> expression)
+        {
+            var symbol = alias.ToParameterExpression();
+            var patternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
+            var bindingBuilder = patternBuilder.Binding();
+            bindingBuilder.DslBindingExpression(_groupBuilder.Declarations, expression);
+            return this;
+        }
+
+        public ILeftHandSideExpression Having(params Expression<Func<bool>>[] conditions)
+        {
+            var patternBuilder = _groupBuilder.NestedBuilders.OfType<PatternBuilder>().LastOrDefault();
+            if (patternBuilder == null)
+            {
+                throw new ArgumentException("HAVING clause can only be used on existing rule patterns");
+            }
+            patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
             return this;
         }
     }

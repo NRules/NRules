@@ -15,22 +15,20 @@ namespace NRules
     internal class ActionContext : IActionContext
     {
         private readonly ISession _session;
-        private readonly Activation _activation;
-        private bool _isHalted;
 
         public ActionContext(ISession session, Activation activation)
         {
             _session = session;
-            _activation = activation;
-            _isHalted = false;
+            Activation = activation;
+            IsHalted = false;
         }
 
-        public IRuleDefinition Rule { get { return CompiledRule.Definition; } }
-        public IEnumerable<IFactMatch> Facts { get { return _activation.Facts; } }
+        public IRuleDefinition Rule => CompiledRule.Definition;
+        public IEnumerable<IFactMatch> Facts => Activation.Facts;
+        public ICompiledRule CompiledRule => Activation.CompiledRule;
 
-        public ICompiledRule CompiledRule { get { return _activation.CompiledRule; } }
-        public Activation Activation { get { return _activation; } }
-        public bool IsHalted { get { return _isHalted; } }
+        public Activation Activation { get; }
+        public bool IsHalted { get; private set; }
 
         public void Insert(object fact)
         {
@@ -77,12 +75,6 @@ namespace NRules
             return _session.TryRetract(fact);
         }
 
-        public TService Resolve<TService>()
-        {
-            var service = Resolve(typeof (TService));
-            return (TService) service;
-        }
-
         public object Resolve(Type serviceType)
         {
             var resolutionContext = new ResolutionContext(_session, Rule);
@@ -92,7 +84,7 @@ namespace NRules
 
         public void Halt()
         {
-            _isHalted = true;
+            IsHalted = true;
         }
     }
 }

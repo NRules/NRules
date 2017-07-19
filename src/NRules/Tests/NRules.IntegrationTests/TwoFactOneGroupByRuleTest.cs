@@ -26,8 +26,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType2>>(0).Count());
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType2>>(1).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(0).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(1).Count());
         }
 
         [Fact]
@@ -64,8 +64,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType2>>(0).Count());
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType2>>(1).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(0).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(1).Count());
         }
 
         [Fact]
@@ -83,12 +83,12 @@ namespace NRules.IntegrationTests
 
             //Act
             Session.Fire();
-            var actualCount11 = GetFiredFact<IGrouping<string, FactType2>>(0).Count();
-            var actualCount12 = GetFiredFact<IGrouping<string, FactType2>>(1).Count();
+            var actualCount11 = GetFiredFact<IGrouping<string, GroupElement>>(0).Count();
+            var actualCount12 = GetFiredFact<IGrouping<string, GroupElement>>(1).Count();
 
             Session.Insert(fact23);
             Session.Fire();
-            var actualCount2 = GetFiredFact<IGrouping<string, FactType2>>(2).Count();
+            var actualCount2 = GetFiredFact<IGrouping<string, GroupElement>>(2).Count();
 
             //Assert
             AssertFiredTimes(3);
@@ -116,7 +116,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType2>>().Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>().Count());
         }
 
         [Fact]
@@ -227,8 +227,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType2>>(0).Count());
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType2>>(1).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(0).Count());
+            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(1).Count());
         }
 
         [Fact]
@@ -250,7 +250,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(2, GetFiredFact<IGrouping<string, FactType2>>().Count());
+            Assert.Equal(2, GetFiredFact<IGrouping<string, GroupElement>>().Count());
         }
 
         [Fact]
@@ -276,9 +276,9 @@ namespace NRules.IntegrationTests
             AssertFiredTimes(3);
             var firedFacts2 = new[]
             {
-                GetFiredFact<IGrouping<string, FactType2>>(0),
-                GetFiredFact<IGrouping<string, FactType2>>(1),
-                GetFiredFact<IGrouping<string, FactType2>>(2)
+                GetFiredFact<IGrouping<string, GroupElement>>(0),
+                GetFiredFact<IGrouping<string, GroupElement>>(1),
+                GetFiredFact<IGrouping<string, GroupElement>>(2)
             };
             var firedFacts1 = new[] {GetFiredFact<FactType1>(0), GetFiredFact<FactType1>(1), GetFiredFact<FactType1>(2)};
             var validAmountsPerGroup = firedFacts2.Count(x => x.Count() == 1) == 2 &&
@@ -309,9 +309,9 @@ namespace NRules.IntegrationTests
             AssertFiredTimes(3);
             var firedFacts2 = new[]
             {
-                GetFiredFact<IGrouping<string, FactType2>>(0),
-                GetFiredFact<IGrouping<string, FactType2>>(1),
-                GetFiredFact<IGrouping<string, FactType2>>(2)
+                GetFiredFact<IGrouping<string, GroupElement>>(0),
+                GetFiredFact<IGrouping<string, GroupElement>>(1),
+                GetFiredFact<IGrouping<string, GroupElement>>(2)
             };
             var firedFacts1 = new[] {GetFiredFact<FactType1>(0), GetFiredFact<FactType1>(1), GetFiredFact<FactType1>(2)};
             var validAmountsPerGroup = firedFacts2.Count(x => x.Count() == 1) == 2 &&
@@ -344,9 +344,9 @@ namespace NRules.IntegrationTests
             AssertFiredTimes(3);
             var firedFacts2 = new[]
             {
-                GetFiredFact<IGrouping<string, FactType2>>(0),
-                GetFiredFact<IGrouping<string, FactType2>>(1),
-                GetFiredFact<IGrouping<string, FactType2>>(2)
+                GetFiredFact<IGrouping<string, GroupElement>>(0),
+                GetFiredFact<IGrouping<string, GroupElement>>(1),
+                GetFiredFact<IGrouping<string, GroupElement>>(2)
             };
             var firedFacts1 = new[] {GetFiredFact<FactType1>(0), GetFiredFact<FactType1>(1), GetFiredFact<FactType1>(2)};
             var validAmountsPerGroup = firedFacts2.Count(x => x.Count() == 1) == 2 &&
@@ -428,12 +428,22 @@ namespace NRules.IntegrationTests
             public string JoinProperty { get; set; }
         }
 
+        public class GroupElement
+        {
+            public GroupElement(FactType1 fact1, FactType2 fact2)
+            {
+                TestProperty = $"{fact1.TestProperty}|{fact2.TestProperty}";
+            }
+
+            public string TestProperty { get; }
+        }
+
         public class TestRule : Rule
         {
             public override void Define()
             {
                 FactType1 fact = null;
-                IGrouping<string, FactType2> group = null;
+                IGrouping<string, GroupElement> group = null;
 
                 When()
                     .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
@@ -441,7 +451,7 @@ namespace NRules.IntegrationTests
                         .Match<FactType2>(
                             f => f.TestProperty.StartsWith("Valid"),
                             f => f.JoinProperty == fact.TestProperty)
-                        .GroupBy(f => f.TestProperty));
+                        .GroupBy(f => f.TestProperty, f => new GroupElement(fact, f)));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }

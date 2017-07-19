@@ -8,15 +8,20 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a rule pattern.
     /// </summary>
-    public class PatternBuilder : RuleElementBuilder, IBuilder<PatternElement>
+    public class PatternBuilder : RuleLeftElementBuilder, IBuilder<PatternElement>
     {
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
-        private IBuilder<PatternSourceElement> _sourceBuilder;
+        private PatternSourceElementBuilder _sourceBuilder;
 
         internal PatternBuilder(SymbolTable scope, Declaration declaration) : base(scope)
         {
             Declaration = declaration;
         }
+
+        /// <summary>
+        /// Builder for the source of this element.
+        /// </summary>
+        public PatternSourceElementBuilder SourceBuilder => _sourceBuilder;
 
         /// <summary>
         /// Adds a condition expression to the pattern.
@@ -26,14 +31,14 @@ namespace NRules.RuleModel.Builders
         public void Condition(LambdaExpression expression)
         {
             IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var condition = new ConditionElement(Scope.Declarations, references, expression);
+            var condition = new ConditionElement(Scope.VisibleDeclarations, references, expression);
             _conditions.Add(condition);
         }
 
         /// <summary>
         /// Pattern declaration.
         /// </summary>
-        public Declaration Declaration { get; private set; }
+        public Declaration Declaration { get; }
 
         /// <summary>
         /// Creates an aggregate builder that builds the source of the pattern.
@@ -47,13 +52,25 @@ namespace NRules.RuleModel.Builders
             return builder;
         }
 
+        /// <summary>
+        /// Creates a binding builder that builds the source of the pattern.
+        /// </summary>
+        /// <returns>Binding builder.</returns>
+        public BindingBuilder Binding()
+        {
+            var builder = new BindingBuilder(Scope, Declaration.Type);
+            _sourceBuilder = builder;
+            return builder;
+        }
+
         PatternElement IBuilder<PatternElement>.Build()
         {
             Validate();
             PatternElement patternElement;
             if (_sourceBuilder != null)
             {
-                var source = _sourceBuilder.Build();
+                var builder = (IBuilder<PatternSourceElement>)_sourceBuilder;
+                var source = builder.Build();
                 patternElement = new PatternElement(Declaration, Scope.VisibleDeclarations, _conditions, source);
             }
             else
@@ -79,10 +96,15 @@ namespace NRules.RuleModel.Builders
                 var dependencyDeclarations = condition.References.Where(x => x.Target is DependencyElement).ToArray();
                 if (dependencyDeclarations.Any())
                 {
-                    var message = string.Format(
-                        "Pattern element cannot reference injected dependency. Condition={0}, Dependency={1}",
-                        condition.Expression, string.Join(",", dependencyDeclarations.Select(x => x.Name)));
+                    var names = string.Join(",", dependencyDeclarations.Select(x => x.Name));
+                    var message = $"Pattern element cannot reference injected dependency. Condition={condition.Expression}, Dependency={names}";
                     throw new InvalidOperationException(message);
+                }
+
+                if (condition.Expression.ReturnType != typeof(bool))
+                {
+                    var message = $"Pattern condition must return a Boolean result. Condition={condition.Expression}";
+                    throw new ArgumentException(message);
                 }
             }
         }

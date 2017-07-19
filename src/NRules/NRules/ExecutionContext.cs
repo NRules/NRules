@@ -20,9 +20,9 @@ namespace NRules
             EventAggregator = eventAggregator;
         }
 
-        public ISessionInternal Session { get; private set; }
-        public IWorkingMemory WorkingMemory { get; private set; }
-        public IAgendaInternal Agenda { get; private set; }
-        public IEventAggregator EventAggregator { get; private set; }
+        public ISessionInternal Session { get; }
+        public IWorkingMemory WorkingMemory { get; }
+        public IAgendaInternal Agenda { get; }
+        public IEventAggregator EventAggregator { get; }
     }
 }

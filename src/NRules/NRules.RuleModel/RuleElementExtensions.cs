@@ -27,7 +27,7 @@ namespace NRules.RuleModel
         {
             if (element == null)
             {
-                throw new ArgumentNullException("element", "Rule element cannot be null");
+                throw new ArgumentNullException(nameof(element), "Rule element cannot be null");
             }
             else if (element is PatternElement)
             {
@@ -55,7 +55,8 @@ namespace NRules.RuleModel
             }
             else
             {
-                throw new ArgumentOutOfRangeException("element", string.Format("Unsupported rule element. ElementType={0}", element.GetType()));
+                throw new ArgumentOutOfRangeException(nameof(element),
+                    $"Unsupported rule element. ElementType={element.GetType()}");
             }
         }
 
@@ -71,9 +72,10 @@ namespace NRules.RuleModel
         {
             if (element == null)
             {
-                throw new ArgumentNullException("element", "Group element cannot be null");
+                throw new ArgumentNullException(nameof(element), "Group element cannot be null");
             }
-            else if (element is AndElement)
+
+            if (element is AndElement)
             {
                 and.Invoke((AndElement)element);
             }
@@ -83,7 +85,8 @@ namespace NRules.RuleModel
             }
             else
             {
-                throw new ArgumentOutOfRangeException("element", string.Format("Unsupported group element. ElementType={0}", element.GetType()));
+                throw new ArgumentOutOfRangeException(nameof(element),
+                    $"Unsupported group element. ElementType={element.GetType()}");
             }
         }
     }

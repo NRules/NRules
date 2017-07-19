@@ -14,10 +14,10 @@ namespace NRules.Rete
         private readonly LambdaExpression _expression;
         private readonly FastDelegate<Func<object, bool>> _compiledExpression;
 
-        public AlphaCondition(LambdaExpression expression)
+        public AlphaCondition(LambdaExpression expression, FastDelegate<Func<object, bool>> compiledExpression)
         {
             _expression = expression;
-            _compiledExpression = FastDelegate.AlphaCondition(expression);
+            _compiledExpression = compiledExpression;
         }
 
         public bool IsSatisfiedBy(IExecutionContext context, Fact fact)

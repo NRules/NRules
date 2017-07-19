@@ -13,7 +13,7 @@ namespace NRules.Rete
             FilterType = filterType.GetTypeInfo();
         }
 
-        public TypeInfo FilterType { get; private set; }
+        public TypeInfo FilterType { get; }
 
         public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {

@@ -19,15 +19,8 @@ namespace NRules.Collections
             _linkedList = new LinkedList<TValue>();
         }
 
-        public int Count
-        {
-            get { return _dictionary.Count; }
-        }
-
-        public virtual bool IsReadOnly
-        {
-            get { return _dictionary.IsReadOnly; }
-        }
+        public int Count => _dictionary.Count;
+        public virtual bool IsReadOnly => _dictionary.IsReadOnly;
 
         void ICollection<TValue>.Add(TValue item)
         {

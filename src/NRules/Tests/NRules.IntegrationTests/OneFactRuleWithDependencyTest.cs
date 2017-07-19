@@ -87,11 +87,7 @@ namespace NRules.IntegrationTests
 
             public void Action(string value)
             {
-                var handler = ServiceCalled;
-                if (handler != null)
-                {
-                    handler(this, EventArgs.Empty);
-                }
+                ServiceCalled?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -106,11 +102,7 @@ namespace NRules.IntegrationTests
 
             public void Action(string value)
             {
-                var handler = ServiceCalled;
-                if (handler != null)
-                {
-                    handler(this, EventArgs.Empty);
-                }
+                ServiceCalled?.Invoke(this, EventArgs.Empty);
             }
         }
 

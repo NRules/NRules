@@ -6,10 +6,10 @@ using NRules.RuleModel;
 
 namespace NRules.Fluent.Expressions
 {
-    internal abstract class ExpressionRewriter : ExpressionVisitor
+    internal class ExpressionRewriter : ExpressionVisitor
     {
-        protected IDictionary<string, Declaration> Declarations { get; private set; }
-        protected IList<ParameterExpression> Parameters { get; private set; }
+        protected IDictionary<string, Declaration> Declarations { get; }
+        protected List<ParameterExpression> Parameters { get; }
 
         public ExpressionRewriter(IEnumerable<Declaration> declarations)
         {
@@ -25,8 +25,12 @@ namespace NRules.Fluent.Expressions
             return Expression.Lambda(body, expression.TailCall, Parameters);
         }
 
-        protected abstract void InitParameters(LambdaExpression expression);
-        
+        protected virtual void InitParameters(LambdaExpression expression)
+        {
+            Parameters.Clear();
+            Parameters.AddRange(expression.Parameters);
+        }
+
         protected override Expression VisitMember(MemberExpression member)
         {
             Declaration declaration;
@@ -41,8 +45,7 @@ namespace NRules.Fluent.Expressions
                 else if (parameter.Type != declaration.Type)
                 {
                     throw new ArgumentException(
-                        string.Format("Expression parameter type mismatch. Name={0}, ExpectedType={1}, FoundType={2}",
-                            declaration.Name, declaration.Type, parameter.Type));
+                        $"Expression parameter type mismatch. Name={declaration.Name}, ExpectedType={declaration.Type}, FoundType={parameter.Type}");
                 }
                 return parameter;
             }

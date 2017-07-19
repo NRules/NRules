@@ -69,7 +69,7 @@ namespace NRules
             DependencyResolver = new DependencyResolver();
         }
 
-        public IEventProvider Events { get { return _eventAggregator; } }
+        public IEventProvider Events => _eventAggregator;
         public IDependencyResolver DependencyResolver { get; set; }
         public IActionInterceptor ActionInterceptor { get; set; }
 

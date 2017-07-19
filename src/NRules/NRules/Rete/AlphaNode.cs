@@ -13,7 +13,7 @@ namespace NRules.Rete
         public AlphaMemoryNode MemoryNode { get; set; }
 
         [DebuggerDisplay("Count = {ChildNodes.Count}")]
-        public IList<AlphaNode> ChildNodes { get; private set; }
+        public IList<AlphaNode> ChildNodes { get; }
 
         public abstract bool IsSatisfiedBy(IExecutionContext context, Fact fact);
 
@@ -32,10 +32,7 @@ namespace NRules.Rete
                 {
                     childNode.PropagateAssert(context, toAssert);
                 }
-                if (MemoryNode != null)
-                {
-                    MemoryNode.PropagateAssert(context, toAssert);
-                }
+                MemoryNode?.PropagateAssert(context, toAssert);
             }
         }
 
@@ -57,10 +54,7 @@ namespace NRules.Rete
                 {
                     childNode.PropagateUpdate(context, toUpdate);
                 }
-                if (MemoryNode != null)
-                {
-                    MemoryNode.PropagateUpdate(context, toUpdate);
-                }
+                MemoryNode?.PropagateUpdate(context, toUpdate);
             }
             if (toRetract.Count > 0)
             {
@@ -74,10 +68,7 @@ namespace NRules.Rete
             {
                 childNode.PropagateRetract(context, facts);
             }
-            if (MemoryNode != null)
-            {
-                MemoryNode.PropagateRetract(context, facts);
-            }
+            MemoryNode?.PropagateRetract(context, facts);
         }
 
         protected virtual void UnsatisfiedFactUpdate(IExecutionContext context, IList<Fact> facts)

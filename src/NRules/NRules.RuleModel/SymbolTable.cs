@@ -9,10 +9,9 @@ namespace NRules.RuleModel
         public const string ScopeSeparator = ":";
 
         private readonly HashSet<Declaration> _symbolTable;
-        private readonly string _name;
         private int _declarationCounter = 0;
 
-        public SymbolTable ParentScope { get; private set; }
+        public SymbolTable ParentScope { get; }
 
         internal SymbolTable()
         {
@@ -21,8 +20,15 @@ namespace NRules.RuleModel
 
         internal SymbolTable(string name)
         {
-            _name = name;
+            Name = name;
             _symbolTable = new HashSet<Declaration>();
+        }
+
+        internal SymbolTable(string name, SymbolTable parentScope)
+        {
+            Name = name;
+            _symbolTable = new HashSet<Declaration>();
+            ParentScope = parentScope;
         }
 
         internal SymbolTable(IEnumerable<Declaration> declarations)
@@ -32,25 +38,14 @@ namespace NRules.RuleModel
 
         internal SymbolTable New(string name)
         {
-            var childScope = new SymbolTable(name);
-            childScope.ParentScope = this;
+            var childScope = new SymbolTable(name, this);
             return childScope;
         }
 
-        public string FullName
-        {
-            get { return (ParentScope == null || ParentScope.FullName == null) ? _name : ParentScope.FullName + ScopeSeparator + _name; }
-        }
-
-        public IEnumerable<Declaration> Declarations
-        {
-            get { return _symbolTable; }
-        }
-
-        public IEnumerable<Declaration> VisibleDeclarations
-        {
-            get { return (ParentScope != null) ? ParentScope.VisibleDeclarations.Concat(Declarations) : Declarations; }
-        }
+        public string Name { get; }
+        public string FullName => ParentScope?.FullName == null ? Name : ParentScope.FullName + ScopeSeparator + Name;
+        public IEnumerable<Declaration> Declarations => _symbolTable;
+        public IEnumerable<Declaration> VisibleDeclarations => ParentScope?.VisibleDeclarations.Concat(Declarations) ?? Declarations;
 
         public void Add(Declaration declaration)
         {
@@ -60,7 +55,7 @@ namespace NRules.RuleModel
         public Declaration Declare(Type type, string name)
         {
             _declarationCounter++;
-            string declarationName = name ?? string.Format("$var{0}$", _declarationCounter);
+            string declarationName = name ?? $"$var{_declarationCounter}$";
             var declaration = new Declaration(type, declarationName, FullName);
             Add(declaration);
             return declaration;
@@ -74,8 +69,7 @@ namespace NRules.RuleModel
                 if (declaration.Type != type)
                 {
                     throw new ArgumentException(
-                        string.Format("Declaration type mismatch. Name={0}, ExpectedType={1}, FoundType={2}",
-                                      name, declaration.Type, type));
+                        $"Declaration type mismatch. Name={name}, ExpectedType={declaration.Type}, FoundType={type}");
                 }
                 return declaration;
             }
@@ -84,7 +78,7 @@ namespace NRules.RuleModel
                 return ParentScope.Lookup(name, type);
             }
 
-            throw new ArgumentException(string.Format("Declaration not found. Name={0}, Type={1}", name, type));
+            throw new ArgumentException($"Declaration not found. Name={name}, Type={type}");
         }
     }
 }

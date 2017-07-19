@@ -16,6 +16,50 @@ namespace NRules.Tests.Utilities
         }
 
         [Fact]
+        public void AreEqual_EquivalentConditional_True()
+        {
+            //Arrange
+            Expression<Func<int, int>> first = i1 => i1 == 1 ? 1 : 0;
+            Expression<Func<int, int>> second = i2 => i2 == 1 ? 1 : 0;
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentConditional_Test_False()
+        {
+            //Arrange
+            Expression<Func<int, int>> first = i1 => i1 == 1 ? 1 : 0;
+            Expression<Func<int, int>> second = i2 => i2 == 2 ? 1 : 0;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentConditional_IfTrue_False()
+        {
+            //Arrange
+            Expression<Func<int, int>> first = i1 => i1 == 1 ? 1 : 0;
+            Expression<Func<int, int>> second = i2 => i2 == 1 ? 2 : 0;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentConditional_IfFalse_False()
+        {
+            //Arrange
+            Expression<Func<int, int>> first = i1 => i1 == 1 ? 1 : 0;
+            Expression<Func<int, int>> second = i2 => i2 == 1 ? 1 : 2;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
         public void AreEqual_EquivalentBinary_True()
         {
             //Arrange
@@ -369,10 +413,7 @@ namespace NRules.Tests.Utilities
 
         public static readonly int StaticField = 1;
 
-        public static int StaticProperty
-        {
-            get { return 1; }
-        }
+        public static int StaticProperty => 1;
 
         public static int StaticMethod()
         {
@@ -393,12 +434,12 @@ namespace NRules.Tests.Utilities
         {
             public int Value = 1;
 
-            public SomeClass Child = new SomeClass();
+            public readonly SomeClass Child = new SomeClass();
         }
 
         public class SomeClass
         {
-            public string[] Values = { "blop" };
+            public readonly string[] Values = { "blop" };
 
             public SomeClass NestedValue1()
             {

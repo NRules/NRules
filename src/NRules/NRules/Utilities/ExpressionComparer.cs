@@ -86,6 +86,14 @@ namespace NRules.Utilities
                 var tby = (TypeBinaryExpression)y;
                 return Equals(tbx.TypeOperand, tby.TypeOperand);
             }
+            if (x is ConditionalExpression)
+            {
+                var cx = (ConditionalExpression)x;
+                var cy = (ConditionalExpression)y;
+                return ExpressionEqual(cx.Test, cy.Test, rootX, rootY)
+                    && ExpressionEqual(cx.IfTrue, cy.IfTrue, rootX, rootY)
+                    && ExpressionEqual(cx.IfFalse, cy.IfFalse, rootX, rootY);
+            }
 
             throw new NotImplementedException(x.ToString());
         }

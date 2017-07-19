@@ -84,17 +84,13 @@ namespace NRules.Fluent
         private readonly IRuleActivator _activator;
         private readonly RuleTypeScanner _typeScanner = new RuleTypeScanner();
         private Func<IRuleMetadata, bool> _filter;
-        private string _ruleSetName;
 
         public RuleLoadSpec(IRuleActivator activator)
         {
             _activator = activator;
         }
 
-        public string RuleSetName
-        {
-            get { return _ruleSetName; }
-        }
+        public string RuleSetName { get; private set; }
 
         public IRuleLoadSpec PrivateTypes(bool include = true)
         {
@@ -150,11 +146,11 @@ namespace NRules.Fluent
 
         public IRuleLoadSpec To(string ruleSetName)
         {
-            if (_ruleSetName != null)
+            if (RuleSetName != null)
             {
                 throw new InvalidOperationException("Rule load specification can only have a single 'To' clause");
             }
-            _ruleSetName = ruleSetName;
+            RuleSetName = ruleSetName;
             return this;
         }
 

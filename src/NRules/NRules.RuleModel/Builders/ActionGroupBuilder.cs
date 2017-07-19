@@ -8,7 +8,7 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a group of rule actions.
     /// </summary>
-    public class ActionGroupBuilder : RuleElementBuilder, IBuilder<ActionGroupElement>
+    public class ActionGroupBuilder : RuleRightElementBuilder, IBuilder<ActionGroupElement>
     {
         private readonly List<ActionElement> _actions = new List<ActionElement>();
 
@@ -28,11 +28,11 @@ namespace NRules.RuleModel.Builders
                 expression.Parameters.First().Type != typeof(IContext))
             {
                 throw new ArgumentException(
-                    string.Format("Action expression must have {0} as its first parameter", typeof(IContext)));
+                    $"Action expression must have {typeof(IContext)} as its first parameter");
             }
             IEnumerable<ParameterExpression> parameters = expression.Parameters.Skip(1);
             IEnumerable<Declaration> references = parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var actionElement = new ActionElement(Scope.Declarations, references, expression);
+            var actionElement = new ActionElement(Scope.VisibleDeclarations, references, expression);
             _actions.Add(actionElement);
         }
 

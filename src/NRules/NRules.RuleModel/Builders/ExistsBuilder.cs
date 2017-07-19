@@ -5,14 +5,19 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose an existential element.
     /// </summary>
-    public class ExistsBuilder : RuleElementBuilder, IBuilder<ExistsElement>
+    public class ExistsBuilder : RuleLeftElementBuilder, IBuilder<ExistsElement>
     {
-        private IBuilder<RuleLeftElement> _sourceBuilder;
+        private RuleLeftElementBuilder _sourceBuilder;
 
         internal ExistsBuilder(SymbolTable scope)
             : base(scope.New("Exists"))
         {
         }
+
+        /// <summary>
+        /// Builder for the source of this element.
+        /// </summary>
+        public RuleLeftElementBuilder SourceBuilder => _sourceBuilder;
 
         /// <summary>
         /// Creates a pattern builder that builds the source of the existential element.
@@ -55,7 +60,8 @@ namespace NRules.RuleModel.Builders
         ExistsElement IBuilder<ExistsElement>.Build()
         {
             Validate();
-            RuleLeftElement sourceElement = _sourceBuilder.Build();
+            var builder = (IBuilder<RuleLeftElement>)_sourceBuilder;
+            RuleLeftElement sourceElement = builder.Build();
             var existsElement = new ExistsElement(Scope.VisibleDeclarations, sourceElement);
             return existsElement;
         }

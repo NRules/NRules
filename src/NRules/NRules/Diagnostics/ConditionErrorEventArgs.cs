@@ -13,14 +13,13 @@ namespace NRules.Diagnostics
     /// </summary>
     public class ConditionErrorEventArgs : ErrorEventArgs
     {
-        private readonly Expression _expression;
         private readonly Tuple _tuple;
         private readonly Fact _fact;
 
         internal ConditionErrorEventArgs(Exception exception, Expression expression, Tuple tuple, Fact fact)
             : base(exception)
         {
-            _expression = expression;
+            Condition = expression;
             _tuple = tuple;
             _fact = fact;
         }
@@ -28,7 +27,7 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Condition that caused exception.
         /// </summary>
-        public Expression Condition { get { return _expression; } }
+        public Expression Condition { get; }
 
         /// <summary>
         /// Facts that caused exception.

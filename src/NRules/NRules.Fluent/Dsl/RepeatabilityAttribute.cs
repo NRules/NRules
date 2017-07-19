@@ -18,6 +18,6 @@ namespace NRules.Fluent.Dsl
             Value = value;
         }
 
-        internal RuleRepeatability Value { get; private set; }
+        internal RuleRepeatability Value { get; }
     }
 }

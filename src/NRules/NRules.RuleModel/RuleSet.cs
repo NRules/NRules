@@ -36,16 +36,12 @@ namespace NRules.RuleModel
             Name = name;
         }
 
-        public string Name { get; private set; }
+        public string Name { get; }
+        public IEnumerable<IRuleDefinition> Rules => _rules;
 
         public void Add(IEnumerable<IRuleDefinition> ruleDefinitions)
         {
             _rules.AddRange(ruleDefinitions);
-        }
-
-        public IEnumerable<IRuleDefinition> Rules
-        {
-            get { return _rules; }
         }
     }
 }

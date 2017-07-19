@@ -18,10 +18,7 @@ namespace NRules.RuleModel
         /// <summary>
         /// List of dependencies the group element contains.
         /// </summary>
-        public IEnumerable<DependencyElement> Dependencies
-        {
-            get { return _dependencies; }
-        }
+        public IEnumerable<DependencyElement> Dependencies => _dependencies;
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
         {

@@ -15,10 +15,7 @@ namespace NRules.Rete
     {
         private readonly OrderedHashSet<Fact> _facts = new OrderedHashSet<Fact>();
 
-        public IEnumerable<Fact> Facts
-        {
-            get { return _facts; }
-        }
+        public IEnumerable<Fact> Facts => _facts;
 
         public bool Contains(Fact fact)
         {

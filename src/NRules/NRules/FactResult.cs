@@ -17,4 +17,17 @@ namespace NRules
         /// </summary>
         IEnumerable<object> Failed { get; }
     }
+
+    internal class FactResult : IFactResult
+    {
+        private readonly List<object> _failed;
+
+        internal FactResult(List<object> failed)
+        {
+            _failed = failed;
+        }
+
+        public int FailedCount => _failed.Count;
+        public IEnumerable<object> Failed => _failed;
+    }
 }

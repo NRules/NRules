@@ -2,18 +2,16 @@
 {
     internal class SelectionNode : AlphaNode
     {
-        private readonly IAlphaCondition _condition;
-
-        public IAlphaCondition Condition { get { return _condition; } }
+        public IAlphaCondition Condition { get; }
 
         public SelectionNode(IAlphaCondition condition)
         {
-            _condition = condition;
+            Condition = condition;
         }
 
         public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
-            return _condition.IsSatisfiedBy(context, fact);
+            return Condition.IsSatisfiedBy(context, fact);
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)

@@ -25,43 +25,22 @@ namespace NRules
 
     internal class Activation : IActivation, IEquatable<Activation>
     {
-        private readonly ICompiledRule _compiledRule;
-        private readonly Tuple _tuple;
-        private readonly IndexMap _tupleFactMap;
         private readonly Lazy<FactMatch[]> _matchedFacts;
 
         internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap tupleFactMap)
         {
-            _compiledRule = compiledRule;
-            _tuple = tuple;
-            _tupleFactMap = tupleFactMap;
+            CompiledRule = compiledRule;
+            Tuple = tuple;
+            TupleFactMap = tupleFactMap;
             _matchedFacts = new Lazy<FactMatch[]>(CreateMatchedFacts);
         }
 
-        public IRuleDefinition Rule
-        {
-            get { return _compiledRule.Definition; }
-        }
+        public IRuleDefinition Rule => CompiledRule.Definition;
+        public IEnumerable<IFactMatch> Facts => _matchedFacts.Value;
 
-        public IEnumerable<IFactMatch> Facts
-        {
-            get { return _matchedFacts.Value; }
-        }
-
-        public ICompiledRule CompiledRule
-        {
-            get { return _compiledRule; }
-        }
-
-        public Tuple Tuple
-        {
-            get { return _tuple; }
-        }
-
-        public IndexMap TupleFactMap
-        {
-            get { return _tupleFactMap; }
-        }
+        public ICompiledRule CompiledRule { get; }
+        public Tuple Tuple { get; }
+        public IndexMap TupleFactMap { get; }
 
         public bool Equals(Activation other)
         {
@@ -88,11 +67,11 @@ namespace NRules
 
         private FactMatch[] CreateMatchedFacts()
         {
-            var matches = _compiledRule.Declarations.Select(x => new FactMatch(x)).ToArray();
-            int index = _tuple.Count - 1;
-            foreach (var fact in _tuple.Facts)
+            var matches = CompiledRule.Declarations.Select(x => new FactMatch(x)).ToArray();
+            int index = Tuple.Count - 1;
+            foreach (var fact in Tuple.Facts)
             {
-                int factIndex = _tupleFactMap[index];
+                int factIndex = TupleFactMap[index];
                 var factMatch = matches[factIndex];
                 factMatch.SetFact(fact);
                 index--;

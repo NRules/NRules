@@ -72,13 +72,17 @@ namespace NRules.RuleModel.Builders
             }
         }
 
+        protected internal override void VisitBinding(Context context, BindingElement element)
+        {
+        }
+
         protected internal override void VisitAggregate(Context context, AggregateElement element)
         {
             var source = Transform<PatternElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = new AggregateElement(element.Declarations, element.ResultType,
-                    element.Name, element.ExpressionMap, element.AggregatorFactory, source);
+                var newElement = new AggregateElement(element.Declarations, 
+                    element.ResultType, element.Name, element.ExpressionMap, source);
                 Result(context, newElement);
             }
         }

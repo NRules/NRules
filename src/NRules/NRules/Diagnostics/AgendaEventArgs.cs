@@ -19,14 +19,11 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Rule related to the event.
         /// </summary>
-        public IRuleDefinition Rule { get { return _activation.Rule; } }
+        public IRuleDefinition Rule => _activation.Rule;
 
         /// <summary>
         /// Facts related to the event.
         /// </summary>
-        public IEnumerable<IFactMatch> Facts
-        {
-            get { return _activation.Facts; }
-        }
+        public IEnumerable<IFactMatch> Facts => _activation.Facts;
     }
 }

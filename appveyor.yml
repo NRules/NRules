@@ -1,4 +1,4 @@
-version: 0.6.3.{build}
+version: 0.7.0.{build}
 configuration: Release
 
 skip_tags: true
@@ -16,3 +16,8 @@ build_script:
 artifacts:
 - path: build\packages\**\*.nupkg
   name: NuGet
+
+hosts:
+  api.nuget.org: 93.184.221.200
+  dist.nuget.org: 93.184.221.200
+  dotnetcli.azureedge.net:  93.184.221.200

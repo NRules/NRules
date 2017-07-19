@@ -25,7 +25,7 @@ namespace NRules.Collections
         public PriorityQueue(IComparer<TPriority> comparer)
         {
             if (comparer == null)
-                throw new ArgumentNullException("comparer");
+                throw new ArgumentNullException(nameof(comparer));
 
             _baseHeap = new List<KeyValuePair<TPriority, TValue>>();
             _comparer = comparer;
@@ -56,10 +56,7 @@ namespace NRules.Collections
             throw new InvalidOperationException("Priority queue is empty");
         }
 
-        public bool IsEmpty
-        {
-            get { return _baseHeap.Count == 0; }
-        }
+        public bool IsEmpty => _baseHeap.Count == 0;
 
         public void Clear()
         {

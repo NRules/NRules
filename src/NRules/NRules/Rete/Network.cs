@@ -27,7 +27,7 @@ namespace NRules.Rete
         {
             if (factObjects == null)
             {
-                throw new ArgumentNullException("factObjects");
+                throw new ArgumentNullException(nameof(factObjects));
             }
 
             var failed = new List<object>();
@@ -69,7 +69,7 @@ namespace NRules.Rete
         {
             if (factObjects == null)
             {
-                throw new ArgumentNullException("factObjects");
+                throw new ArgumentNullException(nameof(factObjects));
             }
 
             var failed = new List<object>();
@@ -111,7 +111,7 @@ namespace NRules.Rete
         {
             if (factObjects == null)
             {
-                throw new ArgumentNullException("factObjects");
+                throw new ArgumentNullException(nameof(factObjects));
             }
 
             var failed = new List<object>();
