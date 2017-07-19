@@ -1,4 +1,4 @@
-version: 0.7.0.{build}
+version: 0.7.1.{build}
 configuration: Release
 
 skip_tags: true
