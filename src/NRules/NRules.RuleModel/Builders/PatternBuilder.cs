@@ -31,7 +31,7 @@ namespace NRules.RuleModel.Builders
         public void Condition(LambdaExpression expression)
         {
             IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var condition = new ConditionElement(Scope.Declarations, references, expression);
+            var condition = new ConditionElement(Scope.VisibleDeclarations, references, expression);
             _conditions.Add(condition);
         }
 
@@ -48,6 +48,17 @@ namespace NRules.RuleModel.Builders
         {
             AssertSingleSource();
             var builder = new AggregateBuilder(Declaration.Type, Scope);
+            _sourceBuilder = builder;
+            return builder;
+        }
+
+        /// <summary>
+        /// Creates a binding builder that builds the source of the pattern.
+        /// </summary>
+        /// <returns>Binding builder.</returns>
+        public BindingBuilder Binding()
+        {
+            var builder = new BindingBuilder(Scope, Declaration.Type);
             _sourceBuilder = builder;
             return builder;
         }

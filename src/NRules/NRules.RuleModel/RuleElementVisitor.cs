@@ -20,6 +20,10 @@
             element.Source?.Accept(context, this);
         }
 
+        protected internal virtual void VisitBinding(TContext context, BindingElement element)
+        {
+        }
+
         protected internal virtual void VisitCondition(TContext context, ConditionElement element)
         {
         }

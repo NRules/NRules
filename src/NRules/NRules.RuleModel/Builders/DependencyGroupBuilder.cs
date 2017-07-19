@@ -23,7 +23,7 @@ namespace NRules.RuleModel.Builders
         public void Dependency(Type type, string name)
         {
             Declaration declaration = Scope.Declare(type, name);
-            var dependency = new DependencyElement(declaration, Scope.Declarations, type);
+            var dependency = new DependencyElement(declaration, Scope.VisibleDeclarations, type);
             declaration.Target = dependency;
             _dependencies.Add(dependency);
         }

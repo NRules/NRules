@@ -86,6 +86,13 @@ namespace NRules.Diagnostics
             base.VisitObjectInputAdapter(builder, node);
         }
 
+        protected internal override void VisitBindingNode(SnapshotBuilder builder, BindingNode node)
+        {
+            if (builder.IsVisited(node)) return;
+            builder.AddNode(node, NodeInfo.Create);
+            base.VisitBindingNode(builder, node);
+        }
+
         protected internal override void VisitBetaMemoryNode(SnapshotBuilder builder, BetaMemoryNode node)
         {
             if (builder.IsVisited(node)) return;

@@ -10,7 +10,7 @@ namespace NRules.IntegrationTests
     public class NodeSharingTest : BaseRuleTestFixture
     {
         [Fact]
-        public void Fire_AlphaSelectionNodes_OnePerIntraCondition()
+        public void Session_AlphaSelectionNodes_OnePerIntraCondition()
         {
             //Arrange
             var snapshotProvider = (ISessionSnapshotProvider) Session;
@@ -24,7 +24,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_BetaJoinNodes_OnePerPattern()
+        public void Session_BetaJoinNodes_OnePerPattern()
         {
             //Arrange
             var snapshotProvider = (ISessionSnapshotProvider) Session;
@@ -38,7 +38,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_AggregateNodes_CorrectCount()
+        public void Session_AggregateNodes_CorrectCount()
         {
             //Arrange
             var snapshotProvider = (ISessionSnapshotProvider) Session;
@@ -52,7 +52,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_NotNodes_CorrectCount()
+        public void Session_NotNodes_CorrectCount()
         {
             //Arrange
             var snapshotProvider = (ISessionSnapshotProvider) Session;
@@ -66,7 +66,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_ExistsNodes_CorrectCount()
+        public void Session_ExistsNodes_CorrectCount()
         {
             //Arrange
             var snapshotProvider = (ISessionSnapshotProvider) Session;
@@ -74,6 +74,20 @@ namespace NRules.IntegrationTests
 
             //Act
             var count = snapshot.Nodes.Count(x => x.NodeType == NodeType.Exists);
+
+            //Assert
+            Assert.Equal(1, count);
+        }
+
+        [Fact]
+        public void Session_BindingNodes_CorrectCount()
+        {
+            //Arrange
+            var snapshotProvider = (ISessionSnapshotProvider) Session;
+            var snapshot = snapshotProvider.GetSnapshot();
+
+            //Act
+            var count = snapshot.Nodes.Count(x => x.NodeType == NodeType.Binding);
 
             //Assert
             Assert.Equal(1, count);
@@ -111,12 +125,14 @@ namespace NRules.IntegrationTests
             public override void Define()
             {
                 FactType1 fact1 = null;
+                string joinValue = null;
                 FactType2 fact2 = null;
                 IEnumerable<FactType4> group = null;
 
                 When()
                     .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
+                    .Calculate(() => joinValue, () => fact1.TestProperty)
+                    .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
                     .Not<FactType3>(f => f.TestProperty.StartsWith("Invalid"))
                     .Exists<FactType3>(f => f.TestProperty.StartsWith("Valid"))
                     .Query(() => group, q => q
@@ -137,12 +153,14 @@ namespace NRules.IntegrationTests
             public override void Define()
             {
                 FactType1 fact1 = null;
+                string joinValue = null;
                 FactType2 fact2 = null;
                 IEnumerable<FactType4> group = null;
 
                 When()
                     .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
+                    .Calculate(() => joinValue, () => fact1.TestProperty)
+                    .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
                     .Not<FactType3>(f => f.TestProperty.StartsWith("Invalid"))
                     .Exists<FactType3>(f => f.TestProperty.StartsWith("Valid"))
                     .Query(() => group, q => q

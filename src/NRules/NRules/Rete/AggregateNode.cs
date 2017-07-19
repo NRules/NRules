@@ -4,7 +4,7 @@ using NRules.RuleModel;
 
 namespace NRules.Rete
 {
-    internal class AggregateNode : BetaNode
+    internal class AggregateNode : BinaryBetaNode
     {
         private readonly IAggregatorFactory _aggregatorFactory;
         private readonly bool _isSubnetJoin;

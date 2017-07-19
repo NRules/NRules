@@ -32,7 +32,7 @@ namespace NRules.RuleModel.Builders
             }
             IEnumerable<ParameterExpression> parameters = expression.Parameters.Skip(1);
             IEnumerable<Declaration> references = parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var actionElement = new ActionElement(Scope.Declarations, references, expression);
+            var actionElement = new ActionElement(Scope.VisibleDeclarations, references, expression);
             _actions.Add(actionElement);
         }
 

@@ -10,7 +10,7 @@
         public bool IsOpen { get; private set; }
         public bool IsDiscounted { get { return PercentDiscount > 0; } }
 
-        public double Price
+        public double Amount
         {
             get { return UnitPrice*Quantity*(1.0 - PercentDiscount/100.0); }
         }

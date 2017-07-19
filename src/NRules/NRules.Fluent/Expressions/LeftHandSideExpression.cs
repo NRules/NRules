@@ -100,6 +100,15 @@ namespace NRules.Fluent.Expressions
             return this;
         }
 
+        public ILeftHandSideExpression Calculate<TResult>(Expression<Func<TResult>> alias, Expression<Func<TResult>> expression)
+        {
+            var symbol = alias.ToParameterExpression();
+            var patternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
+            var bindingBuilder = patternBuilder.Binding();
+            bindingBuilder.DslBindingExpression(_groupBuilder.Declarations, expression);
+            return this;
+        }
+
         public ILeftHandSideExpression Having(params Expression<Func<bool>>[] conditions)
         {
             var patternBuilder = _groupBuilder.NestedBuilders.OfType<PatternBuilder>().LastOrDefault();

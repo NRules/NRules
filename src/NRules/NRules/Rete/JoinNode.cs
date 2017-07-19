@@ -2,7 +2,7 @@
 
 namespace NRules.Rete
 {
-    internal class JoinNode : BetaNode
+    internal class JoinNode : BinaryBetaNode
     {
         private readonly bool _isSubnetJoin;
 

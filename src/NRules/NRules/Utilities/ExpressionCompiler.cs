@@ -68,9 +68,31 @@ namespace NRules.Utilities
             }
         }
 
+        public static IBindingExpression CompileBindingExpression(BindingElement element, IEnumerable<Declaration> declarations)
+        {
+            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], object>>();
+            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
+            var @delegate = optimizedExpression.Compile();
+            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new BindingExpression(element.Expression, fastDelegate, factIndexMap);
+            return expression;
+        }
+
         private static FastDelegate<TDelegate> Create<TDelegate>(TDelegate @delegate, int parameterCount) where TDelegate : class
         {
             return new FastDelegate<TDelegate>(@delegate, parameterCount);
+        }
+
+        private static Expression EnsureReturnType(Expression expression, Type delegateType)
+        {
+            if (expression.Type == typeof(void)) return expression;
+            if (delegateType.GenericTypeArguments.Length == 0) return expression;
+
+            var resultType = delegateType.GenericTypeArguments.Last();
+            if (expression.Type == resultType) return expression;
+            var convertedExpression = Expression.Convert(expression, resultType);
+            return convertedExpression;
         }
 
         private class ExpressionSingleParameterOptimizer<TDelegate> : ExpressionVisitor
@@ -89,8 +111,10 @@ namespace NRules.Utilities
                 _objectParameter = Expression.Parameter(typeof (object));
                 _typedParameter = expression.Parameters.Single();
 
-                Expression body = Visit(expression.Body);
-                Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(body, _objectParameter);
+                var body = Visit(expression.Body);
+                var convertedBody = EnsureReturnType(body, typeof(TDelegate));
+
+                Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(convertedBody, _objectParameter);
                 return optimizedLambda;
             }
 
@@ -125,8 +149,10 @@ namespace NRules.Utilities
                 var parameters = expression.Parameters.Take(startIndex).ToList();
                 parameters.Add(_arrayParameter);
 
-                Expression body = Visit(expression.Body);
-                Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(body, parameters);
+                var body = Visit(expression.Body);
+                var convertedBody = EnsureReturnType(body, typeof(TDelegate));
+
+                Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(convertedBody, parameters);
                 return optimizedLambda;
             }
 

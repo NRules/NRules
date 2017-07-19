@@ -19,6 +19,7 @@ namespace NRules.Diagnostics
         Exists,
         Aggregate,
         Not,
+        Binding,
         BetaMemory,
         Terminal,
         Rule,
@@ -46,17 +47,20 @@ namespace NRules.Diagnostics
         
         internal static NodeInfo Create(SelectionNode node)
         {
-            return new NodeInfo(NodeType.Selection, string.Empty, new[] {node.Condition.ToString()}, Empty, Empty);
+            var conditions = new[] {node.Condition.ToString()};
+            return new NodeInfo(NodeType.Selection, string.Empty, conditions, Empty, Empty);
         }
 
         internal static NodeInfo Create(AlphaMemoryNode node, IAlphaMemory memory)
         {
-            return new NodeInfo(NodeType.AlphaMemory, string.Empty, Empty, Empty, memory.Facts.Select(f => f.Object.ToString()));
+            var items = memory.Facts.Select(f => f.Object.ToString());
+            return new NodeInfo(NodeType.AlphaMemory, string.Empty, Empty, Empty, items);
         }
 
         internal static NodeInfo Create(JoinNode node)
         {
-            return new NodeInfo(NodeType.Join, string.Empty, node.Conditions.Select(c => c.ToString()), Empty, Empty);
+            var conditions = node.Conditions.Select(c => c.ToString());
+            return new NodeInfo(NodeType.Join, string.Empty, conditions, Empty, Empty);
         }
 
         internal static NodeInfo Create(NotNode node)
@@ -78,6 +82,12 @@ namespace NRules.Diagnostics
         internal static NodeInfo Create(ObjectInputAdapter node)
         {
             return new NodeInfo(NodeType.Adapter, string.Empty);
+        }
+
+        internal static NodeInfo Create(BindingNode node)
+        {
+            var expressions = new[] {node.BindingExpression.ToString()};
+            return new NodeInfo(NodeType.Binding, string.Empty, Empty, expressions, Empty);
         }
 
         internal static NodeInfo Create(BetaMemoryNode node, IBetaMemory memory)
