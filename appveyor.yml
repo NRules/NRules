@@ -16,8 +16,3 @@ build_script:
 artifacts:
 - path: build\packages\**\*.nupkg
   name: NuGet
-
-hosts:
-  api.nuget.org: 93.184.221.200
-  dist.nuget.org: 93.184.221.200
-  dotnetcli.azureedge.net:  93.184.221.200
