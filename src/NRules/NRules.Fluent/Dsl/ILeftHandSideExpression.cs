@@ -92,7 +92,17 @@ namespace NRules.Fluent.Dsl
         /// <param name="alias">Alias for the calculation result.</param>
         /// <param name="expression">Calculation expression.</param>
         /// <returns>Left hand side expression builder.</returns>
+        [Obsolete("Use method Let instead")]
         ILeftHandSideExpression Calculate<TResult>(Expression<Func<TResult>> alias, Expression<Func<TResult>> expression);
+
+        /// <summary>
+        /// Binds expression to a variable. Expression can use previously defined rule patterns.
+        /// </summary>
+        /// <typeparam name="TResult">Type of the expression result.</typeparam>
+        /// <param name="alias">Alias for the expression.</param>
+        /// <param name="expression">Expression to bind.</param>
+        /// <returns>Left hand side expression builder.</returns>
+        ILeftHandSideExpression Let<TResult>(Expression<Func<TResult>> alias, Expression<Func<TResult>> expression);
 
         /// <summary>
         /// Adds match conditions to existing rule patterns.

@@ -36,7 +36,7 @@ namespace NRules.Debugger.Visualizer.Tests.TestAssets
 
             When()
                 .Match<Fact1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                .Calculate(() => joinValue, () => fact1.TestProperty)
+                .Let(() => joinValue, () => fact1.TestProperty)
                 .Match<Fact2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
                 .Not<Fact3>(f => f.TestProperty.StartsWith("Invalid"))
                 .Exists<Fact3>(f => f.TestProperty.StartsWith("Valid"))

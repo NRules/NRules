@@ -21,7 +21,7 @@ namespace NRules.Samples.SimpleRules.Rules
                         o => o.Customer == customer,
                         o => o.IsOpen)
                     .Collect())
-                .Calculate(() => total, () => orders.Sum(x => x.Amount))
+                .Let(() => total, () => orders.Sum(x => x.Amount))
                 .Having(() => total > 100);
 
             Then()
