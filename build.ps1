@@ -119,8 +119,12 @@ $components = @{
         }
     };
     'Documentation' = @{
-        name = 'NRules.Documentation'
-        help = 'NRules.shfbproj'
+        name = 'Documentation'
+        src_root = 'doc'
+        build = @{
+            tool = 'shfb'
+            solution_file = 'NRules.shfbproj'
+        }
     };
 }
 
