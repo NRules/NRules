@@ -324,11 +324,21 @@ namespace NRules.Rete
                     factory = new FlatteningAggregatorFactory();
                     break;
                 default:
-                    throw new ArgumentException(
-                        $"Unrecognized aggregate element. Name={element.Name}");
+                    factory = GetCustomFactory(element);
+                    break;
             }
             var compiledExpressions = CompileExpressions(context, element);
             factory.Compile(element, compiledExpressions);
+            return factory;
+        }
+
+        private static IAggregatorFactory GetCustomFactory(AggregateElement element)
+        {
+            if (element.CustomFactoryType == null)
+            {
+                throw new ArgumentException($"Custom aggregator does not have a factory. Name={element.Name}");
+            }
+            var factory = (IAggregatorFactory) Activator.CreateInstance(element.CustomFactoryType);
             return factory;
         }
 

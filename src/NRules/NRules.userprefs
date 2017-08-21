@@ -1,0 +1,22 @@
+﻿<Properties StartupConfiguration="{44552136-3A20-4F8C-999A-835048FF6101}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="NRules.RuleModel/AggregateElement.cs">
+    <Files>
+      <File FileName="NRules.RuleModel/ConditionElement.cs" Line="1" Column="1" />
+      <File FileName="NRules.RuleModel/DeclarationExtensions.cs" Line="1" Column="1" />
+      <File FileName="NRules.RuleModel/ExpressionElement.cs" Line="1" Column="1" />
+      <File FileName="NRules/FactMatch.cs" Line="1" Column="1" />
+      <File FileName="NRules/CompiledRule.cs" Line="1" Column="1" />
+      <File FileName="NRules/ActionInvocation.cs" Line="1" Column="1" />
+      <File FileName="NRules/Agenda.cs" Line="1" Column="1" />
+      <File FileName="NRules/Utilities/ExpressionComparer.cs" Line="104" Column="13" />
+      <File FileName="NRules.RuleModel/AggregateElement.cs" Line="16" Column="22" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.Tests.NRules.Tests PreferredExecutionTarget="MonoDevelop.Default" />
+</Properties>
