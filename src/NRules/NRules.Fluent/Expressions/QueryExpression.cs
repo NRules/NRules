@@ -126,7 +126,7 @@ namespace NRules.Fluent.Expressions
         }
     }
 
-    internal class QueryExpression<TSource> : IQuery<TSource>
+    public class QueryExpression<TSource> : IQuery<TSource>
     {
         public QueryExpression(IQueryBuilder builder)
         {
