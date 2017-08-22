@@ -82,7 +82,7 @@ namespace NRules.RuleModel.Builders
             if (context.IsModified)
             {
                 var newElement = new AggregateElement(element.Declarations, 
-                    element.ResultType, element.Name, element.ExpressionMap, source);
+                    element.ResultType, element.Name, element.ExpressionMap, source, element.CustomFactoryType);
                 Result(context, newElement);
             }
         }

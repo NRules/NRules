@@ -14,6 +14,7 @@ namespace NRules.RuleModel.Builders
         private string _name;
         private readonly Dictionary<string, LambdaExpression> _expressions = new Dictionary<string, LambdaExpression>();
         private readonly Type _resultType;
+        private Type _customFactoryType;
         private PatternBuilder _sourceBuilder;
 
         internal AggregateBuilder(Type resultType, SymbolTable scope) 
@@ -32,13 +33,15 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="name">Name of the aggregator.</param>
         /// <param name="expressions">Named expressions used by the aggregator.</param>
-        public void Aggregator(string name, IDictionary<string, LambdaExpression> expressions)
+        /// <param name="customFactoryType">The type of the custom aggregate factory</param>
+        public void Aggregator(string name, IDictionary<string, LambdaExpression> expressions, Type customFactoryType = null)
         {
             _name = name;
             foreach (var item in expressions)
             {
                 _expressions[item.Key] = item.Value;
             }
+            _customFactoryType = customFactoryType;
         }
         
         /// <summary>
@@ -113,7 +116,7 @@ namespace NRules.RuleModel.Builders
             PatternElement sourceElement = sourceBuilder.Build();
             var elements = _expressions.Select(x => ToNamedExpression(x.Key, x.Value));
             var expressionMap = new ExpressionMap(elements);
-            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _name, expressionMap, sourceElement);
+            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _name, expressionMap, sourceElement, _customFactoryType);
             return aggregateElement;
         }
 
