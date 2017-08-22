@@ -1,4 +1,6 @@
-﻿namespace NRules
+﻿using System.Linq;
+
+namespace NRules
 {
     /// <summary>
     /// Agenda stores matches between rules and facts. These matches are called activations.
@@ -28,9 +30,9 @@
     internal interface IAgendaInternal : IAgenda
     {
         Activation Pop();
-        void Add(Activation activation);
-        void Modify(Activation activation);
-        void Remove(Activation activation);
+        void Add(IExecutionContext context, Activation activation);
+        void Modify(IExecutionContext context, Activation activation);
+        void Remove(IExecutionContext context, Activation activation);
     }
 
     internal class Agenda : IAgendaInternal
@@ -59,19 +61,30 @@
             return activation;
         }
 
-        public void Add(Activation activation)
+        public void Add(IExecutionContext context, Activation activation)
         {
             _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
 
-        public void Modify(Activation activation)
+        public void Modify(IExecutionContext context, Activation activation)
         {
             _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
 
-        public void Remove(Activation activation)
+        public void Remove(IExecutionContext context, Activation activation)
         {
             _activationQueue.Remove(activation);
+            UnlinkFacts(context.Session, context.WorkingMemory, activation);
+        }
+
+        private static void UnlinkFacts(ISessionInternal session, IWorkingMemory workingMemory, Activation activation)
+        {
+            var linkedKeys = workingMemory.GetLinkedKeys(activation).ToList();
+            foreach (var key in linkedKeys)
+            {
+                var linkedFact = workingMemory.GetLinkedFact(activation, key);
+                session.RetractLinked(activation, key, linkedFact.RawObject);
+            }
         }
     }
 }

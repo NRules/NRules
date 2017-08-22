@@ -23,49 +23,23 @@ namespace NRules
         IEnumerable<IFactMatch> Facts { get; }
     }
 
-    internal class Activation : IActivation, IEquatable<Activation>
+    internal class Activation : IActivation
     {
-        private readonly Lazy<FactMatch[]> _matchedFacts;
-
         internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap tupleFactMap)
         {
             CompiledRule = compiledRule;
             Tuple = tuple;
             TupleFactMap = tupleFactMap;
-            _matchedFacts = new Lazy<FactMatch[]>(CreateMatchedFacts);
         }
 
         public IRuleDefinition Rule => CompiledRule.Definition;
-        public IEnumerable<IFactMatch> Facts => _matchedFacts.Value;
+        public IEnumerable<IFactMatch> Facts => GetMatchedFacts();
 
         public ICompiledRule CompiledRule { get; }
         public Tuple Tuple { get; }
         public IndexMap TupleFactMap { get; }
 
-        public bool Equals(Activation other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(other.CompiledRule, CompiledRule) && Equals(other.Tuple, Tuple);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (Activation)) return false;
-            return Equals((Activation) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (CompiledRule.GetHashCode()*397) ^ Tuple.GetHashCode();
-            }
-        }
-
-        private FactMatch[] CreateMatchedFacts()
+        private FactMatch[] GetMatchedFacts()
         {
             var matches = CompiledRule.Declarations.Select(x => new FactMatch(x)).ToArray();
             int index = Tuple.Count - 1;

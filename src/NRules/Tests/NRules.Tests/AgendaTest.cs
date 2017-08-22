@@ -8,6 +8,17 @@ namespace NRules.Tests
 {
     public class AgendaTest
     {
+        private readonly Mock<IExecutionContext> _context;
+        private readonly Mock<IWorkingMemory> _workingMemory;
+
+        public AgendaTest()
+        {
+            _context = new Mock<IExecutionContext>();
+            _workingMemory = new Mock<IWorkingMemory>();
+
+            _context.Setup(x => x.WorkingMemory).Returns(_workingMemory.Object);
+        }
+
         [Fact]
         public void Agenda_Created_Empty()
         {
@@ -34,17 +45,17 @@ namespace NRules.Tests
         {
             // Arrange
             var ruleMock1 = new Mock<ICompiledRule>();
-            var activation1 = new Activation(ruleMock1.Object, new Tuple(), null);
+            var activation = new Activation(ruleMock1.Object, new Tuple(), null);
             var target = CreateTarget();
 
-            target.Add(activation1);
+            target.Add(_context.Object, activation);
 
             // Act
             var actualActivation = target.Pop();
 
             // Assert
             Assert.True(target.IsEmpty());
-            Assert.Same(activation1, actualActivation);
+            Assert.Same(activation, actualActivation);
         }
 
         [Fact]
@@ -58,7 +69,7 @@ namespace NRules.Tests
             var target = CreateTarget();
 
             // Act
-            target.Add(activation);
+            target.Add(_context.Object, activation);
 
             // Assert
             Assert.False(target.IsEmpty());
@@ -75,14 +86,13 @@ namespace NRules.Tests
             var ruleMock = new Mock<ICompiledRule>();
             var factObject = new FactObject { Value = "Test" };
             var tuple = CreateTuple(factObject);
-            var activation1 = new Activation(ruleMock.Object, tuple, null);
+            var activation = new Activation(ruleMock.Object, tuple, null);
             var target = CreateTarget();
-            target.Add(activation1);
+            target.Add(_context.Object, activation);
 
             // Act
             factObject.Value = "New Value";
-            var activation2 = new Activation(ruleMock.Object, tuple, null);
-            target.Modify(activation2);
+            target.Modify(_context.Object, activation);
 
             // Assert
             var actualActivation = target.Pop();
@@ -98,13 +108,14 @@ namespace NRules.Tests
             var ruleMock = new Mock<ICompiledRule>();
             var factObject = new FactObject { Value = "Test" };
             var tuple = CreateTuple(factObject);
-            var activation1 = new Activation(ruleMock.Object, tuple, null);
+            var activation = new Activation(ruleMock.Object, tuple, null);
             var target = CreateTarget();
-            target.Add(activation1);
+            target.Add(_context.Object, activation);
+
+            _workingMemory.Setup(x => x.GetLinkedKeys(activation)).Returns(new object[0]);
 
             // Act
-            var activation2 = new Activation(ruleMock.Object, tuple, null);
-            target.Remove(activation2);
+            target.Remove(_context.Object, activation);
 
             // Assert
             Assert.True(target.IsEmpty());
@@ -121,8 +132,8 @@ namespace NRules.Tests
             var target = CreateTarget();
 
             // Act
-            target.Add(activation1);
-            target.Add(activation2);
+            target.Add(_context.Object, activation1);
+            target.Add(_context.Object, activation2);
 
             // Assert
             Assert.False(target.IsEmpty());
@@ -139,7 +150,7 @@ namespace NRules.Tests
             var activation1 = new Activation(ruleMock1.Object, new Tuple(), null);
             var target = CreateTarget();
 
-            target.Add(activation1);
+            target.Add(_context.Object, activation1);
 
             // Act
             var actualActivation = target.Peek();
@@ -167,7 +178,7 @@ namespace NRules.Tests
             var activation1 = new Activation(ruleMock1.Object, new Tuple(), null);
             var target = CreateTarget();
 
-            target.Add(activation1);
+            target.Add(_context.Object, activation1);
 
             // Act
             target.Clear();

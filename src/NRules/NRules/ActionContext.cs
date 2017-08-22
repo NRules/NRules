@@ -14,9 +14,9 @@ namespace NRules
 
     internal class ActionContext : IActionContext
     {
-        private readonly ISession _session;
+        private readonly ISessionInternal _session;
 
-        public ActionContext(ISession session, Activation activation)
+        public ActionContext(ISessionInternal session, Activation activation)
         {
             _session = session;
             Activation = activation;
@@ -29,6 +29,11 @@ namespace NRules
 
         public Activation Activation { get; }
         public bool IsHalted { get; private set; }
+
+        public void Halt()
+        {
+            IsHalted = true;
+        }
 
         public void Insert(object fact)
         {
@@ -75,16 +80,26 @@ namespace NRules
             return _session.TryRetract(fact);
         }
 
+        public object GetLinked(object key)
+        {
+            return _session.GetLinked(Activation, key);
+        }
+
+        public void InsertLinked(object key, object fact)
+        {
+            _session.InsertLinked(Activation, key, fact);
+        }
+
+        public void UpdateLinked(object key, object fact)
+        {
+            _session.UpdateLinked(Activation, key, fact);
+        }
+
         public object Resolve(Type serviceType)
         {
             var resolutionContext = new ResolutionContext(_session, Rule);
             var service = _session.DependencyResolver.Resolve(resolutionContext, serviceType);
             return service;
-        }
-
-        public void Halt()
-        {
-            IsHalted = true;
         }
     }
 }

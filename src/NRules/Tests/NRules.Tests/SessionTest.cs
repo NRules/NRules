@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Moq;
 using NRules.Diagnostics;
 using NRules.Extensibility;
@@ -29,48 +30,58 @@ namespace NRules.Tests
         }
 
         [Fact]
-        public void Insert_Called_PropagatesAssert()
+        public void Insert_FactDoesNotExist_PropagatesAssert()
         {
             // Arrange
             var fact = new object();
             var target = CreateTarget();
-            _network.Setup(x => x.PropagateAssert(It.IsAny<IExecutionContext>(), new [] {fact})).Returns(Succeeded());
+            _workingMemory.Setup(x => x.GetFact(fact)).Returns(() => null);
 
             // Act
             target.Insert(fact);
 
             // Assert
-            _network.Verify(x => x.PropagateAssert(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
+            _network.Verify(x => x.PropagateAssert(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.Is<IList<Fact>>(p => p.Count == 1 && p[0].Object == fact)),
+                Times.Exactly(1));
         }
 
         [Fact]
-        public void InsertAll_Called_PropagatesAssert()
+        public void InsertAll_FactsDoNotExist_PropagatesAssert()
         {
             // Arrange
-            var facts = new[] {new object(), new object()};
+            var facts = new[] { new object(), new object() };
             var target = CreateTarget();
-            _network.Setup(x => x.PropagateAssert(It.IsAny<IExecutionContext>(), facts)).Returns(Succeeded());
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns(() => null);
 
             // Act
             target.InsertAll(facts);
 
             // Assert
-            _network.Verify(x => x.PropagateAssert(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), facts), Times.Exactly(1));
+            _network.Verify(x => x.PropagateAssert(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.Is<IList<Fact>>(p => p.Count == 2 && p[0].Object == facts[0] && p[1].Object == facts[1])),
+                Times.Exactly(1));
         }
 
         [Fact]
-        public void Update_Called_PropagatesUpdate()
+        public void Update_FactExists_PropagatesUpdate()
         {
             // Arrange
             var fact = new object();
+            var factWrapper = new Fact(fact);
             var target = CreateTarget();
-            _network.Setup(x => x.PropagateUpdate(It.IsAny<IExecutionContext>(), new[] { fact })).Returns(Succeeded());
+            _workingMemory.Setup(x => x.GetFact(fact)).Returns(factWrapper);
 
             // Act
             target.Update(fact);
 
             // Assert
-            _network.Verify(x => x.PropagateUpdate(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
+            _network.Verify(x => x.PropagateUpdate(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.Is<IList<Fact>>(p => p.Count == 1 && p[0] == factWrapper)),
+                Times.Exactly(1));
         }
 
         [Fact]
@@ -78,44 +89,58 @@ namespace NRules.Tests
         {
             // Arrange
             var facts = new[] {new object(), new object()};
+            var factWrappers = new[] {new Fact(facts[0]), new Fact(facts[1])};
             var target = CreateTarget();
-            _network.Setup(x => x.PropagateUpdate(It.IsAny<IExecutionContext>(), facts)).Returns(Succeeded());
+            var factLookup = factWrappers.ToDictionary(x => x.Object, x => x);
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factLookup[x]);
 
             // Act
             target.UpdateAll(facts);
 
             // Assert
-            _network.Verify(x => x.PropagateUpdate(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), facts), Times.Exactly(1));
+            _network.Verify(x => x.PropagateUpdate(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.Is<IList<Fact>>(p => p.Count == 2 && p[0] == factWrappers[0] && p[1] == factWrappers[1])),
+                Times.Exactly(1));
         }
 
         [Fact]
-        public void Retract_Called_PropagatesRetract()
+        public void Retract_FactExists_PropagatesRetract()
         {
             // Arrange
             var fact = new object();
+            var factWrapper = new Fact(fact);
             var target = CreateTarget();
-            _network.Setup(x => x.PropagateRetract(It.IsAny<IExecutionContext>(), new[] { fact })).Returns(Succeeded());
+            _workingMemory.Setup(x => x.GetFact(fact)).Returns(factWrapper);
 
             // Act
             target.Retract(fact);
 
             // Assert
-            _network.Verify(x => x.PropagateRetract(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), new[] { fact }), Times.Exactly(1));
+            _network.Verify(x => x.PropagateRetract(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.Is<IList<Fact>>(p => p.Count == 1 && p[0] == factWrapper)),
+                Times.Exactly(1));
         }
 
         [Fact]
         public void RetractAll_Called_PropagatesRetract()
         {
             // Arrange
-            var facts = new[] {new object(), new object()};
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new[] { new Fact(facts[0]), new Fact(facts[1]) };
             var target = CreateTarget();
-            _network.Setup(x => x.PropagateRetract(It.IsAny<IExecutionContext>(), facts)).Returns(Succeeded());
+            var factLookup = factWrappers.ToDictionary(x => x.Object, x => x);
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factLookup[x]);
 
             // Act
             target.RetractAll(facts);
 
             // Assert
-            _network.Verify(x => x.PropagateRetract(It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object), facts), Times.Exactly(1));
+            _network.Verify(x => x.PropagateRetract(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.Is<IList<Fact>>(p => p.Count == 2 && p[0] == factWrappers[0] && p[1] == factWrappers[1])),
+                Times.Exactly(1));
         }
 
         [Fact]
@@ -167,11 +192,6 @@ namespace NRules.Tests
         private Session CreateTarget()
         {
             return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, _actionExecutor.Object, _dependencyResolver.Object, _actionInterceptor.Object);
-        }
-
-        private FactResult Succeeded()
-        {
-            return new FactResult(new List<object>());
         }
 
         private static Activation StubActivation()
