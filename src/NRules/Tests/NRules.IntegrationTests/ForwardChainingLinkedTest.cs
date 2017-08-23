@@ -1,8 +1,6 @@
 using System.Linq;
-using NRules.Diagnostics;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.RuleModel;
 using Xunit;
 
 namespace NRules.IntegrationTests
@@ -108,25 +106,14 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => Chain(ctx, fact1));
+                    .Yield(ctx => new FactType2 {TestProperty = fact1.JoinProperty}, (ctx, fact2) => Update(fact1, fact2));
             }
 
-            private static void Chain(IContext ctx, FactType1 fact1)
+            private static FactType2 Update(FactType1 fact1, FactType2 fact2)
             {
-                var factType2 = (FactType2)ctx.GetLinked("fact2");
-                if (factType2 == null)
-                {
-                    factType2 = new FactType2
-                    {
-                        TestProperty = fact1.JoinProperty,
-                    };
-                    ctx.InsertLinked("fact2", factType2);
-                }
-                else
-                {
-                    factType2.Count++;
-                    ctx.UpdateLinked("fact2", factType2);
-                }
+                fact2.TestProperty = fact1.JoinProperty;
+                fact2.Count++;
+                return fact2;
             }
         }
 
