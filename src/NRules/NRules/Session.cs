@@ -401,39 +401,60 @@ namespace NRules
 
         public void InsertLinked(IActivation activation, object key, object fact)
         {
-            var factWrapper = _workingMemory.GetFact(fact);
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (fact == null)
+            {
+                throw new ArgumentNullException(nameof(fact));
+            }
+            var factWrapper = _workingMemory.GetLinkedFact(activation, key);
             if (factWrapper != null)
             {
                 throw new ArgumentException($"Linked fact already exists. Key={key}", nameof(fact));
             }
             factWrapper = new Fact(fact);
-            _workingMemory.AddFact(factWrapper);
             _workingMemory.AddLinkedFact(activation, key, factWrapper);
             _network.PropagateAssert(_executionContext, new List<Fact> {factWrapper});
         }
 
         public void UpdateLinked(IActivation activation, object key, object fact)
         {
-            var factWrapper = _workingMemory.GetFact(fact);
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (fact == null)
+            {
+                throw new ArgumentNullException(nameof(fact));
+            }
+            var factWrapper = _workingMemory.GetLinkedFact(activation, key);
             if (factWrapper == null)
             {
                 throw new ArgumentException($"Linked fact does not exist. Key={key}", nameof(fact));
             }
-            _workingMemory.UpdateFact(factWrapper);
-            _workingMemory.UpdateLinkedFact(activation, key, factWrapper);
+            _workingMemory.UpdateLinkedFact(activation, key, factWrapper, fact);
             _network.PropagateUpdate(_executionContext, new List<Fact> {factWrapper});
         }
 
         public void RetractLinked(IActivation activation, object key, object fact)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (fact == null)
+            {
+                throw new ArgumentNullException(nameof(fact));
+            }
             var factWrapper = _workingMemory.GetFact(fact);
             if (factWrapper == null)
             {
                 throw new ArgumentException($"Linked fact does not exist. Key={key}", nameof(fact));
             }
+            _network.PropagateRetract(_executionContext, new List<Fact> {factWrapper});
             _workingMemory.RemoveLinkedFact(activation, key, factWrapper);
-            _network.PropagateRetract(_executionContext, new List<Fact> { factWrapper });
-            _workingMemory.RemoveFact(factWrapper);
         }
 
         public int Fire()
