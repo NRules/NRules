@@ -22,7 +22,7 @@ namespace NRules.Rete
         {
             foreach (var tuple in tuples)
             {
-                RuleNode.Activate(context, tuple, FactIndexMap);
+                RuleNode.PropagateAssert(context, tuple, FactIndexMap);
             }
         }
 
@@ -30,7 +30,7 @@ namespace NRules.Rete
         {
             foreach (var tuple in tuples)
             {
-                RuleNode.Reactivate(context, tuple, FactIndexMap);
+                RuleNode.PropagateUpdate(context, tuple, FactIndexMap);
             }
         }
 
@@ -38,7 +38,7 @@ namespace NRules.Rete
         {
             foreach (var tuple in tuples)
             {
-                RuleNode.Deactivate(context, tuple, FactIndexMap);
+                RuleNode.PropagateRetract(context, tuple, FactIndexMap);
             }
         }
 

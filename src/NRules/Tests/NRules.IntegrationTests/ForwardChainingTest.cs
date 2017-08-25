@@ -7,7 +7,7 @@ namespace NRules.IntegrationTests
     public class ForwardChainingTest : BaseRuleTestFixture
     {
         [Fact]
-        public void Fire_OneMatchingFactErrorInSecondCondition_FiresFirstRuleAndChainsSecond()
+        public void Fire_OneMatchingFact_FiresFirstRuleAndChainsSecond()
         {
             //Arrange
             var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
@@ -22,7 +22,7 @@ namespace NRules.IntegrationTests
         }
         
         [Fact]
-        public void Fire_OneMatchingFact_FiresFirstRuleAndChainsSecond()
+        public void Fire_OneMatchingFactErrorInSecondCondition_FiresFirstRuleAndChainsSecond()
         {
             //Arrange
             var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = null};

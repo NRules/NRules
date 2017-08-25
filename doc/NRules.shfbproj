@@ -13,7 +13,7 @@
     <Name>Documentation</Name>
     <!-- SHFB properties -->
     <FrameworkVersion>.NET Framework 4.0</FrameworkVersion>
-    <OutputPath>..\build\help\NRules\</OutputPath>
+    <OutputPath>..\build\doc\NRules\</OutputPath>
     <HtmlHelpName>NRules</HtmlHelpName>
     <Language>en-US</Language>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
@@ -45,7 +45,7 @@
     <VisibleItems>ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected</VisibleItems>
     <HeaderText>
     </HeaderText>
-    <CopyrightHref>https://raw.githubusercontent.com/NRules/NRules/master/LICENSE.txt</CopyrightHref>
+    <CopyrightHref>https://github.com/NRules/NRules/blob/master/LICENSE.txt</CopyrightHref>
     <CopyrightText>License and Copyright Information</CopyrightText>
     <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
     <HtmlSdkLinkType>Msdn</HtmlSdkLinkType>
