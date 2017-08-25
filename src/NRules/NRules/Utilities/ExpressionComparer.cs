@@ -94,6 +94,12 @@ namespace NRules.Utilities
                     && ExpressionEqual(cx.IfTrue, cy.IfTrue, rootX, rootY)
                     && ExpressionEqual(cx.IfFalse, cy.IfFalse, rootX, rootY);
             }
+            if (x is NewArrayExpression)
+            {
+                var ax = (NewArrayExpression) x;
+                var ay = (NewArrayExpression) y;
+                return Equals(ax.Type, ay.Type) && CollectionsEqual(ax.Expressions, ay.Expressions, rootX, rootY);
+            }
 
             throw new NotImplementedException(x.ToString());
         }

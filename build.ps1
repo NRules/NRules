@@ -3,7 +3,7 @@ param (
     [string]$component_name = 'Core'
 )
 
-$version = '0.7.0'
+$version = '0.7.1'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -119,8 +119,12 @@ $components = @{
         }
     };
     'Documentation' = @{
-        name = 'NRules.Documentation'
-        help = 'NRules.shfbproj'
+        name = 'Documentation'
+        src_root = 'doc'
+        build = @{
+            tool = 'shfb'
+            solution_file = 'NRules.shfbproj'
+        }
     };
 }
 

@@ -214,8 +214,8 @@ namespace NRules.IntegrationTests
                 When()
                     .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
                     .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
-                    .Calculate(() => fact3, () => CreateFact3(fact1, fact2))
-                    .Calculate(() => fact4, () => CreateFact4(fact1, fact2))
+                    .Let(() => fact3, () => CreateFact3(fact1, fact2))
+                    .Let(() => fact4, () => CreateFact4(fact1, fact2))
                     .Having(() => fact4 != null && fact4.Value == 0);
 
                 Then()

@@ -15,5 +15,6 @@ namespace NRules.Fluent.Dsl
         void SelectMany<TSource, TResult>(Expression<Func<TSource, IEnumerable<TResult>>> selector);
         void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector);
         void Collect<TSource>();
+        void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap, Type customFactoryType);
     }
 }

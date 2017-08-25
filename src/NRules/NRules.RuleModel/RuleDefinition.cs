@@ -53,7 +53,7 @@ namespace NRules.RuleModel
         /// </summary>
         PropertyMap Properties { get; }
 
-            /// <summary>
+        /// <summary>
         /// Rule's dependencies.
         /// </summary>
         DependencyGroupElement DependencyGroup { get; }

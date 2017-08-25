@@ -26,11 +26,11 @@ task Init {
     $src_root = if ($component.ContainsKey('src_root')) { $component.src_root } else { 'src' }
     
     $script:binaries_dir = "$base_dir\binaries\$comp_name"
-    $script:src_dir = "$base_dir\$src_root\$comp_name"
+    $script:src_root_dir = "$base_dir\$src_root"
+    $script:src_dir = "$src_root_dir\$comp_name"
     $script:build_dir = "$base_dir\build"
     $script:pkg_out_dir = "$build_dir\packages\$comp_name"
     $script:packages_dir = "$base_dir\packages"
-    $script:help_dir = "$base_dir\help"
     
     $framework_root = Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
     $framework_root = $framework_root + "v4.0.30319"
@@ -89,11 +89,20 @@ task Compile -depends Init, Clean, PatchFiles, RestoreDependencies -precondition
     Create-Directory $build_dir
     
     $solution_file = "$src_dir\$($component.name).sln"
+    if ($component.build.ContainsKey('solution_file')) {
+        $solution_file = "$src_root_dir\$($component.build.solution_file)"
+    }
+    
     if ($component.build.tool -eq 'msbuild') {
         exec { &$msbuild_exec $solution_file /p:Configuration=$configuration /v:m /nologo }
     }
     if ($component.build.tool -eq 'dotnet') {
         exec { dotnet build $solution_file --configuration $configuration --verbosity minimal }
+    }
+    if ($component.build.tool -eq 'shfb') {
+        Assert (Test-Path Env:\SHFBROOT) 'Sandcastle root environment variable SHFBROOT is not set'
+        
+        exec { &$msbuild_exec $solution_file /v:m /nologo }
     }
 }
 
@@ -158,13 +167,4 @@ task PublishNuGet -precondition { return $component.ContainsKey('package') -and 
 }
 
 task Publish -depends Package, PublishNuGet {
-}
-
-task Help -depends Init, Build -precondition { return $component.ContainsKey('help') } {
-    Assert (Test-Path Env:\SHFBROOT) 'Sandcastle root environment variable SHFBROOT is not set'
-    
-    Create-Directory $build_dir
-    
-    $help_proj_file = "$help_dir\$($component.help)"
-    exec { &$msbuild_exec $help_proj_file /v:m /nologo }
 }
