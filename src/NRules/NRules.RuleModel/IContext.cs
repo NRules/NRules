@@ -103,11 +103,22 @@ namespace NRules.RuleModel
         void InsertLinked(object key, object fact);
 
         /// <summary>
-        /// Updates an existing fact that's linked to the current rule activation.
+        /// Updates existing fact that's linked to the current rule activation.
         /// </summary>
         /// <param name="key">Key for the linked fact. Must be unique for a given rule.</param>
         /// <param name="fact">Fact to update.</param>
         void UpdateLinked(object key, object fact);
+
+        /// <summary>
+        /// Retracts existing fact that's linked to the current rule activation.
+        /// </summary>
+        /// <remarks>Linked facts are retracted automatically, when activation is deleted, but 
+        /// this method can be used in complex scenarios, when linked facts need to be retracted explicitly,
+        /// prior to activation getting deleted.
+        /// </remarks>
+        /// <param name="key">Key for the linked fact. Must be unique for a given rule.</param>
+        /// <param name="fact">Fact to retract.</param>
+        void RetractLinked(object key, object fact);
 
         /// <summary>
         /// Resolves a registered service (normally via an IoC container).

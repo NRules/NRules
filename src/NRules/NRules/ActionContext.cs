@@ -95,6 +95,11 @@ namespace NRules
             _session.UpdateLinked(Activation, key, fact);
         }
 
+        public void RetractLinked(object key, object fact)
+        {
+            _session.RetractLinked(Activation, key, fact);
+        }
+
         public object Resolve(Type serviceType)
         {
             var resolutionContext = new ResolutionContext(_session, Rule);
