@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using NRules.Extensibility;
 
 namespace NRules
 {
     internal class KeyChangeActivationFilter : IActivationFilter
     {
         private readonly List<IActivationExpression> _keySelectors;
-        private List<object> _keys = new List<object>();
+        private readonly Dictionary<Activation, List<object>> _keys = new Dictionary<Activation, List<object>>();
 
         public KeyChangeActivationFilter(IEnumerable<IActivationExpression> keySelectors)
         {
@@ -16,15 +15,18 @@ namespace NRules
 
         public bool Accept(Activation activation)
         {
+            List<object> oldKeys;
+            _keys.TryGetValue(activation, out oldKeys);
+
             var newKeys = _keySelectors.Select(selector => selector.Invoke(activation)).ToList();
             bool accept = true;
 
-            if (_keys.Count == newKeys.Count)
+            if (oldKeys != null)
             {
                 accept = false;
-                for (int i = 0; i < _keys.Count; i++)
+                for (int i = 0; i < oldKeys.Count; i++)
                 {
-                    if (!Equals(_keys[i], newKeys[i]))
+                    if (!Equals(oldKeys[i], newKeys[i]))
                     {
                         accept = true;
                         break;
@@ -32,8 +34,13 @@ namespace NRules
                 }
             }
 
-            _keys = newKeys;
+            _keys[activation] = newKeys;
             return accept;
+        }
+
+        public void Remove(Activation activation)
+        {
+            _keys.Remove(activation);
         }
     }
 }

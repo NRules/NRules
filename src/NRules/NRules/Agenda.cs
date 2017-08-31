@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using NRules.Extensibility;
 
 namespace NRules
 {
@@ -86,6 +84,7 @@ namespace NRules
         {
             _activationQueue.Remove(activation);
             UnlinkFacts(context.Session, activation);
+            Remove(activation);
         }
 
         private bool Accept(Activation activation)
@@ -98,6 +97,17 @@ namespace NRules
                 if (!filter.Accept(activation)) return false;
             }
             return true;
+        }
+
+        private void Remove(Activation activation)
+        {
+            IActivationFilter[] filters;
+            if (!_filters.TryGetValue(activation.CompiledRule, out filters)) return;
+
+            foreach (var filter in filters)
+            {
+                filter.Remove(activation);
+            }
         }
 
         private static void UnlinkFacts(ISessionInternal session, Activation activation)

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using NRules.Extensibility;
 
 namespace NRules
 {
@@ -19,6 +18,10 @@ namespace NRules
                 if (!condition.Invoke(activation)) return false;
             }
             return true;
+        }
+
+        public void Remove(Activation activation)
+        {
         }
     }
 }
