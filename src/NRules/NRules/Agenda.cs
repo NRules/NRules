@@ -74,16 +74,16 @@ namespace NRules
         public void Remove(IExecutionContext context, Activation activation)
         {
             _activationQueue.Remove(activation);
-            UnlinkFacts(context.Session, context.WorkingMemory, activation);
+            UnlinkFacts(context.Session, activation);
         }
 
-        private static void UnlinkFacts(ISessionInternal session, IWorkingMemory workingMemory, Activation activation)
+        private static void UnlinkFacts(ISessionInternal session, Activation activation)
         {
-            var linkedKeys = workingMemory.GetLinkedKeys(activation).ToList();
+            var linkedKeys = session.GetLinkedKeys(activation).ToList();
             foreach (var key in linkedKeys)
             {
-                var linkedFact = workingMemory.GetLinkedFact(activation, key);
-                session.RetractLinked(activation, key, linkedFact.RawObject);
+                var linkedFact = session.GetLinked(activation, key);
+                session.RetractLinked(activation, key, linkedFact);
             }
         }
     }

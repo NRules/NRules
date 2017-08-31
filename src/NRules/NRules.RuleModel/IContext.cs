@@ -88,6 +88,12 @@ namespace NRules.RuleModel
         bool TryRetract(object fact);
 
         /// <summary>
+        /// Retrieves keys of facts linked to the current rule activation.
+        /// </summary>
+        /// <returns>Keys for linked facts.</returns>
+        IEnumerable<object> GetLinkedKeys();
+
+        /// <summary>
         /// Retrieves a fact linked to the current rule activation by key.
         /// </summary>
         /// <param name="key">Key for the linked fact.</param>

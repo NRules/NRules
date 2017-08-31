@@ -181,6 +181,7 @@ namespace NRules
     {
         new IAgendaInternal Agenda { get; }
 
+        IEnumerable<object> GetLinkedKeys(IActivation activation);
         object GetLinked(IActivation activation, object key);
         void InsertLinked(IActivation activation, object key, object fact);
         void UpdateLinked(IActivation activation, object key, object fact);
@@ -391,6 +392,12 @@ namespace NRules
         {
             var result = TryRetractAll(new[] {fact});
             return result.FailedCount == 0;
+        }
+
+        public IEnumerable<object> GetLinkedKeys(IActivation activation)
+        {
+            var keys = _workingMemory.GetLinkedKeys(activation);
+            return keys;
         }
 
         public object GetLinked(IActivation activation, object key)

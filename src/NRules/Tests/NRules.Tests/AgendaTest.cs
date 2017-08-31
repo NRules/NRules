@@ -9,14 +9,14 @@ namespace NRules.Tests
     public class AgendaTest
     {
         private readonly Mock<IExecutionContext> _context;
-        private readonly Mock<IWorkingMemory> _workingMemory;
+        private readonly Mock<ISessionInternal> _session;
 
         public AgendaTest()
         {
             _context = new Mock<IExecutionContext>();
-            _workingMemory = new Mock<IWorkingMemory>();
+            _session = new Mock<ISessionInternal>();
 
-            _context.Setup(x => x.WorkingMemory).Returns(_workingMemory.Object);
+            _context.Setup(x => x.Session).Returns(_session.Object);
         }
 
         [Fact]
@@ -112,7 +112,7 @@ namespace NRules.Tests
             var target = CreateTarget();
             target.Add(_context.Object, activation);
 
-            _workingMemory.Setup(x => x.GetLinkedKeys(activation)).Returns(new object[0]);
+            _session.Setup(x => x.GetLinkedKeys(activation)).Returns(new object[0]);
 
             // Act
             target.Remove(_context.Object, activation);

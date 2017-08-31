@@ -80,6 +80,11 @@ namespace NRules
             return _session.TryRetract(fact);
         }
 
+        public IEnumerable<object> GetLinkedKeys()
+        {
+            return _session.GetLinkedKeys(Activation);
+        }
+
         public object GetLinked(object key)
         {
             return _session.GetLinked(Activation, key);
