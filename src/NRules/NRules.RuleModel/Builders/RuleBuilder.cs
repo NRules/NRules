@@ -17,8 +17,9 @@ namespace NRules.RuleModel.Builders
         private RuleRepeatability _repeatability = RuleDefinition.DefaultRepeatability;
         private readonly List<string> _tags = new List<string>();
         private readonly List<RuleProperty> _properties = new List<RuleProperty>();
-        private readonly DependencyGroupBuilder _dependencyBuilder;
-        private readonly GroupBuilder _groupBuilder;
+        private readonly DependencyGroupBuilder _dependencyGrouipBuilder;
+        private readonly FilterGroupBuilder _filterGroupBuilder;
+        private readonly GroupBuilder _conditionGroupBuilder;
         private readonly ActionGroupBuilder _actionGroupBuilder;
 
         /// <summary>
@@ -27,8 +28,9 @@ namespace NRules.RuleModel.Builders
         public RuleBuilder()
         {
             var rootScope = new SymbolTable();
-            _dependencyBuilder = new DependencyGroupBuilder(rootScope);
-            _groupBuilder = new GroupBuilder(rootScope, GroupType.And);
+            _dependencyGrouipBuilder = new DependencyGroupBuilder(rootScope);
+            _filterGroupBuilder = new FilterGroupBuilder(rootScope);
+            _conditionGroupBuilder = new GroupBuilder(rootScope, GroupType.And);
             _actionGroupBuilder = new ActionGroupBuilder(rootScope);
         }
 
@@ -110,10 +112,19 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Retrieves dependencies builder.
         /// </summary>
-        /// <returns>Left hand side builder.</returns>
+        /// <returns>Dependencies builder.</returns>
         public DependencyGroupBuilder Dependencies()
         {
-            return _dependencyBuilder;
+            return _dependencyGrouipBuilder;
+        }
+
+        /// <summary>
+        /// Retrieves filters builder.
+        /// </summary>
+        /// <returns>Filters builder.</returns>
+        public FilterGroupBuilder Filters()
+        {
+            return _filterGroupBuilder;
         }
 
         /// <summary>
@@ -122,7 +133,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Left hand side builder.</returns>
         public GroupBuilder LeftHandSide()
         {
-            return _groupBuilder;
+            return _conditionGroupBuilder;
         }
 
         /// <summary>
@@ -142,16 +153,19 @@ namespace NRules.RuleModel.Builders
         {
             Validate();
 
-            IBuilder<DependencyGroupElement> dependencyBuilder = _dependencyBuilder;
-            DependencyGroupElement dependencies = dependencyBuilder.Build();
+            IBuilder<DependencyGroupElement> dependencyGroupBuilder = _dependencyGrouipBuilder;
+            DependencyGroupElement dependencies = dependencyGroupBuilder.Build();
 
-            IBuilder<GroupElement> groupBuilder = _groupBuilder;
-            GroupElement conditions = groupBuilder.Build();
+            IBuilder<FilterGroupElement> filterGroupBuilder = _filterGroupBuilder;
+            FilterGroupElement filters = filterGroupBuilder.Build();
 
-            IBuilder<ActionGroupElement> actionBuilder = _actionGroupBuilder;
-            ActionGroupElement actions = actionBuilder.Build();
+            IBuilder<GroupElement> conditionGroupBuilder = _conditionGroupBuilder;
+            GroupElement conditions = conditionGroupBuilder.Build();
 
-            var ruleDefinition = new RuleDefinition(_name, _description, _priority, _repeatability, _tags, _properties, dependencies, conditions, actions);
+            IBuilder<ActionGroupElement> actionGroupBuilder = _actionGroupBuilder;
+            ActionGroupElement actions = actionGroupBuilder.Build();
+
+            var ruleDefinition = new RuleDefinition(_name, _description, _priority, _repeatability, _tags, _properties, dependencies, filters, conditions, actions);
             return ruleDefinition;
         }
 

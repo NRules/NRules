@@ -30,15 +30,6 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
-        /// Returns expression builder for rule's dependencies.
-        /// </summary>
-        /// <returns>Dependencies expression builder.</returns>
-        protected IDependencyExpression Dependency()
-        {
-            return new DependencyExpression(_builder);
-        }
-
-        /// <summary>
         /// Sets rule's name.
         /// Name value set at this level overrides the values specified via <see cref="NameAttribute"/> attribute.
         /// </summary>
@@ -56,6 +47,24 @@ namespace NRules.Fluent.Dsl
         protected void Priority(int value)
         {
             _builder.Priority(value);
+        }
+
+        /// <summary>
+        /// Returns expression builder for rule's dependencies.
+        /// </summary>
+        /// <returns>Dependencies expression builder.</returns>
+        protected IDependencyExpression Dependency()
+        {
+            return new DependencyExpression(_builder);
+        }
+
+        /// <summary>
+        /// Returns expression builder for rule's filters.
+        /// </summary>
+        /// <returns>Filters expression builder.</returns>
+        protected IFilterExpression Filter()
+        {
+            return new FilterExpression(_builder);
         }
 
         /// <summary>

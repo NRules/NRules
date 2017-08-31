@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using NRules.Extensibility;
 
 namespace NRules
 {
@@ -38,6 +41,12 @@ namespace NRules
     internal class Agenda : IAgendaInternal
     {
         private readonly ActivationQueue _activationQueue = new ActivationQueue();
+        private readonly IDictionary<ICompiledRule, IActivationFilter[]> _filters;
+
+        public Agenda(IDictionary<ICompiledRule, IActivationFilter[]> filters)
+        {
+            _filters = filters;
+        }
 
         public bool IsEmpty()
         {
@@ -63,11 +72,13 @@ namespace NRules
 
         public void Add(IExecutionContext context, Activation activation)
         {
+            if (!Accept(activation)) return;
             _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
 
         public void Modify(IExecutionContext context, Activation activation)
         {
+            if (!Accept(activation)) return;
             _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
 
@@ -75,6 +86,18 @@ namespace NRules
         {
             _activationQueue.Remove(activation);
             UnlinkFacts(context.Session, activation);
+        }
+
+        private bool Accept(Activation activation)
+        {
+            IActivationFilter[] filters;
+            if (!_filters.TryGetValue(activation.CompiledRule, out filters)) return true;
+
+            foreach (var filter in filters)
+            {
+                if (!filter.Accept(activation)) return false;
+            }
+            return true;
         }
 
         private static void UnlinkFacts(ISessionInternal session, Activation activation)

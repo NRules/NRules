@@ -79,6 +79,28 @@ namespace NRules.Utilities
             return expression;
         }
 
+        public static IActivationCondition CompileFilterCondition(FilterElement element, IEnumerable<Declaration> declarations)
+        {
+            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], bool>>();
+            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
+            var @delegate = optimizedExpression.Compile();
+            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new ActivationCondition(element.Expression, fastDelegate, factIndexMap);
+            return expression;
+        }
+
+        public static IActivationExpression CompileFilterExpression(FilterElement element, IEnumerable<Declaration> declarations)
+        {
+            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], object>>();
+            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
+            var @delegate = optimizedExpression.Compile();
+            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new ActivationExpression(element.Expression, fastDelegate, factIndexMap);
+            return expression;
+        }
+        
         private static FastDelegate<TDelegate> Create<TDelegate>(TDelegate @delegate, int parameterCount) where TDelegate : class
         {
             return new FastDelegate<TDelegate>(@delegate, parameterCount);

@@ -101,5 +101,17 @@
         protected internal virtual void VisitDependency(TContext context, DependencyElement element)
         {
         }
+
+        protected internal virtual void VisitFilterGroup(TContext context, FilterGroupElement element)
+        {
+            foreach (FilterElement filter in element.Filters)
+            {
+                filter.Accept(context, this);
+            }
+        }
+
+        protected internal virtual void VisitFilter(TContext context, FilterElement element)
+        {
+        }
     }
 }

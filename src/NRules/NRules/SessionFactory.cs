@@ -1,4 +1,6 @@
-﻿using NRules.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NRules.Diagnostics;
 using NRules.Extensibility;
 using NRules.Rete;
 
@@ -61,11 +63,13 @@ namespace NRules
     internal class SessionFactory : ISessionFactory
     {
         private readonly INetwork _network;
+        private readonly List<ICompiledRule> _compiledRules;
         private readonly IEventAggregator _eventAggregator = new EventAggregator();
 
-        public SessionFactory(INetwork network)
+        public SessionFactory(INetwork network, IEnumerable<ICompiledRule> compiledRules)
         {
             _network = network;
+            _compiledRules = new List<ICompiledRule>(compiledRules);
             DependencyResolver = new DependencyResolver();
         }
 
@@ -75,12 +79,44 @@ namespace NRules
 
         public ISession CreateSession()
         {
-            var agenda = new Agenda();
+            var agenda = CreateAgenda();
             var workingMemory = new WorkingMemory();
             var eventAggregator = new EventAggregator(_eventAggregator);
             var actionExecutor = new ActionExecutor();
             var session = new Session(_network, agenda, workingMemory, eventAggregator, actionExecutor, DependencyResolver, ActionInterceptor);
             return session;
+        }
+
+        private IAgendaInternal CreateAgenda()
+        {
+            var filters = new Dictionary<ICompiledRule, IActivationFilter[]>();
+            foreach (var compiledRule in _compiledRules)
+            {
+                var ruleFilters = CreateRuleFilters(compiledRule).ToArray();
+                if (ruleFilters.Any())
+                {
+                    filters[compiledRule] = ruleFilters;
+                }
+            }
+
+            var agenda = new Agenda(filters);
+            return agenda;
+        }
+
+        private static IEnumerable<IActivationFilter> CreateRuleFilters(ICompiledRule compiledRule)
+        {
+            var filterConditions = compiledRule.Filter.Conditions.ToList();
+            if (filterConditions.Any())
+            {
+                var filter = new PredicateActivationFilter(filterConditions);
+                yield return filter;
+            }
+            var filterKeySelectors = compiledRule.Filter.KeySelectors.ToList();
+            if (filterKeySelectors.Any())
+            {
+                var filter = new KeyChangeActivationFilter(filterKeySelectors);
+                yield return filter;
+            }
         }
     }
 }
