@@ -112,8 +112,7 @@ namespace NRules.IntegrationTests
                     .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
 
                 Filter()
-                    .OnChange(() => fact1.TestProperty)
-                    .OnChange(() => fact2.TestProperty);
+                    .OnChange(() => fact1.TestProperty, () => fact2.TestProperty);
 
                 Then()
                     .Do(ctx => ctx.NoOp());

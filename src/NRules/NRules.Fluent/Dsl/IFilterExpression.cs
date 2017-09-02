@@ -9,19 +9,19 @@ namespace NRules.Fluent.Dsl
     public interface IFilterExpression
     {
         /// <summary>
-        /// Configures the engine to filter rule's matches, so that updates are only triggered if a given key changed.
-        /// If multiple change filters are configured, the match is accepted if one or more keys changed.
+        /// Configures the engine to filter rule's matches, so that updates are only triggered if given keys changed.
+        /// If multiple keys are configured, the match is accepted if any of the keys changed.
         /// </summary>
-        /// <param name="keySelector">Key selector expression.</param>
+        /// <param name="keySelectors">Key selector expressions.</param>
         /// <returns>Filters expression builder.</returns>
-        IFilterExpression OnChange(Expression<Func<object>> keySelector);
+        IFilterExpression OnChange(params Expression<Func<object>>[] keySelectors);
 
         /// <summary>
-        /// Configures the engine to filter rule's matches given a predicate.
-        /// If multiple predicate filters are configured, the match is accepted if all predicates are true.
+        /// Configures the engine to filter rule's matches given a set of predicates.
+        /// If multiple predicates are configured, the match is accepted if all predicates are true.
         /// </summary>
-        /// <param name="keySelector"></param>
-        /// <returns></returns>
-        IFilterExpression Where(Expression<Func<bool>> keySelector);
+        /// <param name="predicates">Predicate expressions.</param>
+        /// <returns>Filters expression builder.</returns>
+        IFilterExpression Where(params Expression<Func<bool>>[] predicates);
     }
 }

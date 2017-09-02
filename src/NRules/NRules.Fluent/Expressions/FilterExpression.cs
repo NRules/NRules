@@ -15,19 +15,25 @@ namespace NRules.Fluent.Expressions
             _builder = builder;
         }
 
-        public IFilterExpression OnChange(Expression<Func<object>> keySelector)
+        public IFilterExpression OnChange(params Expression<Func<object>>[] keySelectors)
         {
             var filters = _builder.Filters();
-            var expression = keySelector.DslExpression(filters.Declarations);
-            filters.Filter(FilterType.KeyChange, expression);
+            foreach (var keySelector in keySelectors)
+            {
+                var expression = keySelector.DslExpression(filters.Declarations);
+                filters.Filter(FilterType.KeyChange, expression);
+            }
             return this;
         }
 
-        public IFilterExpression Where(Expression<Func<bool>> keySelector)
+        public IFilterExpression Where(params Expression<Func<bool>>[] predicates)
         {
             var filters = _builder.Filters();
-            var expression = keySelector.DslExpression(filters.Declarations);
-            filters.Filter(FilterType.Predicate, expression);
+            foreach (var predicate in predicates)
+            {
+                var expression = predicate.DslExpression(filters.Declarations);
+                filters.Filter(FilterType.Predicate, expression);
+            }
             return this;
         }
     }
