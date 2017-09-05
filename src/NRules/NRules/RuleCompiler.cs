@@ -23,11 +23,13 @@ namespace NRules
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
         {
             IReteBuilder reteBuilder = new ReteBuilder();
+            var compiledRules = new List<ICompiledRule>();
             foreach (var ruleDefinition in ruleDefinitions)
             {
                 try
                 {
-                    CompileRule(reteBuilder, ruleDefinition);
+                    var compiledRule = CompileRule(reteBuilder, ruleDefinition);
+                    compiledRules.Add(compiledRule);
                 }
                 catch (Exception e)
                 {
@@ -36,7 +38,7 @@ namespace NRules
             }
 
             INetwork network = reteBuilder.Build();
-            var factory = new SessionFactory(network);
+            var factory = new SessionFactory(network, compiledRules);
             return factory;
         }
 
@@ -51,7 +53,7 @@ namespace NRules
             return Compile(rules);
         }
 
-        private void CompileRule(IReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
+        private ICompiledRule CompileRule(IReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
         {
             var transformation = new RuleTransformation();
             var transformedRule = transformation.Transform(ruleDefinition);
@@ -61,6 +63,8 @@ namespace NRules
             IEnumerable<IRuleDependency> dependencies = CompileDependencies(transformedRule);
             IEnumerable<ITerminalNode> terminals = reteBuilder.AddRule(transformedRule);
 
+            IRuleFilter filter = CompileFilters(transformedRule, ruleDeclarations);
+            
             var rightHandSide = transformedRule.RightHandSide;
             var actions = new List<IRuleAction>();
             foreach (var action in rightHandSide.Actions)
@@ -69,8 +73,10 @@ namespace NRules
                 actions.Add(ruleAction);
             }
 
-            var rule = new CompiledRule(ruleDefinition, ruleDeclarations, actions, dependencies);
+            var rule = new CompiledRule(ruleDefinition, ruleDeclarations, actions, dependencies, filter);
             BuildRuleNode(rule, terminals);
+
+            return rule;
         }
 
         private IEnumerable<IRuleDependency> CompileDependencies(IRuleDefinition ruleDefinition)
@@ -80,6 +86,30 @@ namespace NRules
                 var compiledDependency = new RuleDependency(dependency.Declaration, dependency.ServiceType);
                 yield return compiledDependency;
             }
+        }
+
+        private IRuleFilter CompileFilters(IRuleDefinition ruleDefinition, IList<Declaration> ruleDeclarations)
+        {
+            var conditions = new List<IActivationCondition>();
+            var keySelectors = new List<IActivationExpression>();
+            foreach (var filter in ruleDefinition.FilterGroup.Filters)
+            {
+                switch (filter.FilterType)
+                {
+                    case FilterType.Predicate:
+                        var condition = ExpressionCompiler.CompileFilterCondition(filter, ruleDeclarations);
+                        conditions.Add(condition);
+                        break;
+                    case FilterType.KeyChange:
+                        var keySelector = ExpressionCompiler.CompileFilterExpression(filter, ruleDeclarations);
+                        keySelectors.Add(keySelector);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Unrecognized filter type. FilterType={filter.FilterType}");
+                }
+            }
+            var compileFilter = new RuleFilter(conditions, keySelectors);
+            return compileFilter;
         }
 
         private void BuildRuleNode(ICompiledRule compiledRule, IEnumerable<ITerminalNode> terminalNodes)

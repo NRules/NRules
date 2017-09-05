@@ -48,5 +48,12 @@ namespace NRules.Fluent.Expressions
             var rewrittenExpression = rewriter.Rewrite(expression);
             return rewrittenExpression;
         }
+
+        public static LambdaExpression DslExpression(this LambdaExpression expression, IEnumerable<Declaration> declarations)
+        {
+            var rewriter = new ExpressionRewriter(declarations);
+            var rewrittenExpression = rewriter.Rewrite(expression);
+            return rewrittenExpression;
+        }
     }
 }
