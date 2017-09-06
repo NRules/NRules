@@ -14,6 +14,10 @@ namespace NRules.RuleModel
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         private readonly Dictionary<string, RuleProperty> _properties;
 
+        /// <summary>
+        /// Creates new map of rule properties.
+        /// </summary>
+        /// <param name="properties">Rule properties to put in the map.</param>
         public PropertyMap(IEnumerable<RuleProperty> properties)
         {
             _properties = new Dictionary<string, RuleProperty>(properties.ToDictionary(x => x.Name));

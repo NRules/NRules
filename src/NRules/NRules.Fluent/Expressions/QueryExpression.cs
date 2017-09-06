@@ -86,6 +86,27 @@ namespace NRules.Fluent.Expressions
             };
         }
 
+        public void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap, Type customFactoryType)
+        {
+            var previousBuildAction = _buildAction;
+            _buildAction = (b, n) =>
+            {
+                var aggregatePatternBuilder = b.Pattern(typeof(TResult), n);
+                var aggregateBuilder = aggregatePatternBuilder.Aggregate();
+                var sourceBuilder = previousBuildAction(aggregateBuilder, null);
+
+                var rewrittenExpressionMap = new Dictionary<string, LambdaExpression>();
+                foreach (var expression in expressionMap)
+                {
+                    var lambda = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, expression.Value);
+                    rewrittenExpressionMap[expression.Key] = lambda;
+                }
+
+                aggregateBuilder.Aggregator(name, rewrittenExpressionMap, customFactoryType);
+                return aggregatePatternBuilder;
+            };
+        }
+        
         public void Collect<TSource>()
         {
             var previousBuildAction = _buildAction;
@@ -103,15 +124,5 @@ namespace NRules.Fluent.Expressions
         {
             _buildAction(_groupBuilder, _symbol.Name);
         }
-    }
-
-    internal class QueryExpression<TSource> : IQuery<TSource>
-    {
-        public QueryExpression(IQueryBuilder builder)
-        {
-            Builder = builder;
-        }
-
-        public IQueryBuilder Builder { get; }
     }
 }

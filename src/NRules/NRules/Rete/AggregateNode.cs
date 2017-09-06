@@ -42,16 +42,21 @@ namespace NRules.Rete
 
         public override void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
         {
-            if (_isSubnetJoin) return;
-
             var toUpdate = new TupleFactList();
-            foreach (var tuple in tuples)
+            var joinedSets = JoinedSets(context, tuples);
+            foreach (var set in joinedSets)
             {
-                IAggregator aggregator = GetAggregator(tuple);
+                if (_isSubnetJoin && HasRightFacts(context, set))
+                {
+                    //Update already propagated from the right
+                    continue;
+                }
+
+                IAggregator aggregator = GetAggregator(set.Tuple);
                 foreach (var aggregate in aggregator.Aggregates)
                 {
                     Fact aggregateFact = ToAggregateFact(context, aggregate);
-                    toUpdate.Add(tuple, aggregateFact);
+                    toUpdate.Add(set.Tuple, aggregateFact);
                 }
             }
             MemoryNode.PropagateUpdate(context, toUpdate);
@@ -227,6 +232,18 @@ namespace NRules.Rete
                 context.WorkingMemory.UpdateInternalFact(this, fact);
             }
             return fact;
+        }
+
+        private bool HasRightFacts(IExecutionContext context, TupleFactSet set)
+        {
+            foreach (var fact in set.Facts)
+            {
+                if (MatchesConditions(context, set.Tuple, fact))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

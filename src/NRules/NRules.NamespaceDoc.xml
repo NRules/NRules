@@ -9,6 +9,11 @@
         Contains types that implement runtime components of the rules engine.
       </summary>
     </member>
+    <member name="N:NRules.Aggregators">
+      <summary>
+        Contains types that implement aggregation of facts as part of rules engine execution.
+      </summary>
+    </member>
     <member name="N:NRules.Diagnostics">
       <summary>
         Contains types that facilitate troubleshooting and monitoring of the rules engine execution.

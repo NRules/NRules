@@ -131,7 +131,7 @@ namespace NRules.IntegrationTests
 
                 When()
                     .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Calculate(() => joinValue, () => fact1.TestProperty)
+                    .Let(() => joinValue, () => fact1.TestProperty)
                     .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
                     .Not<FactType3>(f => f.TestProperty.StartsWith("Invalid"))
                     .Exists<FactType3>(f => f.TestProperty.StartsWith("Valid"))
@@ -159,7 +159,7 @@ namespace NRules.IntegrationTests
 
                 When()
                     .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Calculate(() => joinValue, () => fact1.TestProperty)
+                    .Let(() => joinValue, () => fact1.TestProperty)
                     .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
                     .Not<FactType3>(f => f.TestProperty.StartsWith("Invalid"))
                     .Exists<FactType3>(f => f.TestProperty.StartsWith("Valid"))

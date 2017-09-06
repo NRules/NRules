@@ -34,7 +34,7 @@ namespace NRules.RuleModel.Builders
             if (lhsContext.IsModified || rhsContext.IsModified)
             {
                 var transformedRule = new RuleDefinition(rule.Name, rule.Description, rule.Priority, 
-                    rule.Repeatability, rule.Tags, rule.Properties, rule.DependencyGroup, lhs, rhs);
+                    rule.Repeatability, rule.Tags, rule.Properties, rule.DependencyGroup, rule.FilterGroup, lhs, rhs);
                 return transformedRule;
             }
             return rule;
@@ -82,7 +82,7 @@ namespace NRules.RuleModel.Builders
             if (context.IsModified)
             {
                 var newElement = new AggregateElement(element.Declarations, 
-                    element.ResultType, element.Name, element.ExpressionMap, source);
+                    element.ResultType, element.Name, element.ExpressionMap, source, element.CustomFactoryType);
                 Result(context, newElement);
             }
         }
