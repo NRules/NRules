@@ -125,14 +125,4 @@ namespace NRules.Fluent.Expressions
             _buildAction(_groupBuilder, _symbol.Name);
         }
     }
-
-    public class QueryExpression<TSource> : IQuery<TSource>
-    {
-        public QueryExpression(IQueryBuilder builder)
-        {
-            Builder = builder;
-        }
-
-        public IQueryBuilder Builder { get; }
-    }
 }
