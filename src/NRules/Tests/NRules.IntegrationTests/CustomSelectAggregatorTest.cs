@@ -9,15 +9,15 @@ using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
 using Xunit;
 
-namespace NRules.IntegrationTests.CustomAggregator
+namespace NRules.IntegrationTests
 {
-    public class OneFactOneExpressionAggregatorTest : BaseRuleTestFixture
+    public class CustomSelectAggregatorTest : BaseRuleTestFixture
     {
         [Fact]
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
-            var fact = new FactType { TestProperty = "Valid Value 1" };
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
 
             //Act
@@ -32,7 +32,7 @@ namespace NRules.IntegrationTests.CustomAggregator
         public void Fire_OneMatchingFactInsertedThenUpdated_FiresOnce()
         {
             //Arrange
-            var fact = new FactType { TestProperty = "Valid Value 1" };
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
             Session.Update(fact);
 
@@ -42,99 +42,15 @@ namespace NRules.IntegrationTests.CustomAggregator
             //Assert
             AssertFiredOnce();
             Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
-        }
-
-        [Fact]
-        public void Fire_TwoMatchingFacts_FiresTwice()
-        {
-            //Arrange
-            var fact1 = new FactType { TestProperty = "Valid Value 1" };
-            var fact2 = new FactType { TestProperty = "Valid Value 2" };
-            var facts = new[] { fact1, fact2 };
-            Session.InsertAll(facts);
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            AssertFiredTwice();
-            Assert.Equal(fact1.TestProperty, GetFiredFact<FactProjection>(0).Value);
-            Assert.Equal(fact2.TestProperty, GetFiredFact<FactProjection>(1).Value);
-        }
-
-        [Fact]
-        public void Fire_ConditionDoesNotMatch_DoesNotFire()
-        {
-            //Arrange
-            var fact = new FactType { TestProperty = "Invalid Value 1" };
-            Session.Insert(fact);
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            AssertDidNotFire();
         }
 
         [Fact]
         public void Fire_OneMatchingFactAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType { TestProperty = "Valid Value 1" };
+            var fact = new FactType {TestProperty = "Valid Value 1"};
             Session.Insert(fact);
             Session.Retract(fact);
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            AssertDidNotFire();
-        }
-
-        [Fact]
-        public void Fire_OneFactUpdatedFromInvalidToMatching_FiresOnce()
-        {
-            //Arrange
-            var fact = new FactType { TestProperty = "Invalid Value 1" };
-            Session.Insert(fact);
-
-            fact.TestProperty = "Valid Value 1";
-            Session.Update(fact);
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            AssertFiredOnce();
-            Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
-        }
-
-        [Fact]
-        public void Fire_OneMatchingFactAssertedAndRetractedAndAssertedAgain_FiresOnce()
-        {
-            //Arrange
-            var fact = new FactType { TestProperty = "Valid Value 1" };
-            Session.Insert(fact);
-            Session.Retract(fact);
-            Session.Insert(fact);
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            AssertFiredOnce();
-            Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
-        }
-
-        [Fact]
-        public void Fire_OneMatchingFactAssertedAndUpdatedToInvalid_DoesNotFire()
-        {
-            //Arrange
-            var fact = new FactType { TestProperty = "Valid Value 1" };
-            Session.Insert(fact);
-
-            fact.TestProperty = "Invalid Value 1";
-            Session.Update(fact);
 
             //Act
             Session.Fire();
@@ -190,9 +106,9 @@ namespace NRules.IntegrationTests.CustomAggregator
                 FactProjection projection = null;
 
                 When()
-                    .Query(() => projection, x => x
+                    .Query(() => projection, q => q
                         .Match<FactType>()
-                        .MimicSelect(f => new FactProjection(f))
+                        .CustomSelect(f => new FactProjection(f))
                         .Where(p => p.Value.StartsWith("Valid")));
                 Then()
                     .Do(ctx => ctx.NoOp());
@@ -200,20 +116,20 @@ namespace NRules.IntegrationTests.CustomAggregator
         }
     }
 
-    public static class SelectQuery
+    public static class CustomSelectQuery
     {
-        public static IQuery<TResult> MimicSelect<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, TResult>> selector)
+        public static IQuery<TResult> CustomSelect<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, TResult>> selector)
         {
             var expressionMap = new Dictionary<string, LambdaExpression>
             {
                 {"Selector", selector}
             };
-            source.Builder.Aggregate<TSource,TResult>("SelectMimicry", expressionMap, typeof(MimicSelectAggregateFactory));
+            source.Builder.Aggregate<TSource,TResult>("CustomSelect", expressionMap, typeof(CustomSelectAggregateFactory));
             return new QueryExpression<TResult>(source.Builder);
         }
     }
 
-    internal class MimicSelectAggregateFactory : IAggregatorFactory
+    internal class CustomSelectAggregateFactory : IAggregatorFactory
     {
         private Func<IAggregator> _factory;
         
@@ -222,7 +138,7 @@ namespace NRules.IntegrationTests.CustomAggregator
             var selector = element.ExpressionMap["Selector"];
             var sourceType = element.Source.ValueType;
             var resultType = selector.Expression.ReturnType;
-            var aggregatorType = typeof(MimicSelectAggregator<,>).MakeGenericType(sourceType, resultType);
+            var aggregatorType = typeof(CustomSelectAggregator<,>).MakeGenericType(sourceType, resultType);
 
             var compiledSelector = compiledExpressions["Selector"];
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
@@ -237,12 +153,12 @@ namespace NRules.IntegrationTests.CustomAggregator
         }
     }
 
-    public class MimicSelectAggregator<TSource, TResult> : IAggregator
+    public class CustomSelectAggregator<TSource, TResult> : IAggregator
     {
         private readonly IAggregateExpression _selector;
         private readonly Dictionary<TSource, object> _sourceToValue = new Dictionary<TSource, object>();
 
-        public MimicSelectAggregator(IAggregateExpression selector)
+        public CustomSelectAggregator(IAggregateExpression selector)
         {
             _selector = selector;
         }
