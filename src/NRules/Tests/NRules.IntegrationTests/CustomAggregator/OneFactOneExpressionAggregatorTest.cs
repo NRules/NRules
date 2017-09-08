@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using NRules.Aggregators;
 using NRules.Fluent.Dsl;
-using NRules.Fluent.Expressions;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
 using Xunit;
