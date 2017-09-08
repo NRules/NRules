@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NRules.Aggregators;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -108,12 +109,10 @@ namespace NRules.Utilities
 
         private static Expression EnsureReturnType(Expression expression, Type delegateType)
         {
-            if (expression.Type == typeof(void)) return expression;
-            if (delegateType.GenericTypeArguments.Length == 0) return expression;
-
-            var resultType = delegateType.GenericTypeArguments.Last();
-            if (expression.Type == resultType) return expression;
-            var convertedExpression = Expression.Convert(expression, resultType);
+            var returnType = delegateType.GetTypeInfo().GetDeclaredMethod(nameof(Action.Invoke)).ReturnType;
+            if (returnType == typeof(void)) return expression;
+            if (expression.Type == returnType) return expression;
+            var convertedExpression = Expression.Convert(expression, returnType);
             return convertedExpression;
         }
 
