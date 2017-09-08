@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace NRules.IntegrationTests
 {
-    public class TryRetractRuleTest : BaseRuleTestFixture
+    public class SelfRetractRuleTest : BaseRuleTestFixture
     {
         [Fact]
         public void Fire_OneMatchingFact_FiresOnceAndRetractsFact()
