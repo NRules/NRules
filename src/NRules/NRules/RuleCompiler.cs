@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NRules.Aggregators;
 using NRules.Rete;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
@@ -13,6 +14,13 @@ namespace NRules
     /// </summary>
     public class RuleCompiler
     {
+        private readonly AggregatorRegistry _aggregatorRegistry = new AggregatorRegistry();
+
+        /// <summary>
+        /// Registry of custom aggregator factories.
+        /// </summary>
+        public AggregatorRegistry AggregatorRegistry => _aggregatorRegistry;
+
         /// <summary>
         /// Compiles a collection of rules into a session factory.
         /// </summary>
@@ -22,7 +30,7 @@ namespace NRules
         /// <seealso cref="IRuleRepository"/>
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
         {
-            IReteBuilder reteBuilder = new ReteBuilder();
+            IReteBuilder reteBuilder = new ReteBuilder(_aggregatorRegistry);
             var compiledRules = new List<ICompiledRule>();
             foreach (var ruleDefinition in ruleDefinitions)
             {

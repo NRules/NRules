@@ -64,6 +64,15 @@ namespace NRules.IntegrationTests
             SetUpRule<TestRule>();
         }
 
+        protected override ISessionFactory Compile()
+        {
+            var compiler = new RuleCompiler();
+            compiler.AggregatorRegistry.RegisterFactory("CustomSelect", typeof(CustomSelectAggregateFactory));
+
+            var factory = compiler.Compile(Repository.GetRules());
+            return factory;
+        }
+
         public class FactType
         {
             public string TestProperty { get; set; }
@@ -124,7 +133,7 @@ namespace NRules.IntegrationTests
             {
                 {"Selector", selector}
             };
-            source.Builder.Aggregate<TSource,TResult>("CustomSelect", expressionMap, typeof(CustomSelectAggregateFactory));
+            source.Builder.Aggregate<TSource,TResult>("CustomSelect", expressionMap);
             return new QueryExpression<TResult>(source.Builder);
         }
     }

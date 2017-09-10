@@ -17,6 +17,12 @@ namespace NRules.Rete
     {
         private readonly RootNode _root = new RootNode();
         private readonly DummyNode _dummyNode = new DummyNode();
+        private readonly AggregatorRegistry _aggregatorRegistry;
+
+        public ReteBuilder(AggregatorRegistry aggregatorRegistry)
+        {
+            _aggregatorRegistry = aggregatorRegistry;
+        }
 
         public IEnumerable<ITerminalNode> AddRule(IRuleDefinition rule)
         {
@@ -332,13 +338,20 @@ namespace NRules.Rete
             return factory;
         }
 
-        private static IAggregatorFactory GetCustomFactory(AggregateElement element)
+        private IAggregatorFactory GetCustomFactory(AggregateElement element)
         {
-            if (element.CustomFactoryType == null)
+            Type factoryType = element.CustomFactoryType;
+            if (factoryType == null)
             {
-                throw new ArgumentException($"Custom aggregator does not have a factory. Name={element.Name}");
+                factoryType = _aggregatorRegistry[element.Name];
             }
-            var factory = (IAggregatorFactory) Activator.CreateInstance(element.CustomFactoryType);
+
+            if (factoryType == null)
+            {
+                throw new ArgumentException($"Custom aggregator does not have a factory registered. Name={element.Name}");
+            }
+
+            var factory = (IAggregatorFactory)Activator.CreateInstance(factoryType);
             return factory;
         }
 
