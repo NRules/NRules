@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace NRules.RuleModel
 {
@@ -74,6 +75,7 @@ namespace NRules.RuleModel
         ActionGroupElement RightHandSide { get; }
     }
 
+    [DebuggerDisplay("{Name} ({Priority})")]
     internal class RuleDefinition : IRuleDefinition
     {
         private readonly List<string> _tags;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -22,6 +23,7 @@ namespace NRules
         IEnumerable<IFactMatch> Facts { get; }
     }
 
+    [DebuggerDisplay("{Rule.Name} FactCount={Tuple.Count}")]
     internal class Activation : IActivation
     {
         internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap tupleFactMap)
