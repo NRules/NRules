@@ -4,7 +4,10 @@ namespace NRules.Extensibility
 {
     /// <summary>
     /// Defines a mechanism to resolve rule dependencies at runtime.
+    /// An instance of <c>IDependencyResolver</c> can be assigned to <see cref="ISessionFactory.DependencyResolver"/> or
+    /// <see cref="ISession.DependencyResolver"/>, so that all requests for rule dependencies resolution are fulfiled by that resolver.
     /// </summary>
+    /// <remarks>If dependency resolver is not configured, any attempt to resolve rule dependencies will result in exception.</remarks>
     public interface IDependencyResolver
     {
         /// <summary>

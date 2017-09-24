@@ -7,6 +7,8 @@ namespace NRules.Fluent
     /// <summary>
     /// Rule activator that instantiates rules based on the .NET types.
     /// Default activator uses .NET reflection activator.
+    /// An instance of <c>IRuleActivator</c> can be assigned to <see cref="RuleRepository.Activator"/>,
+    /// so that all rule instantiation requests are delegated to the rule activator.
     /// </summary>
     public interface IRuleActivator
     {

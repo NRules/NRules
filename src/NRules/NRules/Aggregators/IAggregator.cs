@@ -5,6 +5,12 @@ namespace NRules.Aggregators
 {
     /// <summary>
     /// Base interface for fact aggregators.
+    /// An aggregator is a stateful element of the rules engine, that receives matching facts of a particular kind,
+    /// and can combine them into a synthetic fact, that is then used by the downstream logic in the rule.
+    /// Aggregator also recieves updates and removals for the matching facts, so that it can keep the corresponding
+    /// aggregate facts in sync.
+    /// An aggregator must be supplemented by a corresponding implementation of <see cref="IAggregatorFactory"/> that
+    /// knows how to create new instances of the aggregator.
     /// </summary>
     public interface IAggregator
     {

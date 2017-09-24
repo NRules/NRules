@@ -5,6 +5,10 @@ namespace NRules.Extensibility
 {
     /// <summary>
     /// Extension point for rule actions interception.
+    /// An instance of <c>IActionInterceptor</c> can be assigned to <see cref="ISessionFactory.ActionInterceptor"/> or
+    /// <see cref="ISession.ActionInterceptor"/>, so that invocation of all rule actions is delegated to the interceptor.
+    /// The interceptor is free to add pre- or post-processing to action invocations, error handling, or decide not to invoke
+    /// the actions.
     /// </summary>
     /// <remarks>
     /// When actions are invoked via <c>IActionInterceptor</c>, exceptions thrown by actions

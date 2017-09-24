@@ -15,7 +15,7 @@ namespace NRules.Aggregators
         }
 
         /// <summary>
-        /// Looks up custom aggregator factory type by name.
+        /// Looks up custom aggregator factory type by the aggregator name.
         /// </summary>
         /// <param name="name">Name of the custom aggregator.</param>
         /// <returns>Custom aggregator type or <c>null</c> if a given aggregator type is not registered.</returns>
@@ -23,8 +23,7 @@ namespace NRules.Aggregators
         {
             get
             {
-                Type factoryType;
-                _factoryMap.TryGetValue(name, out factoryType);
+                _factoryMap.TryGetValue(name, out var factoryType);
                 return factoryType;
             }
         }
