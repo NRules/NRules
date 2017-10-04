@@ -37,13 +37,8 @@ namespace NRules.Rete
             foreach (var tuple in tuples)
             {
                 var fact = tuple.GetState<Fact>(this);
-                var oldValue = fact.RawObject;
-                var newValue = BindingExpression.Invoke(context, tuple);
-
-                if (!ReferenceEquals(oldValue, newValue))
-                {
-                    fact.RawObject = newValue;
-                }
+                var value = BindingExpression.Invoke(context, tuple);
+                fact.RawObject = value;
                 toUpdate.Add(tuple, fact);
             }
             MemoryNode.PropagateUpdate(context, toUpdate);
