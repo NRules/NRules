@@ -40,16 +40,7 @@ namespace NRules.Aggregators
                 var value = _selector.Invoke(tuple, fact);
                 var oldValue = (TResult)_sourceToValue[source];
                 _sourceToValue[source] = value;
-
-                if (Equals(oldValue, value))
-                {
-                    results.Add(AggregationResult.Modified(value));
-                }
-                else
-                {
-                    results.Add(AggregationResult.Removed(oldValue));
-                    results.Add(AggregationResult.Added(value));
-                }
+                results.Add(AggregationResult.Modified(value, oldValue));
             }
             return results;
         }

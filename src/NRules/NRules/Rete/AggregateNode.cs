@@ -163,7 +163,7 @@ namespace NRules.Rete
                         aggregation.Add(result.Action, tuple, addedFact);
                         break;
                     case AggregationAction.Modified:
-                        var modifiedFact = GetAggregateFact(context, result.Aggregate);
+                        var modifiedFact = GetAggregateFact(context, result.Aggregate, result.Previous);
                         aggregation.Add(result.Action, tuple, modifiedFact);
                         break;
                     case AggregationAction.Removed:
@@ -216,9 +216,9 @@ namespace NRules.Rete
             return fact;
         }
 
-        private Fact GetAggregateFact(IExecutionContext context, object aggregate)
+        private Fact GetAggregateFact(IExecutionContext context, object aggregate, object previous = null)
         {
-            Fact fact = context.WorkingMemory.GetInternalFact(this, aggregate);
+            Fact fact = context.WorkingMemory.GetInternalFact(this, previous ?? aggregate);
             if (fact == null)
             {
                 throw new InvalidOperationException(

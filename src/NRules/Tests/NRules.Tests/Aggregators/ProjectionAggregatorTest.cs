@@ -84,7 +84,7 @@ namespace NRules.Tests.Aggregators
         }
 
         [Fact]
-        public void Modify_ProjectionChanged_RemovedAddedResult()
+        public void Modify_ProjectionChanged_ModifiedResult()
         {
             //Arrange
             var target = CreateTarget();
@@ -94,15 +94,13 @@ namespace NRules.Tests.Aggregators
             var result = target.Modify(EmptyTuple(), AsFact(new TestFact(1, "value1x"), new TestFact(2, "value2x"))).ToArray();
 
             //Assert
-            Assert.Equal(4, result.Length);
-            Assert.Equal(AggregationAction.Removed, result[0].Action);
-            Assert.Equal("value1", result[0].Aggregate);
-            Assert.Equal(AggregationAction.Added, result[1].Action);
-            Assert.Equal("value1x", result[1].Aggregate);
-            Assert.Equal(AggregationAction.Removed, result[2].Action);
-            Assert.Equal("value2", result[2].Aggregate);
-            Assert.Equal(AggregationAction.Added, result[3].Action);
-            Assert.Equal("value2x", result[3].Aggregate);
+            Assert.Equal(2, result.Length);
+            Assert.Equal(AggregationAction.Modified, result[0].Action);
+            Assert.Equal("value1", result[0].Previous);
+            Assert.Equal("value1x", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Modified, result[1].Action);
+            Assert.Equal("value2", result[1].Previous);
+            Assert.Equal("value2x", result[1].Aggregate);
         }
 
         [Fact]

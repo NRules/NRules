@@ -40,6 +40,14 @@ namespace NRules.Aggregators
         {
             Action = action;
             Aggregate = aggregate;
+            Previous = aggregate;
+        }
+
+        private AggregationResult(AggregationAction action, object aggregate, object previous)
+        {
+            Action = action;
+            Aggregate = aggregate;
+            Previous = previous;
         }
 
         /// <summary>
@@ -73,6 +81,17 @@ namespace NRules.Aggregators
         }
 
         /// <summary>
+        /// Constructs an aggregation result that indicates a modification at the aggregate level.
+        /// </summary>
+        /// <param name="result">Aggregate.</param>
+        /// <param name="previous">Previous aggregate.</param>
+        /// <returns>Aggregation result.</returns>
+        public static AggregationResult Modified(object result, object previous)
+        {
+            return new AggregationResult(AggregationAction.Modified, result, previous);
+        }
+
+        /// <summary>
         /// Constructs an aggregation result that indicates an aggregate was removed.
         /// </summary>
         /// <param name="result">Aggregate.</param>
@@ -91,5 +110,10 @@ namespace NRules.Aggregators
         /// Resulting aggregate.
         /// </summary>
         public object Aggregate { get; }
+        
+        /// <summary>
+        /// Previous aggregate.
+        /// </summary>
+        public object Previous { get; }
     }
 }
