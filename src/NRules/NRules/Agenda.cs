@@ -89,9 +89,7 @@ namespace NRules
 
         private bool Accept(Activation activation)
         {
-            IActivationFilter[] filters;
-            if (!_filters.TryGetValue(activation.CompiledRule, out filters)) return true;
-
+            if (!_filters.TryGetValue(activation.CompiledRule, out var filters)) return true;
             foreach (var filter in filters)
             {
                 if (!filter.Accept(activation)) return false;
@@ -101,9 +99,7 @@ namespace NRules
 
         private void Remove(Activation activation)
         {
-            IActivationFilter[] filters;
-            if (!_filters.TryGetValue(activation.CompiledRule, out filters)) return;
-
+            if (!_filters.TryGetValue(activation.CompiledRule, out var filters)) return;
             foreach (var filter in filters)
             {
                 filter.Remove(activation);

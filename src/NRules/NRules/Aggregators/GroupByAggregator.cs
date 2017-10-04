@@ -81,8 +81,7 @@ namespace NRules.Aggregators
                     resultLookup[oldKey] = result1;
 
                     var result2 = Add(key, element);
-                    AggregationResult previousResult;
-                    if (!resultLookup.TryGetValue(key, out previousResult))
+                    if (!resultLookup.TryGetValue(key, out var previousResult))
                     {
                         keys.Add(key);
                         resultLookup[key] = result2;
@@ -122,8 +121,7 @@ namespace NRules.Aggregators
 
         private AggregationResult Add(TKey key, TElement element)
         {
-            Grouping group;
-            if (!_groups.TryGetValue(key, out group))
+            if (!_groups.TryGetValue(key, out var group))
             {
                 group = new Grouping(key);
                 _groups[key] = group;
