@@ -224,7 +224,14 @@ namespace NRules.Rete
                 throw new InvalidOperationException(
                     $"Fact for aggregate object does not exist. Aggregate={Name}, FactType={aggregate.GetType()}");
             }
-            if (!ReferenceEquals(fact.RawObject, aggregate))
+
+            if (!Equals(fact.RawObject, aggregate))
+            {
+                context.WorkingMemory.RemoveInternalFact(this, fact);
+                fact.RawObject = aggregate;
+                context.WorkingMemory.AddInternalFact(this, fact);
+            }
+            else if (!ReferenceEquals(fact.RawObject, aggregate))
             {
                 fact.RawObject = aggregate;
                 context.WorkingMemory.UpdateInternalFact(this, fact);
