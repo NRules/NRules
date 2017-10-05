@@ -74,24 +74,20 @@ namespace NRules
 
         public Fact GetInternalFact(INode node, object factObject)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_internalFactMap.TryGetValue(node, out factMap)) return null;
+            if (!_internalFactMap.TryGetValue(node, out var factMap)) return null;
 
-            Fact fact;
-            factMap.TryGetValue(factObject, out fact);
+            factMap.TryGetValue(factObject, out var fact);
             return fact;
         }
 
         public IEnumerable<Fact> GetInternalFacts(INode node, IEnumerable<object> factObjects)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_internalFactMap.TryGetValue(node, out factMap)) return EmptyFactList;
+            if (!_internalFactMap.TryGetValue(node, out var factMap)) return EmptyFactList;
 
             var facts = new List<Fact>();
             foreach (var factObject in factObjects)
             {
-                Fact fact;
-                factMap.TryGetValue(factObject, out fact);
+                factMap.TryGetValue(factObject, out var fact);
                 facts.Add(fact);
             }
             return facts;
@@ -99,8 +95,7 @@ namespace NRules
 
         public void AddInternalFact(INode node, Fact fact)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_internalFactMap.TryGetValue(node, out factMap))
+            if (!_internalFactMap.TryGetValue(node, out var factMap))
             {
                 factMap = new Dictionary<object, Fact>();
                 _internalFactMap[node] = factMap;
@@ -111,8 +106,7 @@ namespace NRules
 
         public void UpdateInternalFact(INode node, Fact fact)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_internalFactMap.TryGetValue(node, out factMap))
+            if (!_internalFactMap.TryGetValue(node, out var factMap))
             {
                 factMap = new Dictionary<object, Fact>();
                 _internalFactMap[node] = factMap;
@@ -124,8 +118,7 @@ namespace NRules
 
         public void RemoveInternalFact(INode node, Fact fact)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_internalFactMap.TryGetValue(node, out factMap)) return;
+            if (!_internalFactMap.TryGetValue(node, out var factMap)) return;
 
             factMap.Remove(fact.RawObject);
             if (factMap.Count == 0) _internalFactMap.Remove(node);
@@ -133,18 +126,15 @@ namespace NRules
 
         public IEnumerable<object> GetLinkedKeys(IActivation activation)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_linkedFactMap.TryGetValue(activation, out factMap)) return EmptyObjectList;
+            if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return EmptyObjectList;
             return factMap.Keys;
         }
 
         public Fact GetLinkedFact(IActivation activation, object key)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_linkedFactMap.TryGetValue(activation, out factMap)) return null;
+            if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return null;
 
-            Fact fact;
-            factMap.TryGetValue(key, out fact);
+            factMap.TryGetValue(key, out var fact);
             return fact;
         }
 
@@ -152,8 +142,7 @@ namespace NRules
         {
             AddFact(fact);
 
-            Dictionary<object, Fact> factMap;
-            if (!_linkedFactMap.TryGetValue(activation, out factMap))
+            if (!_linkedFactMap.TryGetValue(activation, out var factMap))
             {
                 factMap = new Dictionary<object, Fact>();
                 _linkedFactMap[activation] = factMap;
@@ -171,8 +160,7 @@ namespace NRules
                 AddFact(fact);
             }
 
-            Dictionary<object, Fact> factMap;
-            if (!_linkedFactMap.TryGetValue(activation, out factMap))
+            if (!_linkedFactMap.TryGetValue(activation, out var factMap))
             {
                 factMap = new Dictionary<object, Fact>();
                 _linkedFactMap[activation] = factMap;
@@ -184,8 +172,7 @@ namespace NRules
 
         public void RemoveLinkedFact(IActivation activation, object key, Fact fact)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_linkedFactMap.TryGetValue(activation, out factMap)) return;
+            if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return;
 
             factMap.Remove(key);
             if (factMap.Count == 0) _linkedFactMap.Remove(activation);
@@ -195,8 +182,7 @@ namespace NRules
 
         public IAlphaMemory GetNodeMemory(IAlphaMemoryNode node)
         {
-            IAlphaMemory memory;
-            if (!_alphaMap.TryGetValue(node, out memory))
+            if (!_alphaMap.TryGetValue(node, out var memory))
             {
                 memory = new AlphaMemory();
                 _alphaMap[node] = memory;
@@ -206,8 +192,7 @@ namespace NRules
 
         public IBetaMemory GetNodeMemory(IBetaMemoryNode node)
         {
-            IBetaMemory memory;
-            if (!_betaMap.TryGetValue(node, out memory))
+            if (!_betaMap.TryGetValue(node, out var memory))
             {
                 memory = new BetaMemory();
                 _betaMap[node] = memory;

@@ -20,7 +20,7 @@ namespace NRules.Collections
         }
 
         public int Count => _dictionary.Count;
-        public virtual bool IsReadOnly => _dictionary.IsReadOnly;
+        public bool IsReadOnly => _dictionary.IsReadOnly;
 
         void ICollection<TValue>.Add(TValue item)
         {
@@ -35,8 +35,7 @@ namespace NRules.Collections
 
         public bool Remove(TValue item)
         {
-            LinkedListNode<TValue> node;
-            bool found = _dictionary.TryGetValue(item, out node);
+            bool found = _dictionary.TryGetValue(item, out var node);
             if (!found) return false;
             _dictionary.Remove(item);
             _linkedList.Remove(node);
