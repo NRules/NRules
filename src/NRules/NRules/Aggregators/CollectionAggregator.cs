@@ -46,7 +46,7 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var item = (TElement)fact.Value;
-                _items.Add(item);
+                _items.Add(fact, item);
             }
         }
 
@@ -55,7 +55,7 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var item = (TElement)fact.Value;
-                _items.Modify(item);
+                _items.Modify(fact, item);
             }
         }
 
@@ -64,7 +64,7 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var item = (TElement) fact.Value;
-                _items.Remove(item);
+                _items.Remove(fact, item);
             }
         }
 

@@ -11,7 +11,7 @@ namespace NRules.Aggregators
     internal class ProjectionAggregator<TSource, TResult> : IAggregator
     {
         private readonly IAggregateExpression _selector;
-        private readonly Dictionary<TSource, object> _sourceToValue = new Dictionary<TSource, object>();
+        private readonly Dictionary<IFact, object> _sourceToValue = new Dictionary<IFact, object>();
 
         public ProjectionAggregator(IAggregateExpression selector)
         {
@@ -23,9 +23,8 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
                 var value = _selector.Invoke(tuple, fact);
-                _sourceToValue[source] = value;
+                _sourceToValue[fact] = value;
                 results.Add(AggregationResult.Added(value));
             }
             return results;
@@ -36,10 +35,9 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
                 var value = _selector.Invoke(tuple, fact);
-                var oldValue = (TResult)_sourceToValue[source];
-                _sourceToValue[source] = value;
+                var oldValue = (TResult)_sourceToValue[fact];
+                _sourceToValue[fact] = value;
                 results.Add(AggregationResult.Modified(value, oldValue));
             }
             return results;
@@ -50,9 +48,8 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
-                var oldValue = _sourceToValue[source];
-                _sourceToValue.Remove(source);
+                var oldValue = _sourceToValue[fact];
+                _sourceToValue.Remove(fact);
                 results.Add(AggregationResult.Removed(oldValue));
             }
             return results;

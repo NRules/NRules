@@ -11,7 +11,7 @@ namespace NRules.Aggregators
     internal class FlatteningAggregator<TSource, TResult> : IAggregator
     {
         private readonly IAggregateExpression _selector;
-        private readonly Dictionary<TSource, IList<TResult>> _sourceToList = new Dictionary<TSource, IList<TResult>>();
+        private readonly Dictionary<IFact, IList<TResult>> _sourceToList = new Dictionary<IFact, IList<TResult>>();
 
         public FlatteningAggregator(IAggregateExpression selector)
         {
@@ -23,10 +23,9 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
                 var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
                 var list = new List<TResult>(value);
-                _sourceToList[source] = list;
+                _sourceToList[fact] = list;
                 foreach (var item in list)
                 {
                     results.Add(AggregationResult.Added(item));
@@ -40,11 +39,10 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
                 var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
                 var list = new List<TResult>(value);
-                var oldList = _sourceToList[source];
-                _sourceToList[source] = list;
+                var oldList = _sourceToList[fact];
+                _sourceToList[fact] = list;
                 foreach (var item in oldList)
                 {
                     results.Add(AggregationResult.Removed(item));
@@ -62,9 +60,8 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
-                var oldList = _sourceToList[source];
-                _sourceToList.Remove(source);
+                var oldList = _sourceToList[fact];
+                _sourceToList.Remove(fact);
                 foreach (var item in oldList)
                 {
                     results.Add(AggregationResult.Removed(item));

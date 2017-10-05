@@ -15,8 +15,8 @@ namespace NRules.Aggregators
         private readonly IAggregateExpression _keySelector;
         private readonly IAggregateExpression _elementSelector;
         
-        private readonly Dictionary<object, TKey> _sourceToKey = new Dictionary<object, TKey>();
-        private readonly Dictionary<object, TElement> _sourceToElement = new Dictionary<object, TElement>();
+        private readonly Dictionary<IFact, TKey> _sourceToKey = new Dictionary<IFact, TKey>();
+        private readonly Dictionary<IFact, TElement> _sourceToElement = new Dictionary<IFact, TElement>();
 
         private readonly DefaultKeyMap<TKey, Grouping> _groups = new DefaultKeyMap<TKey, Grouping>();
 
@@ -32,12 +32,11 @@ namespace NRules.Aggregators
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
                 var key = (TKey)_keySelector.Invoke(tuple, fact);
                 var element = (TElement)_elementSelector.Invoke(tuple, fact);
-                _sourceToKey[source] = key;
-                _sourceToElement[source] = element;
-                var result = Add(key, element);
+                _sourceToKey[fact] = key;
+                _sourceToElement[fact] = element;
+                var result = Add(fact, key, element);
                 if (!resultLookup.ContainsKey(key))
                 {
                     keys.Add(key);
@@ -54,17 +53,16 @@ namespace NRules.Aggregators
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
                 var key = (TKey)_keySelector.Invoke(tuple, fact);
                 var element = (TElement)_elementSelector.Invoke(tuple, fact);
-                var oldKey = _sourceToKey[source];
-                var oldElement = _sourceToElement[source];
-                _sourceToKey[source] = key;
-                _sourceToElement[source] = element;
+                var oldKey = _sourceToKey[fact];
+                var oldElement = _sourceToElement[fact];
+                _sourceToKey[fact] = key;
+                _sourceToElement[fact] = element;
         
                 if (Equals(key, oldKey))
                 {
-                    var result = Modify(key, oldElement, element);
+                    var result = Modify(fact, key, element);
                     if (!resultLookup.ContainsKey(key))
                     {
                         keys.Add(key);
@@ -73,14 +71,14 @@ namespace NRules.Aggregators
                 }
                 else
                 {
-                    var result1 = Remove(oldKey, oldElement);
+                    var result1 = Remove(fact, oldKey, oldElement);
                     if (!resultLookup.ContainsKey(oldKey))
                     {
                         keys.Add(oldKey);
                     }
                     resultLookup[oldKey] = result1;
 
-                    var result2 = Add(key, element);
+                    var result2 = Add(fact, key, element);
                     if (!resultLookup.TryGetValue(key, out var previousResult))
                     {
                         keys.Add(key);
@@ -103,12 +101,11 @@ namespace NRules.Aggregators
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
-                var oldKey = _sourceToKey[source];
-                var oldElement = _sourceToElement[source];
-                _sourceToKey.Remove(source);
-                _sourceToElement.Remove(source);
-                var result = Remove(oldKey, oldElement);
+                var oldKey = _sourceToKey[fact];
+                var oldElement = _sourceToElement[fact];
+                _sourceToKey.Remove(fact);
+                _sourceToElement.Remove(fact);
+                var result = Remove(fact, oldKey, oldElement);
                 if (!resultLookup.ContainsKey(oldKey))
                 {
                     keys.Add(oldKey);
@@ -119,40 +116,32 @@ namespace NRules.Aggregators
             return results;
         }
 
-        private AggregationResult Add(TKey key, TElement element)
+        private AggregationResult Add(IFact fact, TKey key, TElement element)
         {
             if (!_groups.TryGetValue(key, out var group))
             {
                 group = new Grouping(key);
                 _groups[key] = group;
 
-                group.Add(element);
+                group.Add(fact, element);
                 return AggregationResult.Added(group);
             }
 
-            group.Add(element);
+            group.Add(fact, element);
             return AggregationResult.Modified(group);
         }
 
-        private AggregationResult Modify(TKey key, TElement oldElement, TElement element)
+        private AggregationResult Modify(IFact fact, TKey key, TElement element)
         {
             var group = _groups[key];
-            if (Equals(oldElement, element))
-            {
-                group.Modify(element);
-            }
-            else
-            {
-                group.Remove(oldElement);
-                group.Add(element);
-            }
+            group.Modify(fact, element);
             return AggregationResult.Modified(group);
         }
 
-        private AggregationResult Remove(TKey key, TElement element)
+        private AggregationResult Remove(IFact fact, TKey key, TElement element)
         {
             var group = _groups[key];
-            group.Remove(element);
+            group.Remove(fact, element);
             if (group.Count == 0)
             {
                 _groups.Remove(key);
