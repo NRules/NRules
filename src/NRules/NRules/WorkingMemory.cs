@@ -13,12 +13,6 @@ namespace NRules
         void UpdateFact(Fact fact);
         void RemoveFact(Fact fact);
 
-        Fact GetInternalFact(INode node, object factObject);
-        IEnumerable<Fact> GetInternalFacts(INode node, IEnumerable<object> factObjects);
-        void AddInternalFact(INode node, Fact fact);
-        void UpdateInternalFact(INode node, Fact fact);
-        void RemoveInternalFact(INode node, Fact fact);
-
         IEnumerable<object> GetLinkedKeys(IActivation activation);
         Fact GetLinkedFact(IActivation activation, object key);
         void AddLinkedFact(IActivation activation, object key, Fact fact);
@@ -32,7 +26,6 @@ namespace NRules
     internal class WorkingMemory : IWorkingMemory
     {
         private readonly Dictionary<object, Fact> _factMap = new Dictionary<object, Fact>();
-        private readonly Dictionary<INode, Dictionary<object, Fact>> _internalFactMap = new Dictionary<INode, Dictionary<object, Fact>>();
         private readonly Dictionary<IActivation, Dictionary<object, Fact>> _linkedFactMap = new Dictionary<IActivation, Dictionary<object, Fact>>();
 
         private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap =
@@ -70,58 +63,6 @@ namespace NRules
             {
                 throw new ArgumentException("Element does not exist", nameof(fact));
             }
-        }
-
-        public Fact GetInternalFact(INode node, object factObject)
-        {
-            if (!_internalFactMap.TryGetValue(node, out var factMap)) return null;
-
-            factMap.TryGetValue(factObject, out var fact);
-            return fact;
-        }
-
-        public IEnumerable<Fact> GetInternalFacts(INode node, IEnumerable<object> factObjects)
-        {
-            if (!_internalFactMap.TryGetValue(node, out var factMap)) return EmptyFactList;
-
-            var facts = new List<Fact>();
-            foreach (var factObject in factObjects)
-            {
-                factMap.TryGetValue(factObject, out var fact);
-                facts.Add(fact);
-            }
-            return facts;
-        }
-
-        public void AddInternalFact(INode node, Fact fact)
-        {
-            if (!_internalFactMap.TryGetValue(node, out var factMap))
-            {
-                factMap = new Dictionary<object, Fact>();
-                _internalFactMap[node] = factMap;
-            }
-
-            factMap[fact.RawObject] = fact;
-        }
-
-        public void UpdateInternalFact(INode node, Fact fact)
-        {
-            if (!_internalFactMap.TryGetValue(node, out var factMap))
-            {
-                factMap = new Dictionary<object, Fact>();
-                _internalFactMap[node] = factMap;
-            }
-
-            factMap.Remove(fact.RawObject);
-            factMap[fact.RawObject] = fact;
-        }
-
-        public void RemoveInternalFact(INode node, Fact fact)
-        {
-            if (!_internalFactMap.TryGetValue(node, out var factMap)) return;
-
-            factMap.Remove(fact.RawObject);
-            if (factMap.Count == 0) _internalFactMap.Remove(node);
         }
 
         public IEnumerable<object> GetLinkedKeys(IActivation activation)

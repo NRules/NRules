@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NRules.Aggregators;
 using NRules.RuleModel;
 
@@ -34,9 +33,8 @@ namespace NRules.Rete
                     if (MatchesConditions(context, set.Tuple, fact))
                         matchingFacts.Add(fact);
                 }
-                IAggregator aggregator = CreateAggregator(set.Tuple);
-                var results = aggregator.Add(set.Tuple, matchingFacts);
-                AddAggregationResult(context, aggregation, set.Tuple, results);
+                IFactAggregator aggregator = CreateFactAggregator(set.Tuple);
+                aggregator.Add(aggregation, set.Tuple, matchingFacts);
             }
             PropagateAggregation(context, aggregation);
         }
@@ -53,12 +51,8 @@ namespace NRules.Rete
                     continue;
                 }
 
-                IAggregator aggregator = GetAggregator(set.Tuple);
-                foreach (var aggregate in aggregator.Aggregates)
-                {
-                    var aggregateFact = GetAggregateFact(context, aggregate);
-                    aggregation.AddUpdate(set.Tuple, aggregateFact);
-                }
+                IFactAggregator aggregator = GetFactAggregator(set.Tuple);
+                aggregator.Modify(aggregation, set.Tuple);
             }
             PropagateAggregation(context, aggregation);
         }
@@ -68,12 +62,8 @@ namespace NRules.Rete
             var aggregation = new Aggregation();
             foreach (var tuple in tuples)
             {
-                IAggregator aggregator = GetAggregator(tuple);
-                foreach (var aggregate in aggregator.Aggregates)
-                {
-                    var aggregateFact = GetAggregateFact(context, aggregate);
-                    aggregation.AddRetract(tuple, aggregateFact);
-                }
+                IFactAggregator aggregator = RemoveFactAggregator(tuple);
+                aggregator.Remove(aggregation, tuple);
             }
             PropagateAggregation(context, aggregation);
         }
@@ -93,9 +83,8 @@ namespace NRules.Rete
                 }
                 if (matchingFacts.Count > 0)
                 {
-                    IAggregator aggregator = GetAggregator(set.Tuple);
-                    var results = aggregator.Add(set.Tuple, matchingFacts);
-                    AddAggregationResult(context, aggregation, set.Tuple, results);
+                    IFactAggregator aggregator = GetFactAggregator(set.Tuple);
+                    aggregator.Add(aggregation, set.Tuple, matchingFacts);
                 }
             }
             PropagateAggregation(context, aggregation);
@@ -116,9 +105,8 @@ namespace NRules.Rete
                 }
                 if (matchingFacts.Count > 0)
                 {
-                    IAggregator aggregator = GetAggregator(set.Tuple);
-                    var results = aggregator.Modify(set.Tuple, matchingFacts);
-                    AddAggregationResult(context, aggregation, set.Tuple, results);
+                    IFactAggregator aggregator = GetFactAggregator(set.Tuple);
+                    aggregator.Modify(aggregation, set.Tuple, matchingFacts);
                 }
             }
             PropagateAggregation(context, aggregation);
@@ -139,9 +127,8 @@ namespace NRules.Rete
                 }
                 if (matchingFacts.Count > 0)
                 {
-                    IAggregator aggregator = GetAggregator(set.Tuple);
-                    var results = aggregator.Remove(set.Tuple, set.Facts);
-                    AddAggregationResult(context, aggregation, set.Tuple, results);
+                    IFactAggregator aggregator = GetFactAggregator(set.Tuple);
+                    aggregator.Remove(aggregation, set.Tuple, set.Facts);
                 }
             }
             PropagateAggregation(context, aggregation);
@@ -150,28 +137,6 @@ namespace NRules.Rete
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.VisitAggregateNode(context, this);
-        }
-
-        private void AddAggregationResult(IExecutionContext context, Aggregation aggregation, Tuple tuple, IEnumerable<AggregationResult> results)
-        {
-            foreach (var result in results)
-            {
-                switch (result.Action)
-                {
-                    case AggregationAction.Added:
-                        var addedFact = CreateAggregateFact(context, result.Aggregate);
-                        aggregation.Add(result.Action, tuple, addedFact);
-                        break;
-                    case AggregationAction.Modified:
-                        var modifiedFact = GetAggregateFact(context, result.Aggregate, result.Previous);
-                        aggregation.Add(result.Action, tuple, modifiedFact);
-                        break;
-                    case AggregationAction.Removed:
-                        var retractedFact = GetAggregateFact(context, result.Aggregate);
-                        aggregation.Add(result.Action, tuple, retractedFact);
-                        break;
-                }
-            }
         }
 
         private void PropagateAggregation(IExecutionContext context, Aggregation aggregation)
@@ -190,62 +155,29 @@ namespace NRules.Rete
                         break;
                     case AggregationAction.Removed:
                         MemoryNode.PropagateRetract(context, aggregateList);
-                        RemoveAggregateFacts(context, aggregateList);
                         break;
                 }
             }
         }
-        
-        private IAggregator GetAggregator(Tuple tuple)
-        {
-            var aggregator = tuple.GetState<IAggregator>(this);
-            return aggregator;
-        }
 
-        private IAggregator CreateAggregator(Tuple tuple)
+        private IFactAggregator CreateFactAggregator(Tuple tuple)
         {
             var aggregator = _aggregatorFactory.Create();
-            tuple.SetState(this, aggregator);
-            return aggregator;
+            var factAggregator = new FactAggregator(aggregator);
+            tuple.SetState(this, factAggregator);
+            return factAggregator;
         }
 
-        private Fact CreateAggregateFact(IExecutionContext context, object aggregate)
+        private IFactAggregator GetFactAggregator(Tuple tuple)
         {
-            Fact fact = new Fact(aggregate);
-            context.WorkingMemory.AddInternalFact(this, fact);
-            return fact;
+            var factAggregator = tuple.GetState<IFactAggregator>(this);
+            return factAggregator;
         }
 
-        private Fact GetAggregateFact(IExecutionContext context, object aggregate, object previous = null)
+        private IFactAggregator RemoveFactAggregator(Tuple tuple)
         {
-            Fact fact = context.WorkingMemory.GetInternalFact(this, previous ?? aggregate);
-            if (fact == null)
-            {
-                throw new InvalidOperationException(
-                    $"Fact for aggregate object does not exist. Aggregate={Name}, FactType={aggregate.GetType()}");
-            }
-
-            if (!Equals(fact.RawObject, aggregate))
-            {
-                context.WorkingMemory.RemoveInternalFact(this, fact);
-                fact.RawObject = aggregate;
-                context.WorkingMemory.AddInternalFact(this, fact);
-            }
-            else if (!ReferenceEquals(fact.RawObject, aggregate))
-            {
-                fact.RawObject = aggregate;
-                context.WorkingMemory.UpdateInternalFact(this, fact);
-            }
-            return fact;
-        }
-
-        private void RemoveAggregateFacts(IExecutionContext context, TupleFactList tupleFactList)
-        {
-            var enumerator = tupleFactList.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                context.WorkingMemory.RemoveInternalFact(this, enumerator.CurrentFact);
-            }
+            var factAggregator = tuple.RemoveState<IFactAggregator>(this);
+            return factAggregator;
         }
 
         private bool HasRightFacts(IExecutionContext context, TupleFactSet set)

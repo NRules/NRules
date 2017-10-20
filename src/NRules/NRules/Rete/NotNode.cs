@@ -14,7 +14,7 @@ namespace NRules.Rete
             var toAssert = new TupleFactList();
             foreach (var set in joinedSets)
             {
-                var quantifier = set.Tuple.Quantifier(this);
+                var quantifier = set.Tuple.CreateQuantifier(this);
                 foreach (var fact in set.Facts)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
@@ -35,7 +35,7 @@ namespace NRules.Rete
             var toUpdate = new TupleFactList();
             foreach (var tuple in tuples)
             {
-                if (tuple.Quantifier(this).Value == 0)
+                if (tuple.GetQuantifier(this).Value == 0)
                 {
                     toUpdate.Add(tuple, null);
                 }
@@ -48,7 +48,7 @@ namespace NRules.Rete
             var toRetract = new TupleFactList();
             foreach (var tuple in tuples)
             {
-                if (tuple.Quantifier(this).Value == 0)
+                if (tuple.RemoveQuantifier(this).Value == 0)
                 {
                     toRetract.Add(tuple, null);
                 }
@@ -62,7 +62,7 @@ namespace NRules.Rete
             var toRetract = new TupleFactList();
             foreach (var set in joinedSets)
             {
-                var quantifier = set.Tuple.Quantifier(this);
+                var quantifier = set.Tuple.GetQuantifier(this);
                 int startingCount = quantifier.Value;
                 foreach (var fact in set.Facts)
                 {
@@ -90,7 +90,7 @@ namespace NRules.Rete
             var toAssert = new TupleFactList();
             foreach (var set in joinedSets)
             {
-                var quantifier = set.Tuple.Quantifier(this);
+                var quantifier = set.Tuple.GetQuantifier(this);
                 int startingCount = quantifier.Value;
                 foreach (var fact in set.Facts)
                 {

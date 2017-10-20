@@ -159,6 +159,48 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
+        public void Fire_TwoMatchingFactsOfOneKindOneFactOfSecondKindDuplicateProjectionsFirstSetUpdatedToInvalid_DoesNotFire()
+        {
+            //Arrange
+            var fact11 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Value 1" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Value 1" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = "Value 1" };
+            Session.InsertAll(new object[] {fact11, fact12});
+            Session.Insert(fact2);
+
+            fact11.TestProperty = "Invalid Value 1";
+            Session.Update(fact11);
+            fact12.TestProperty = "Invalid Value 1";
+            Session.Update(fact12);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+
+        [Fact]
+        public void Fire_TwoMatchingFactsOfOneKindOneFactOfSecondKindDuplicateProjectionsFirstSetRetracted_DoesNotFire()
+        {
+            //Arrange
+            var fact11 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Value 1" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Value 1" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = "Value 1" };
+            Session.InsertAll(new object[] {fact11, fact12});
+            Session.Insert(fact2);
+
+            Session.Retract(fact11);
+            Session.Retract(fact12);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+
+        [Fact]
         public void Fire_MatchingFactOfFirstKind_DoesNotFire()
         {
             //Arrange
@@ -241,7 +283,7 @@ namespace NRules.IntegrationTests
                 FactProjection projection = null;
 
                 When()
-                    .Match(() => fact1)
+                    .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
                     .Query(() => projection, q => q
                         .Match<FactType2>(f => f.JoinProperty == fact1.JoinProperty)
                         .Select(f => new FactProjection(fact1, f))

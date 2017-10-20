@@ -49,7 +49,7 @@ namespace NRules.Rete
             var toRetract = new TupleFactList();
             foreach (var tuple in tuples)
             {
-                var fact = tuple.GetState<Fact>(this);
+                var fact = tuple.RemoveState<Fact>(this);
                 toRetract.Add(tuple, fact);
             }
             MemoryNode.PropagateRetract(context, toRetract);

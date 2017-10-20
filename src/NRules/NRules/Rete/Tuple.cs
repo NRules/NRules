@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using NRules.RuleModel;
@@ -40,12 +41,22 @@ namespace NRules.Rete
         
         public T GetState<T>(INode node)
         {
-            object value;
-            if (_stateMap != null && _stateMap.TryGetValue(node, out value))
+            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
             {
                 return (T) value;
             }
-            return default(T);
+            throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
+        }
+
+        public T RemoveState<T>(INode node)
+        {
+            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
+            {
+                var state = (T)value;
+                _stateMap.Remove(node);
+                return state;
+            }
+            throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
         }
 
         public void SetState(INode node, object value)

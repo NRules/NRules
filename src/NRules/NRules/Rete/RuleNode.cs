@@ -33,7 +33,7 @@
 
         public void PropagateRetract(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap)
         {
-            var activation = tuple.GetState<Activation>(this);
+            var activation = tuple.RemoveState<Activation>(this);
             context.Agenda.Remove(context, activation);
             context.EventAggregator.RaiseActivationDeleted(context.Session, activation);
         }

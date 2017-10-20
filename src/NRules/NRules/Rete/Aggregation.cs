@@ -10,25 +10,19 @@ namespace NRules.Rete
 
         public IList<AggregateList> AggregateLists => _aggregateLists;
 
-        public void Add(AggregationAction action, Tuple tuple, Fact aggregateFact)
-        {
-            var list = GetList(action);
-            list.Add(tuple, aggregateFact);
-        }
-
-        public void AddAssert(Tuple tuple, Fact aggregateFact)
+        public void Add(Tuple tuple, Fact aggregateFact)
         {
             var list = GetList(AggregationAction.Added);
             list.Add(tuple, aggregateFact);
         }
 
-        public void AddUpdate(Tuple tuple, Fact aggregateFact)
+        public void Modify(Tuple tuple, Fact aggregateFact)
         {
             var list = GetList(AggregationAction.Modified);
             list.Add(tuple, aggregateFact);
         }
         
-        public void AddRetract(Tuple tuple, Fact aggregateFact)
+        public void Remove(Tuple tuple, Fact aggregateFact)
         {
             var list = GetList(AggregationAction.Removed);
             list.Add(tuple, aggregateFact);
