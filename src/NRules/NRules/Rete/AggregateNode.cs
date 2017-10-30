@@ -34,7 +34,7 @@ namespace NRules.Rete
                         matchingFacts.Add(fact);
                 }
                 IFactAggregator aggregator = CreateFactAggregator(set.Tuple);
-                aggregator.Add(aggregation, set.Tuple, matchingFacts);
+                aggregator.Add(context, aggregation, set.Tuple, matchingFacts);
             }
             PropagateAggregation(context, aggregation);
         }
@@ -52,7 +52,7 @@ namespace NRules.Rete
                 }
 
                 IFactAggregator aggregator = GetFactAggregator(set.Tuple);
-                aggregator.Modify(aggregation, set.Tuple);
+                aggregator.Modify(context, aggregation, set.Tuple);
             }
             PropagateAggregation(context, aggregation);
         }
@@ -63,7 +63,7 @@ namespace NRules.Rete
             foreach (var tuple in tuples)
             {
                 IFactAggregator aggregator = RemoveFactAggregator(tuple);
-                aggregator.Remove(aggregation, tuple);
+                aggregator.Remove(context, aggregation, tuple);
             }
             PropagateAggregation(context, aggregation);
         }
@@ -84,7 +84,7 @@ namespace NRules.Rete
                 if (matchingFacts.Count > 0)
                 {
                     IFactAggregator aggregator = GetFactAggregator(set.Tuple);
-                    aggregator.Add(aggregation, set.Tuple, matchingFacts);
+                    aggregator.Add(context, aggregation, set.Tuple, matchingFacts);
                 }
             }
             PropagateAggregation(context, aggregation);
@@ -106,7 +106,7 @@ namespace NRules.Rete
                 if (matchingFacts.Count > 0)
                 {
                     IFactAggregator aggregator = GetFactAggregator(set.Tuple);
-                    aggregator.Modify(aggregation, set.Tuple, matchingFacts);
+                    aggregator.Modify(context, aggregation, set.Tuple, matchingFacts);
                 }
             }
             PropagateAggregation(context, aggregation);
@@ -128,7 +128,7 @@ namespace NRules.Rete
                 if (matchingFacts.Count > 0)
                 {
                     IFactAggregator aggregator = GetFactAggregator(set.Tuple);
-                    aggregator.Remove(aggregation, set.Tuple, set.Facts);
+                    aggregator.Remove(context, aggregation, set.Tuple, set.Facts);
                 }
             }
             PropagateAggregation(context, aggregation);

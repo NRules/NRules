@@ -29,6 +29,10 @@ namespace NRules
     /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
     /// <event cref="IEventProvider.ConditionFailedEvent">When there is an error during condition evaluation,
     /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.BindingFailedEvent">When there is an error during binding expression evaluation,
+    /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.AggregateFailedEvent">When there is an error during aggregate expression evaluation,
+    /// before throwing exception to the client.</event>
     /// <event cref="IEventProvider.ActionFailedEvent">When there is an error during action evaluation,
     /// before throwing exception to the client.</event>
     /// <seealso cref="ISession"/>

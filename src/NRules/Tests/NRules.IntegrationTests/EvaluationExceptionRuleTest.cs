@@ -43,9 +43,54 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
+        public void Fire_ErrorInBinding_Throws()
+        {
+            //Arrange
+            GetRuleInstance<TestRule>().BindingExpression = null;
+
+            Expression expression = null;
+            IList<IFact> facts = null;
+            Session.Events.BindingFailedEvent += (sender, args) => expression = args.Expression;
+            Session.Events.BindingFailedEvent += (sender, args) => facts = args.Facts.ToList();
+
+            var fact = new FactType { TestProperty = "Valid value" };
+
+            //Act - Assert
+            var ex = Assert.Throws<RuleExpressionEvaluationException>(() => Session.Insert(fact));
+            Assert.NotNull(expression);
+            Assert.Equal(1, facts.Count());
+            Assert.Same(fact, facts.First().Value);
+            Assert.IsType<NullReferenceException>(ex.InnerException);
+        }
+
+        [Fact]
+        public void Fire_ErrorInAggregate_Throws()
+        {
+            //Arrange
+            GetRuleInstance<TestRule>().GroupingExpression = null;
+
+            Expression expression = null;
+            IList<IFact> facts = null;
+            Session.Events.AggregateFailedEvent += (sender, args) => expression = args.Expression;
+            Session.Events.AggregateFailedEvent += (sender, args) => facts = args.Facts.ToList();
+
+            var fact = new FactType { TestProperty = "Valid value" };
+
+            //Act - Assert
+            var ex = Assert.Throws<RuleExpressionEvaluationException>(() => Session.Insert(fact));
+            Assert.NotNull(expression);
+            Assert.Equal(3, facts.Count());
+            Assert.Same(fact, facts.First().Value);
+            Assert.Equal("value", facts.Skip(1).First().Value);
+            Assert.IsType<NullReferenceException>(ex.InnerException);
+        }
+
+        [Fact]
         public void Fire_ErrorInActionNoErrorHandler_Throws()
         {
             //Arrange
+            GetRuleInstance<TestRule>().Action = null;
+
             Expression expression = null;
             IList<IFactMatch> facts = null;
             Session.Events.ActionFailedEvent += (sender, args) => expression = args.Action;
@@ -54,12 +99,10 @@ namespace NRules.IntegrationTests
             var fact = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact);
 
-            GetRuleInstance<TestRule>().Action = null;
-
             //Act - Assert
             var ex = Assert.Throws<RuleActionEvaluationException>(() => Session.Fire());
             Assert.NotNull(expression);
-            Assert.Equal(1, facts.Count());
+            Assert.Equal(3, facts.Count());
             Assert.Same(fact, facts.First().Value);
             Assert.IsType<NullReferenceException>(ex.InnerException);
         }
@@ -68,12 +111,12 @@ namespace NRules.IntegrationTests
         public void Fire_ErrorInActionErrorHandler_DoesNotThrow()
         {
             //Arrange
+            GetRuleInstance<TestRule>().Action = null;
+
             Session.Events.ActionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact);
-
-            GetRuleInstance<TestRule>().Action = null;
 
             //Act - Assert
             Session.Fire();
@@ -92,13 +135,22 @@ namespace NRules.IntegrationTests
         public class TestRule : Rule
         {
             public Action Action = () => { };
+            public Func<string> BindingExpression = () => "value";
+            public Func<FactType, object> GroupingExpression = x => x.TestProperty;
 
             public override void Define()
             {
                 FactType fact = null;
+                string binding = null;
+                IEnumerable<FactType> factGroup = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Let(() => binding, () => BindingExpression())
+                    .Query(() => factGroup, q => q
+                        .Match<FactType>(f => f == fact)
+                        .GroupBy(f => GroupingExpression(f))
+                    );
                 Then()
                     .Do(ctx => Action());
             }

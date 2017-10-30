@@ -2,6 +2,7 @@ using System;
 using System.Linq.Expressions;
 using NRules.Extensibility;
 using NRules.Rete;
+using NRules.RuleModel;
 using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Diagnostics
@@ -75,16 +76,27 @@ namespace NRules.Diagnostics
         event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
 
         /// <summary>
+        /// Raised when condition evaluation threw an exception.
+        /// Gives observer of the event control over handling of the exception.
+        /// </summary>
+        event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
+
+        /// <summary>
+        /// Raised when binding expression evaluation threw an exception.
+        /// </summary>
+        event EventHandler<BindingErrorEventArgs> BindingFailedEvent;
+
+        /// <summary>
+        /// Raised when aggregate expression evaluation threw an exception.
+        /// </summary>
+        event EventHandler<AggregateErrorEventArgs> AggregateFailedEvent;
+
+        /// <summary>
         /// Raised when action execution threw an exception.
         /// Gives observer of the event control over handling of the exception.
         /// <remarks>This event is not raised when actions are invoked via <see cref="IActionInterceptor"/>.</remarks>
         /// </summary>
         event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
-
-        /// <summary>
-        /// Raised when condition evaluation threw an exception.
-        /// </summary>
-        event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
     }
 
     internal interface IEventAggregator : IEventProvider
@@ -100,8 +112,10 @@ namespace NRules.Diagnostics
         void RaiseFactUpdated(ISession session, Fact fact);
         void RaiseFactRetracting(ISession session, Fact fact);
         void RaiseFactRetracted(ISession session, Fact fact);
-        void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, ref bool isHandled);
         void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled);
+        void RaiseBindingFailed(ISession session, Exception exception, Expression expression, Tuple tuple);
+        void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, ITuple tuple, IFact fact);
+        void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, ref bool isHandled);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -119,8 +133,10 @@ namespace NRules.Diagnostics
         public event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactRetractingEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
-        public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
         public event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
+        public event EventHandler<BindingErrorEventArgs> BindingFailedEvent;
+        public event EventHandler<AggregateErrorEventArgs> AggregateFailedEvent;
+        public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
 
         public EventAggregator()
         {
@@ -252,18 +268,6 @@ namespace NRules.Diagnostics
             _parent?.RaiseFactRetracted(session, fact);
         }
 
-        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, ref bool isHandled)
-        {
-            var handler = ActionFailedEvent;
-            if (handler != null)
-            {
-                var @event = new ActionErrorEventArgs(exception, expression, activation);
-                handler(session, @event);
-                isHandled |= @event.IsHandled;
-            }
-            _parent?.RaiseActionFailed(session, exception, expression, activation, ref isHandled);
-        }
-
         public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled)
         {
             var hanlder = ConditionFailedEvent;
@@ -274,6 +278,40 @@ namespace NRules.Diagnostics
                 isHandled |= @event.IsHandled;
             }
             _parent?.RaiseConditionFailed(session, exception, expression, tuple, fact, ref isHandled);
+        }
+
+        public void RaiseBindingFailed(ISession session, Exception exception, Expression expression, Tuple tuple)
+        {
+            var hanlder = BindingFailedEvent;
+            if (hanlder != null)
+            {
+                var @event = new BindingErrorEventArgs(exception, expression, tuple);
+                hanlder(session, @event);
+            }
+            _parent?.RaiseBindingFailed(session, exception, expression, tuple);
+        }
+
+        public void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, ITuple tuple, IFact fact)
+        {
+            var hanlder = AggregateFailedEvent;
+            if (hanlder != null)
+            {
+                var @event = new AggregateErrorEventArgs(exception, expression, tuple, fact);
+                hanlder(session, @event);
+            }
+            _parent?.RaiseAggregateFailed(session, exception, expression, tuple, fact);
+        }
+
+        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, ref bool isHandled)
+        {
+            var handler = ActionFailedEvent;
+            if (handler != null)
+            {
+                var @event = new ActionErrorEventArgs(exception, expression, activation);
+                handler(session, @event);
+                isHandled |= @event.IsHandled;
+            }
+            _parent?.RaiseActionFailed(session, exception, expression, activation, ref isHandled);
         }
     }
 }

@@ -6,11 +6,11 @@ namespace NRules.Rete
 {
     internal interface IFactAggregator
     {
-        void Add(Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
-        void Modify(Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
-        void Modify(Aggregation aggregation, Tuple tuple);
-        void Remove(Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
-        void Remove(Aggregation aggregation, Tuple tuple);
+        void Add(IExecutionContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
+        void Modify(IExecutionContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
+        void Modify(IExecutionContext context, Aggregation aggregation, Tuple tuple);
+        void Remove(IExecutionContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
+        void Remove(IExecutionContext context, Aggregation aggregation, Tuple tuple);
     }
 
     internal class FactAggregator : IFactAggregator
@@ -23,19 +23,37 @@ namespace NRules.Rete
             _aggregator = aggregator;
         }
 
-        public void Add(Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
+        public void Add(IExecutionContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
         {
-            var results = _aggregator.Add(tuple, facts);
+            IEnumerable<AggregationResult> results;
+            try
+            {
+                results = _aggregator.Add(tuple, facts);
+            }
+            catch (AggregateExpressionException e)
+            {
+                context.EventAggregator.RaiseAggregateFailed(context.Session, e.InnerException, e.Expression, e.Tuple, e.Fact);
+                throw new RuleExpressionEvaluationException("Failed to evaluate aggregate expression", e.Expression.ToString(), e.InnerException);
+            }
             AddAggregationResult(aggregation, tuple, results);
         }
 
-        public void Modify(Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
+        public void Modify(IExecutionContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
         {
-            var results = _aggregator.Modify(tuple, facts);
+            IEnumerable<AggregationResult> results;
+            try
+            {
+                results = _aggregator.Modify(tuple, facts);
+            }
+            catch (AggregateExpressionException e)
+            {
+                context.EventAggregator.RaiseAggregateFailed(context.Session, e.InnerException, e.Expression, e.Tuple, e.Fact);
+                throw new RuleExpressionEvaluationException("Failed to evaluate aggregate expression", e.Expression.ToString(), e.InnerException);
+            }
             AddAggregationResult(aggregation, tuple, results);
         }
 
-        public void Modify(Aggregation aggregation, Tuple tuple)
+        public void Modify(IExecutionContext context, Aggregation aggregation, Tuple tuple)
         {
             foreach (var aggregate in _aggregator.Aggregates)
             {
@@ -44,13 +62,22 @@ namespace NRules.Rete
             }
         }
 
-        public void Remove(Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
+        public void Remove(IExecutionContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
         {
-            var results = _aggregator.Remove(tuple, facts);
+            IEnumerable<AggregationResult> results;
+            try
+            {
+                results = _aggregator.Remove(tuple, facts);
+            }
+            catch (AggregateExpressionException e)
+            {
+                context.EventAggregator.RaiseAggregateFailed(context.Session, e.InnerException, e.Expression, e.Tuple, e.Fact);
+                throw new RuleExpressionEvaluationException("Failed to evaluate aggregate expression", e.Expression.ToString(), e.InnerException);
+            }
             AddAggregationResult(aggregation, tuple, results);
         }
 
-        public void Remove(Aggregation aggregation, Tuple tuple)
+        public void Remove(IExecutionContext context, Aggregation aggregation, Tuple tuple)
         {
             foreach (var aggregate in _aggregator.Aggregates)
             {

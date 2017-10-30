@@ -25,12 +25,19 @@ namespace NRules
     /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
     /// <event cref="IEventProvider.ConditionFailedEvent">When there is an error during condition evaluation,
     /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.BindingFailedEvent">When there is an error during binding expression evaluation,
+    /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.AggregateFailedEvent">When there is an error during aggregate expression evaluation,
+    /// before throwing exception to the client.</event>
     /// <event cref="IEventProvider.ActionFailedEvent">When there is an error during action evaluation,
     /// before throwing exception to the client.</event>
     /// <exception cref="RuleConditionEvaluationException">Error while evaluating any of the rules' conditions.
     /// This exception can also be observed as an event <see cref="IEventProvider.ConditionFailedEvent"/>.</exception>
     /// <exception cref="RuleActionEvaluationException">Error while evaluating any of the rules' actions.
     /// This exception can also be observed as an event <see cref="IEventProvider.ActionFailedEvent"/>.</exception>
+    /// <exception cref="RuleExpressionEvaluationException">Error while evaluating any of the rules' binding or aggregate expressions.
+    /// This exception can also be observed as events <see cref="IEventProvider.BindingFailedEvent"/> and 
+    /// <see cref="IEventProvider.AggregateFailedEvent"/>.</exception>
     /// <threadsafety instance="false" />
     public interface ISession
     {

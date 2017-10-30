@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -11,7 +10,7 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Information related to error events raised during condition evaluation.
     /// </summary>
-    public class ConditionErrorEventArgs : ErrorEventArgs
+    public class ConditionErrorEventArgs : RecoverableErrorEventArgs
     {
         private readonly Tuple _tuple;
         private readonly Fact _fact;
@@ -36,10 +35,14 @@ namespace NRules.Diagnostics
         {
             get
             {
-                var wrappedFact = new[] {_fact};
-                return _tuple == null
-                    ? wrappedFact
-                    : _tuple.OrderedFacts.Concat(wrappedFact).ToArray();
+                if (_tuple != null)
+                {
+                    foreach (var tupleFact in _tuple.OrderedFacts())
+                    {
+                        yield return tupleFact;
+                    }
+                }
+                yield return _fact;
             }
         }
     }

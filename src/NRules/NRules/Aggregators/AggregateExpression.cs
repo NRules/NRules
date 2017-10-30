@@ -41,7 +41,7 @@ namespace NRules.Aggregators
             }
             catch (Exception e)
             {
-                throw new RuleExpressionEvaluationException("Failed to evaluate expression", _expression.ToString(), e);
+                throw new AggregateExpressionException(e, _expression, tuple, fact);
             }
         }
     }
@@ -77,7 +77,7 @@ namespace NRules.Aggregators
             }
             catch (Exception e)
             {
-                throw new RuleExpressionEvaluationException("Failed to evaluate expression", _expression.ToString(), e);
+                throw new AggregateExpressionException(e, _expression, tuple, fact);
             }
         }
 

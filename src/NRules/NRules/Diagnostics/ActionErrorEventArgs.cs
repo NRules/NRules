@@ -8,7 +8,7 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Information related to error events raised during action execution.
     /// </summary>
-    public class ActionErrorEventArgs : ErrorEventArgs
+    public class ActionErrorEventArgs : RecoverableErrorEventArgs
     {
         private readonly IActivation _activation;
 

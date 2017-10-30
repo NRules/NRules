@@ -40,6 +40,7 @@ namespace NRules.Rete
             }
             catch (Exception e)
             {
+                context.EventAggregator.RaiseBindingFailed(context.Session, e, Expression, tuple);
                 throw new RuleExpressionEvaluationException("Failed to evaluate binding expression", Expression.ToString(), e);
             }
         }

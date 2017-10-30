@@ -91,12 +91,6 @@ namespace NRules.Rete
             }
         }
 
-        /// <summary>
-        /// Facts contained in the tuple in correct order.
-        /// </summary>
-        /// <remarks>This method has to reverse the linked list and is slow.</remarks>
-        public IEnumerable<Fact> OrderedFacts => Facts.Reverse();
-
         IEnumerable<IFact> ITuple.Facts => Facts;
 
         internal class TupleDebugView
