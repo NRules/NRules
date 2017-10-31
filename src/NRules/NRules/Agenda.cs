@@ -73,8 +73,8 @@ namespace NRules
             if (!Accept(activation)) return;
             _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
-
-        public void Modify(IExecutionContext context, Activation activation)
+        //I apologize, but the analyzer issued a warning here. Methods Add and Modify Implement the same code, is this normal behavior? Unfortunately I can not go deep into the project to find out.
+        public void Modify(IExecutionContext context, Activation activation) 
         {
             if (!Accept(activation)) return;
             _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
