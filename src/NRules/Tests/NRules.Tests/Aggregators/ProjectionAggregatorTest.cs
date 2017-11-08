@@ -9,34 +9,6 @@ namespace NRules.Tests.Aggregators
     public class ProjectionAggregatorTest : AggregatorTest
     {
         [Fact]
-        public void Aggregates_NewInstance_Empty()
-        {
-            //Arrange
-            var target = CreateTarget();
-
-            //Act
-            var result = target.Aggregates.ToArray();
-
-            //Assert
-            Assert.Equal(0, result.Length);
-        }
-
-        [Fact]
-        public void Aggregates_HasElements_AllElements()
-        {
-            //Arrange
-            var target = CreateTarget();
-            var facts = AsFact(new TestFact(1, "value1"), new TestFact(2, "value2"));
-            target.Add(EmptyTuple(), facts);
-
-            //Act
-            var result = target.Aggregates.ToArray();
-
-            //Assert
-            Assert.Equal(2, result.Length);
-        }
-
-        [Fact]
         public void Add_Facts_AddedResult()
         {
             //Arrange

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NRules.Rete
 {
@@ -35,7 +36,7 @@ namespace NRules.Rete
             var toUpdate = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)
             {
-                var wrapperFact = tuple.GetState<WrapperFact>(this);
+                var wrapperFact = tuple.GetStateOrThrow<WrapperFact>(this);
                 toUpdate.Add(wrapperFact);
             }
             foreach (var sink in _sinks)
@@ -49,7 +50,7 @@ namespace NRules.Rete
             var toRetract = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)
             {
-                var wrapperFact = tuple.RemoveState<WrapperFact>(this);
+                var wrapperFact = tuple.RemoveStateOrThrow<WrapperFact>(this);
                 toRetract.Add(wrapperFact);
             }
             foreach (var sink in _sinks)
@@ -64,7 +65,7 @@ namespace NRules.Rete
             var sourceFacts = new List<Fact>();
             foreach (var sourceTuple in sourceTuples)
             {
-                var wrapperFact = sourceTuple.GetState<WrapperFact>(this);
+                var wrapperFact = sourceTuple.GetStateOrThrow<WrapperFact>(this);
                 sourceFacts.Add(wrapperFact);
             }
             return sourceFacts;

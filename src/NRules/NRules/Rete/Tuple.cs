@@ -45,10 +45,30 @@ namespace NRules.Rete
             {
                 return (T) value;
             }
+            return default(T);
+        }
+        
+        public T GetStateOrThrow<T>(INode node)
+        {
+            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
+            {
+                return (T) value;
+            }
             throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
         }
 
         public T RemoveState<T>(INode node)
+        {
+            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
+            {
+                var state = (T)value;
+                _stateMap.Remove(node);
+                return state;
+            }
+            return default(T);
+        }
+
+        public T RemoveStateOrThrow<T>(INode node)
         {
             if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
             {

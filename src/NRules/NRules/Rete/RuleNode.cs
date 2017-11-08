@@ -26,14 +26,14 @@
 
         public void PropagateUpdate(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap)
         {
-            var activation = tuple.GetState<Activation>(this);
+            var activation = tuple.GetStateOrThrow<Activation>(this);
             context.Agenda.Modify(context, activation);
             context.EventAggregator.RaiseActivationUpdated(context.Session, activation);
         }
 
         public void PropagateRetract(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap)
         {
-            var activation = tuple.RemoveState<Activation>(this);
+            var activation = tuple.RemoveStateOrThrow<Activation>(this);
             context.Agenda.Remove(context, activation);
             context.EventAggregator.RaiseActivationDeleted(context.Session, activation);
         }

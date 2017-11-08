@@ -69,19 +69,5 @@ namespace NRules.Aggregators
             }
             return results;
         }
-
-        public IEnumerable<object> Aggregates
-        {
-            get
-            {
-                foreach (var itemList in _sourceToList)
-                {
-                    foreach (var item in itemList.Value)
-                    {
-                        yield return item;
-                    }
-                }
-            }
-        }
     }
 }

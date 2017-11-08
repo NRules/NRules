@@ -9,38 +9,6 @@ namespace NRules.Tests.Aggregators
     public class CollectionAggregatorTest : AggregatorTest
     {
         [Fact]
-        public void Aggregates_NewInstance_OneEmptyCollection()
-        {
-            //Arrange
-            var target = CreateTarget();
-
-            //Act
-            var result = target.Aggregates.ToArray();
-
-            //Assert
-            Assert.Equal(1, result.Length);
-            var aggregate = (IEnumerable<TestFact>) result[0];
-            Assert.Equal(0, aggregate.Count());
-        }
-
-        [Fact]
-        public void Aggregates_HasElements_OneCollectionWithElements()
-        {
-            //Arrange
-            var target = CreateTarget();
-            var facts = AsFact(new TestFact(1), new TestFact(2));
-            target.Add(EmptyTuple(), facts);
-
-            //Act
-            var result = target.Aggregates.ToArray();
-
-            //Assert
-            Assert.Equal(1, result.Length);
-            var aggregate = (IEnumerable<TestFact>) result[0];
-            Assert.Equal(2, aggregate.Count());
-        }
-
-        [Fact]
         public void Add_NewInstance_AddedResult()
         {
             //Arrange

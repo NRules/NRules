@@ -15,107 +15,159 @@ namespace NRules.IntegrationTests
         public void Insert_ErrorInConditionNoErrorHandler_Throws()
         {
             //Arrange
+            GetRuleInstance<TestRule>().Condition = ThrowCondition;
+
             Expression expression = null;
             IList<IFact> facts = null; 
             Session.Events.ConditionFailedEvent += (sender, args) => expression = args.Condition;
             Session.Events.ConditionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
-            var fact = new FactType {TestProperty = null};
+            var fact = new FactType {TestProperty = "Valid Value" };
 
             //Act - Assert
             var ex = Assert.Throws<RuleConditionEvaluationException>(() => Session.Insert(fact));
             Assert.NotNull(expression);
-            Assert.Equal(1, facts.Count());
+            Assert.Equal(1, facts.Count);
             Assert.Same(fact, facts.First().Value);
-            Assert.IsType<NullReferenceException>(ex.InnerException);
+            Assert.IsType<InvalidOperationException>(ex.InnerException);
         }
 
         [Fact]
-        public void Insert_ErrorInConditionErrorHandler_DoesNotThrow()
+        public void Fire_FailedInsert_DoesNotFire()
+        {
+            //Arrange
+            GetRuleInstance<TestRule>().Condition = ThrowCondition;
+
+            Session.Events.ConditionFailedEvent += (sender, args) => args.IsHandled = true;
+
+            var fact = new FactType { TestProperty = "Valid Value" };
+            Session.Insert(fact);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+
+        [Fact]
+        public void Fire_FailedInsertThenUpdate_Fires()
+        {
+            //Arrange
+            GetRuleInstance<TestRule>().Condition = ThrowCondition;
+
+            Session.Events.ConditionFailedEvent += (sender, args) => args.IsHandled = true;
+
+            var fact = new FactType { TestProperty = "Valid Value" };
+            Session.Insert(fact);
+
+            GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
+
+            Session.Update(fact);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+        }
+
+        [Fact]
+        public void Fire_InsertThenFailedUpdate_DoesNotFire()
         {
             //Arrange
             Session.Events.ConditionFailedEvent += (sender, args) => args.IsHandled = true;
 
-            var fact = new FactType { TestProperty = null };
-            
-            //Act - Assert
+            var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
+
+            GetRuleInstance<TestRule>().Condition = ThrowCondition;
+
+            Session.Update(fact);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
         }
 
         [Fact]
-        public void Fire_ErrorInBinding_Throws()
+        public void Fire_FailedInsertThenRetract_DoesNotFire()
         {
             //Arrange
-            GetRuleInstance<TestRule>().BindingExpression = null;
+            GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
-            Expression expression = null;
-            IList<IFact> facts = null;
-            Session.Events.BindingFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.BindingFailedEvent += (sender, args) => facts = args.Facts.ToList();
+            Session.Events.ConditionFailedEvent += (sender, args) => args.IsHandled = true;
 
-            var fact = new FactType { TestProperty = "Valid value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
+            Session.Insert(fact);
 
-            //Act - Assert
-            var ex = Assert.Throws<RuleExpressionEvaluationException>(() => Session.Insert(fact));
-            Assert.NotNull(expression);
-            Assert.Equal(1, facts.Count());
-            Assert.Same(fact, facts.First().Value);
-            Assert.IsType<NullReferenceException>(ex.InnerException);
+            GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
+
+            Session.Retract(fact);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
         }
 
         [Fact]
-        public void Fire_ErrorInAggregate_Throws()
+        public void Fire_FailedInsertThenUpdateThenRetract_DoesNotFire()
         {
             //Arrange
-            GetRuleInstance<TestRule>().GroupingExpression = null;
+            GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
-            Expression expression = null;
-            IList<IFact> facts = null;
-            Session.Events.AggregateFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.AggregateFailedEvent += (sender, args) => facts = args.Facts.ToList();
+            Session.Events.ConditionFailedEvent += (sender, args) => args.IsHandled = true;
 
-            var fact = new FactType { TestProperty = "Valid value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
+            Session.Insert(fact);
 
-            //Act - Assert
-            var ex = Assert.Throws<RuleExpressionEvaluationException>(() => Session.Insert(fact));
-            Assert.NotNull(expression);
-            Assert.Equal(3, facts.Count());
-            Assert.Same(fact, facts.First().Value);
-            Assert.Equal("value", facts.Skip(1).First().Value);
-            Assert.IsType<NullReferenceException>(ex.InnerException);
+            GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
+
+            Session.Update(fact);
+            Session.Retract(fact);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
         }
 
         [Fact]
         public void Fire_ErrorInActionNoErrorHandler_Throws()
         {
             //Arrange
-            GetRuleInstance<TestRule>().Action = null;
+            GetRuleInstance<TestRule>().Action = ThrowAction;
 
             Expression expression = null;
             IList<IFactMatch> facts = null;
             Session.Events.ActionFailedEvent += (sender, args) => expression = args.Action;
             Session.Events.ActionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
-            var fact = new FactType { TestProperty = "Valid value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
 
             //Act - Assert
             var ex = Assert.Throws<RuleActionEvaluationException>(() => Session.Fire());
             Assert.NotNull(expression);
-            Assert.Equal(3, facts.Count());
+            Assert.Equal(1, facts.Count());
             Assert.Same(fact, facts.First().Value);
-            Assert.IsType<NullReferenceException>(ex.InnerException);
+            Assert.IsType<InvalidOperationException>(ex.InnerException);
         }
 
         [Fact]
         public void Fire_ErrorInActionErrorHandler_DoesNotThrow()
         {
             //Arrange
-            GetRuleInstance<TestRule>().Action = null;
+            GetRuleInstance<TestRule>().Action = ThrowAction;
 
             Session.Events.ActionFailedEvent += (sender, args) => args.IsHandled = true;
 
-            var fact = new FactType { TestProperty = "Valid value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
 
             //Act - Assert
@@ -127,6 +179,11 @@ namespace NRules.IntegrationTests
             SetUpRule<TestRule>();
         }
 
+        private static readonly Action SuccessfulAction = () => { };
+        private static readonly Action ThrowAction = () => throw new InvalidOperationException("Action failed");
+        private static readonly Func<FactType, bool> SuccessfulCondition = f => true;
+        private static readonly Func<FactType, bool> ThrowCondition = f => throw new InvalidOperationException("Condition failed");
+
         public class FactType
         {
             public string TestProperty { get; set; }
@@ -134,23 +191,15 @@ namespace NRules.IntegrationTests
 
         public class TestRule : Rule
         {
-            public Action Action = () => { };
-            public Func<string> BindingExpression = () => "value";
-            public Func<FactType, object> GroupingExpression = x => x.TestProperty;
+            public Action Action = SuccessfulAction;
+            public Func<FactType, bool> Condition = SuccessfulCondition;
 
             public override void Define()
             {
                 FactType fact = null;
-                string binding = null;
-                IEnumerable<FactType> factGroup = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"))
-                    .Let(() => binding, () => BindingExpression())
-                    .Query(() => factGroup, q => q
-                        .Match<FactType>(f => f == fact)
-                        .GroupBy(f => GroupingExpression(f))
-                    );
+                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid") && Condition(f));
                 Then()
                     .Do(ctx => Action());
             }

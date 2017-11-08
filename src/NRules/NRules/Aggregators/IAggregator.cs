@@ -37,10 +37,5 @@ namespace NRules.Aggregators
         /// <param name="facts">Existing facts to remove from the aggregate.</param>
         /// <returns>Results of the operation on the aggregate, based on the removed facts.</returns>
         IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts);
-
-        /// <summary>
-        /// Resulting aggregates.
-        /// </summary>
-        IEnumerable<object> Aggregates { get; } 
     }
 }

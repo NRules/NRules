@@ -208,7 +208,5 @@ namespace NRules.IntegrationTests
             }
             return results;
         }
-
-        public IEnumerable<object> Aggregates => _sourceToValue.Values;
     }
 }

@@ -10,7 +10,7 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Information related to error events raised during condition evaluation.
     /// </summary>
-    public class ConditionErrorEventArgs : RecoverableErrorEventArgs
+    public class ConditionErrorEventArgs : ErrorEventArgs
     {
         private readonly Tuple _tuple;
         private readonly Fact _fact;

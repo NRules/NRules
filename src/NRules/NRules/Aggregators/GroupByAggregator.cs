@@ -161,8 +161,6 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<object> Aggregates => _groups.Values;
-
         private class Grouping : FactCollection<TElement>, IGrouping<TKey, TElement>
         {
             public Grouping(TKey key)

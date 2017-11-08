@@ -54,7 +54,5 @@ namespace NRules.Aggregators
             }
             return results;
         }
-
-        public IEnumerable<object> Aggregates => _sourceToValue.Values;
     }
 }

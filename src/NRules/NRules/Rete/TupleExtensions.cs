@@ -24,13 +24,13 @@ namespace NRules.Rete
 
         public static Quantifier GetQuantifier(this Tuple tuple, INode node)
         {
-            var quantifier = tuple.GetState<Quantifier>(node);
+            var quantifier = tuple.GetStateOrThrow<Quantifier>(node);
             return quantifier;
         }
 
         public static Quantifier RemoveQuantifier(this Tuple tuple, INode node)
         {
-            var quantifier = tuple.RemoveState<Quantifier>(node);
+            var quantifier = tuple.RemoveStateOrThrow<Quantifier>(node);
             return quantifier;
         }
     }

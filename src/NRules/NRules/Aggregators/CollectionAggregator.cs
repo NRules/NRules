@@ -10,13 +10,7 @@ namespace NRules.Aggregators
     internal class CollectionAggregator<TElement> : IAggregator
     {
         private readonly FactCollection<TElement> _items = new FactCollection<TElement>();
-        private readonly object[] _container; 
         private bool _created = false;
-
-        public CollectionAggregator()
-        {
-            _container = new object[] {_items};
-        } 
 
         public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
         {
@@ -67,7 +61,5 @@ namespace NRules.Aggregators
                 _items.Remove(fact, item);
             }
         }
-
-        public IEnumerable<object> Aggregates => _container;
     }
 }

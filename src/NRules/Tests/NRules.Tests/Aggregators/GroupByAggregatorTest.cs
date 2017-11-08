@@ -9,34 +9,6 @@ namespace NRules.Tests.Aggregators
     public class GroupByAggregatorTest : AggregatorTest
     {
         [Fact]
-        public void Aggregates_NewInstance_Empty()
-        {
-            //Arrange
-            var target = CreateTarget();
-
-            //Act
-            var result = target.Aggregates.ToArray();
-
-            //Assert
-            Assert.Equal(0, result.Length);
-        }
-
-        [Fact]
-        public void Aggregates_HasGroups_AllGroups()
-        {
-            //Arrange
-            var target = CreateTarget();
-            var facts = AsFact(new TestFact(1, "key1"), new TestFact(2, "key1"), new TestFact(3, "key2"), new TestFact(4, null));
-            target.Add(EmptyTuple(), facts);
-
-            //Act
-            var result = target.Aggregates.ToArray();
-
-            //Assert
-            Assert.Equal(3, result.Length);
-        }
-
-        [Fact]
         public void Add_NewGroupNewInstance_AddedResult()
         {
             //Arrange

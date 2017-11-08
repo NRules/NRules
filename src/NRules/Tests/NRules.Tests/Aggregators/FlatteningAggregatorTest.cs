@@ -9,34 +9,6 @@ namespace NRules.Tests.Aggregators
     public class FlatteningAggregatorTest : AggregatorTest
     {
         [Fact]
-        public void Aggregates_NewInstance_Empty()
-        {
-            //Arrange
-            var target = CreateTarget();
-
-            //Act
-            var result = target.Aggregates.ToArray();
-
-            //Assert
-            Assert.Equal(0, result.Length);
-        }
-
-        [Fact]
-        public void Aggregates_HasElements_AllNestedElements()
-        {
-            //Arrange
-            var target = CreateTarget();
-            var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-            target.Add(EmptyTuple(), facts);
-
-            //Act
-            var result = target.Aggregates.ToArray();
-
-            //Assert
-            Assert.Equal(4, result.Length);
-        }
-
-        [Fact]
         public void Add_Facts_AddedResult()
         {
             //Arrange
