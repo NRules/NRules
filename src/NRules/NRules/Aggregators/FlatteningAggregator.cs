@@ -12,6 +12,7 @@ namespace NRules.Aggregators
     internal class FlatteningAggregator<TSource, TResult> : IAggregator
     {
         private readonly IAggregateExpression _selector;
+        private readonly Dictionary<TResult, Counter> _referenceCounter = new Dictionary<TResult, Counter>();
         private readonly Dictionary<IFact, OrderedHashSet<TResult>> _sourceToList = new Dictionary<IFact, OrderedHashSet<TResult>>();
 
         public FlatteningAggregator(IAggregateExpression selector)
@@ -29,8 +30,11 @@ namespace NRules.Aggregators
                 var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
                 foreach (var item in value)
                 {
-                    if (list.Add(item))
+                    if (list.Add(item) &&
+                        AddRef(item) == 1)
+                    {
                         results.Add(AggregationResult.Added(item));
+                    }
                 }
             }
             return results;
@@ -42,25 +46,33 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var list = new OrderedHashSet<TResult>();
+                var oldList = _sourceToList[fact];
+                _sourceToList[fact] = list;
+                
                 var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
                 foreach (var item in value)
                 {
                     list.Add(item);
                 }
 
-                var oldList = _sourceToList[fact];
-                _sourceToList[fact] = list;
                 foreach (var item in oldList)
                 {
-                    if (!list.Contains(item))
+                    if (!list.Contains(item) &&
+                        RemoveRef(item) == 0)
+                    {
                         results.Add(AggregationResult.Removed(item));
+                    }
                 }
                 foreach (var item in list)
                 {
                     if (oldList.Contains(item))
+                    {
                         results.Add(AggregationResult.Modified(item));
-                    else
+                    }
+                    else if (AddRef(item) == 1)
+                    {
                         results.Add(AggregationResult.Added(item));
+                    }
                 }
             }
             return results;
@@ -75,10 +87,36 @@ namespace NRules.Aggregators
                 _sourceToList.Remove(fact);
                 foreach (var item in oldList)
                 {
-                    results.Add(AggregationResult.Removed(item));
+                    if (RemoveRef(item) == 0)
+                    {
+                        results.Add(AggregationResult.Removed(item));
+                    }
                 }
             }
             return results;
+        }
+
+        private int AddRef(TResult item)
+        {
+            if (!_referenceCounter.TryGetValue(item, out var counter))
+            {
+                counter = new Counter();
+                _referenceCounter[item] = counter;
+            }
+            counter.Value++;
+            return counter.Value;
+        }
+
+        private int RemoveRef(TResult item)
+        {
+            var counter = _referenceCounter[item];
+            counter.Value--;
+            return counter.Value;
+        }
+
+        private class Counter
+        {
+            public int Value { get; set; }
         }
     }
 }
