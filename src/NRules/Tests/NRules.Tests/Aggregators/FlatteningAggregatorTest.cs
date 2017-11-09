@@ -57,19 +57,15 @@ namespace NRules.Tests.Aggregators
             var result = target.Modify(EmptyTuple(), toUpdate).ToArray();
 
             //Assert
-            Assert.Equal(4, result.Length);
-            Assert.Equal(AggregationAction.Removed, result[0].Action);
+            Assert.Equal(2, result.Length);
+            Assert.Equal(AggregationAction.Modified, result[0].Action);
             Assert.Equal("value11", result[0].Aggregate);
-            Assert.Equal(AggregationAction.Removed, result[1].Action);
+            Assert.Equal(AggregationAction.Modified, result[1].Action);
             Assert.Equal("value12", result[1].Aggregate);
-            Assert.Equal(AggregationAction.Added, result[2].Action);
-            Assert.Equal("value11", result[2].Aggregate);
-            Assert.Equal(AggregationAction.Added, result[3].Action);
-            Assert.Equal("value12", result[3].Aggregate);
         }
 
         [Fact]
-        public void Modify_ExistingFactsDifferentIdentity_ModifiedResult()
+        public void Modify_ExistingFactsDifferentIdentity_RemovedAddedResult()
         {
             //Arrange
             var target = CreateTarget();
@@ -91,6 +87,29 @@ namespace NRules.Tests.Aggregators
             Assert.Equal("value31", result[2].Aggregate);
             Assert.Equal(AggregationAction.Added, result[3].Action);
             Assert.Equal("value32", result[3].Aggregate);
+        }
+
+        [Fact]
+        public void Modify_ExistingFactsHasAdditionsModificationsAndRemovals_CorrectResult()
+        {
+            //Arrange
+            var target = CreateTarget();
+            var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
+            target.Add(EmptyTuple(), facts);
+
+            //Act
+            facts[0].Value = new TestFact(2, "value12", "value13");
+            var toUpdate = facts.Take(1).ToArray();
+            var result = target.Modify(EmptyTuple(), toUpdate).ToArray();
+
+            //Assert
+            Assert.Equal(3, result.Length);
+            Assert.Equal(AggregationAction.Removed, result[0].Action);
+            Assert.Equal("value11", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Modified, result[1].Action);
+            Assert.Equal("value12", result[1].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[2].Action);
+            Assert.Equal("value13", result[2].Aggregate);
         }
 
         [Fact]

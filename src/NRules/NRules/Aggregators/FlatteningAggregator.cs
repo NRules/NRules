@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NRules.Collections;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators
@@ -11,7 +12,7 @@ namespace NRules.Aggregators
     internal class FlatteningAggregator<TSource, TResult> : IAggregator
     {
         private readonly IAggregateExpression _selector;
-        private readonly Dictionary<IFact, IList<TResult>> _sourceToList = new Dictionary<IFact, IList<TResult>>();
+        private readonly Dictionary<IFact, OrderedHashSet<TResult>> _sourceToList = new Dictionary<IFact, OrderedHashSet<TResult>>();
 
         public FlatteningAggregator(IAggregateExpression selector)
         {
@@ -23,12 +24,13 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
-                var list = new List<TResult>(value);
+                var list = new OrderedHashSet<TResult>();
                 _sourceToList[fact] = list;
-                foreach (var item in list)
+                var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
+                foreach (var item in value)
                 {
-                    results.Add(AggregationResult.Added(item));
+                    if (list.Add(item))
+                        results.Add(AggregationResult.Added(item));
                 }
             }
             return results;
@@ -39,17 +41,26 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
+                var list = new OrderedHashSet<TResult>();
                 var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
-                var list = new List<TResult>(value);
+                foreach (var item in value)
+                {
+                    list.Add(item);
+                }
+
                 var oldList = _sourceToList[fact];
                 _sourceToList[fact] = list;
                 foreach (var item in oldList)
                 {
-                    results.Add(AggregationResult.Removed(item));
+                    if (!list.Contains(item))
+                        results.Add(AggregationResult.Removed(item));
                 }
                 foreach (var item in list)
                 {
-                    results.Add(AggregationResult.Added(item));
+                    if (oldList.Contains(item))
+                        results.Add(AggregationResult.Modified(item));
+                    else
+                        results.Add(AggregationResult.Added(item));
                 }
             }
             return results;
