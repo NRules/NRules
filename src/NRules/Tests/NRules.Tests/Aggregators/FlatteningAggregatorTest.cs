@@ -31,6 +31,28 @@ namespace NRules.Tests.Aggregators
         }
 
         [Fact]
+        public void Add_FactsWithDuplicates_AddedDistinctResult()
+        {
+            //Arrange
+            var target = CreateTarget();
+
+            //Act
+            var facts = AsFact(new TestFact(1, "value11", "value12", "value12"), new TestFact(2, "value21", "value21", "value22"));
+            var result = target.Add(EmptyTuple(), facts).ToArray();
+
+            //Assert
+            Assert.Equal(4, result.Length);
+            Assert.Equal(AggregationAction.Added, result[0].Action);
+            Assert.Equal("value11", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[1].Action);
+            Assert.Equal("value12", result[1].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[2].Action);
+            Assert.Equal("value21", result[2].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[3].Action);
+            Assert.Equal("value22", result[3].Aggregate);
+        }
+
+        [Fact]
         public void Add_NoFacts_EmptyResult()
         {
             //Arrange
