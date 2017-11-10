@@ -128,6 +128,7 @@ namespace NRules.Aggregators
             }
 
             group.Add(fact, element);
+            group.Key = key;
             return AggregationResult.Modified(group);
         }
 
@@ -135,6 +136,7 @@ namespace NRules.Aggregators
         {
             var group = _groups[key];
             group.Modify(fact, element);
+            group.Key = key;
             return AggregationResult.Modified(group);
         }
 
@@ -168,7 +170,7 @@ namespace NRules.Aggregators
                 Key = key;
             }
 
-            public TKey Key { get; }
+            public TKey Key { get; set; }
         }
     }
 }
