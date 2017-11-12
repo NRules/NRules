@@ -168,10 +168,10 @@ namespace NRules.RuleModel.Builders
         private void ValidateGroupBy()
         {
             var keySelector = _expressions["KeySelector"];
-            if (keySelector.Parameters.Count != 1)
+            if (keySelector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
-                    $"GroupBy key selector must have a single parameter. KeySelector={keySelector}");
+                    $"GroupBy key selector must have at least one parameter. KeySelector={keySelector}");
             }
             if (keySelector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
             {
