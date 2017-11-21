@@ -10,9 +10,9 @@ namespace NRules.Diagnostics
     /// </summary>
     public class ActionErrorEventArgs : ErrorEventArgs
     {
-        private readonly IActivation _activation;
+        private readonly Activation _activation;
 
-        internal ActionErrorEventArgs(Exception exception, Expression expression, IActivation activation) : base(exception)
+        internal ActionErrorEventArgs(Exception exception, Expression expression, Activation activation) : base(exception)
         {
             Action = expression;
             _activation = activation;

@@ -19,9 +19,5 @@ namespace NRules
             }
             return true;
         }
-
-        public void Remove(Activation activation)
-        {
-        }
     }
 }

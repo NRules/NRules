@@ -27,8 +27,8 @@ namespace NRules.Utilities
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
-            var condition = new BetaCondition(element.Expression, fastDelegate, factIndexMap);
+            var factMap = IndexMap.CreateMap(element.References, declarations);
+            var condition = new BetaCondition(element.Expression, fastDelegate, factMap);
             return condition;
         }
 
@@ -38,9 +38,9 @@ namespace NRules.Utilities
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 1);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count - 1);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
+            var tupleFactMap = IndexMap.CreateMap(element.References, declarations);
             var dependencyIndexMap = IndexMap.CreateMap(element.References, dependencies);
-            var action = new RuleAction(element.Expression, fastDelegate, factIndexMap, dependencyIndexMap);
+            var action = new RuleAction(element.Expression, fastDelegate, tupleFactMap, dependencyIndexMap);
             return action;
         }
 
@@ -63,8 +63,8 @@ namespace NRules.Utilities
                 var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
                 var @delegate = optimizedExpression.Compile();
                 var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-                var factIndexMap = IndexMap.CreateMap(element.References, declarationsList);
-                var expression = new AggregateExpression(element.Expression, fastDelegate, factIndexMap);
+                var factMap = IndexMap.CreateMap(element.References, declarationsList);
+                var expression = new AggregateExpression(element.Expression, fastDelegate, factMap);
                 return expression;
             }
         }
@@ -75,8 +75,8 @@ namespace NRules.Utilities
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
-            var expression = new BindingExpression(element.Expression, fastDelegate, factIndexMap);
+            var factMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new BindingExpression(element.Expression, fastDelegate, factMap);
             return expression;
         }
 
@@ -86,8 +86,8 @@ namespace NRules.Utilities
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
-            var expression = new ActivationCondition(element.Expression, fastDelegate, factIndexMap);
+            var factMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new ActivationCondition(element.Expression, fastDelegate, factMap);
             return expression;
         }
 
@@ -97,8 +97,8 @@ namespace NRules.Utilities
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
-            var expression = new ActivationExpression(element.Expression, fastDelegate, factIndexMap);
+            var factMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new ActivationExpression(element.Expression, fastDelegate, factMap);
             return expression;
         }
         

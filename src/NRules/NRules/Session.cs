@@ -188,11 +188,11 @@ namespace NRules
     {
         new IAgendaInternal Agenda { get; }
 
-        IEnumerable<object> GetLinkedKeys(IActivation activation);
-        object GetLinked(IActivation activation, object key);
-        void InsertLinked(IActivation activation, object key, object fact);
-        void UpdateLinked(IActivation activation, object key, object fact);
-        void RetractLinked(IActivation activation, object key, object fact);
+        IEnumerable<object> GetLinkedKeys(Activation activation);
+        object GetLinked(Activation activation, object key);
+        void InsertLinked(Activation activation, object key, object fact);
+        void UpdateLinked(Activation activation, object key, object fact);
+        void RetractLinked(Activation activation, object key, object fact);
     }
 
     /// <summary>
@@ -401,19 +401,19 @@ namespace NRules
             return result.FailedCount == 0;
         }
 
-        public IEnumerable<object> GetLinkedKeys(IActivation activation)
+        public IEnumerable<object> GetLinkedKeys(Activation activation)
         {
             var keys = _workingMemory.GetLinkedKeys(activation);
             return keys;
         }
 
-        public object GetLinked(IActivation activation, object key)
+        public object GetLinked(Activation activation, object key)
         {
             var factWrapper = _workingMemory.GetLinkedFact(activation, key);
             return factWrapper?.Object;
         }
 
-        public void InsertLinked(IActivation activation, object key, object fact)
+        public void InsertLinked(Activation activation, object key, object fact)
         {
             if (key == null)
             {
@@ -433,7 +433,7 @@ namespace NRules
             _network.PropagateAssert(_executionContext, new List<Fact> {factWrapper});
         }
 
-        public void UpdateLinked(IActivation activation, object key, object fact)
+        public void UpdateLinked(Activation activation, object key, object fact)
         {
             if (key == null)
             {
@@ -452,7 +452,7 @@ namespace NRules
             _network.PropagateUpdate(_executionContext, new List<Fact> {factWrapper});
         }
 
-        public void RetractLinked(IActivation activation, object key, object fact)
+        public void RetractLinked(Activation activation, object key, object fact)
         {
             if (key == null)
             {

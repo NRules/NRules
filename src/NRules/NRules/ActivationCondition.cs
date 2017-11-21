@@ -14,27 +14,26 @@ namespace NRules
     {
         private readonly LambdaExpression _expression;
         private readonly FastDelegate<Func<object[], bool>> _compiledExpression;
-        private readonly IndexMap _factIndexMap;
+        private readonly IndexMap _tupleFactMap;
 
-        public ActivationCondition(LambdaExpression expression, FastDelegate<Func<object[], bool>> compiledExpression, IndexMap factIndexMap)
+        public ActivationCondition(LambdaExpression expression, FastDelegate<Func<object[], bool>> compiledExpression, IndexMap tupleFactMap)
         {
             _expression = expression;
             _compiledExpression = compiledExpression;
-            _factIndexMap = factIndexMap;
+            _tupleFactMap = tupleFactMap;
         }
 
         public bool Invoke(Activation activation)
         {
             var tuple = activation.Tuple;
-            var tupleFactMap = activation.TupleFactMap;
+            var activationFactMap = activation.FactMap;
 
             var args = new object[_compiledExpression.ArrayArgumentCount];
 
             int index = tuple.Count - 1;
-            var factIndexMap = _factIndexMap;
             foreach (var fact in tuple.Facts)
             {
-                var mappedIndex = factIndexMap[tupleFactMap[index]];
+                var mappedIndex = _tupleFactMap[activationFactMap[index]];
                 IndexMap.SetElementAt(args, mappedIndex, fact.Object);
                 index--;
             }

@@ -9,12 +9,12 @@ namespace NRules.Rete
 
     internal class TerminalNode : ITerminalNode, ITupleSink
     {
-        public IndexMap FactIndexMap { get; }
+        public IndexMap FactMap { get; }
         public IRuleNode RuleNode { get; private set; }
 
-        public TerminalNode(ITupleSource source, IndexMap factIndexMap)
+        public TerminalNode(ITupleSource source, IndexMap factMap)
         {
-            FactIndexMap = factIndexMap;
+            FactMap = factMap;
             source.Attach(this);
         }
 
@@ -22,7 +22,7 @@ namespace NRules.Rete
         {
             foreach (var tuple in tuples)
             {
-                RuleNode.PropagateAssert(context, tuple, FactIndexMap);
+                RuleNode.PropagateAssert(context, tuple, FactMap);
             }
         }
 
@@ -30,7 +30,7 @@ namespace NRules.Rete
         {
             foreach (var tuple in tuples)
             {
-                RuleNode.PropagateUpdate(context, tuple, FactIndexMap);
+                RuleNode.PropagateUpdate(context, tuple, FactMap);
             }
         }
 
@@ -38,7 +38,7 @@ namespace NRules.Rete
         {
             foreach (var tuple in tuples)
             {
-                RuleNode.PropagateRetract(context, tuple, FactIndexMap);
+                RuleNode.PropagateRetract(context, tuple, FactMap);
             }
         }
 

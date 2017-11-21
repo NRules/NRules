@@ -20,7 +20,7 @@ namespace NRules
         /// </summary>
         /// <remarks>Throws <c>InvalidOperationException</c> if agenda is empty.</remarks>
         /// <returns>Next match.</returns>
-        IActivation Peek();
+        Activation Peek();
 
         /// <summary>
         /// Removes all matches from agenda.
@@ -51,7 +51,7 @@ namespace NRules
             return !_activationQueue.HasActive();
         }
 
-        public IActivation Peek()
+        public Activation Peek()
         {
             Activation activation = _activationQueue.Peek();
             return activation;

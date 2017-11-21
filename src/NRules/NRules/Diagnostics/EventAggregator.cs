@@ -103,11 +103,11 @@ namespace NRules.Diagnostics
 
     internal interface IEventAggregator : IEventProvider
     {
-        void RaiseActivationCreated(ISession session, IActivation activation);
-        void RaiseActivationUpdated(ISession session, IActivation activation);
-        void RaiseActivationDeleted(ISession session, IActivation activation);
-        void RaiseRuleFiring(ISession session, IActivation activation);
-        void RaiseRuleFired(ISession session, IActivation activation);
+        void RaiseActivationCreated(ISession session, Activation activation);
+        void RaiseActivationUpdated(ISession session, Activation activation);
+        void RaiseActivationDeleted(ISession session, Activation activation);
+        void RaiseRuleFiring(ISession session, Activation activation);
+        void RaiseRuleFired(ISession session, Activation activation);
         void RaiseFactInserting(ISession session, Fact fact);
         void RaiseFactInserted(ISession session, Fact fact);
         void RaiseFactUpdating(ISession session, Fact fact);
@@ -117,7 +117,7 @@ namespace NRules.Diagnostics
         void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled);
         void RaiseBindingFailed(ISession session, Exception exception, Expression expression, Tuple tuple, ref bool isHandled);
         void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, ITuple tuple, IFact fact, ref bool isHandled);
-        void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, ref bool isHandled);
+        void RaiseActionFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -149,7 +149,7 @@ namespace NRules.Diagnostics
             _parent = eventAggregator;
         }
 
-        public void RaiseActivationCreated(ISession session, IActivation activation)
+        public void RaiseActivationCreated(ISession session, Activation activation)
         {
             var handler = ActivationCreatedEvent;
             if (handler != null)
@@ -160,7 +160,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseActivationCreated(session, activation);
         }
 
-        public void RaiseActivationUpdated(ISession session, IActivation activation)
+        public void RaiseActivationUpdated(ISession session, Activation activation)
         {
             var handler = ActivationUpdatedEvent;
             if (handler != null)
@@ -171,7 +171,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseActivationUpdated(session, activation);
         }
 
-        public void RaiseActivationDeleted(ISession session, IActivation activation)
+        public void RaiseActivationDeleted(ISession session, Activation activation)
         {
             var handler = ActivationDeletedEvent;
             if (handler != null)
@@ -182,7 +182,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseActivationDeleted(session, activation);
         }
 
-        public void RaiseRuleFiring(ISession session, IActivation activation)
+        public void RaiseRuleFiring(ISession session, Activation activation)
         {
             var handler = RuleFiringEvent;
             if (handler != null)
@@ -193,7 +193,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseRuleFiring(session, activation);
         }
 
-        public void RaiseRuleFired(ISession session, IActivation activation)
+        public void RaiseRuleFired(ISession session, Activation activation)
         {
             var handler = RuleFiredEvent;
             if (handler != null)
@@ -306,7 +306,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseAggregateFailed(session, exception, expression, tuple, fact, ref isHandled);
         }
 
-        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, IActivation activation, ref bool isHandled)
+        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled)
         {
             var handler = ActionFailedEvent;
             if (handler != null)

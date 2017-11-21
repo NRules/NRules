@@ -55,8 +55,8 @@ namespace NRules.Rete
             {
                 BuildJoinNode(context);
             }
-            var factIndexMap = IndexMap.CreateMap(ruleDeclarations, context.Declarations);
-            var terminalNode = new TerminalNode(context.BetaSource, factIndexMap);
+            var factMap = IndexMap.CreateMap(ruleDeclarations, context.Declarations);
+            var terminalNode = new TerminalNode(context.BetaSource, factMap);
             return terminalNode;
         }
 

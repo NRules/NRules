@@ -116,8 +116,8 @@ namespace NRules
                         throw new ArgumentOutOfRangeException($"Unrecognized filter type. FilterType={filter.FilterType}");
                 }
             }
-            var compileFilter = new RuleFilter(conditions, keySelectors);
-            return compileFilter;
+            var compiledFilter = new RuleFilter(conditions, keySelectors);
+            return compiledFilter;
         }
 
         private void BuildRuleNode(ICompiledRule compiledRule, IEnumerable<ITerminalNode> terminalNodes)

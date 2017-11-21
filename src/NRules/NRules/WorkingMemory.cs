@@ -13,11 +13,11 @@ namespace NRules
         void UpdateFact(Fact fact);
         void RemoveFact(Fact fact);
 
-        IEnumerable<object> GetLinkedKeys(IActivation activation);
-        Fact GetLinkedFact(IActivation activation, object key);
-        void AddLinkedFact(IActivation activation, object key, Fact fact);
-        void UpdateLinkedFact(IActivation activation, object key, Fact fact, object factObject);
-        void RemoveLinkedFact(IActivation activation, object key, Fact fact);
+        IEnumerable<object> GetLinkedKeys(Activation activation);
+        Fact GetLinkedFact(Activation activation, object key);
+        void AddLinkedFact(Activation activation, object key, Fact fact);
+        void UpdateLinkedFact(Activation activation, object key, Fact fact, object factObject);
+        void RemoveLinkedFact(Activation activation, object key, Fact fact);
 
         IAlphaMemory GetNodeMemory(IAlphaMemoryNode node);
         IBetaMemory GetNodeMemory(IBetaMemoryNode node);
@@ -26,7 +26,7 @@ namespace NRules
     internal class WorkingMemory : IWorkingMemory
     {
         private readonly Dictionary<object, Fact> _factMap = new Dictionary<object, Fact>();
-        private readonly Dictionary<IActivation, Dictionary<object, Fact>> _linkedFactMap = new Dictionary<IActivation, Dictionary<object, Fact>>();
+        private readonly Dictionary<Activation, Dictionary<object, Fact>> _linkedFactMap = new Dictionary<Activation, Dictionary<object, Fact>>();
 
         private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap =
             new Dictionary<IAlphaMemoryNode, IAlphaMemory>();
@@ -34,7 +34,6 @@ namespace NRules
         private readonly Dictionary<IBetaMemoryNode, IBetaMemory> _betaMap =
             new Dictionary<IBetaMemoryNode, IBetaMemory>();
 
-        private static readonly Fact[] EmptyFactList = new Fact[0];
         private static readonly object[] EmptyObjectList = new object[0];
 
         public IEnumerable<Fact> Facts => _factMap.Values;
@@ -65,13 +64,13 @@ namespace NRules
             }
         }
 
-        public IEnumerable<object> GetLinkedKeys(IActivation activation)
+        public IEnumerable<object> GetLinkedKeys(Activation activation)
         {
             if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return EmptyObjectList;
             return factMap.Keys;
         }
 
-        public Fact GetLinkedFact(IActivation activation, object key)
+        public Fact GetLinkedFact(Activation activation, object key)
         {
             if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return null;
 
@@ -79,7 +78,7 @@ namespace NRules
             return fact;
         }
 
-        public void AddLinkedFact(IActivation activation, object key, Fact fact)
+        public void AddLinkedFact(Activation activation, object key, Fact fact)
         {
             AddFact(fact);
 
@@ -92,7 +91,7 @@ namespace NRules
             factMap.Add(key, fact);
         }
 
-        public void UpdateLinkedFact(IActivation activation, object key, Fact fact, object factObject)
+        public void UpdateLinkedFact(Activation activation, object key, Fact fact, object factObject)
         {
             if (!ReferenceEquals(fact.RawObject, factObject))
             {
@@ -111,7 +110,7 @@ namespace NRules
             factMap.Add(key, fact);
         }
 
-        public void RemoveLinkedFact(IActivation activation, object key, Fact fact)
+        public void RemoveLinkedFact(Activation activation, object key, Fact fact)
         {
             if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return;
 

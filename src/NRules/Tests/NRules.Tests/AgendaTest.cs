@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Moq;
-using NRules.Extensibility;
 using NRules.Rete;
 using Xunit;
 using Tuple = NRules.Rete.Tuple;

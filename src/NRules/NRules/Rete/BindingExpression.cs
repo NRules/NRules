@@ -13,13 +13,13 @@ namespace NRules.Rete
     internal class BindingExpression : IBindingExpression, IEquatable<BindingExpression>
     {
         private readonly FastDelegate<Func<object[], object>> _compiledExpression;
-        private readonly IndexMap _factIndexMap;
+        private readonly IndexMap _factMap;
 
-        public BindingExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap factIndexMap)
+        public BindingExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap factMap)
         {
             Expression = expression;
             _compiledExpression = compiledExpression;
-            _factIndexMap = factIndexMap;
+            _factMap = factMap;
         }
 
         public LambdaExpression Expression { get; }
@@ -30,7 +30,7 @@ namespace NRules.Rete
             int index = tuple.Count - 1;
             foreach (var fact in tuple.Facts)
             {
-                IndexMap.SetElementAt(args, _factIndexMap[index], fact.Object);
+                IndexMap.SetElementAt(args, _factMap[index], fact.Object);
                 index--;
             }
 
