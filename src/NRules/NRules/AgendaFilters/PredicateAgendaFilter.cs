@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 
-namespace NRules
+namespace NRules.AgendaFilters
 {
-    internal class PredicateActivationFilter : IActivationFilter
+    internal class PredicateAgendaFilter : IAgendaFilter
     {
         private readonly List<IActivationCondition> _conditions;
 
-        public PredicateActivationFilter(IEnumerable<IActivationCondition> conditions)
+        public PredicateAgendaFilter(IEnumerable<IActivationCondition> conditions)
         {
             _conditions = new List<IActivationCondition>(conditions);
         }

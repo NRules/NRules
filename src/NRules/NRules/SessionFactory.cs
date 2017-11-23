@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NRules.AgendaFilters;
 using NRules.Diagnostics;
 using NRules.Extensibility;
 using NRules.Rete;
@@ -93,7 +94,7 @@ namespace NRules
 
         private IAgendaInternal CreateAgenda()
         {
-            var filters = new Dictionary<ICompiledRule, IActivationFilter[]>();
+            var filters = new Dictionary<ICompiledRule, IAgendaFilter[]>();
             foreach (var compiledRule in _compiledRules)
             {
                 var ruleFilters = CreateRuleFilters(compiledRule).ToArray();
@@ -107,18 +108,18 @@ namespace NRules
             return agenda;
         }
 
-        private static IEnumerable<IActivationFilter> CreateRuleFilters(ICompiledRule compiledRule)
+        private static IEnumerable<IAgendaFilter> CreateRuleFilters(ICompiledRule compiledRule)
         {
             var filterConditions = compiledRule.Filter.Conditions.ToList();
             if (filterConditions.Any())
             {
-                var filter = new PredicateActivationFilter(filterConditions);
+                var filter = new PredicateAgendaFilter(filterConditions);
                 yield return filter;
             }
             var filterKeySelectors = compiledRule.Filter.KeySelectors.ToList();
             if (filterKeySelectors.Any())
             {
-                var filter = new KeyChangeActivationFilter(filterKeySelectors);
+                var filter = new KeyChangeAgendaFilter(filterKeySelectors);
                 yield return filter;
             }
         }

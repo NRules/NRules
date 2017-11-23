@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NRules.AgendaFilters;
+using NRules.RuleModel;
 
 namespace NRules
 {
@@ -20,7 +22,7 @@ namespace NRules
         /// </summary>
         /// <remarks>Throws <c>InvalidOperationException</c> if agenda is empty.</remarks>
         /// <returns>Next match.</returns>
-        Activation Peek();
+        IMatch Peek();
 
         /// <summary>
         /// Removes all matches from agenda.
@@ -39,9 +41,9 @@ namespace NRules
     internal class Agenda : IAgendaInternal
     {
         private readonly ActivationQueue _activationQueue = new ActivationQueue();
-        private readonly IDictionary<ICompiledRule, IActivationFilter[]> _filters;
+        private readonly IDictionary<ICompiledRule, IAgendaFilter[]> _filters;
 
-        public Agenda(IDictionary<ICompiledRule, IActivationFilter[]> filters)
+        public Agenda(IDictionary<ICompiledRule, IAgendaFilter[]> filters)
         {
             _filters = filters;
         }
@@ -51,7 +53,7 @@ namespace NRules
             return !_activationQueue.HasActive();
         }
 
-        public Activation Peek()
+        public IMatch Peek()
         {
             Activation activation = _activationQueue.Peek();
             return activation;

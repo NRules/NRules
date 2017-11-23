@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Moq;
+using NRules.AgendaFilters;
 using NRules.Rete;
 using Xunit;
 using Tuple = NRules.Rete.Tuple;
@@ -190,7 +191,7 @@ namespace NRules.Tests
 
         private Agenda CreateTarget()
         {
-            return new Agenda(new Dictionary<ICompiledRule, IActivationFilter[]>());
+            return new Agenda(new Dictionary<ICompiledRule, IAgendaFilter[]>());
         }
 
         private static Tuple CreateTuple(object factObject)

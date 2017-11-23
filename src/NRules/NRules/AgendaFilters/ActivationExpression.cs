@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using NRules.Rete;
 using NRules.Utilities;
 
-namespace NRules
+namespace NRules.AgendaFilters
 {
     internal interface IActivationExpression
     {
