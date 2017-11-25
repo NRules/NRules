@@ -35,6 +35,8 @@ namespace NRules
     /// before throwing exception to the client.</event>
     /// <event cref="IEventProvider.AggregateFailedEvent">When there is an error during aggregate expression evaluation,
     /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.AgendaFilterFailedEvent">When there is an error during agenda filter evaluation,
+    /// before throwing exception to the client.</event>
     /// <event cref="IEventProvider.ActionFailedEvent">When there is an error during action evaluation,
     /// before throwing exception to the client.</event>
     /// <seealso cref="ISession"/>

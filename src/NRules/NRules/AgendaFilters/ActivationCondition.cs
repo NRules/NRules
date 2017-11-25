@@ -38,7 +38,15 @@ namespace NRules.AgendaFilters
                 index--;
             }
 
-            return _compiledExpression.Delegate.Invoke(args);
+            try
+            {
+                var result = _compiledExpression.Delegate.Invoke(args);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new ActivationExpressionException(e, _expression, activation);
+            }
         }
     }
 }

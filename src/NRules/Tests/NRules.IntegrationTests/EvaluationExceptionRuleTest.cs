@@ -138,6 +138,44 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
+        public void Insert_ErrorInFilterNoErrorHandler_Throws()
+        {
+            //Arrange
+            GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
+
+            Expression expression = null;
+            IList<IFactMatch> facts = null;
+            Session.Events.AgendaFilterFailedEvent += (sender, args) => expression = args.Expression;
+            Session.Events.AgendaFilterFailedEvent += (sender, args) => facts = args.Facts.ToList();
+
+            var fact = new FactType { TestProperty = "Valid Value" };
+
+            //Act - Assert
+            var ex = Assert.Throws<RuleExpressionEvaluationException>(() => Session.Insert(fact));
+            Assert.NotNull(expression);
+            Assert.Equal(1, facts.Count);
+            Assert.Same(fact, facts.First().Value);
+            Assert.IsType<InvalidOperationException>(ex.InnerException);
+        }
+
+        [Fact]
+        public void Insert_ErrorInFilterErrorHandler_DoesNotFire()
+        {
+            //Arrange
+            GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
+
+            Session.Events.AgendaFilterFailedEvent += (sender, args) => args.IsHandled = true;
+            var fact = new FactType { TestProperty = "Valid Value" };
+
+            //Act
+            Session.Insert(fact);
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+
+        [Fact]
         public void Fire_ErrorInActionNoErrorHandler_Throws()
         {
             //Arrange
@@ -183,6 +221,8 @@ namespace NRules.IntegrationTests
         private static readonly Action ThrowAction = () => throw new InvalidOperationException("Action failed");
         private static readonly Func<FactType, bool> SuccessfulCondition = f => true;
         private static readonly Func<FactType, bool> ThrowCondition = f => throw new InvalidOperationException("Condition failed");
+        private static readonly Func<FactType, bool> SuccessfulFilter = f => true;
+        private static readonly Func<FactType, bool> ThrowFilter = f => throw new InvalidOperationException("Filter failed");
 
         public class FactType
         {
@@ -193,6 +233,7 @@ namespace NRules.IntegrationTests
         {
             public Action Action = SuccessfulAction;
             public Func<FactType, bool> Condition = SuccessfulCondition;
+            public Func<FactType, bool> FilterCondition = SuccessfulFilter;
 
             public override void Define()
             {
@@ -200,6 +241,10 @@ namespace NRules.IntegrationTests
 
                 When()
                     .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid") && Condition(f));
+
+                Filter()
+                    .Where(() => FilterCondition(fact));
+
                 Then()
                     .Do(ctx => Action());
             }

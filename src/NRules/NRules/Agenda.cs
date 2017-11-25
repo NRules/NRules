@@ -96,13 +96,13 @@ namespace NRules
 
         public void Add(IExecutionContext context, Activation activation)
         {
-            if (!Accept(activation)) return;
+            if (!Accept(context, activation)) return;
             _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
 
         public void Modify(IExecutionContext context, Activation activation)
         {
-            if (!Accept(activation)) return;
+            if (!Accept(context, activation)) return;
             _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
 
@@ -112,7 +112,27 @@ namespace NRules
             UnlinkFacts(context.Session, activation);
         }
 
-        private bool Accept(Activation activation)
+        private bool Accept(IExecutionContext context, Activation activation)
+        {
+            try
+            {
+                return AcceptActivation(activation);
+            }
+            catch (ActivationExpressionException e)
+            {
+                bool isHandled = false;
+                context.EventAggregator.RaiseAgendaFilterFailed(context.Session, e.InnerException,
+                    e.Expression, activation, ref isHandled);
+                if (!isHandled)
+                {
+                    throw new RuleExpressionEvaluationException("Failed to evaluate agenda filter expression",
+                        e.Expression.ToString(), e.InnerException);
+                }
+                return false;
+            }
+        }
+
+        private bool AcceptActivation(Activation activation)
         {
             bool result = true;
             foreach (var filter in _globalFilters)

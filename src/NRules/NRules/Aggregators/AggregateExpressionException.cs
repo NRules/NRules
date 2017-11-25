@@ -8,7 +8,7 @@ namespace NRules.Aggregators
     /// Exception raised by <see cref="IAggregateExpression"/> if evaluation of the expression failed.
     /// Inner exception contains the details of the failure.
     /// </summary>
-    public class AggregateExpressionException : Exception
+    internal class AggregateExpressionException : Exception
     {
         /// <summary>
         /// Expression that failed to evaluate.

@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using NRules.AgendaFilters;
 using NRules.Extensibility;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -94,10 +95,18 @@ namespace NRules.Diagnostics
         event EventHandler<AggregateErrorEventArgs> AggregateFailedEvent;
 
         /// <summary>
+        /// Raised when agenda filter execution threw an exception.
+        /// Gives observer of the event control over handling of the exception.
+        /// </summary>
+        /// <seealso cref="IAgendaFilter"/>
+        event EventHandler<AgendaErrorEventArgs> AgendaFilterFailedEvent;
+
+        /// <summary>
         /// Raised when action execution threw an exception.
         /// Gives observer of the event control over handling of the exception.
-        /// <remarks>This event is not raised when actions are invoked via <see cref="IActionInterceptor"/>.</remarks>
         /// </summary>
+        /// <remarks>This event is not raised when actions are invoked via <see cref="IActionInterceptor"/>.</remarks>
+        /// <seealso cref="IActionInterceptor"/>
         event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
     }
 
@@ -117,6 +126,7 @@ namespace NRules.Diagnostics
         void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled);
         void RaiseBindingFailed(ISession session, Exception exception, Expression expression, Tuple tuple, ref bool isHandled);
         void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, ITuple tuple, IFact fact, ref bool isHandled);
+        void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
         void RaiseActionFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
     }
 
@@ -138,6 +148,7 @@ namespace NRules.Diagnostics
         public event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
         public event EventHandler<BindingErrorEventArgs> BindingFailedEvent;
         public event EventHandler<AggregateErrorEventArgs> AggregateFailedEvent;
+        public event EventHandler<AgendaErrorEventArgs> AgendaFilterFailedEvent;
         public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
 
         public EventAggregator()
@@ -304,6 +315,18 @@ namespace NRules.Diagnostics
                 isHandled |= @event.IsHandled;
             }
             _parent?.RaiseAggregateFailed(session, exception, expression, tuple, fact, ref isHandled);
+        }
+
+        public void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled)
+        {
+            var handler = AgendaFilterFailedEvent;
+            if (handler != null)
+            {
+                var @event = new AgendaErrorEventArgs(exception, expression, activation);
+                handler(session, @event);
+                isHandled |= @event.IsHandled;
+            }
+            _parent?.RaiseAgendaFilterFailed(session, exception, expression, activation, ref isHandled);
         }
 
         public void RaiseActionFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled)
