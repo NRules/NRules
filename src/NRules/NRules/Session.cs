@@ -224,7 +224,6 @@ namespace NRules
             _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator);
             DependencyResolver = dependencyResolver;
             ActionInterceptor = actionInterceptor;
-            _network.Activate(_executionContext);
         }
 
         public IAgenda Agenda => _agenda;
@@ -233,6 +232,11 @@ namespace NRules
         public IActionInterceptor ActionInterceptor { get; set; }
 
         IAgendaInternal ISessionInternal.Agenda => _agenda;
+
+        internal void Activate()
+        {
+            _network.Activate(_executionContext);
+        }
 
         public void InsertAll(IEnumerable<object> facts)
         {

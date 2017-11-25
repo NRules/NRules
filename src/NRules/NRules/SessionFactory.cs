@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NRules.AgendaFilters;
 using NRules.Diagnostics;
@@ -63,6 +64,13 @@ namespace NRules
         /// </summary>
         /// <returns>New rules session.</returns>
         ISession CreateSession();
+
+        /// <summary>
+        /// Creates a new rules session.
+        /// </summary>
+        /// <param name="initializationAction">Action invoked on the newly created session, before the session is activated (which could result in rule matches placed on the agenda).</param>
+        /// <returns>New rules session.</returns>
+        ISession CreateSession(Action<ISession> initializationAction);
     }
 
     internal class SessionFactory : ISessionFactory
@@ -84,27 +92,32 @@ namespace NRules
 
         public ISession CreateSession()
         {
+            return CreateSession(null);
+        }
+
+        public ISession CreateSession(Action<ISession> initializationAction)
+        {
             var agenda = CreateAgenda();
             var workingMemory = new WorkingMemory();
             var eventAggregator = new EventAggregator(_eventAggregator);
             var actionExecutor = new ActionExecutor();
             var session = new Session(_network, agenda, workingMemory, eventAggregator, actionExecutor, DependencyResolver, ActionInterceptor);
+            initializationAction?.Invoke(session);
+            session.Activate();
             return session;
         }
 
         private IAgendaInternal CreateAgenda()
         {
-            var filters = new Dictionary<ICompiledRule, IAgendaFilter[]>();
+            var agenda = new Agenda();
             foreach (var compiledRule in _compiledRules)
             {
                 var ruleFilters = CreateRuleFilters(compiledRule).ToArray();
-                if (ruleFilters.Any())
+                foreach (var filter in ruleFilters)
                 {
-                    filters[compiledRule] = ruleFilters;
+                    agenda.AddFilter(compiledRule.Definition, filter);
                 }
             }
-
-            var agenda = new Agenda(filters);
             return agenda;
         }
 

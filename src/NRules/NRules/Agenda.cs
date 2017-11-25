@@ -28,6 +28,19 @@ namespace NRules
         /// Removes all matches from agenda.
         /// </summary>
         void Clear();
+
+        /// <summary>
+        /// Adds a global filter to the agenda.
+        /// </summary>
+        /// <param name="filter">Filter to be applied to all activations before they are placed on the agenda.</param>
+        void AddFilter(IAgendaFilter filter);
+
+        /// <summary>
+        /// Adds a rule-level filter to the agenda.
+        /// </summary>
+        /// <param name="rule">Rule, whose activations are to be filtered before placing them on the agenda.</param>
+        /// <param name="filter">Filter to be applied to all activations for a given rule before they are placed on the agenda.</param>
+        void AddFilter(IRuleDefinition rule, IAgendaFilter filter);
     }
 
     internal interface IAgendaInternal : IAgenda
@@ -41,12 +54,8 @@ namespace NRules
     internal class Agenda : IAgendaInternal
     {
         private readonly ActivationQueue _activationQueue = new ActivationQueue();
-        private readonly IDictionary<ICompiledRule, IAgendaFilter[]> _filters;
-
-        public Agenda(IDictionary<ICompiledRule, IAgendaFilter[]> filters)
-        {
-            _filters = filters;
-        }
+        private readonly List<IAgendaFilter> _globalFilters = new List<IAgendaFilter>();
+        private readonly Dictionary<IRuleDefinition, List<IAgendaFilter>> _ruleFilters = new Dictionary<IRuleDefinition, List<IAgendaFilter>>();
 
         public bool IsEmpty()
         {
@@ -62,6 +71,21 @@ namespace NRules
         public void Clear()
         {
             _activationQueue.Clear();
+        }
+
+        public void AddFilter(IAgendaFilter filter)
+        {
+            _globalFilters.Add(filter);
+        }
+
+        public void AddFilter(IRuleDefinition rule, IAgendaFilter filter)
+        {
+            if (!_ruleFilters.TryGetValue(rule, out var filters))
+            {
+                filters = new List<IAgendaFilter>();
+                _ruleFilters.Add(rule, filters);
+            }
+            filters.Add(filter);
         }
 
         public Activation Pop()
@@ -90,7 +114,11 @@ namespace NRules
 
         private bool Accept(Activation activation)
         {
-            if (!_filters.TryGetValue(activation.CompiledRule, out var filters)) return true;
+            foreach (var filter in _globalFilters)
+            {
+                if (!filter.Accept(activation)) return false;
+            }
+            if (!_ruleFilters.TryGetValue(activation.Rule, out var filters)) return true;
             foreach (var filter in filters)
             {
                 if (!filter.Accept(activation)) return false;
