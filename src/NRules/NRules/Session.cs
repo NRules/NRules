@@ -40,6 +40,7 @@ namespace NRules
     /// <exception cref="RuleExpressionEvaluationException">Error while evaluating any of the rules' binding, aggregate or filter expressions.
     /// This exception can also be observed as events <see cref="IEventProvider.BindingFailedEvent"/>, 
     /// <see cref="IEventProvider.AggregateFailedEvent"/>, <see cref="IEventProvider.AgendaFilterFailedEvent"/>.</exception>
+    /// <seealso cref="ISessionFactory"/>
     /// <threadsafety instance="false" />
     public interface ISession
     {

@@ -9,6 +9,8 @@ namespace NRules
     /// Agenda stores matches between rules and facts. These matches are called activations.
     /// Multiple activations are ordered according to the conflict resolution strategy.
     /// </summary>
+    /// <seealso cref="IMatch"/>
+    /// <seealso cref="IAgendaFilter"/>
     public interface IAgenda
     {
         /// <summary>

@@ -40,6 +40,7 @@ namespace NRules
     /// <event cref="IEventProvider.ActionFailedEvent">When there is an error during action evaluation,
     /// before throwing exception to the client.</event>
     /// <seealso cref="ISession"/>
+    /// <seealso cref="RuleCompiler"/>
     /// <threadsafety instance="true" />
     public interface ISessionFactory
     {

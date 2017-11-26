@@ -11,6 +11,8 @@ namespace NRules
     /// <summary>
     /// Represents a match of all rule's conditions.
     /// </summary>
+    /// <seealso cref="IMatch"/>
+    /// <seealso cref="IFactMatch"/>
     [DebuggerDisplay("{Rule.Name} FactCount={Tuple.Count}")]
     public class Activation : IMatch
     {
