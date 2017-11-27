@@ -127,8 +127,8 @@ namespace NRules
                     e.Expression, activation, ref isHandled);
                 if (!isHandled)
                 {
-                    throw new RuleExpressionEvaluationException("Failed to evaluate agenda filter expression",
-                        e.Expression.ToString(), e.InnerException);
+                    throw new AgendaExpressionEvaluationException("Failed to evaluate agenda filter expression",
+                        activation.Rule.Name, e.Expression.ToString(), e.InnerException);
                 }
                 return false;
             }

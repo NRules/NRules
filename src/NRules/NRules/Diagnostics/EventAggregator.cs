@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using NRules.AgendaFilters;
+using NRules.Aggregators;
 using NRules.Extensibility;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -92,6 +93,7 @@ namespace NRules.Diagnostics
         /// Raised when aggregate expression evaluation threw an exception.
         /// Gives observer of the event control over handling of the exception.
         /// </summary>
+        /// <seealso cref="IAggregator"/>
         event EventHandler<AggregateErrorEventArgs> AggregateFailedEvent;
 
         /// <summary>

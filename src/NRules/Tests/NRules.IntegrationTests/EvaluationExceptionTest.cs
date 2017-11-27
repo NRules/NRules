@@ -9,10 +9,10 @@ using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    public class EvaluationExceptionRuleTest : BaseRuleTestFixture
+    public class EvaluationExceptionTest : BaseRuleTestFixture
     {
         [Fact]
-        public void Insert_ErrorInConditionNoErrorHandler_Throws()
+        public void Insert_ConditionErrorNoErrorHandler_Throws()
         {
             //Arrange
             GetRuleInstance<TestRule>().Condition = ThrowCondition;
@@ -33,7 +33,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_FailedInsert_DoesNotFire()
+        public void Fire_ConditionFailedInsert_DoesNotFire()
         {
             //Arrange
             GetRuleInstance<TestRule>().Condition = ThrowCondition;
@@ -51,7 +51,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_FailedInsertThenUpdate_Fires()
+        public void Fire_ConditionFailedInsertThenUpdate_Fires()
         {
             //Arrange
             GetRuleInstance<TestRule>().Condition = ThrowCondition;
@@ -73,7 +73,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_InsertThenFailedUpdate_DoesNotFire()
+        public void Fire_ConditionInsertThenFailedUpdate_DoesNotFire()
         {
             //Arrange
             Session.Events.ConditionFailedEvent += (sender, args) => args.IsHandled = true;
@@ -93,7 +93,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_FailedInsertThenRetract_DoesNotFire()
+        public void Fire_ConditionFailedInsertThenRetract_DoesNotFire()
         {
             //Arrange
             GetRuleInstance<TestRule>().Condition = ThrowCondition;
@@ -115,7 +115,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_FailedInsertThenUpdateThenRetract_DoesNotFire()
+        public void Fire_ConditionFailedInsertThenUpdateThenRetract_DoesNotFire()
         {
             //Arrange
             GetRuleInstance<TestRule>().Condition = ThrowCondition;
@@ -138,7 +138,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Insert_ErrorInFilterNoErrorHandler_Throws()
+        public void Insert_FilterErrorNoErrorHandler_Throws()
         {
             //Arrange
             GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
@@ -151,7 +151,7 @@ namespace NRules.IntegrationTests
             var fact = new FactType { TestProperty = "Valid Value" };
 
             //Act - Assert
-            var ex = Assert.Throws<RuleExpressionEvaluationException>(() => Session.Insert(fact));
+            var ex = Assert.Throws<AgendaExpressionEvaluationException>(() => Session.Insert(fact));
             Assert.NotNull(expression);
             Assert.Equal(1, facts.Count);
             Assert.Same(fact, facts.First().Value);
@@ -159,7 +159,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Insert_ErrorInFilterErrorHandler_DoesNotFire()
+        public void Insert_FilterErrorHasErrorHandler_DoesNotFire()
         {
             //Arrange
             GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
@@ -176,7 +176,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_ErrorInActionNoErrorHandler_Throws()
+        public void Fire_ActionErrorNoErrorHandler_Throws()
         {
             //Arrange
             GetRuleInstance<TestRule>().Action = ThrowAction;
@@ -198,7 +198,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Fire_ErrorInActionErrorHandler_DoesNotThrow()
+        public void Fire_ActionErrorHasErrorHandler_DoesNotThrow()
         {
             //Arrange
             GetRuleInstance<TestRule>().Action = ThrowAction;

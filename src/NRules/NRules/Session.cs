@@ -35,11 +35,12 @@ namespace NRules
     /// before throwing exception to the client.</event>
     /// <exception cref="RuleConditionEvaluationException">Error while evaluating any of the rules' conditions.
     /// This exception can also be observed as an event <see cref="IEventProvider.ConditionFailedEvent"/>.</exception>
+    /// <exception cref="RuleExpressionEvaluationException">Error while evaluating any of the rules' binding or aggregate expressions.
+    /// This exception can also be observed as events <see cref="IEventProvider.BindingFailedEvent"/>, <see cref="IEventProvider.AggregateFailedEvent"/>.</exception>
+    /// <exception cref="AgendaExpressionEvaluationException">Error while evaluating any of the agenda filters.
+    /// This exception can also be observed as an event <see cref="IEventProvider.AgendaFilterFailedEvent"/>.</exception>
     /// <exception cref="RuleActionEvaluationException">Error while evaluating any of the rules' actions.
     /// This exception can also be observed as an event <see cref="IEventProvider.ActionFailedEvent"/>.</exception>
-    /// <exception cref="RuleExpressionEvaluationException">Error while evaluating any of the rules' binding, aggregate or filter expressions.
-    /// This exception can also be observed as events <see cref="IEventProvider.BindingFailedEvent"/>, 
-    /// <see cref="IEventProvider.AggregateFailedEvent"/>, <see cref="IEventProvider.AgendaFilterFailedEvent"/>.</exception>
     /// <seealso cref="ISessionFactory"/>
     /// <threadsafety instance="false" />
     public interface ISession
