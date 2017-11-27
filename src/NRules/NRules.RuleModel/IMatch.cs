@@ -8,7 +8,7 @@ namespace NRules.RuleModel
     public interface IMatch
     {
         /// <summary>
-        /// Rule that got activated.
+        /// Rule that matched the given facts.
         /// </summary>
         IRuleDefinition Rule { get; }
 
