@@ -136,17 +136,16 @@ namespace NRules
 
         private bool AcceptActivation(Activation activation)
         {
-            bool result = true;
             foreach (var filter in _globalFilters)
             {
-                if (!filter.Accept(activation)) result = false;
+                if (!filter.Accept(activation)) return false;
             }
-            if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters)) return result;
+            if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters)) return true;
             foreach (var filter in ruleFilters)
             {
-                if (!filter.Accept(activation)) result = false;
+                if (!filter.Accept(activation)) return false;
             }
-            return result;
+            return true;
         }
 
         private static void UnlinkFacts(ISessionInternal session, Activation activation)
