@@ -8,9 +8,9 @@ namespace NRules.Tests.Aggregators
 {
     public abstract class AggregatorTest
     {
-        protected IEnumerable<IFact> AsFact<T>(params T[] value)
+        protected Fact[] AsFact<T>(params T[] value)
         {
-            return value.Select(x => new Fact(x));
+            return value.Select(x => new Fact(x)).ToArray();
         }
 
         protected ITuple EmptyTuple()
@@ -24,7 +24,7 @@ namespace NRules.Tests.Aggregators
             public int Count => 0;
         }
 
-        private class Fact : IFact
+        public class Fact : IFact
         {
             public Fact(object value)
             {
@@ -33,7 +33,7 @@ namespace NRules.Tests.Aggregators
             }
 
             public Type Type { get; }
-            public object Value { get; }
+            public object Value { get; set; }
         }
     }
 

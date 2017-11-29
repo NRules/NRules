@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -10,73 +11,79 @@ namespace NRules
     /// <summary>
     /// Represents a match of all rule's conditions.
     /// </summary>
-    public interface IActivation
+    /// <seealso cref="IMatch"/>
+    /// <seealso cref="IFactMatch"/>
+    [DebuggerDisplay("{Rule.Name} FactCount={Tuple.Count}")]
+    public class Activation : IMatch
     {
+        private Dictionary<object, object> _stateMap;
+        
+        internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap factMap)
+        {
+            CompiledRule = compiledRule;
+            Tuple = tuple;
+            FactMap = factMap;
+        }
+
         /// <summary>
         /// Rule that got activated.
         /// </summary>
-        IRuleDefinition Rule { get; }
+        public IRuleDefinition Rule => CompiledRule.Definition;
 
         /// <summary>
         /// Facts matched by the rule.
         /// </summary>
-        IEnumerable<IFactMatch> Facts { get; }
-    }
+        public IEnumerable<IFactMatch> Facts => GetMatchedFacts();
 
-    internal class Activation : IActivation, IEquatable<Activation>
-    {
-        private readonly Lazy<FactMatch[]> _matchedFacts;
+        internal ICompiledRule CompiledRule { get; }
+        internal Tuple Tuple { get; }
+        internal IndexMap FactMap { get; }
 
-        internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap tupleFactMap)
+        internal T GetState<T>(object key)
         {
-            CompiledRule = compiledRule;
-            Tuple = tuple;
-            TupleFactMap = tupleFactMap;
-            _matchedFacts = new Lazy<FactMatch[]>(CreateMatchedFacts);
-        }
-
-        public IRuleDefinition Rule => CompiledRule.Definition;
-        public IEnumerable<IFactMatch> Facts => _matchedFacts.Value;
-
-        public ICompiledRule CompiledRule { get; }
-        public Tuple Tuple { get; }
-        public IndexMap TupleFactMap { get; }
-
-        public bool Equals(Activation other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(other.CompiledRule, CompiledRule) && Equals(other.Tuple, Tuple);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (Activation)) return false;
-            return Equals((Activation) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
+            if (_stateMap != null && _stateMap.TryGetValue(key, out var value))
             {
-                return (CompiledRule.GetHashCode()*397) ^ Tuple.GetHashCode();
+                return (T)value;
             }
+            return default(T);
         }
 
-        private FactMatch[] CreateMatchedFacts()
+        internal void SetState(object key, object value)
+        {
+            if (_stateMap == null) _stateMap = new Dictionary<object, object>();
+            _stateMap[key] = value;
+        }
+
+        private FactMatch[] GetMatchedFacts()
         {
             var matches = CompiledRule.Declarations.Select(x => new FactMatch(x)).ToArray();
             int index = Tuple.Count - 1;
             foreach (var fact in Tuple.Facts)
             {
-                int factIndex = TupleFactMap[index];
+                int factIndex = FactMap[index];
                 var factMatch = matches[factIndex];
                 factMatch.SetFact(fact);
                 index--;
             }
             return matches;
+        }
+
+        private class FactMatch : IFactMatch
+        {
+            public FactMatch(Declaration declaration)
+            {
+                Declaration = declaration;
+            }
+
+            public Declaration Declaration { get; }
+            public Type Type { get; private set; }
+            public object Value { get; private set; }
+
+            public void SetFact(Fact fact)
+            {
+                Type = fact.FactType.AsType();
+                Value = fact.Object;
+            }
         }
     }
 }

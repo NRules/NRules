@@ -5,48 +5,65 @@ namespace NRules.Rete
 {
     internal class Aggregation
     {
-        private readonly List<AggregationEntry> _asserts = new List<AggregationEntry>();
-        private readonly List<AggregationEntry> _updates = new List<AggregationEntry>();
-        private readonly List<AggregationEntry> _retracts = new List<AggregationEntry>();
+        private readonly List<AggregateList> _aggregateLists = new List<AggregateList>();
+        private AggregateList _currentList;
 
-        public IList<AggregationEntry> Asserts => _asserts;
-        public IList<AggregationEntry> Updates => _updates;
-        public IList<AggregationEntry> Retracts => _retracts;
+        public IList<AggregateList> AggregateLists => _aggregateLists;
 
-        public void Add(Tuple tuple, IEnumerable<AggregationResult> results)
+        public void Add(Tuple tuple, Fact aggregateFact)
         {
-            foreach (var result in results)
+            var list = GetList(AggregationAction.Added);
+            list.Add(tuple, aggregateFact);
+        }
+
+        public void Modify(Tuple tuple, Fact aggregateFact)
+        {
+            var list = GetList(AggregationAction.Modified);
+            list.Add(tuple, aggregateFact);
+        }
+
+        public void Modify(Tuple tuple, IEnumerable<Fact> aggregateFacts)
+        {
+            var list = GetList(AggregationAction.Modified);
+            foreach (var aggregateFact in aggregateFacts)
             {
-                Add(tuple, result);
+                list.Add(tuple, aggregateFact);
+            }
+        }
+        
+        public void Remove(Tuple tuple, Fact aggregateFact)
+        {
+            var list = GetList(AggregationAction.Removed);
+            list.Add(tuple, aggregateFact);
+        }
+
+        public void Remove(Tuple tuple, IEnumerable<Fact> aggregateFacts)
+        {
+            var list = GetList(AggregationAction.Removed);
+            foreach (var aggregateFact in aggregateFacts)
+            {
+                list.Add(tuple, aggregateFact);
             }
         }
 
-        public void Add(Tuple tuple, AggregationResult result)
+        private AggregateList GetList(AggregationAction action)
         {
-            switch (result.Action)
+            if (_currentList == null || _currentList.Action != action)
             {
-                case AggregationAction.Added:
-                    _asserts.Add(new AggregationEntry(tuple, result.Aggregate));
-                    break;
-                case AggregationAction.Modified:
-                    _updates.Add(new AggregationEntry(tuple, result.Aggregate));
-                    break;
-                case AggregationAction.Removed:
-                    _retracts.Add(new AggregationEntry(tuple, result.Aggregate));
-                    break;
+                _currentList = new AggregateList(action);
+                _aggregateLists.Add(_currentList);
             }
+            return _currentList;
         }
     }
 
-    internal class AggregationEntry
+    internal class AggregateList : TupleFactList
     {
-        public Tuple Tuple { get; }
-        public object ResultObject { get; }
+        public AggregationAction Action { get; }
 
-        public AggregationEntry(Tuple tuple, object resultObject)
+        public AggregateList(AggregationAction action)
         {
-            Tuple = tuple;
-            ResultObject = resultObject;
+            Action = action;
         }
     }
 }

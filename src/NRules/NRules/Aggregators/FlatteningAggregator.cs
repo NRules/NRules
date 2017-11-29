@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NRules.Collections;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators
@@ -11,7 +12,8 @@ namespace NRules.Aggregators
     internal class FlatteningAggregator<TSource, TResult> : IAggregator
     {
         private readonly IAggregateExpression _selector;
-        private readonly Dictionary<TSource, IList<TResult>> _sourceToList = new Dictionary<TSource, IList<TResult>>();
+        private readonly Dictionary<TResult, Counter> _referenceCounter = new Dictionary<TResult, Counter>();
+        private readonly Dictionary<IFact, OrderedHashSet<TResult>> _sourceToList = new Dictionary<IFact, OrderedHashSet<TResult>>();
 
         public FlatteningAggregator(IAggregateExpression selector)
         {
@@ -23,13 +25,16 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
+                var list = new OrderedHashSet<TResult>();
+                _sourceToList[fact] = list;
                 var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
-                var list = new List<TResult>(value);
-                _sourceToList[source] = list;
-                foreach (var item in list)
+                foreach (var item in value)
                 {
-                    results.Add(AggregationResult.Added(item));
+                    if (list.Add(item) &&
+                        AddRef(item) == 1)
+                    {
+                        results.Add(AggregationResult.Added(item));
+                    }
                 }
             }
             return results;
@@ -40,18 +45,34 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
+                var list = new OrderedHashSet<TResult>();
+                var oldList = _sourceToList[fact];
+                _sourceToList[fact] = list;
+                
                 var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
-                var list = new List<TResult>(value);
-                var oldList = _sourceToList[source];
-                _sourceToList[source] = list;
+                foreach (var item in value)
+                {
+                    list.Add(item);
+                }
+
                 foreach (var item in oldList)
                 {
-                    results.Add(AggregationResult.Removed(item));
+                    if (!list.Contains(item) &&
+                        RemoveRef(item) == 0)
+                    {
+                        results.Add(AggregationResult.Removed(item));
+                    }
                 }
                 foreach (var item in list)
                 {
-                    results.Add(AggregationResult.Added(item));
+                    if (oldList.Contains(item))
+                    {
+                        results.Add(AggregationResult.Modified(item));
+                    }
+                    else if (AddRef(item) == 1)
+                    {
+                        results.Add(AggregationResult.Added(item));
+                    }
                 }
             }
             return results;
@@ -62,29 +83,40 @@ namespace NRules.Aggregators
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var source = (TSource)fact.Value;
-                var oldList = _sourceToList[source];
-                _sourceToList.Remove(source);
+                var oldList = _sourceToList[fact];
+                _sourceToList.Remove(fact);
                 foreach (var item in oldList)
                 {
-                    results.Add(AggregationResult.Removed(item));
+                    if (RemoveRef(item) == 0)
+                    {
+                        results.Add(AggregationResult.Removed(item));
+                    }
                 }
             }
             return results;
         }
 
-        public IEnumerable<object> Aggregates
+        private int AddRef(TResult item)
         {
-            get
+            if (!_referenceCounter.TryGetValue(item, out var counter))
             {
-                foreach (var itemList in _sourceToList)
-                {
-                    foreach (var item in itemList.Value)
-                    {
-                        yield return item;
-                    }
-                }
+                counter = new Counter();
+                _referenceCounter[item] = counter;
             }
+            counter.Value++;
+            return counter.Value;
+        }
+
+        private int RemoveRef(TResult item)
+        {
+            var counter = _referenceCounter[item];
+            counter.Value--;
+            return counter.Value;
+        }
+
+        private class Counter
+        {
+            public int Value { get; set; }
         }
     }
 }

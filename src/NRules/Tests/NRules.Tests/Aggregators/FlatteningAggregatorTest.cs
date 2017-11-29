@@ -9,40 +9,14 @@ namespace NRules.Tests.Aggregators
     public class FlatteningAggregatorTest : AggregatorTest
     {
         [Fact]
-        public void Aggregates_NewInstance_Empty()
-        {
-            //Arrange
-            var target = CreateTarget();
-
-            //Act
-            var result = target.Aggregates.ToArray();
-
-            //Assert
-            Assert.Equal(0, result.Length);
-        }
-
-        [Fact]
-        public void Aggregates_HasElements_AllNestedElements()
-        {
-            //Arrange
-            var target = CreateTarget();
-            target.Add(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")));
-
-            //Act
-            var result = target.Aggregates.ToArray();
-
-            //Assert
-            Assert.Equal(4, result.Length);
-        }
-
-        [Fact]
         public void Add_Facts_AddedResult()
         {
             //Arrange
             var target = CreateTarget();
 
             //Act
-            var result = target.Add(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))).ToArray();
+            var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
+            var result = target.Add(EmptyTuple(), facts).ToArray();
 
             //Assert
             Assert.Equal(4, result.Length);
@@ -57,27 +31,75 @@ namespace NRules.Tests.Aggregators
         }
 
         [Fact]
+        public void Add_FactsWithDuplicates_AddedDistinctResult()
+        {
+            //Arrange
+            var target = CreateTarget();
+
+            //Act
+            var facts = AsFact(new TestFact(1, "value11", "value12", "value12", "valuex"), new TestFact(2, "value21", "value21", "value22", "valuex"));
+            var result = target.Add(EmptyTuple(), facts).ToArray();
+
+            //Assert
+            Assert.Equal(5, result.Length);
+            Assert.Equal(AggregationAction.Added, result[0].Action);
+            Assert.Equal("value11", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[1].Action);
+            Assert.Equal("value12", result[1].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[2].Action);
+            Assert.Equal("valuex", result[2].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[3].Action);
+            Assert.Equal("value21", result[3].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[4].Action);
+            Assert.Equal("value22", result[4].Aggregate);
+        }
+
+        [Fact]
         public void Add_NoFacts_EmptyResult()
         {
             //Arrange
             var target = CreateTarget();
 
             //Act
-            var result = target.Add(EmptyTuple(), AsFact(new TestFact[0])).ToArray();
+            var facts = AsFact(new TestFact[0]);
+            var result = target.Add(EmptyTuple(), facts).ToArray();
 
             //Assert
             Assert.Equal(0, result.Length);
         }
 
         [Fact]
-        public void Modify_ExistingFacts_ModifiedResult()
+        public void Modify_ExistingFactsSameIdentity_ModifiedResult()
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")));
+            var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
+            target.Add(EmptyTuple(), facts);
 
             //Act
-            var result = target.Modify(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"))).ToArray();
+            var toUpdate = facts.Take(1).ToArray();
+            var result = target.Modify(EmptyTuple(), toUpdate).ToArray();
+
+            //Assert
+            Assert.Equal(2, result.Length);
+            Assert.Equal(AggregationAction.Modified, result[0].Action);
+            Assert.Equal("value11", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Modified, result[1].Action);
+            Assert.Equal("value12", result[1].Aggregate);
+        }
+
+        [Fact]
+        public void Modify_ExistingFactsDifferentIdentity_RemovedAddedResult()
+        {
+            //Arrange
+            var target = CreateTarget();
+            var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
+            target.Add(EmptyTuple(), facts);
+
+            //Act
+            facts[0].Value = new TestFact(3, "value31", "value32");
+            var toUpdate = facts.Take(1).ToArray();
+            var result = target.Modify(EmptyTuple(), toUpdate).ToArray();
 
             //Assert
             Assert.Equal(4, result.Length);
@@ -86,9 +108,56 @@ namespace NRules.Tests.Aggregators
             Assert.Equal(AggregationAction.Removed, result[1].Action);
             Assert.Equal("value12", result[1].Aggregate);
             Assert.Equal(AggregationAction.Added, result[2].Action);
-            Assert.Equal("value11", result[2].Aggregate);
+            Assert.Equal("value31", result[2].Aggregate);
             Assert.Equal(AggregationAction.Added, result[3].Action);
-            Assert.Equal("value12", result[3].Aggregate);
+            Assert.Equal("value32", result[3].Aggregate);
+        }
+
+        [Fact]
+        public void Modify_ExistingFactsHasAdditionsModificationsAndRemovals_CorrectResult()
+        {
+            //Arrange
+            var target = CreateTarget();
+            var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
+            target.Add(EmptyTuple(), facts);
+
+            //Act
+            facts[0].Value = new TestFact(2, "value12", "value13");
+            var toUpdate = facts.Take(1).ToArray();
+            var result = target.Modify(EmptyTuple(), toUpdate).ToArray();
+
+            //Assert
+            Assert.Equal(3, result.Length);
+            Assert.Equal(AggregationAction.Removed, result[0].Action);
+            Assert.Equal("value11", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Modified, result[1].Action);
+            Assert.Equal("value12", result[1].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[2].Action);
+            Assert.Equal("value13", result[2].Aggregate);
+        }
+
+        [Fact]
+        public void Modify_FactsWithDuplicates_CorrectResult()
+        {
+            //Arrange
+            var target = CreateTarget();
+
+            var facts = AsFact(new TestFact(1, "value11", "value12", "value12", "valuex"), new TestFact(2, "value21", "value21", "value22", "valuex"));
+            target.Add(EmptyTuple(), facts);
+
+            //Act
+            facts[0].Value = new TestFact(2, "value12", "value13");
+            var toUpdate = facts.Take(1).ToArray();
+            var result = target.Modify(EmptyTuple(), toUpdate).ToArray();
+
+            //Assert
+            Assert.Equal(3, result.Length);
+            Assert.Equal(AggregationAction.Removed, result[0].Action);
+            Assert.Equal("value11", result[0].Aggregate);
+            Assert.Equal(AggregationAction.Modified, result[1].Action);
+            Assert.Equal("value12", result[1].Aggregate);
+            Assert.Equal(AggregationAction.Added, result[2].Action);
+            Assert.Equal("value13", result[2].Aggregate);
         }
 
         [Fact]
@@ -107,10 +176,12 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22")));
+            var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
+            target.Add(EmptyTuple(), facts);
 
             //Act
-            var result = target.Remove(EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"))).ToArray();
+            var toRemove = facts.Take(1).ToArray();
+            var result = target.Remove(EmptyTuple(), toRemove).ToArray();
 
             //Assert
             Assert.Equal(2, result.Length);
@@ -118,6 +189,40 @@ namespace NRules.Tests.Aggregators
             Assert.Equal("value11", result[0].Aggregate);
             Assert.Equal(AggregationAction.Removed, result[1].Action);
             Assert.Equal("value12", result[1].Aggregate);
+        }
+
+        [Fact]
+        public void Remove_FactsWithDuplicates_CorrectResult()
+        {
+            //Arrange
+            var target = CreateTarget();
+
+            var facts = AsFact(new TestFact(1, "value11", "value12", "value12", "valuex"), new TestFact(2, "value21", "value21", "value22", "valuex"));
+            target.Add(EmptyTuple(), facts);
+
+            //Act - I
+            var toRemove1 = facts.Take(1).ToArray();
+            var result1 = target.Remove(EmptyTuple(), toRemove1).ToArray();
+
+            //Assert - I
+            Assert.Equal(2, result1.Length);
+            Assert.Equal(AggregationAction.Removed, result1[0].Action);
+            Assert.Equal("value11", result1[0].Aggregate);
+            Assert.Equal(AggregationAction.Removed, result1[1].Action);
+            Assert.Equal("value12", result1[1].Aggregate);
+
+            //Act - II
+            var toRemove2 = facts.Skip(1).Take(1).ToArray();
+            var result2 = target.Remove(EmptyTuple(), toRemove2).ToArray();
+
+            //Assert - II
+            Assert.Equal(3, result2.Length);
+            Assert.Equal(AggregationAction.Removed, result2[0].Action);
+            Assert.Equal("value21", result2[0].Aggregate);
+            Assert.Equal(AggregationAction.Removed, result2[1].Action);
+            Assert.Equal("value22", result2[1].Aggregate);
+            Assert.Equal(AggregationAction.Removed, result2[2].Action);
+            Assert.Equal("valuex", result2[2].Aggregate);
         }
 
         [Fact]
@@ -160,7 +265,7 @@ namespace NRules.Tests.Aggregators
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
                 if (obj.GetType() != this.GetType()) return false;
-                return Equals((TestFact)obj);
+                return Equals((TestFact) obj);
             }
 
             public override int GetHashCode()

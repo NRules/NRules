@@ -86,6 +86,11 @@ namespace NRules.Fluent.Expressions
             };
         }
 
+        public void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap)
+        {
+            Aggregate<TSource, TResult>(name, expressionMap, null);
+        }
+
         public void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap, Type customFactoryType)
         {
             var previousBuildAction = _buildAction;

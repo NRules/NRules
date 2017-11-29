@@ -26,9 +26,15 @@ namespace NRules.IntegrationTests.TestAssets
 
             SetUpRules();
 
-            ISessionFactory factory = Repository.Compile();
+            ISessionFactory factory = Compile();
             Session = factory.CreateSession();
             Session.Events.RuleFiredEvent += (sender, args) => _firedRulesMap[args.Rule.Name].Add(args);
+        }
+
+        protected virtual ISessionFactory Compile()
+        {
+            var factory = Repository.Compile();
+            return factory;
         }
 
         protected abstract void SetUpRules();

@@ -9,9 +9,9 @@ namespace NRules.Diagnostics
     /// </summary>
     public class AgendaEventArgs : EventArgs
     {
-        private readonly IActivation _activation;
+        private readonly Activation _activation;
 
-        internal AgendaEventArgs(IActivation activation)
+        internal AgendaEventArgs(Activation activation)
         {
             _activation = activation;
         }

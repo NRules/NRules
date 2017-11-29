@@ -41,7 +41,7 @@ namespace NRules.Aggregators
             }
             catch (Exception e)
             {
-                throw new RuleExpressionEvaluationException("Failed to evaluate expression", _expression.ToString(), e);
+                throw new AggregateExpressionException(e, _expression, tuple, fact);
             }
         }
     }
@@ -49,13 +49,13 @@ namespace NRules.Aggregators
     internal class AggregateExpression : IAggregateExpression
     {
         private readonly LambdaExpression _expression;
-        private readonly IndexMap _factIndexMap;
+        private readonly IndexMap _factMap;
         private readonly FastDelegate<Func<object[], object>> _compiledExpression;
 
-        public AggregateExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap factIndexMap)
+        public AggregateExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap factMap)
         {
             _expression = expression;
-            _factIndexMap = factIndexMap;
+            _factMap = factMap;
             _compiledExpression = compiledExpression;
         }
 
@@ -65,10 +65,10 @@ namespace NRules.Aggregators
             int index = tuple.Count - 1;
             foreach (var tupleFact in tuple.Facts)
             {
-                IndexMap.SetElementAt(args, _factIndexMap[index], tupleFact.Value);
+                IndexMap.SetElementAt(args, _factMap[index], tupleFact.Value);
                 index--;
             }
-            IndexMap.SetElementAt(args, _factIndexMap[tuple.Count], fact.Value);
+            IndexMap.SetElementAt(args, _factMap[tuple.Count], fact.Value);
 
             try
             {
@@ -77,7 +77,7 @@ namespace NRules.Aggregators
             }
             catch (Exception e)
             {
-                throw new RuleExpressionEvaluationException("Failed to evaluate expression", _expression.ToString(), e);
+                throw new AggregateExpressionException(e, _expression, tuple, fact);
             }
         }
 

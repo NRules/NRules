@@ -93,7 +93,7 @@ namespace NRules.Diagnostics
         internal static NodeInfo Create(BetaMemoryNode node, IBetaMemory memory)
         {
             var tuples = memory.Tuples.Select(
-                t => string.Join(" || ", t.OrderedFacts.Select(f => f.Object).ToArray()));
+                t => string.Join(" || ", t.OrderedFacts().Select(f => f.Value).ToArray()));
             return new NodeInfo(NodeType.BetaMemory, string.Empty, Empty, Empty, tuples);
         }
 

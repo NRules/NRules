@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -36,10 +35,14 @@ namespace NRules.Diagnostics
         {
             get
             {
-                var wrappedFact = new[] {_fact};
-                return _tuple == null
-                    ? wrappedFact
-                    : _tuple.OrderedFacts.Concat(wrappedFact).ToArray();
+                if (_tuple != null)
+                {
+                    foreach (var tupleFact in _tuple.OrderedFacts())
+                    {
+                        yield return tupleFact;
+                    }
+                }
+                yield return _fact;
             }
         }
     }

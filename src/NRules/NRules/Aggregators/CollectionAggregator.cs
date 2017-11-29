@@ -10,13 +10,7 @@ namespace NRules.Aggregators
     internal class CollectionAggregator<TElement> : IAggregator
     {
         private readonly FactCollection<TElement> _items = new FactCollection<TElement>();
-        private readonly object[] _container; 
         private bool _created = false;
-
-        public CollectionAggregator()
-        {
-            _container = new object[] {_items};
-        } 
 
         public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
         {
@@ -46,7 +40,7 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var item = (TElement)fact.Value;
-                _items.Add(item);
+                _items.Add(fact, item);
             }
         }
 
@@ -55,7 +49,7 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var item = (TElement)fact.Value;
-                _items.Modify(item);
+                _items.Modify(fact, item);
             }
         }
 
@@ -64,10 +58,8 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var item = (TElement) fact.Value;
-                _items.Remove(item);
+                _items.Remove(fact, item);
             }
         }
-
-        public IEnumerable<object> Aggregates => _container;
     }
 }

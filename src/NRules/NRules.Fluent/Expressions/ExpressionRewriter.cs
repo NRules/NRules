@@ -8,7 +8,7 @@ namespace NRules.Fluent.Expressions
 {
     internal class ExpressionRewriter : ExpressionVisitor
     {
-        protected IDictionary<string, Declaration> Declarations { get; }
+        private IDictionary<string, Declaration> Declarations { get; }
         protected List<ParameterExpression> Parameters { get; }
 
         public ExpressionRewriter(IEnumerable<Declaration> declarations)
@@ -33,8 +33,7 @@ namespace NRules.Fluent.Expressions
 
         protected override Expression VisitMember(MemberExpression member)
         {
-            Declaration declaration;
-            if (Declarations.TryGetValue(member.Member.Name, out declaration))
+            if (Declarations.TryGetValue(member.Member.Name, out var declaration))
             {
                 ParameterExpression parameter = Parameters.FirstOrDefault(p => p.Name == declaration.Name);
                 if (parameter == null)

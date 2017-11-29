@@ -12,13 +12,13 @@ namespace NRules.Rete
     internal class BetaCondition : IBetaCondition, IEquatable<BetaCondition>
     {
         private readonly LambdaExpression _expression;
-        private readonly IndexMap _factIndexMap;
+        private readonly IndexMap _factMap;
         private readonly FastDelegate<Func<object[], bool>> _compiledExpression;
 
-        public BetaCondition(LambdaExpression expression, FastDelegate<Func<object[], bool>> compiledExpression, IndexMap factIndexMap)
+        public BetaCondition(LambdaExpression expression, FastDelegate<Func<object[], bool>> compiledExpression, IndexMap factMap)
         {
             _expression = expression;
-            _factIndexMap = factIndexMap;
+            _factMap = factMap;
             _compiledExpression = compiledExpression;
         }
 
@@ -28,10 +28,10 @@ namespace NRules.Rete
             int index = leftTuple.Count - 1;
             foreach (var fact in leftTuple.Facts)
             {
-                IndexMap.SetElementAt(args, _factIndexMap[index], fact.Object);
+                IndexMap.SetElementAt(args, _factMap[index], fact.Object);
                 index--;
             }
-            IndexMap.SetElementAt(args, _factIndexMap[leftTuple.Count], rightFact.Object);
+            IndexMap.SetElementAt(args, _factMap[leftTuple.Count], rightFact.Object);
 
             try
             {

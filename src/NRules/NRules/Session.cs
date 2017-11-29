@@ -25,12 +25,23 @@ namespace NRules
     /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
     /// <event cref="IEventProvider.ConditionFailedEvent">When there is an error during condition evaluation,
     /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.BindingFailedEvent">When there is an error during binding expression evaluation,
+    /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.AggregateFailedEvent">When there is an error during aggregate expression evaluation,
+    /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.AgendaFilterFailedEvent">When there is an error during agenda filter evaluation,
+    /// before throwing exception to the client.</event>
     /// <event cref="IEventProvider.ActionFailedEvent">When there is an error during action evaluation,
     /// before throwing exception to the client.</event>
     /// <exception cref="RuleConditionEvaluationException">Error while evaluating any of the rules' conditions.
     /// This exception can also be observed as an event <see cref="IEventProvider.ConditionFailedEvent"/>.</exception>
+    /// <exception cref="RuleExpressionEvaluationException">Error while evaluating any of the rules' binding or aggregate expressions.
+    /// This exception can also be observed as events <see cref="IEventProvider.BindingFailedEvent"/>, <see cref="IEventProvider.AggregateFailedEvent"/>.</exception>
+    /// <exception cref="AgendaExpressionEvaluationException">Error while evaluating any of the agenda filters.
+    /// This exception can also be observed as an event <see cref="IEventProvider.AgendaFilterFailedEvent"/>.</exception>
     /// <exception cref="RuleActionEvaluationException">Error while evaluating any of the rules' actions.
     /// This exception can also be observed as an event <see cref="IEventProvider.ActionFailedEvent"/>.</exception>
+    /// <seealso cref="ISessionFactory"/>
     /// <threadsafety instance="false" />
     public interface ISession
     {
@@ -180,6 +191,12 @@ namespace NRules
     internal interface ISessionInternal : ISession
     {
         new IAgendaInternal Agenda { get; }
+
+        IEnumerable<object> GetLinkedKeys(Activation activation);
+        object GetLinked(Activation activation, object key);
+        void InsertLinked(Activation activation, object key, object fact);
+        void UpdateLinked(Activation activation, object key, object fact);
+        void RetractLinked(Activation activation, object key, object fact);
     }
 
     /// <summary>
@@ -211,7 +228,6 @@ namespace NRules
             _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator);
             DependencyResolver = dependencyResolver;
             ActionInterceptor = actionInterceptor;
-            _network.Activate(_executionContext);
         }
 
         public IAgenda Agenda => _agenda;
@@ -221,9 +237,14 @@ namespace NRules
 
         IAgendaInternal ISessionInternal.Agenda => _agenda;
 
+        internal void Activate()
+        {
+            _network.Activate(_executionContext);
+        }
+
         public void InsertAll(IEnumerable<object> facts)
         {
-            var result = _network.PropagateAssert(_executionContext, facts);
+            var result = TryInsertAll(facts);
             if (result.FailedCount > 0)
             {
                 throw new ArgumentException("Facts for insert already exist", nameof(facts));
@@ -232,7 +253,37 @@ namespace NRules
 
         public IFactResult TryInsertAll(IEnumerable<object> facts)
         {
-            var result = _network.PropagateAssert(_executionContext, facts);
+            if (facts == null)
+            {
+                throw new ArgumentNullException(nameof(facts));
+            }
+
+            var failed = new List<object>();
+            var toPropagate = new List<Fact>();
+            foreach (var factObject in facts)
+            {
+                var factWrapper = _workingMemory.GetFact(factObject);
+                if (factWrapper == null)
+                {
+                    factWrapper = new Fact(factObject);
+                    toPropagate.Add(factWrapper);
+                }
+                else
+                {
+                    failed.Add(factObject);
+                }
+            }
+
+            var result = new FactResult(failed);
+            if (result.FailedCount == 0)
+            {
+                foreach (var fact in toPropagate)
+                {
+                    _workingMemory.AddFact(fact);
+                }
+
+                _network.PropagateAssert(_executionContext, toPropagate);
+            }
             return result;
         }
 
@@ -243,13 +294,13 @@ namespace NRules
 
         public bool TryInsert(object fact)
         {
-            var result = _network.PropagateAssert(_executionContext, new[] {fact});
+            var result = TryInsertAll(new[] {fact});
             return result.FailedCount == 0;
         }
 
         public void UpdateAll(IEnumerable<object> facts)
         {
-            var result = _network.PropagateUpdate(_executionContext, facts);
+            var result = TryUpdateAll(facts);
             if (result.FailedCount > 0)
             {
                 throw new ArgumentException("Facts for update do not exist", nameof(facts));
@@ -258,7 +309,37 @@ namespace NRules
 
         public IFactResult TryUpdateAll(IEnumerable<object> facts)
         {
-            var result = _network.PropagateUpdate(_executionContext, facts);
+            if (facts == null)
+            {
+                throw new ArgumentNullException(nameof(facts));
+            }
+
+            var failed = new List<object>();
+            var toPropagate = new List<Fact>();
+            foreach (var fact in facts)
+            {
+                var factWrapper = _workingMemory.GetFact(fact);
+                if (factWrapper != null)
+                {
+                    UpdateFact(factWrapper, fact);
+                    toPropagate.Add(factWrapper);
+                }
+                else
+                {
+                    failed.Add(fact);
+                }
+            }
+
+            var result = new FactResult(failed);
+            if (result.FailedCount == 0)
+            {
+                foreach (var fact in toPropagate)
+                {
+                    _workingMemory.UpdateFact(fact);
+                }
+
+                _network.PropagateUpdate(_executionContext, toPropagate);
+            }
             return result;
         }
 
@@ -269,13 +350,13 @@ namespace NRules
 
         public bool TryUpdate(object fact)
         {
-            var result = _network.PropagateUpdate(_executionContext, new[] {fact});
+            var result = TryUpdateAll(new[] {fact});
             return result.FailedCount == 0;
         }
 
         public void RetractAll(IEnumerable<object> facts)
         {
-            var result = _network.PropagateRetract(_executionContext, facts);
+            var result = TryRetractAll(facts);
             if (result.FailedCount > 0)
             {
                 throw new ArgumentException("Facts for retract do not exist", nameof(facts));
@@ -284,7 +365,36 @@ namespace NRules
 
         public IFactResult TryRetractAll(IEnumerable<object> facts)
         {
-            var result = _network.PropagateRetract(_executionContext, facts);
+            if (facts == null)
+            {
+                throw new ArgumentNullException(nameof(facts));
+            }
+
+            var failed = new List<object>();
+            var toPropagate = new List<Fact>();
+            foreach (var fact in facts)
+            {
+                var factWrapper = _workingMemory.GetFact(fact);
+                if (factWrapper != null)
+                {
+                    toPropagate.Add(factWrapper);
+                }
+                else
+                {
+                    failed.Add(fact);
+                }
+            }
+
+            var result = new FactResult(failed);
+            if (result.FailedCount == 0)
+            {
+                _network.PropagateRetract(_executionContext, toPropagate);
+
+                foreach (var fact in toPropagate)
+                {
+                    _workingMemory.RemoveFact(fact);
+                }
+            }
             return result;
         }
 
@@ -295,8 +405,78 @@ namespace NRules
 
         public bool TryRetract(object fact)
         {
-            var result = _network.PropagateRetract(_executionContext, new[] {fact});
+            var result = TryRetractAll(new[] {fact});
             return result.FailedCount == 0;
+        }
+
+        public IEnumerable<object> GetLinkedKeys(Activation activation)
+        {
+            var keys = _workingMemory.GetLinkedKeys(activation);
+            return keys;
+        }
+
+        public object GetLinked(Activation activation, object key)
+        {
+            var factWrapper = _workingMemory.GetLinkedFact(activation, key);
+            return factWrapper?.Object;
+        }
+
+        public void InsertLinked(Activation activation, object key, object fact)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (fact == null)
+            {
+                throw new ArgumentNullException(nameof(fact));
+            }
+            var factWrapper = _workingMemory.GetLinkedFact(activation, key);
+            if (factWrapper != null)
+            {
+                throw new ArgumentException($"Linked fact already exists. Key={key}", nameof(fact));
+            }
+            factWrapper = new Fact(fact);
+            _workingMemory.AddLinkedFact(activation, key, factWrapper);
+            _network.PropagateAssert(_executionContext, new List<Fact> {factWrapper});
+        }
+
+        public void UpdateLinked(Activation activation, object key, object fact)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (fact == null)
+            {
+                throw new ArgumentNullException(nameof(fact));
+            }
+            var factWrapper = _workingMemory.GetLinkedFact(activation, key);
+            if (factWrapper == null)
+            {
+                throw new ArgumentException($"Linked fact does not exist. Key={key}", nameof(fact));
+            }
+            _workingMemory.UpdateLinkedFact(activation, key, factWrapper, fact);
+            _network.PropagateUpdate(_executionContext, new List<Fact> {factWrapper});
+        }
+
+        public void RetractLinked(Activation activation, object key, object fact)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (fact == null)
+            {
+                throw new ArgumentNullException(nameof(fact));
+            }
+            var factWrapper = _workingMemory.GetFact(fact);
+            if (factWrapper == null)
+            {
+                throw new ArgumentException($"Linked fact does not exist. Key={key}", nameof(fact));
+            }
+            _network.PropagateRetract(_executionContext, new List<Fact> {factWrapper});
+            _workingMemory.RemoveLinkedFact(activation, key, factWrapper);
         }
 
         public int Fire()
@@ -323,6 +503,12 @@ namespace NRules
         public IQueryable<TFact> Query<TFact>()
         {
             return _workingMemory.Facts.Select(x => x.Object).OfType<TFact>().AsQueryable();
+        }
+
+        private static void UpdateFact(Fact fact, object factObject)
+        {
+            if (ReferenceEquals(fact.RawObject, factObject)) return;
+            fact.RawObject = factObject;
         }
 
         SessionSnapshot ISessionSnapshotProvider.GetSnapshot()

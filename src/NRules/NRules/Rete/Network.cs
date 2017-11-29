@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace NRules.Rete
 {
     internal interface INetwork
     {
-        FactResult PropagateAssert(IExecutionContext context, IEnumerable<object> factObjects);
-        FactResult PropagateUpdate(IExecutionContext context, IEnumerable<object> factObjects);
-        FactResult PropagateRetract(IExecutionContext context, IEnumerable<object> factObjects);
+        void PropagateAssert(IExecutionContext context, IList<Fact> factObjects);
+        void PropagateUpdate(IExecutionContext context, IList<Fact> factObjects);
+        void PropagateRetract(IExecutionContext context, IList<Fact> factObjects);
         void Activate(IExecutionContext context);
         void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);
     }
@@ -23,129 +22,49 @@ namespace NRules.Rete
             _dummyNode = dummyNode;
         }
 
-        public FactResult PropagateAssert(IExecutionContext context, IEnumerable<object> factObjects)
+        public void PropagateAssert(IExecutionContext context, IList<Fact> facts)
         {
-            if (factObjects == null)
+            foreach (var fact in facts)
             {
-                throw new ArgumentNullException(nameof(factObjects));
+                context.EventAggregator.RaiseFactInserting(context.Session, fact);
             }
 
-            var failed = new List<object>();
-            var toPropagate = new List<Fact>();
-            foreach (var factObject in factObjects)
+            _root.PropagateAssert(context, facts);
+
+            foreach (var fact in facts)
             {
-                var fact = context.WorkingMemory.GetFact(factObject);
-                if (fact == null)
-                {
-                    fact = new Fact(factObject);
-                    toPropagate.Add(fact);
-                }
-                else
-                {
-                    failed.Add(factObject);
-                }
+                context.EventAggregator.RaiseFactInserted(context.Session, fact);
             }
-
-            var result = new FactResult(failed);
-            if (result.FailedCount == 0)
-            {
-                foreach (var fact in toPropagate)
-                {
-                    context.EventAggregator.RaiseFactInserting(context.Session, fact);
-                    context.WorkingMemory.AddFact(fact);
-                }
-
-                _root.PropagateAssert(context, toPropagate);
-
-                foreach (var fact in toPropagate)
-                {
-                    context.EventAggregator.RaiseFactInserted(context.Session, fact);
-                }
-            }
-            return result;
         }
 
-        public FactResult PropagateUpdate(IExecutionContext context, IEnumerable<object> factObjects)
+        public void PropagateUpdate(IExecutionContext context, IList<Fact> facts)
         {
-            if (factObjects == null)
+            foreach (var fact in facts)
             {
-                throw new ArgumentNullException(nameof(factObjects));
+                context.EventAggregator.RaiseFactUpdating(context.Session, fact);
             }
 
-            var failed = new List<object>();
-            var toPropagate = new List<Fact>();
-            foreach (var factObject in factObjects)
+            _root.PropagateUpdate(context, facts);
+
+            foreach (var fact in facts)
             {
-                var fact = context.WorkingMemory.GetFact(factObject);
-                if (fact != null)
-                {
-                    UpdateFact(fact, factObject);
-                    toPropagate.Add(fact);
-                }
-                else
-                {
-                    failed.Add(factObject);
-                }
+                context.EventAggregator.RaiseFactUpdated(context.Session, fact);
             }
-
-            var result = new FactResult(failed);
-            if (result.FailedCount == 0)
-            {
-                foreach (var fact in toPropagate)
-                {
-                    context.WorkingMemory.UpdateFact(fact);
-                    context.EventAggregator.RaiseFactUpdating(context.Session, fact);
-                }
-
-                _root.PropagateUpdate(context, toPropagate);
-
-                foreach (var fact in toPropagate)
-                {
-                    context.EventAggregator.RaiseFactUpdated(context.Session, fact);
-                }
-            }
-            return result;
         }
 
-        public FactResult PropagateRetract(IExecutionContext context, IEnumerable<object> factObjects)
+        public void PropagateRetract(IExecutionContext context, IList<Fact> facts)
         {
-            if (factObjects == null)
+            foreach (var fact in facts)
             {
-                throw new ArgumentNullException(nameof(factObjects));
+                context.EventAggregator.RaiseFactRetracting(context.Session, fact);
             }
 
-            var failed = new List<object>();
-            var toPropagate = new List<Fact>();
-            foreach (var factObject in factObjects)
+            _root.PropagateRetract(context, facts);
+
+            foreach (var fact in facts)
             {
-                var fact = context.WorkingMemory.GetFact(factObject);
-                if (fact != null)
-                {
-                    toPropagate.Add(fact);
-                }
-                else
-                {
-                    failed.Add(factObject);
-                }
+                context.EventAggregator.RaiseFactRetracted(context.Session, fact);
             }
-
-            var result = new FactResult(failed);
-            if (result.FailedCount == 0)
-            {
-                foreach (var fact in toPropagate)
-                {
-                    context.EventAggregator.RaiseFactRetracting(context.Session, fact);
-                }
-
-                _root.PropagateRetract(context, toPropagate);
-
-                foreach (var fact in toPropagate)
-                {
-                    context.WorkingMemory.RemoveFact(fact);
-                    context.EventAggregator.RaiseFactRetracted(context.Session, fact);
-                }
-            }
-            return result;
         }
 
         public void Activate(IExecutionContext context)
@@ -156,12 +75,6 @@ namespace NRules.Rete
         public void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.Visit(context, _root);
-        }
-
-        private static void UpdateFact(Fact fact, object factObject)
-        {
-            if (ReferenceEquals(fact.RawObject, factObject)) return;
-            fact.RawObject = factObject;
         }
     }
 }

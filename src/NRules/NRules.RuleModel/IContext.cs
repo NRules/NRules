@@ -88,6 +88,45 @@ namespace NRules.RuleModel
         bool TryRetract(object fact);
 
         /// <summary>
+        /// Retrieves keys of facts linked to the current rule activation.
+        /// </summary>
+        /// <returns>Keys for linked facts.</returns>
+        IEnumerable<object> GetLinkedKeys();
+
+        /// <summary>
+        /// Retrieves a fact linked to the current rule activation by key.
+        /// </summary>
+        /// <param name="key">Key for the linked fact.</param>
+        /// <returns>Linked fact if it exists, <c>null</c> otherwise.</returns>
+        object GetLinked(object key);
+
+        /// <summary>
+        /// Inserts a new fact and links it to the current rule activation.
+        /// The fact will be automatically retracted if this activation is removed.
+        /// </summary>
+        /// <param name="key">Key for the linked fact. Must be unique for a given rule.</param>
+        /// <param name="fact">Fact to insert.</param>
+        void InsertLinked(object key, object fact);
+
+        /// <summary>
+        /// Updates existing fact that's linked to the current rule activation.
+        /// </summary>
+        /// <param name="key">Key for the linked fact. Must be unique for a given rule.</param>
+        /// <param name="fact">Fact to update.</param>
+        void UpdateLinked(object key, object fact);
+
+        /// <summary>
+        /// Retracts existing fact that's linked to the current rule activation.
+        /// </summary>
+        /// <remarks>Linked facts are retracted automatically, when activation is deleted, but 
+        /// this method can be used in complex scenarios, when linked facts need to be retracted explicitly,
+        /// prior to activation getting deleted.
+        /// </remarks>
+        /// <param name="key">Key for the linked fact. Must be unique for a given rule.</param>
+        /// <param name="fact">Fact to retract.</param>
+        void RetractLinked(object key, object fact);
+
+        /// <summary>
         /// Resolves a registered service (normally via an IoC container).
         /// </summary>
         /// <param name="serviceType">Type of service to resolve.</param>

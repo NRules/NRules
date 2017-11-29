@@ -3,6 +3,7 @@
     /// <summary>
     /// Represents a fact matched by a rule.
     /// </summary>
+    /// <seealso cref="IFact"/>
     public interface IFactMatch : IFact
     {
         /// <summary>

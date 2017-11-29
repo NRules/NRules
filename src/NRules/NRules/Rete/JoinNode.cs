@@ -46,8 +46,8 @@ namespace NRules.Rete
                     toRetract.Add(set.Tuple, fact);
                 }
             }
-            MemoryNode.PropagateUpdate(context, toUpdate);
             MemoryNode.PropagateRetract(context, toRetract);
+            MemoryNode.PropagateUpdate(context, toUpdate);
         }
 
         public override void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
@@ -90,8 +90,8 @@ namespace NRules.Rete
                 else
                     toRetract.Add(set.Tuple, fact);
             }
-            MemoryNode.PropagateUpdate(context, toUpdate);
             MemoryNode.PropagateRetract(context, toRetract);
+            MemoryNode.PropagateUpdate(context, toUpdate);
         }
 
         public override void PropagateRetract(IExecutionContext context, IList<Fact> facts)

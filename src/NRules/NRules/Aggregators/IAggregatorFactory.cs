@@ -5,6 +5,11 @@ namespace NRules.Aggregators
 {
     /// <summary>
     /// Base interface for aggregator factories.
+    /// Aggregator factory constructs new instances of <see cref="IAggregator"/> of a given type, so that they
+    /// can accumulate aggregation results.
+    /// An <c>IAggregatorFactory</c> type must either be registered in <see cref="RuleCompiler.AggregatorRegistry"/>,
+    /// or provided in the canonical rule model via <see cref="AggregateElement.CustomFactoryType"/>. If both are
+    /// provided, the aggregator factory at the <see cref="AggregateElement"/> level takes precedence.
     /// </summary>
     public interface IAggregatorFactory
     {

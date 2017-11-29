@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace NRules.RuleModel
 {
@@ -59,6 +60,11 @@ namespace NRules.RuleModel
         DependencyGroupElement DependencyGroup { get; }
 
         /// <summary>
+        /// Rule's filters, that determine whether rule's match triggers actions.
+        /// </summary>
+        FilterGroupElement FilterGroup { get; }
+
+        /// <summary>
         /// Rule left hand side (conditions).
         /// </summary>
         GroupElement LeftHandSide { get; }
@@ -69,6 +75,7 @@ namespace NRules.RuleModel
         ActionGroupElement RightHandSide { get; }
     }
 
+    [DebuggerDisplay("{Name} ({Priority})")]
     internal class RuleDefinition : IRuleDefinition
     {
         private readonly List<string> _tags;
@@ -78,7 +85,7 @@ namespace NRules.RuleModel
 
         public RuleDefinition(string name, string description, int priority, 
             RuleRepeatability repeatability, IEnumerable<string> tags, IEnumerable<RuleProperty> properties,
-            DependencyGroupElement dependencies, GroupElement leftHandSide, ActionGroupElement rightHandSide)
+            DependencyGroupElement dependencies, FilterGroupElement filters, GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
             Name = name;
             Description = description;
@@ -88,6 +95,7 @@ namespace NRules.RuleModel
             Properties = new PropertyMap(properties);
 
             DependencyGroup = dependencies;
+            FilterGroup = filters;
             LeftHandSide = leftHandSide;
             RightHandSide = rightHandSide;
         }
@@ -98,6 +106,7 @@ namespace NRules.RuleModel
         public RuleRepeatability Repeatability { get; }
         public PropertyMap Properties { get; }
         public DependencyGroupElement DependencyGroup { get; }
+        public FilterGroupElement FilterGroup { get; }
         public GroupElement LeftHandSide { get; }
         public ActionGroupElement RightHandSide { get; }
         public IEnumerable<string> Tags => _tags;

@@ -51,9 +51,9 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Customer.cs" />
+    <Compile Include="Domain\Customer.cs" />
     <Compile Include="CustomRuleRepository.cs" />
-    <Compile Include="Order.cs" />
+    <Compile Include="Domain\Order.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
