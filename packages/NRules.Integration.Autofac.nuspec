@@ -17,7 +17,7 @@
     <dependencies>
       <group targetFramework="net45">
         <dependency id="NRules" version="[$version$]" />
-        <dependency id="Autofac" version="3.2.0" />
+        <dependency id="Autofac" version="3.3.1" />
       </group>
     </dependencies>
   </metadata>

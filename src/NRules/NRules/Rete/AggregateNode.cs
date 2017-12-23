@@ -48,7 +48,8 @@ namespace NRules.Rete
                         //Update already propagated from the right
                         continue;
                     }
-                    aggregation.Modify(set.Tuple, aggregator.AggregateFacts);
+                    var matchingFacts = GetMatchingFacts(context, set);
+                    UpdateInAggregate(context, aggregator, aggregation, set.Tuple, matchingFacts);
                 }
                 else
                 {

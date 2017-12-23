@@ -21,15 +21,6 @@ namespace NRules.Rete
             var list = GetList(AggregationAction.Modified);
             list.Add(tuple, aggregateFact);
         }
-
-        public void Modify(Tuple tuple, IEnumerable<Fact> aggregateFacts)
-        {
-            var list = GetList(AggregationAction.Modified);
-            foreach (var aggregateFact in aggregateFacts)
-            {
-                list.Add(tuple, aggregateFact);
-            }
-        }
         
         public void Remove(Tuple tuple, Fact aggregateFact)
         {
