@@ -60,7 +60,7 @@ namespace NRules.IntegrationTests.TestAssets
             var rule = _ruleMap.Single().Value;
             var firedRule = _firedRulesMap[rule.Name];
             var x = firedRule.Last();
-            return (T)x.Facts.First(f => typeof(T).GetTypeInfo().IsAssignableFrom(f.Type.GetTypeInfo())).Value;
+            return (T)x.Facts.First(f => typeof(T).GetTypeInfo().IsAssignableFrom(f.Declaration.Type.GetTypeInfo())).Value;
         }
 
         protected T GetFiredFact<T>(int instanceNumber)
@@ -68,7 +68,7 @@ namespace NRules.IntegrationTests.TestAssets
             var rule = _ruleMap.Single().Value;
             var firedRule = _firedRulesMap[rule.Name];
             var x = firedRule.ElementAt(instanceNumber);
-            return (T)x.Facts.First(f => typeof(T).GetTypeInfo().IsAssignableFrom(f.Type.GetTypeInfo())).Value;
+            return (T)x.Facts.First(f => typeof(T).GetTypeInfo().IsAssignableFrom(f.Declaration.Type.GetTypeInfo())).Value;
         }
 
         protected void AssertFiredOnce()
