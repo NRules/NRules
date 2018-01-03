@@ -13,6 +13,10 @@ Contributions to NRules, whether new features or bug fixes, are welcome and are 
 - **Code review.** Some iteration may take place requiring updates to the pull request.
 - **Pull request acceptance.** The pull request will be accepted into the `develop` branch and pushed to `master` with the next release.
 
+### Questions
+
+If you just want to ask a question about how to use NRules, instead of creating an issue consider asking your question at [Stack Overflow](http://stackoverflow.com/questions/tagged/nrules), [Discussion Group](http://groups.google.com/group/nrules-users) or [Gitter Chat](https://gitter.im/NRules/NRules).
+
 ## License
 
 By contributing to NRules, you assert that:
