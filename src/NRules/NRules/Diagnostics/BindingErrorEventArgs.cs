@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using NRules.Rete;
 using NRules.RuleModel;
-using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Diagnostics
 {
@@ -12,9 +11,15 @@ namespace NRules.Diagnostics
     /// </summary>
     public class BindingErrorEventArgs : ErrorEventArgs
     {
-        private readonly Tuple _tuple;
+        private readonly ITuple _tuple;
 
-        internal BindingErrorEventArgs(Exception exception, Expression expression, Tuple tuple) : base(exception)
+        /// <summary>
+        /// Initializes a new instance of the <c>BindingErrorEventArgs</c> class.
+        /// </summary>
+        /// <param name="exception">Exception related to the event.</param>
+        /// <param name="expression">Binding expression related to the event.</param>
+        /// <param name="tuple">Tuple related to the event.</param>
+        public BindingErrorEventArgs(Exception exception, Expression expression, ITuple tuple) : base(exception)
         {
             _tuple = tuple;
             Expression = expression;

@@ -7,7 +7,11 @@ namespace NRules.Diagnostics
     /// </summary>
     public class ErrorEventArgs : EventArgs
     {
-        internal ErrorEventArgs(Exception exception)
+        /// <summary>
+        /// Initializes a new instance of the <c>ErrorEventArgs</c> class.
+        /// </summary>
+        /// <param name="exception">Exception related to the event.</param>
+        protected ErrorEventArgs(Exception exception)
         {
             Exception = exception;
         }

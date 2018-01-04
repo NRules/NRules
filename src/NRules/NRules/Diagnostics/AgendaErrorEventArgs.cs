@@ -10,18 +10,24 @@ namespace NRules.Diagnostics
     /// </summary>
     public class AgendaErrorEventArgs : ErrorEventArgs
     {
-        private readonly Activation _activation;
+        private readonly IMatch _match;
 
-        internal AgendaErrorEventArgs(Exception exception, Expression expression, Activation activation) : base(exception)
+        /// <summary>
+        /// Initializes a new instance of the <c>AgendaErrorEventArgs</c> class.
+        /// </summary>
+        /// <param name="exception">Exception related to the event.</param>
+        /// <param name="expression">Expression related to the event.</param>
+        /// <param name="match">Rule match related to the event.</param>
+        public AgendaErrorEventArgs(Exception exception, Expression expression, IMatch match) : base(exception)
         {
             Expression = expression;
-            _activation = activation;
+            _match = match;
         }
 
         /// <summary>
         /// Rule related to the event.
         /// </summary>
-        public IRuleDefinition Rule => _activation.Rule;
+        public IRuleDefinition Rule => _match.Rule;
 
         /// <summary>
         /// Expression that caused exception.
@@ -31,6 +37,6 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Facts that caused exception.
         /// </summary>
-        public IEnumerable<IFactMatch> Facts => _activation.Facts;
+        public IEnumerable<IFactMatch> Facts => _match.Facts;
     }
 }
