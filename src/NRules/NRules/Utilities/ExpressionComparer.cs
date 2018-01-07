@@ -120,6 +120,7 @@ namespace NRules.Utilities
 
             if (x.Expression.NodeType != y.Expression.NodeType)
                 return false;
+
             switch (x.Expression.NodeType)
             {
                 case ExpressionType.Constant:
@@ -128,6 +129,7 @@ namespace NRules.Utilities
                     return Equals(constx, consty);
                 case ExpressionType.Parameter:
                 case ExpressionType.MemberAccess:
+                case ExpressionType.Convert:
                     return Equals(x.Member, y.Member) && ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
                 case ExpressionType.New:
                 case ExpressionType.Call:
