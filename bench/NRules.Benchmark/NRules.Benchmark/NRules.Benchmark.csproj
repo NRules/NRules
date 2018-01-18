@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\..\Common.props" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net462</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="NRules">
+      <HintPath>..\..\..\binaries\NRules\net45\NRules.dll</HintPath>
+    </Reference>
+    <Reference Include="NRules.Fluent">
+      <HintPath>..\..\..\binaries\NRules\net45\NRules.Fluent.dll</HintPath>
+    </Reference>
+    <Reference Include="NRules.RuleModel">
+      <HintPath>..\..\..\binaries\NRules\net45\NRules.RuleModel.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
