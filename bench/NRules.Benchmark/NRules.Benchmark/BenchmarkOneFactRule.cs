@@ -1,36 +1,31 @@
 ﻿using BenchmarkDotNet.Attributes;
-using NRules.Fluent;
 using NRules.Fluent.Dsl;
 
 namespace NRules.Benchmark
 {
-    public class OneFactRule
+    public class BenchmarkOneFactRule : BenchmarkBase
     {
-        private ISessionFactory _factory;
         private TestFact[] _facts;
 
         [GlobalSetup]
         public void Setup()
         {
-            var repository = new RuleRepository();
-            repository.Load(x => x.NestedTypes().PrivateTypes().From(xx => xx.Type(typeof(TestRule))));
+            SetupRule<TestRule>();
 
-            _factory = repository.Compile();
-
-            _facts = new TestFact[Count];
-            for (int i = 0; i < Count; i++)
+            _facts = new TestFact[FactCount];
+            for (int i = 0; i < FactCount; i++)
             {
-                _facts[i] = new TestFact{Test = $"Valid {i}"};
+                _facts[i] = new TestFact{StringProperty = $"Valid {i}", IntProperty = i};
             }
         }
 
         [Params(10, 100, 1000, 10000)]
-        public int Count { get; set; }
+        public int FactCount { get; set; }
 
         [Benchmark]
         public int Insert()
         {
-            var session = _factory.CreateSession();
+            var session = Factory.CreateSession();
             session.InsertAll(_facts);
             return session.Fire();
         }
@@ -38,7 +33,7 @@ namespace NRules.Benchmark
         [Benchmark]
         public int InsertUpdate()
         {
-            var session = _factory.CreateSession();
+            var session = Factory.CreateSession();
             session.InsertAll(_facts);
             session.UpdateAll(_facts);
             return session.Fire();
@@ -47,7 +42,7 @@ namespace NRules.Benchmark
         [Benchmark]
         public int InsertRetract()
         {
-            var session = _factory.CreateSession();
+            var session = Factory.CreateSession();
             session.InsertAll(_facts);
             session.RetractAll(_facts);
             return session.Fire();
@@ -55,7 +50,8 @@ namespace NRules.Benchmark
 
         private class TestFact
         {
-            public string Test { get; set; }
+            public string StringProperty { get; set; }
+            public int IntProperty { get; set; }
         }
 
         private class TestRule : Rule
@@ -65,7 +61,9 @@ namespace NRules.Benchmark
                 TestFact fact = null;
 
                 When()
-                    .Match(() => fact, x => x.Test.StartsWith("Valid"));
+                    .Match(() => fact, 
+                        x => x.StringProperty.StartsWith("Valid"), 
+                        x => x.IntProperty % 2 == 0);
 
                 Then()
                     .Do(_ => Nothing());
