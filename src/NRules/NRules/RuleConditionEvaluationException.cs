@@ -5,7 +5,7 @@ namespace NRules
     /// <summary>
     /// Represents errors that occur while evaluating rule condition.
     /// </summary>
-#if NET45
+#if (NET45 || NETSTANDARD2_0)
     [Serializable]
 #endif
     public class RuleConditionEvaluationException : RuleExpressionEvaluationException
@@ -15,7 +15,7 @@ namespace NRules
         {
         }
 
-#if NET45
+#if (NET45 || NETSTANDARD2_0)
         [System.Security.SecuritySafeCritical]
         protected RuleConditionEvaluationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)

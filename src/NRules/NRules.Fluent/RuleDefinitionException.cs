@@ -5,7 +5,7 @@ namespace NRules.Fluent
     /// <summary>
     /// Represents errors that occur while building rule definition using fluent DSL.
     /// </summary>
-#if NET45
+#if (NET45 || NETSTANDARD2_0)
     [System.Serializable]
 #endif
     public class RuleDefinitionException : Exception
@@ -16,7 +16,7 @@ namespace NRules.Fluent
             RuleType = ruleType;
         }
 
-#if NET45
+#if (NET45 || NETSTANDARD2_0)
         [System.Security.SecuritySafeCritical]
         protected RuleDefinitionException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)

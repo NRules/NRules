@@ -103,7 +103,9 @@ function Get-DotNetProjects([string] $path) {
     Get-ChildItem -Path $path -Recurse -Include "*.csproj" | Select-Object @{ Name="ParentFolder"; Expression={ $_.Directory.FullName.TrimEnd("\") } } | Select-Object -ExpandProperty ParentFolder
 }
 
-function Install-DotNetCli([string] $location, [string] $version = "Latest") {
+function Install-DotNetCli([string] $location, [string] $version) {
+    Assert ($version -ne $null) 'DotNet CLI version should not be null'
+    
     (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     if ((Get-Command "dotnet.exe" -ErrorAction SilentlyContinue) -ne $null) {
         $installedVersion = dotnet --version
@@ -119,7 +121,8 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
     }
 
     if (!(Test-Path $location\dotnet-install.ps1)) {
-        Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.1/scripts/obtain/dotnet-install.ps1" -OutFile "$location\dotnet-install.ps1"
+        $url = "https://raw.githubusercontent.com/dotnet/cli/v$version/scripts/obtain/dotnet-install.ps1"
+        Invoke-WebRequest $url -OutFile "$location\dotnet-install.ps1"
     }
 
     Write-Host "Installing .NET Core SDK"
@@ -127,11 +130,13 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
 
     if (!($env:PATH -contains $installDir)) {
         $env:PATH = "$installDir;$env:PATH"
-        $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
     }
+    $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
 }
 
-function Install-NuGet([string] $location, [string] $version = "latest") {
+function Install-NuGet([string] $location, [string] $version) {
+    Assert ($version -ne $null) 'NuGet version should not be null'
+    
     (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     $installDir = $location
     if (!(Test-Path $installDir)) {
@@ -140,10 +145,7 @@ function Install-NuGet([string] $location, [string] $version = "latest") {
 
     if (!(Test-Path $location\nuget.exe)) {
         Write-Host "Downloading NuGet version $version"
-        $url = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-        if ($version -ne "latest") {
-            $url = "https://dist.nuget.org/win-x86-commandline/v$version/nuget.exe"
-        }
+        $url = "https://dist.nuget.org/win-x86-commandline/v$version/nuget.exe"
         Invoke-WebRequest $url -OutFile "$location\nuget.exe"
     }
 

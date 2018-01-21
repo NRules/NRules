@@ -5,7 +5,7 @@ namespace NRules.Fluent
     /// <summary>
     /// Represents errors that occur when instantiating rule classes.
     /// </summary>
-#if NET45
+#if (NET45 || NETSTANDARD2_0)
     [System.Serializable]
 #endif
     public class RuleActivationException : Exception
@@ -16,7 +16,7 @@ namespace NRules.Fluent
             RuleType = ruleType;
         }
 
-#if NET45
+#if (NET45 || NETSTANDARD2_0)
         [System.Security.SecuritySafeCritical]
         protected RuleActivationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)

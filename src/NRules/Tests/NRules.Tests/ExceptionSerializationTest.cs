@@ -1,4 +1,4 @@
-﻿#if NET45 || NET46
+﻿#if (NET45 || NET46 || NETSTANDARD2_0)
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
