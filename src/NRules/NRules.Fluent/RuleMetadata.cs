@@ -12,7 +12,7 @@ namespace NRules.Fluent
     public interface IRuleMetadata
     {
         /// <summary>
-        /// Rule's .NET type.
+        /// Rule's CLR type.
         /// </summary>
         Type RuleType { get; }
 
@@ -48,7 +48,7 @@ namespace NRules.Fluent
         }
 
         /// <summary>
-        /// Rule's .NET type.
+        /// Rule's CLR type.
         /// </summary>
         public Type RuleType { get; }
 

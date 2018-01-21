@@ -1,5 +1,4 @@
 using System;
-using NRules.Rete;
 using NRules.RuleModel;
 
 namespace NRules.Diagnostics
@@ -9,9 +8,13 @@ namespace NRules.Diagnostics
     /// </summary>
     public class WorkingMemoryEventArgs : EventArgs
     {
-        private readonly Fact _fact;
+        private readonly IFact _fact;
 
-        internal WorkingMemoryEventArgs(Fact fact)
+        /// <summary>
+        /// Initializes a new instance of the <c>WorkingMemoryEventArgs</c> class.
+        /// </summary>
+        /// <param name="fact">Fact related to the event.</param>
+        public WorkingMemoryEventArgs(IFact fact)
         {
             _fact = fact;
         }

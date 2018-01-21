@@ -5,7 +5,7 @@ namespace NRules
     /// <summary>
     /// Represents errors that occur while compiling a rule.
     /// </summary>
-#if NET45
+#if (NET45 || NETSTANDARD2_0)
     [System.Serializable]
 #endif
     public class RuleCompilationException : Exception
@@ -16,7 +16,7 @@ namespace NRules
             RuleName = ruleName;
         }
 
-#if NET45
+#if (NET45 || NETSTANDARD2_0)
         [System.Security.SecuritySafeCritical]
         protected RuleCompilationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)

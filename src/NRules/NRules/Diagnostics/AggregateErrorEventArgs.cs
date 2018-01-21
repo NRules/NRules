@@ -14,7 +14,14 @@ namespace NRules.Diagnostics
         private readonly ITuple _tuple;
         private readonly IFact _fact;
 
-        internal AggregateErrorEventArgs(Exception exception, Expression expression, ITuple tuple, IFact fact) : base(exception)
+        /// <summary>
+        /// Initializes a new instance of the <c>AggregateErrorEventArgs</c> class.
+        /// </summary>
+        /// <param name="exception">Exception related to the event.</param>
+        /// <param name="expression">Aggregate expression related to the event.</param>
+        /// <param name="tuple">Tuple related to the event.</param>
+        /// <param name="fact">Fact related to the event.</param>
+        public AggregateErrorEventArgs(Exception exception, Expression expression, ITuple tuple, IFact fact) : base(exception)
         {
             _tuple = tuple;
             _fact = fact;

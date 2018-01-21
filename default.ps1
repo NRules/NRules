@@ -4,8 +4,8 @@ param (
 
 properties {
     $version = $null
-    $sdkVersion = "1.0.1"
-    $nugetVersion = "4.1.0"
+    $sdkVersion = "2.1.4"
+    $nugetVersion = "4.4.1"
     $configuration = "Release"
 }
 
@@ -108,10 +108,16 @@ task Compile -depends Init, Clean, PatchFiles, RestoreDependencies -precondition
 
 task Test -depends Compile -precondition { return $component.ContainsKey('test') } {
     $tests_dir = "$src_dir\$($component.test.location)"
+    Get-ChildItem $tests_dir -recurse -filter "*.trx" | % { Delete-File $_.fullname }
+    
     $projects = Get-DotNetProjects $tests_dir
     foreach ($project in $projects) {
         Push-Location $project
-        exec { dotnet test --no-build --configuration $configuration --framework net46 --verbosity minimal --logger "trx;LogFileName=TestResult.trx" }
+        $project_name = Split-Path $project -Leaf
+        foreach ($framework in $component.test.frameworks) {
+            $result = "$($project_name)_$framework.trx"
+            exec { dotnet test --no-build --configuration $configuration --framework $framework --verbosity minimal --logger "trx;LogFileName=$result" }
+        }
         Pop-Location
     }
     

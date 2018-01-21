@@ -3,7 +3,7 @@ param (
     [string]$component_name = 'Core'
 )
 
-$version = '0.8.1'
+$version = '0.8.2'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -20,9 +20,10 @@ $components = @{
         }
         test = @{
             location = 'Tests'
+            frameworks = @('net462', 'netcoreapp1.0', 'netcoreapp2.0')
         }
         bin = @{
-            frameworks = @('net45', 'netstandard1.0')
+            frameworks = @('net45', 'netstandard1.0', 'netstandard2.0')
             'net45' = @{
                 include = @(
                     "NRules\bin\$configuration\net45",
@@ -35,6 +36,13 @@ $components = @{
                     "NRules\bin\$configuration\netstandard1.0",
                     "NRules.Fluent\bin\$configuration\netstandard1.0",
                     "NRules.RuleModel\bin\$configuration\netstandard1.0"
+                )
+            }
+            'netstandard2.0' = @{
+                include = @(
+                    "NRules\bin\$configuration\netstandard2.0",
+                    "NRules.Fluent\bin\$configuration\netstandard2.0",
+                    "NRules.RuleModel\bin\$configuration\netstandard2.0"
                 )
             }
         }

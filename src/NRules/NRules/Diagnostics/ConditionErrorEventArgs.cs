@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using NRules.Rete;
 using NRules.RuleModel;
-using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Diagnostics
 {
@@ -12,10 +11,17 @@ namespace NRules.Diagnostics
     /// </summary>
     public class ConditionErrorEventArgs : ErrorEventArgs
     {
-        private readonly Tuple _tuple;
-        private readonly Fact _fact;
+        private readonly ITuple _tuple;
+        private readonly IFact _fact;
 
-        internal ConditionErrorEventArgs(Exception exception, Expression expression, Tuple tuple, Fact fact)
+        /// <summary>
+        /// Initializes a new instance of the <c>ConditionErrorEventArgs</c> class.
+        /// </summary>
+        /// <param name="exception">Exception related to the event.</param>
+        /// <param name="expression">Condition expression related to the event.</param>
+        /// <param name="tuple">Tuple related to the event.</param>
+        /// <param name="fact">Fact related to the event.</param>
+        public ConditionErrorEventArgs(Exception exception, Expression expression, ITuple tuple, IFact fact)
             : base(exception)
         {
             Condition = expression;

@@ -28,7 +28,7 @@ namespace NRules.Diagnostics
     /// <summary>
     /// Node in the rete network graph.
     /// </summary>
-#if NET45
+#if (NET45 || NETSTANDARD2_0)
     [System.Serializable]
 #endif
     public class NodeInfo

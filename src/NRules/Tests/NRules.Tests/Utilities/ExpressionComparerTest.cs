@@ -277,6 +277,17 @@ namespace NRules.Tests.Utilities
         }
 
         [Fact]
+        public void AreEqual_NonEquivalentMemberAccessExtension_False()
+        {
+            //Arrange
+            Expression<Func<SomeFact, bool>> first = f => f.Child.Values.Contains("abcdef");
+            Expression<Func<SomeFact, bool>> second = f => f.Child.Values.Contains("sdlkjf");
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
         public void AreEqual_EquivalentMemberAccess_True()
         {
             //Arrange
@@ -285,6 +296,44 @@ namespace NRules.Tests.Utilities
 
             //Act - Assert
             AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentMemberAccess_False()
+        {
+            //Arrange
+            Expression<Func<SomeFact, bool>> first = f => f.Child.Values.GetLength(0) == 0;
+            Expression<Func<SomeFact, bool>> second = f => f.Child.Values.GetLength(1) == 0;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_EquivalentMemberAccessConvert_True()
+        {
+            //Arrange
+            int value = 1;
+
+            Expression<Func<SomeOtherFact, bool>> first = f => ((ISomeFact)f).Value.Equals(value);
+            Expression<Func<SomeOtherFact, bool>> second = f => ((ISomeFact)f).Value.Equals(value);
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentMemberAccessConvert_False()
+        {
+            //Arrange
+            int value1 = 1;
+            int value2 = 2;
+
+            Expression<Func<SomeOtherFact, bool>> first = f => ((ISomeFact)f).Value.Equals(value1);
+            Expression<Func<SomeOtherFact, bool>> second = f => ((ISomeFact)f).Value.Equals(value2);
+
+            //Act - Assert
+            AssertNotEqual(first, second);
         }
 
         [Fact]
@@ -485,6 +534,16 @@ namespace NRules.Tests.Utilities
             public int Value = 1;
 
             public readonly SomeClass Child = new SomeClass();
+        }
+
+        public interface ISomeFact
+        {
+            int Value { get; set; }
+        }
+
+        public class SomeOtherFact : ISomeFact
+        {
+            int ISomeFact.Value { get; set; }
         }
 
         public class SomeClass
