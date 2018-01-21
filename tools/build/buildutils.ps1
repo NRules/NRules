@@ -3,7 +3,7 @@
 }
 
 function Delete-File($fileName) {
-    if($fileName) {
+    if ($fileName) {
         Remove-Item $fileName -Force -ErrorAction SilentlyContinue | Out-Null
     } 
 }

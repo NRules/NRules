@@ -20,6 +20,7 @@ $components = @{
         }
         test = @{
             location = 'Tests'
+            frameworks = @('net462', 'netcoreapp1.0', 'netcoreapp2.0')
         }
         bin = @{
             frameworks = @('net45', 'netstandard1.0', 'netstandard2.0')

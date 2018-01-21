@@ -13,7 +13,7 @@ namespace NRules.Fluent
         internal RuleActivationException(string message, Type ruleType, Exception innerException)
             : base(message, innerException)
         {
-            RuleType = ruleType;
+            RuleTypeName = ruleType.AssemblyQualifiedName;
         }
 
 #if (NET45 || NETSTANDARD2_0)
@@ -21,7 +21,7 @@ namespace NRules.Fluent
         protected RuleActivationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)
         {
-            RuleType = (Type)info.GetValue("RuleType", typeof(Type));
+            RuleTypeName = info.GetString("RuleTypeName");
         }
 
         [System.Security.SecurityCritical]
@@ -32,20 +32,25 @@ namespace NRules.Fluent
                 throw new ArgumentNullException(nameof(info));
             }
             base.GetObjectData(info, context);
-            info.AddValue("RuleType", RuleType, typeof(Type));
+            info.AddValue("RuleTypeName", RuleTypeName, typeof(string));
         }
 #endif
 
         /// <summary>
-        /// Rule .NET type that caused exception.
+        /// Rule CLR type that caused exception.
         /// </summary>
-        public Type RuleType { get; }
+        public Type RuleType => Type.GetType(RuleTypeName);
+
+        /// <summary>
+        /// Rule CLR type name that caused exception.
+        /// </summary>
+        public string RuleTypeName { get; }
 
         public override string Message
         {
             get
             {
-                string message = base.Message + Environment.NewLine + RuleType.FullName;
+                string message = base.Message + Environment.NewLine + RuleTypeName;
                 return message;
             }
         }
