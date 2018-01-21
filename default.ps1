@@ -111,7 +111,7 @@ task Test -depends Compile -precondition { return $component.ContainsKey('test')
     $projects = Get-DotNetProjects $tests_dir
     foreach ($project in $projects) {
         Push-Location $project
-        exec { dotnet test --no-build --configuration $configuration --framework net46 --verbosity minimal --logger "trx;LogFileName=TestResult.trx" }
+        exec { dotnet test --no-build --configuration $configuration --framework net462 --verbosity minimal --logger "trx;LogFileName=TestResult.trx" }
         Pop-Location
     }
     
