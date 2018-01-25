@@ -9,6 +9,7 @@ namespace NRules.Benchmark
             BenchmarkRunner.Run<BenchmarkOneFactRule>();
             BenchmarkRunner.Run<BenchmarkTwoFactJoinRule>();
             BenchmarkRunner.Run<BenchmarkTwoFactAggregateRule>();
+            BenchmarkRunner.Run<BenchmarkRuleCount>();
         }
     }
 }
