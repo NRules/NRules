@@ -146,6 +146,13 @@ task Build -depends Compile, Test, ResetPatch -precondition { return $component.
     }
 }
 
+task Run -depends Build -precondition { return $component.ContainsKey('run') } {
+    foreach ($exe in $component.run.exe) {
+        $exe_file = "$binaries_dir\$exe"
+        exec { &$exe_file }
+    }
+}
+
 task PackageNuGet -depends Build -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
     Create-Directory $pkg_out_dir
     foreach ($package in $component.package.nuget) {
