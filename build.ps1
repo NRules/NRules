@@ -118,6 +118,27 @@ $components = @{
             tool = 'msbuild'
         }
     };
+    'Benchmark' = @{
+        name = 'NRules.Benchmark'
+        src_root = 'bench'
+        restore = @{
+            tool = 'dotnet'
+        }
+        build = @{
+            tool = 'dotnet'
+        }
+        bin = @{
+            frameworks = @('net462')
+            'net462' = @{
+                include = @(
+                    "NRules.Benchmark\bin\$configuration\net462"
+                )
+            }
+        }
+        run = @{
+            exe = @('net462\NRules.Benchmark.exe')
+        }
+   };
     'Documentation' = @{
         name = 'Documentation'
         src_root = 'doc'
