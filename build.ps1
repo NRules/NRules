@@ -1,6 +1,6 @@
 param (
     [string]$target = 'Build',
-    [string]$component_name = 'Core'
+    [string]$component = 'Core'
 )
 
 $version = '0.8.3'
@@ -161,24 +161,25 @@ $core = @('NRules', 'NRules.Debugger.Visualizer')
 $integration = $components.keys | where { $_.StartsWith("NRules.Integration") }
 $samples = $components.keys | where { $_.StartsWith("Samples.") }
 
-$component_list = @()
-if ($component_name -eq "Core") {
-    $component_list += $core
-} elseif ($component_name -eq "Integration") {
-    $component_list += $integration
-} elseif ($component_name -eq "Samples") {
-    $component_list += $samples
-} elseif ($component_name -eq "All") {
-    $component_list += $core
-    $component_list += $integration
-    $component_list += $samples
+$componentList = @()
+if ($component -eq "Core") {
+    $componentList += $core
+} elseif ($component -eq "Integration") {
+    $componentList += $integration
+} elseif ($component -eq "Samples") {
+    $componentList += $samples
+} elseif ($component -eq "All") {
+    $componentList += $core
+    $componentList += $integration
+    $componentList += $samples
 } else {
-    $component_list += $component_name
+    $componentList += $component
 }
 
 Import-Module .\tools\build\psake.psm1
-$component_list | % {
-    Invoke-psake .\default.ps1 $target -properties @{version=$version;configuration=$configuration} -parameters @{component=$components[$_]}
+$baseDir = Resolve-Path .
+$componentList | % {
+    Invoke-psake .\tools\build\default.ps1 $target -properties @{version=$version;configuration=$configuration;baseDir=$baseDir} -parameters @{component=$components[$_]}
     if (-not $psake.build_success) {
         break
     }
