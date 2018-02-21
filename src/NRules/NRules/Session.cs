@@ -437,6 +437,7 @@ namespace NRules
                 throw new ArgumentException($"Linked fact already exists. Key={key}", nameof(fact));
             }
             factWrapper = new Fact(fact);
+            factWrapper.Source = activation.Tuple.Facts;
             _workingMemory.AddLinkedFact(activation, key, factWrapper);
             _network.PropagateAssert(_executionContext, new List<Fact> {factWrapper});
         }
@@ -456,6 +457,7 @@ namespace NRules
             {
                 throw new ArgumentException($"Linked fact does not exist. Key={key}", nameof(fact));
             }
+            factWrapper.Source = activation.Tuple.Facts;
             _workingMemory.UpdateLinkedFact(activation, key, factWrapper, fact);
             _network.PropagateUpdate(_executionContext, new List<Fact> {factWrapper});
         }

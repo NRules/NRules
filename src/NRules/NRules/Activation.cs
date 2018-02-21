@@ -78,11 +78,13 @@ namespace NRules
             public Declaration Declaration { get; }
             public Type Type { get; private set; }
             public object Value { get; private set; }
+            public IEnumerable<IFact> Source { get; private set; }
 
             public void SetFact(Fact fact)
             {
                 Type = fact.FactType.AsType();
                 Value = fact.Object;
+                Source = fact.Source;
             }
         }
     }

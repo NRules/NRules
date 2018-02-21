@@ -50,55 +50,57 @@ namespace NRules.Rete
                 switch (result.Action)
                 {
                     case AggregationAction.Added:
-                        var addedFact = CreateAggregateFact(result.Aggregate);
+                        var addedFact = CreateAggregateFact(result);
                         aggregation.Add(tuple, addedFact);
                         break;
                     case AggregationAction.Modified:
-                        var modifiedFact = GetAggregateFact(result.Aggregate, result.Previous);
+                        var modifiedFact = GetAggregateFact(result);
                         aggregation.Modify(tuple, modifiedFact);
                         break;
                     case AggregationAction.Removed:
-                        var removedFact = RemoveAggregateFact(result.Aggregate);
+                        var removedFact = RemoveAggregateFact(result);
                         aggregation.Remove(tuple, removedFact);
                         break;
                 }
             }
         }
 
-        private Fact CreateAggregateFact(object aggregate)
+        private Fact CreateAggregateFact(AggregationResult result)
         {
-            Fact fact = new Fact(aggregate);
-            _aggregateFactMap.Add(aggregate, fact);
+            var fact = new Fact(result.Aggregate);
+            fact.Source = result.Source;
+            _aggregateFactMap.Add(result.Aggregate, fact);
             return fact;
         }
 
-        private Fact GetAggregateFact(object aggregate, object previous = null)
+        private Fact GetAggregateFact(AggregationResult result)
         {
-            if (!_aggregateFactMap.TryGetValue(previous ?? aggregate, out var fact))
+            if (!_aggregateFactMap.TryGetValue(result.Previous ?? result.Aggregate, out var fact))
             {
                 throw new InvalidOperationException(
-                    $"Fact for aggregate object does not exist. AggregatorTye={_aggregator.GetType()}, FactType={aggregate.GetType()}");
+                    $"Fact for aggregate object does not exist. AggregatorTye={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
             }
 
-            if (!ReferenceEquals(fact.RawObject, aggregate))
+            fact.Source = result.Source;
+            if (!ReferenceEquals(fact.RawObject, result.Aggregate))
             {
                 _aggregateFactMap.Remove(fact.RawObject);
-                fact.RawObject = aggregate;
+                fact.RawObject = result.Aggregate;
                 _aggregateFactMap.Add(fact.RawObject, fact);
             }
             return fact;
         }
 
-        private Fact RemoveAggregateFact(object aggregate)
+        private Fact RemoveAggregateFact(AggregationResult result)
         {
-            if (!_aggregateFactMap.TryGetValue(aggregate, out var fact))
+            if (!_aggregateFactMap.TryGetValue(result.Aggregate, out var fact))
             {
                 throw new InvalidOperationException(
-                    $"Fact for aggregate object does not exist. AggregatorTye={_aggregator.GetType()}, FactType={aggregate.GetType()}");
+                    $"Fact for aggregate object does not exist. AggregatorTye={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
             }
 
             _aggregateFactMap.Remove(fact.RawObject);
-            fact.RawObject = aggregate;
+            fact.RawObject = result.Aggregate;
             return fact;
         }
     }

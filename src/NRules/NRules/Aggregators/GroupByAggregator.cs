@@ -87,7 +87,7 @@ namespace NRules.Aggregators
                     else if (previousResult.Action == AggregationAction.Removed ||
                              result2.Action == AggregationAction.Added)
                     {
-                        resultLookup[key] = AggregationResult.Modified(previousResult.Aggregate);
+                        resultLookup[key] = AggregationResult.Modified(previousResult.Aggregate, previousResult.Aggregate, previousResult.Source);
                     }
                 }
             }
@@ -124,12 +124,12 @@ namespace NRules.Aggregators
                 _groups[key] = group;
 
                 group.Add(fact, element);
-                return AggregationResult.Added(group);
+                return AggregationResult.Added(group, group.Facts);
             }
 
             group.Add(fact, element);
             group.Key = key;
-            return AggregationResult.Modified(group);
+            return AggregationResult.Modified(group, group, group.Facts);
         }
 
         private AggregationResult Modify(IFact fact, TKey key, TElement element)
@@ -137,7 +137,7 @@ namespace NRules.Aggregators
             var group = _groups[key];
             group.Modify(fact, element);
             group.Key = key;
-            return AggregationResult.Modified(group);
+            return AggregationResult.Modified(group, group, group.Facts);
         }
 
         private AggregationResult Remove(IFact fact, TKey key, TElement element)
@@ -149,7 +149,7 @@ namespace NRules.Aggregators
                 _groups.Remove(key);
                 return AggregationResult.Removed(group);
             }
-            return AggregationResult.Modified(group);
+            return AggregationResult.Modified(group, group, group.Facts);
         }
 
         private static IEnumerable<AggregationResult> GetResults(IEnumerable<TKey> keys, DefaultKeyMap<TKey, AggregationResult> lookup)

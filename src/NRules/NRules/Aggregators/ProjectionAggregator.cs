@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators
@@ -25,7 +26,7 @@ namespace NRules.Aggregators
             {
                 var value = _selector.Invoke(tuple, fact);
                 _sourceToValue[fact] = value;
-                results.Add(AggregationResult.Added(value));
+                results.Add(AggregationResult.Added(value, Enumerable.Repeat(fact, 1)));
             }
             return results;
         }
@@ -38,7 +39,7 @@ namespace NRules.Aggregators
                 var value = _selector.Invoke(tuple, fact);
                 var oldValue = (TResult)_sourceToValue[fact];
                 _sourceToValue[fact] = value;
-                results.Add(AggregationResult.Modified(value, oldValue));
+                results.Add(AggregationResult.Modified(value, oldValue, Enumerable.Repeat(fact, 1)));
             }
             return results;
         }

@@ -34,6 +34,7 @@ namespace NRules.Tests.Aggregators
 
             public Type Type { get; }
             public object Value { get; set; }
+            public IEnumerable<IFact> Source { get; set; }
         }
     }
 

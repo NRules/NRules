@@ -18,21 +18,21 @@ namespace NRules.Aggregators
             if (!_created)
             {
                 _created = true;
-                return new[] {AggregationResult.Added(_items)};
+                return new[] {AggregationResult.Added(_items, _items.Facts)};
             }
-            return new[] {AggregationResult.Modified(_items)};
+            return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
         }
 
         public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
         {
             ModifyFacts(facts);
-            return new[] {AggregationResult.Modified(_items)};
+            return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
         }
 
         public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
         {
             RemoveFacts(facts);
-            return new[] {AggregationResult.Modified(_items)};
+            return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
         }
 
         private void AddFacts(IEnumerable<IFact> facts)

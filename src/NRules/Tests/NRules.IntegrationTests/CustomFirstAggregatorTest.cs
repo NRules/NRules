@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using NRules.Aggregators;
 using NRules.Fluent.Dsl;
@@ -131,7 +132,7 @@ namespace NRules.IntegrationTests
                 foreach (var value in collection)
                 {
                     _firstElements[fact] = value;
-                    results.Add(AggregationResult.Added(value));
+                    results.Add(AggregationResult.Added(value, Enumerable.Repeat(fact, 1)));
                     break;
                 }
             }
@@ -150,17 +151,17 @@ namespace NRules.IntegrationTests
                     {
                         if (Equals(oldFirst, value))
                         {
-                            results.Add(AggregationResult.Modified(value));
+                            results.Add(AggregationResult.Modified(value, value, Enumerable.Repeat(fact, 1)));
                         }
                         else
                         {
                             results.Add(AggregationResult.Removed(oldFirst));
-                            results.Add(AggregationResult.Added(value));
+                            results.Add(AggregationResult.Added(value, Enumerable.Repeat(fact, 1)));
                         }
                     }
                     else
                     {
-                        results.Add(AggregationResult.Added(value));
+                        results.Add(AggregationResult.Added(value, Enumerable.Repeat(fact, 1)));
                     }
                     _firstElements[fact] = value;
                     break;
