@@ -34,7 +34,7 @@ namespace NRules.Aggregators
     /// Result of the aggregation.
     /// </summary>
     [DebuggerDisplay("{Action}")]
-    public struct AggregationResult
+    public class AggregationResult
     {
         public static readonly AggregationResult[] Empty = new AggregationResult[0];
 
@@ -50,7 +50,7 @@ namespace NRules.Aggregators
         /// Constructs an aggregation result that indicates no changes at the aggregate level.
         /// </summary>
         /// <param name="result">Aggregate.</param>
-        /// <param name="source"></param>
+        /// <param name="source">Aggregate source facts.</param>
         /// <returns>Aggregation result.</returns>
         public static AggregationResult None(object result, IEnumerable<IFact> source)
         {
@@ -61,7 +61,7 @@ namespace NRules.Aggregators
         /// Constructs an aggregation result that indicates a new aggregate.
         /// </summary>
         /// <param name="result">Aggregate.</param>
-        /// <param name="source"></param>
+        /// <param name="source">Aggregate source facts.</param>
         /// <returns>Aggregation result.</returns>
         public static AggregationResult Added(object result, IEnumerable<IFact> source)
         {
@@ -73,7 +73,7 @@ namespace NRules.Aggregators
         /// </summary>
         /// <param name="result">Aggregate.</param>
         /// <param name="previous">Previous aggregate.</param>
-        /// <param name="source"></param>
+        /// <param name="source">Aggregate source facts.</param>
         /// <returns>Aggregation result.</returns>
         public static AggregationResult Modified(object result, object previous, IEnumerable<IFact> source)
         {

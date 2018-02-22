@@ -68,7 +68,7 @@ namespace NRules.Rete
         private Fact CreateAggregateFact(AggregationResult result)
         {
             var fact = new Fact(result.Aggregate);
-            fact.Source = result.Source;
+            fact.Source = new AggregateFactSource(result.Source);
             _aggregateFactMap.Add(result.Aggregate, fact);
             return fact;
         }
@@ -81,7 +81,7 @@ namespace NRules.Rete
                     $"Fact for aggregate object does not exist. AggregatorTye={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
             }
 
-            fact.Source = result.Source;
+            fact.Source = new AggregateFactSource(result.Source);
             if (!ReferenceEquals(fact.RawObject, result.Aggregate))
             {
                 _aggregateFactMap.Remove(fact.RawObject);
@@ -101,6 +101,7 @@ namespace NRules.Rete
 
             _aggregateFactMap.Remove(fact.RawObject);
             fact.RawObject = result.Aggregate;
+            fact.Source = null;
             return fact;
         }
     }

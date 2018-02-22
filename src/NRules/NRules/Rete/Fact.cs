@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using NRules.RuleModel;
@@ -10,7 +9,7 @@ namespace NRules.Rete
     internal class Fact : IFact
     {
         private object _object;
-        private IEnumerable<IFact> _source;
+        private IFactSource _source;
 
         public Fact()
         {
@@ -38,7 +37,7 @@ namespace NRules.Rete
             set => _object = value;
         }
 
-        public IEnumerable<IFact> Source
+        public IFactSource Source
         {
             get => _source;
             set => _source = value;
@@ -48,7 +47,7 @@ namespace NRules.Rete
         public virtual bool IsWrapperFact => false;
         Type IFact.Type => FactType.AsType();
         object IFact.Value => Object;
-        IEnumerable<IFact> IFact.Source => Source;
+        IFactSource IFact.Source => Source;
     }
 
     [DebuggerDisplay("Wrapper Tuple({WrappedTuple.Count}) -> {Object}")]

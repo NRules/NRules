@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace NRules.RuleModel
 {
@@ -19,8 +18,8 @@ namespace NRules.RuleModel
         object Value { get; }
 
         /// <summary>
-        /// Source facts that produced this fact (for synthetic facts) or <c>null</c>.
+        /// Source of this fact, for synthetic facts, or <c>null</c>.
         /// </summary>
-        IEnumerable<IFact> Source { get; }
+        IFactSource Source { get; }
     }
 }
