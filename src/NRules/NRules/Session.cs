@@ -436,7 +436,7 @@ namespace NRules
             {
                 throw new ArgumentException($"Linked fact already exists. Key={key}", nameof(fact));
             }
-            factWrapper = new Fact(fact);
+            factWrapper = new SyntheticFact(fact);
             factWrapper.Source = new LinkedFactSource(activation);
             _workingMemory.AddLinkedFact(activation, key, factWrapper);
             _network.PropagateAssert(_executionContext, new List<Fact> {factWrapper});

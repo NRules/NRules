@@ -67,7 +67,7 @@ namespace NRules.Rete
 
         private Fact CreateAggregateFact(AggregationResult result)
         {
-            var fact = new Fact(result.Aggregate);
+            var fact = new SyntheticFact(result.Aggregate);
             fact.Source = new AggregateFactSource(result.Source);
             _aggregateFactMap.Add(result.Aggregate, fact);
             return fact;
