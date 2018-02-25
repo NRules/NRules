@@ -39,7 +39,7 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
     }
 }
 
-function Update-Properties([string] $version, [string] $propsFileName = "Common.props") {
+function Update-Properties([string] $path, [string] $version, [string] $propsFileName = "Common.props") {
     if ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}") {
         Write-Error "Version number incorrect format: $version"
     }
@@ -48,7 +48,7 @@ function Update-Properties([string] $version, [string] $propsFileName = "Common.
     $versionPrefixPattern = '<VersionPrefix>[0-9]+(\.([0-9]+|\*)){1,3}<\/VersionPrefix>'
     $versionPrefix = '<VersionPrefix>' + $version + '</VersionPrefix>';
 
-    Get-ChildItem -Recurse -Filter $propsFileName | % {
+    Get-ChildItem -Path $path -Recurse -Filter $propsFileName | % {
         $filename = $_.fullname
 
         $tmp = ($filename + ".tmp")
@@ -61,7 +61,7 @@ function Update-Properties([string] $version, [string] $propsFileName = "Common.
     }
 }
 
-function Update-AssemblyInfoFiles([string] $version, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
+function Update-AssemblyInfoFiles([string] $path, [string] $version, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
     if ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}") {
         Write-Error "Version number incorrect format: $version"
     }
@@ -74,7 +74,7 @@ function Update-AssemblyInfoFiles([string] $version, [string] $assemblyInfoFileN
     $assemblyInfoVersionPattern = 'AssemblyInformationalVersionAttribute\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
     $assemblyInfoVersion = 'AssemblyInformationalVersionAttribute("' + $version + '")';
 
-    Get-ChildItem -Recurse -Filter $assemblyInfoFileName | % {
+    Get-ChildItem -Path $path -Recurse -Filter $assemblyInfoFileName | % {
         $filename = $_.fullname
 
         $tmp = ($filename + ".tmp")
@@ -89,14 +89,14 @@ function Update-AssemblyInfoFiles([string] $version, [string] $assemblyInfoFileN
     }
 }
 
-function Update-Version([string] $version) {
-    Update-AssemblyInfoFiles $version "GlobalAssemblyInfo.cs"
-    Update-Properties $version "Common.props"
+function Update-Version([string] $path, [string] $version) {
+    Update-AssemblyInfoFiles $path $version "GlobalAssemblyInfo.cs"
+    Update-Properties $path $version "Common.props"
 }
 
-function Reset-Version() {
-    Update-AssemblyInfoFiles "1.0.0.0" "GlobalAssemblyInfo.cs"
-    Update-Properties "1.0.0" "Common.props"
+function Reset-Version([string] $path) {
+    Update-AssemblyInfoFiles $path "1.0.0.0" "GlobalAssemblyInfo.cs"
+    Update-Properties $path "1.0.0" "Common.props"
 }
 
 function Get-DotNetProjects([string] $path) {
