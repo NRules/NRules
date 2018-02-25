@@ -46,7 +46,7 @@ task Clean -depends Init {
 }
 
 task PatchFiles {
-    Update-Version $version
+    Update-Version $baseDir $version
     
     $signingKey = "$baseDir\SigningKey.snk"
     $secureKey = "$baseDir\..\SecureSigningKey.snk"
@@ -64,7 +64,7 @@ task PatchFiles {
 }
 
 task ResetPatch {
-    Reset-Version
+    Reset-Version $baseDir
     
     $signingKey = "$baseDir\SigningKey.snk"
     $devKey = "$baseDir\DevSigningKey.snk"
