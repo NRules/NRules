@@ -104,7 +104,8 @@ namespace NRules
             var workingMemory = new WorkingMemory();
             var eventAggregator = new EventAggregator(_eventAggregator);
             var actionExecutor = new ActionExecutor();
-            var session = new Session(_network, agenda, workingMemory, eventAggregator, actionExecutor, DependencyResolver, ActionInterceptor);
+            var idGenerator = new IdGenerator();
+            var session = new Session(_network, agenda, workingMemory, eventAggregator, actionExecutor, idGenerator, DependencyResolver, ActionInterceptor);
             initializationAction?.Invoke(session);
             session.Activate();
             return session;
