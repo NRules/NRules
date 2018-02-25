@@ -217,6 +217,7 @@ namespace NRules
             IWorkingMemory workingMemory,
             IEventAggregator eventAggregator,
             IActionExecutor actionExecutor,
+            IIdGenerator idGenerator,
             IDependencyResolver dependencyResolver,
             IActionInterceptor actionInterceptor)
         {
@@ -225,7 +226,7 @@ namespace NRules
             _agenda = agenda;
             _eventAggregator = eventAggregator;
             _actionExecutor = actionExecutor;
-            _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator);
+            _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator, idGenerator);
             DependencyResolver = dependencyResolver;
             ActionInterceptor = actionInterceptor;
         }

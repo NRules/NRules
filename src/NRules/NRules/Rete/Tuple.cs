@@ -14,15 +14,15 @@ namespace NRules.Rete
 
         private Dictionary<INode, object> _stateMap;
 
-        public Tuple()
+        public Tuple(long id)
         {
-            Id = GetHashCode();
+            Id = id;
             GroupId = NoGroup;
             Count = 0;
             Level = 0;
         }
 
-        public Tuple(Tuple left, Fact right) : this()
+        public Tuple(long id, Tuple left, Fact right) : this(id)
         {
             RightFact = right;
             LeftTuple = left;

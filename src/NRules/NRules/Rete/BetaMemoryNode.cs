@@ -24,7 +24,7 @@ namespace NRules.Rete
             var enumerator = tupleFactList.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                var childTuple = new Tuple(enumerator.CurrentTuple, enumerator.CurrentFact);
+                var childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact);
                 childTuple.GroupId = enumerator.CurrentTuple.Id;
                 toAssert.Add(childTuple);
             }
@@ -44,7 +44,7 @@ namespace NRules.Rete
                 Tuple childTuple = memory.FindTuple(enumerator.CurrentTuple, enumerator.CurrentFact);
                 if (childTuple == null)
                 {
-                    childTuple = new Tuple(enumerator.CurrentTuple, enumerator.CurrentFact);
+                    childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact);
                     childTuple.GroupId = enumerator.CurrentTuple.Id;
                     toAssert.Add(childTuple);
                 }

@@ -47,7 +47,7 @@ namespace NRules.Tests
         {
             // Arrange
             var rule = MockRule();
-            var activation = new Activation(rule, new Tuple(), null);
+            var activation = new Activation(rule, new Tuple(0), null);
             var target = CreateTarget();
 
             target.Add(_context.Object, activation);
@@ -309,8 +309,8 @@ namespace NRules.Tests
             // Arrange
             var rule1 = MockRule();
             var rule2 = MockRule();
-            var activation1 = new Activation(rule1, new Tuple(), null);
-            var activation2 = new Activation(rule2, new Tuple(), null);
+            var activation1 = new Activation(rule1, new Tuple(0), null);
+            var activation2 = new Activation(rule2, new Tuple(0), null);
             var target = CreateTarget();
 
             // Act
@@ -329,7 +329,7 @@ namespace NRules.Tests
         {
             // Arrange
             var rule = MockRule();
-            var activation = new Activation(rule, new Tuple(), null);
+            var activation = new Activation(rule, new Tuple(0), null);
             var target = CreateTarget();
 
             target.Add(_context.Object, activation);
@@ -357,7 +357,7 @@ namespace NRules.Tests
         {
             // Arrange
             var rule = MockRule();
-            var activation = new Activation(rule, new Tuple(), null);
+            var activation = new Activation(rule, new Tuple(0), null);
             var target = CreateTarget();
 
             target.Add(_context.Object, activation);
@@ -384,7 +384,7 @@ namespace NRules.Tests
 
         private static Tuple CreateTuple(object factObject)
         {
-            return new Tuple(new Tuple(), new Fact(factObject));
+            return new Tuple(0, new Tuple(0), new Fact(factObject));
         }
 
         private class FactObject
