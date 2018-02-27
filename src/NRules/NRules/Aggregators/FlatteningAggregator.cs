@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NRules.Collections;
 using NRules.RuleModel;
 
@@ -33,7 +34,7 @@ namespace NRules.Aggregators
                     if (list.Add(item) &&
                         AddRef(item) == 1)
                     {
-                        results.Add(AggregationResult.Added(item));
+                        results.Add(AggregationResult.Added(item, Enumerable.Repeat(fact, 1)));
                     }
                 }
             }
@@ -67,11 +68,11 @@ namespace NRules.Aggregators
                 {
                     if (oldList.Contains(item))
                     {
-                        results.Add(AggregationResult.Modified(item));
+                        results.Add(AggregationResult.Modified(item, item, Enumerable.Repeat(fact, 1)));
                     }
                     else if (AddRef(item) == 1)
                     {
-                        results.Add(AggregationResult.Added(item));
+                        results.Add(AggregationResult.Added(item, Enumerable.Repeat(fact, 1)));
                     }
                 }
             }

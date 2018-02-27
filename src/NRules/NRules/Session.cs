@@ -437,7 +437,8 @@ namespace NRules
             {
                 throw new ArgumentException($"Linked fact already exists. Key={key}", nameof(fact));
             }
-            factWrapper = new Fact(fact);
+            factWrapper = new SyntheticFact(fact);
+            factWrapper.Source = new LinkedFactSource(activation);
             _workingMemory.AddLinkedFact(activation, key, factWrapper);
             _network.PropagateAssert(_executionContext, new List<Fact> {factWrapper});
         }
@@ -457,6 +458,7 @@ namespace NRules
             {
                 throw new ArgumentException($"Linked fact does not exist. Key={key}", nameof(fact));
             }
+            factWrapper.Source = new LinkedFactSource(activation);
             _workingMemory.UpdateLinkedFact(activation, key, factWrapper, fact);
             _network.PropagateUpdate(_executionContext, new List<Fact> {factWrapper});
         }
@@ -478,6 +480,7 @@ namespace NRules
             }
             _network.PropagateRetract(_executionContext, new List<Fact> {factWrapper});
             _workingMemory.RemoveLinkedFact(activation, key, factWrapper);
+            factWrapper.Source = null;
         }
 
         public int Fire()

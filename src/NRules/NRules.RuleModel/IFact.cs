@@ -16,5 +16,10 @@ namespace NRules.RuleModel
         /// Fact value.
         /// </summary>
         object Value { get; }
+
+        /// <summary>
+        /// Source of this fact, for synthetic facts, or <c>null</c>.
+        /// </summary>
+        IFactSource Source { get; }
     }
 }
