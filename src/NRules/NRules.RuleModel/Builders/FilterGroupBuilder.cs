@@ -23,7 +23,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="expression">Filter expression.</param>
         public void Filter(FilterType filterType, LambdaExpression expression)
         {
-            IEnumerable<Declaration> references = expression.Parameters.Select<ParameterExpression, Declaration>(p => Scope.Lookup(p.Name, p.Type));
+            IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
             var filter = new FilterElement(filterType, Scope.VisibleDeclarations, references, expression);
             _filters.Add(filter);
         }

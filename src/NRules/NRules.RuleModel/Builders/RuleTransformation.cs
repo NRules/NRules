@@ -40,14 +40,14 @@ namespace NRules.RuleModel.Builders
             return rule;
         }
 
-        internal void Result(Context context, RuleElement element)
+        private void Result(Context context, RuleElement element)
         {
             context.Pop();
             context.Push(element);
             context.IsModified = true;
         }
 
-        internal T Transform<T>(Context context, RuleElement element) where T : RuleElement
+        private T Transform<T>(Context context, RuleElement element) where T : RuleElement
         {
             if (element == null) return null;
 
@@ -223,8 +223,7 @@ namespace NRules.RuleModel.Builders
             var newChildElements = new List<RuleLeftElement>();
             foreach (var childElement in childElements)
             {
-                var childOrElement = childElement as OrElement;
-                if (childOrElement != null)
+                if (childElement is OrElement childOrElement)
                 {
                     newChildElements.AddRange(childOrElement.ChildElements);
                 }

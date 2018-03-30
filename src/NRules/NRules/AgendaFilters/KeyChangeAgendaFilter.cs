@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,7 +16,7 @@ namespace NRules.AgendaFilters
         public bool Accept(Activation activation)
         {
             var oldKeys = activation.GetState<List<object>>(KeyName);
-            var newKeys = Enumerable.Select(_keySelectors, selector => selector.Invoke(activation)).ToList<object>();
+            var newKeys = _keySelectors.Select(selector => selector.Invoke(activation)).ToList();
             bool accept = true;
 
             if (oldKeys != null)
@@ -25,7 +24,7 @@ namespace NRules.AgendaFilters
                 accept = false;
                 for (int i = 0; i < oldKeys.Count; i++)
                 {
-                    if (!Object.Equals(oldKeys[i], newKeys[i]))
+                    if (!Equals(oldKeys[i], newKeys[i]))
                     {
                         accept = true;
                         break;

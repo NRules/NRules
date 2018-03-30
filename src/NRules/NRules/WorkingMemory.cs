@@ -40,8 +40,7 @@ namespace NRules
 
         public Fact GetFact(object factObject)
         {
-            Fact fact;
-            _factMap.TryGetValue(factObject, out fact);
+            _factMap.TryGetValue(factObject, out var fact);
             return fact;
         }
 
