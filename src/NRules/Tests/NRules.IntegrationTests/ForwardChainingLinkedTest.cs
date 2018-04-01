@@ -1,7 +1,7 @@
+using System;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.Rete;
 using NRules.RuleModel;
 using Xunit;
 
@@ -119,6 +119,34 @@ namespace NRules.IntegrationTests
             var linkedSource = (ILinkedFactSource)matchedFact2.Source;
             Assert.NotNull(linkedSource.Rule);
             Assert.Contains(nameof(ForwardChainingFirstRule), linkedSource.Rule.Name);
+        }
+
+        [Fact]
+        public void Fire_DirectUpdateOfLinkedFact_Fails()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
+            Session.Insert(fact1);
+            Session.Fire();
+
+            var linkedFacts = Session.Query<FactType2>();
+
+            //Act - Assert
+            Assert.Throws<ArgumentException>(() => Session.UpdateAll(linkedFacts));
+        }
+
+        [Fact]
+        public void Fire_DirectRetractOfLinkedFact_Fails()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
+            Session.Insert(fact1);
+            Session.Fire();
+
+            var linkedFacts = Session.Query<FactType2>();
+
+            //Act - Assert
+            Assert.Throws<ArgumentException>(() => Session.RetractAll(linkedFacts));
         }
 
         protected override void SetUpRules()

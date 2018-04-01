@@ -320,7 +320,7 @@ namespace NRules
             foreach (var fact in facts)
             {
                 var factWrapper = _workingMemory.GetFact(fact);
-                if (factWrapper != null)
+                if (factWrapper != null && factWrapper.Source == null)
                 {
                     UpdateFact(factWrapper, fact);
                     toPropagate.Add(factWrapper);
@@ -376,7 +376,7 @@ namespace NRules
             foreach (var fact in facts)
             {
                 var factWrapper = _workingMemory.GetFact(fact);
-                if (factWrapper != null)
+                if (factWrapper != null && factWrapper.Source == null)
                 {
                     toPropagate.Add(factWrapper);
                 }
