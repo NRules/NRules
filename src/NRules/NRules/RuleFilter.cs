@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.AgendaFilters;
 
 namespace NRules
 {

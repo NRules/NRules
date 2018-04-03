@@ -9,21 +9,25 @@ namespace NRules.Diagnostics
     /// </summary>
     public class AgendaEventArgs : EventArgs
     {
-        private readonly IActivation _activation;
+        private readonly IMatch _match;
 
-        internal AgendaEventArgs(IActivation activation)
+        /// <summary>
+        /// Initializes a new instance of the <c>AgendaEventArgs</c> class.
+        /// </summary>
+        /// <param name="match">Rule match related to the event.</param>
+        public AgendaEventArgs(IMatch match)
         {
-            _activation = activation;
+            _match = match;
         }
 
         /// <summary>
         /// Rule related to the event.
         /// </summary>
-        public IRuleDefinition Rule => _activation.Rule;
+        public IRuleDefinition Rule => _match.Rule;
 
         /// <summary>
         /// Facts related to the event.
         /// </summary>
-        public IEnumerable<IFactMatch> Facts => _activation.Facts;
+        public IEnumerable<IFactMatch> Facts => _match.Facts;
     }
 }

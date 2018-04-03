@@ -17,15 +17,15 @@ namespace NRules
     internal class RuleAction : IRuleAction
     {
         private readonly LambdaExpression _expression;
-        private readonly IndexMap _factIndexMap;
-        private readonly IndexMap _dependencyIndexMap;
+        private readonly IndexMap _tupleFactMap;
+        private readonly IndexMap _dependencyFactMap;
         private readonly FastDelegate<Action<IContext, object[]>> _compiledExpression;
 
-        public RuleAction(LambdaExpression expression, FastDelegate<Action<IContext, object[]>> compiledExpression, IndexMap factIndexMap, IndexMap dependencyIndexMap)
+        public RuleAction(LambdaExpression expression, FastDelegate<Action<IContext, object[]>> compiledExpression, IndexMap tupleFactMap, IndexMap dependencyFactMap)
         {
             _expression = expression;
-            _factIndexMap = factIndexMap;
-            _dependencyIndexMap = dependencyIndexMap;
+            _tupleFactMap = tupleFactMap;
+            _dependencyFactMap = dependencyFactMap;
             _compiledExpression = compiledExpression;
         }
 
@@ -36,26 +36,24 @@ namespace NRules
             var compiledRule = actionContext.CompiledRule;
             var activation = actionContext.Activation;
             var tuple = activation.Tuple;
-            var tupleFactMap = activation.TupleFactMap;
 
             var args = new object[_compiledExpression.ArrayArgumentCount];
 
             int index = tuple.Count - 1;
-            var factIndexMap = _factIndexMap;
+            var activationFactMap = activation.FactMap;
             foreach (var fact in tuple.Facts)
             {
-                var mappedIndex = factIndexMap[tupleFactMap[index]];
+                var mappedIndex = _tupleFactMap[activationFactMap[index]];
                 IndexMap.SetElementAt(args, mappedIndex, fact.Object);
                 index--;
             }
 
             index = 0;
-            var dependencyIndexMap = _dependencyIndexMap;
             var dependencyResolver = executionContext.Session.DependencyResolver;
             var resolutionContext = new ResolutionContext(executionContext.Session, compiledRule.Definition);
             foreach (var dependency in compiledRule.Dependencies)
             {
-                var mappedIndex = dependencyIndexMap[index];
+                var mappedIndex = _dependencyFactMap[index];
                 if (mappedIndex >= 0)
                 {
                     var resolvedDependency = dependency.Factory(dependencyResolver, resolutionContext);

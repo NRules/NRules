@@ -1,32 +1,33 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NRules.Diagnostics
 {
     /// <summary>
     /// Snapshot of rules session state.
     /// </summary>
-#if NET45
+#if (NET45 || NETSTANDARD2_0)
     [System.Serializable]
 #endif
     public class SessionSnapshot
     {
-        private readonly List<NodeInfo> _nodes;
-        private readonly List<LinkInfo> _links;
+        private readonly NodeInfo[] _nodes;
+        private readonly LinkInfo[] _links;
         
         internal SessionSnapshot(IEnumerable<NodeInfo> nodes, IEnumerable<LinkInfo> links)
         {
-            _nodes = new List<NodeInfo>(nodes);
-            _links = new List<LinkInfo>(links);
+            _nodes = nodes.ToArray();
+            _links = links.ToArray();
         }
 
         /// <summary>
         /// Nodes of the rete network graph.
         /// </summary>
-        public IEnumerable<NodeInfo> Nodes => _nodes;
+        public NodeInfo[] Nodes => _nodes;
 
         /// <summary>
         /// Links between nodes of the rete network graph.
         /// </summary>
-        public IEnumerable<LinkInfo> Links => _links;
+        public LinkInfo[] Links => _links;
     }
 }

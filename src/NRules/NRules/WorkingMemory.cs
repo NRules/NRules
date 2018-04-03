@@ -13,17 +13,11 @@ namespace NRules
         void UpdateFact(Fact fact);
         void RemoveFact(Fact fact);
 
-        Fact GetInternalFact(INode node, object factObject);
-        IEnumerable<Fact> GetInternalFacts(INode node, IEnumerable<object> factObjects);
-        void AddInternalFact(INode node, Fact fact);
-        void UpdateInternalFact(INode node, Fact fact);
-        void RemoveInternalFact(INode node, Fact fact);
-
-        IEnumerable<object> GetLinkedKeys(IActivation activation);
-        Fact GetLinkedFact(IActivation activation, object key);
-        void AddLinkedFact(IActivation activation, object key, Fact fact);
-        void UpdateLinkedFact(IActivation activation, object key, Fact fact, object factObject);
-        void RemoveLinkedFact(IActivation activation, object key, Fact fact);
+        IEnumerable<object> GetLinkedKeys(Activation activation);
+        Fact GetLinkedFact(Activation activation, object key);
+        void AddLinkedFact(Activation activation, object key, Fact fact);
+        void UpdateLinkedFact(Activation activation, object key, Fact fact, object factObject);
+        void RemoveLinkedFact(Activation activation, object key, Fact fact);
 
         IAlphaMemory GetNodeMemory(IAlphaMemoryNode node);
         IBetaMemory GetNodeMemory(IBetaMemoryNode node);
@@ -32,8 +26,7 @@ namespace NRules
     internal class WorkingMemory : IWorkingMemory
     {
         private readonly Dictionary<object, Fact> _factMap = new Dictionary<object, Fact>();
-        private readonly Dictionary<INode, Dictionary<object, Fact>> _internalFactMap = new Dictionary<INode, Dictionary<object, Fact>>();
-        private readonly Dictionary<IActivation, Dictionary<object, Fact>> _linkedFactMap = new Dictionary<IActivation, Dictionary<object, Fact>>();
+        private readonly Dictionary<Activation, Dictionary<object, Fact>> _linkedFactMap = new Dictionary<Activation, Dictionary<object, Fact>>();
 
         private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap =
             new Dictionary<IAlphaMemoryNode, IAlphaMemory>();
@@ -41,15 +34,13 @@ namespace NRules
         private readonly Dictionary<IBetaMemoryNode, IBetaMemory> _betaMap =
             new Dictionary<IBetaMemoryNode, IBetaMemory>();
 
-        private static readonly Fact[] EmptyFactList = new Fact[0];
         private static readonly object[] EmptyObjectList = new object[0];
 
         public IEnumerable<Fact> Facts => _factMap.Values;
 
         public Fact GetFact(object factObject)
         {
-            Fact fact;
-            _factMap.TryGetValue(factObject, out fact);
+            _factMap.TryGetValue(factObject, out var fact);
             return fact;
         }
 
@@ -72,88 +63,25 @@ namespace NRules
             }
         }
 
-        public Fact GetInternalFact(INode node, object factObject)
+        public IEnumerable<object> GetLinkedKeys(Activation activation)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_internalFactMap.TryGetValue(node, out factMap)) return null;
-
-            Fact fact;
-            factMap.TryGetValue(factObject, out fact);
-            return fact;
-        }
-
-        public IEnumerable<Fact> GetInternalFacts(INode node, IEnumerable<object> factObjects)
-        {
-            Dictionary<object, Fact> factMap;
-            if (!_internalFactMap.TryGetValue(node, out factMap)) return EmptyFactList;
-
-            var facts = new List<Fact>();
-            foreach (var factObject in factObjects)
-            {
-                Fact fact;
-                factMap.TryGetValue(factObject, out fact);
-                facts.Add(fact);
-            }
-            return facts;
-        }
-
-        public void AddInternalFact(INode node, Fact fact)
-        {
-            Dictionary<object, Fact> factMap;
-            if (!_internalFactMap.TryGetValue(node, out factMap))
-            {
-                factMap = new Dictionary<object, Fact>();
-                _internalFactMap[node] = factMap;
-            }
-
-            factMap[fact.RawObject] = fact;
-        }
-
-        public void UpdateInternalFact(INode node, Fact fact)
-        {
-            Dictionary<object, Fact> factMap;
-            if (!_internalFactMap.TryGetValue(node, out factMap))
-            {
-                factMap = new Dictionary<object, Fact>();
-                _internalFactMap[node] = factMap;
-            }
-
-            factMap.Remove(fact.RawObject);
-            factMap[fact.RawObject] = fact;
-        }
-
-        public void RemoveInternalFact(INode node, Fact fact)
-        {
-            Dictionary<object, Fact> factMap;
-            if (!_internalFactMap.TryGetValue(node, out factMap)) return;
-
-            factMap.Remove(fact.RawObject);
-            if (factMap.Count == 0) _internalFactMap.Remove(node);
-        }
-
-        public IEnumerable<object> GetLinkedKeys(IActivation activation)
-        {
-            Dictionary<object, Fact> factMap;
-            if (!_linkedFactMap.TryGetValue(activation, out factMap)) return EmptyObjectList;
+            if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return EmptyObjectList;
             return factMap.Keys;
         }
 
-        public Fact GetLinkedFact(IActivation activation, object key)
+        public Fact GetLinkedFact(Activation activation, object key)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_linkedFactMap.TryGetValue(activation, out factMap)) return null;
+            if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return null;
 
-            Fact fact;
-            factMap.TryGetValue(key, out fact);
+            factMap.TryGetValue(key, out var fact);
             return fact;
         }
 
-        public void AddLinkedFact(IActivation activation, object key, Fact fact)
+        public void AddLinkedFact(Activation activation, object key, Fact fact)
         {
             AddFact(fact);
 
-            Dictionary<object, Fact> factMap;
-            if (!_linkedFactMap.TryGetValue(activation, out factMap))
+            if (!_linkedFactMap.TryGetValue(activation, out var factMap))
             {
                 factMap = new Dictionary<object, Fact>();
                 _linkedFactMap[activation] = factMap;
@@ -162,7 +90,7 @@ namespace NRules
             factMap.Add(key, fact);
         }
 
-        public void UpdateLinkedFact(IActivation activation, object key, Fact fact, object factObject)
+        public void UpdateLinkedFact(Activation activation, object key, Fact fact, object factObject)
         {
             if (!ReferenceEquals(fact.RawObject, factObject))
             {
@@ -171,8 +99,7 @@ namespace NRules
                 AddFact(fact);
             }
 
-            Dictionary<object, Fact> factMap;
-            if (!_linkedFactMap.TryGetValue(activation, out factMap))
+            if (!_linkedFactMap.TryGetValue(activation, out var factMap))
             {
                 factMap = new Dictionary<object, Fact>();
                 _linkedFactMap[activation] = factMap;
@@ -182,10 +109,9 @@ namespace NRules
             factMap.Add(key, fact);
         }
 
-        public void RemoveLinkedFact(IActivation activation, object key, Fact fact)
+        public void RemoveLinkedFact(Activation activation, object key, Fact fact)
         {
-            Dictionary<object, Fact> factMap;
-            if (!_linkedFactMap.TryGetValue(activation, out factMap)) return;
+            if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return;
 
             factMap.Remove(key);
             if (factMap.Count == 0) _linkedFactMap.Remove(activation);
@@ -195,8 +121,7 @@ namespace NRules
 
         public IAlphaMemory GetNodeMemory(IAlphaMemoryNode node)
         {
-            IAlphaMemory memory;
-            if (!_alphaMap.TryGetValue(node, out memory))
+            if (!_alphaMap.TryGetValue(node, out var memory))
             {
                 memory = new AlphaMemory();
                 _alphaMap[node] = memory;
@@ -206,8 +131,7 @@ namespace NRules
 
         public IBetaMemory GetNodeMemory(IBetaMemoryNode node)
         {
-            IBetaMemory memory;
-            if (!_betaMap.TryGetValue(node, out memory))
+            if (!_betaMap.TryGetValue(node, out var memory))
             {
                 memory = new BetaMemory();
                 _betaMap[node] = memory;

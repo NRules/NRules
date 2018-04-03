@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using NRules.RuleModel;
@@ -13,15 +14,15 @@ namespace NRules.Rete
 
         private Dictionary<INode, object> _stateMap;
 
-        public Tuple()
+        public Tuple(long id)
         {
-            Id = GetHashCode();
+            Id = id;
             GroupId = NoGroup;
             Count = 0;
             Level = 0;
         }
 
-        public Tuple(Tuple left, Fact right) : this()
+        public Tuple(long id, Tuple left, Fact right) : this(id)
         {
             RightFact = right;
             LeftTuple = left;
@@ -40,12 +41,42 @@ namespace NRules.Rete
         
         public T GetState<T>(INode node)
         {
-            object value;
-            if (_stateMap != null && _stateMap.TryGetValue(node, out value))
+            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
             {
                 return (T) value;
             }
             return default(T);
+        }
+        
+        public T GetStateOrThrow<T>(INode node)
+        {
+            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
+            {
+                return (T) value;
+            }
+            throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
+        }
+
+        public T RemoveState<T>(INode node)
+        {
+            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
+            {
+                var state = (T)value;
+                _stateMap.Remove(node);
+                return state;
+            }
+            return default(T);
+        }
+
+        public T RemoveStateOrThrow<T>(INode node)
+        {
+            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
+            {
+                var state = (T)value;
+                _stateMap.Remove(node);
+                return state;
+            }
+            throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
         }
 
         public void SetState(INode node, object value)
@@ -79,12 +110,6 @@ namespace NRules.Rete
                 }
             }
         }
-
-        /// <summary>
-        /// Facts contained in the tuple in correct order.
-        /// </summary>
-        /// <remarks>This method has to reverse the linked list and is slow.</remarks>
-        public IEnumerable<Fact> OrderedFacts => Facts.Reverse();
 
         IEnumerable<IFact> ITuple.Facts => Facts;
 

@@ -3,7 +3,7 @@
 }
 
 function Delete-File($fileName) {
-    if($fileName) {
+    if ($fileName) {
         Remove-Item $fileName -Force -ErrorAction SilentlyContinue | Out-Null
     } 
 }
@@ -39,7 +39,7 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
     }
 }
 
-function Update-Properties([string] $version, [string] $propsFileName = "Common.props") {
+function Update-Properties([string] $path, [string] $version, [string] $propsFileName = "Common.props") {
     if ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}") {
         Write-Error "Version number incorrect format: $version"
     }
@@ -48,7 +48,7 @@ function Update-Properties([string] $version, [string] $propsFileName = "Common.
     $versionPrefixPattern = '<VersionPrefix>[0-9]+(\.([0-9]+|\*)){1,3}<\/VersionPrefix>'
     $versionPrefix = '<VersionPrefix>' + $version + '</VersionPrefix>';
 
-    Get-ChildItem -Recurse -Filter $propsFileName | % {
+    Get-ChildItem -Path $path -Recurse -Filter $propsFileName | % {
         $filename = $_.fullname
 
         $tmp = ($filename + ".tmp")
@@ -61,7 +61,7 @@ function Update-Properties([string] $version, [string] $propsFileName = "Common.
     }
 }
 
-function Update-AssemblyInfoFiles([string] $version, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
+function Update-AssemblyInfoFiles([string] $path, [string] $version, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
     if ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}") {
         Write-Error "Version number incorrect format: $version"
     }
@@ -74,7 +74,7 @@ function Update-AssemblyInfoFiles([string] $version, [string] $assemblyInfoFileN
     $assemblyInfoVersionPattern = 'AssemblyInformationalVersionAttribute\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
     $assemblyInfoVersion = 'AssemblyInformationalVersionAttribute("' + $version + '")';
 
-    Get-ChildItem -Recurse -Filter $assemblyInfoFileName | % {
+    Get-ChildItem -Path $path -Recurse -Filter $assemblyInfoFileName | % {
         $filename = $_.fullname
 
         $tmp = ($filename + ".tmp")
@@ -89,21 +89,23 @@ function Update-AssemblyInfoFiles([string] $version, [string] $assemblyInfoFileN
     }
 }
 
-function Update-Version([string] $version) {
-    Update-AssemblyInfoFiles $version "GlobalAssemblyInfo.cs"
-    Update-Properties $version "Common.props"
+function Update-Version([string] $path, [string] $version) {
+    Update-AssemblyInfoFiles $path $version "GlobalAssemblyInfo.cs"
+    Update-Properties $path $version "Common.props"
 }
 
-function Reset-Version() {
-    Update-AssemblyInfoFiles "1.0.0.0" "GlobalAssemblyInfo.cs"
-    Update-Properties "1.0.0" "Common.props"
+function Reset-Version([string] $path) {
+    Update-AssemblyInfoFiles $path "1.0.0.0" "GlobalAssemblyInfo.cs"
+    Update-Properties $path "1.0.0" "Common.props"
 }
 
 function Get-DotNetProjects([string] $path) {
     Get-ChildItem -Path $path -Recurse -Include "*.csproj" | Select-Object @{ Name="ParentFolder"; Expression={ $_.Directory.FullName.TrimEnd("\") } } | Select-Object -ExpandProperty ParentFolder
 }
 
-function Install-DotNetCli([string] $location, [string] $version = "Latest") {
+function Install-DotNetCli([string] $location, [string] $version) {
+    Assert ($version -ne $null) 'DotNet CLI version should not be null'
+    
     (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     if ((Get-Command "dotnet.exe" -ErrorAction SilentlyContinue) -ne $null) {
         $installedVersion = dotnet --version
@@ -119,7 +121,8 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
     }
 
     if (!(Test-Path $location\dotnet-install.ps1)) {
-        Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.1/scripts/obtain/dotnet-install.ps1" -OutFile "$location\dotnet-install.ps1"
+        $url = "https://raw.githubusercontent.com/dotnet/cli/v$version/scripts/obtain/dotnet-install.ps1"
+        Invoke-WebRequest $url -OutFile "$location\dotnet-install.ps1"
     }
 
     Write-Host "Installing .NET Core SDK"
@@ -127,11 +130,13 @@ function Install-DotNetCli([string] $location, [string] $version = "Latest") {
 
     if (!($env:PATH -contains $installDir)) {
         $env:PATH = "$installDir;$env:PATH"
-        $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
     }
+    $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
 }
 
-function Install-NuGet([string] $location, [string] $version = "latest") {
+function Install-NuGet([string] $location, [string] $version) {
+    Assert ($version -ne $null) 'NuGet version should not be null'
+    
     (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     $installDir = $location
     if (!(Test-Path $installDir)) {
@@ -140,10 +145,7 @@ function Install-NuGet([string] $location, [string] $version = "latest") {
 
     if (!(Test-Path $location\nuget.exe)) {
         Write-Host "Downloading NuGet version $version"
-        $url = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-        if ($version -ne "latest") {
-            $url = "https://dist.nuget.org/win-x86-commandline/v$version/nuget.exe"
-        }
+        $url = "https://dist.nuget.org/win-x86-commandline/v$version/nuget.exe"
         Invoke-WebRequest $url -OutFile "$location\nuget.exe"
     }
 

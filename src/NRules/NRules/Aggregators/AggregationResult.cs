@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Diagnostics;
+using NRules.RuleModel;
 
 namespace NRules.Aggregators
 {
@@ -32,44 +34,50 @@ namespace NRules.Aggregators
     /// Result of the aggregation.
     /// </summary>
     [DebuggerDisplay("{Action}")]
-    public struct AggregationResult
+    public class AggregationResult
     {
-        public static AggregationResult[] Empty = new AggregationResult[0];
+        public static readonly AggregationResult[] Empty = new AggregationResult[0];
 
-        private AggregationResult(AggregationAction action, object aggregate)
+        private AggregationResult(AggregationAction action, object aggregate, object previous, IEnumerable<IFact> source)
         {
             Action = action;
             Aggregate = aggregate;
+            Previous = previous;
+            Source = source;
         }
 
         /// <summary>
         /// Constructs an aggregation result that indicates no changes at the aggregate level.
         /// </summary>
         /// <param name="result">Aggregate.</param>
+        /// <param name="source">Aggregate source facts.</param>
         /// <returns>Aggregation result.</returns>
-        public static AggregationResult None(object result)
+        public static AggregationResult None(object result, IEnumerable<IFact> source)
         {
-            return new AggregationResult(AggregationAction.None, result);
+            return new AggregationResult(AggregationAction.None, result, null, source);
         }
 
         /// <summary>
         /// Constructs an aggregation result that indicates a new aggregate.
         /// </summary>
         /// <param name="result">Aggregate.</param>
+        /// <param name="source">Aggregate source facts.</param>
         /// <returns>Aggregation result.</returns>
-        public static AggregationResult Added(object result)
+        public static AggregationResult Added(object result, IEnumerable<IFact> source)
         {
-            return new AggregationResult(AggregationAction.Added, result);
+            return new AggregationResult(AggregationAction.Added, result, null, source);
         }
 
         /// <summary>
         /// Constructs an aggregation result that indicates a modification at the aggregate level.
         /// </summary>
         /// <param name="result">Aggregate.</param>
+        /// <param name="previous">Previous aggregate.</param>
+        /// <param name="source">Aggregate source facts.</param>
         /// <returns>Aggregation result.</returns>
-        public static AggregationResult Modified(object result)
+        public static AggregationResult Modified(object result, object previous, IEnumerable<IFact> source)
         {
-            return new AggregationResult(AggregationAction.Modified, result);
+            return new AggregationResult(AggregationAction.Modified, result, previous, source);
         }
 
         /// <summary>
@@ -79,7 +87,7 @@ namespace NRules.Aggregators
         /// <returns>Aggregation result.</returns>
         public static AggregationResult Removed(object result)
         {
-            return new AggregationResult(AggregationAction.Removed, result);
+            return new AggregationResult(AggregationAction.Removed, result, result, null);
         }
 
         /// <summary>
@@ -91,5 +99,15 @@ namespace NRules.Aggregators
         /// Resulting aggregate.
         /// </summary>
         public object Aggregate { get; }
+        
+        /// <summary>
+        /// Previous aggregate.
+        /// </summary>
+        public object Previous { get; }
+
+        /// <summary>
+        /// Facts that produced this aggregation result.
+        /// </summary>
+        public IEnumerable<IFact> Source { get; }
     }
 }

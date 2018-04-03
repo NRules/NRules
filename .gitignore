@@ -120,3 +120,6 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
+
+# Benchmak Results
+BenchmarkDotNet.Artifacts

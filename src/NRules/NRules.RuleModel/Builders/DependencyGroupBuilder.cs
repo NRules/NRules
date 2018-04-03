@@ -18,7 +18,7 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Adds a dependency to the group.
         /// </summary>
-        /// <param name="type">Dependency .NET type.</param>
+        /// <param name="type">Dependency CLR type.</param>
         /// <param name="name">Dependency name.</param>
         public void Dependency(Type type, string name)
         {

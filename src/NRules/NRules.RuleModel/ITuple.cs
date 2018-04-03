@@ -5,6 +5,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Set of facts matched by the rules engine.
     /// </summary>
+    /// <seealso cref="IFact"/>
     public interface ITuple
     {
         /// <summary>

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using NRules.AgendaFilters;
 using NRules.Aggregators;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -26,8 +28,8 @@ namespace NRules.Utilities
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
-            var condition = new BetaCondition(element.Expression, fastDelegate, factIndexMap);
+            var factMap = IndexMap.CreateMap(element.References, declarations);
+            var condition = new BetaCondition(element.Expression, fastDelegate, factMap);
             return condition;
         }
 
@@ -37,9 +39,9 @@ namespace NRules.Utilities
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 1);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count - 1);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
+            var tupleFactMap = IndexMap.CreateMap(element.References, declarations);
             var dependencyIndexMap = IndexMap.CreateMap(element.References, dependencies);
-            var action = new RuleAction(element.Expression, fastDelegate, factIndexMap, dependencyIndexMap);
+            var action = new RuleAction(element.Expression, fastDelegate, tupleFactMap, dependencyIndexMap);
             return action;
         }
 
@@ -62,8 +64,8 @@ namespace NRules.Utilities
                 var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
                 var @delegate = optimizedExpression.Compile();
                 var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-                var factIndexMap = IndexMap.CreateMap(element.References, declarationsList);
-                var expression = new AggregateExpression(element.Expression, fastDelegate, factIndexMap);
+                var factMap = IndexMap.CreateMap(element.References, declarationsList);
+                var expression = new AggregateExpression(element.Expression, fastDelegate, factMap);
                 return expression;
             }
         }
@@ -74,8 +76,8 @@ namespace NRules.Utilities
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
-            var expression = new BindingExpression(element.Expression, fastDelegate, factIndexMap);
+            var factMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new BindingExpression(element.Expression, fastDelegate, factMap);
             return expression;
         }
 
@@ -85,8 +87,8 @@ namespace NRules.Utilities
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
-            var expression = new ActivationCondition(element.Expression, fastDelegate, factIndexMap);
+            var factMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new ActivationCondition(element.Expression, fastDelegate, factMap);
             return expression;
         }
 
@@ -96,8 +98,8 @@ namespace NRules.Utilities
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factIndexMap = IndexMap.CreateMap(element.References, declarations);
-            var expression = new ActivationExpression(element.Expression, fastDelegate, factIndexMap);
+            var factMap = IndexMap.CreateMap(element.References, declarations);
+            var expression = new ActivationExpression(element.Expression, fastDelegate, factMap);
             return expression;
         }
         
@@ -108,12 +110,10 @@ namespace NRules.Utilities
 
         private static Expression EnsureReturnType(Expression expression, Type delegateType)
         {
-            if (expression.Type == typeof(void)) return expression;
-            if (delegateType.GenericTypeArguments.Length == 0) return expression;
-
-            var resultType = delegateType.GenericTypeArguments.Last();
-            if (expression.Type == resultType) return expression;
-            var convertedExpression = Expression.Convert(expression, resultType);
+            var returnType = delegateType.GetTypeInfo().GetDeclaredMethod(nameof(Action.Invoke)).ReturnType;
+            if (returnType == typeof(void)) return expression;
+            if (expression.Type == returnType) return expression;
+            var convertedExpression = Expression.Convert(expression, returnType);
             return convertedExpression;
         }
 

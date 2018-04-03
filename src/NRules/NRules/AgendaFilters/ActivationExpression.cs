@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using NRules.Rete;
 using NRules.Utilities;
 
-namespace NRules
+namespace NRules.AgendaFilters
 {
     internal interface IActivationExpression
     {
@@ -14,32 +14,39 @@ namespace NRules
     {
         private readonly LambdaExpression _expression;
         private readonly FastDelegate<Func<object[], object>> _compiledExpression;
-        private readonly IndexMap _factIndexMap;
+        private readonly IndexMap _tupleFactMap;
 
-        public ActivationExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap factIndexMap)
+        public ActivationExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap tupleFactMap)
         {
             _expression = expression;
             _compiledExpression = compiledExpression;
-            _factIndexMap = factIndexMap;
+            _tupleFactMap = tupleFactMap;
         }
 
         public object Invoke(Activation activation)
         {
             var tuple = activation.Tuple;
-            var tupleFactMap = activation.TupleFactMap;
+            var activationFactMap = activation.FactMap;
 
             var args = new object[_compiledExpression.ArrayArgumentCount];
 
             int index = tuple.Count - 1;
-            var factIndexMap = _factIndexMap;
             foreach (var fact in tuple.Facts)
             {
-                var mappedIndex = factIndexMap[tupleFactMap[index]];
+                var mappedIndex = _tupleFactMap[activationFactMap[index]];
                 IndexMap.SetElementAt(args, mappedIndex, fact.Object);
                 index--;
             }
 
-            return _compiledExpression.Delegate.Invoke(args);
+            try
+            {
+                var result = _compiledExpression.Delegate.Invoke(args);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new ActivationExpressionException(e, _expression, activation);
+            }
         }
     }
 }

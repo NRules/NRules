@@ -12,12 +12,12 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Autofac IoC container integration for NRules.</description>
     <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
-    <copyright>Copyright 2012-2017 Sergiy Nikolayev. All rights reserved.</copyright>
+    <copyright>Copyright 2012-2018 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>nrules autofac</tags>
     <dependencies>
       <group targetFramework="net45">
         <dependency id="NRules" version="[$version$]" />
-        <dependency id="Autofac" version="3.2.0" />
+        <dependency id="Autofac" version="3.3.1" />
       </group>
     </dependencies>
   </metadata>

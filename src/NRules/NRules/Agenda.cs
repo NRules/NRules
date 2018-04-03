@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NRules.AgendaFilters;
+using NRules.RuleModel;
 
 namespace NRules
 {
@@ -7,6 +9,8 @@ namespace NRules
     /// Agenda stores matches between rules and facts. These matches are called activations.
     /// Multiple activations are ordered according to the conflict resolution strategy.
     /// </summary>
+    /// <seealso cref="IMatch"/>
+    /// <seealso cref="IAgendaFilter"/>
     public interface IAgenda
     {
         /// <summary>
@@ -20,12 +24,25 @@ namespace NRules
         /// </summary>
         /// <remarks>Throws <c>InvalidOperationException</c> if agenda is empty.</remarks>
         /// <returns>Next match.</returns>
-        IActivation Peek();
+        IMatch Peek();
 
         /// <summary>
         /// Removes all matches from agenda.
         /// </summary>
         void Clear();
+
+        /// <summary>
+        /// Adds a global filter to the agenda.
+        /// </summary>
+        /// <param name="filter">Filter to be applied to all activations before they are placed on the agenda.</param>
+        void AddFilter(IAgendaFilter filter);
+
+        /// <summary>
+        /// Adds a rule-level filter to the agenda.
+        /// </summary>
+        /// <param name="rule">Rule, whose activations are to be filtered before placing them on the agenda.</param>
+        /// <param name="filter">Filter to be applied to all activations for a given rule before they are placed on the agenda.</param>
+        void AddFilter(IRuleDefinition rule, IAgendaFilter filter);
     }
 
     internal interface IAgendaInternal : IAgenda
@@ -39,19 +56,15 @@ namespace NRules
     internal class Agenda : IAgendaInternal
     {
         private readonly ActivationQueue _activationQueue = new ActivationQueue();
-        private readonly IDictionary<ICompiledRule, IActivationFilter[]> _filters;
-
-        public Agenda(IDictionary<ICompiledRule, IActivationFilter[]> filters)
-        {
-            _filters = filters;
-        }
+        private readonly List<IAgendaFilter> _globalFilters = new List<IAgendaFilter>();
+        private readonly Dictionary<IRuleDefinition, List<IAgendaFilter>> _ruleFilters = new Dictionary<IRuleDefinition, List<IAgendaFilter>>();
 
         public bool IsEmpty()
         {
             return !_activationQueue.HasActive();
         }
 
-        public IActivation Peek()
+        public IMatch Peek()
         {
             Activation activation = _activationQueue.Peek();
             return activation;
@@ -62,6 +75,21 @@ namespace NRules
             _activationQueue.Clear();
         }
 
+        public void AddFilter(IAgendaFilter filter)
+        {
+            _globalFilters.Add(filter);
+        }
+
+        public void AddFilter(IRuleDefinition rule, IAgendaFilter filter)
+        {
+            if (!_ruleFilters.TryGetValue(rule, out var filters))
+            {
+                filters = new List<IAgendaFilter>();
+                _ruleFilters.Add(rule, filters);
+            }
+            filters.Add(filter);
+        }
+
         public Activation Pop()
         {
             Activation activation = _activationQueue.Dequeue();
@@ -70,13 +98,13 @@ namespace NRules
 
         public void Add(IExecutionContext context, Activation activation)
         {
-            if (!Accept(activation)) return;
+            if (!Accept(context, activation)) return;
             _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
 
         public void Modify(IExecutionContext context, Activation activation)
         {
-            if (!Accept(activation)) return;
+            if (!Accept(context, activation)) return;
             _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
         }
 
@@ -84,30 +112,40 @@ namespace NRules
         {
             _activationQueue.Remove(activation);
             UnlinkFacts(context.Session, activation);
-            Remove(activation);
         }
 
-        private bool Accept(Activation activation)
+        private bool Accept(IExecutionContext context, Activation activation)
         {
-            IActivationFilter[] filters;
-            if (!_filters.TryGetValue(activation.CompiledRule, out filters)) return true;
+            try
+            {
+                return AcceptActivation(activation);
+            }
+            catch (ActivationExpressionException e)
+            {
+                bool isHandled = false;
+                context.EventAggregator.RaiseAgendaFilterFailed(context.Session, e.InnerException,
+                    e.Expression, activation, ref isHandled);
+                if (!isHandled)
+                {
+                    throw new AgendaExpressionEvaluationException("Failed to evaluate agenda filter expression",
+                        activation.Rule.Name, e.Expression.ToString(), e.InnerException);
+                }
+                return false;
+            }
+        }
 
-            foreach (var filter in filters)
+        private bool AcceptActivation(Activation activation)
+        {
+            foreach (var filter in _globalFilters)
+            {
+                if (!filter.Accept(activation)) return false;
+            }
+            if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters)) return true;
+            foreach (var filter in ruleFilters)
             {
                 if (!filter.Accept(activation)) return false;
             }
             return true;
-        }
-
-        private void Remove(Activation activation)
-        {
-            IActivationFilter[] filters;
-            if (!_filters.TryGetValue(activation.CompiledRule, out filters)) return;
-
-            foreach (var filter in filters)
-            {
-                filter.Remove(activation);
-            }
         }
 
         private static void UnlinkFacts(ISessionInternal session, Activation activation)

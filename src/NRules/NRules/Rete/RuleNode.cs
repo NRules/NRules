@@ -2,9 +2,9 @@
 {
     internal interface IRuleNode : INode
     {
-        void PropagateAssert(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap);
-        void PropagateUpdate(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap);
-        void PropagateRetract(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap);
+        void PropagateAssert(IExecutionContext context, Tuple tuple, IndexMap factMap);
+        void PropagateUpdate(IExecutionContext context, Tuple tuple, IndexMap factMap);
+        void PropagateRetract(IExecutionContext context, Tuple tuple, IndexMap factMap);
     }
 
     internal class RuleNode : IRuleNode
@@ -16,24 +16,24 @@
             CompiledRule = compiledRule;
         }
 
-        public void PropagateAssert(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap)
+        public void PropagateAssert(IExecutionContext context, Tuple tuple, IndexMap factMap)
         {
-            var activation = new Activation(CompiledRule, tuple, tupleFactMap);
+            var activation = new Activation(CompiledRule, tuple, factMap);
             tuple.SetState(this, activation);
             context.Agenda.Add(context, activation);
             context.EventAggregator.RaiseActivationCreated(context.Session, activation);
         }
 
-        public void PropagateUpdate(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap)
+        public void PropagateUpdate(IExecutionContext context, Tuple tuple, IndexMap factMap)
         {
-            var activation = tuple.GetState<Activation>(this);
+            var activation = tuple.GetStateOrThrow<Activation>(this);
             context.Agenda.Modify(context, activation);
             context.EventAggregator.RaiseActivationUpdated(context.Session, activation);
         }
 
-        public void PropagateRetract(IExecutionContext context, Tuple tuple, IndexMap tupleFactMap)
+        public void PropagateRetract(IExecutionContext context, Tuple tuple, IndexMap factMap)
         {
-            var activation = tuple.GetState<Activation>(this);
+            var activation = tuple.RemoveStateOrThrow<Activation>(this);
             context.Agenda.Remove(context, activation);
             context.EventAggregator.RaiseActivationDeleted(context.Session, activation);
         }

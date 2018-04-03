@@ -15,6 +15,7 @@ namespace NRules.Tests
         private readonly Mock<IWorkingMemory> _workingMemory;
         private readonly Mock<IEventAggregator> _eventAggregator;
         private readonly Mock<IActionExecutor> _actionExecutor;
+        private readonly Mock<IIdGenerator> _idGenerator;
         private readonly Mock<IDependencyResolver> _dependencyResolver;
         private readonly Mock<IActionInterceptor> _actionInterceptor;
             
@@ -25,6 +26,7 @@ namespace NRules.Tests
             _workingMemory = new Mock<IWorkingMemory>();
             _eventAggregator = new Mock<IEventAggregator>();
             _actionExecutor = new Mock<IActionExecutor>();
+            _idGenerator = new Mock<IIdGenerator>();
             _dependencyResolver = new Mock<IDependencyResolver>();
             _actionInterceptor = new Mock<IActionInterceptor>();
         }
@@ -191,7 +193,9 @@ namespace NRules.Tests
 
         private Session CreateTarget()
         {
-            return new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, _actionExecutor.Object, _dependencyResolver.Object, _actionInterceptor.Object);
+            var session = new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, 
+                _actionExecutor.Object, _idGenerator.Object, _dependencyResolver.Object, _actionInterceptor.Object);
+            return session;
         }
 
         private static Activation StubActivation()

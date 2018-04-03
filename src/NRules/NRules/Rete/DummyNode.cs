@@ -10,7 +10,7 @@ namespace NRules.Rete
 
         public void Activate(IExecutionContext context)
         {
-            var tuple = new Tuple();
+            var tuple = new Tuple(context.IdGenerator.NextTupleId());
             var tupleList = new List<Tuple>();
             tupleList.Add(tuple);
 

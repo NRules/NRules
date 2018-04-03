@@ -1,9 +1,9 @@
 param (
     [string]$target = 'Build',
-    [string]$component_name = 'Core'
+    [string]$component = 'Core'
 )
 
-$version = '0.8.0'
+$version = '0.9.0'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -20,9 +20,10 @@ $components = @{
         }
         test = @{
             location = 'Tests'
+            frameworks = @('net462', 'netcoreapp1.0', 'netcoreapp2.0')
         }
         bin = @{
-            frameworks = @('net45', 'netstandard1.0')
+            frameworks = @('net45', 'netstandard1.0', 'netstandard2.0')
             'net45' = @{
                 include = @(
                     "NRules\bin\$configuration\net45",
@@ -35,6 +36,13 @@ $components = @{
                     "NRules\bin\$configuration\netstandard1.0",
                     "NRules.Fluent\bin\$configuration\netstandard1.0",
                     "NRules.RuleModel\bin\$configuration\netstandard1.0"
+                )
+            }
+            'netstandard2.0' = @{
+                include = @(
+                    "NRules\bin\$configuration\netstandard2.0",
+                    "NRules.Fluent\bin\$configuration\netstandard2.0",
+                    "NRules.RuleModel\bin\$configuration\netstandard2.0"
                 )
             }
         }
@@ -118,6 +126,27 @@ $components = @{
             tool = 'msbuild'
         }
     };
+    'Benchmark' = @{
+        name = 'NRules.Benchmark'
+        src_root = 'bench'
+        restore = @{
+            tool = 'dotnet'
+        }
+        build = @{
+            tool = 'dotnet'
+        }
+        bin = @{
+            frameworks = @('net462')
+            'net462' = @{
+                include = @(
+                    "NRules.Benchmark\bin\$configuration\net462"
+                )
+            }
+        }
+        run = @{
+            exe = @('net462\NRules.Benchmark.exe')
+        }
+   };
     'Documentation' = @{
         name = 'Documentation'
         src_root = 'doc'
@@ -132,24 +161,25 @@ $core = @('NRules', 'NRules.Debugger.Visualizer')
 $integration = $components.keys | where { $_.StartsWith("NRules.Integration") }
 $samples = $components.keys | where { $_.StartsWith("Samples.") }
 
-$component_list = @()
-if ($component_name -eq "Core") {
-    $component_list += $core
-} elseif ($component_name -eq "Integration") {
-    $component_list += $integration
-} elseif ($component_name -eq "Samples") {
-    $component_list += $samples
-} elseif ($component_name -eq "All") {
-    $component_list += $core
-    $component_list += $integration
-    $component_list += $samples
+$componentList = @()
+if ($component -eq "Core") {
+    $componentList += $core
+} elseif ($component -eq "Integration") {
+    $componentList += $integration
+} elseif ($component -eq "Samples") {
+    $componentList += $samples
+} elseif ($component -eq "All") {
+    $componentList += $core
+    $componentList += $integration
+    $componentList += $samples
 } else {
-    $component_list += $component_name
+    $componentList += $component
 }
 
 Import-Module .\tools\build\psake.psm1
-$component_list | % {
-    Invoke-psake .\default.ps1 $target -properties @{version=$version;configuration=$configuration} -parameters @{component=$components[$_]}
+$baseDir = Resolve-Path .
+$componentList | % {
+    Invoke-psake .\tools\build\default.ps1 $target -properties @{version=$version;configuration=$configuration;baseDir=$baseDir} -parameters @{component=$components[$_]}
     if (-not $psake.build_success) {
         break
     }

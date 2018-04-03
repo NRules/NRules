@@ -11,8 +11,8 @@ namespace NRules.Fluent.Expressions
             {
                 throw new ArgumentNullException(nameof(alias), "Pattern alias is null");
             }
-            var fieldMember = alias.Body as MemberExpression;
-            if (fieldMember == null)
+
+            if (!(alias.Body is MemberExpression fieldMember))
             {
                 throw new ArgumentException(
                     $"Invalid pattern alias expression. Expected={typeof(MemberExpression)}, Actual={alias.Body.GetType()}");

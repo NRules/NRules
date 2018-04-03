@@ -100,11 +100,6 @@ namespace NRules.Fluent.Expressions
             return this;
         }
 
-        public ILeftHandSideExpression Calculate<TResult>(Expression<Func<TResult>> alias, Expression<Func<TResult>> expression)
-        {
-            return Let(alias, expression);
-        }
-
         public ILeftHandSideExpression Let<TResult>(Expression<Func<TResult>> alias, Expression<Func<TResult>> expression)
         {
             var symbol = alias.ToParameterExpression();

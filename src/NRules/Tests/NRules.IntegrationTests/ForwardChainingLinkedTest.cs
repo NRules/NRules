@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.RuleModel;
 using Xunit;
 
 namespace NRules.IntegrationTests
@@ -87,6 +89,64 @@ namespace NRules.IntegrationTests
             //Assert - II
             Assert.Equal(0, Session.Query<FactType2>().Count());
             Assert.Equal(0, Session.Query<FactType3>().Count());
+        }
+
+        [Fact]
+        public void Fire_OneMatchingFact_LinkedFactHasSource()
+        {
+            //Arrange
+            IFact matchedFact2 = null;
+            IFact matchedFact3 = null;
+            Session.Events.FactInsertedEvent += (sender, args) =>
+            {
+                if (args.Fact.Type == typeof(FactType2)) matchedFact2 = args.Fact;
+                if (args.Fact.Type == typeof(FactType3)) matchedFact3 = args.Fact;
+            };
+
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
+            Session.Insert(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            Assert.NotNull(matchedFact2);
+            Assert.NotNull(matchedFact3);
+            Assert.NotNull(matchedFact2.Source);
+            Assert.Equal(FactSourceType.Linked, matchedFact2.Source.SourceType);
+            Assert.Single(matchedFact2.Source.Facts, x => x.Value == fact1);
+
+            var linkedSource = (ILinkedFactSource)matchedFact2.Source;
+            Assert.NotNull(linkedSource.Rule);
+            Assert.Contains(nameof(ForwardChainingFirstRule), linkedSource.Rule.Name);
+        }
+
+        [Fact]
+        public void Fire_DirectUpdateOfLinkedFact_Fails()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
+            Session.Insert(fact1);
+            Session.Fire();
+
+            var linkedFacts = Session.Query<FactType2>();
+
+            //Act - Assert
+            Assert.Throws<ArgumentException>(() => Session.UpdateAll(linkedFacts));
+        }
+
+        [Fact]
+        public void Fire_DirectRetractOfLinkedFact_Fails()
+        {
+            //Arrange
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
+            Session.Insert(fact1);
+            Session.Fire();
+
+            var linkedFacts = Session.Query<FactType2>();
+
+            //Act - Assert
+            Assert.Throws<ArgumentException>(() => Session.RetractAll(linkedFacts));
         }
 
         protected override void SetUpRules()

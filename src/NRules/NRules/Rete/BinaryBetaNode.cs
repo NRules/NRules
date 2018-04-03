@@ -39,12 +39,25 @@ namespace NRules.Rete
             return true;
         }
 
+        protected TupleFactSet JoinedSet(IExecutionContext context, Tuple tuple)
+        {
+            int level = tuple.Level;
+            var facts = RightSource.GetFacts(context).ToList();
+            if (facts.Count > 0)
+            {
+                IDictionary<long, List<Fact>> factGroups = GroupFacts(facts, level);
+                if (factGroups.Count > 0)
+                    return JoinByGroupId(tuple, factGroups);
+            }
+            return new TupleFactSet(tuple, facts);
+        }
+
         protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, IList<Tuple> tuples)
         {
             if (tuples.Count == 0) return EmptySetList;
             int level = tuples[0].Level;
 
-            var facts = Enumerable.ToList<Fact>(RightSource.GetFacts(context));
+            var facts = RightSource.GetFacts(context).ToList();
             if (facts.Count > 0)
             {
                 IDictionary<long, List<Fact>> factGroups = GroupFacts(facts, level);
@@ -57,7 +70,7 @@ namespace NRules.Rete
 
         protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, IList<Fact> facts)
         {
-            var tuples = Enumerable.ToList<Tuple>(LeftSource.GetTuples(context));
+            var tuples = LeftSource.GetTuples(context).ToList();
             if (tuples.Count == 0) return EmptySetList;
             int level = tuples[0].Level;
 
@@ -73,13 +86,18 @@ namespace NRules.Rete
             var sets = new List<TupleFactSet>();
             foreach (var tuple in tuples)
             {
-                List<Fact> tupleFacts;
-                var tupleFactSet = factGroups.TryGetValue(tuple.Id, out tupleFacts)
-                    ? new TupleFactSet(tuple, tupleFacts)
-                    : new TupleFactSet(tuple, new List<Fact>());
+                var tupleFactSet = JoinByGroupId(tuple, factGroups);
                 sets.Add(tupleFactSet);
             }
             return sets;
+        }
+
+        private static TupleFactSet JoinByGroupId(Tuple tuple, IDictionary<long, List<Fact>> factGroups)
+        {
+            var tupleFactSet = factGroups.TryGetValue(tuple.Id, out var tupleFacts)
+                ? new TupleFactSet(tuple, tupleFacts)
+                : new TupleFactSet(tuple, new List<Fact>());
+            return tupleFactSet;
         }
 
         private IEnumerable<TupleFactSet> CrossJoin(IList<Tuple> tuples, IList<Fact> facts)
@@ -103,8 +121,7 @@ namespace NRules.Rete
             {
                 var wrapperfact = (WrapperFact) fact;
                 long groupId = wrapperfact.WrappedTuple.GetGroupId(level);
-                List<Fact> factGroup;
-                if (!factGroups.TryGetValue(groupId, out factGroup))
+                if (!factGroups.TryGetValue(groupId, out var factGroup))
                 {
                     factGroup = new List<Fact>();
                     factGroups[groupId] = factGroup;

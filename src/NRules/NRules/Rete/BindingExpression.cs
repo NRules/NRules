@@ -7,41 +7,34 @@ namespace NRules.Rete
     internal interface IBindingExpression
     {
         LambdaExpression Expression { get; }
-        object Invoke(IExecutionContext context, Tuple tuple);
+        object Invoke(Tuple tuple);
     }
 
     internal class BindingExpression : IBindingExpression, IEquatable<BindingExpression>
     {
         private readonly FastDelegate<Func<object[], object>> _compiledExpression;
-        private readonly IndexMap _factIndexMap;
+        private readonly IndexMap _factMap;
 
-        public BindingExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap factIndexMap)
+        public BindingExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap factMap)
         {
             Expression = expression;
             _compiledExpression = compiledExpression;
-            _factIndexMap = factIndexMap;
+            _factMap = factMap;
         }
 
         public LambdaExpression Expression { get; }
         
-        public object Invoke(IExecutionContext context, Tuple tuple)
+        public object Invoke(Tuple tuple)
         {
             var args = new object[_compiledExpression.ArrayArgumentCount];
             int index = tuple.Count - 1;
             foreach (var fact in tuple.Facts)
             {
-                IndexMap.SetElementAt(args, _factIndexMap[index], fact.Object);
+                IndexMap.SetElementAt(args, _factMap[index], fact.Object);
                 index--;
             }
 
-            try
-            {
-                return _compiledExpression.Delegate(args);
-            }
-            catch (Exception e)
-            {
-                throw new RuleExpressionEvaluationException("Failed to evaluate binding expression", Expression.ToString(), e);
-            }
+            return _compiledExpression.Delegate(args);
         }
 
         public bool Equals(BindingExpression other)

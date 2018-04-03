@@ -25,12 +25,23 @@ namespace NRules
     /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
     /// <event cref="IEventProvider.ConditionFailedEvent">When there is an error during condition evaluation,
     /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.BindingFailedEvent">When there is an error during binding expression evaluation,
+    /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.AggregateFailedEvent">When there is an error during aggregate expression evaluation,
+    /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.AgendaFilterFailedEvent">When there is an error during agenda filter evaluation,
+    /// before throwing exception to the client.</event>
     /// <event cref="IEventProvider.ActionFailedEvent">When there is an error during action evaluation,
     /// before throwing exception to the client.</event>
     /// <exception cref="RuleConditionEvaluationException">Error while evaluating any of the rules' conditions.
     /// This exception can also be observed as an event <see cref="IEventProvider.ConditionFailedEvent"/>.</exception>
+    /// <exception cref="RuleExpressionEvaluationException">Error while evaluating any of the rules' binding or aggregate expressions.
+    /// This exception can also be observed as events <see cref="IEventProvider.BindingFailedEvent"/>, <see cref="IEventProvider.AggregateFailedEvent"/>.</exception>
+    /// <exception cref="AgendaExpressionEvaluationException">Error while evaluating any of the agenda filters.
+    /// This exception can also be observed as an event <see cref="IEventProvider.AgendaFilterFailedEvent"/>.</exception>
     /// <exception cref="RuleActionEvaluationException">Error while evaluating any of the rules' actions.
     /// This exception can also be observed as an event <see cref="IEventProvider.ActionFailedEvent"/>.</exception>
+    /// <seealso cref="ISessionFactory"/>
     /// <threadsafety instance="false" />
     public interface ISession
     {
@@ -181,11 +192,11 @@ namespace NRules
     {
         new IAgendaInternal Agenda { get; }
 
-        IEnumerable<object> GetLinkedKeys(IActivation activation);
-        object GetLinked(IActivation activation, object key);
-        void InsertLinked(IActivation activation, object key, object fact);
-        void UpdateLinked(IActivation activation, object key, object fact);
-        void RetractLinked(IActivation activation, object key, object fact);
+        IEnumerable<object> GetLinkedKeys(Activation activation);
+        object GetLinked(Activation activation, object key);
+        void InsertLinked(Activation activation, object key, object fact);
+        void UpdateLinked(Activation activation, object key, object fact);
+        void RetractLinked(Activation activation, object key, object fact);
     }
 
     /// <summary>
@@ -206,6 +217,7 @@ namespace NRules
             IWorkingMemory workingMemory,
             IEventAggregator eventAggregator,
             IActionExecutor actionExecutor,
+            IIdGenerator idGenerator,
             IDependencyResolver dependencyResolver,
             IActionInterceptor actionInterceptor)
         {
@@ -214,10 +226,9 @@ namespace NRules
             _agenda = agenda;
             _eventAggregator = eventAggregator;
             _actionExecutor = actionExecutor;
-            _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator);
+            _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator, idGenerator);
             DependencyResolver = dependencyResolver;
             ActionInterceptor = actionInterceptor;
-            _network.Activate(_executionContext);
         }
 
         public IAgenda Agenda => _agenda;
@@ -226,6 +237,11 @@ namespace NRules
         public IActionInterceptor ActionInterceptor { get; set; }
 
         IAgendaInternal ISessionInternal.Agenda => _agenda;
+
+        internal void Activate()
+        {
+            _network.Activate(_executionContext);
+        }
 
         public void InsertAll(IEnumerable<object> facts)
         {
@@ -304,7 +320,7 @@ namespace NRules
             foreach (var fact in facts)
             {
                 var factWrapper = _workingMemory.GetFact(fact);
-                if (factWrapper != null)
+                if (factWrapper != null && factWrapper.Source == null)
                 {
                     UpdateFact(factWrapper, fact);
                     toPropagate.Add(factWrapper);
@@ -360,7 +376,7 @@ namespace NRules
             foreach (var fact in facts)
             {
                 var factWrapper = _workingMemory.GetFact(fact);
-                if (factWrapper != null)
+                if (factWrapper != null && factWrapper.Source == null)
                 {
                     toPropagate.Add(factWrapper);
                 }
@@ -394,19 +410,19 @@ namespace NRules
             return result.FailedCount == 0;
         }
 
-        public IEnumerable<object> GetLinkedKeys(IActivation activation)
+        public IEnumerable<object> GetLinkedKeys(Activation activation)
         {
             var keys = _workingMemory.GetLinkedKeys(activation);
             return keys;
         }
 
-        public object GetLinked(IActivation activation, object key)
+        public object GetLinked(Activation activation, object key)
         {
             var factWrapper = _workingMemory.GetLinkedFact(activation, key);
             return factWrapper?.Object;
         }
 
-        public void InsertLinked(IActivation activation, object key, object fact)
+        public void InsertLinked(Activation activation, object key, object fact)
         {
             if (key == null)
             {
@@ -421,12 +437,13 @@ namespace NRules
             {
                 throw new ArgumentException($"Linked fact already exists. Key={key}", nameof(fact));
             }
-            factWrapper = new Fact(fact);
+            factWrapper = new SyntheticFact(fact);
+            factWrapper.Source = new LinkedFactSource(activation);
             _workingMemory.AddLinkedFact(activation, key, factWrapper);
             _network.PropagateAssert(_executionContext, new List<Fact> {factWrapper});
         }
 
-        public void UpdateLinked(IActivation activation, object key, object fact)
+        public void UpdateLinked(Activation activation, object key, object fact)
         {
             if (key == null)
             {
@@ -441,11 +458,12 @@ namespace NRules
             {
                 throw new ArgumentException($"Linked fact does not exist. Key={key}", nameof(fact));
             }
+            factWrapper.Source = new LinkedFactSource(activation);
             _workingMemory.UpdateLinkedFact(activation, key, factWrapper, fact);
             _network.PropagateUpdate(_executionContext, new List<Fact> {factWrapper});
         }
 
-        public void RetractLinked(IActivation activation, object key, object fact)
+        public void RetractLinked(Activation activation, object key, object fact)
         {
             if (key == null)
             {
@@ -462,6 +480,7 @@ namespace NRules
             }
             _network.PropagateRetract(_executionContext, new List<Fact> {factWrapper});
             _workingMemory.RemoveLinkedFact(activation, key, factWrapper);
+            factWrapper.Source = null;
         }
 
         public int Fire()

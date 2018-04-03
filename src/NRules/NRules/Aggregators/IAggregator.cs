@@ -5,6 +5,12 @@ namespace NRules.Aggregators
 {
     /// <summary>
     /// Base interface for fact aggregators.
+    /// An aggregator is a stateful element of the rules engine, that receives matching facts of a particular kind,
+    /// and can combine them into a synthetic fact, that is then used by the downstream logic in the rule.
+    /// Aggregator also recieves updates and removals for the matching facts, so that it can keep the corresponding
+    /// aggregate facts in sync.
+    /// An aggregator must be supplemented by a corresponding implementation of <see cref="IAggregatorFactory"/> that
+    /// knows how to create new instances of the aggregator.
     /// </summary>
     public interface IAggregator
     {
@@ -31,10 +37,5 @@ namespace NRules.Aggregators
         /// <param name="facts">Existing facts to remove from the aggregate.</param>
         /// <returns>Results of the operation on the aggregate, based on the removed facts.</returns>
         IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts);
-
-        /// <summary>
-        /// Resulting aggregates.
-        /// </summary>
-        IEnumerable<object> Aggregates { get; } 
     }
 }

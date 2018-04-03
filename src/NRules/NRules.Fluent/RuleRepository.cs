@@ -23,7 +23,7 @@ namespace NRules.Fluent
         }
 
         /// <summary>
-        /// Rules activator that instantiates rules based on a .NET type.
+        /// Rules activator that instantiates rules based on a CLR type.
         /// </summary>
         public IRuleActivator Activator { get; set; }
 

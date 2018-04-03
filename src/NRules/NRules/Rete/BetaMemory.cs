@@ -34,11 +34,9 @@ namespace NRules.Rete
 
         public Tuple FindTuple(Tuple leftTuple, Fact rightFact)
         {
-            Dictionary<Fact, Tuple> subMap;
-            if (_parentToChildMap.TryGetValue(leftTuple, out subMap))
+            if (_parentToChildMap.TryGetValue(leftTuple, out var subMap))
             {
-                Tuple childTuple;
-                subMap.TryGetValue(rightFact ?? NullFact, out childTuple);
+                subMap.TryGetValue(rightFact ?? NullFact, out var childTuple);
                 return childTuple;
             }
             return null;
@@ -47,8 +45,7 @@ namespace NRules.Rete
         private void AddMapping(Tuple tuple)
         {
             if (tuple.LeftTuple == null) return;
-            Dictionary<Fact, Tuple> subMap;
-            if (!_parentToChildMap.TryGetValue(tuple.LeftTuple, out subMap))
+            if (!_parentToChildMap.TryGetValue(tuple.LeftTuple, out var subMap))
             {
                 subMap = new Dictionary<Fact, Tuple>();
                 _parentToChildMap[tuple.LeftTuple] = subMap;
@@ -59,8 +56,7 @@ namespace NRules.Rete
         private void RemoveMapping(Tuple tuple)
         {
             if (tuple.LeftTuple == null) return;
-            Dictionary<Fact, Tuple> subMap;
-            if (_parentToChildMap.TryGetValue(tuple.LeftTuple, out subMap))
+            if (_parentToChildMap.TryGetValue(tuple.LeftTuple, out var subMap))
             {
                 subMap.Remove(tuple.RightFact ?? NullFact);
                 if (subMap.Count == 0) _parentToChildMap.Remove(tuple.LeftTuple);

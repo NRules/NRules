@@ -1,23 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NRules
+namespace NRules.AgendaFilters
 {
-    internal class KeyChangeActivationFilter : IActivationFilter
+    internal class KeyChangeAgendaFilter : IAgendaFilter
     {
+        private const string KeyName = "ChangeKeys";
         private readonly List<IActivationExpression> _keySelectors;
-        private readonly Dictionary<Activation, List<object>> _keys = new Dictionary<Activation, List<object>>();
 
-        public KeyChangeActivationFilter(IEnumerable<IActivationExpression> keySelectors)
+        public KeyChangeAgendaFilter(IEnumerable<IActivationExpression> keySelectors)
         {
             _keySelectors = new List<IActivationExpression>(keySelectors);
         }
 
         public bool Accept(Activation activation)
         {
-            List<object> oldKeys;
-            _keys.TryGetValue(activation, out oldKeys);
-
+            var oldKeys = activation.GetState<List<object>>(KeyName);
             var newKeys = _keySelectors.Select(selector => selector.Invoke(activation)).ToList();
             bool accept = true;
 
@@ -34,13 +32,8 @@ namespace NRules
                 }
             }
 
-            _keys[activation] = newKeys;
+            activation.SetState(KeyName, newKeys);
             return accept;
-        }
-
-        public void Remove(Activation activation)
-        {
-            _keys.Remove(activation);
         }
     }
 }

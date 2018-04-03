@@ -10,13 +10,7 @@ namespace NRules.Aggregators
     internal class CollectionAggregator<TElement> : IAggregator
     {
         private readonly FactCollection<TElement> _items = new FactCollection<TElement>();
-        private readonly object[] _container; 
         private bool _created = false;
-
-        public CollectionAggregator()
-        {
-            _container = new object[] {_items};
-        } 
 
         public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
         {
@@ -24,21 +18,21 @@ namespace NRules.Aggregators
             if (!_created)
             {
                 _created = true;
-                return new[] {AggregationResult.Added(_items)};
+                return new[] {AggregationResult.Added(_items, _items.Facts)};
             }
-            return new[] {AggregationResult.Modified(_items)};
+            return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
         }
 
         public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
         {
             ModifyFacts(facts);
-            return new[] {AggregationResult.Modified(_items)};
+            return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
         }
 
         public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
         {
             RemoveFacts(facts);
-            return new[] {AggregationResult.Modified(_items)};
+            return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
         }
 
         private void AddFacts(IEnumerable<IFact> facts)
@@ -46,7 +40,7 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var item = (TElement)fact.Value;
-                _items.Add(item);
+                _items.Add(fact, item);
             }
         }
 
@@ -55,7 +49,7 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var item = (TElement)fact.Value;
-                _items.Modify(item);
+                _items.Modify(fact, item);
             }
         }
 
@@ -64,10 +58,8 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var item = (TElement) fact.Value;
-                _items.Remove(item);
+                _items.Remove(fact, item);
             }
         }
-
-        public IEnumerable<object> Aggregates => _container;
     }
 }

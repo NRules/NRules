@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using NRules.RuleModel;
 
 namespace NRules
@@ -14,6 +15,7 @@ namespace NRules
         IRuleFilter Filter { get; }
     }
 
+    [DebuggerDisplay("{Definition.Name}")]
     internal class CompiledRule : ICompiledRule
     {
         private readonly List<Declaration> _declarations;

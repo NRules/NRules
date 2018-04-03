@@ -199,7 +199,7 @@ namespace NRules.Fluent
             }
         }
 
-        internal bool IsFilterSet()
+        private bool IsFilterSet()
         {
             return _filter != null;
         }

@@ -2,6 +2,7 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.RuleModel;
 using Xunit;
 
 namespace NRules.IntegrationTests
@@ -149,6 +150,36 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
             Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
             Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
+        }
+
+        [Fact]
+        public void Fire_TwoFactsOneGroupAnotherFactFilteredOut_FiresOnceAggregateHasSource()
+        {
+            //Arrange
+            IFact matchedGroup = null;
+            Session.Events.RuleFiredEvent += (sender, args) =>
+            {
+                matchedGroup = args.Facts.Single();
+            };
+
+            var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
+            var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
+            var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+
+            var facts = new[] {fact1, fact2, fact3};
+            Session.InsertAll(facts);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+            Assert.NotNull(matchedGroup);
+            Assert.NotNull(matchedGroup.Source);
+            Assert.Equal(FactSourceType.Aggregate, matchedGroup.Source.SourceType);
+            Assert.Collection(matchedGroup.Source.Facts,
+                item => Assert.Same(fact1, item.Value),
+                item => Assert.Same(fact2, item.Value));
         }
 
         protected override void SetUpRules()

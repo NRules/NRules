@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using NRules.AgendaFilters;
 using NRules.Diagnostics;
 using NRules.Extensibility;
 using NRules.Rete;
@@ -29,9 +31,16 @@ namespace NRules
     /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
     /// <event cref="IEventProvider.ConditionFailedEvent">When there is an error during condition evaluation,
     /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.BindingFailedEvent">When there is an error during binding expression evaluation,
+    /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.AggregateFailedEvent">When there is an error during aggregate expression evaluation,
+    /// before throwing exception to the client.</event>
+    /// <event cref="IEventProvider.AgendaFilterFailedEvent">When there is an error during agenda filter evaluation,
+    /// before throwing exception to the client.</event>
     /// <event cref="IEventProvider.ActionFailedEvent">When there is an error during action evaluation,
     /// before throwing exception to the client.</event>
     /// <seealso cref="ISession"/>
+    /// <seealso cref="RuleCompiler"/>
     /// <threadsafety instance="true" />
     public interface ISessionFactory
     {
@@ -58,6 +67,13 @@ namespace NRules
         /// </summary>
         /// <returns>New rules session.</returns>
         ISession CreateSession();
+
+        /// <summary>
+        /// Creates a new rules session.
+        /// </summary>
+        /// <param name="initializationAction">Action invoked on the newly created session, before the session is activated (which could result in rule matches placed on the agenda).</param>
+        /// <returns>New rules session.</returns>
+        ISession CreateSession(Action<ISession> initializationAction);
     }
 
     internal class SessionFactory : ISessionFactory
@@ -79,42 +95,48 @@ namespace NRules
 
         public ISession CreateSession()
         {
+            return CreateSession(null);
+        }
+
+        public ISession CreateSession(Action<ISession> initializationAction)
+        {
             var agenda = CreateAgenda();
             var workingMemory = new WorkingMemory();
             var eventAggregator = new EventAggregator(_eventAggregator);
             var actionExecutor = new ActionExecutor();
-            var session = new Session(_network, agenda, workingMemory, eventAggregator, actionExecutor, DependencyResolver, ActionInterceptor);
+            var idGenerator = new IdGenerator();
+            var session = new Session(_network, agenda, workingMemory, eventAggregator, actionExecutor, idGenerator, DependencyResolver, ActionInterceptor);
+            initializationAction?.Invoke(session);
+            session.Activate();
             return session;
         }
 
         private IAgendaInternal CreateAgenda()
         {
-            var filters = new Dictionary<ICompiledRule, IActivationFilter[]>();
+            var agenda = new Agenda();
             foreach (var compiledRule in _compiledRules)
             {
                 var ruleFilters = CreateRuleFilters(compiledRule).ToArray();
-                if (ruleFilters.Any())
+                foreach (var filter in ruleFilters)
                 {
-                    filters[compiledRule] = ruleFilters;
+                    agenda.AddFilter(compiledRule.Definition, filter);
                 }
             }
-
-            var agenda = new Agenda(filters);
             return agenda;
         }
 
-        private static IEnumerable<IActivationFilter> CreateRuleFilters(ICompiledRule compiledRule)
+        private static IEnumerable<IAgendaFilter> CreateRuleFilters(ICompiledRule compiledRule)
         {
             var filterConditions = compiledRule.Filter.Conditions.ToList();
             if (filterConditions.Any())
             {
-                var filter = new PredicateActivationFilter(filterConditions);
+                var filter = new PredicateAgendaFilter(filterConditions);
                 yield return filter;
             }
             var filterKeySelectors = compiledRule.Filter.KeySelectors.ToList();
             if (filterKeySelectors.Any())
             {
-                var filter = new KeyChangeActivationFilter(filterKeySelectors);
+                var filter = new KeyChangeAgendaFilter(filterKeySelectors);
                 yield return filter;
             }
         }

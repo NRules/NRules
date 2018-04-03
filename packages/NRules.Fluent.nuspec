@@ -15,14 +15,17 @@
 
 This package installs the fluent DSL for authoring rules in C# with NRules. These rules can be then compiled to the canonical rules model, recognized by the NRules rules engine.</description>
     <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
-    <copyright>Copyright 2012-2017 Sergiy Nikolayev. All rights reserved.</copyright>
+    <copyright>Copyright 2012-2018 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>rules engine inference rete business dsl</tags>
     <dependencies>
       <group targetFramework="net45">
         <dependency id="NRules.RuleModel" version="[$version$]" />
       </group>
       <group targetFramework="netstandard1.0">
-        <dependency id="NETStandard.Library" version="1.6.0" />
+        <dependency id="NETStandard.Library" version="1.6.1" />
+        <dependency id="NRules.RuleModel" version="[$version$]" />
+      </group>
+      <group targetFramework="netstandard2.0">
         <dependency id="NRules.RuleModel" version="[$version$]" />
       </group>
     </dependencies>
@@ -34,5 +37,8 @@ This package installs the fluent DSL for authoring rules in C# with NRules. Thes
     <file src="..\binaries\NRules\netstandard1.0\NRules.Fluent.dll" target="lib\netstandard1.0" />
     <file src="..\binaries\NRules\netstandard1.0\NRules.Fluent.xml" target="lib\netstandard1.0" />
     <file src="..\binaries\NRules\netstandard1.0\NRules.Fluent.pdb" target="lib\netstandard1.0" />
+    <file src="..\binaries\NRules\netstandard2.0\NRules.Fluent.dll" target="lib\netstandard2.0" />
+    <file src="..\binaries\NRules\netstandard2.0\NRules.Fluent.xml" target="lib\netstandard2.0" />
+    <file src="..\binaries\NRules\netstandard2.0\NRules.Fluent.pdb" target="lib\netstandard2.0" />
   </files>
 </package>

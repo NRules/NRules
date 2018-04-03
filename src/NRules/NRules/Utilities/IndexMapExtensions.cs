@@ -25,8 +25,7 @@ namespace NRules.Utilities
         /// <returns></returns>
         public static int IndexOrDefault<TElement>(this Dictionary<TElement, int> indexMap, TElement element)
         {
-            int index;
-            if (indexMap.TryGetValue(element, out index))
+            if (indexMap.TryGetValue(element, out var index))
             {
                 return index;
             }
