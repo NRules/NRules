@@ -8,7 +8,7 @@ namespace NRules.Aggregators
     /// Exception raised by <see cref="IAggregateExpression"/> if evaluation of the expression failed.
     /// Inner exception contains the details of the failure.
     /// </summary>
-    internal class AggregateExpressionException : Exception
+    public class AggregateExpressionException : Exception
     {
         /// <summary>
         /// Expression that failed to evaluate.
@@ -25,12 +25,18 @@ namespace NRules.Aggregators
         /// </summary>
         public IFact Fact { get; }
 
-        internal AggregateExpressionException(Exception inner, Expression expression, ITuple tuple, IFact fact)
+        /// <summary>
+        /// Indicates whether exception was handled via event handler.
+        /// </summary>
+        public bool IsHandled { get; }
+
+        internal AggregateExpressionException(Exception inner, Expression expression, ITuple tuple, IFact fact, bool isHandled)
             : base("Aggregate expression evaluation failed", inner)
         {
             Expression = expression;
             Tuple = tuple;
             Fact = fact;
+            IsHandled = isHandled;
         }
     }
 }

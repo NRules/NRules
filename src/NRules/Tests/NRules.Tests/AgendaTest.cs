@@ -394,7 +394,7 @@ namespace NRules.Tests
 
         private class RejectingFilter : IAgendaFilter
         {
-            public bool Accept(Activation activation)
+            public bool Accept(AgendaContext context, Activation activation)
             {
                 return false;
             }
@@ -402,7 +402,7 @@ namespace NRules.Tests
 
         private class AcceptingFilter : IAgendaFilter
         {
-            public bool Accept(Activation activation)
+            public bool Accept(AgendaContext context, Activation activation)
             {
                 return true;
             }

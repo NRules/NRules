@@ -14,10 +14,11 @@ namespace NRules.Aggregators
         /// <summary>
         /// Invokes the expression with the given inputs.
         /// </summary>
+        /// <param name="context">Aggregation context.</param>
         /// <param name="tuple">Partial match up to the aggregate element.</param>
         /// <param name="fact">Fact being processed by the aggregate element.</param>
         /// <returns>Result of the expression.</returns>
-        object Invoke(ITuple tuple, IFact fact);
+        object Invoke(AggregationContext context, ITuple tuple, IFact fact);
     }
 
     internal class AggregateFactExpression : IAggregateExpression
@@ -31,17 +32,22 @@ namespace NRules.Aggregators
             _compiledExpression = compiledExpression;
         }
 
-        public object Invoke(ITuple tuple, IFact fact)
+        public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
         {
+            var factValue = fact.Value;
             try
             {
-                var factValue = fact.Value;
                 var result = _compiledExpression.Delegate(factValue);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, new[] {factValue}, result);
                 return result;
             }
             catch (Exception e)
             {
-                throw new AggregateExpressionException(e, _expression, tuple, fact);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, new[] {factValue}, null);
+
+                bool isHandled = false;
+                context.EventAggregator.RaiseAggregateFailed(context.Session, e, _expression, tuple, fact, ref isHandled);
+                throw new AggregateExpressionException(e, _expression, tuple, fact, isHandled);
             }
         }
     }
@@ -59,7 +65,7 @@ namespace NRules.Aggregators
             _compiledExpression = compiledExpression;
         }
 
-        public object Invoke(ITuple tuple, IFact fact)
+        public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
         {
             var args = new object[_compiledExpression.ArrayArgumentCount];
             int index = tuple.Count - 1;
@@ -73,11 +79,16 @@ namespace NRules.Aggregators
             try
             {
                 var result = _compiledExpression.Delegate(args);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, args, result);
                 return result;
             }
             catch (Exception e)
             {
-                throw new AggregateExpressionException(e, _expression, tuple, fact);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, args, null);
+
+                bool isHandled = false;
+                context.EventAggregator.RaiseAggregateFailed(context.Session, e, _expression, tuple, fact, ref isHandled);
+                throw new AggregateExpressionException(e, _expression, tuple, fact, isHandled);
             }
         }
 

@@ -24,10 +24,14 @@ namespace NRules.Rete
         {
             try
             {
-                return _compiledExpression.Delegate(fact.Object);
+                bool result = _compiledExpression.Delegate(fact.Object);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, new[] {fact.Object}, result);
+                return result;
             }
             catch (Exception e)
             {
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, new[] {fact.Object}, null);
+
                 bool isHandled = false;
                 context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, null, fact, ref isHandled);
                 if (!isHandled)

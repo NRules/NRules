@@ -7,7 +7,7 @@ namespace NRules.Rete
     internal interface IBindingExpression
     {
         LambdaExpression Expression { get; }
-        object Invoke(Tuple tuple);
+        object Invoke(IExecutionContext context, Tuple tuple);
     }
 
     internal class BindingExpression : IBindingExpression, IEquatable<BindingExpression>
@@ -24,7 +24,7 @@ namespace NRules.Rete
 
         public LambdaExpression Expression { get; }
         
-        public object Invoke(Tuple tuple)
+        public object Invoke(IExecutionContext context, Tuple tuple)
         {
             var args = new object[_compiledExpression.ArrayArgumentCount];
             int index = tuple.Count - 1;
@@ -34,7 +34,17 @@ namespace NRules.Rete
                 index--;
             }
 
-            return _compiledExpression.Delegate(args);
+            try
+            {
+                var result = _compiledExpression.Delegate(args);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, Expression, null, args, result);
+                return result;
+            }
+            catch (Exception e)
+            {
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, Expression, e, args, null);
+                throw;
+            }
         }
 
         public bool Equals(BindingExpression other)

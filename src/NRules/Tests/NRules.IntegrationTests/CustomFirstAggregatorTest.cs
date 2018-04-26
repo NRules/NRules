@@ -123,7 +123,7 @@ namespace NRules.IntegrationTests
     {
         private readonly Dictionary<object, TElement> _firstElements = new Dictionary<object, TElement>();
 
-        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
@@ -139,7 +139,7 @@ namespace NRules.IntegrationTests
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
@@ -170,7 +170,7 @@ namespace NRules.IntegrationTests
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)

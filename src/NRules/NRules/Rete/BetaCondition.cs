@@ -35,10 +35,14 @@ namespace NRules.Rete
 
             try
             {
-                return _compiledExpression.Delegate(args);
+                bool result = _compiledExpression.Delegate(args);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, args, result);
+                return result;
             }
             catch (Exception e)
             {
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, args, null);
+
                 bool isHandled = false;
                 context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, leftTuple, rightFact, ref isHandled);
                 if (!isHandled)

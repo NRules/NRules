@@ -20,11 +20,17 @@ namespace NRules.AgendaFilters
         /// </summary>
         public Activation Activation { get; }
 
-        internal ActivationExpressionException(Exception inner, Expression expression, Activation activation)
+        /// <summary>
+        /// Indicates whether exception was handled via event handler.
+        /// </summary>
+        public bool IsHandled { get; }
+
+        internal ActivationExpressionException(Exception inner, Expression expression, Activation activation, bool isHandled)
             : base("Activation expression evaluation failed", inner)
         {
             Expression = expression;
             Activation = activation;
+            IsHandled = isHandled;
         }
     }
 }

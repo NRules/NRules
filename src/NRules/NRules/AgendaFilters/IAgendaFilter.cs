@@ -13,8 +13,9 @@
         /// <summary>
         /// Tests rule activation whether it should be added to the agenda.
         /// </summary>
+        /// <param name="context">Agenda context.</param>
         /// <param name="activation">Rule activation.</param>
         /// <returns>Whether the activation should be added to the agenda - <c>true</c>, or not - <c>false</c>.</returns>
-        bool Accept(Activation activation);
+        bool Accept(AgendaContext context, Activation activation);
     }
 }

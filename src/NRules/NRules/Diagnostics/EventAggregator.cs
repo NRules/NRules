@@ -110,6 +110,11 @@ namespace NRules.Diagnostics
         /// <remarks>This event is not raised when actions are invoked via <see cref="IActionInterceptor"/>.</remarks>
         /// <seealso cref="IActionInterceptor"/>
         event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
+
+        /// <summary>
+        /// Raised after expression was evaluated.
+        /// </summary>
+        event EventHandler<ExpressionEventArgs> ExpressionEvaluatedEvent;
     }
 
     internal interface IEventAggregator : IEventProvider
@@ -130,6 +135,7 @@ namespace NRules.Diagnostics
         void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, ITuple tuple, IFact fact, ref bool isHandled);
         void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
         void RaiseActionFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
+        void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object[] arguments, object result);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -152,6 +158,7 @@ namespace NRules.Diagnostics
         public event EventHandler<AggregateErrorEventArgs> AggregateFailedEvent;
         public event EventHandler<AgendaErrorEventArgs> AgendaFilterFailedEvent;
         public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
+        public event EventHandler<ExpressionEventArgs> ExpressionEvaluatedEvent;
 
         public EventAggregator()
         {
@@ -341,6 +348,17 @@ namespace NRules.Diagnostics
                 isHandled |= @event.IsHandled;
             }
             _parent?.RaiseActionFailed(session, exception, expression, activation, ref isHandled);
+        }
+
+        public void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object[] arguments, object result)
+        {
+            var handler = ExpressionEvaluatedEvent;
+            if (handler != null)
+            {
+                var @event = new ExpressionEventArgs(expression, exception, arguments, result);
+                handler(session, @event);
+            }
+            _parent?.RaiseExpressionEvaluated(session, expression, exception, arguments, result);
         }
     }
 }
