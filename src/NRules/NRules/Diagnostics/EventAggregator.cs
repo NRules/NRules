@@ -135,6 +135,7 @@ namespace NRules.Diagnostics
         void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, ITuple tuple, IFact fact, ref bool isHandled);
         void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
         void RaiseActionFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
+        void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object argument, object result);
         void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object[] arguments, object result);
     }
 
@@ -348,6 +349,17 @@ namespace NRules.Diagnostics
                 isHandled |= @event.IsHandled;
             }
             _parent?.RaiseActionFailed(session, exception, expression, activation, ref isHandled);
+        }
+
+        public void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object argument, object result)
+        {
+            var handler = ExpressionEvaluatedEvent;
+            if (handler != null)
+            {
+                var @event = new ExpressionEventArgs(expression, exception, argument, result);
+                handler(session, @event);
+            }
+            _parent?.RaiseExpressionEvaluated(session, expression, exception, argument, result);
         }
 
         public void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object[] arguments, object result)

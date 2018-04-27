@@ -38,12 +38,12 @@ namespace NRules.Aggregators
             try
             {
                 var result = _compiledExpression.Delegate(factValue);
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, new[] {factValue}, result);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, factValue, result);
                 return result;
             }
             catch (Exception e)
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, new[] {factValue}, null);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, factValue, null);
 
                 bool isHandled = false;
                 context.EventAggregator.RaiseAggregateFailed(context.Session, e, _expression, tuple, fact, ref isHandled);

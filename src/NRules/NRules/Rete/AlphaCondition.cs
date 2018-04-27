@@ -25,12 +25,12 @@ namespace NRules.Rete
             try
             {
                 bool result = _compiledExpression.Delegate(fact.Object);
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, new[] {fact.Object}, result);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, fact.Object, result);
                 return result;
             }
             catch (Exception e)
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, new[] {fact.Object}, null);
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, fact.Object, null);
 
                 bool isHandled = false;
                 context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, null, fact, ref isHandled);
