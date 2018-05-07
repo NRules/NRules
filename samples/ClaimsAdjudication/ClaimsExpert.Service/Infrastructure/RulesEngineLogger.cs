@@ -21,12 +21,12 @@ namespace NRules.Samples.ClaimsExpert.Service.Infrastructure
 
         private void OnConditionFailedEvent(object sender, ConditionErrorEventArgs args)
         {
-            Log.ErrorFormat("Condition evaluation failed. Condition={0}, Message={1}", args.Condition, args.Exception);
+            Log.ErrorFormat("Condition evaluation failed. Condition={0}, Message={1}", args.Expression, args.Exception);
         }
 
         private void OnActionFailedEvent(object sender, ActionErrorEventArgs args)
         {
-            Log.ErrorFormat("Action evaluation failed. Action={0}, Message={1}", args.Action, args.Exception);
+            Log.ErrorFormat("Action evaluation failed. Action={0}, Message={1}", args.Expression, args.Exception);
         }
     }
 }
