@@ -121,7 +121,7 @@ namespace NRules
             {
                 return AcceptActivation(agendaContext, activation);
             }
-            catch (ActivationExpressionException e)
+            catch (ExpressionEvaluationException e)
             {
                 if (!e.IsHandled)
                 {

@@ -35,19 +35,23 @@ namespace NRules.Aggregators
         public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
         {
             var factValue = fact.Value;
+            Exception exception = null;
+            object result = null;
             try
             {
-                var result = _compiledExpression.Delegate(factValue);
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, factValue, result);
+                result = _compiledExpression.Delegate(factValue);
                 return result;
             }
             catch (Exception e)
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, factValue, null);
-
+                exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseAggregateFailed(context.Session, e, _expression, tuple, fact, ref isHandled);
-                throw new AggregateExpressionException(e, _expression, tuple, fact, isHandled);
+                context.EventAggregator.RaiseAggregateFailed(context.Session, e, _expression, factValue, tuple, fact, ref isHandled);
+                throw new ExpressionEvaluationException(e, _expression, isHandled);
+            }
+            finally
+            {
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, exception, factValue, result);
             }
         }
     }
@@ -76,19 +80,23 @@ namespace NRules.Aggregators
             }
             IndexMap.SetElementAt(args, _factMap[tuple.Count], fact.Value);
 
+            Exception exception = null;
+            object result = null;
             try
             {
-                var result = _compiledExpression.Delegate(args);
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, args, result);
+                result = _compiledExpression.Delegate(args);
                 return result;
             }
             catch (Exception e)
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, args, null);
-
+                exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseAggregateFailed(context.Session, e, _expression, tuple, fact, ref isHandled);
-                throw new AggregateExpressionException(e, _expression, tuple, fact, isHandled);
+                context.EventAggregator.RaiseAggregateFailed(context.Session, e, _expression, args, tuple, fact, ref isHandled);
+                throw new ExpressionEvaluationException(e, _expression, isHandled);
+            }
+            finally
+            {
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, exception, args, result);
             }
         }
 

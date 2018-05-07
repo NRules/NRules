@@ -34,16 +34,23 @@ namespace NRules.Rete
                 index--;
             }
 
+            Exception exception = null;
+            object result = null;
             try
             {
-                var result = _compiledExpression.Delegate(args);
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, Expression, null, args, result);
+                result = _compiledExpression.Delegate(args);
                 return result;
             }
             catch (Exception e)
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, Expression, e, args, null);
-                throw;
+                exception = e;
+                bool isHandled = false;
+                context.EventAggregator.RaiseBindingFailed(context.Session, e, Expression, args, tuple, ref isHandled);
+                throw new ExpressionEvaluationException(e, Expression, isHandled);
+            }
+            finally
+            {
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, Expression, exception, args, result);
             }
         }
 

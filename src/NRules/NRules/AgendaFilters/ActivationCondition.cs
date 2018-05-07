@@ -38,19 +38,23 @@ namespace NRules.AgendaFilters
                 index--;
             }
 
+            Exception exception = null;
+            bool result = false;
             try
             {
-                var result = _compiledExpression.Delegate.Invoke(args);
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, args, result);
+                result = _compiledExpression.Delegate.Invoke(args);
                 return result;
             }
             catch (Exception e)
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, args, null);
-
+                exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseAgendaFilterFailed(context.Session, e, _expression, activation, ref isHandled);
-                throw new ActivationExpressionException(e, _expression, activation, isHandled);
+                context.EventAggregator.RaiseAgendaFilterFailed(context.Session, e, _expression, args, activation, ref isHandled);
+                throw new ExpressionEvaluationException(e, _expression, isHandled);
+            }
+            finally
+            {
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, exception, args, result);
             }
         }
     }

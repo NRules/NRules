@@ -22,16 +22,17 @@ namespace NRules.Rete
 
         public bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
+            var factValue = fact.Object;
+            Exception exception = null;
+            bool result = false;
             try
             {
-                bool result = _compiledExpression.Delegate(fact.Object);
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, fact.Object, result);
+                result = _compiledExpression.Delegate(factValue);
                 return result;
             }
             catch (Exception e)
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, fact.Object, null);
-
+                exception = e;
                 bool isHandled = false;
                 context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, null, fact, ref isHandled);
                 if (!isHandled)
@@ -39,6 +40,10 @@ namespace NRules.Rete
                     throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
                 }
                 return false;
+            }
+            finally
+            {
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, exception, factValue, result);
             }
         }
 

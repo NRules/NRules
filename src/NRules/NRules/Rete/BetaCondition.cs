@@ -33,16 +33,16 @@ namespace NRules.Rete
             }
             IndexMap.SetElementAt(args, _factMap[leftTuple.Count], rightFact.Object);
 
+            Exception exception = null;
+            bool result = false;
             try
             {
-                bool result = _compiledExpression.Delegate(args);
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, null, args, result);
+                result = _compiledExpression.Delegate(args);
                 return result;
             }
             catch (Exception e)
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, e, args, null);
-
+                exception = e;
                 bool isHandled = false;
                 context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, leftTuple, rightFact, ref isHandled);
                 if (!isHandled)
@@ -50,6 +50,10 @@ namespace NRules.Rete
                     throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
                 }
                 return false;
+            }
+            finally
+            {
+                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, exception, args, result);
             }
         }
 

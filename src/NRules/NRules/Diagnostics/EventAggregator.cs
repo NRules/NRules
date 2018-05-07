@@ -101,7 +101,7 @@ namespace NRules.Diagnostics
         /// Gives observer of the event control over handling of the exception.
         /// </summary>
         /// <seealso cref="IAgendaFilter"/>
-        event EventHandler<AgendaErrorEventArgs> AgendaFilterFailedEvent;
+        event EventHandler<AgendaFilterErrorEventArgs> AgendaFilterFailedEvent;
 
         /// <summary>
         /// Raised when action execution threw an exception.
@@ -130,11 +130,13 @@ namespace NRules.Diagnostics
         void RaiseFactUpdated(ISession session, Fact fact);
         void RaiseFactRetracting(ISession session, Fact fact);
         void RaiseFactRetracted(ISession session, Fact fact);
-        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled);
-        void RaiseBindingFailed(ISession session, Exception exception, Expression expression, Tuple tuple, ref bool isHandled);
-        void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, ITuple tuple, IFact fact, ref bool isHandled);
-        void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
-        void RaiseActionFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
+        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, object argument, Fact fact, ref bool isHandled);
+        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, object[] arguments, Tuple tuple, Fact fact, ref bool isHandled);
+        void RaiseBindingFailed(ISession session, Exception exception, Expression expression, object[] arguments, Tuple tuple, ref bool isHandled);
+        void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, ref bool isHandled);
+        void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, object[] arguments, ITuple tuple, IFact fact, ref bool isHandled);
+        void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, object[] arguments, Activation activation, ref bool isHandled);
+        void RaiseActionFailed(ISession session, Exception exception, Expression expression, object[] arguments, Activation activation, ref bool isHandled);
         void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object argument, object result);
         void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object[] arguments, object result);
     }
@@ -157,7 +159,7 @@ namespace NRules.Diagnostics
         public event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
         public event EventHandler<BindingErrorEventArgs> BindingFailedEvent;
         public event EventHandler<AggregateErrorEventArgs> AggregateFailedEvent;
-        public event EventHandler<AgendaErrorEventArgs> AgendaFilterFailedEvent;
+        public event EventHandler<AgendaFilterErrorEventArgs> AgendaFilterFailedEvent;
         public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
         public event EventHandler<ExpressionEventArgs> ExpressionEvaluatedEvent;
 
@@ -291,64 +293,88 @@ namespace NRules.Diagnostics
             _parent?.RaiseFactRetracted(session, fact);
         }
 
-        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled)
+        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, object argument, Fact fact, ref bool isHandled)
         {
             var hanlder = ConditionFailedEvent;
             if (hanlder != null)
             {
-                var @event = new ConditionErrorEventArgs(exception, expression, tuple, fact);
+                var @event = new ConditionErrorEventArgs(expression, exception, argument, fact);
                 hanlder(session, @event);
                 isHandled |= @event.IsHandled;
             }
-            _parent?.RaiseConditionFailed(session, exception, expression, tuple, fact, ref isHandled);
+            _parent?.RaiseConditionFailed(session, exception, expression, argument, fact, ref isHandled);
         }
 
-        public void RaiseBindingFailed(ISession session, Exception exception, Expression expression, Tuple tuple, ref bool isHandled)
+        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, object[] arguments, Tuple tuple, Fact fact, ref bool isHandled)
+        {
+            var hanlder = ConditionFailedEvent;
+            if (hanlder != null)
+            {
+                var @event = new ConditionErrorEventArgs(expression, exception, arguments, tuple, fact);
+                hanlder(session, @event);
+                isHandled |= @event.IsHandled;
+            }
+            _parent?.RaiseConditionFailed(session, exception, expression, arguments, tuple, fact, ref isHandled);
+        }
+
+        public void RaiseBindingFailed(ISession session, Exception exception, Expression expression, object[] arguments, Tuple tuple, ref bool isHandled)
         {
             var hanlder = BindingFailedEvent;
             if (hanlder != null)
             {
-                var @event = new BindingErrorEventArgs(exception, expression, tuple);
+                var @event = new BindingErrorEventArgs(expression, exception, arguments, tuple);
                 hanlder(session, @event);
                 isHandled |= @event.IsHandled;
             }
-            _parent?.RaiseBindingFailed(session, exception, expression, tuple, ref isHandled);
+            _parent?.RaiseBindingFailed(session, exception, expression, arguments, tuple, ref isHandled);
         }
 
-        public void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, ITuple tuple, IFact fact, ref bool isHandled)
+        public void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, ref bool isHandled)
         {
             var hanlder = AggregateFailedEvent;
             if (hanlder != null)
             {
-                var @event = new AggregateErrorEventArgs(exception, expression, tuple, fact);
+                var @event = new AggregateErrorEventArgs(expression, exception, argument, tuple, fact);
                 hanlder(session, @event);
                 isHandled |= @event.IsHandled;
             }
-            _parent?.RaiseAggregateFailed(session, exception, expression, tuple, fact, ref isHandled);
+            _parent?.RaiseAggregateFailed(session, exception, expression, argument, tuple, fact, ref isHandled);
         }
 
-        public void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled)
+        public void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, object[] arguments, ITuple tuple, IFact fact, ref bool isHandled)
+        {
+            var hanlder = AggregateFailedEvent;
+            if (hanlder != null)
+            {
+                var @event = new AggregateErrorEventArgs(expression, exception, arguments, tuple, fact);
+                hanlder(session, @event);
+                isHandled |= @event.IsHandled;
+            }
+            _parent?.RaiseAggregateFailed(session, exception, expression, arguments, tuple, fact, ref isHandled);
+        }
+
+        public void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, object[] arguments, Activation activation, ref bool isHandled)
         {
             var handler = AgendaFilterFailedEvent;
             if (handler != null)
             {
-                var @event = new AgendaErrorEventArgs(exception, expression, activation);
+                var @event = new AgendaFilterErrorEventArgs(expression, exception, arguments, activation);
                 handler(session, @event);
                 isHandled |= @event.IsHandled;
             }
-            _parent?.RaiseAgendaFilterFailed(session, exception, expression, activation, ref isHandled);
+            _parent?.RaiseAgendaFilterFailed(session, exception, expression, arguments, activation, ref isHandled);
         }
 
-        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled)
+        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, object[] arguments, Activation activation, ref bool isHandled)
         {
             var handler = ActionFailedEvent;
             if (handler != null)
             {
-                var @event = new ActionErrorEventArgs(exception, expression, activation);
+                var @event = new ActionErrorEventArgs(expression, exception, arguments, activation);
                 handler(session, @event);
                 isHandled |= @event.IsHandled;
             }
-            _parent?.RaiseActionFailed(session, exception, expression, activation, ref isHandled);
+            _parent?.RaiseActionFailed(session, exception, expression, arguments, activation, ref isHandled);
         }
 
         public void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object argument, object result)

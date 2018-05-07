@@ -175,7 +175,7 @@ namespace NRules.Rete
             {
                 aggregator.Add(context, aggregation, tuple, facts);
             }
-            catch (AggregateExpressionException e)
+            catch (ExpressionEvaluationException e)
             {
                 if (!e.IsHandled)
                 {
@@ -192,7 +192,7 @@ namespace NRules.Rete
             {
                 aggregator.Modify(context, aggregation, tuple, facts);
             }
-            catch (AggregateExpressionException e)
+            catch (ExpressionEvaluationException e)
             {
                 if (!e.IsHandled)
                 {
@@ -209,7 +209,7 @@ namespace NRules.Rete
             {
                 aggregator.Remove(context, aggregation, tuple, facts);
             }
-            catch (AggregateExpressionException e)
+            catch (ExpressionEvaluationException e)
             {
                 if (!e.IsHandled)
                 {
