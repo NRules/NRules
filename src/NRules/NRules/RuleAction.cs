@@ -84,7 +84,7 @@ namespace NRules
             }
             finally
             {
-                executionContext.EventAggregator.RaiseExpressionEvaluated(executionContext.Session, _expression, exception, arguments, null);
+                executionContext.EventAggregator.RaiseActionEvaluated(executionContext.Session, exception, _expression, arguments, actionContext.Activation);
             }
         }
     }

@@ -50,7 +50,7 @@ namespace NRules.Rete
             }
             finally
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, Expression, exception, args, result);
+                context.EventAggregator.RaiseBindingEvaluated(context.Session, exception, Expression, args, result, tuple);
             }
         }
 

@@ -54,7 +54,7 @@ namespace NRules.AgendaFilters
             }
             finally
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, exception, args, result);
+                context.EventAggregator.RaiseAgendaFilterEvaluated(context.Session, exception, _expression, args, result, activation);
             }
         }
     }

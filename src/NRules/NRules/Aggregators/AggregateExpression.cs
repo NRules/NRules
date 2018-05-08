@@ -51,7 +51,7 @@ namespace NRules.Aggregators
             }
             finally
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, exception, factValue, result);
+                context.EventAggregator.RaiseAggregateEvaluated(context.Session, exception, _expression, factValue, result, tuple, fact);
             }
         }
     }
@@ -96,7 +96,7 @@ namespace NRules.Aggregators
             }
             finally
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, exception, args, result);
+                context.EventAggregator.RaiseAggregateEvaluated(context.Session, exception, _expression, args, result, tuple, fact);
             }
         }
 

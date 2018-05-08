@@ -53,7 +53,7 @@ namespace NRules.Rete
             }
             finally
             {
-                context.EventAggregator.RaiseExpressionEvaluated(context.Session, _expression, exception, args, result);
+                context.EventAggregator.RaiseConditionEvaluated(context.Session, exception, _expression, args, result, leftTuple, rightFact);
             }
         }
 

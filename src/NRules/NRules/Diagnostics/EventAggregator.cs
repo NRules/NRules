@@ -112,9 +112,31 @@ namespace NRules.Diagnostics
         event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
 
         /// <summary>
-        /// Raised after expression was evaluated.
+        /// Raised when condition expression is evaluated.
         /// </summary>
-        event EventHandler<ExpressionEventArgs> ExpressionEvaluatedEvent;
+        event EventHandler<ConditionEventArgs> ConditionEvaluatedEvent;
+
+        /// <summary>
+        /// Raised when binding expression is evaluated.
+        /// </summary>
+        event EventHandler<BindingEventArgs> BindingEvaluatedEvent;
+
+        /// <summary>
+        /// Raised when aggregate expression is evaluated.
+        /// </summary>
+        /// <seealso cref="IAggregator"/>
+        event EventHandler<AggregateEventArgs> AggregateEvaluatedEvent;
+
+        /// <summary>
+        /// Raised when agenda filter expression is evaluated.
+        /// </summary>
+        /// <seealso cref="IAgendaFilter"/>
+        event EventHandler<AgendaFilterEventArgs> AgendaFilterEvaluatedEvent;
+
+        /// <summary>
+        /// Raised when action expression is evaluated.
+        /// </summary>
+        event EventHandler<ActionEventArgs> ActionEvaluatedEvent;
     }
 
     internal interface IEventAggregator : IEventProvider
@@ -132,13 +154,18 @@ namespace NRules.Diagnostics
         void RaiseFactRetracted(ISession session, Fact fact);
         void RaiseConditionFailed(ISession session, Exception exception, Expression expression, object argument, Fact fact, ref bool isHandled);
         void RaiseConditionFailed(ISession session, Exception exception, Expression expression, object[] arguments, Tuple tuple, Fact fact, ref bool isHandled);
+        void RaiseConditionEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, Fact fact);
+        void RaiseConditionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, Tuple tuple, Fact fact);
         void RaiseBindingFailed(ISession session, Exception exception, Expression expression, object[] arguments, Tuple tuple, ref bool isHandled);
+        void RaiseBindingEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, Tuple tuple);
         void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, ref bool isHandled);
         void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, object[] arguments, ITuple tuple, IFact fact, ref bool isHandled);
+        void RaiseAggregateEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, ITuple tuple, IFact fact);
+        void RaiseAggregateEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, ITuple tuple, IFact fact);
         void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, object[] arguments, Activation activation, ref bool isHandled);
+        void RaiseAgendaFilterEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, Activation activation);
         void RaiseActionFailed(ISession session, Exception exception, Expression expression, object[] arguments, Activation activation, ref bool isHandled);
-        void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object argument, object result);
-        void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object[] arguments, object result);
+        void RaiseActionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, Activation activation);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -161,7 +188,11 @@ namespace NRules.Diagnostics
         public event EventHandler<AggregateErrorEventArgs> AggregateFailedEvent;
         public event EventHandler<AgendaFilterErrorEventArgs> AgendaFilterFailedEvent;
         public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
-        public event EventHandler<ExpressionEventArgs> ExpressionEvaluatedEvent;
+        public event EventHandler<ConditionEventArgs> ConditionEvaluatedEvent;
+        public event EventHandler<BindingEventArgs> BindingEvaluatedEvent;
+        public event EventHandler<AggregateEventArgs> AggregateEvaluatedEvent;
+        public event EventHandler<AgendaFilterEventArgs> AgendaFilterEvaluatedEvent;
+        public event EventHandler<ActionEventArgs> ActionEvaluatedEvent;
 
         public EventAggregator()
         {
@@ -317,6 +348,28 @@ namespace NRules.Diagnostics
             _parent?.RaiseConditionFailed(session, exception, expression, arguments, tuple, fact, ref isHandled);
         }
 
+        public void RaiseConditionEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, Fact fact)
+        {
+            var hanlder = ConditionEvaluatedEvent;
+            if (hanlder != null)
+            {
+                var @event = new ConditionEventArgs(expression, exception, argument, result, fact);
+                hanlder(session, @event);
+            }
+            _parent?.RaiseConditionEvaluated(session, exception, expression, argument, result, fact);
+        }
+
+        public void RaiseConditionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, Tuple tuple, Fact fact)
+        {
+            var hanlder = ConditionEvaluatedEvent;
+            if (hanlder != null)
+            {
+                var @event = new ConditionEventArgs(expression, exception, arguments, result, tuple, fact);
+                hanlder(session, @event);
+            }
+            _parent?.RaiseConditionEvaluated(session, exception, expression, arguments, result, tuple, fact);
+        }
+
         public void RaiseBindingFailed(ISession session, Exception exception, Expression expression, object[] arguments, Tuple tuple, ref bool isHandled)
         {
             var hanlder = BindingFailedEvent;
@@ -327,6 +380,17 @@ namespace NRules.Diagnostics
                 isHandled |= @event.IsHandled;
             }
             _parent?.RaiseBindingFailed(session, exception, expression, arguments, tuple, ref isHandled);
+        }
+
+        public void RaiseBindingEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, Tuple tuple)
+        {
+            var hanlder = BindingEvaluatedEvent;
+            if (hanlder != null)
+            {
+                var @event = new BindingEventArgs(expression, exception, arguments, result, tuple);
+                hanlder(session, @event);
+            }
+            _parent?.RaiseBindingEvaluated(session, exception, expression, arguments, result, tuple);
         }
 
         public void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, ref bool isHandled)
@@ -353,6 +417,28 @@ namespace NRules.Diagnostics
             _parent?.RaiseAggregateFailed(session, exception, expression, arguments, tuple, fact, ref isHandled);
         }
 
+        public void RaiseAggregateEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, ITuple tuple, IFact fact)
+        {
+            var hanlder = AggregateEvaluatedEvent;
+            if (hanlder != null)
+            {
+                var @event = new AggregateEventArgs(expression, exception, argument, result, tuple, fact);
+                hanlder(session, @event);
+            }
+            _parent?.RaiseAggregateEvaluated(session, exception, expression, argument, result, tuple, fact);
+        }
+
+        public void RaiseAggregateEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, ITuple tuple, IFact fact)
+        {
+            var hanlder = AggregateEvaluatedEvent;
+            if (hanlder != null)
+            {
+                var @event = new AggregateEventArgs(expression, exception, arguments, result, tuple, fact);
+                hanlder(session, @event);
+            }
+            _parent?.RaiseAggregateEvaluated(session, exception, expression, arguments, result, tuple, fact);
+        }
+
         public void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, object[] arguments, Activation activation, ref bool isHandled)
         {
             var handler = AgendaFilterFailedEvent;
@@ -363,6 +449,17 @@ namespace NRules.Diagnostics
                 isHandled |= @event.IsHandled;
             }
             _parent?.RaiseAgendaFilterFailed(session, exception, expression, arguments, activation, ref isHandled);
+        }
+
+        public void RaiseAgendaFilterEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, Activation activation)
+        {
+            var hanlder = AgendaFilterEvaluatedEvent;
+            if (hanlder != null)
+            {
+                var @event = new AgendaFilterEventArgs(expression, exception, arguments, result, activation);
+                hanlder(session, @event);
+            }
+            _parent?.RaiseAgendaFilterEvaluated(session, exception, expression, arguments, result, activation);
         }
 
         public void RaiseActionFailed(ISession session, Exception exception, Expression expression, object[] arguments, Activation activation, ref bool isHandled)
@@ -377,26 +474,15 @@ namespace NRules.Diagnostics
             _parent?.RaiseActionFailed(session, exception, expression, arguments, activation, ref isHandled);
         }
 
-        public void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object argument, object result)
+        public void RaiseActionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, Activation activation)
         {
-            var handler = ExpressionEvaluatedEvent;
-            if (handler != null)
+            var hanlder = ActionEvaluatedEvent;
+            if (hanlder != null)
             {
-                var @event = new ExpressionEventArgs(expression, exception, argument, result);
-                handler(session, @event);
+                var @event = new ActionEventArgs(expression, exception, arguments, activation);
+                hanlder(session, @event);
             }
-            _parent?.RaiseExpressionEvaluated(session, expression, exception, argument, result);
-        }
-
-        public void RaiseExpressionEvaluated(ISession session, Expression expression, Exception exception, object[] arguments, object result)
-        {
-            var handler = ExpressionEvaluatedEvent;
-            if (handler != null)
-            {
-                var @event = new ExpressionEventArgs(expression, exception, arguments, result);
-                handler(session, @event);
-            }
-            _parent?.RaiseExpressionEvaluated(session, expression, exception, arguments, result);
+            _parent?.RaiseActionEvaluated(session, exception, expression, arguments, activation);
         }
     }
 }
