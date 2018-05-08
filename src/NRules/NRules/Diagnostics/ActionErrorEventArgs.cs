@@ -21,6 +21,7 @@ namespace NRules.Diagnostics
         {
         }
 
+        /// <inheritdoc />
         public bool IsHandled { get; set; }
     }
 }
