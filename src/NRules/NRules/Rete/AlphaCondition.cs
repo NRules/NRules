@@ -34,7 +34,7 @@ namespace NRules.Rete
             {
                 exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, factValue, fact, ref isHandled);
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, factValue, null, fact, ref isHandled);
                 if (!isHandled)
                 {
                     throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
@@ -43,7 +43,7 @@ namespace NRules.Rete
             }
             finally
             {
-                context.EventAggregator.RaiseConditionEvaluated(context.Session, exception, _expression, factValue, result, fact);
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, factValue, result, null, fact);
             }
         }
 

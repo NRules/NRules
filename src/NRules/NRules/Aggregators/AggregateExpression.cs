@@ -46,12 +46,12 @@ namespace NRules.Aggregators
             {
                 exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseAggregateFailed(context.Session, e, _expression, factValue, tuple, fact, ref isHandled);
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, factValue, tuple, fact, ref isHandled);
                 throw new ExpressionEvaluationException(e, _expression, isHandled);
             }
             finally
             {
-                context.EventAggregator.RaiseAggregateEvaluated(context.Session, exception, _expression, factValue, result, tuple, fact);
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, factValue, result, tuple, fact);
             }
         }
     }
@@ -91,12 +91,12 @@ namespace NRules.Aggregators
             {
                 exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseAggregateFailed(context.Session, e, _expression, args, tuple, fact, ref isHandled);
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, args, tuple, fact, ref isHandled);
                 throw new ExpressionEvaluationException(e, _expression, isHandled);
             }
             finally
             {
-                context.EventAggregator.RaiseAggregateEvaluated(context.Session, exception, _expression, args, result, tuple, fact);
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, args, result, tuple, fact);
             }
         }
 

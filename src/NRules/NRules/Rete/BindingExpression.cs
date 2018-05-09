@@ -45,12 +45,12 @@ namespace NRules.Rete
             {
                 exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseBindingFailed(context.Session, e, Expression, args, tuple, ref isHandled);
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, Expression, args, tuple, null, ref isHandled);
                 throw new ExpressionEvaluationException(e, Expression, isHandled);
             }
             finally
             {
-                context.EventAggregator.RaiseBindingEvaluated(context.Session, exception, Expression, args, result, tuple);
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, Expression, args, result, tuple, null);
             }
         }
 

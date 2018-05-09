@@ -17,7 +17,7 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<ExpressionEventArgs>();
-            factory.Events.ConditionEvaluatedEvent += (sender, args) =>
+            factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
             };
@@ -43,7 +43,7 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<ExpressionEventArgs>();
-            factory.Events.ConditionEvaluatedEvent += (sender, args) =>
+            factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
             };
@@ -67,7 +67,7 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<ExpressionEventArgs>();
-            factory.Events.ConditionEvaluatedEvent += (sender, args) =>
+            factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
             };
@@ -95,7 +95,7 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<ExpressionEventArgs>();
-            factory.Events.AggregateEvaluatedEvent += (sender, args) =>
+            factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
             };
@@ -108,8 +108,8 @@ namespace NRules.IntegrationTests
             session.Insert(fact2);
 
             //Assert
-            Assert.Equal(1, handledEvents.Count);
-            var eventArgs = handledEvents[0];
+            Assert.Equal(5, handledEvents.Count);
+            var eventArgs = handledEvents[2];
             Assert.Collection(eventArgs.Arguments, x => Assert.Same(fact2, x));
             Assert.Equal("12345", eventArgs.Result);
             Assert.Null(eventArgs.Exception);
@@ -123,7 +123,7 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<ExpressionEventArgs>();
-            factory.Events.BindingEvaluatedEvent += (sender, args) =>
+            factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
             };
@@ -136,8 +136,8 @@ namespace NRules.IntegrationTests
             session.Insert(fact2);
 
             //Assert
-            Assert.Equal(1, handledEvents.Count);
-            var eventArgs = handledEvents[0];
+            Assert.Equal(5, handledEvents.Count);
+            var eventArgs = handledEvents[3];
             Assert.Collection(eventArgs.Arguments, x => Assert.Equal("12345", x));
             Assert.Equal(5, eventArgs.Result);
             Assert.Null(eventArgs.Exception);
@@ -150,8 +150,8 @@ namespace NRules.IntegrationTests
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var handledEvents = new List<AgendaFilterEventArgs>();
-            factory.Events.AgendaFilterEvaluatedEvent += (sender, args) =>
+            var handledEvents = new List<AgendaExpressionEventArgs>();
+            factory.Events.AgendaExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
             };
@@ -180,8 +180,8 @@ namespace NRules.IntegrationTests
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var handledEvents = new List<ActionEventArgs>();
-            factory.Events.ActionEvaluatedEvent += (sender, args) =>
+            var handledEvents = new List<RhsExpressionEventArgs>();
+            factory.Events.RhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
             };

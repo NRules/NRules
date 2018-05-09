@@ -76,7 +76,7 @@ namespace NRules
             {
                 exception = e;
                 bool isHandled = false;
-                executionContext.EventAggregator.RaiseActionFailed(executionContext.Session, e, _expression, arguments, actionContext.Activation, ref isHandled);
+                executionContext.EventAggregator.RaiseRhsExpressionFailed(executionContext.Session, e, _expression, arguments, actionContext.Activation, ref isHandled);
                 if (!isHandled)
                 {
                     throw;
@@ -84,7 +84,7 @@ namespace NRules
             }
             finally
             {
-                executionContext.EventAggregator.RaiseActionEvaluated(executionContext.Session, exception, _expression, arguments, actionContext.Activation);
+                executionContext.EventAggregator.RaiseRhsExpressionEvaluated(executionContext.Session, exception, _expression, arguments, actionContext.Activation);
             }
         }
     }

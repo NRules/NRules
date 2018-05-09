@@ -49,12 +49,12 @@ namespace NRules.AgendaFilters
             {
                 exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseAgendaFilterFailed(context.Session, e, _expression, args, activation, ref isHandled);
+                context.EventAggregator.RaiseAgendaExpressionFailed(context.Session, e, _expression, args, activation, ref isHandled);
                 throw new ExpressionEvaluationException(e, _expression, isHandled);
             }
             finally
             {
-                context.EventAggregator.RaiseAgendaFilterEvaluated(context.Session, exception, _expression, args, result, activation);
+                context.EventAggregator.RaiseAgendaExpressionEvaluated(context.Session, exception, _expression, args, result, activation);
             }
         }
     }

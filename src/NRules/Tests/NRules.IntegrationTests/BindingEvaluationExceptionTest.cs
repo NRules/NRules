@@ -19,8 +19,8 @@ namespace NRules.IntegrationTests
 
             Expression expression = null;
             IList<IFact> facts = null;
-            Session.Events.BindingFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.BindingFailedEvent += (sender, args) => facts = args.Facts.ToList();
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
             var fact = new FactType { TestProperty = "Valid value" };
 
@@ -38,7 +38,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Session.Events.BindingFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact = new FactType { TestProperty = "Valid value" };
 
@@ -57,7 +57,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Session.Events.BindingFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact1 = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact1);
@@ -80,7 +80,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Session.Events.BindingFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact = new FactType {TestProperty = "Valid value"};
 
@@ -102,7 +102,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Session.Events.BindingFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact = new FactType {TestProperty = "Valid value"};
 
@@ -125,7 +125,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Session.Events.BindingFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact = new FactType {TestProperty = "Valid value"};
 

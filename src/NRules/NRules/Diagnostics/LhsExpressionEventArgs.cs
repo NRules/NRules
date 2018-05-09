@@ -7,15 +7,15 @@ using NRules.RuleModel;
 namespace NRules.Diagnostics
 {
     /// <summary>
-    /// Information related to events raised during aggregate expression evaluation.
+    /// Information related to events raised during left-hand side expression evaluation.
     /// </summary>
-    public class AggregateEventArgs : ExpressionEventArgs
+    public class LhsExpressionEventArgs : ExpressionEventArgs
     {
         private readonly ITuple _tuple;
         private readonly IFact _fact;
 
         /// <summary>
-        /// Initializes a new instance of the <c>AggregateEventArgs</c> class.
+        /// Initializes a new instance of the <c>LhsExpressionEventArgs</c> class.
         /// </summary>
         /// <param name="expression">Expression related to the event.</param>
         /// <param name="exception">Exception related to the event.</param>
@@ -23,7 +23,7 @@ namespace NRules.Diagnostics
         /// <param name="result">Expression result.</param>
         /// <param name="tuple">Tuple related to the event.</param>
         /// <param name="fact">Fact related to the event.</param>
-        public AggregateEventArgs(Expression expression, Exception exception, object[] arguments, object result, ITuple tuple, IFact fact)
+        public LhsExpressionEventArgs(Expression expression, Exception exception, object[] arguments, object result, ITuple tuple, IFact fact)
             : base(expression, exception, arguments, result)
         {
             _tuple = tuple;
@@ -31,7 +31,7 @@ namespace NRules.Diagnostics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <c>AggregateEventArgs</c> class.
+        /// Initializes a new instance of the <c>LhsExpressionEventArgs</c> class.
         /// </summary>
         /// <param name="expression">Expression related to the event.</param>
         /// <param name="exception">Exception related to the event.</param>
@@ -39,7 +39,7 @@ namespace NRules.Diagnostics
         /// <param name="result">Expression result.</param>
         /// <param name="tuple">Tuple related to the event.</param>
         /// <param name="fact">Fact related to the event.</param>
-        public AggregateEventArgs(Expression expression, Exception exception, object argument, object result, ITuple tuple, IFact fact)
+        public LhsExpressionEventArgs(Expression expression, Exception exception, object argument, object result, ITuple tuple, IFact fact)
             : base(expression, exception, argument, result)
         {
             _tuple = tuple;
@@ -53,11 +53,18 @@ namespace NRules.Diagnostics
         {
             get
             {
-                foreach (var tupleFact in _tuple.OrderedFacts())
+                if (_tuple != null)
                 {
-                    yield return tupleFact;
+                    foreach (var tupleFact in _tuple.OrderedFacts())
+                    {
+                        yield return tupleFact;
+                    }
                 }
-                yield return _fact;
+
+                if (_fact != null)
+                {
+                    yield return _fact;
+                }
             }
         }
     }

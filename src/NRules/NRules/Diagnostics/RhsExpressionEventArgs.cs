@@ -6,20 +6,20 @@ using NRules.RuleModel;
 namespace NRules.Diagnostics
 {
     /// <summary>
-    /// Information related to events raised during action evaluation.
+    /// Information related to events raised during right-hand side expression evaluation.
     /// </summary>
-    public class ActionEventArgs : ExpressionEventArgs
+    public class RhsExpressionEventArgs : ExpressionEventArgs
     {
         private readonly IMatch _match;
 
         /// <summary>
-        /// Initializes a new instance of the <c>ActionEventArgs</c> class.
+        /// Initializes a new instance of the <c>RhsExpressionEventArgs</c> class.
         /// </summary>
         /// <param name="expression">Expression related to the event.</param>
         /// <param name="exception">Exception related to the event.</param>
         /// <param name="arguments">Expression arguments.</param>
         /// <param name="match">Rule match related to the event.</param>
-        public ActionEventArgs(Expression expression, Exception exception, object[] arguments, IMatch match)
+        public RhsExpressionEventArgs(Expression expression, Exception exception, object[] arguments, IMatch match)
             : base(expression, exception, arguments, null)
         {
             _match = match;

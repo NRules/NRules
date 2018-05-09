@@ -5,32 +5,33 @@ using NRules.RuleModel;
 namespace NRules.Diagnostics
 {
     /// <summary>
-    /// Information related to error events raised during condition evaluation.
+    /// Information related to error events raised during left-hand side expression evaluation.
     /// </summary>
-    public class ConditionErrorEventArgs : ConditionEventArgs, IRecoverableError
+    public class LhsExpressionErrorEventArgs : LhsExpressionEventArgs, IRecoverableError
     {
         /// <summary>
-        /// Initializes a new instance of the <c>ConditionErrorEventArgs</c> class.
+        /// Initializes a new instance of the <c>LhsExpressionErrorEventArgs</c> class.
         /// </summary>
         /// <param name="expression">Expression related to the event.</param>
         /// <param name="exception">Exception related to the event.</param>
         /// <param name="arguments">Expression arguments.</param>
         /// <param name="tuple">Tuple related to the event.</param>
         /// <param name="fact">Fact related to the event.</param>
-        public ConditionErrorEventArgs(Expression expression, Exception exception, object[] arguments, ITuple tuple, IFact fact)
+        public LhsExpressionErrorEventArgs(Expression expression, Exception exception, object[] arguments, ITuple tuple, IFact fact)
             : base(expression, exception, arguments, null, tuple, fact)
         {
         }
         
         /// <summary>
-        /// Initializes a new instance of the <c>ConditionErrorEventArgs</c> class.
+        /// Initializes a new instance of the <c>LhsExpressionErrorEventArgs</c> class.
         /// </summary>
         /// <param name="expression">Expression related to the event.</param>
         /// <param name="exception">Exception related to the event.</param>
         /// <param name="argument">Expression argument.</param>
+        /// <param name="tuple">Tuple related to the event.</param>
         /// <param name="fact">Fact related to the event.</param>
-        public ConditionErrorEventArgs(Expression expression, Exception exception, object argument, IFact fact)
-            : base(expression, exception, argument, null, fact)
+        public LhsExpressionErrorEventArgs(Expression expression, Exception exception, object argument, ITuple tuple, IFact fact)
+            : base(expression, exception, argument, null, tuple, fact)
         {
         }
 
