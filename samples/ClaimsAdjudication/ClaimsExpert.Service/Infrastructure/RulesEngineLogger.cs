@@ -10,8 +10,8 @@ namespace NRules.Samples.ClaimsExpert.Service.Infrastructure
         public RulesEngineLogger(ISessionFactory sessionFactory)
         {
             sessionFactory.Events.RuleFiredEvent += OnRuleFired;
-            sessionFactory.Events.ConditionFailedEvent += OnConditionFailedEvent;
-            sessionFactory.Events.ActionFailedEvent += OnActionFailedEvent;
+            sessionFactory.Events.LhsExpressionFailedEvent += OnConditionFailedEvent;
+            sessionFactory.Events.RhsExpressionFailedEvent += OnActionFailedEvent;
         }
 
         private void OnRuleFired(object sender, AgendaEventArgs args)
@@ -19,12 +19,12 @@ namespace NRules.Samples.ClaimsExpert.Service.Infrastructure
             Log.InfoFormat("Rule fired. Rule={0}", args.Rule.Name);
         }
 
-        private void OnConditionFailedEvent(object sender, ConditionErrorEventArgs args)
+        private void OnConditionFailedEvent(object sender, LhsExpressionErrorEventArgs args)
         {
             Log.ErrorFormat("Condition evaluation failed. Condition={0}, Message={1}", args.Expression, args.Exception);
         }
 
-        private void OnActionFailedEvent(object sender, ActionErrorEventArgs args)
+        private void OnActionFailedEvent(object sender, RhsExpressionErrorEventArgs args)
         {
             Log.ErrorFormat("Action evaluation failed. Action={0}, Message={1}", args.Expression, args.Exception);
         }
