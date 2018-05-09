@@ -5,7 +5,7 @@ using NRules.RuleModel;
 namespace NRules.Fluent.Dsl
 {
     /// <summary>
-    /// Rule's right hand side (actions) expression builder.
+    /// Rule's right-hand side (actions) expression builder.
     /// </summary>
     public interface IRightHandSideExpression
     {
