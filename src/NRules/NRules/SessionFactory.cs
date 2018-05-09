@@ -29,14 +29,14 @@ namespace NRules
     /// <event cref="IEventProvider.ActivationDeletedEvent">When a set of facts no longer matches a rule.</event>
     /// <event cref="IEventProvider.RuleFiringEvent">Before rule's actions are executed.</event>
     /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
-    /// <event cref="IEventProvider.LhsExpressionEvaluatedEvent">When an LHS expression was evaluated.</event>
-    /// <event cref="IEventProvider.LhsExpressionFailedEvent">When there is an error during LHS expression evaluation,
+    /// <event cref="IEventProvider.LhsExpressionEvaluatedEvent">When an left-hand side expression was evaluated.</event>
+    /// <event cref="IEventProvider.LhsExpressionFailedEvent">When there is an error during left-hand side expression evaluation,
     /// before throwing exception to the client.</event>
     /// <event cref="IEventProvider.AgendaExpressionEvaluatedEvent">When an agenda expression was evaluated.</event>
     /// <event cref="IEventProvider.AgendaExpressionFailedEvent">When there is an error during agenda expression evaluation,
     /// before throwing exception to the client.</event>
-    /// <event cref="IEventProvider.RhsExpressionEvaluatedEvent">When an RHS expression was evaluated.</event>
-    /// <event cref="IEventProvider.RhsExpressionFailedEvent">When there is an error during RHS expression evaluation,
+    /// <event cref="IEventProvider.RhsExpressionEvaluatedEvent">When an right-hand side expression was evaluated.</event>
+    /// <event cref="IEventProvider.RhsExpressionFailedEvent">When there is an error during right-hand side expression evaluation,
     /// before throwing exception to the client.</event>
     /// <seealso cref="ISession"/>
     /// <seealso cref="RuleCompiler"/>

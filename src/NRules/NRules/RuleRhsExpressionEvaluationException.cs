@@ -3,14 +3,14 @@ using System;
 namespace NRules
 {
     /// <summary>
-    /// Represents errors that occur while evaluating rule action.
+    /// Represents errors that occur while evaluating rule right-hand side expresson.
     /// </summary>
 #if (NET45 || NETSTANDARD2_0)
     [System.Serializable]
 #endif
-    public class RuleActionEvaluationException : RuleExpressionEvaluationException
+    public class RuleRhsExpressionEvaluationException : RuleExpressionEvaluationException
     {
-        internal RuleActionEvaluationException(string message, string ruleName, string expression, Exception innerException)
+        internal RuleRhsExpressionEvaluationException(string message, string ruleName, string expression, Exception innerException)
             : base(message, expression, innerException)
         {
             RuleName = ruleName;
@@ -18,7 +18,7 @@ namespace NRules
 
 #if (NET45 || NETSTANDARD2_0)
         [System.Security.SecuritySafeCritical]
-        protected RuleActionEvaluationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+        protected RuleRhsExpressionEvaluationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)
         {
             RuleName = info.GetString("RuleName");

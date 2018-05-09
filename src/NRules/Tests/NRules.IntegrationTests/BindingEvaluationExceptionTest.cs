@@ -25,7 +25,7 @@ namespace NRules.IntegrationTests
             var fact = new FactType { TestProperty = "Valid value" };
 
             //Act - Assert
-            var ex = Assert.Throws<RuleExpressionEvaluationException>(() => Session.Insert(fact));
+            var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact));
             Assert.NotNull(expression);
             Assert.Equal(1, facts.Count);
             Assert.Same(fact, facts.First().Value);

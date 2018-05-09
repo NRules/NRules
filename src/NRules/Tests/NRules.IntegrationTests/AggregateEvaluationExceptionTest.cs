@@ -28,7 +28,7 @@ namespace NRules.IntegrationTests
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
 
             //Act - Assert
-            var ex = Assert.Throws<RuleExpressionEvaluationException>(() => Session.Insert(fact21));
+            var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact21));
             Assert.NotNull(expression);
             Assert.Equal(2, facts.Count);
             Assert.Same(fact11, facts.First().Value);

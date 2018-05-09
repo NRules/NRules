@@ -51,7 +51,7 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 { TestProperty = null };
 
             //Act - Assert
-            var ex = Assert.Throws<RuleConditionEvaluationException>(() => session.Insert(fact1));
+            var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => session.Insert(fact1));
             Assert.Equal(1, handledEvents.Count);
             var eventArgs = handledEvents[0];
             Assert.Collection(eventArgs.Arguments, x => Assert.Same(fact1, x));

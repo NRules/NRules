@@ -33,7 +33,7 @@ namespace NRules
                     }
                     catch (Exception e)
                     {
-                        throw new RuleActionEvaluationException("Failed to evaluate rule action",
+                        throw new RuleRhsExpressionEvaluationException("Failed to evaluate rule action",
                             actionContext.Rule.Name, invocation.Expression.ToString(), e);
                     }
                 }

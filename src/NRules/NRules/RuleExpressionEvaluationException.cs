@@ -8,7 +8,7 @@ namespace NRules
 #if (NET45 || NETSTANDARD2_0)
     [System.Serializable]
 #endif
-    public class RuleExpressionEvaluationException : RuleExecutionException
+    public abstract class RuleExpressionEvaluationException : RuleExecutionException
     {
         internal RuleExpressionEvaluationException(string message, string expression, Exception innerException)
             : base(message, innerException)

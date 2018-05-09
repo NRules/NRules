@@ -179,7 +179,7 @@ namespace NRules.Rete
             {
                 if (!e.IsHandled)
                 {
-                    throw new RuleExpressionEvaluationException("Failed to evaluate aggregate expression",
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
                         e.Expression.ToString(), e.InnerException);
                 }
                 ResetAggregator(aggregation, tuple, aggregator);
@@ -196,7 +196,7 @@ namespace NRules.Rete
             {
                 if (!e.IsHandled)
                 {
-                    throw new RuleExpressionEvaluationException("Failed to evaluate aggregate expression",
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
                         e.Expression.ToString(), e.InnerException);
                 }
                 ResetAggregator(aggregation, tuple, aggregator);
@@ -213,7 +213,7 @@ namespace NRules.Rete
             {
                 if (!e.IsHandled)
                 {
-                    throw new RuleExpressionEvaluationException("Failed to evaluate aggregate expression",
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
                         e.Expression.ToString(), e.InnerException);
                 }
                 ResetAggregator(aggregation, tuple, aggregator);

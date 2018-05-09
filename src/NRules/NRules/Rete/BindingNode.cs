@@ -73,7 +73,7 @@ namespace NRules.Rete
             {
                 if (!e.IsHandled)
                 {
-                    throw new RuleExpressionEvaluationException("Failed to evaluate binding expression",
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate binding expression",
                         e.Expression.ToString(), e.InnerException);
                 }
             }
@@ -91,7 +91,7 @@ namespace NRules.Rete
             {
                 if (!e.IsHandled)
                 {
-                    throw new RuleExpressionEvaluationException("Failed to evaluate binding expression",
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate binding expression",
                         e.Expression.ToString(), e.InnerException);
                 }
                 RetractBinding(tuple, toRetract);

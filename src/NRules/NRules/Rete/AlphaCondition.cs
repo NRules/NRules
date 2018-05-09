@@ -37,7 +37,7 @@ namespace NRules.Rete
                 context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, factValue, null, fact, ref isHandled);
                 if (!isHandled)
                 {
-                    throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
                 }
                 return false;
             }

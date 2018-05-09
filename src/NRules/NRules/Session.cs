@@ -23,22 +23,20 @@ namespace NRules
     /// <event cref="IEventProvider.ActivationDeletedEvent">When a set of facts no longer matches a rule.</event>
     /// <event cref="IEventProvider.RuleFiringEvent">Before rule's actions are executed.</event>
     /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
-    /// <event cref="IEventProvider.LhsExpressionEvaluatedEvent">When an LHS expression was evaluated.</event>
-    /// <event cref="IEventProvider.LhsExpressionFailedEvent">When there is an error during LHS expression evaluation,
+    /// <event cref="IEventProvider.LhsExpressionEvaluatedEvent">When an left-hand side expression was evaluated.</event>
+    /// <event cref="IEventProvider.LhsExpressionFailedEvent">When there is an error during left-hand side expression evaluation,
     /// before throwing exception to the client.</event>
     /// <event cref="IEventProvider.AgendaExpressionEvaluatedEvent">When an agenda expression was evaluated.</event>
     /// <event cref="IEventProvider.AgendaExpressionFailedEvent">When there is an error during agenda expression evaluation,
     /// before throwing exception to the client.</event>
-    /// <event cref="IEventProvider.RhsExpressionEvaluatedEvent">When an RHS expression was evaluated.</event>
-    /// <event cref="IEventProvider.RhsExpressionFailedEvent">When there is an error during RHS expression evaluation,
+    /// <event cref="IEventProvider.RhsExpressionEvaluatedEvent">When an right-hand side expression was evaluated.</event>
+    /// <event cref="IEventProvider.RhsExpressionFailedEvent">When there is an error during right-hand side expression evaluation,
     /// before throwing exception to the client.</event>
-    /// <exception cref="RuleConditionEvaluationException">Error while evaluating any of the rules' conditions.
+    /// <exception cref="RuleLhsExpressionEvaluationException">Error while evaluating any of the rules' left-hand side expressons.
     /// This exception can also be observed as an event <see cref="IEventProvider.LhsExpressionEvaluatedEvent"/>.</exception>
-    /// <exception cref="RuleExpressionEvaluationException">Error while evaluating any of the rules' binding or aggregate expressions.
-    /// This exception can also be observed as an event <see cref="IEventProvider.LhsExpressionEvaluatedEvent"/>.</exception>
-    /// <exception cref="AgendaExpressionEvaluationException">Error while evaluating any of the agenda filters.
+    /// <exception cref="AgendaExpressionEvaluationException">Error while evaluating any of the agenda expressions.
     /// This exception can also be observed as an event <see cref="IEventProvider.AgendaExpressionFailedEvent"/>.</exception>
-    /// <exception cref="RuleActionEvaluationException">Error while evaluating any of the rules' actions.
+    /// <exception cref="RuleRhsExpressionEvaluationException">Error while evaluating any of the rules' right-hand side expressions.
     /// This exception can also be observed as an event <see cref="IEventProvider.RhsExpressionFailedEvent"/>.</exception>
     /// <seealso cref="ISessionFactory"/>
     /// <threadsafety instance="false" />
