@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NRules.Diagnostics;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
-using NRules.IntegrationTests.TestAssets;
 using Xunit;
 
 namespace NRules.IntegrationTests
@@ -16,7 +16,7 @@ namespace NRules.IntegrationTests
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var handledEvents = new List<ExpressionEventArgs>();
+            var handledEvents = new List<LhsExpressionEventArgs>();
             factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
@@ -31,6 +31,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, handledEvents.Count);
             var eventArgs = handledEvents[0];
             Assert.Collection(eventArgs.Arguments, x => Assert.Same(fact1, x));
+            Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Same(fact1, x));
             Assert.Equal(true, eventArgs.Result);
             Assert.Null(eventArgs.Exception);
         }
@@ -42,7 +43,7 @@ namespace NRules.IntegrationTests
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var handledEvents = new List<ExpressionEventArgs>();
+            var handledEvents = new List<LhsExpressionEventArgs>();
             factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
@@ -55,6 +56,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, handledEvents.Count);
             var eventArgs = handledEvents[0];
             Assert.Collection(eventArgs.Arguments, x => Assert.Same(fact1, x));
+            Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Same(fact1, x));
             Assert.Equal(false, eventArgs.Result);
             Assert.Same(ex.InnerException, eventArgs.Exception);
         }
@@ -66,7 +68,7 @@ namespace NRules.IntegrationTests
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var handledEvents = new List<ExpressionEventArgs>();
+            var handledEvents = new List<LhsExpressionEventArgs>();
             factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
@@ -83,6 +85,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(2, handledEvents.Count);
             var eventArgs = handledEvents[1];
             Assert.Collection(eventArgs.Arguments, x => Assert.Same(fact2, x), x => Assert.Same(fact1, x));
+            Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Same(fact1, x), x => Assert.Same(fact2, x));
             Assert.Equal(false, eventArgs.Result);
             Assert.Null(eventArgs.Exception);
         }
@@ -94,7 +97,7 @@ namespace NRules.IntegrationTests
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var handledEvents = new List<ExpressionEventArgs>();
+            var handledEvents = new List<LhsExpressionEventArgs>();
             factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
@@ -111,6 +114,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(5, handledEvents.Count);
             var eventArgs = handledEvents[2];
             Assert.Collection(eventArgs.Arguments, x => Assert.Same(fact2, x));
+            Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Same(fact1, x), x => Assert.Same(fact2, x));
             Assert.Equal("12345", eventArgs.Result);
             Assert.Null(eventArgs.Exception);
         }
@@ -122,7 +126,7 @@ namespace NRules.IntegrationTests
             var factory = CreateTarget();
             var session = factory.CreateSession();
 
-            var handledEvents = new List<ExpressionEventArgs>();
+            var handledEvents = new List<LhsExpressionEventArgs>();
             factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
             {
                 handledEvents.Add(args);
@@ -139,6 +143,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(5, handledEvents.Count);
             var eventArgs = handledEvents[3];
             Assert.Collection(eventArgs.Arguments, x => Assert.Equal("12345", x));
+            Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Equal(fact1, x), x => Assert.Equal("12345", x));
             Assert.Equal(5, eventArgs.Result);
             Assert.Null(eventArgs.Exception);
         }
@@ -168,6 +173,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, handledEvents.Count);
             var eventArgs = handledEvents[0];
             Assert.Collection(eventArgs.Arguments, x => Assert.Equal(6, x));
+            Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Equal(fact1, x), x => Assert.Equal("123456", x), x => Assert.Equal(6, x));
             Assert.Equal(false, eventArgs.Result);
             Assert.Null(eventArgs.Exception);
             Assert.Equal("Test Rule", eventArgs.Rule.Name);
@@ -197,7 +203,8 @@ namespace NRules.IntegrationTests
             //Assert
             Assert.Equal(1, handledEvents.Count);
             var eventArgs = handledEvents[0];
-            Assert.Collection(eventArgs.Arguments);
+            Assert.Collection(eventArgs.Arguments, x => Assert.Equal(fact1, x), x => Assert.Equal("1234567890A", x));
+            Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Equal(fact1, x), x => Assert.Equal("1234567890A", x), x => Assert.Equal(11, x));
             Assert.Null(eventArgs.Result);
             Assert.Null(eventArgs.Exception);
             Assert.Equal("Test Rule", eventArgs.Rule.Name);
@@ -244,7 +251,11 @@ namespace NRules.IntegrationTests
                     .Where(() => length > 10);
 
                 Then()
-                    .Do(ctx => ctx.NoOp());
+                    .Do(ctx => NoOp(fact, value));
+            }
+
+            private void NoOp(FactType1 fact, string value)
+            {
             }
         }
     }
