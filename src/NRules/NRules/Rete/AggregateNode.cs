@@ -23,19 +23,21 @@ namespace NRules.Rete
 
         public override void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
         {
+            var aggregationContext = new AggregationContext(context.Session, context.EventAggregator);
             var joinedSets = JoinedSets(context, tuples);
             var aggregation = new Aggregation();
             foreach (var set in joinedSets)
             {
                 var matchingFacts = GetMatchingFacts(context, set);
                 IFactAggregator aggregator = CreateFactAggregator(set.Tuple);
-                AddToAggregate(context, aggregator, aggregation, set.Tuple, matchingFacts);
+                AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
             }
             PropagateAggregation(context, aggregation);
         }
 
         public override void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
         {
+            var aggregationContext = new AggregationContext(context.Session, context.EventAggregator);
             var joinedSets = JoinedSets(context, tuples);
             var aggregation = new Aggregation();
             foreach (var set in joinedSets)
@@ -49,13 +51,13 @@ namespace NRules.Rete
                         continue;
                     }
                     var matchingFacts = GetMatchingFacts(context, set);
-                    UpdateInAggregate(context, aggregator, aggregation, set.Tuple, matchingFacts);
+                    UpdateInAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
                 }
                 else
                 {
                     var matchingFacts = GetMatchingFacts(context, set);
                     aggregator = CreateFactAggregator(set.Tuple);
-                    AddToAggregate(context, aggregator, aggregation, set.Tuple, matchingFacts);
+                    AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
                 }
             }
             PropagateAggregation(context, aggregation);
@@ -77,6 +79,7 @@ namespace NRules.Rete
 
         public override void PropagateAssert(IExecutionContext context, IList<Fact> facts)
         {
+            var aggregationContext = new AggregationContext(context.Session, context.EventAggregator);
             var joinedSets = JoinedSets(context, facts);
             var aggregation = new Aggregation();
             foreach (var set in joinedSets)
@@ -92,10 +95,10 @@ namespace NRules.Rete
 
                         var originalSet = JoinedSet(context, set.Tuple);
                         var matchingOriginalFacts = GetMatchingFacts(context, originalSet);
-                        AddToAggregate(context, aggregator, aggregation, originalSet.Tuple, matchingOriginalFacts);
+                        AddToAggregate(aggregationContext, aggregator, aggregation, originalSet.Tuple, matchingOriginalFacts);
                     }
 
-                    AddToAggregate(context, aggregator, aggregation, set.Tuple, matchingFacts);
+                    AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
                 }
             }
             PropagateAggregation(context, aggregation);
@@ -103,6 +106,7 @@ namespace NRules.Rete
 
         public override void PropagateUpdate(IExecutionContext context, IList<Fact> facts)
         {
+            var aggregationContext = new AggregationContext(context.Session, context.EventAggregator);
             var joinedSets = JoinedSets(context, facts);
             var aggregation = new Aggregation();
             foreach (var set in joinedSets)
@@ -114,14 +118,14 @@ namespace NRules.Rete
                     IFactAggregator aggregator = GetFactAggregator(set.Tuple);
                     if (aggregator != null)
                     {
-                        UpdateInAggregate(context, aggregator, aggregation, set.Tuple, matchingFacts);
+                        UpdateInAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
                     }
                     else
                     {
                         var fullSet = JoinedSet(context, set.Tuple);
                         var allMatchingFacts = GetMatchingFacts(context, fullSet);
                         aggregator = CreateFactAggregator(fullSet.Tuple);
-                        AddToAggregate(context, aggregator, aggregation, fullSet.Tuple, allMatchingFacts);
+                        AddToAggregate(aggregationContext, aggregator, aggregation, fullSet.Tuple, allMatchingFacts);
                     }
                 }
             }
@@ -130,6 +134,7 @@ namespace NRules.Rete
 
         public override void PropagateRetract(IExecutionContext context, IList<Fact> facts)
         {
+            var aggregationContext = new AggregationContext(context.Session, context.EventAggregator);
             var joinedSets = JoinedSets(context, facts);
             var aggregation = new Aggregation();
             foreach (var set in joinedSets)
@@ -141,7 +146,7 @@ namespace NRules.Rete
                     IFactAggregator aggregator = GetFactAggregator(set.Tuple);
                     if (aggregator != null)
                     {
-                        RetractFromAggregate(context, aggregator, aggregation, set.Tuple, set.Facts);
+                        RetractFromAggregate(aggregationContext, aggregator, aggregation, set.Tuple, set.Facts);
                     }
                 }
             }
@@ -164,58 +169,51 @@ namespace NRules.Rete
             return matchingFacts;
         }
 
-        private void AddToAggregate(IExecutionContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IList<Fact> facts)
+        private void AddToAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IList<Fact> facts)
         {
             try
             {
-                aggregator.Add(aggregation, tuple, facts);
+                aggregator.Add(context, aggregation, tuple, facts);
             }
-            catch (AggregateExpressionException e)
+            catch (ExpressionEvaluationException e)
             {
-                bool isHandled = false;
-                context.EventAggregator.RaiseAggregateFailed(context.Session, e.InnerException, e.Expression, e.Tuple, e.Fact, ref isHandled);
-                if (!isHandled)
+                if (!e.IsHandled)
                 {
-                    throw new RuleExpressionEvaluationException("Failed to evaluate aggregate expression", e.Expression.ToString(), e.InnerException);
-                }
-                ResetAggregator(aggregation, tuple, aggregator);
-            }
-        }
-
-        private void UpdateInAggregate(IExecutionContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, List<Fact> facts)
-        {
-            try
-            {
-                aggregator.Modify(aggregation, tuple, facts);
-            }
-            catch (AggregateExpressionException e)
-            {
-                bool isHandled = false;
-                context.EventAggregator.RaiseAggregateFailed(context.Session, e.InnerException,
-                    e.Expression, e.Tuple, e.Fact, ref isHandled);
-                if (!isHandled)
-                {
-                    throw new RuleExpressionEvaluationException("Failed to evaluate aggregate expression",
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
                         e.Expression.ToString(), e.InnerException);
                 }
                 ResetAggregator(aggregation, tuple, aggregator);
             }
         }
 
-        private void RetractFromAggregate(IExecutionContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IList<Fact> facts)
+        private void UpdateInAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, List<Fact> facts)
         {
             try
             {
-                aggregator.Remove(aggregation, tuple, facts);
+                aggregator.Modify(context, aggregation, tuple, facts);
             }
-            catch (AggregateExpressionException e)
+            catch (ExpressionEvaluationException e)
             {
-                bool isHandled = false;
-                context.EventAggregator.RaiseAggregateFailed(context.Session, e.InnerException,
-                    e.Expression, e.Tuple, e.Fact, ref isHandled);
-                if (!isHandled)
+                if (!e.IsHandled)
                 {
-                    throw new RuleExpressionEvaluationException("Failed to evaluate aggregate expression",
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
+                        e.Expression.ToString(), e.InnerException);
+                }
+                ResetAggregator(aggregation, tuple, aggregator);
+            }
+        }
+
+        private void RetractFromAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IList<Fact> facts)
+        {
+            try
+            {
+                aggregator.Remove(context, aggregation, tuple, facts);
+            }
+            catch (ExpressionEvaluationException e)
+            {
+                if (!e.IsHandled)
+                {
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
                         e.Expression.ToString(), e.InnerException);
                 }
                 ResetAggregator(aggregation, tuple, aggregator);

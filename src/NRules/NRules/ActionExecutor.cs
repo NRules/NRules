@@ -33,14 +33,8 @@ namespace NRules
                     }
                     catch (Exception e)
                     {
-                        bool isHandled = false;
-                        var expression = invocation.RuleAction.Expression;
-                        executionContext.EventAggregator.RaiseActionFailed(executionContext.Session, e, expression, actionContext.Activation, ref isHandled);
-                        if (!isHandled)
-                        {
-                            throw new RuleActionEvaluationException("Failed to evaluate rule action",
-                                actionContext.Rule.Name, expression.ToString(), e);
-                        }
+                        throw new RuleRhsExpressionEvaluationException("Failed to evaluate rule action",
+                            actionContext.Rule.Name, invocation.Expression.ToString(), e);
                     }
                 }
             }

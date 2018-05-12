@@ -21,14 +21,14 @@ namespace NRules.Aggregators
             _selector = selector;
         }
 
-        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
                 var list = new OrderedHashSet<TResult>();
                 _sourceToList[fact] = list;
-                var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
+                var value = (IEnumerable<TResult>)_selector.Invoke(context, tuple, fact);
                 foreach (var item in value)
                 {
                     if (list.Add(item) &&
@@ -41,7 +41,7 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
@@ -50,7 +50,7 @@ namespace NRules.Aggregators
                 var oldList = _sourceToList[fact];
                 _sourceToList[fact] = list;
                 
-                var value = (IEnumerable<TResult>)_selector.Invoke(tuple, fact);
+                var value = (IEnumerable<TResult>)_selector.Invoke(context, tuple, fact);
                 foreach (var item in value)
                 {
                     list.Add(item);
@@ -79,7 +79,7 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)

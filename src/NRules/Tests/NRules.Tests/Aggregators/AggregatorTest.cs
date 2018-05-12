@@ -47,7 +47,7 @@ namespace NRules.Tests.Aggregators
             _func = func;
         }
 
-        public object Invoke(ITuple tuple, IFact fact)
+        public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
         {
             return _func((TFact) fact.Value);
         }

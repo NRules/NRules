@@ -33,19 +33,27 @@ namespace NRules.Rete
             }
             IndexMap.SetElementAt(args, _factMap[leftTuple.Count], rightFact.Object);
 
+            Exception exception = null;
+            bool result = false;
             try
             {
-                return _compiledExpression.Delegate(args);
+                result = _compiledExpression.Delegate(args);
+                return result;
             }
             catch (Exception e)
             {
+                exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, leftTuple, rightFact, ref isHandled);
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, args, leftTuple, rightFact, ref isHandled);
                 if (!isHandled)
                 {
-                    throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
                 }
                 return false;
+            }
+            finally
+            {
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, args, result, leftTuple, rightFact);
             }
         }
 

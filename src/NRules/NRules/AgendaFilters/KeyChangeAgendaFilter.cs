@@ -13,10 +13,10 @@ namespace NRules.AgendaFilters
             _keySelectors = new List<IActivationExpression>(keySelectors);
         }
 
-        public bool Accept(Activation activation)
+        public bool Accept(AgendaContext context, Activation activation)
         {
             var oldKeys = activation.GetState<List<object>>(KeyName);
-            var newKeys = _keySelectors.Select(selector => selector.Invoke(activation)).ToList();
+            var newKeys = _keySelectors.Select(selector => selector.Invoke(context, activation)).ToList();
             bool accept = true;
 
             if (oldKeys != null)

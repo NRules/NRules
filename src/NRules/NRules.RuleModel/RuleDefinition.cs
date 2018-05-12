@@ -65,12 +65,12 @@ namespace NRules.RuleModel
         FilterGroupElement FilterGroup { get; }
 
         /// <summary>
-        /// Rule left hand side (conditions).
+        /// Rule left-hand side (conditions).
         /// </summary>
         GroupElement LeftHandSide { get; }
 
         /// <summary>
-        /// Rule right hand side (actions).
+        /// Rule right-hand side (actions).
         /// </summary>
         ActionGroupElement RightHandSide { get; }
     }

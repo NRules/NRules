@@ -22,19 +22,28 @@ namespace NRules.Rete
 
         public bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
+            var factValue = fact.Object;
+            Exception exception = null;
+            bool result = false;
             try
             {
-                return _compiledExpression.Delegate(fact.Object);
+                result = _compiledExpression.Delegate(factValue);
+                return result;
             }
             catch (Exception e)
             {
+                exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, null, fact, ref isHandled);
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, factValue, null, fact, ref isHandled);
                 if (!isHandled)
                 {
-                    throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
                 }
                 return false;
+            }
+            finally
+            {
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, factValue, result, null, fact);
             }
         }
 

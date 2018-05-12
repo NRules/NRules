@@ -29,9 +29,9 @@ namespace NRules.IntegrationTests
             Session.Insert(fact1);
 
             //Act - Assert
-            var ex = Assert.Throws<RuleActionEvaluationException>(() => Session.Fire());
+            var ex = Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
             Assert.NotNull(ex.InnerException);
-            Assert.IsType<RuleConditionEvaluationException>(ex.InnerException);
+            Assert.IsType<RuleLhsExpressionEvaluationException>(ex.InnerException);
         }
 
         [Fact]

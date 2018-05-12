@@ -11,10 +11,27 @@ namespace NRules.Tests
     public class ExceptionSerializationTest
     {
         [Fact]
-        public void RuleActionEvaluationException_SerializedDeserialized_Equals()
+        public void RuleLhsExpressionEvaluationException_SerializedDeserialized_Equals()
         {
             //Arrange
-            var exception = new RuleActionEvaluationException("Test message", "Test rule", "Test expression", new Exception("Inner exception"));
+            var exception = new RuleLhsExpressionEvaluationException("Test message", "Test expression", new Exception("Inner exception"));
+
+            //Act
+            var newException = SerializeDeserialize(exception);
+
+            //Assert
+            Assert.NotNull(newException);
+            Assert.NotSame(exception, newException);
+            Assert.Equal(exception.Message, newException.Message);
+            Assert.Equal(exception.Expression, newException.Expression);
+            Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
+        }
+        
+        [Fact]
+        public void AgendaExpressionEvaluationException_SerializedDeserialized_Equals()
+        {
+            //Arrange
+            var exception = new AgendaExpressionEvaluationException("Test message", "Test rule", "Test expression", new Exception("Inner exception"));
 
             //Act
             var newException = SerializeDeserialize(exception);
@@ -29,10 +46,10 @@ namespace NRules.Tests
         }
 
         [Fact]
-        public void RuleConditionEvaluationException_SerializedDeserialized_Equals()
+        public void RuleRhsExpressionEvaluationException_SerializedDeserialized_Equals()
         {
             //Arrange
-            var exception = new RuleConditionEvaluationException("Test message", "Test expression", new Exception("Inner exception"));
+            var exception = new RuleRhsExpressionEvaluationException("Test message", "Test rule", "Test expression", new Exception("Inner exception"));
 
             //Act
             var newException = SerializeDeserialize(exception);
@@ -41,6 +58,7 @@ namespace NRules.Tests
             Assert.NotNull(newException);
             Assert.NotSame(exception, newException);
             Assert.Equal(exception.Message, newException.Message);
+            Assert.Equal(exception.RuleName, newException.RuleName);
             Assert.Equal(exception.Expression, newException.Expression);
             Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
         }
