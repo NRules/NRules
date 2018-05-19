@@ -98,20 +98,26 @@ namespace NRules
 
         public void Add(IExecutionContext context, Activation activation)
         {
-            if (!Accept(context, activation)) return;
-            _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
+            Enqueue(context, activation);
         }
 
         public void Modify(IExecutionContext context, Activation activation)
         {
-            if (!Accept(context, activation)) return;
-            _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
+            Enqueue(context, activation);
         }
 
         public void Remove(IExecutionContext context, Activation activation)
         {
             _activationQueue.Remove(activation);
             UnlinkFacts(context.Session, activation);
+        }
+
+        private void Enqueue(IExecutionContext context, Activation activation)
+        {
+            if (Accept(context, activation))
+                _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
+            else
+                _activationQueue.Remove(activation);
         }
 
         private bool Accept(IExecutionContext context, Activation activation)

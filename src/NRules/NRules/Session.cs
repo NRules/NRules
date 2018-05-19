@@ -494,6 +494,7 @@ namespace NRules
                 IActionContext actionContext = new ActionContext(this, activation);
 
                 _actionExecutor.Execute(_executionContext, actionContext);
+                activation.RaiseRuleFired();
 
                 ruleFiredCount++;
                 if (actionContext.IsHalted) break;

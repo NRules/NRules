@@ -45,6 +45,29 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
+        public void Fire_MatchingFactsInsertAndFireThenUpdateKey1TwiceNoEffectiveChangeAndFire_FiresOnce()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1", Allow = true};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", Allow = true};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+
+            //Act
+            Session.Fire();
+
+            fact2.TestProperty = "Valid Value 22";
+            Session.Update(fact2);
+            fact2.TestProperty = "Valid Value 2";
+            Session.Update(fact2);
+            Session.Fire();
+
+            //Assert
+            AssertFiredOnce();
+        }
+
+        [Fact]
         public void Fire_MatchingFactsInsertAndFireThenUpdateKey2ChangedAndFire_FiresTwice()
         {
             //Arrange
