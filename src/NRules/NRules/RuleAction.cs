@@ -67,7 +67,25 @@ namespace NRules
 
         public void Invoke(IExecutionContext executionContext, IActionContext actionContext, object[] arguments)
         {
-            _compiledExpression.Delegate.Invoke(actionContext, arguments);
+            Exception exception = null;
+            try
+            {
+                _compiledExpression.Delegate.Invoke(actionContext, arguments);
+            }
+            catch (Exception e)
+            {
+                exception = e;
+                bool isHandled = false;
+                executionContext.EventAggregator.RaiseRhsExpressionFailed(executionContext.Session, e, _expression, arguments, actionContext.Activation, ref isHandled);
+                if (!isHandled)
+                {
+                    throw;
+                }
+            }
+            finally
+            {
+                executionContext.EventAggregator.RaiseRhsExpressionEvaluated(executionContext.Session, exception, _expression, arguments, actionContext.Activation);
+            }
         }
     }
 }

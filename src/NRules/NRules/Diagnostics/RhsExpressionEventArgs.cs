@@ -6,21 +6,22 @@ using NRules.RuleModel;
 namespace NRules.Diagnostics
 {
     /// <summary>
-    /// Information related to error events raised during action execution.
+    /// Information related to events raised during right-hand side expression evaluation.
     /// </summary>
-    public class ActionErrorEventArgs : ErrorEventArgs
+    public class RhsExpressionEventArgs : ExpressionEventArgs
     {
         private readonly IMatch _match;
 
         /// <summary>
-        /// Initializes a new instance of the <c>ActionErrorEventArgs</c> class.
+        /// Initializes a new instance of the <c>RhsExpressionEventArgs</c> class.
         /// </summary>
+        /// <param name="expression">Expression related to the event.</param>
         /// <param name="exception">Exception related to the event.</param>
-        /// <param name="expression">Action expression related to the event.</param>
+        /// <param name="arguments">Expression arguments.</param>
         /// <param name="match">Rule match related to the event.</param>
-        public ActionErrorEventArgs(Exception exception, Expression expression, IMatch match) : base(exception)
+        public RhsExpressionEventArgs(Expression expression, Exception exception, object[] arguments, IMatch match)
+            : base(expression, exception, arguments, null)
         {
-            Action = expression;
             _match = match;
         }
 
@@ -30,12 +31,7 @@ namespace NRules.Diagnostics
         public IRuleDefinition Rule => _match.Rule;
 
         /// <summary>
-        /// Action that caused exception.
-        /// </summary>
-        public Expression Action { get; }
-
-        /// <summary>
-        /// Facts that caused exception.
+        /// Facts related to the event.
         /// </summary>
         public IEnumerable<IFactMatch> Facts => _match.Facts;
     }

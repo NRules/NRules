@@ -12,7 +12,7 @@ namespace NRules.Aggregators
         private readonly FactCollection<TElement> _items = new FactCollection<TElement>();
         private bool _created = false;
 
-        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             AddFacts(facts);
             if (!_created)
@@ -23,13 +23,13 @@ namespace NRules.Aggregators
             return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
         }
 
-        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             ModifyFacts(facts);
             return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
         }
 
-        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             RemoveFacts(facts);
             return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};

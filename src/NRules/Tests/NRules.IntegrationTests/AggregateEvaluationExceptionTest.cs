@@ -19,8 +19,8 @@ namespace NRules.IntegrationTests
 
             Expression expression = null;
             IList<IFact> facts = null;
-            Session.Events.AggregateFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.AggregateFailedEvent += (sender, args) => facts = args.Facts.ToList();
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -28,7 +28,7 @@ namespace NRules.IntegrationTests
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
 
             //Act - Assert
-            var ex = Assert.Throws<RuleExpressionEvaluationException>(() => Session.Insert(fact21));
+            var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact21));
             Assert.NotNull(expression);
             Assert.Equal(2, facts.Count);
             Assert.Same(fact11, facts.First().Value);
@@ -42,7 +42,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -61,7 +61,7 @@ namespace NRules.IntegrationTests
         public void Fire_AssertThenFailedAssertForSameJoin_DoesNotFire()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -85,7 +85,7 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenAssertForSameJoin_Fires()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -113,7 +113,7 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenAssertForSameJoinThenUpdate_Fires()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -143,7 +143,7 @@ namespace NRules.IntegrationTests
         public void Fire_AssertThenFailedAssertForDifferentJoin_FiresForSuccessfulJoin()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -171,7 +171,7 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenAssertForDifferentJoin_FiresForSuccessfulJoin()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -201,7 +201,7 @@ namespace NRules.IntegrationTests
         public void Fire_AssertThenFailedUpdate_DoesNotFire()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -223,7 +223,7 @@ namespace NRules.IntegrationTests
         public void Fire_AssertThenFailedUpdateThenUpdate_Fires()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -248,7 +248,7 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenUpdate_Fires()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -273,7 +273,7 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenUpdateJoin_Fires()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -303,7 +303,7 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenUpdateThenRetract_DoesNotFire()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -329,7 +329,7 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenRetract_DoesNotFire()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
@@ -354,7 +354,7 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenRetractJoined_DoesNotFire()
         {
             //Arrange
-            Session.Events.AggregateFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);

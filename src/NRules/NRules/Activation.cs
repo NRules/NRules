@@ -17,7 +17,9 @@ namespace NRules
     public class Activation : IMatch
     {
         private Dictionary<object, object> _stateMap;
-        
+
+        internal event EventHandler<ActivationEventArgs> OnRuleFired;
+
         internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap factMap)
         {
             CompiledRule = compiledRule;
@@ -38,6 +40,11 @@ namespace NRules
         internal ICompiledRule CompiledRule { get; }
         internal Tuple Tuple { get; }
         internal IndexMap FactMap { get; }
+
+        internal void RaiseRuleFired()
+        {
+            OnRuleFired?.Invoke(this, new ActivationEventArgs(this));
+        }
 
         internal T GetState<T>(object key)
         {

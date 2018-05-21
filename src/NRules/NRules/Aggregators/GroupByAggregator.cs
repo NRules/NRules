@@ -26,14 +26,14 @@ namespace NRules.Aggregators
             _elementSelector = elementSelector;
         }
 
-        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var key = (TKey)_keySelector.Invoke(tuple, fact);
-                var element = (TElement)_elementSelector.Invoke(tuple, fact);
+                var key = (TKey)_keySelector.Invoke(context, tuple, fact);
+                var element = (TElement)_elementSelector.Invoke(context, tuple, fact);
                 _sourceToKey[fact] = key;
                 _sourceToElement[fact] = element;
                 var result = Add(fact, key, element);
@@ -47,14 +47,14 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var key = (TKey)_keySelector.Invoke(tuple, fact);
-                var element = (TElement)_elementSelector.Invoke(tuple, fact);
+                var key = (TKey)_keySelector.Invoke(context, tuple, fact);
+                var element = (TElement)_elementSelector.Invoke(context, tuple, fact);
                 var oldKey = _sourceToKey[fact];
                 var oldElement = _sourceToElement[fact];
                 _sourceToKey[fact] = key;
@@ -95,7 +95,7 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();

@@ -238,7 +238,7 @@ namespace NRules.Tests
         }
 
         [Fact]
-        public void Modify_ActivationAlreadyInQueueRejectingFilter_ActivationUpdatedInQueue()
+        public void Modify_ActivationAlreadyInQueueRejectingFilter_ActivationRemovedFromQueue()
         {
             // Arrange
             var rule = MockRule();
@@ -255,10 +255,6 @@ namespace NRules.Tests
             target.Modify(_context.Object, activation);
 
             // Assert
-            Assert.False(target.IsEmpty());
-            var actualActivation = target.Pop();
-            Assert.Equal(rule, actualActivation.CompiledRule);
-            Assert.Equal(factObject.Value, ((FactObject)actualActivation.Tuple.RightFact.Object).Value);
             Assert.True(target.IsEmpty());
         }
 
@@ -394,7 +390,7 @@ namespace NRules.Tests
 
         private class RejectingFilter : IAgendaFilter
         {
-            public bool Accept(Activation activation)
+            public bool Accept(AgendaContext context, Activation activation)
             {
                 return false;
             }
@@ -402,7 +398,7 @@ namespace NRules.Tests
 
         private class AcceptingFilter : IAgendaFilter
         {
-            public bool Accept(Activation activation)
+            public bool Accept(AgendaContext context, Activation activation)
             {
                 return true;
             }

@@ -23,24 +23,21 @@ namespace NRules
     /// <event cref="IEventProvider.ActivationDeletedEvent">When a set of facts no longer matches a rule.</event>
     /// <event cref="IEventProvider.RuleFiringEvent">Before rule's actions are executed.</event>
     /// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
-    /// <event cref="IEventProvider.ConditionFailedEvent">When there is an error during condition evaluation,
+    /// <event cref="IEventProvider.LhsExpressionEvaluatedEvent">When an left-hand side expression was evaluated.</event>
+    /// <event cref="IEventProvider.LhsExpressionFailedEvent">When there is an error during left-hand side expression evaluation,
     /// before throwing exception to the client.</event>
-    /// <event cref="IEventProvider.BindingFailedEvent">When there is an error during binding expression evaluation,
+    /// <event cref="IEventProvider.AgendaExpressionEvaluatedEvent">When an agenda expression was evaluated.</event>
+    /// <event cref="IEventProvider.AgendaExpressionFailedEvent">When there is an error during agenda expression evaluation,
     /// before throwing exception to the client.</event>
-    /// <event cref="IEventProvider.AggregateFailedEvent">When there is an error during aggregate expression evaluation,
+    /// <event cref="IEventProvider.RhsExpressionEvaluatedEvent">When an right-hand side expression was evaluated.</event>
+    /// <event cref="IEventProvider.RhsExpressionFailedEvent">When there is an error during right-hand side expression evaluation,
     /// before throwing exception to the client.</event>
-    /// <event cref="IEventProvider.AgendaFilterFailedEvent">When there is an error during agenda filter evaluation,
-    /// before throwing exception to the client.</event>
-    /// <event cref="IEventProvider.ActionFailedEvent">When there is an error during action evaluation,
-    /// before throwing exception to the client.</event>
-    /// <exception cref="RuleConditionEvaluationException">Error while evaluating any of the rules' conditions.
-    /// This exception can also be observed as an event <see cref="IEventProvider.ConditionFailedEvent"/>.</exception>
-    /// <exception cref="RuleExpressionEvaluationException">Error while evaluating any of the rules' binding or aggregate expressions.
-    /// This exception can also be observed as events <see cref="IEventProvider.BindingFailedEvent"/>, <see cref="IEventProvider.AggregateFailedEvent"/>.</exception>
-    /// <exception cref="AgendaExpressionEvaluationException">Error while evaluating any of the agenda filters.
-    /// This exception can also be observed as an event <see cref="IEventProvider.AgendaFilterFailedEvent"/>.</exception>
-    /// <exception cref="RuleActionEvaluationException">Error while evaluating any of the rules' actions.
-    /// This exception can also be observed as an event <see cref="IEventProvider.ActionFailedEvent"/>.</exception>
+    /// <exception cref="RuleLhsExpressionEvaluationException">Error while evaluating any of the rules' left-hand side expressons.
+    /// This exception can also be observed as an event <see cref="IEventProvider.LhsExpressionEvaluatedEvent"/>.</exception>
+    /// <exception cref="AgendaExpressionEvaluationException">Error while evaluating any of the agenda expressions.
+    /// This exception can also be observed as an event <see cref="IEventProvider.AgendaExpressionFailedEvent"/>.</exception>
+    /// <exception cref="RuleRhsExpressionEvaluationException">Error while evaluating any of the rules' right-hand side expressions.
+    /// This exception can also be observed as an event <see cref="IEventProvider.RhsExpressionFailedEvent"/>.</exception>
     /// <seealso cref="ISessionFactory"/>
     /// <threadsafety instance="false" />
     public interface ISession
@@ -497,6 +494,7 @@ namespace NRules
                 IActionContext actionContext = new ActionContext(this, activation);
 
                 _actionExecutor.Execute(_executionContext, actionContext);
+                activation.RaiseRuleFired();
 
                 ruleFiredCount++;
                 if (actionContext.IsHalted) break;

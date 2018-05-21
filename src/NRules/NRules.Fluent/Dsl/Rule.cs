@@ -68,7 +68,7 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
-        /// Returns expression builder for rule's left hand side (conditions).
+        /// Returns expression builder for rule's left-hand side (conditions).
         /// </summary>
         /// <returns>Left hand side expression builder.</returns>
         protected ILeftHandSideExpression When()
@@ -77,7 +77,7 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
-        /// Returns expression builder for rule's right hand side (actions).
+        /// Returns expression builder for rule's right-hand side (actions).
         /// </summary>
         /// <returns>Right hand side expression builder.</returns>
         protected IRightHandSideExpression Then()

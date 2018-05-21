@@ -128,7 +128,7 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Retrieves left hand side builder (conditions).
+        /// Retrieves left-hand side builder (conditions).
         /// </summary>
         /// <returns>Left hand side builder.</returns>
         public GroupBuilder LeftHandSide()
@@ -137,7 +137,7 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Retrieves right hand side builder (actions).
+        /// Retrieves right-hand side builder (actions).
         /// </summary>
         /// <returns>Right hand side builder.</returns>
         public ActionGroupBuilder RightHandSide()

@@ -98,14 +98,12 @@ namespace NRules
 
         public void Add(IExecutionContext context, Activation activation)
         {
-            if (!Accept(context, activation)) return;
-            _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
+            Enqueue(context, activation);
         }
 
         public void Modify(IExecutionContext context, Activation activation)
         {
-            if (!Accept(context, activation)) return;
-            _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
+            Enqueue(context, activation);
         }
 
         public void Remove(IExecutionContext context, Activation activation)
@@ -114,18 +112,24 @@ namespace NRules
             UnlinkFacts(context.Session, activation);
         }
 
+        private void Enqueue(IExecutionContext context, Activation activation)
+        {
+            if (Accept(context, activation))
+                _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
+            else
+                _activationQueue.Remove(activation);
+        }
+
         private bool Accept(IExecutionContext context, Activation activation)
         {
+            var agendaContext = new AgendaContext(context.Session, context.EventAggregator);
             try
             {
-                return AcceptActivation(activation);
+                return AcceptActivation(agendaContext, activation);
             }
-            catch (ActivationExpressionException e)
+            catch (ExpressionEvaluationException e)
             {
-                bool isHandled = false;
-                context.EventAggregator.RaiseAgendaFilterFailed(context.Session, e.InnerException,
-                    e.Expression, activation, ref isHandled);
-                if (!isHandled)
+                if (!e.IsHandled)
                 {
                     throw new AgendaExpressionEvaluationException("Failed to evaluate agenda filter expression",
                         activation.Rule.Name, e.Expression.ToString(), e.InnerException);
@@ -134,16 +138,16 @@ namespace NRules
             }
         }
 
-        private bool AcceptActivation(Activation activation)
+        private bool AcceptActivation(AgendaContext context, Activation activation)
         {
             foreach (var filter in _globalFilters)
             {
-                if (!filter.Accept(activation)) return false;
+                if (!filter.Accept(context, activation)) return false;
             }
             if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters)) return true;
             foreach (var filter in ruleFilters)
             {
-                if (!filter.Accept(activation)) return false;
+                if (!filter.Accept(context, activation)) return false;
             }
             return true;
         }

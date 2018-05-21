@@ -7,7 +7,7 @@ namespace NRules.AgendaFilters
 {
     internal interface IActivationCondition
     {
-        bool Invoke(Activation activation);
+        bool Invoke(AgendaContext context, Activation activation);
     }
 
     internal class ActivationCondition : IActivationCondition
@@ -23,7 +23,7 @@ namespace NRules.AgendaFilters
             _tupleFactMap = tupleFactMap;
         }
 
-        public bool Invoke(Activation activation)
+        public bool Invoke(AgendaContext context, Activation activation)
         {
             var tuple = activation.Tuple;
             var activationFactMap = activation.FactMap;
@@ -38,14 +38,23 @@ namespace NRules.AgendaFilters
                 index--;
             }
 
+            Exception exception = null;
+            bool result = false;
             try
             {
-                var result = _compiledExpression.Delegate.Invoke(args);
+                result = _compiledExpression.Delegate.Invoke(args);
                 return result;
             }
             catch (Exception e)
             {
-                throw new ActivationExpressionException(e, _expression, activation);
+                exception = e;
+                bool isHandled = false;
+                context.EventAggregator.RaiseAgendaExpressionFailed(context.Session, e, _expression, args, activation, ref isHandled);
+                throw new ExpressionEvaluationException(e, _expression, isHandled);
+            }
+            finally
+            {
+                context.EventAggregator.RaiseAgendaExpressionEvaluated(context.Session, exception, _expression, args, result, activation);
             }
         }
     }

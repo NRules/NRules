@@ -11,11 +11,11 @@ namespace NRules.AgendaFilters
             _conditions = new List<IActivationCondition>(conditions);
         }
 
-        public bool Accept(Activation activation)
+        public bool Accept(AgendaContext context, Activation activation)
         {
             foreach (var condition in _conditions)
             {
-                if (!condition.Invoke(activation)) return false;
+                if (!condition.Invoke(context, activation)) return false;
             }
             return true;
         }

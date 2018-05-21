@@ -19,24 +19,24 @@ namespace NRules.Aggregators
             _selector = selector;
         }
 
-        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var value = _selector.Invoke(tuple, fact);
+                var value = _selector.Invoke(context, tuple, fact);
                 _sourceToValue[fact] = value;
                 results.Add(AggregationResult.Added(value, Enumerable.Repeat(fact, 1)));
             }
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var value = _selector.Invoke(tuple, fact);
+                var value = _selector.Invoke(context, tuple, fact);
                 var oldValue = (TResult)_sourceToValue[fact];
                 _sourceToValue[fact] = value;
                 results.Add(AggregationResult.Modified(value, oldValue, Enumerable.Repeat(fact, 1)));
@@ -44,7 +44,7 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
