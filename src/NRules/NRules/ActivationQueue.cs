@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using NRules.Collections;
+﻿using NRules.Collections;
 using NRules.RuleModel;
 
 namespace NRules
@@ -7,20 +6,19 @@ namespace NRules
     internal class ActivationQueue
     {
         private readonly IPriorityQueue<int, Activation> _queue = new OrderedPriorityQueue<int, Activation>();
-        private readonly ISet<Activation> _activations = new HashSet<Activation>();
-        private readonly ISet<Activation> _refractions = new HashSet<Activation>();
 
         public void Enqueue(int priority, Activation activation)
         {
-            bool isRefracted = !_refractions.Add(activation);
-            if (isRefracted && activation.CompiledRule.Repeatability == RuleRepeatability.NonRepeatable)
+            if (activation.CompiledRule.Repeatability == RuleRepeatability.NonRepeatable && activation.IsRefracted)
             {
                 return;
             }
 
-            bool isNewActivation = _activations.Add(activation);
-            if (isNewActivation)
+            activation.IsRefracted = true;
+
+            if (!activation.IsActive)
             {
+                activation.IsActive = true;
                 _queue.Enqueue(priority, activation);
             }
         }
@@ -34,46 +32,39 @@ namespace NRules
         public Activation Dequeue()
         {
             Activation activation = _queue.Dequeue();
-            _activations.Remove(activation);
+            activation.IsActive = false;
             return activation;
         }
 
         public void Remove(Activation activation)
         {
-            _activations.Remove(activation);
-            _refractions.Remove(activation);
+            activation.IsActive = false;
+            activation.IsRefracted = false;
         }
 
         public bool HasActive()
         {
             PurgeQueue();
-            var hasActive = QueueHasElements();
-            return hasActive;
+            return !_queue.IsEmpty;
         }
 
         private void PurgeQueue()
         {
-            while (QueueHasElements() && IsCurrentQueueElementInactive())
+            while (!_queue.IsEmpty)
             {
+                Activation current = _queue.Peek();
+                if (current.IsActive) return;
                 _queue.Dequeue();
             }
         }
 
-        private bool IsCurrentQueueElementInactive()
-        {
-            return !_activations.Contains(_queue.Peek());
-        }
-
-        private bool QueueHasElements()
-        {
-            return !_queue.IsEmpty;
-        }
-
         public void Clear()
         {
-            _queue.Clear();
-            _activations.Clear();
-            _refractions.Clear();
+            while (!_queue.IsEmpty)
+            {
+                Activation activation = Dequeue();
+                activation.IsRefracted = false;
+            }
         }
     }
 }

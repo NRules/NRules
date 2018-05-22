@@ -41,6 +41,9 @@ namespace NRules
         internal Tuple Tuple { get; }
         internal IndexMap FactMap { get; }
 
+        internal bool IsActive {get; set; }
+        internal bool IsRefracted {get; set; }
+
         internal void RaiseRuleFired()
         {
             OnRuleFired?.Invoke(this, new ActivationEventArgs(this));
