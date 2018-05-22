@@ -493,8 +493,8 @@ namespace NRules
                 Activation activation = _agenda.Pop();
                 IActionContext actionContext = new ActionContext(this, activation);
 
+                activation.RaiseRuleFiring();
                 _actionExecutor.Execute(_executionContext, actionContext);
-                activation.RaiseRuleFired();
 
                 ruleFiredCount++;
                 if (actionContext.IsHalted) break;

@@ -18,7 +18,7 @@ namespace NRules
     {
         private Dictionary<object, object> _stateMap;
 
-        internal event EventHandler<ActivationEventArgs> OnRuleFired;
+        internal event EventHandler<ActivationEventArgs> OnRuleFiring;
 
         internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap factMap)
         {
@@ -44,9 +44,9 @@ namespace NRules
         internal bool IsActive {get; set; }
         internal bool IsRefracted {get; set; }
 
-        internal void RaiseRuleFired()
+        internal void RaiseRuleFiring()
         {
-            OnRuleFired?.Invoke(this, new ActivationEventArgs(this));
+            OnRuleFiring?.Invoke(this, new ActivationEventArgs(this));
         }
 
         internal T GetState<T>(object key)

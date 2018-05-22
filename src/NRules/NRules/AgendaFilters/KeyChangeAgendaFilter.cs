@@ -20,7 +20,7 @@ namespace NRules.AgendaFilters
             {
                 keys = new ChangeKeys();
                 activation.SetState(KeyName, keys);
-                activation.OnRuleFired += OnRuleFired;
+                activation.OnRuleFiring += OnRuleFiring;
             }
 
             keys.New = _keySelectors.Select(selector => selector.Invoke(context, activation)).ToList();
@@ -42,7 +42,7 @@ namespace NRules.AgendaFilters
             return accept;
         }
 
-        private void OnRuleFired(object sender, ActivationEventArgs args)
+        private void OnRuleFiring(object sender, ActivationEventArgs args)
         {
             var keys = args.Activation.GetState<ChangeKeys>(KeyName);
             if (keys != null)
