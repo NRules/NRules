@@ -9,12 +9,12 @@ namespace NRules
 
         public void Enqueue(int priority, Activation activation)
         {
-            if (activation.CompiledRule.Repeatability == RuleRepeatability.NonRepeatable && activation.IsRefracted)
+            if (activation.CompiledRule.Repeatability == RuleRepeatability.NonRepeatable)
             {
-                return;
+                if (activation.IsRefracted)
+                    return;
+                activation.IsRefracted = true;
             }
-
-            activation.IsRefracted = true;
 
             if (!activation.IsActive)
             {
