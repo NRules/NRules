@@ -49,12 +49,16 @@ namespace NRules.Rete
             var toRetract = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)
             {
-                var wrapperFact = tuple.RemoveStateOrThrow<WrapperFact>(this);
+                var wrapperFact = tuple.GetStateOrThrow<WrapperFact>(this);
                 toRetract.Add(wrapperFact);
             }
             foreach (var sink in _sinks)
             {
                 sink.PropagateRetract(context, toRetract);
+            }
+            foreach (var tuple in tuples)
+            {
+                tuple.RemoveStateOrThrow<WrapperFact>(this);
             }
         }
 
