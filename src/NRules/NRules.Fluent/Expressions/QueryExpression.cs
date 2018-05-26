@@ -32,6 +32,17 @@ namespace NRules.Fluent.Expressions
             };
         }
 
+        public void From<TSource>(Expression<Func<TSource>> source)
+        {
+            _buildAction = (b, n) =>
+            {
+                var patternBuilder = b.Pattern(typeof(TSource), n);
+                var bindingBuilder = patternBuilder.Binding();
+                bindingBuilder.DslBindingExpression(_groupBuilder.Declarations, source);
+                return patternBuilder;
+            };
+        }
+
         public void Where<TSource>(Expression<Func<TSource, bool>>[] predicates)
         {
             var previousBuildAction = _buildAction;
@@ -71,7 +82,8 @@ namespace NRules.Fluent.Expressions
             };
         }
 
-        public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector,
+            Expression<Func<TSource, TElement>> elementSelector)
         {
             var previousBuildAction = _buildAction;
             _buildAction = (b, n) =>
@@ -80,7 +92,8 @@ namespace NRules.Fluent.Expressions
                 var aggregateBuilder = aggregatePatternBuilder.Aggregate();
                 var sourceBuilder = previousBuildAction(aggregateBuilder, null);
                 var keySelectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, keySelector);
-                var elementSelectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, elementSelector);
+                var elementSelectorExpression =
+                    sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, elementSelector);
                 aggregateBuilder.GroupBy(keySelectorExpression, elementSelectorExpression);
                 return aggregatePatternBuilder;
             };
@@ -91,7 +104,8 @@ namespace NRules.Fluent.Expressions
             Aggregate<TSource, TResult>(name, expressionMap, null);
         }
 
-        public void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap, Type customFactoryType)
+        public void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap,
+            Type customFactoryType)
         {
             var previousBuildAction = _buildAction;
             _buildAction = (b, n) =>
@@ -111,7 +125,7 @@ namespace NRules.Fluent.Expressions
                 return aggregatePatternBuilder;
             };
         }
-        
+
         public void Collect<TSource>()
         {
             var previousBuildAction = _buildAction;

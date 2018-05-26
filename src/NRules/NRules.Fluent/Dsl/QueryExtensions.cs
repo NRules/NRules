@@ -21,6 +21,19 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
+        /// Creates a query from a given binding expression
+        /// </summary>
+        /// <typeparam name="TFact"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQuery<TFact> From<TFact>(this IQuery query, Expression<Func<TFact>> source)
+        {
+            query.Builder.From(source);
+            return new QueryExpression<TFact>(query.Builder);
+        }
+
+        /// <summary>
         /// Filters source facts using a set of predicate expressions.
         /// The facts must match all predicate expressions in order to pass the filter.
         /// </summary>
@@ -28,7 +41,8 @@ namespace NRules.Fluent.Dsl
         /// <param name="source">Query expression builder.</param>
         /// <param name="predicates">Filter expressions.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<TSource> Where<TSource>(this IQuery<TSource> source, params Expression<Func<TSource, bool>>[] predicates)
+        public static IQuery<TSource> Where<TSource>(this IQuery<TSource> source,
+            params Expression<Func<TSource, bool>>[] predicates)
         {
             source.Builder.Where(predicates);
             return new QueryExpression<TSource>(source.Builder);
@@ -42,7 +56,8 @@ namespace NRules.Fluent.Dsl
         /// <param name="source">Query expression builder.</param>
         /// <param name="selector">Projection expression.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<TResult> Select<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, TResult>> selector)
+        public static IQuery<TResult> Select<TSource, TResult>(this IQuery<TSource> source,
+            Expression<Func<TSource, TResult>> selector)
         {
             source.Builder.Select(selector);
             return new QueryExpression<TResult>(source.Builder);
@@ -56,7 +71,8 @@ namespace NRules.Fluent.Dsl
         /// <param name="source">Query expression builder.</param>
         /// <param name="selector">Collection flattening expression.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<TResult> SelectMany<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, IEnumerable<TResult>>> selector)
+        public static IQuery<TResult> SelectMany<TSource, TResult>(this IQuery<TSource> source,
+            Expression<Func<TSource, IEnumerable<TResult>>> selector)
         {
             source.Builder.SelectMany(selector);
             return new QueryExpression<TResult>(source.Builder);
@@ -70,7 +86,8 @@ namespace NRules.Fluent.Dsl
         /// <param name="source">Query expression builder.</param>
         /// <param name="keySelector">Key selection expression.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector)
+        public static IQuery<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IQuery<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector)
         {
             source.Builder.GroupBy(keySelector, x => x);
             return new QueryExpression<IGrouping<TKey, TSource>>(source.Builder);
@@ -87,7 +104,8 @@ namespace NRules.Fluent.Dsl
         /// <param name="keySelector">Key selection expression.</param>
         /// <param name="elementSelector">Projected fact selection expression.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector,
+        public static IQuery<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IQuery<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector,
             Expression<Func<TSource, TElement>> elementSelector)
         {
             source.Builder.GroupBy(keySelector, elementSelector);
