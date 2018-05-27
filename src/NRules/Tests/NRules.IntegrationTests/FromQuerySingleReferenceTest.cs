@@ -43,19 +43,6 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void From_NoElements_DoesNotFire()
-        {
-            // Arrange
-            Session.InsertAll(new[] {"rubbish", "data"});
-
-            // Act
-            Session.Fire();
-
-            // Assert
-            AssertDidNotFire();
-        }
-
-        [Fact]
         public void From_HandlesRetracts_FiresThenDoesNotFire()
         {
             // Arrange
