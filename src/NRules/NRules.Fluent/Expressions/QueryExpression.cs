@@ -82,8 +82,7 @@ namespace NRules.Fluent.Expressions
             };
         }
 
-        public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector,
-            Expression<Func<TSource, TElement>> elementSelector)
+        public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
         {
             var previousBuildAction = _buildAction;
             _buildAction = (b, n) =>
@@ -92,8 +91,7 @@ namespace NRules.Fluent.Expressions
                 var aggregateBuilder = aggregatePatternBuilder.Aggregate();
                 var sourceBuilder = previousBuildAction(aggregateBuilder, null);
                 var keySelectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, keySelector);
-                var elementSelectorExpression =
-                    sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, elementSelector);
+                var elementSelectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, elementSelector);
                 aggregateBuilder.GroupBy(keySelectorExpression, elementSelectorExpression);
                 return aggregatePatternBuilder;
             };
@@ -104,8 +102,7 @@ namespace NRules.Fluent.Expressions
             Aggregate<TSource, TResult>(name, expressionMap, null);
         }
 
-        public void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap,
-            Type customFactoryType)
+        public void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap, Type customFactoryType)
         {
             var previousBuildAction = _buildAction;
             _buildAction = (b, n) =>
