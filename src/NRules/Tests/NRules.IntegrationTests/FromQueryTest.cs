@@ -12,55 +12,70 @@ namespace NRules.IntegrationTests
         [Fact]
         public void From_MultipleKeys_ShouldFireOnceForEachGroup()
         {
+            // Arrange
             var keys = new[] {"K1", "K2", "K2", "K1"};
             var facts = keys.Select(k => new Fact {Value = k}).ToArray();
 
             Session.InsertAll(facts);
 
+            // Act
             Session.Fire();
 
+            // Assert
             AssertFiredTwice();
         }
 
         [Fact]
         public void From_SingleKey_FiresOnce()
         {
+            // Arrange
             var keys = new[] { "K1", "K1", "K1", "K1" };
             var facts = keys.Select(k => new Fact { Value = k }).ToArray();
 
             Session.InsertAll(facts);
 
+            // Act
             Session.Fire();
 
+            // Assert
             AssertFiredOnce();
         }
 
         [Fact]
         public void From_NoElements_DoesNotFire()
         {
+            // Arrange
             Session.InsertAll(new[] {"rubbish", "data"});
 
+            // Act
             Session.Fire();
 
+            // Assert
             AssertDidNotFire();
         }
 
         [Fact]
         public void From_HandlesRetracts_FiresThenDoesNotFire()
         {
+            // Arrange
             var keys = new[] { "K1", "K2", "K2", "K1" };
             var facts = keys.Select(k => new Fact { Value = k }).ToArray();
 
             Session.InsertAll(facts);
 
+            // Act
             Session.Fire();
 
+            // Assert
             AssertFiredTwice();
 
+            // Arrange
             Session.RetractAll(facts);
 
+            // Act
             Session.Fire();
 
+            // Assert
             AssertFiredTwice();
         }
 
