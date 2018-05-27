@@ -108,7 +108,7 @@ namespace NRules.IntegrationTests
                     .GroupBy(f => f.Value));
 
             Then()
-                .Do(ctx => Console.WriteLine($"AllCount={factsAll.Count()}, GroupCount={factsGrouped.Count()}"));
+                .Do(ctx => ctx.NoOp());
         }
     }
 }
