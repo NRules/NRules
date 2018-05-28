@@ -55,6 +55,14 @@ namespace NRules.IntegrationTests.TestAssets
             return (T)Repository.Activator.Activate(typeof(T)).Single();
         }
 
+        protected IEnumerable<T> GetFiredFacts<T>()
+        {
+            var rule = _ruleMap.Single().Value;
+            var firedRule = _firedRulesMap[rule.Name];
+            var x = firedRule.Last();
+            return x.Facts.Where(f => typeof(T).GetTypeInfo().IsAssignableFrom(f.Declaration.Type.GetTypeInfo())).Select(f => (T) f.Value);
+        }
+
         protected T GetFiredFact<T>()
         {
             var rule = _ruleMap.Single().Value;

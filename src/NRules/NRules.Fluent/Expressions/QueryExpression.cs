@@ -32,6 +32,17 @@ namespace NRules.Fluent.Expressions
             };
         }
 
+        public void From<TSource>(Expression<Func<TSource>> source)
+        {
+            _buildAction = (b, n) =>
+            {
+                var patternBuilder = b.Pattern(typeof(TSource), n);
+                var bindingBuilder = patternBuilder.Binding();
+                bindingBuilder.DslBindingExpression(_groupBuilder.Declarations, source);
+                return patternBuilder;
+            };
+        }
+
         public void Where<TSource>(Expression<Func<TSource, bool>>[] predicates)
         {
             var previousBuildAction = _buildAction;
@@ -111,7 +122,7 @@ namespace NRules.Fluent.Expressions
                 return aggregatePatternBuilder;
             };
         }
-        
+
         public void Collect<TSource>()
         {
             var previousBuildAction = _buildAction;

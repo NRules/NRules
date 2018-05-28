@@ -21,6 +21,19 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
+        /// Creates a query from a given binding expression
+        /// </summary>
+        /// <typeparam name="TFact"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IQuery<TFact> From<TFact>(this IQuery query, Expression<Func<TFact>> source)
+        {
+            query.Builder.From(source);
+            return new QueryExpression<TFact>(query.Builder);
+        }
+
+        /// <summary>
         /// Filters source facts using a set of predicate expressions.
         /// The facts must match all predicate expressions in order to pass the filter.
         /// </summary>
@@ -87,7 +100,8 @@ namespace NRules.Fluent.Dsl
         /// <param name="keySelector">Key selection expression.</param>
         /// <param name="elementSelector">Projected fact selection expression.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector,
+        public static IQuery<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IQuery<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector,
             Expression<Func<TSource, TElement>> elementSelector)
         {
             source.Builder.GroupBy(keySelector, elementSelector);
