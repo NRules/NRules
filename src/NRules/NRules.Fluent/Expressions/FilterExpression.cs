@@ -48,7 +48,7 @@ namespace NRules.Fluent.Expressions
             return this;
         }
 
-        private Expression<Func<object>> InternalizeComparer<T>(Expression<Func<T>> keySelector, Expression<Func<IEqualityComparer<T>>> comparer) where T : class
+        private static Expression<Func<object>> InternalizeComparer<T>(Expression<Func<T>> keySelector, Expression<Func<IEqualityComparer<T>>> comparer) where T : class
         {
             var keyExpr = Expression.Invoke(keySelector);
             var compExpr = Expression.Invoke(comparer);
