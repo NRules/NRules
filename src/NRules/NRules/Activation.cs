@@ -37,16 +37,43 @@ namespace NRules
         /// </summary>
         public IEnumerable<IFactMatch> Facts => GetMatchedFacts();
 
+        /// <summary>
+        /// Event that triggered the match.
+        /// </summary>
+        public MatchTrigger Trigger { get; private set; }
+
         internal ICompiledRule CompiledRule { get; }
         internal Tuple Tuple { get; }
         internal IndexMap FactMap { get; }
 
-        internal bool IsActive {get; set; }
-        internal bool IsRefracted {get; set; }
+        internal bool IsEnqueued { get; set; }
+        internal bool HasFired { get; set; }
 
-        internal void RaiseRuleFiring()
+        internal void Insert()
+        {
+            Trigger = MatchTrigger.Created;
+        }
+
+        internal void Update()
+        {
+            Trigger = HasFired ? MatchTrigger.Updated : MatchTrigger.Created;
+        }
+
+        internal void Remove()
+        {
+            Trigger = HasFired ? MatchTrigger.Removed : MatchTrigger.None;
+        }
+
+        internal void Clear()
+        {
+            HasFired = false;
+            Trigger = MatchTrigger.None;
+        }
+
+        internal void RuleFiring()
         {
             OnRuleFiring?.Invoke(this, new ActivationEventArgs(this));
+            HasFired = Trigger != MatchTrigger.Removed;
         }
 
         internal T GetState<T>(object key)

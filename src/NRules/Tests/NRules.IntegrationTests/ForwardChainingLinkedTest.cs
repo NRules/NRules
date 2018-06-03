@@ -85,6 +85,7 @@ namespace NRules.IntegrationTests
 
             //Act - II
             Session.Retract(fact1);
+            Session.Fire();
 
             //Assert - II
             Assert.Equal(0, Session.Query<FactType2>().Count());

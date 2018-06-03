@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using NRules.RuleModel;
+using NRules.Utilities;
 
 namespace NRules
 {
@@ -44,9 +46,12 @@ namespace NRules
         private IEnumerable<ActionInvocation> CreateInvocations(IExecutionContext executionContext, IActionContext actionContext)
         {
             ICompiledRule compiledRule = actionContext.CompiledRule;
+            MatchTrigger trigger = actionContext.Activation.Trigger;
             var invocations = new List<ActionInvocation>();
             foreach (IRuleAction action in compiledRule.Actions)
             {
+                if (!trigger.Matches(action.Trigger)) continue;
+
                 var args = action.GetArguments(executionContext, actionContext);
                 var invocation = new ActionInvocation(executionContext, actionContext, action, args);
                 invocations.Add(invocation);

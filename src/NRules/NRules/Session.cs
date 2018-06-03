@@ -488,12 +488,11 @@ namespace NRules
         public int Fire(int maxRulesNumber)
         {
             int ruleFiredCount = 0;
-            while (!_agenda.IsEmpty() && ruleFiredCount < maxRulesNumber)
+            while (!_agenda.IsEmpty && ruleFiredCount < maxRulesNumber)
             {
                 Activation activation = _agenda.Pop();
                 IActionContext actionContext = new ActionContext(this, activation);
 
-                activation.RaiseRuleFiring();
                 _actionExecutor.Execute(_executionContext, actionContext);
 
                 ruleFiredCount++;

@@ -1,5 +1,7 @@
-﻿using NRules.Collections;
+﻿using System;
+using NRules.Collections;
 using NRules.RuleModel;
+using NRules.Utilities;
 
 namespace NRules
 {
@@ -9,16 +11,9 @@ namespace NRules
 
         public void Enqueue(int priority, Activation activation)
         {
-            if (activation.CompiledRule.Repeatability == RuleRepeatability.NonRepeatable)
+            if (!activation.IsEnqueued)
             {
-                if (activation.IsRefracted)
-                    return;
-                activation.IsRefracted = true;
-            }
-
-            if (!activation.IsActive)
-            {
-                activation.IsActive = true;
+                activation.IsEnqueued = true;
                 _queue.Enqueue(priority, activation);
             }
         }
@@ -32,14 +27,13 @@ namespace NRules
         public Activation Dequeue()
         {
             Activation activation = _queue.Dequeue();
-            activation.IsActive = false;
+            activation.IsEnqueued = false;
             return activation;
         }
 
         public void Remove(Activation activation)
         {
-            activation.IsActive = false;
-            activation.IsRefracted = false;
+            activation.IsEnqueued = false;
         }
 
         public bool HasActive()
@@ -53,7 +47,7 @@ namespace NRules
             while (!_queue.IsEmpty)
             {
                 Activation current = _queue.Peek();
-                if (current.IsActive) return;
+                if (current.IsEnqueued && current.Trigger.Matches(current.CompiledRule.ActionTriggers)) return;
                 _queue.Dequeue();
             }
         }
@@ -63,7 +57,7 @@ namespace NRules
             while (!_queue.IsEmpty)
             {
                 Activation activation = Dequeue();
-                activation.IsRefracted = false;
+                activation.Clear();
             }
         }
     }

@@ -41,7 +41,7 @@ namespace NRules.Utilities
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count - 1);
             var tupleFactMap = IndexMap.CreateMap(element.References, declarations);
             var dependencyIndexMap = IndexMap.CreateMap(element.References, dependencies);
-            var action = new RuleAction(element.Expression, fastDelegate, tupleFactMap, dependencyIndexMap);
+            var action = new RuleAction(element.Expression, fastDelegate, tupleFactMap, dependencyIndexMap, element.ActionTrigger);
             return action;
         }
 

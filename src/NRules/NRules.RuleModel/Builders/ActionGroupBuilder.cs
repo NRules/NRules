@@ -12,8 +12,22 @@ namespace NRules.RuleModel.Builders
     {
         private readonly List<ActionElement> _actions = new List<ActionElement>();
 
+        private const ActionTrigger DefaultTrigger = ActionTrigger.Activated | ActionTrigger.Reactivated;
+
         internal ActionGroupBuilder(SymbolTable scope) : base(scope)
         {
+        }
+
+        /// <summary>
+        /// Adds a rule action to the group.
+        /// The action will be executed on new and updated rule activations.
+        /// </summary>
+        /// <param name="expression">Rule action expression.
+        /// The first parameter of the action expression must be <see cref="IContext"/>.
+        /// Names and types of the rest of the expression parameters must match the names and types defined in the pattern declarations.</param>
+        public void Action(LambdaExpression expression)
+        {
+            Action(expression, DefaultTrigger);
         }
 
         /// <summary>
@@ -22,7 +36,8 @@ namespace NRules.RuleModel.Builders
         /// <param name="expression">Rule action expression.
         /// The first parameter of the action expression must be <see cref="IContext"/>.
         /// Names and types of the rest of the expression parameters must match the names and types defined in the pattern declarations.</param>
-        public void Action(LambdaExpression expression)
+        /// <param name="actionTrigger">Activation events that trigger the action.</param>
+        public void Action(LambdaExpression expression, ActionTrigger actionTrigger)
         {
             if (expression.Parameters.Count == 0 ||
                 expression.Parameters.First().Type != typeof(IContext))
@@ -30,9 +45,15 @@ namespace NRules.RuleModel.Builders
                 throw new ArgumentException(
                     $"Action expression must have {typeof(IContext)} as its first parameter");
             }
+
+            if (actionTrigger == ActionTrigger.None)
+            {
+                throw new ArgumentException("Action trigger not specified");
+            }
+
             IEnumerable<ParameterExpression> parameters = expression.Parameters.Skip(1);
             IEnumerable<Declaration> references = parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var actionElement = new ActionElement(Scope.VisibleDeclarations, references, expression);
+            var actionElement = new ActionElement(Scope.VisibleDeclarations, references, expression, actionTrigger);
             _actions.Add(actionElement);
         }
 
