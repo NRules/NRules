@@ -59,6 +59,12 @@ namespace NRules.RuleModel.Builders
 
         ActionGroupElement IBuilder<ActionGroupElement>.Build()
         {
+            var insertActions = _actions.Where(x => x.ActionTrigger.HasFlag(ActionTrigger.Activated)).ToList();
+            if (insertActions.Count == 0)
+            {
+                throw new ArgumentException($"Rule must have at least one match action");
+            }
+
             var actionGroup = new ActionGroupElement(Scope.VisibleDeclarations, _actions);
             return actionGroup;
         }
