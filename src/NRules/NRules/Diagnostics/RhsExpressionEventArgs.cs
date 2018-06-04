@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using NRules.RuleModel;
 
@@ -10,8 +9,6 @@ namespace NRules.Diagnostics
     /// </summary>
     public class RhsExpressionEventArgs : ExpressionEventArgs
     {
-        private readonly IMatch _match;
-
         /// <summary>
         /// Initializes a new instance of the <c>RhsExpressionEventArgs</c> class.
         /// </summary>
@@ -22,17 +19,12 @@ namespace NRules.Diagnostics
         public RhsExpressionEventArgs(Expression expression, Exception exception, object[] arguments, IMatch match)
             : base(expression, exception, arguments, null)
         {
-            _match = match;
+            Match = match;
         }
 
         /// <summary>
-        /// Rule related to the event.
+        /// Rule match related to the event.
         /// </summary>
-        public IRuleDefinition Rule => _match.Rule;
-
-        /// <summary>
-        /// Facts related to the event.
-        /// </summary>
-        public IEnumerable<IFactMatch> Facts => _match.Facts;
+        public IMatch Match { get; }
     }
 }

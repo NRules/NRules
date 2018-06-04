@@ -35,11 +35,11 @@ namespace NRules.Fluent.Expressions
             builder.BindingExpression(rewrittenExpression);
         }
 
-        public static void DslAction(this ActionGroupBuilder builder, IEnumerable<Declaration> declarations, Expression<Action<IContext>> action)
+        public static void DslAction(this ActionGroupBuilder builder, IEnumerable<Declaration> declarations, Expression<Action<IContext>> action, ActionTrigger actionTrigger)
         {
             var rewriter = new ExpressionRewriter(declarations);
             var rewrittenAction = rewriter.Rewrite(action);
-            builder.Action(rewrittenAction);
+            builder.Action(rewrittenAction, actionTrigger);
         }
 
         public static LambdaExpression DslPatternExpression(this PatternBuilder builder, IEnumerable<Declaration> declarations, LambdaExpression expression)

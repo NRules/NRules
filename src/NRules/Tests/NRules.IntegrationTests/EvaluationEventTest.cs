@@ -3,6 +3,7 @@ using System.Linq;
 using NRules.Diagnostics;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
+using NRules.RuleModel;
 using Xunit;
 
 namespace NRules.IntegrationTests
@@ -180,7 +181,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Insert_Fact_RaisesActionExpressionEvalEvent()
+        public void Fire_Rule_RaisesActionExpressionEvalEvent()
         {
             //Arrange
             var factory = CreateTarget();
@@ -204,10 +205,11 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, handledEvents.Count);
             var eventArgs = handledEvents[0];
             Assert.Collection(eventArgs.Arguments, x => Assert.Equal(fact1, x), x => Assert.Equal("1234567890A", x));
-            Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Equal(fact1, x), x => Assert.Equal("1234567890A", x), x => Assert.Equal(11, x));
+            Assert.Collection(eventArgs.Match.Facts.Select(x => x.Value), x => Assert.Equal(fact1, x), x => Assert.Equal("1234567890A", x), x => Assert.Equal(11, x));
             Assert.Null(eventArgs.Result);
             Assert.Null(eventArgs.Exception);
-            Assert.Equal("Test Rule", eventArgs.Rule.Name);
+            Assert.Equal("Test Rule", eventArgs.Match.Rule.Name);
+            Assert.Equal(MatchTrigger.Created, eventArgs.Match.Trigger);
         }
 
         private ISessionFactory CreateTarget()

@@ -13,6 +13,7 @@ namespace NRules
         IEnumerable<IRuleAction> Actions { get; }
         IEnumerable<IRuleDependency> Dependencies { get; }
         IRuleFilter Filter { get; }
+        ActionTrigger ActionTriggers { get; }
     }
 
     [DebuggerDisplay("{Definition.Name}")]
@@ -31,12 +32,18 @@ namespace NRules
             _declarations = new List<Declaration>(declarations);
             _actions = new List<IRuleAction>(actions);
             _dependencies = new List<IRuleDependency>(dependencies);
+
+            foreach (var ruleAction in _actions)
+            {
+                ActionTriggers |= ruleAction.Trigger;
+            }
         }
 
         public int Priority { get; }
         public RuleRepeatability Repeatability { get; }
         public IRuleDefinition Definition { get; }
         public IRuleFilter Filter { get; }
+        public ActionTrigger ActionTriggers { get; }
 
         public IEnumerable<Declaration> Declarations => _declarations;
         public IEnumerable<IRuleAction> Actions => _actions;

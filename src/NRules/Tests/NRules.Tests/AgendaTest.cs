@@ -29,7 +29,7 @@ namespace NRules.Tests
             var target = CreateTarget();
 
             // Assert
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace NRules.Tests
             var actualActivation = target.Pop();
 
             // Assert
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
             Assert.Same(activation, actualActivation);
         }
 
@@ -74,11 +74,11 @@ namespace NRules.Tests
             target.Add(_context.Object, activation);
 
             // Assert
-            Assert.False(target.IsEmpty());
+            Assert.False(target.IsEmpty);
             var actualActivation = target.Pop();
             Assert.Equal(rule, actualActivation.CompiledRule);
             Assert.Equal(factObject, actualActivation.Tuple.RightFact.Object);
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace NRules.Tests
             target.Add(_context.Object, activation);
 
             // Assert
-            Assert.False(target.IsEmpty());
+            Assert.False(target.IsEmpty);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace NRules.Tests
             target.Add(_context.Object, activation);
 
             // Assert
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
         [Fact]
@@ -133,7 +133,7 @@ namespace NRules.Tests
             target.Add(_context.Object, activation);
 
             // Assert
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
         [Fact]
@@ -151,7 +151,7 @@ namespace NRules.Tests
             target.Add(_context.Object, activation);
 
             // Assert
-            Assert.False(target.IsEmpty());
+            Assert.False(target.IsEmpty);
         }
 
         [Fact]
@@ -169,7 +169,7 @@ namespace NRules.Tests
             target.Add(_context.Object, activation);
 
             // Assert
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
 
@@ -189,7 +189,7 @@ namespace NRules.Tests
             target.Add(_context.Object, activation);
 
             // Assert
-            Assert.False(target.IsEmpty());
+            Assert.False(target.IsEmpty);
         }
 
         [Fact]
@@ -208,11 +208,11 @@ namespace NRules.Tests
             target.Modify(_context.Object, activation);
 
             // Assert
-            Assert.False(target.IsEmpty());
+            Assert.False(target.IsEmpty);
             var actualActivation = target.Pop();
             Assert.Equal(rule, actualActivation.CompiledRule);
             Assert.Equal(factObject.Value, ((FactObject)actualActivation.Tuple.RightFact.Object).Value);
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
         [Fact]
@@ -231,10 +231,10 @@ namespace NRules.Tests
             target.Modify(_context.Object, activation);
 
             // Assert
-            Assert.False(target.IsEmpty());
+            Assert.False(target.IsEmpty);
             var actualActivation = target.Pop();
             Assert.Equal(rule, actualActivation.CompiledRule);
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
         [Fact]
@@ -255,7 +255,7 @@ namespace NRules.Tests
             target.Modify(_context.Object, activation);
 
             // Assert
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
         [Fact]
@@ -276,7 +276,7 @@ namespace NRules.Tests
             target.Modify(_context.Object, activation);
 
             // Assert
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
         [Fact]
@@ -296,7 +296,7 @@ namespace NRules.Tests
             target.Remove(_context.Object, activation);
 
             // Assert
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
         [Fact]
@@ -314,9 +314,9 @@ namespace NRules.Tests
             target.Add(_context.Object, activation2);
 
             // Assert
-            Assert.False(target.IsEmpty());
+            Assert.False(target.IsEmpty);
             Assert.Equal(rule1, target.Pop().CompiledRule);
-            Assert.False(target.IsEmpty());
+            Assert.False(target.IsEmpty);
             Assert.Equal(rule2, target.Pop().CompiledRule);
         }
 
@@ -334,7 +334,7 @@ namespace NRules.Tests
             var actualActivation = target.Peek();
 
             // Assert
-            Assert.False(target.IsEmpty());
+            Assert.False(target.IsEmpty);
             Assert.Same(activation, actualActivation);
         }
 
@@ -362,7 +362,7 @@ namespace NRules.Tests
             target.Clear();
 
             // Assert
-            Assert.True(target.IsEmpty());
+            Assert.True(target.IsEmpty);
         }
 
         private Agenda CreateTarget()
@@ -373,8 +373,10 @@ namespace NRules.Tests
         private static ICompiledRule MockRule()
         {
             var compiledRuleMock = new Mock<ICompiledRule>();
-            var ruleMock = new Mock<IRuleDefinition>();
-            compiledRuleMock.Setup(x => x.Definition).Returns(ruleMock.Object);
+            var ruleDefinitionMock = new Mock<IRuleDefinition>();
+            compiledRuleMock.Setup(x => x.Definition).Returns(ruleDefinitionMock.Object);
+            var actionTrigger = ActionTrigger.Activated | ActionTrigger.Reactivated | ActionTrigger.Deactivated;
+            compiledRuleMock.Setup(x => x.ActionTriggers).Returns(actionTrigger);
             return compiledRuleMock.Object;
         }
 

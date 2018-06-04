@@ -150,7 +150,7 @@ namespace NRules.Tests
         {
             // Arrange
             var target = CreateTarget();
-            _agenda.Setup(x => x.IsEmpty()).Returns(true);
+            _agenda.Setup(x => x.IsEmpty).Returns(true);
 
             // Act
             var actual = target.Fire();
@@ -165,7 +165,7 @@ namespace NRules.Tests
             // Arrange
             var target = CreateTarget();
             _agenda.Setup(x => x.Pop()).Returns(StubActivation());
-            _agenda.SetupSequence(x => x.IsEmpty())
+            _agenda.SetupSequence(x => x.IsEmpty)
                 .Returns(false).Returns(false).Returns(true);
 
             // Act
@@ -181,7 +181,7 @@ namespace NRules.Tests
             // Arrange
             var target = CreateTarget();
             _agenda.Setup(x => x.Pop()).Returns(StubActivation());
-            _agenda.SetupSequence(x => x.IsEmpty())
+            _agenda.SetupSequence(x => x.IsEmpty)
                 .Returns(false).Returns(false).Returns(true);
 
             // Act

@@ -10,6 +10,7 @@ namespace NRules
     internal interface IRuleAction
     {
         Expression Expression { get; }
+        ActionTrigger Trigger { get; }
         object[] GetArguments(IExecutionContext executionContext, IActionContext actionContext);
         void Invoke(IExecutionContext executionContext, IActionContext actionContext, object[] arguments);
     }
@@ -19,17 +20,21 @@ namespace NRules
         private readonly LambdaExpression _expression;
         private readonly IndexMap _tupleFactMap;
         private readonly IndexMap _dependencyFactMap;
+        private readonly ActionTrigger _actionTrigger;
         private readonly FastDelegate<Action<IContext, object[]>> _compiledExpression;
 
-        public RuleAction(LambdaExpression expression, FastDelegate<Action<IContext, object[]>> compiledExpression, IndexMap tupleFactMap, IndexMap dependencyFactMap)
+        public RuleAction(LambdaExpression expression, FastDelegate<Action<IContext, object[]>> compiledExpression,
+            IndexMap tupleFactMap, IndexMap dependencyFactMap, ActionTrigger actionTrigger)
         {
             _expression = expression;
             _tupleFactMap = tupleFactMap;
             _dependencyFactMap = dependencyFactMap;
+            _actionTrigger = actionTrigger;
             _compiledExpression = compiledExpression;
         }
 
         public Expression Expression => _expression;
+        public ActionTrigger Trigger => _actionTrigger;
 
         public object[] GetArguments(IExecutionContext executionContext, IActionContext actionContext)
         {
