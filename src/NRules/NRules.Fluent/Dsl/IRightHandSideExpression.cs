@@ -35,7 +35,7 @@ namespace NRules.Fluent.Dsl
 
         /// <summary>
         /// Defines rule's action that yields a linked fact when the rule fires.
-        /// If the rule is fired due to an update, the linked fact is also updated with the new yielded value.
+        /// If the rule fires due to an update, the linked fact is also updated with the new yielded value.
         /// </summary>
         /// <typeparam name="TFact">Type of fact to yield.</typeparam>
         /// <param name="yield">Action expression that yields the linked fact.</param>
@@ -44,22 +44,22 @@ namespace NRules.Fluent.Dsl
 
         /// <summary>
         /// Defines rule's action that yields a linked fact when the rule fires.
-        /// If the rule is fired due to an update, the update expression is evaluated to produce an updated linked fact.
+        /// If the rule fires due to an update, the update expression is evaluated to produce an updated linked fact.
         /// </summary>
         /// <typeparam name="TFact">Type of fact to yield.</typeparam>
-        /// <param name="yieldInsert">Action expression that yields a new linked fact if the linked fact does not yet exist.</param>
-        /// <param name="yieldUpdate">Action expression that yields an updated linked fact if the linked fact already exists.</param>
+        /// <param name="yieldInsert">Action expression that yields a new linked fact.</param>
+        /// <param name="yieldUpdate">Action expression that yields an updated linked fact.</param>
         /// <returns>Right hand side expression builder.</returns>
         IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yieldInsert, Expression<Func<IContext, TFact, TFact>> yieldUpdate);
 
         /// <summary>
         /// Defines rule's action that yields a linked fact when the rule fires.
-        /// If the rule is fired due to an update, the update expression is evaluated to produce an updated linked fact.
-        /// If the rule's conditions are no longer true and the rule's activation is removed, the remove expression is evaluated and the linked fact is retracted.
+        /// If the rule fires due to an update, the update expression is evaluated to produce an updated linked fact.
+        /// If the rule fires due to match removal, the remove expression is evaluated before the linked fact is retracted.
         /// </summary>
         /// <typeparam name="TFact">Type of fact to yield.</typeparam>
-        /// <param name="yieldInsert">Action expression that yields a new linked fact if the linked fact does not yet exist.</param>
-        /// <param name="yieldUpdate">Action expression that yields an updated linked fact if the linked fact already exists.</param>
+        /// <param name="yieldInsert">Action expression that yields a new linked fact.</param>
+        /// <param name="yieldUpdate">Action expression that yields an updated linked fact.</param>
         /// <param name="yieldRemove">Action expression that is evaluated before the linked fact is retracted.</param>
         /// <returns>Right hand side expression builder.</returns>
         IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yieldInsert, Expression<Func<IContext, TFact, TFact>> yieldUpdate,
