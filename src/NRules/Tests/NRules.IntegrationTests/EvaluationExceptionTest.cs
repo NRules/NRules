@@ -184,7 +184,7 @@ namespace NRules.IntegrationTests
             Expression expression = null;
             IList<IFactMatch> facts = null;
             Session.Events.RhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.RhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
+            Session.Events.RhsExpressionFailedEvent += (sender, args) => facts = args.Match.Facts.ToList();
 
             var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);

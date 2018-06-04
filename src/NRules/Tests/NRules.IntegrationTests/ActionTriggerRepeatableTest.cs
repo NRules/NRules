@@ -6,9 +6,9 @@ using Xunit;
 
 namespace NRules.IntegrationTests
 {
-    public class ActionTriggerTest : BaseRuleTestFixture
+    public class ActionTriggerRepeatableTest : BaseRuleTestFixture
     {
-        public ActionTriggerTest()
+        public ActionTriggerRepeatableTest()
         {
             _matchActionCount = 0;
             _rematchActionCount = 0;
