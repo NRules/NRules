@@ -81,6 +81,9 @@ namespace NRules.IntegrationTests
                         .Where(c => c.Any()))
                     .Query(() => factsOneTwo, q => q
                         .From(() => factsOne.Concat(factsTwo)));
+
+                Then()
+                    .Do(ctx => ctx.NoOp());
             }
         }
     }
