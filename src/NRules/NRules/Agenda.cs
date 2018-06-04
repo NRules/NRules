@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NRules.AgendaFilters;
 using NRules.RuleModel;
+using NRules.Utilities;
 
 namespace NRules
 {
@@ -128,7 +129,8 @@ namespace NRules
         public void Remove(IExecutionContext context, Activation activation)
         {
             activation.Remove();
-            if (activation.HasFired)
+            if (activation.Trigger.Matches(activation.CompiledRule.ActionTriggers) &&
+                activation.HasFired)
             {
                 _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
             }
