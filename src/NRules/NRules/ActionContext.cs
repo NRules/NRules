@@ -24,7 +24,7 @@ namespace NRules
         }
 
         public IRuleDefinition Rule => CompiledRule.Definition;
-        public IEnumerable<IFactMatch> Facts => Activation.Facts;
+        public IMatch Match => Activation;
         public ICompiledRule CompiledRule => Activation.CompiledRule;
 
         public Activation Activation { get; }

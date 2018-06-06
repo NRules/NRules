@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using NRules.Extensibility;
+using NRules.RuleModel;
 
 namespace NRules
 {
@@ -19,6 +20,7 @@ namespace NRules
 
         public object[] Arguments { get; }
         public Expression Expression => _action.Expression;
+        public ActionTrigger Trigger => _action.Trigger;
 
         public void Invoke()
         {

@@ -56,7 +56,7 @@ namespace NRules.IntegrationTests
             IFactMatch[] matches = null;
             GetRuleInstance<TestRule>().Action = ctx =>
             {
-                matches = ctx.Facts.ToArray();
+                matches = ctx.Match.Facts.ToArray();
             };
 
             //Act

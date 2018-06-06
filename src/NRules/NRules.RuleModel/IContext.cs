@@ -15,9 +15,9 @@ namespace NRules.RuleModel
         IRuleDefinition Rule { get; }
 
         /// <summary>
-        /// Retrieves matched facts.
+        /// Current rule match.
         /// </summary>
-        IEnumerable<IFactMatch> Facts { get; }
+        IMatch Match { get; }
 
         /// <summary>
         /// Halts rules execution. The engine continues execution of the current rule and exits the execution cycle.
