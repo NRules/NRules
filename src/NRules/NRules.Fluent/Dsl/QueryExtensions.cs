@@ -8,6 +8,20 @@ namespace NRules.Fluent.Dsl
     public static class QueryExtensions
     {
         /// <summary>
+        /// Matches a fact and binds it to a variable.
+        /// </summary>
+        /// <typeparam name="TFact">Type of fact to match.</typeparam>
+        /// <param name="query">Query expression builder.</param>
+        /// <param name="alias">Alias for the matching fact.</param>
+        /// <param name="conditions">Set of conditions the fact must satisfy.</param>
+        /// <returns>Query expression builder.</returns>
+        public static IQuery Match<TFact>(this IQuery query, Expression<Func<TFact>> alias, params Expression<Func<TFact, bool>>[] conditions)
+        {
+            query.Builder.FactQuery(alias, conditions);
+            return query;
+        }
+
+        /// <summary>
         /// Creates a query from matching facts in the engine's working memory.
         /// </summary>
         /// <typeparam name="TFact">Type of facts to query.</typeparam>
@@ -21,12 +35,39 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
-        /// Creates a query from a given binding expression
+        /// Creates a sub-query and binds it to a variable.
         /// </summary>
-        /// <typeparam name="TFact"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="source"></param>
-        /// <returns></returns>
+        /// <typeparam name="TResult">Query result type.</typeparam>
+        /// <param name="query">Query expression builder.</param>
+        /// <param name="alias">Alias for the sub-query results.</param>
+        /// <param name="queryAction">Definition of the query.</param>
+        /// <returns>Query expression builder.</returns>
+        public static IQuery Query<TResult>(this IQuery query, Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryAction)
+        {
+            query.Builder.Query(alias, queryAction);
+            return query;
+        }
+
+        /// <summary>
+        /// Crates a query from a sub-query.
+        /// </summary>
+        /// <typeparam name="TResult">Query result type.</typeparam>
+        /// <param name="query">Query expression builder.</param>
+        /// <param name="queryAction">Definition of the query.</param>
+        /// <returns>Query expression builder.</returns>
+        public static IQuery<TResult> Query<TResult>(this IQuery query, Func<IQuery, IQuery<TResult>> queryAction)
+        {
+            query.Builder.Query(queryAction);
+            return new QueryExpression<TResult>(query.Builder);
+        }
+
+        /// <summary>
+        /// Creates a query from a given expression.
+        /// </summary>
+        /// <typeparam name="TFact">Type of facts to query.</typeparam>
+        /// <param name="query">Query expression builder.</param>
+        /// <param name="source">Query source expression.</param>
+        /// <returns>Query expression builder.</returns>
         public static IQuery<TFact> From<TFact>(this IQuery query, Expression<Func<TFact>> source)
         {
             query.Builder.From(source);

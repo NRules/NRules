@@ -80,9 +80,9 @@ namespace NRules.Fluent.Expressions
         public ILeftHandSideExpression Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryAction)
         {
             var symbol = alias.ToParameterExpression();
-            var queryBuilder = new QueryExpression(symbol, _groupBuilder);
+            var queryBuilder = new QueryExpression(_groupBuilder);
             queryAction(queryBuilder);
-            queryBuilder.Build();
+            queryBuilder.Build(symbol.Name);
             return this;
         }
 

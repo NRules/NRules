@@ -9,18 +9,23 @@ namespace NRules.Fluent.Expressions
 {
     internal class QueryExpression : IQuery, IQueryBuilder
     {
-        private readonly ParameterExpression _symbol;
         private readonly GroupBuilder _groupBuilder;
         private Func<IPatternContainerBuilder, string, PatternBuilder> _buildAction;
 
-        public QueryExpression(ParameterExpression symbol, GroupBuilder groupBuilder)
+        public QueryExpression(GroupBuilder groupBuilder)
         {
-            _symbol = symbol;
             _groupBuilder = groupBuilder;
             Builder = this;
         }
 
         public IQueryBuilder Builder { get; }
+
+        public void FactQuery<TFact>(Expression<Func<TFact>> alias, Expression<Func<TFact, bool>>[] conditions)
+        {
+            var symbol = alias.ToParameterExpression();
+            var patternBuilder = _groupBuilder.Pattern(symbol.Type, symbol.Name);
+            patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
+        }
 
         public void FactQuery<TSource>(Expression<Func<TSource, bool>>[] conditions)
         {
@@ -28,6 +33,29 @@ namespace NRules.Fluent.Expressions
             {
                 var patternBuilder = b.Pattern(typeof(TSource), n);
                 patternBuilder.DslConditions(_groupBuilder.Declarations, conditions);
+                return patternBuilder;
+            };
+        }
+
+        public void Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryAction)
+        {
+            var symbol = alias.ToParameterExpression();
+            var patternBuilder = _groupBuilder.Pattern(typeof(TResult), symbol.Name);
+            var groupBuilder = patternBuilder.Group(GroupType.And);
+            var queryBuilder = new QueryExpression(groupBuilder);
+            queryAction(queryBuilder);
+            queryBuilder.Build(null);
+        }
+
+        public void Query<TSource>(Func<IQuery, IQuery<TSource>> queryAction)
+        {
+            _buildAction = (b, n) =>
+            {
+                var patternBuilder = b.Pattern(typeof(TSource), n);
+                var groupBuilder = patternBuilder.Group(GroupType.And);
+                var queryBuilder = new QueryExpression(groupBuilder);
+                queryAction(queryBuilder);
+                queryBuilder.Build(null);
                 return patternBuilder;
             };
         }
@@ -136,9 +164,9 @@ namespace NRules.Fluent.Expressions
             };
         }
 
-        public void Build()
+        public void Build(string symbolName)
         {
-            _buildAction(_groupBuilder, _symbol.Name);
+            _buildAction(_groupBuilder, symbolName);
         }
     }
 }

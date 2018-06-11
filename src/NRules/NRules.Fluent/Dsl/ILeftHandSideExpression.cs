@@ -65,9 +65,9 @@ namespace NRules.Fluent.Dsl
         /// </summary>
         /// <typeparam name="TResult">Query result type.</typeparam>
         /// <param name="alias">Alias for the query results.</param>
-        /// <param name="queryExpression">Query expression.</param>
+        /// <param name="queryAction">Definition of the query.</param>
         /// <returns>Left hand side expression builder.</returns>
-        ILeftHandSideExpression Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryExpression);
+        ILeftHandSideExpression Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryAction);
 
         /// <summary>
         /// Defines a group of patterns joined by an AND operator.

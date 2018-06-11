@@ -9,7 +9,10 @@ namespace NRules.Fluent.Dsl
     /// </summary>
     public interface IQueryBuilder
     {
+        void FactQuery<TFact>(Expression<Func<TFact>> alias, Expression<Func<TFact, bool>>[] conditions);
         void FactQuery<TSource>(Expression<Func<TSource, bool>>[] conditions);
+        void Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryAction);
+        void Query<TSource>(Func<IQuery, IQuery<TSource>> queryAction);
         void From<TSource>(Expression<Func<TSource>> source);
         void Where<TSource>(Expression<Func<TSource, bool>>[] predicates);
         void Select<TSource, TResult>(Expression<Func<TSource, TResult>> selector);
