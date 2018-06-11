@@ -8,12 +8,13 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a binding element that associates a pattern with a calculated expression.
     /// </summary>
-    public class BindingBuilder : PatternSourceElementBuilder, IBuilder<BindingElement>
+    public class BindingBuilder : RuleLeftElementBuilder, IBuilder<BindingElement>
     {
         private readonly Type _valueType;
         private LambdaExpression _expression;
 
-        internal BindingBuilder(SymbolTable scope, Type valueType) : base(scope)
+        internal BindingBuilder(SymbolTable scope, Type valueType)
+            : base(scope)
         {
             _valueType = valueType;
         }

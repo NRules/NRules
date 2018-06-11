@@ -18,7 +18,7 @@ namespace NRules.RuleModel
             _conditions = new List<ConditionElement>(conditions);
         }
 
-        internal PatternElement(Declaration declaration, IEnumerable<Declaration> declarations, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
+        internal PatternElement(Declaration declaration, IEnumerable<Declaration> declarations, IEnumerable<ConditionElement> conditions, RuleLeftElement source)
             : this(declaration, declarations, conditions)
         {
             Source = source;
@@ -32,7 +32,7 @@ namespace NRules.RuleModel
         /// <summary>
         /// Optional pattern source element.
         /// </summary>
-        public PatternSourceElement Source { get; }
+        public RuleLeftElement Source { get; }
 
         /// <summary>
         /// Type of the values that the pattern matches.

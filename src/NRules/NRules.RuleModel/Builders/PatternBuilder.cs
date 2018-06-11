@@ -11,7 +11,7 @@ namespace NRules.RuleModel.Builders
     public class PatternBuilder : RuleLeftElementBuilder, IBuilder<PatternElement>
     {
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
-        private PatternSourceElementBuilder _sourceBuilder;
+        private RuleLeftElementBuilder _sourceBuilder;
 
         internal PatternBuilder(SymbolTable scope, Declaration declaration) : base(scope)
         {
@@ -21,7 +21,7 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Builder for the source of this element.
         /// </summary>
-        public PatternSourceElementBuilder SourceBuilder => _sourceBuilder;
+        public RuleLeftElementBuilder SourceBuilder => _sourceBuilder;
 
         /// <summary>
         /// Adds a condition expression to the pattern.
@@ -63,13 +63,24 @@ namespace NRules.RuleModel.Builders
             return builder;
         }
 
+        /// <summary>
+        /// Creates a group builder that builds the source of the pattern.
+        /// </summary>
+        /// <returns>Group builder.</returns>
+        public GroupBuilder Group(GroupType groupType)
+        {
+            var builder = new GroupBuilder(Scope, groupType);
+            _sourceBuilder = builder;
+            return builder;
+        }
+
         PatternElement IBuilder<PatternElement>.Build()
         {
             Validate();
             PatternElement patternElement;
             if (_sourceBuilder != null)
             {
-                var builder = (IBuilder<PatternSourceElement>)_sourceBuilder;
+                var builder = (IBuilder<RuleLeftElement>)_sourceBuilder;
                 var source = builder.Build();
                 patternElement = new PatternElement(Declaration, Scope.VisibleDeclarations, _conditions, source);
             }

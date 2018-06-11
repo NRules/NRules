@@ -6,7 +6,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Rule element that creates new facts (aggregates) based on matching facts it receives as input.
     /// </summary>
-    public class AggregateElement : PatternSourceElement
+    public class AggregateElement : RuleLeftElement
     {
         public const string CollectName = "Collect";
         public const string GroupByName = "GroupBy";
@@ -24,6 +24,11 @@ namespace NRules.RuleModel
         public string Name { get; }
 
         /// <summary>
+        /// Type of the result that this rule element yields.
+        /// </summary>
+        public Type ResultType { get; }
+
+        /// <summary>
         /// The type of custom aggregator factory.
         /// </summary>
         public Type CustomFactoryType { get; }
@@ -35,9 +40,10 @@ namespace NRules.RuleModel
 
         internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, string name, ExpressionMap expressionMap, PatternElement source,
             Type customFactoryType)
-            : base(declarations, resultType)
+            : base(declarations)
         {
             Name = name;
+            ResultType = resultType;
             ExpressionMap = expressionMap;
             Source = source;
             CustomFactoryType = customFactoryType;

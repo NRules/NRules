@@ -64,7 +64,7 @@ namespace NRules.RuleModel.Builders
         protected internal override void VisitPattern(Context context, PatternElement element)
         {
             var conditions = element.Conditions.Select(x => Transform<ConditionElement>(context, x)).ToList();
-            var source = Transform<PatternSourceElement>(context, element.Source);
+            var source = Transform<RuleLeftElement>(context, element.Source);
             if (context.IsModified)
             {
                 var newElement = new PatternElement(element.Declaration, element.Declarations, conditions, source);

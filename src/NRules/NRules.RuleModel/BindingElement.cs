@@ -7,17 +7,23 @@ namespace NRules.RuleModel
     /// <summary>
     /// Rule element that represents a binding of a calculated expression to a declaration.
     /// </summary>
-    public class BindingElement : PatternSourceElement
+    public class BindingElement : RuleLeftElement
     {
         private readonly List<Declaration> _references;
 
         internal BindingElement(Type resultType, IEnumerable<Declaration> declarations, IEnumerable<Declaration> references, LambdaExpression expression) 
-            : base(declarations, resultType)
+            : base(declarations)
         {
+            ResultType = resultType;
             Expression = expression;
             _references = new List<Declaration>(references);
         }
-        
+
+        /// <summary>
+        /// Type of the result that this rule element yields.
+        /// </summary>
+        public Type ResultType { get; }
+
         /// <summary>
         /// Binding expression.
         /// </summary>

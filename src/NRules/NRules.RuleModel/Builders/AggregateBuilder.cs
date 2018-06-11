@@ -9,7 +9,7 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose an aggregate element.
     /// </summary>
-    public class AggregateBuilder : PatternSourceElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
+    public class AggregateBuilder : RuleLeftElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
     {
         private string _name;
         private readonly Dictionary<string, LambdaExpression> _expressions = new Dictionary<string, LambdaExpression>();
