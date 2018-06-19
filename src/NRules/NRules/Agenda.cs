@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NRules.AgendaFilters;
 using NRules.RuleModel;
 using NRules.Utilities;
@@ -137,6 +138,11 @@ namespace NRules
             else
             {
                 _activationQueue.Remove(activation);
+            }
+
+            if (context.Session.GetLinkedKeys(activation).Any())
+            {
+                context.UnlinkQueue.Enqueue(activation);
             }
         }
 

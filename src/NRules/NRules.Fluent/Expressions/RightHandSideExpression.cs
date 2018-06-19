@@ -44,12 +44,6 @@ namespace NRules.Fluent.Expressions
 
         public IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yieldInsert, Expression<Func<IContext, TFact, TFact>> yieldUpdate)
         {
-            var yieldRemove = Expression.Lambda<Action<IContext, TFact>>(Expression.Empty(), yieldUpdate.Parameters);
-            return Yield(yieldInsert, yieldUpdate, yieldRemove);
-        }
-
-        public IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yieldInsert, Expression<Func<IContext, TFact, TFact>> yieldUpdate, Expression<Action<IContext, TFact>> yieldRemove)
-        {
             _linkedCount++;
             var linkedFact = Expression.Parameter(typeof(TFact), "$temp");
             var linkedKey = Expression.Constant($"$linkedkey{_linkedCount}$");
@@ -80,26 +74,8 @@ namespace NRules.Fluent.Expressions
                         linkedKey, linkedFact)),
                 updateContext);
 
-            var removeContext = yieldRemove.Parameters[0];
-            var removeAction = Expression.Lambda<Action<IContext>>(
-                Expression.Block(
-                    new[] {linkedFact},
-                    Expression.Assign(linkedFact,
-                        Expression.Convert(
-                            Expression.Call(removeContext,
-                                typeof(IContext).GetTypeInfo().GetDeclaredMethod(nameof(IContext.GetLinked)),
-                                linkedKey),
-                            typeof(TFact))),
-                    Expression.Invoke(yieldRemove, removeContext, linkedFact),
-                    Expression.Call(removeContext,
-                        typeof(IContext).GetTypeInfo().GetDeclaredMethod(nameof(IContext.RetractLinked)),
-                        linkedKey, linkedFact)
-                ),
-                removeContext);
-
             var rhs = Action(insertAction, ActionTrigger.Activated)
-                .Action(updateAction, ActionTrigger.Reactivated)
-                .Action(removeAction, ActionTrigger.Deactivated);
+                .Action(updateAction, ActionTrigger.Reactivated);
             return rhs;
         }
     }

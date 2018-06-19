@@ -281,6 +281,8 @@ namespace NRules
                 }
 
                 _network.PropagateAssert(_executionContext, toPropagate);
+
+                UnlinkFacts();
             }
             return result;
         }
@@ -337,6 +339,8 @@ namespace NRules
                 }
 
                 _network.PropagateUpdate(_executionContext, toPropagate);
+
+                UnlinkFacts();
             }
             return result;
         }
@@ -392,6 +396,8 @@ namespace NRules
                 {
                     _workingMemory.RemoveFact(fact);
                 }
+
+                UnlinkFacts();
             }
             return result;
         }
@@ -478,6 +484,21 @@ namespace NRules
             _network.PropagateRetract(_executionContext, new List<Fact> {factWrapper});
             _workingMemory.RemoveLinkedFact(activation, key, factWrapper);
             factWrapper.Source = null;
+        }
+
+        private void UnlinkFacts()
+        {
+            var unlinkQueue = _executionContext.UnlinkQueue;
+            while (unlinkQueue.Count > 0)
+            {
+                var activation = unlinkQueue.Dequeue();
+                var linkedKeys = GetLinkedKeys(activation).ToList();
+                foreach (var key in linkedKeys)
+                {
+                    var linkedFact = GetLinked(activation, key);
+                    RetractLinked(activation, key, linkedFact);
+                }
+            }
         }
 
         public int Fire()
