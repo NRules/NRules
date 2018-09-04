@@ -184,7 +184,6 @@ namespace NRules.Rete
             if (node == null)
             {
                 node = new JoinNode(context.BetaSource, context.AlphaSource, context.HasSubnet);
-                if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
                 foreach (var betaCondition in betaConditions)
                 {
                     node.Conditions.Add(betaCondition);
@@ -204,7 +203,6 @@ namespace NRules.Rete
             if (node == null)
             {
                 node = new NotNode(context.BetaSource, context.AlphaSource);
-                if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
             }
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
@@ -220,7 +218,6 @@ namespace NRules.Rete
             if (node == null)
             {
                 node = new ExistsNode(context.BetaSource, context.AlphaSource);
-                if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
             }
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
@@ -240,7 +237,6 @@ namespace NRules.Rete
                 var aggregatorFactory = BuildAggregatorFactory(context, element);
                 node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name, 
                     element.ExpressionMap, aggregatorFactory, context.HasSubnet);
-                if (context.HasSubnet) node.Conditions.Insert(0, new SubnetCondition());
             }
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
