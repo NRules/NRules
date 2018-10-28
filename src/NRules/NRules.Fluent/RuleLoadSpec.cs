@@ -156,9 +156,10 @@ namespace NRules.Fluent
 
         public IEnumerable<IRuleDefinition> Load()
         {
-            var ruleDefinitions = GetRuleTypes()
-                .SelectMany(Activate)
-                .Select(BuildDefinition);
+            var rules = GetRuleTypes()
+                .SelectMany(Activate);
+            var factory = new RuleDefinitionFactory();
+            var ruleDefinitions = factory.Create(rules);
             return ruleDefinitions;
         }
 
@@ -184,18 +185,6 @@ namespace NRules.Fluent
             catch (Exception e)
             {
                 throw new RuleActivationException("Failed to activate rule type", type, e);
-            }
-        }
-
-        private static IRuleDefinition BuildDefinition(Rule rule)
-        {
-            try
-            {
-                return rule.GetDefinition();
-            }
-            catch (Exception e)
-            {
-                throw new RuleDefinitionException("Failed to build rule definition", rule.GetType(), e);
             }
         }
 
