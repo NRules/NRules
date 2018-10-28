@@ -143,6 +143,28 @@ namespace NRules.IntegrationTests
             Assert.Equal("Rule with metadata", ruleSet.Rules.First().Name);
         }
 
+        [Fact]
+        public void Add_RuleInstanceInRuleSet_AddedToRepository()
+        {
+            //Arrange
+            var rule = new ValidRule();
+
+            var factory = new RuleDefinitionFactory();
+            var ruleDefinition = factory.Create(rule);
+            
+            var ruleSet = new RuleSet("MyRuleSet");
+            ruleSet.Add(ruleDefinition);
+
+            RuleRepository target = CreateTarget();
+
+            //Act
+            target.Add(ruleSet);
+
+            //Assert
+            Assert.Equal(1, ruleSet.Rules.Count());
+            Assert.Equal(typeof(ValidRule).FullName, ruleSet.Rules.First().Name);
+        }
+
         private Assembly ThisAssembly => GetType().GetTypeInfo().Assembly;
 
         public RuleRepository CreateTarget()

@@ -19,7 +19,7 @@ namespace NRules.RuleModel
         void Add(IEnumerable<IRuleDefinition> ruleDefinitions);
 
         /// <summary>
-        /// Rules in the ruleset.
+        /// Rules in the rule set.
         /// </summary>
         IEnumerable<IRuleDefinition> Rules { get; }
     }
