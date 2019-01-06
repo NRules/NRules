@@ -15,7 +15,7 @@
 
 This package installs the fluent DSL for authoring rules in C# with NRules. These rules can be then compiled to the canonical rules model, recognized by the NRules rules engine.</description>
     <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
-    <copyright>Copyright 2012-2018 Sergiy Nikolayev. All rights reserved.</copyright>
+    <copyright>Copyright 2012-2019 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>rules engine inference rete business dsl</tags>
     <dependencies>
       <group targetFramework="net45">
