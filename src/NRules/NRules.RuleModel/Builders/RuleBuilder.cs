@@ -17,7 +17,7 @@ namespace NRules.RuleModel.Builders
         private RuleRepeatability _repeatability = RuleDefinition.DefaultRepeatability;
         private readonly List<string> _tags = new List<string>();
         private readonly List<RuleProperty> _properties = new List<RuleProperty>();
-        private readonly DependencyGroupBuilder _dependencyGrouipBuilder;
+        private readonly DependencyGroupBuilder _dependencyGroupBuilder;
         private readonly FilterGroupBuilder _filterGroupBuilder;
         private readonly GroupBuilder _conditionGroupBuilder;
         private readonly ActionGroupBuilder _actionGroupBuilder;
@@ -28,7 +28,7 @@ namespace NRules.RuleModel.Builders
         public RuleBuilder()
         {
             var rootScope = new SymbolTable();
-            _dependencyGrouipBuilder = new DependencyGroupBuilder(rootScope);
+            _dependencyGroupBuilder = new DependencyGroupBuilder(rootScope);
             _filterGroupBuilder = new FilterGroupBuilder(rootScope);
             _conditionGroupBuilder = new GroupBuilder(rootScope, GroupType.And);
             _actionGroupBuilder = new ActionGroupBuilder(rootScope);
@@ -115,7 +115,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Dependencies builder.</returns>
         public DependencyGroupBuilder Dependencies()
         {
-            return _dependencyGrouipBuilder;
+            return _dependencyGroupBuilder;
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace NRules.RuleModel.Builders
         {
             Validate();
 
-            IBuilder<DependencyGroupElement> dependencyGroupBuilder = _dependencyGrouipBuilder;
+            IBuilder<DependencyGroupElement> dependencyGroupBuilder = _dependencyGroupBuilder;
             DependencyGroupElement dependencies = dependencyGroupBuilder.Build();
 
             IBuilder<FilterGroupElement> filterGroupBuilder = _filterGroupBuilder;

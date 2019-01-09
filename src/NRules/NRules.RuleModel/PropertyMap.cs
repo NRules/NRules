@@ -37,8 +37,7 @@ namespace NRules.RuleModel
         {
             get
             {
-                RuleProperty result;
-                var found = _properties.TryGetValue(name, out result);
+                var found = _properties.TryGetValue(name, out var result);
                 if (!found)
                 {
                     throw new ArgumentException(

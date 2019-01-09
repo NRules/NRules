@@ -5,7 +5,7 @@ namespace NRules.RuleModel
     public static class RuleSetExtensions
     {
         /// <summary>
-        /// Adds a rule to the rule set
+        /// Adds a rule to the rule set.
         /// </summary>
         /// <param name="ruleSet">Rule set instance.</param>
         /// <param name="ruleDefinition">Rule definition to add.</param>

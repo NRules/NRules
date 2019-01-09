@@ -31,8 +31,7 @@ namespace NRules.RuleModel
         {
             get
             {
-                NamedExpressionElement result;
-                var found = _expressions.TryGetValue(name, out result);
+                var found = _expressions.TryGetValue(name, out var result);
                 if (!found)
                 {
                     throw new ArgumentException(
