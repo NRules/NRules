@@ -21,12 +21,12 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
-        /// Creates a query from a given binding expression
+        /// Creates a query from a given expression.
         /// </summary>
-        /// <typeparam name="TFact"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="source"></param>
-        /// <returns></returns>
+        /// <typeparam name="TFact">Type of facts to query.</typeparam>
+        /// <param name="query">Query expression builder.</param>
+        /// <param name="source">Expression that generates source facts.</param>
+        /// <returns>Query expression builder.</returns>
         public static IQuery<TFact> From<TFact>(this IQuery query, Expression<Func<TFact>> source)
         {
             query.Builder.From(source);

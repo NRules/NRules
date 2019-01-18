@@ -10,7 +10,7 @@ namespace NRules.Rete
         object Invoke(IExecutionContext context, Tuple tuple);
     }
 
-    internal class BindingExpression : IBindingExpression, IEquatable<BindingExpression>
+    internal sealed class BindingExpression : IBindingExpression, IEquatable<BindingExpression>
     {
         private readonly FastDelegate<Func<object[], object>> _compiledExpression;
         private readonly IndexMap _factMap;

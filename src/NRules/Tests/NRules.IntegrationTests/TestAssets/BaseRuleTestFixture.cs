@@ -123,8 +123,7 @@ namespace NRules.IntegrationTests.TestAssets
 
             public IEnumerable<Rule> Activate(Type type)
             {
-                Rule rule;
-                if (!_rules.TryGetValue(type, out rule))
+                if (!_rules.TryGetValue(type, out var rule))
                 {
                     rule = (Rule) Activator.CreateInstance(type);
                     _rules[type] = rule;
