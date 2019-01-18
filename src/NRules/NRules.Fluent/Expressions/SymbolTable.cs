@@ -6,12 +6,12 @@ namespace NRules.Fluent.Expressions
 {
     internal class SymbolTable
     {
-        private readonly List<Declaration> _declarations;
+        private readonly HashSet<Declaration> _declarations;
         private readonly SymbolTable _parentScope;
 
         internal SymbolTable()
         {
-            _declarations = new List<Declaration>();
+            _declarations = new HashSet<Declaration>();
         }
 
         internal SymbolTable(SymbolTable parentScope)
@@ -20,7 +20,7 @@ namespace NRules.Fluent.Expressions
             _parentScope = parentScope;
         }
 
-        public IEnumerable<Declaration> Declarations => _parentScope?.Declarations.Concat(_declarations) ?? _declarations;
+        public IEnumerable<Declaration> Declarations => _parentScope?.Declarations.Union(_declarations) ?? _declarations;
 
         public void Add(Declaration declaration)
         {

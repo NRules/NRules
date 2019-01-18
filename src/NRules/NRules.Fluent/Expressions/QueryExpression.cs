@@ -173,10 +173,9 @@ namespace NRules.Fluent.Expressions
             };
         }
 
-        public Declaration Build()
+        public void Build()
         {
-            var patternBuilder = _buildAction(_groupBuilder, _symbol.Name);
-            return patternBuilder.Declaration;
+            _buildAction(_groupBuilder, _symbol.Name);
         }
     }
 }

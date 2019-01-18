@@ -78,8 +78,7 @@ namespace NRules.Fluent.Expressions
             var symbol = alias.ToParameterExpression();
             var queryBuilder = new QueryExpression(symbol, _symbolStack, _builder);
             queryAction(queryBuilder);
-            var declaration = queryBuilder.Build();
-            _symbolStack.Scope.Add(declaration);
+            queryBuilder.Build();
             return this;
         }
 
@@ -101,9 +100,9 @@ namespace NRules.Fluent.Expressions
         {
             var symbol = alias.ToParameterExpression();
             var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
-            _symbolStack.Scope.Add(patternBuilder.Declaration);
             var bindingBuilder = patternBuilder.Binding();
             bindingBuilder.DslBindingExpression(_symbolStack.Scope.Declarations, expression);
+            _symbolStack.Scope.Add(patternBuilder.Declaration);
             return this;
         }
 
