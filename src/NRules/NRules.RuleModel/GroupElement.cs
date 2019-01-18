@@ -9,10 +9,12 @@ namespace NRules.RuleModel
     {
         private readonly List<RuleLeftElement> _childElements;
 
-        internal GroupElement(IEnumerable<Declaration> declarations, IEnumerable<RuleLeftElement> childElements)
-            : base(declarations)
+        internal GroupElement(IEnumerable<RuleLeftElement> childElements)
         {
             _childElements = new List<RuleLeftElement>(childElements);
+
+            AddExports(_childElements);
+            AddImports(_childElements);
         }
 
         /// <summary>

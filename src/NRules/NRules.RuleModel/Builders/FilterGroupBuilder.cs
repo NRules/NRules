@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel.Builders
@@ -11,8 +10,7 @@ namespace NRules.RuleModel.Builders
     {
         private readonly List<FilterElement> _filters = new List<FilterElement>();
 
-        internal FilterGroupBuilder(SymbolTable scope)
-            : base(scope)
+        internal FilterGroupBuilder()
         {
         }
 
@@ -23,14 +21,13 @@ namespace NRules.RuleModel.Builders
         /// <param name="expression">Filter expression.</param>
         public void Filter(FilterType filterType, LambdaExpression expression)
         {
-            IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var filter = new FilterElement(filterType, Scope.VisibleDeclarations, references, expression);
+            var filter = new FilterElement(filterType, expression);
             _filters.Add(filter);
         }
 
         FilterGroupElement IBuilder<FilterGroupElement>.Build()
         {
-            var filterGroup = new FilterGroupElement(Scope.VisibleDeclarations, _filters);
+            var filterGroup = new FilterGroupElement(_filters);
             return filterGroup;
         }
     }

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace NRules.RuleModel
 {
     /// <summary>
@@ -7,6 +5,5 @@ namespace NRules.RuleModel
     /// </summary>
     public abstract class RuleLeftElement : RuleElement
     {
-        internal RuleLeftElement(IEnumerable<Declaration> declarations) : base(declarations) { }
     }
 }

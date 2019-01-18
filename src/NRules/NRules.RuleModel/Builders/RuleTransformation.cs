@@ -67,7 +67,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<PatternSourceElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = new PatternElement(element.Declaration, element.Declarations, conditions, source);
+                var newElement = new PatternElement(element.Declaration, conditions, source);
                 Result(context, newElement);
             }
         }
@@ -81,8 +81,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<PatternElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = new AggregateElement(element.Declarations, 
-                    element.ResultType, element.Name, element.ExpressionMap, source, element.CustomFactoryType);
+                var newElement = new AggregateElement(element.ResultType, element.Name, element.ExpressionMap, source, element.CustomFactoryType);
                 Result(context, newElement);
             }
         }
@@ -92,7 +91,7 @@ namespace NRules.RuleModel.Builders
             var actions = element.Actions.Select(x => Transform<ActionElement>(context, x)).ToList();
             if (context.IsModified)
             {
-                var newElement = new ActionGroupElement(element.Declarations, actions);
+                var newElement = new ActionGroupElement(actions);
                 Result(context, newElement);
             }
         }
@@ -112,7 +111,7 @@ namespace NRules.RuleModel.Builders
             if (SplitOrGroup(context, element, childElements)) return;
             if (context.IsModified)
             {
-                var newElement = new AndElement(element.Declarations, childElements);
+                var newElement = new AndElement(childElements);
                 Result(context, newElement);
             }
         }
@@ -124,7 +123,7 @@ namespace NRules.RuleModel.Builders
             if (MergeOrGroups(context, element, childElements)) return;
             if (context.IsModified)
             {
-                var newElement = new OrElement(element.Declarations, childElements);
+                var newElement = new OrElement(childElements);
                 Result(context, newElement);
             }
         }
@@ -134,7 +133,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<RuleLeftElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = new NotElement(element.Declarations, source);
+                var newElement = new NotElement(source);
                 Result(context, newElement);
             }
         }
@@ -144,7 +143,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<RuleLeftElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = new ExistsElement(element.Declarations, source);
+                var newElement = new ExistsElement(source);
                 Result(context, newElement);
             }
         }
@@ -155,9 +154,7 @@ namespace NRules.RuleModel.Builders
             var patterns = element.Patterns.Select(x => Transform<PatternElement>(context, x)).ToList();
 
             //forall -> not(base and not(patterns))
-            var symbolTable = new SymbolTable(element.Declarations);
-
-            var notBuilder = new NotBuilder(symbolTable);
+            var notBuilder = new NotBuilder();
             var groupBuilder = notBuilder.Group(GroupType.And);
 
             Declaration declaration = basePattern.Declaration;
@@ -211,8 +208,8 @@ namespace NRules.RuleModel.Builders
             groups.Add(new List<RuleLeftElement>());
             ExpandOrElements(groups, childElements, 0);
 
-            var andElements = groups.Select(x => new AndElement(element.Declarations, x)).ToList();
-            var orElement = new OrElement(element.Declarations, andElements);
+            var andElements = groups.Select(x => new AndElement(x)).ToList();
+            var orElement = new OrElement(andElements);
             Result(context, orElement);
             return true;
         }
@@ -233,7 +230,7 @@ namespace NRules.RuleModel.Builders
                 }
 
             }
-            var orElement = new OrElement(element.Declarations, newChildElements);
+            var orElement = new OrElement(newChildElements);
             Result(context, orElement);
             return true;
         }

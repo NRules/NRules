@@ -14,7 +14,7 @@ namespace NRules.RuleModel.Builders
 
         private const ActionTrigger DefaultTrigger = ActionTrigger.Activated | ActionTrigger.Reactivated;
 
-        internal ActionGroupBuilder(SymbolTable scope) : base(scope)
+        internal ActionGroupBuilder()
         {
         }
 
@@ -51,9 +51,7 @@ namespace NRules.RuleModel.Builders
                 throw new ArgumentException("Action trigger not specified");
             }
 
-            IEnumerable<ParameterExpression> parameters = expression.Parameters.Skip(1);
-            IEnumerable<Declaration> references = parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var actionElement = new ActionElement(Scope.VisibleDeclarations, references, expression, actionTrigger);
+            var actionElement = new ActionElement(expression, actionTrigger);
             _actions.Add(actionElement);
         }
 
@@ -65,7 +63,7 @@ namespace NRules.RuleModel.Builders
                 throw new ArgumentException($"Rule must have at least one match action");
             }
 
-            var actionGroup = new ActionGroupElement(Scope.VisibleDeclarations, _actions);
+            var actionGroup = new ActionGroupElement(_actions);
             return actionGroup;
         }
     }

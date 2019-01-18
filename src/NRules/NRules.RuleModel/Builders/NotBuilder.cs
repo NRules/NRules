@@ -9,8 +9,7 @@ namespace NRules.RuleModel.Builders
     {
         private RuleLeftElementBuilder _sourceBuilder;
 
-        internal NotBuilder(SymbolTable scope)
-            : base(scope.New("Not"))
+        internal NotBuilder()
         {
         }
 
@@ -27,7 +26,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
-            Declaration declaration = Scope.Declare(type, name);
+            var declaration = new Declaration(type, DeclarationName(name));
             return Pattern(declaration);
         }
 
@@ -39,7 +38,7 @@ namespace NRules.RuleModel.Builders
         public PatternBuilder Pattern(Declaration declaration)
         {
             AssertSingleSource();
-            var sourceBuilder = new PatternBuilder(Scope, declaration);
+            var sourceBuilder = new PatternBuilder(declaration);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
@@ -52,7 +51,7 @@ namespace NRules.RuleModel.Builders
         public GroupBuilder Group(GroupType groupType)
         {
             AssertSingleSource();
-            var sourceBuilder = new GroupBuilder(Scope, groupType);
+            var sourceBuilder = new GroupBuilder(groupType);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
@@ -64,7 +63,7 @@ namespace NRules.RuleModel.Builders
         public ForAllBuilder ForAll()
         {
             AssertSingleSource();
-            var sourceBuilder = new ForAllBuilder(Scope);
+            var sourceBuilder = new ForAllBuilder();
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
@@ -74,7 +73,7 @@ namespace NRules.RuleModel.Builders
             Validate();
             var builder = (IBuilder<RuleLeftElement>)_sourceBuilder;
             RuleLeftElement sourceElement = builder.Build();
-            var notElement = new NotElement(Scope.VisibleDeclarations, sourceElement);
+            var notElement = new NotElement(sourceElement);
             return notElement;
         }
 

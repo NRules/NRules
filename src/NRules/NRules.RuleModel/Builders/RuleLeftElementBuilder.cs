@@ -5,7 +5,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public abstract class RuleLeftElementBuilder : RuleElementBuilder
     {
-        internal RuleLeftElementBuilder(SymbolTable scope) : base(scope)
+        internal RuleLeftElementBuilder()
         {
         }
     }

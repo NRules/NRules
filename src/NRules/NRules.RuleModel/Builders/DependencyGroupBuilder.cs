@@ -10,8 +10,7 @@ namespace NRules.RuleModel.Builders
     {
         private readonly List<DependencyElement> _dependencies = new List<DependencyElement>();
 
-        internal DependencyGroupBuilder(SymbolTable scope)
-            : base(scope)
+        internal DependencyGroupBuilder()
         {
         }
 
@@ -20,18 +19,26 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="type">Dependency CLR type.</param>
         /// <param name="name">Dependency name.</param>
-        public void Dependency(Type type, string name)
+        /// <returns>Dependency declaration.</returns>
+        public Declaration Dependency(Type type, string name)
         {
-            Declaration declaration = Scope.Declare(type, name);
-            var dependency = new DependencyElement(declaration, Scope.VisibleDeclarations, type);
+            var declaration = new Declaration(type, DeclarationName(name));
+            var dependency = new DependencyElement(declaration, type);
             declaration.Target = dependency;
             _dependencies.Add(dependency);
+            return declaration;
         }
 
         DependencyGroupElement IBuilder<DependencyGroupElement>.Build()
         {
-            var actionGroup = new DependencyGroupElement(Scope.VisibleDeclarations, _dependencies);
-            return actionGroup;
+            var dependencyGroup = new DependencyGroupElement(_dependencies);
+            Validate(dependencyGroup);
+            return dependencyGroup;
+        }
+
+        private static void Validate(DependencyGroupElement element)
+        {
+            ValidationHelper.AssertUniqueDeclarations(element.Dependencies);
         }
     }
 }

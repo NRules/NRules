@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace NRules.RuleModel
 {
@@ -24,8 +23,8 @@ namespace NRules.RuleModel
     /// </summary>
     public class FilterElement : ExpressionElement
     {
-        internal FilterElement(FilterType filterType, IEnumerable<Declaration> declarations, IEnumerable<Declaration> references, LambdaExpression expression) 
-            : base(declarations, references, expression)
+        internal FilterElement(FilterType filterType, LambdaExpression expression) 
+            : base(expression)
         {
             FilterType = filterType;
         }

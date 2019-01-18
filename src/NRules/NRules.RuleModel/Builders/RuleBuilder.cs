@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NRules.RuleModel.Builders
 {
@@ -27,11 +28,10 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         public RuleBuilder()
         {
-            var rootScope = new SymbolTable();
-            _dependencyGroupBuilder = new DependencyGroupBuilder(rootScope);
-            _filterGroupBuilder = new FilterGroupBuilder(rootScope);
-            _conditionGroupBuilder = new GroupBuilder(rootScope, GroupType.And);
-            _actionGroupBuilder = new ActionGroupBuilder(rootScope);
+            _dependencyGroupBuilder = new DependencyGroupBuilder();
+            _filterGroupBuilder = new FilterGroupBuilder();
+            _conditionGroupBuilder = new GroupBuilder(GroupType.And);
+            _actionGroupBuilder = new ActionGroupBuilder();
         }
 
         /// <summary>
@@ -166,6 +166,8 @@ namespace NRules.RuleModel.Builders
             ActionGroupElement actions = actionGroupBuilder.Build();
 
             var ruleDefinition = new RuleDefinition(_name, _description, _priority, _repeatability, _tags, _properties, dependencies, filters, conditions, actions);
+            Validate(ruleDefinition);
+
             return ruleDefinition;
         }
 
@@ -174,6 +176,39 @@ namespace NRules.RuleModel.Builders
             if (string.IsNullOrEmpty(_name))
             {
                 throw new InvalidOperationException("Rule name not specified");
+            }
+        }
+
+        private void Validate(RuleDefinition definition)
+        {
+            ValidationHelper.AssertUniqueDeclarations(
+                definition.LeftHandSide, definition.DependencyGroup);
+            
+            var exports = definition.LeftHandSide.Exports
+                .Concat(definition.DependencyGroup.Exports).ToArray();
+
+            var undefinedLhs = definition.LeftHandSide.Imports
+                .Except(exports).ToArray();
+            if (undefinedLhs.Any())
+            {
+                var variables = string.Join(",", undefinedLhs.Select(x => x.Name));
+                throw new InvalidOperationException($"Undefined variables in rule match conditions. Variables={variables}");
+            }
+
+            var undefinedFilter = definition.FilterGroup.Imports
+                .Except(exports).ToArray();
+            if (undefinedFilter.Any())
+            {
+                var variables = string.Join(",", undefinedFilter.Select(x => x.Name));
+                throw new InvalidOperationException($"Undefined variables in rule filter. Variables={variables}");
+            }
+
+            var undefinedRhs = definition.RightHandSide.Imports
+                .Except(exports).ToArray();
+            if (undefinedRhs.Any())
+            {
+                var variables = string.Join(",", undefinedRhs.Select(x => x.Name));
+                throw new InvalidOperationException($"Undefined variables in rule actions. Variables={variables}");
             }
         }
     }

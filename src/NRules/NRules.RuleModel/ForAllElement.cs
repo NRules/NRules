@@ -9,11 +9,13 @@ namespace NRules.RuleModel
     {
         private readonly List<PatternElement> _patterns;
 
-        internal ForAllElement(IEnumerable<Declaration> declarations, PatternElement source, IEnumerable<PatternElement> patterns)
-            : base(declarations)
+        internal ForAllElement(PatternElement source, IEnumerable<PatternElement> patterns)
         {
             BasePattern = source;
             _patterns = new List<PatternElement>(patterns);
+
+            AddImports(source);
+            AddImports(_patterns);
         }
 
         /// <summary>

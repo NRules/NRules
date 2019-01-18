@@ -17,8 +17,7 @@ namespace NRules.RuleModel.Builders
         private Type _customFactoryType;
         private PatternBuilder _sourceBuilder;
 
-        internal AggregateBuilder(Type resultType, SymbolTable scope) 
-            : base(scope.New("Aggregate"))
+        internal AggregateBuilder(Type resultType) 
         {
             _resultType = resultType;
         }
@@ -92,7 +91,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
-            Declaration declaration = Scope.Declare(type, name);
+            var declaration = new Declaration(type, DeclarationName(name));
             return Pattern(declaration);
         }
 
@@ -104,7 +103,7 @@ namespace NRules.RuleModel.Builders
         public PatternBuilder Pattern(Declaration declaration)
         {
             AssertSingleSource();
-            var sourceBuilder = new PatternBuilder(Scope, declaration);
+            var sourceBuilder = new PatternBuilder(declaration);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
@@ -116,14 +115,13 @@ namespace NRules.RuleModel.Builders
             PatternElement sourceElement = sourceBuilder.Build();
             var elements = _expressions.Select(x => ToNamedExpression(x.Key, x.Value));
             var expressionMap = new ExpressionMap(elements);
-            var aggregateElement = new AggregateElement(Scope.VisibleDeclarations, _resultType, _name, expressionMap, sourceElement, _customFactoryType);
+            var aggregateElement = new AggregateElement(_resultType, _name, expressionMap, sourceElement, _customFactoryType);
             return aggregateElement;
         }
 
         private NamedExpressionElement ToNamedExpression(string name, LambdaExpression expression)
         {
-            IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var element = new NamedExpressionElement(name, Scope.VisibleDeclarations, references, expression);
+            var element = new NamedExpressionElement(name, expression);
             return element;
         }
 

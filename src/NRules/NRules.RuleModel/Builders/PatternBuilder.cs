@@ -13,7 +13,7 @@ namespace NRules.RuleModel.Builders
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
         private PatternSourceElementBuilder _sourceBuilder;
 
-        internal PatternBuilder(SymbolTable scope, Declaration declaration) : base(scope)
+        internal PatternBuilder(Declaration declaration)
         {
             Declaration = declaration;
         }
@@ -30,8 +30,7 @@ namespace NRules.RuleModel.Builders
         /// Names and types of the expression parameters must match the names and types defined in the pattern declarations.</param>
         public void Condition(LambdaExpression expression)
         {
-            IEnumerable<Declaration> references = expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var condition = new ConditionElement(Scope.VisibleDeclarations, references, expression);
+            var condition = new ConditionElement(expression);
             _conditions.Add(condition);
         }
 
@@ -47,7 +46,7 @@ namespace NRules.RuleModel.Builders
         public AggregateBuilder Aggregate()
         {
             AssertSingleSource();
-            var builder = new AggregateBuilder(Declaration.Type, Scope);
+            var builder = new AggregateBuilder(Declaration.Type);
             _sourceBuilder = builder;
             return builder;
         }
@@ -58,7 +57,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Binding builder.</returns>
         public BindingBuilder Binding()
         {
-            var builder = new BindingBuilder(Scope, Declaration.Type);
+            var builder = new BindingBuilder(Declaration.Type);
             _sourceBuilder = builder;
             return builder;
         }
@@ -71,11 +70,11 @@ namespace NRules.RuleModel.Builders
             {
                 var builder = (IBuilder<PatternSourceElement>)_sourceBuilder;
                 var source = builder.Build();
-                patternElement = new PatternElement(Declaration, Scope.VisibleDeclarations, _conditions, source);
+                patternElement = new PatternElement(Declaration, _conditions, source);
             }
             else
             {
-                patternElement = new PatternElement(Declaration, Scope.VisibleDeclarations, _conditions);
+                patternElement = new PatternElement(Declaration, _conditions);
             }
             Declaration.Target = patternElement;
             return patternElement;
@@ -93,7 +92,7 @@ namespace NRules.RuleModel.Builders
         {
             foreach (var condition in _conditions)
             {
-                var dependencyDeclarations = condition.References.Where(x => x.Target is DependencyElement).ToArray();
+                var dependencyDeclarations = condition.Imports.Where(x => x.Target is DependencyElement).ToArray();
                 if (dependencyDeclarations.Any())
                 {
                     var names = string.Join(",", dependencyDeclarations.Select(x => x.Name));

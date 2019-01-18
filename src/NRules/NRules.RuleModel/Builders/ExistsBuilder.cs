@@ -9,8 +9,7 @@ namespace NRules.RuleModel.Builders
     {
         private RuleLeftElementBuilder _sourceBuilder;
 
-        internal ExistsBuilder(SymbolTable scope)
-            : base(scope.New("Exists"))
+        internal ExistsBuilder()
         {
         }
 
@@ -27,7 +26,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
-            Declaration declaration = Scope.Declare(type, name);
+            var declaration = new Declaration(type, DeclarationName(name));
             return Pattern(declaration);
         }
 
@@ -39,7 +38,7 @@ namespace NRules.RuleModel.Builders
         public PatternBuilder Pattern(Declaration declaration)
         {
             AssertSingleSource();
-            var sourceBuilder = new PatternBuilder(Scope, declaration);
+            var sourceBuilder = new PatternBuilder(declaration);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
@@ -52,7 +51,7 @@ namespace NRules.RuleModel.Builders
         public GroupBuilder Group(GroupType groupType)
         {
             AssertSingleSource();
-            var sourceBuilder = new GroupBuilder(Scope, groupType);
+            var sourceBuilder = new GroupBuilder(groupType);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
@@ -62,7 +61,7 @@ namespace NRules.RuleModel.Builders
             Validate();
             var builder = (IBuilder<RuleLeftElement>)_sourceBuilder;
             RuleLeftElement sourceElement = builder.Build();
-            var existsElement = new ExistsElement(Scope.VisibleDeclarations, sourceElement);
+            var existsElement = new ExistsElement(sourceElement);
             return existsElement;
         }
 

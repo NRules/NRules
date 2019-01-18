@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel.Builders
@@ -13,7 +11,7 @@ namespace NRules.RuleModel.Builders
         private readonly Type _valueType;
         private LambdaExpression _expression;
 
-        internal BindingBuilder(SymbolTable scope, Type valueType) : base(scope)
+        internal BindingBuilder(Type valueType)
         {
             _valueType = valueType;
         }
@@ -32,8 +30,7 @@ namespace NRules.RuleModel.Builders
             if (_expression == null)
                 throw new ArgumentException($"BINDING element requires a binding expression.");
 
-            IEnumerable<Declaration> references = _expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var element = new BindingElement(_valueType, Scope.VisibleDeclarations, references, _expression);
+            var element = new BindingElement(_valueType, _expression);
             return element;
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace NRules.RuleModel
 {
@@ -8,11 +7,12 @@ namespace NRules.RuleModel
     /// </summary>
     public class DependencyElement : RuleElement
     {
-        internal DependencyElement(Declaration declaration, IEnumerable<Declaration> declarations, Type serviceType)
-            : base(declarations)
+        internal DependencyElement(Declaration declaration, Type serviceType)
         {
             Declaration = declaration;
             ServiceType = serviceType;
+
+            AddExport(declaration);
         }
 
         /// <summary>

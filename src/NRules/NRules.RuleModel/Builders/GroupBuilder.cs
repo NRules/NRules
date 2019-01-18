@@ -27,7 +27,7 @@ namespace NRules.RuleModel.Builders
         private readonly GroupType _groupType;
         private readonly List<RuleLeftElementBuilder> _nestedBuilders = new List<RuleLeftElementBuilder>();
 
-        internal GroupBuilder(SymbolTable scope, GroupType groupType) : base(scope)
+        internal GroupBuilder(GroupType groupType)
         {
             _groupType = groupType;
         }
@@ -45,7 +45,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
-            Declaration declaration = Scope.Declare(type, name);
+            var declaration = new Declaration(type, DeclarationName(name));
             return Pattern(declaration);
         }
 
@@ -56,7 +56,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Declaration declaration)
         {
-            var builder = new PatternBuilder(Scope, declaration);
+            var builder = new PatternBuilder(declaration);
             _nestedBuilders.Add(builder);
             return builder;            
         }
@@ -68,7 +68,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Group builder.</returns>
         public GroupBuilder Group(GroupType groupType)
         {
-            var builder = new GroupBuilder(Scope, groupType);
+            var builder = new GroupBuilder(groupType);
             _nestedBuilders.Add(builder);
             return builder;
         }
@@ -79,7 +79,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Existential builder.</returns>
         public ExistsBuilder Exists()
         {
-            var builder = new ExistsBuilder(Scope);
+            var builder = new ExistsBuilder();
             _nestedBuilders.Add(builder);
             return builder;
         }
@@ -90,7 +90,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Negative existential builder.</returns>
         public NotBuilder Not()
         {
-            var builder = new NotBuilder(Scope);
+            var builder = new NotBuilder();
             _nestedBuilders.Add(builder);
             return builder;
         }
@@ -101,7 +101,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Forall builder.</returns>
         public ForAllBuilder ForAll()
         {
-            var builder = new ForAllBuilder(Scope);
+            var builder = new ForAllBuilder();
             _nestedBuilders.Add(builder);
             return builder;
         }
@@ -120,14 +120,15 @@ namespace NRules.RuleModel.Builders
             switch (_groupType)
             {
                 case GroupType.And:
-                    groupElement = new AndElement(Scope.VisibleDeclarations, childElements);
+                    groupElement = new AndElement(childElements);
                     break;
                 case GroupType.Or:
-                    groupElement = new OrElement(Scope.VisibleDeclarations, childElements);
+                    groupElement = new OrElement(childElements);
                     break;
                 default:
                     throw new InvalidOperationException($"Unrecognized group type. GroupType={_groupType}");
             }
+            Validate(groupElement);
             return groupElement;
         }
 
@@ -146,6 +147,16 @@ namespace NRules.RuleModel.Builders
                     {
                         throw new InvalidOperationException("Group element OR requires at least one child element");
                     }
+                    break;
+            }
+        }
+
+        private void Validate(GroupElement element)
+        {
+            switch (_groupType)
+            {
+                case GroupType.And:
+                    ValidationHelper.AssertUniqueDeclarations(element.ChildElements);
                     break;
             }
         }

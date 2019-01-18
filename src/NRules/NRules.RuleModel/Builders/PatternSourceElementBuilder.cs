@@ -5,7 +5,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public abstract class PatternSourceElementBuilder : RuleLeftElementBuilder
     {
-        internal PatternSourceElementBuilder(SymbolTable scope) : base(scope)
+        internal PatternSourceElementBuilder()
         {
         }
     }
