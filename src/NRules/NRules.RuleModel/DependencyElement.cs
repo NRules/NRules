@@ -3,9 +3,9 @@
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Dependency that the rule uses when its actions runs.
+    /// Dependency that the rule uses when its actions run.
     /// </summary>
-    public class DependencyElement : RuleElement
+    public class DependencyElement : RuleLeftElement
     {
         internal DependencyElement(Declaration declaration, Type serviceType)
         {

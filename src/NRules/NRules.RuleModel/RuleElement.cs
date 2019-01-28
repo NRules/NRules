@@ -33,7 +33,8 @@ namespace NRules.RuleModel
 
         protected void AddImports(RuleElement element)
         {
-            AddImports(new[] {element});
+            if (element != null)
+                AddImports(new[] {element});
         }
 
         protected void AddImports(IEnumerable<RuleElement> elements)
@@ -54,7 +55,8 @@ namespace NRules.RuleModel
 
         protected void AddExports(RuleElement element)
         {
-            AddExports(new[] {element});
+            if (element != null)
+                AddExports(new[] {element});
         }
 
         protected void AddExports(IEnumerable<RuleElement> elements)

@@ -3,7 +3,7 @@
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Grouping element that logically combines the patterns.
+    /// Grouping element that logically combines the patterns or other grouping elements.
     /// </summary>
     public abstract class GroupElement : RuleLeftElement
     {

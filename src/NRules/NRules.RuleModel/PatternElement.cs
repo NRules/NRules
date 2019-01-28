@@ -10,21 +10,15 @@ namespace NRules.RuleModel
     {
         private readonly List<ConditionElement> _conditions;
 
-        internal PatternElement(Declaration declaration, IEnumerable<ConditionElement> conditions)
+        internal PatternElement(Declaration declaration, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
         {
             Declaration = declaration;
             ValueType = declaration.Type;
             _conditions = new List<ConditionElement>(conditions);
+            Source = source;
 
             AddExport(declaration);
             AddImports(_conditions);
-        }
-
-        internal PatternElement(Declaration declaration, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
-            : this(declaration, conditions)
-        {
-            Source = source;
-
             AddImports(source);
         }
 
