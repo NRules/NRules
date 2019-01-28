@@ -58,19 +58,10 @@ namespace NRules.RuleModel.Builders
 
         ExistsElement IBuilder<ExistsElement>.Build()
         {
-            Validate();
-            var builder = (IBuilder<RuleLeftElement>)_sourceBuilder;
-            RuleLeftElement sourceElement = builder.Build();
-            var existsElement = new ExistsElement(sourceElement);
+            var sourceBuilder = (IBuilder<RuleLeftElement>)_sourceBuilder;
+            var sourceElement = sourceBuilder?.Build();
+            var existsElement = Element.Exists(sourceElement);
             return existsElement;
-        }
-
-        private void Validate()
-        {
-            if (_sourceBuilder == null)
-            {
-                throw new InvalidOperationException("EXISTS element source is not provided");
-            }
         }
 
         private void AssertSingleSource()

@@ -27,10 +27,7 @@ namespace NRules.RuleModel.Builders
 
         BindingElement IBuilder<BindingElement>.Build()
         {
-            if (_expression == null)
-                throw new ArgumentException($"BINDING element requires a binding expression.");
-
-            var element = new BindingElement(_valueType, _expression);
+            var element = Element.Binding(_valueType, _expression);
             return element;
         }
     }

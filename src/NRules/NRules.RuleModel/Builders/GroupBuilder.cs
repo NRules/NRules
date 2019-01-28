@@ -108,7 +108,6 @@ namespace NRules.RuleModel.Builders
 
         GroupElement IBuilder<GroupElement>.Build()
         {
-            Validate();
             var childElements = new List<RuleLeftElement>();
             foreach (var nestedBuilder in _nestedBuilders)
             {
@@ -116,49 +115,8 @@ namespace NRules.RuleModel.Builders
                 RuleLeftElement childElement = builder.Build();
                 childElements.Add(childElement);
             }
-            GroupElement groupElement;
-            switch (_groupType)
-            {
-                case GroupType.And:
-                    groupElement = new AndElement(childElements);
-                    break;
-                case GroupType.Or:
-                    groupElement = new OrElement(childElements);
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unrecognized group type. GroupType={_groupType}");
-            }
-            Validate(groupElement);
+            var groupElement = Element.Group(_groupType, childElements);
             return groupElement;
-        }
-
-        private void Validate()
-        {
-            switch (_groupType)
-            {
-                case GroupType.And:
-                    if (_nestedBuilders.Count < 1)
-                    {
-                        throw new InvalidOperationException("Group element AND requires at least one child element");
-                    }
-                    break;
-                case GroupType.Or:
-                    if (_nestedBuilders.Count < 1)
-                    {
-                        throw new InvalidOperationException("Group element OR requires at least one child element");
-                    }
-                    break;
-            }
-        }
-
-        private void Validate(GroupElement element)
-        {
-            switch (_groupType)
-            {
-                case GroupType.And:
-                    ValidationHelper.AssertUniqueDeclarations(element.ChildElements);
-                    break;
-            }
         }
     }
 }

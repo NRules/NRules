@@ -22,23 +22,15 @@ namespace NRules.RuleModel.Builders
         /// <returns>Dependency declaration.</returns>
         public Declaration Dependency(Type type, string name)
         {
-            var declaration = new Declaration(type, DeclarationName(name));
-            var dependency = new DependencyElement(declaration, type);
-            declaration.Target = dependency;
+            var dependency = Element.Dependency(type, DeclarationName(name));
             _dependencies.Add(dependency);
-            return declaration;
+            return dependency.Declaration;
         }
 
         DependencyGroupElement IBuilder<DependencyGroupElement>.Build()
         {
-            var dependencyGroup = new DependencyGroupElement(_dependencies);
-            Validate(dependencyGroup);
+            var dependencyGroup = Element.DependencyGroup(_dependencies);
             return dependencyGroup;
-        }
-
-        private static void Validate(DependencyGroupElement element)
-        {
-            ValidationHelper.AssertUniqueDeclarations(element.Dependencies);
         }
     }
 }

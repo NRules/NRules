@@ -1,0 +1,128 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+namespace NRules.RuleModel.Builders
+{
+    internal static class ElementValidator
+    {
+        public static void ValidateUniqueDeclarations(params RuleElement[] elements)
+        {
+            ValidateUniqueDeclarations(elements.AsEnumerable());
+        }
+
+        public static void ValidateUniqueDeclarations(IEnumerable<RuleElement> elements)
+        {
+            var duplicates = elements.SelectMany(x => x.Exports)
+                .GroupBy(x => x.Name)
+                .Where(x => x.Count() > 1)
+                .ToArray();
+            if (duplicates.Any())
+            {
+                var declarations = string.Join(",", duplicates.Select(x => x.Key));
+                throw new InvalidOperationException($"Duplicate declarations. Declaration={declarations}");
+            }
+        }
+
+        public static void ValidateCollectAggregate(AggregateElement element)
+        {
+            var sourceType = element.Source.ValueType;
+            var resultType = element.ResultType;
+            var expectedResultType = typeof(IEnumerable<>).MakeGenericType(sourceType);
+            if (!expectedResultType.GetTypeInfo().IsAssignableFrom(resultType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    $"Collect result must be a collection of source elements. ElementType={sourceType}, ResultType={resultType}");
+            }
+        }
+
+        public static void ValidateGroupByAggregate(AggregateElement element)
+        {
+            var sourceType = element.Source.ValueType;
+            var resultType = element.ResultType;
+            var keySelector = element.ExpressionMap["KeySelector"].Expression;
+            if (keySelector.Parameters.Count == 0)
+            {
+                throw new ArgumentException(
+                    $"GroupBy key selector must have at least one parameter. KeySelector={keySelector}");
+            }
+            if (keySelector.Parameters[0].Type != sourceType)
+            {
+                throw new ArgumentException(
+                    "GroupBy key selector must have a parameter type that matches the aggregate source. " +
+                    $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}");
+            }
+
+            var elementSelector = element.ExpressionMap["ElementSelector"].Expression;
+            if (elementSelector.Parameters.Count == 0)
+            {
+                throw new ArgumentException(
+                    $"GroupBy element selector must have at least one parameter. ElementSelector={elementSelector}");
+            }
+            if (elementSelector.Parameters[0].Type != sourceType)
+            {
+                throw new ArgumentException(
+                    "GroupBy element selector must have a parameter type that matches the aggregate source. " +
+                    $"ElementSelector={elementSelector}, ExpectedType={sourceType}, ActualType={elementSelector.Parameters[0].Type}");
+            }
+
+            var groupType = typeof(IGrouping<,>).MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
+            if (!resultType.GetTypeInfo().IsAssignableFrom(groupType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    "GroupBy key/element selectors must produce a grouping assignable to the aggregation result. " +
+                    $"ElementSelector={elementSelector}, ResultType={resultType}, GroupingType={groupType}");
+            }
+        }
+
+        public static void ValidateProjectAggregate(AggregateElement element)
+        {
+            var sourceType = element.Source.ValueType;
+            var resultType = element.ResultType;
+            var selector = element.ExpressionMap["Selector"].Expression;
+            if (selector.Parameters.Count == 0)
+            {
+                throw new ArgumentException(
+                    $"Projection selector must have at least one parameter. Selector={selector}");
+            }
+            if (selector.Parameters[0].Type != sourceType)
+            {
+                throw new ArgumentException(
+                    "Projection selector must have its first parameter type that matches the aggregate source. " +
+                    $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}");
+            }
+            if (!resultType.GetTypeInfo().IsAssignableFrom(selector.ReturnType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    "Projection selector must produce a value assignable to the aggregation result. " +
+                    $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}");
+            }
+        }
+
+        public static void ValidateFlattenAggregate(AggregateElement element)
+        {
+            var sourceType = element.Source.ValueType;
+            var resultType = element.ResultType;
+            var selector = element.ExpressionMap["Selector"].Expression;
+            if (selector.Parameters.Count != 1)
+            {
+                throw new ArgumentException(
+                    $"Flattening selector must have a single parameter. Selector={selector}");
+            }
+            if (selector.Parameters[0].Type != sourceType)
+            {
+                throw new ArgumentException(
+                    "Flattening selector must have a parameter type that matches the aggregate source. " +
+                    $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}");
+            }
+            var resultCollectionType = typeof(IEnumerable<>).MakeGenericType(resultType);
+            if (!resultCollectionType.GetTypeInfo().IsAssignableFrom(selector.ReturnType.GetTypeInfo()))
+            {
+                throw new ArgumentException(
+                    "Flattening selector must produce a collection of values that are assignable to the aggregation result. " +
+                    $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}");
+            }
+        }
+    }
+}

@@ -57,9 +57,8 @@ namespace NRules.RuleModel.Builders
 
         ForAllElement IBuilder<ForAllElement>.Build()
         {
-            Validate();
             IBuilder<PatternElement> basePatternBuilder = _basePatternBuilder;
-            PatternElement basePatternElement = basePatternBuilder.Build();
+            PatternElement basePatternElement = basePatternBuilder?.Build();
 
             var patternElements = new List<PatternElement>();
             foreach (IBuilder<PatternElement> patternBuilder in _patternBuilders)
@@ -67,20 +66,8 @@ namespace NRules.RuleModel.Builders
                 patternElements.Add(patternBuilder.Build());
             }
 
-            var forAllElement = new ForAllElement(basePatternElement, patternElements);
+            var forAllElement = Element.ForAll(basePatternElement, patternElements);
             return forAllElement;
-        }
-
-        private void Validate()
-        {
-            if (_basePatternBuilder == null)
-            {
-                throw new InvalidOperationException("FORALL element base pattern is not provided");
-            }
-            if (_patternBuilders.Count < 1)
-            {
-                throw new InvalidOperationException("At least one additional FORALL pattern must be specified");
-            }
         }
     }
 }

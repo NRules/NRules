@@ -70,19 +70,10 @@ namespace NRules.RuleModel.Builders
 
         NotElement IBuilder<NotElement>.Build()
         {
-            Validate();
-            var builder = (IBuilder<RuleLeftElement>)_sourceBuilder;
-            RuleLeftElement sourceElement = builder.Build();
-            var notElement = new NotElement(sourceElement);
+            var sourceBuilder = (IBuilder<RuleLeftElement>)_sourceBuilder;
+            var sourceElement = sourceBuilder?.Build();
+            var notElement = Element.Not(sourceElement);
             return notElement;
-        }
-
-        private void Validate()
-        {
-            if (_sourceBuilder == null)
-            {
-                throw new InvalidOperationException("NOT element source is not provided");
-            }
         }
 
         private void AssertSingleSource()

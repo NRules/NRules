@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel.Builders
@@ -30,7 +29,7 @@ namespace NRules.RuleModel.Builders
         /// Names and types of the expression parameters must match the names and types defined in the pattern declarations.</param>
         public void Condition(LambdaExpression expression)
         {
-            var condition = new ConditionElement(expression);
+            var condition = Element.Condition(expression);
             _conditions.Add(condition);
         }
 
@@ -64,19 +63,9 @@ namespace NRules.RuleModel.Builders
 
         PatternElement IBuilder<PatternElement>.Build()
         {
-            Validate();
-            PatternElement patternElement;
-            if (_sourceBuilder != null)
-            {
-                var builder = (IBuilder<PatternSourceElement>)_sourceBuilder;
-                var source = builder.Build();
-                patternElement = new PatternElement(Declaration, _conditions, source);
-            }
-            else
-            {
-                patternElement = new PatternElement(Declaration, _conditions);
-            }
-            Declaration.Target = patternElement;
+            var sourceBuilder = (IBuilder<PatternSourceElement>)_sourceBuilder;
+            var source = sourceBuilder?.Build();
+            var patternElement = Element.Pattern(Declaration, _conditions, source);
             return patternElement;
         }
 
@@ -85,26 +74,6 @@ namespace NRules.RuleModel.Builders
             if (_sourceBuilder != null)
             {
                 throw new InvalidOperationException("Pattern element can only have a single source");
-            }
-        }
-
-        private void Validate()
-        {
-            foreach (var condition in _conditions)
-            {
-                var dependencyDeclarations = condition.Imports.Where(x => x.Target is DependencyElement).ToArray();
-                if (dependencyDeclarations.Any())
-                {
-                    var names = string.Join(",", dependencyDeclarations.Select(x => x.Name));
-                    var message = $"Pattern element cannot reference injected dependency. Condition={condition.Expression}, Dependency={names}";
-                    throw new InvalidOperationException(message);
-                }
-
-                if (condition.Expression.ReturnType != typeof(bool))
-                {
-                    var message = $"Pattern condition must return a Boolean result. Condition={condition.Expression}";
-                    throw new ArgumentException(message);
-                }
             }
         }
     }

@@ -181,7 +181,7 @@ namespace NRules.RuleModel.Builders
 
         private void Validate(RuleDefinition definition)
         {
-            ValidationHelper.AssertUniqueDeclarations(
+            ElementValidator.ValidateUniqueDeclarations(
                 definition.LeftHandSide, definition.DependencyGroup);
             
             var exports = definition.LeftHandSide.Exports
@@ -209,6 +209,14 @@ namespace NRules.RuleModel.Builders
             {
                 var variables = string.Join(",", undefinedRhs.Select(x => x.Name));
                 throw new InvalidOperationException($"Undefined variables in rule actions. Variables={variables}");
+            }
+
+            var lhsDependencyRefs = definition.LeftHandSide.Imports
+                .Intersect(definition.DependencyGroup.Exports).ToArray();
+            if (lhsDependencyRefs.Any())
+            {
+                var variables = string.Join(",", lhsDependencyRefs.Select(x => x.Name));
+                throw new InvalidOperationException($"Rule match conditions cannot reference injected dependencies. Variables={variables}");
             }
         }
     }

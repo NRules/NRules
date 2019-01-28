@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel.Builders
@@ -11,8 +9,6 @@ namespace NRules.RuleModel.Builders
     public class ActionGroupBuilder : RuleRightElementBuilder, IBuilder<ActionGroupElement>
     {
         private readonly List<ActionElement> _actions = new List<ActionElement>();
-
-        private const ActionTrigger DefaultTrigger = ActionTrigger.Activated | ActionTrigger.Reactivated;
 
         internal ActionGroupBuilder()
         {
@@ -27,7 +23,7 @@ namespace NRules.RuleModel.Builders
         /// Names and types of the rest of the expression parameters must match the names and types defined in the pattern declarations.</param>
         public void Action(LambdaExpression expression)
         {
-            Action(expression, DefaultTrigger);
+            Action(expression, ActionElement.DefaultTrigger);
         }
 
         /// <summary>
@@ -39,31 +35,13 @@ namespace NRules.RuleModel.Builders
         /// <param name="actionTrigger">Activation events that trigger the action.</param>
         public void Action(LambdaExpression expression, ActionTrigger actionTrigger)
         {
-            if (expression.Parameters.Count == 0 ||
-                expression.Parameters.First().Type != typeof(IContext))
-            {
-                throw new ArgumentException(
-                    $"Action expression must have {typeof(IContext)} as its first parameter");
-            }
-
-            if (actionTrigger == ActionTrigger.None)
-            {
-                throw new ArgumentException("Action trigger not specified");
-            }
-
-            var actionElement = new ActionElement(expression, actionTrigger);
+            var actionElement = Element.Action(expression, actionTrigger);
             _actions.Add(actionElement);
         }
 
         ActionGroupElement IBuilder<ActionGroupElement>.Build()
         {
-            var insertActions = _actions.Where(x => x.ActionTrigger.HasFlag(ActionTrigger.Activated)).ToList();
-            if (insertActions.Count == 0)
-            {
-                throw new ArgumentException($"Rule must have at least one match action");
-            }
-
-            var actionGroup = new ActionGroupElement(_actions);
+            var actionGroup = Element.ActionGroup(_actions);
             return actionGroup;
         }
     }

@@ -38,6 +38,11 @@ namespace NRules.RuleModel
     [DebuggerDisplay("{Expression.ToString()}")]
     public class ActionElement : ExpressionElement
     {
+        /// <summary>
+        /// Default value for action trigger.
+        /// </summary>
+        public const ActionTrigger DefaultTrigger = ActionTrigger.Activated | ActionTrigger.Reactivated;
+        
         internal ActionElement(LambdaExpression expression, ActionTrigger actionTrigger)
             : base(expression, expression.Parameters.Skip(1))
         {

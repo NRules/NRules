@@ -21,13 +21,13 @@ namespace NRules.RuleModel.Builders
         /// <param name="expression">Filter expression.</param>
         public void Filter(FilterType filterType, LambdaExpression expression)
         {
-            var filter = new FilterElement(filterType, expression);
+            var filter = Element.Filter(filterType, expression);
             _filters.Add(filter);
         }
 
         FilterGroupElement IBuilder<FilterGroupElement>.Build()
         {
-            var filterGroup = new FilterGroupElement(_filters);
+            var filterGroup = Element.FilterGroup(_filters);
             return filterGroup;
         }
     }
