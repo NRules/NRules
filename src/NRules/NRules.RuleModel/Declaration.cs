@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Pattern declaration.
+    /// Rule element declaration.
     /// </summary>
     [DebuggerDisplay("{Name}: {Type}")]
     public sealed class Declaration : IEquatable<Declaration>
@@ -28,7 +28,7 @@ namespace NRules.RuleModel
         /// <summary>
         /// Rule element that this declaration is referencing.
         /// </summary>
-        public RuleLeftElement Target { get; internal set; }
+        public RuleElement Target { get; internal set; }
 
         public bool Equals(Declaration other)
         {
