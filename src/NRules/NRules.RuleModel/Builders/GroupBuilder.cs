@@ -33,11 +33,6 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Builders for elements nested in this group.
-        /// </summary>
-        public IEnumerable<RuleLeftElementBuilder> NestedBuilders => _nestedBuilders;
-
-        /// <summary>
         /// Creates a pattern builder that builds a pattern as part of the current group.
         /// </summary>
         /// <param name="type">Pattern type.</param>

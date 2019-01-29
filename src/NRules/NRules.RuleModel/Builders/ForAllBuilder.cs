@@ -16,16 +16,6 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Builder for the base pattern of this forall element.
-        /// </summary>
-        public PatternBuilder BasePatternBuilder => _basePatternBuilder;
-
-        /// <summary>
-        /// Pattern builders for this forall element.
-        /// </summary>
-        public IEnumerable<PatternBuilder> PatternBuilders => _patternBuilders;
-
-        /// <summary>
         /// Creates a pattern builder that builds the base pattern of the forall element.
         /// </summary>
         /// <param name="type">Type of the element the pattern matches.</param>

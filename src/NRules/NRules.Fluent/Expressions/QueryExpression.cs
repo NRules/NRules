@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
-using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Expressions
@@ -173,9 +172,10 @@ namespace NRules.Fluent.Expressions
             };
         }
 
-        public void Build()
+        public PatternBuilder Build()
         {
-            _buildAction(_groupBuilder, _symbol.Name);
+            var patternBuilder = _buildAction(_groupBuilder, _symbol.Name);
+            return patternBuilder;
         }
     }
 }

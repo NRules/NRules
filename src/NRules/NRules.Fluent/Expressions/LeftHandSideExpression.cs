@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
 using NRules.RuleModel.Builders;
@@ -10,6 +9,7 @@ namespace NRules.Fluent.Expressions
     {
         private readonly GroupBuilder _builder;
         private readonly SymbolStack _symbolStack;
+        private PatternBuilder _currentPatternBuilder;
 
         public LeftHandSideExpression(GroupBuilder builder, SymbolStack symbolStack)
         {
@@ -23,6 +23,7 @@ namespace NRules.Fluent.Expressions
             var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
             patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
             _symbolStack.Scope.Add(patternBuilder.Declaration);
+            _currentPatternBuilder = patternBuilder;
             return this;
         }
 
@@ -32,6 +33,7 @@ namespace NRules.Fluent.Expressions
             var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
             patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
             _symbolStack.Scope.Add(patternBuilder.Declaration);
+            _currentPatternBuilder = patternBuilder;
             return this;
         }
 
@@ -78,7 +80,7 @@ namespace NRules.Fluent.Expressions
             var symbol = alias.ToParameterExpression();
             var queryBuilder = new QueryExpression(symbol, _symbolStack, _builder);
             queryAction(queryBuilder);
-            queryBuilder.Build();
+            _currentPatternBuilder = queryBuilder.Build();
             return this;
         }
 
@@ -103,17 +105,17 @@ namespace NRules.Fluent.Expressions
             var bindingBuilder = patternBuilder.Binding();
             bindingBuilder.DslBindingExpression(_symbolStack.Scope.Declarations, expression);
             _symbolStack.Scope.Add(patternBuilder.Declaration);
+            _currentPatternBuilder = patternBuilder;
             return this;
         }
 
         public ILeftHandSideExpression Having(params Expression<Func<bool>>[] conditions)
         {
-            var patternBuilder = _builder.NestedBuilders.OfType<PatternBuilder>().LastOrDefault();
-            if (patternBuilder == null)
+            if (_currentPatternBuilder == null)
             {
                 throw new ArgumentException("HAVING clause can only be used on existing rule patterns");
             }
-            patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
+            _currentPatternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
             return this;
         }
     }

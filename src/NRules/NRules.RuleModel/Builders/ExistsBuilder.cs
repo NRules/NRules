@@ -14,11 +14,6 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Builder for the source of this element.
-        /// </summary>
-        public RuleLeftElementBuilder SourceBuilder => _sourceBuilder;
-
-        /// <summary>
         /// Creates a pattern builder that builds the source of the existential element.
         /// </summary>
         /// <param name="type">Type of the element the pattern matches.</param>

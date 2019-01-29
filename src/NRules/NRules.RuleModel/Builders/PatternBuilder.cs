@@ -18,11 +18,6 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Builder for the source of this element.
-        /// </summary>
-        public PatternSourceElementBuilder SourceBuilder => _sourceBuilder;
-
-        /// <summary>
         /// Adds a condition expression to the pattern.
         /// </summary>
         /// <param name="expression">Condition expression.

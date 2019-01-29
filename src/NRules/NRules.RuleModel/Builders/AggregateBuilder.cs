@@ -21,11 +21,6 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Builder for the source of this element.
-        /// </summary>
-        public PatternBuilder SourceBuilder => _sourceBuilder;
-
-        /// <summary>
         /// Configure a custom aggregator.
         /// </summary>
         /// <param name="name">Name of the aggregator.</param>
