@@ -7,10 +7,10 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a rule pattern.
     /// </summary>
-    public class PatternBuilder : RuleLeftElementBuilder, IBuilder<PatternElement>
+    public class PatternBuilder : RuleElementBuilder, IBuilder<PatternElement>
     {
         private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
-        private PatternSourceElementBuilder _sourceBuilder;
+        private IBuilder<PatternSourceElement> _sourceBuilder;
 
         internal PatternBuilder(Declaration declaration)
         {
@@ -58,8 +58,7 @@ namespace NRules.RuleModel.Builders
 
         PatternElement IBuilder<PatternElement>.Build()
         {
-            var sourceBuilder = (IBuilder<PatternSourceElement>)_sourceBuilder;
-            var source = sourceBuilder?.Build();
+            var source = _sourceBuilder?.Build();
             var patternElement = Element.Pattern(Declaration, _conditions, source);
             return patternElement;
         }

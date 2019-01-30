@@ -7,13 +7,13 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose an aggregate element.
     /// </summary>
-    public class AggregateBuilder : PatternSourceElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
+    public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
     {
         private string _name;
         private readonly Dictionary<string, LambdaExpression> _expressions = new Dictionary<string, LambdaExpression>();
         private readonly Type _resultType;
         private Type _customFactoryType;
-        private PatternBuilder _sourceBuilder;
+        private IBuilder<PatternElement> _sourceBuilder;
 
         internal AggregateBuilder(Type resultType) 
         {
@@ -103,8 +103,7 @@ namespace NRules.RuleModel.Builders
 
         AggregateElement IBuilder<AggregateElement>.Build()
         {
-            IBuilder<PatternElement> sourceBuilder = _sourceBuilder;
-            PatternElement sourceElement = sourceBuilder?.Build();
+            PatternElement sourceElement = _sourceBuilder?.Build();
             var aggregateElement = Element.Aggregate(_resultType, _name, _expressions, sourceElement, _customFactoryType);
             return aggregateElement;
         }

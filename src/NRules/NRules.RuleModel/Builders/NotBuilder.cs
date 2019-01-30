@@ -5,9 +5,9 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a negative existential element.
     /// </summary>
-    public class NotBuilder : RuleLeftElementBuilder, IBuilder<NotElement>
+    public class NotBuilder : RuleElementBuilder, IBuilder<NotElement>
     {
-        private RuleLeftElementBuilder _sourceBuilder;
+        private IBuilder<RuleLeftElement> _sourceBuilder;
 
         internal NotBuilder()
         {
@@ -65,8 +65,7 @@ namespace NRules.RuleModel.Builders
 
         NotElement IBuilder<NotElement>.Build()
         {
-            var sourceBuilder = (IBuilder<RuleLeftElement>)_sourceBuilder;
-            var sourceElement = sourceBuilder?.Build();
+            var sourceElement = _sourceBuilder?.Build();
             var notElement = Element.Not(sourceElement);
             return notElement;
         }

@@ -5,9 +5,9 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose an existential element.
     /// </summary>
-    public class ExistsBuilder : RuleLeftElementBuilder, IBuilder<ExistsElement>
+    public class ExistsBuilder : RuleElementBuilder, IBuilder<ExistsElement>
     {
-        private RuleLeftElementBuilder _sourceBuilder;
+        private IBuilder<RuleLeftElement> _sourceBuilder;
 
         internal ExistsBuilder()
         {
@@ -53,8 +53,7 @@ namespace NRules.RuleModel.Builders
 
         ExistsElement IBuilder<ExistsElement>.Build()
         {
-            var sourceBuilder = (IBuilder<RuleLeftElement>)_sourceBuilder;
-            var sourceElement = sourceBuilder?.Build();
+            var sourceElement = _sourceBuilder?.Build();
             var existsElement = Element.Exists(sourceElement);
             return existsElement;
         }

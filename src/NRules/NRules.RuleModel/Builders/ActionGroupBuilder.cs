@@ -6,7 +6,7 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a group of rule actions.
     /// </summary>
-    public class ActionGroupBuilder : RuleRightElementBuilder, IBuilder<ActionGroupElement>
+    public class ActionGroupBuilder : RuleElementBuilder, IBuilder<ActionGroupElement>
     {
         private readonly List<ActionElement> _actions = new List<ActionElement>();
 

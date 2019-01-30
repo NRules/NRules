@@ -6,10 +6,10 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a forall element (universal quantifier).
     /// </summary>
-    public class ForAllBuilder : RuleLeftElementBuilder, IBuilder<ForAllElement>
+    public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
     {
-        private PatternBuilder _basePatternBuilder;
-        private readonly List<PatternBuilder> _patternBuilders = new List<PatternBuilder>();
+        private IBuilder<PatternElement> _basePatternBuilder;
+        private readonly List<IBuilder<PatternElement>> _patternBuilders = new List<IBuilder<PatternElement>>();
 
         internal ForAllBuilder()
         {
@@ -28,8 +28,9 @@ namespace NRules.RuleModel.Builders
             }
 
             var declaration = new Declaration(type, DeclarationName(null));
-            _basePatternBuilder = new PatternBuilder(declaration);
-            return _basePatternBuilder;
+            var basePatternBuilder = new PatternBuilder(declaration);
+            _basePatternBuilder = basePatternBuilder;
+            return basePatternBuilder;
         }
         
         /// <summary>
@@ -47,11 +48,10 @@ namespace NRules.RuleModel.Builders
 
         ForAllElement IBuilder<ForAllElement>.Build()
         {
-            IBuilder<PatternElement> basePatternBuilder = _basePatternBuilder;
-            PatternElement basePatternElement = basePatternBuilder?.Build();
+            PatternElement basePatternElement = _basePatternBuilder?.Build();
 
             var patternElements = new List<PatternElement>();
-            foreach (IBuilder<PatternElement> patternBuilder in _patternBuilders)
+            foreach (var patternBuilder in _patternBuilders)
             {
                 patternElements.Add(patternBuilder.Build());
             }

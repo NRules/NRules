@@ -22,10 +22,10 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a group element.
     /// </summary>
-    public class GroupBuilder : RuleLeftElementBuilder, IBuilder<GroupElement>, IPatternContainerBuilder
+    public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>, IPatternContainerBuilder
     {
         private readonly GroupType _groupType;
-        private readonly List<RuleLeftElementBuilder> _nestedBuilders = new List<RuleLeftElementBuilder>();
+        private readonly List<IBuilder<RuleLeftElement>> _nestedBuilders = new List<IBuilder<RuleLeftElement>>();
 
         internal GroupBuilder(GroupType groupType)
         {
@@ -104,9 +104,8 @@ namespace NRules.RuleModel.Builders
         GroupElement IBuilder<GroupElement>.Build()
         {
             var childElements = new List<RuleLeftElement>();
-            foreach (var nestedBuilder in _nestedBuilders)
+            foreach (var builder in _nestedBuilders)
             {
-                var builder = (IBuilder<RuleLeftElement>) nestedBuilder;
                 RuleLeftElement childElement = builder.Build();
                 childElements.Add(childElement);
             }
