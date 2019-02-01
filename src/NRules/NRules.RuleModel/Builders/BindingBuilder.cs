@@ -4,20 +4,24 @@ using System.Linq.Expressions;
 namespace NRules.RuleModel.Builders
 {
     /// <summary>
-    /// Builder to compose a binding element that associates a pattern with a calculated expression.
+    /// Builder to compose a binding expression element.
     /// </summary>
     public class BindingBuilder : RuleElementBuilder, IBuilder<BindingElement>
     {
         private readonly Type _valueType;
         private LambdaExpression _expression;
 
-        internal BindingBuilder(Type valueType)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BindingBuilder"/>.
+        /// </summary>
+        /// <param name="valueType">Type of the binding expression result.</param>
+        public BindingBuilder(Type valueType)
         {
             _valueType = valueType;
         }
 
         /// <summary>
-        /// Adds a calculated expression to the binding element.
+        /// Sets a calculated expression on the binding element.
         /// </summary>
         /// <param name="expression">Expression to bind.</param>
         public void BindingExpression(LambdaExpression expression)

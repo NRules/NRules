@@ -9,8 +9,31 @@ namespace NRules.RuleModel.Builders
     {
         private IBuilder<RuleLeftElement> _sourceBuilder;
 
-        internal ExistsBuilder()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExistsBuilder"/>.
+        /// </summary>
+        public ExistsBuilder()
         {
+        }
+
+        /// <summary>
+        /// Sets a pattern as the source of the existential element.
+        /// </summary>
+        /// <param name="element">Element to set as the source.</param>
+        public void Pattern(PatternElement element)
+        {
+            AssertSingleSource();
+            _sourceBuilder = BuilderAdapter.Create(element);
+        }
+
+        /// <summary>
+        /// Sets a pattern builder as the source of the existential element.
+        /// </summary>
+        /// <param name="builder">Element builder to set as the source.</param>
+        public void Pattern(PatternBuilder builder)
+        {
+            AssertSingleSource();
+            _sourceBuilder = builder;
         }
 
         /// <summary>
@@ -39,7 +62,28 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Creates a group builder that builds a group as part of the current element.
+        /// Sets a group as the source of the existential element.
+        /// </summary>
+        /// <param name="element">Element to set as the source.</param>
+        public void Group(GroupElement element)
+        {
+            AssertSingleSource();
+            var builder = BuilderAdapter.Create(element);
+            _sourceBuilder = builder;
+        }
+
+        /// <summary>
+        /// Sets a group builder as the source of the existential element.
+        /// </summary>
+        /// <param name="builder">Element builder to set as the source.</param>
+        public void Group(GroupBuilder builder)
+        {
+            AssertSingleSource();
+            _sourceBuilder = builder;
+        }
+
+        /// <summary>
+        /// Creates a group builder that builds a group as the source of the existential element.
         /// </summary>
         /// <param name="groupType">Group type.</param>
         /// <returns>Group builder.</returns>

@@ -22,18 +22,41 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a group element.
     /// </summary>
-    public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>, IPatternContainerBuilder
+    public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
     {
-        private readonly GroupType _groupType;
         private readonly List<IBuilder<RuleLeftElement>> _nestedBuilders = new List<IBuilder<RuleLeftElement>>();
+        private readonly GroupType _groupType;
 
-        internal GroupBuilder(GroupType groupType)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GroupBuilder"/>.
+        /// </summary>
+        /// <param name="groupType">Type of the group to build.</param>
+        public GroupBuilder(GroupType groupType)
         {
             _groupType = groupType;
         }
 
         /// <summary>
-        /// Creates a pattern builder that builds a pattern as part of the current group.
+        /// Adds a pattern to the group element.
+        /// </summary>
+        /// <param name="element">Element to add.</param>
+        public void Pattern(PatternElement element)
+        {
+            var builder = BuilderAdapter.Create(element);
+            _nestedBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Adds a pattern builder to the group element.
+        /// </summary>
+        /// <param name="builder">Element builder to add.</param>
+        public void Pattern(PatternBuilder builder)
+        {
+            _nestedBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Creates a pattern builder that builds a pattern as part of the current group element.
         /// </summary>
         /// <param name="type">Pattern type.</param>
         /// <param name="name">Pattern name (optional).</param>
@@ -45,7 +68,7 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Creates a pattern builder that builds a pattern as part of the current group.
+        /// Creates a pattern builder that builds a pattern as part of the current group element.
         /// </summary>
         /// <param name="declaration">Pattern declaration.</param>
         /// <returns>Pattern builder.</returns>
@@ -57,7 +80,26 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Creates a group builder that builds a group as part of the current group.
+        /// Adds a nested group to this group element.
+        /// </summary>
+        /// <param name="element">Element to add.</param>
+        public void Group(GroupElement element)
+        {
+            var builder = BuilderAdapter.Create(element);
+            _nestedBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Adds a nested group builder to this group element.
+        /// </summary>
+        /// <param name="builder">Element builder to add.</param>
+        public void Group(GroupBuilder builder)
+        {
+            _nestedBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Creates a group builder that builds a group as part of the current group element.
         /// </summary>
         /// <param name="groupType">Group type.</param>
         /// <returns>Group builder.</returns>
@@ -69,7 +111,26 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Creates a builder for an existential element as part of the current group.
+        /// Adds an existential element to the group element.
+        /// </summary>
+        /// <param name="element">Element to add.</param>
+        public void Exists(ExistsElement element)
+        {
+            var builder = BuilderAdapter.Create(element);
+            _nestedBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Adds an existential element builder to the group element.
+        /// </summary>
+        /// <param name="builder">Element builder to add.</param>
+        public void Exists(ExistsBuilder builder)
+        {
+            _nestedBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Creates a builder for an existential element as part of the current group element.
         /// </summary>
         /// <returns>Existential builder.</returns>
         public ExistsBuilder Exists()
@@ -80,7 +141,26 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Creates a builder for a negative existential element as part of the current group.
+        /// Adds a negative existential element to the group element.
+        /// </summary>
+        /// <param name="element">Element to add.</param>
+        public void Not(NotElement element)
+        {
+            var builder = BuilderAdapter.Create(element);
+            _nestedBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Adds a negative existential element builder to the group element.
+        /// </summary>
+        /// <param name="builder">Element builder to add.</param>
+        public void Not(NotBuilder builder)
+        {
+            _nestedBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Creates a builder for a negative existential element as part of the current group element.
         /// </summary>
         /// <returns>Negative existential builder.</returns>
         public NotBuilder Not()
@@ -91,7 +171,26 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Creates a builder for a forall element as part of the current group.
+        /// Adds a forall element to the group element.
+        /// </summary>
+        /// <param name="element">Element to add.</param>
+        public void ForAll(ForAllElement element)
+        {
+            var builder = BuilderAdapter.Create(element);
+            _nestedBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Adds a forall element builder to the group element.
+        /// </summary>
+        /// <param name="builder">Element builder to add.</param>
+        public void ForAll(ForAllBuilder builder)
+        {
+            _nestedBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Creates a builder for a forall element as part of the current group element.
         /// </summary>
         /// <returns>Forall builder.</returns>
         public ForAllBuilder ForAll()

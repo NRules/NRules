@@ -7,10 +7,6 @@ namespace NRules.RuleModel.Builders
     {
         private int _declarationCounter = 0;
 
-        internal RuleElementBuilder()
-        {
-        }
-
         protected string DeclarationName(string name)
         {
             _declarationCounter++;

@@ -15,7 +15,16 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Adds a filter to the group.
+        /// Adds a filter element to the group element.
+        /// </summary>
+        /// <param name="element">Element to add.</param>
+        public void Filter(FilterElement element)
+        {
+            _filters.Add(element);
+        }
+
+        /// <summary>
+        /// Adds a filter to the group element.
         /// </summary>
         /// <param name="filterType">Type of filter.</param>
         /// <param name="expression">Filter expression.</param>

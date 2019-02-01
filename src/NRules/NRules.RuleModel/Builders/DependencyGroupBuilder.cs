@@ -15,7 +15,16 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Adds a dependency to the group.
+        /// Adds a dependency element to the group element.
+        /// </summary>
+        /// <param name="element">Element to add.</param>
+        public void Dependency(DependencyElement element)
+        {
+            _dependencies.Add(element);
+        }
+
+        /// <summary>
+        /// Adds a dependency to the group element.
         /// </summary>
         /// <param name="type">Dependency CLR type.</param>
         /// <param name="name">Dependency name.</param>

@@ -7,7 +7,7 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose an aggregate element.
     /// </summary>
-    public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>, IPatternContainerBuilder
+    public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
     {
         private string _name;
         private readonly Dictionary<string, LambdaExpression> _expressions = new Dictionary<string, LambdaExpression>();
@@ -15,7 +15,11 @@ namespace NRules.RuleModel.Builders
         private Type _customFactoryType;
         private IBuilder<PatternElement> _sourceBuilder;
 
-        internal AggregateBuilder(Type resultType) 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AggregateBuilder"/>.
+        /// </summary>
+        /// <param name="resultType">Type of the aggregation result.</param>
+        public AggregateBuilder(Type resultType) 
         {
             _resultType = resultType;
         }
@@ -77,7 +81,27 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Creates a pattern builder that builds the source of the aggregate.
+        /// Sets a pattern element as the source of the aggregate element.
+        /// </summary>
+        /// <param name="element">Element to set as the source.</param>
+        public void Pattern(PatternElement element)
+        {
+            AssertSingleSource();
+            _sourceBuilder = BuilderAdapter.Create(element);
+        }
+
+        /// <summary>
+        /// Sets a pattern builder as the source of the aggregate element.
+        /// </summary>
+        /// <param name="builder">Element builder to set as the source.</param>
+        public void Pattern(PatternBuilder builder)
+        {
+            AssertSingleSource();
+            _sourceBuilder = builder;
+        }
+
+        /// <summary>
+        /// Creates a pattern builder that builds the source of the aggregate element.
         /// </summary>
         /// <param name="type">Type of the element the pattern matches.</param>
         /// <param name="name">Pattern name (optional).</param>
