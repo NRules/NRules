@@ -25,13 +25,20 @@ namespace NRules.RuleModel.Builders
     public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
     {
         private readonly List<IBuilder<RuleLeftElement>> _nestedBuilders = new List<IBuilder<RuleLeftElement>>();
-        private readonly GroupType _groupType;
+        private GroupType _groupType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupBuilder"/>.
         /// </summary>
-        /// <param name="groupType">Type of the group to build.</param>
-        public GroupBuilder(GroupType groupType)
+        public GroupBuilder()
+        {
+        }
+
+        /// <summary>
+        /// Sets type of the group element.
+        /// </summary>
+        /// <param name="groupType">Group type to set.</param>
+        public void GroupType(GroupType groupType)
         {
             _groupType = groupType;
         }
@@ -105,7 +112,8 @@ namespace NRules.RuleModel.Builders
         /// <returns>Group builder.</returns>
         public GroupBuilder Group(GroupType groupType)
         {
-            var builder = new GroupBuilder(groupType);
+            var builder = new GroupBuilder();
+            builder.GroupType(groupType);
             _nestedBuilders.Add(builder);
             return builder;
         }

@@ -136,7 +136,7 @@ namespace NRules.RuleModel.Builders
         public GroupBuilder LeftHandSide()
         {
             if (_lhsBuilder == null)
-                _lhsBuilder = new GroupBuilder(GroupType.And);
+                _lhsBuilder = new GroupBuilder();
 
             return _lhsBuilder;
         }

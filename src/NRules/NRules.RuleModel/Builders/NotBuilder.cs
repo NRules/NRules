@@ -90,7 +90,8 @@ namespace NRules.RuleModel.Builders
         public GroupBuilder Group(GroupType groupType)
         {
             AssertSingleSource();
-            var sourceBuilder = new GroupBuilder(groupType);
+            var sourceBuilder = new GroupBuilder();
+            sourceBuilder.GroupType(groupType);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
