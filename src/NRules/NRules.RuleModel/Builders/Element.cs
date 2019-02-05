@@ -41,8 +41,8 @@ namespace NRules.RuleModel.Builders
             IEnumerable<string> tags, GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
             var ruleProperties = new RuleProperty[0];
-            var dependencyGroupElement = DependencyGroup(new DependencyElement[0]);
-            var filterGroupElement = FilterGroup(new FilterElement[0]);
+            var dependencyGroupElement = DependencyGroup();
+            var filterGroupElement = FilterGroup();
             var ruleDefinition = RuleDefinition(name, description, priority, RuleRepeatability.Repeatable, 
                 tags, ruleProperties, dependencyGroupElement, leftHandSide, filterGroupElement, rightHandSide);
             return ruleDefinition;
@@ -87,6 +87,18 @@ namespace NRules.RuleModel.Builders
             ElementValidator.ValidateRuleDefinition(ruleDefinition);
 
             return ruleDefinition;
+        }
+
+        /// <summary>
+        /// Creates a dependency group element.
+        /// </summary>
+        /// <param name="dependencies">Dependency elements in the group.</param>
+        /// <returns>Created element.</returns>
+        /// <seealso cref="DependencyElement"/>
+        public static DependencyGroupElement DependencyGroup(params DependencyElement[] dependencies)
+        {
+            var element = DependencyGroup(dependencies.AsEnumerable());
+            return element;
         }
 
         /// <summary>
@@ -170,6 +182,19 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="childElements">Child elements contained in the group.</param>
         /// <returns>Created element.</returns>
+        /// <see cref="RuleLeftElement"/>
+        public static AndElement AndGroup(params RuleLeftElement[] childElements)
+        {
+            var element = AndGroup(childElements.AsEnumerable());
+            return element;
+        }
+
+        /// <summary>
+        /// Creates a left-hand side group element that combines contained elements using an AND operator.
+        /// </summary>
+        /// <param name="childElements">Child elements contained in the group.</param>
+        /// <returns>Created element.</returns>
+        /// <see cref="RuleLeftElement"/>
         public static AndElement AndGroup(IEnumerable<RuleLeftElement> childElements)
         {
             if (childElements == null) 
@@ -189,6 +214,19 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="childElements">Child elements contained in the group.</param>
         /// <returns>Created element.</returns>
+        /// <see cref="RuleLeftElement"/>
+        public static OrElement OrGroup(params RuleLeftElement[] childElements)
+        {
+            var element = OrGroup(childElements.AsEnumerable());
+            return element;
+        }
+
+        /// <summary>
+        /// Creates a left-hand side group element that combines contained elements using an OR operator.
+        /// </summary>
+        /// <param name="childElements">Child elements contained in the group.</param>
+        /// <returns>Created element.</returns>
+        /// <see cref="RuleLeftElement"/>
         public static OrElement OrGroup(IEnumerable<RuleLeftElement> childElements)
         {
             if (childElements == null) 
@@ -207,6 +245,7 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="source">Source element to apply the existential quantifier to.</param>
         /// <returns>Created element.</returns>
+        /// <see cref="RuleLeftElement"/>
         public static ExistsElement Exists(RuleLeftElement source)
         {
             if (source == null) 
@@ -478,6 +517,19 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="filters">Agenda filter elements in the group.</param>
         /// <returns>Created element.</returns>
+        /// <seealso cref="FilterElement"/>
+        public static FilterGroupElement FilterGroup(params FilterElement[] filters)
+        {
+            var element = FilterGroup(filters.AsEnumerable());
+            return element;
+        }
+
+        /// <summary>
+        /// Creates an agenda filter group element.
+        /// </summary>
+        /// <param name="filters">Agenda filter elements in the group.</param>
+        /// <returns>Created element.</returns>
+        /// <seealso cref="FilterElement"/>
         public static FilterGroupElement FilterGroup(IEnumerable<FilterElement> filters)
         {
             var element = new FilterGroupElement(filters);
@@ -493,6 +545,18 @@ namespace NRules.RuleModel.Builders
         public static FilterElement Filter(FilterType filterType, LambdaExpression expression)
         {
             var element = new FilterElement(filterType, expression);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates an action group element.
+        /// </summary>
+        /// <param name="actions">Action elements in the group.</param>
+        /// <returns>Created element.</returns>
+        /// <seealso cref="ActionElement"/>
+        public static ActionGroupElement ActionGroup(params ActionElement[] actions)
+        {
+            var element = ActionGroup(actions.AsEnumerable());
             return element;
         }
 
