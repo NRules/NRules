@@ -10,7 +10,10 @@ namespace NRules.RuleModel.Builders
     {
         private readonly List<ActionElement> _actions = new List<ActionElement>();
 
-        internal ActionGroupBuilder()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActionGroupBuilder"/>.
+        /// </summary>
+        public ActionGroupBuilder()
         {
         }
 

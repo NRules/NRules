@@ -10,7 +10,10 @@ namespace NRules.RuleModel.Builders
     {
         private readonly List<DependencyElement> _dependencies = new List<DependencyElement>();
 
-        internal DependencyGroupBuilder()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependencyGroupBuilder"/>.
+        /// </summary>
+        public DependencyGroupBuilder()
         {
         }
 

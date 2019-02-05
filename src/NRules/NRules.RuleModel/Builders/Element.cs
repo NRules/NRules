@@ -11,6 +11,85 @@ namespace NRules.RuleModel.Builders
     public static class Element
     {
         /// <summary>
+        /// Creates a rule definition.
+        /// </summary>
+        /// <param name="name">Rule's name.</param>
+        /// <param name="description">Rule's description.</param>
+        /// <param name="priority">Rule's priority.</param>
+        /// <param name="leftHandSide">Rule's left-hand side top group element.</param>
+        /// <param name="rightHandSide">Rule's right-hand side group element.</param>
+        /// <returns>Created rule definition.</returns>
+        public static IRuleDefinition RuleDefinition(string name, string description, int priority,
+            GroupElement leftHandSide, ActionGroupElement rightHandSide)
+        {
+            var tags = new string[0];
+            var ruleDefinition = RuleDefinition(name, description, priority, tags, leftHandSide, rightHandSide);
+            return ruleDefinition;
+        }
+
+        /// <summary>
+        /// Creates a rule definition.
+        /// </summary>
+        /// <param name="name">Rule's name.</param>
+        /// <param name="description">Rule's description.</param>
+        /// <param name="priority">Rule's priority.</param>
+        /// <param name="tags">Tags associated with the rule.</param>
+        /// <param name="leftHandSide">Rule's left-hand side top group element.</param>
+        /// <param name="rightHandSide">Rule's right-hand side group element.</param>
+        /// <returns>Created rule definition.</returns>
+        public static IRuleDefinition RuleDefinition(string name, string description, int priority,
+            IEnumerable<string> tags, GroupElement leftHandSide, ActionGroupElement rightHandSide)
+        {
+            var ruleProperties = new RuleProperty[0];
+            var dependencyGroupElement = DependencyGroup(new DependencyElement[0]);
+            var filterGroupElement = FilterGroup(new FilterElement[0]);
+            var ruleDefinition = RuleDefinition(name, description, priority, RuleRepeatability.Repeatable, 
+                tags, ruleProperties, dependencyGroupElement, leftHandSide, filterGroupElement, rightHandSide);
+            return ruleDefinition;
+        }
+
+        /// <summary>
+        /// Creates a rule definition.
+        /// </summary>
+        /// <param name="name">Rule's name.</param>
+        /// <param name="description">Rule's description.</param>
+        /// <param name="priority">Rule's priority.</param>
+        /// <param name="repeatability">Rule's repeatability.</param>
+        /// <param name="tags">Tags associated with the rule.</param>
+        /// <param name="properties">Properties associated with the rule.</param>
+        /// <param name="dependencies">Rule's dependency group element.</param>
+        /// <param name="leftHandSide">Rule's left-hand side top group element.</param>
+        /// <param name="filters">Rule's filter group element.</param>
+        /// <param name="rightHandSide">Rule's right-hand side group element.</param>
+        /// <returns>Created rule definition.</returns>
+        public static IRuleDefinition RuleDefinition(string name, string description, int priority, 
+            RuleRepeatability repeatability, IEnumerable<string> tags, IEnumerable<RuleProperty> properties,
+            DependencyGroupElement dependencies, GroupElement leftHandSide, FilterGroupElement filters, ActionGroupElement rightHandSide)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("Rule name not provided", nameof(name));
+            if (tags == null) 
+                throw new ArgumentNullException(nameof(tags), "Rule tags not provided");
+            if (properties == null) 
+                throw new ArgumentNullException(nameof(properties), "Rule properties not provided");
+            if (dependencies == null) 
+                throw new ArgumentNullException(nameof(dependencies), "Rule dependencies not provided");
+            if (leftHandSide == null) 
+                throw new ArgumentNullException(nameof(leftHandSide), "Rule left-hand side not provided");
+            if (filters == null) 
+                throw new ArgumentNullException(nameof(filters), "Rule filters not provided");
+            if (rightHandSide == null) 
+                throw new ArgumentNullException(nameof(rightHandSide), "Rule right-hand side not provided");
+
+            var ruleDefinition = new RuleDefinition(name, description, priority, repeatability, tags, properties, dependencies, leftHandSide, filters, rightHandSide);
+
+            ElementValidator.ValidateUniqueDeclarations(ruleDefinition.LeftHandSide, ruleDefinition.DependencyGroup);
+            ElementValidator.ValidateRuleDefinition(ruleDefinition);
+
+            return ruleDefinition;
+        }
+
+        /// <summary>
         /// Creates a dependency group element.
         /// </summary>
         /// <param name="dependencies">Dependency elements in the group.</param>

@@ -85,7 +85,7 @@ namespace NRules.RuleModel
 
         public RuleDefinition(string name, string description, int priority, 
             RuleRepeatability repeatability, IEnumerable<string> tags, IEnumerable<RuleProperty> properties,
-            DependencyGroupElement dependencies, FilterGroupElement filters, GroupElement leftHandSide, ActionGroupElement rightHandSide)
+            DependencyGroupElement dependencies, GroupElement leftHandSide, FilterGroupElement filters, ActionGroupElement rightHandSide)
         {
             Name = name;
             Description = description;
@@ -95,8 +95,8 @@ namespace NRules.RuleModel
             Properties = new PropertyMap(properties);
 
             DependencyGroup = dependencies;
-            FilterGroup = filters;
             LeftHandSide = leftHandSide;
+            FilterGroup = filters;
             RightHandSide = rightHandSide;
         }
 

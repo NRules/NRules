@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.RuleModel.Builders
 {
@@ -20,8 +18,8 @@ namespace NRules.RuleModel.Builders
         private readonly List<RuleProperty> _properties = new List<RuleProperty>();
         private readonly DependencyGroupBuilder _dependencyGroupBuilder;
         private readonly FilterGroupBuilder _filterGroupBuilder;
-        private readonly GroupBuilder _conditionGroupBuilder;
-        private readonly ActionGroupBuilder _actionGroupBuilder;
+        private readonly GroupBuilder _lhsBuilder;
+        private readonly ActionGroupBuilder _rhsBuilder;
 
         /// <summary>
         /// Constructs an empty rule builder.
@@ -30,8 +28,8 @@ namespace NRules.RuleModel.Builders
         {
             _dependencyGroupBuilder = new DependencyGroupBuilder();
             _filterGroupBuilder = new FilterGroupBuilder();
-            _conditionGroupBuilder = new GroupBuilder(GroupType.And);
-            _actionGroupBuilder = new ActionGroupBuilder();
+            _lhsBuilder = new GroupBuilder(GroupType.And);
+            _rhsBuilder = new ActionGroupBuilder();
         }
 
         /// <summary>
@@ -133,7 +131,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Left hand side builder.</returns>
         public GroupBuilder LeftHandSide()
         {
-            return _conditionGroupBuilder;
+            return _lhsBuilder;
         }
 
         /// <summary>
@@ -142,7 +140,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Right hand side builder.</returns>
         public ActionGroupBuilder RightHandSide()
         {
-            return _actionGroupBuilder;
+            return _rhsBuilder;
         }
 
         /// <summary>
@@ -151,73 +149,20 @@ namespace NRules.RuleModel.Builders
         /// <returns>Rule definition.</returns>
         public IRuleDefinition Build()
         {
-            Validate();
-
             IBuilder<DependencyGroupElement> dependencyGroupBuilder = _dependencyGroupBuilder;
             DependencyGroupElement dependencies = dependencyGroupBuilder.Build();
 
             IBuilder<FilterGroupElement> filterGroupBuilder = _filterGroupBuilder;
             FilterGroupElement filters = filterGroupBuilder.Build();
 
-            IBuilder<GroupElement> conditionGroupBuilder = _conditionGroupBuilder;
-            GroupElement conditions = conditionGroupBuilder.Build();
+            IBuilder<GroupElement> lhsBuilder = _lhsBuilder;
+            GroupElement lhs = lhsBuilder.Build();
 
-            IBuilder<ActionGroupElement> actionGroupBuilder = _actionGroupBuilder;
-            ActionGroupElement actions = actionGroupBuilder.Build();
+            IBuilder<ActionGroupElement> rhsBuilder = _rhsBuilder;
+            ActionGroupElement rhs = rhsBuilder.Build();
 
-            var ruleDefinition = new RuleDefinition(_name, _description, _priority, _repeatability, _tags, _properties, dependencies, filters, conditions, actions);
-            Validate(ruleDefinition);
-
+            var ruleDefinition = Element.RuleDefinition(_name, _description, _priority, _repeatability, _tags, _properties, dependencies, lhs, filters, rhs);
             return ruleDefinition;
-        }
-
-        private void Validate()
-        {
-            if (string.IsNullOrEmpty(_name))
-            {
-                throw new InvalidOperationException("Rule name not specified");
-            }
-        }
-
-        private void Validate(RuleDefinition definition)
-        {
-            ElementValidator.ValidateUniqueDeclarations(
-                definition.LeftHandSide, definition.DependencyGroup);
-            
-            var exports = definition.LeftHandSide.Exports
-                .Concat(definition.DependencyGroup.Exports).ToArray();
-
-            var undefinedLhs = definition.LeftHandSide.Imports
-                .Except(exports).ToArray();
-            if (undefinedLhs.Any())
-            {
-                var variables = string.Join(",", undefinedLhs.Select(x => x.Name));
-                throw new InvalidOperationException($"Undefined variables in rule match conditions. Variables={variables}");
-            }
-
-            var undefinedFilter = definition.FilterGroup.Imports
-                .Except(exports).ToArray();
-            if (undefinedFilter.Any())
-            {
-                var variables = string.Join(",", undefinedFilter.Select(x => x.Name));
-                throw new InvalidOperationException($"Undefined variables in rule filter. Variables={variables}");
-            }
-
-            var undefinedRhs = definition.RightHandSide.Imports
-                .Except(exports).ToArray();
-            if (undefinedRhs.Any())
-            {
-                var variables = string.Join(",", undefinedRhs.Select(x => x.Name));
-                throw new InvalidOperationException($"Undefined variables in rule actions. Variables={variables}");
-            }
-
-            var lhsDependencyRefs = definition.LeftHandSide.Imports
-                .Intersect(definition.DependencyGroup.Exports).ToArray();
-            if (lhsDependencyRefs.Any())
-            {
-                var variables = string.Join(",", lhsDependencyRefs.Select(x => x.Name));
-                throw new InvalidOperationException($"Rule match conditions cannot reference injected dependencies. Variables={variables}");
-            }
         }
     }
 }

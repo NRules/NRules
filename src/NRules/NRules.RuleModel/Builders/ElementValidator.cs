@@ -25,6 +25,44 @@ namespace NRules.RuleModel.Builders
             }
         }
 
+        public static void ValidateRuleDefinition(RuleDefinition definition)
+        {
+            var exports = definition.LeftHandSide.Exports
+                .Concat(definition.DependencyGroup.Exports).ToArray();
+
+            var undefinedLhs = definition.LeftHandSide.Imports
+                .Except(exports).ToArray();
+            if (undefinedLhs.Any())
+            {
+                var variables = string.Join(",", undefinedLhs.Select(x => x.Name));
+                throw new InvalidOperationException($"Undefined variables in rule match conditions. Variables={variables}");
+            }
+
+            var undefinedFilter = definition.FilterGroup.Imports
+                .Except(exports).ToArray();
+            if (undefinedFilter.Any())
+            {
+                var variables = string.Join(",", undefinedFilter.Select(x => x.Name));
+                throw new InvalidOperationException($"Undefined variables in rule filter. Variables={variables}");
+            }
+
+            var undefinedRhs = definition.RightHandSide.Imports
+                .Except(exports).ToArray();
+            if (undefinedRhs.Any())
+            {
+                var variables = string.Join(",", undefinedRhs.Select(x => x.Name));
+                throw new InvalidOperationException($"Undefined variables in rule actions. Variables={variables}");
+            }
+
+            var lhsDependencyRefs = definition.LeftHandSide.Imports
+                .Intersect(definition.DependencyGroup.Exports).ToArray();
+            if (lhsDependencyRefs.Any())
+            {
+                var variables = string.Join(",", lhsDependencyRefs.Select(x => x.Name));
+                throw new InvalidOperationException($"Rule match conditions cannot reference injected dependencies. Variables={variables}");
+            }
+        }
+
         public static void ValidateCollectAggregate(AggregateElement element)
         {
             var sourceType = element.Source.ValueType;

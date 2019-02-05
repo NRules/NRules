@@ -34,7 +34,7 @@ namespace NRules.RuleModel.Builders
             if (lhsContext.IsModified || rhsContext.IsModified)
             {
                 var transformedRule = new RuleDefinition(rule.Name, rule.Description, rule.Priority, 
-                    rule.Repeatability, rule.Tags, rule.Properties, rule.DependencyGroup, rule.FilterGroup, lhs, rhs);
+                    rule.Repeatability, rule.Tags, rule.Properties, rule.DependencyGroup, lhs, rule.FilterGroup, rhs);
                 return transformedRule;
             }
             return rule;

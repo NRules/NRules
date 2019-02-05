@@ -10,7 +10,10 @@ namespace NRules.RuleModel.Builders
     {
         private readonly List<FilterElement> _filters = new List<FilterElement>();
 
-        internal FilterGroupBuilder()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilterGroupBuilder"/>.
+        /// </summary>
+        public FilterGroupBuilder()
         {
         }
 
