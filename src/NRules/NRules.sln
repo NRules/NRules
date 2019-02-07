@@ -15,6 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Tests", "Tests\NRule
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.IntegrationTests", "Tests\NRules.IntegrationTests\NRules.IntegrationTests.csproj", "{2C323E3F-4A00-46C0-919F-90CCB4F601D9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44D66088-D32A-4CB1-87A6-9F86E9D339C5}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +53,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{44552136-3A20-4F8C-999A-835048FF6101} = {E24069C8-9A7F-45CA-9B26-39FAB35F9225}
 		{2C323E3F-4A00-46C0-919F-90CCB4F601D9} = {E24069C8-9A7F-45CA-9B26-39FAB35F9225}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C8C6058-3AB9-48B7-9582-45A0AB17B117}
 	EndGlobalSection
 EndGlobal

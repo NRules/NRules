@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
+using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Expressions
@@ -93,6 +94,30 @@ namespace NRules.Fluent.Expressions
                 var keySelectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, keySelector);
                 var elementSelectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, elementSelector);
                 aggregateBuilder.GroupBy(keySelectorExpression, elementSelectorExpression);
+                return aggregatePatternBuilder;
+            };
+        }
+
+        public void OrderBy<TSource, TKey>(Expression<Func<TSource, TKey>> keySelector)
+        {
+            OrderBy(keySelector, SortDirection.Ascending);
+        }
+
+        public void OrderByDescending<TSource, TKey>(Expression<Func<TSource, TKey>> keySelector)
+        {
+            OrderBy(keySelector, SortDirection.Descending);
+        }
+
+        private void OrderBy<TSource, TKey>(Expression<Func<TSource, TKey>> keySelector, SortDirection sortDirection)
+        {
+            var previousBuildAction = _buildAction;
+            _buildAction = (b, n) =>
+            {
+                var aggregatePatternBuilder = b.Pattern(typeof(IEnumerable<TSource>), n);
+                var aggregateBuilder = aggregatePatternBuilder.Aggregate();
+                var sourceBuilder = previousBuildAction(aggregateBuilder, null);
+                var keySelectorExpression = sourceBuilder.DslPatternExpression(_groupBuilder.Declarations, keySelector);
+                aggregateBuilder.Sort(keySelectorExpression, sortDirection);
                 return aggregatePatternBuilder;
             };
         }

@@ -17,7 +17,7 @@ namespace NRules.RuleModel.Builders
         private Type _customFactoryType;
         private PatternBuilder _sourceBuilder;
 
-        internal AggregateBuilder(Type resultType, SymbolTable scope) 
+        internal AggregateBuilder(Type resultType, SymbolTable scope)
             : base(scope.New("Aggregate"))
         {
             _resultType = resultType;
@@ -43,7 +43,7 @@ namespace NRules.RuleModel.Builders
             }
             _customFactoryType = customFactoryType;
         }
-        
+
         /// <summary>
         /// Configure a collection aggregator.
         /// </summary>
@@ -82,6 +82,18 @@ namespace NRules.RuleModel.Builders
         {
             _name = AggregateElement.FlattenName;
             _expressions["Selector"] = selector;
+        }
+
+        /// <summary>
+        /// Configure sorted aggregator.
+        /// </summary>
+        /// <param name="keySelector">Key selection expression.</param>
+        /// <param name="sortDirection">Order to sort the aggregation in.</param>
+        public void Sort(LambdaExpression keySelector, SortDirection sortDirection)
+        {
+            _name = AggregateElement.SortName;
+            var expressionName = sortDirection == SortDirection.Ascending ? "KeySelectorAscending" : "KeySelectorDescending";
+            _expressions[expressionName] = keySelector;
         }
 
         /// <summary>
@@ -150,6 +162,9 @@ namespace NRules.RuleModel.Builders
                     break;
                 case AggregateElement.FlattenName:
                     ValidateFlatten();
+                    break;
+                case AggregateElement.SortName:
+                    ValidateSort();
                     break;
             }
         }
@@ -244,6 +259,37 @@ namespace NRules.RuleModel.Builders
                 throw new ArgumentException(
                     "Flattening selector must produce a collection of values that are assignable to the aggregation result. " +
                     $"Selector={selector}, ResultType={_resultType}, SelectorReturnType={selector.ReturnType}");
+            }
+        }
+
+        private void ValidateSort()
+        {
+            _expressions.TryGetValue("KeySelectorAscending", out var keySelectorAscending);
+            _expressions.TryGetValue("KeySelectorDescending", out var keySelectorDescending);
+
+            if (keySelectorAscending != null && keySelectorDescending != null)
+            {
+                throw new ArgumentException(
+                    $"Must have a single key selector for sorting.");
+            }
+
+            var keySelector = keySelectorAscending ?? keySelectorDescending;
+            if (keySelector == null)
+            {
+                throw new ArgumentException(
+                    $"Must have a key selector for sorting.");
+            }
+
+            if (keySelector.Parameters.Count == 0)
+            {
+                throw new ArgumentException(
+                    $"Sort key selector must have at least one parameter. KeySelector={keySelector}");
+            }
+            if (keySelector.Parameters[0].Type != _sourceBuilder.Declaration.Type)
+            {
+                throw new ArgumentException(
+                    "Sort key selector must have a parameter type that matches the aggregate source. " +
+                    $"KeySelector={keySelector}, ExpectedType={_sourceBuilder.Declaration.Type}, ActualType={keySelector.Parameters[0].Type}");
             }
         }
 
