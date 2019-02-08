@@ -8,16 +8,24 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class BindingBuilder : RuleElementBuilder, IBuilder<BindingElement>
     {
-        private readonly Type _valueType;
+        private Type _resultType;
         private LambdaExpression _expression;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BindingBuilder"/>.
         /// </summary>
-        /// <param name="valueType">Type of the binding expression result.</param>
-        public BindingBuilder(Type valueType)
+        public BindingBuilder()
         {
-            _valueType = valueType;
+        }
+
+        /// <summary>
+        /// Sets type of the result produced by the binding expression.
+        /// If not provided, this is set to the return type of the binding expression.
+        /// </summary>
+        /// <param name="resultType">Type of the result.</param>
+        public void ResultType(Type resultType)
+        {
+            _resultType = resultType;
         }
 
         /// <summary>
@@ -31,7 +39,8 @@ namespace NRules.RuleModel.Builders
 
         BindingElement IBuilder<BindingElement>.Build()
         {
-            var element = Element.Binding(_valueType, _expression);
+            var resultType = _resultType ?? _expression?.ReturnType;
+            var element = Element.Binding(resultType, _expression);
             return element;
         }
     }

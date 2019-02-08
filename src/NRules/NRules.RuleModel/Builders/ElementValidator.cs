@@ -63,6 +63,25 @@ namespace NRules.RuleModel.Builders
             }
         }
 
+        public static void ValidateAggregate(AggregateElement element)
+        {
+            switch (element.Name)
+            {
+                case AggregateElement.CollectName:
+                    ValidateCollectAggregate(element);
+                    break;
+                case AggregateElement.GroupByName:
+                    ValidateGroupByAggregate(element);
+                    break;
+                case AggregateElement.ProjectName:
+                    ValidateProjectAggregate(element);
+                    break;
+                case AggregateElement.FlattenName:
+                    ValidateFlattenAggregate(element);
+                    break;
+            }
+        }
+
         public static void ValidateCollectAggregate(AggregateElement element)
         {
             var sourceType = element.Source.ValueType;
@@ -160,6 +179,16 @@ namespace NRules.RuleModel.Builders
                 throw new ArgumentException(
                     "Flattening selector must produce a collection of values that are assignable to the aggregation result. " +
                     $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}");
+            }
+        }
+
+        public static void ValidateBinding(BindingElement element)
+        {
+            var resultType = element.ResultType;
+            var expressionReturnType = element.Expression.ReturnType;
+            if (!resultType.GetTypeInfo().IsAssignableFrom(expressionReturnType.GetTypeInfo()))
+            {
+                throw new ArgumentException($"Binding expression not assignable to result type. ResultType={resultType}, ExpressionResult={expressionReturnType}");
             }
         }
     }

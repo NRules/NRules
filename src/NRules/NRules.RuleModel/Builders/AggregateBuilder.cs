@@ -10,16 +10,23 @@ namespace NRules.RuleModel.Builders
     public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
     {
         private string _name;
+        private Type _resultType;
         private readonly Dictionary<string, LambdaExpression> _expressions = new Dictionary<string, LambdaExpression>();
-        private readonly Type _resultType;
         private Type _customFactoryType;
         private IBuilder<PatternElement> _sourceBuilder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateBuilder"/>.
         /// </summary>
-        /// <param name="resultType">Type of the aggregation result.</param>
-        public AggregateBuilder(Type resultType) 
+        public AggregateBuilder() 
+        {
+        }
+
+        /// <summary>
+        /// Sets type of the result produced by the aggregation.
+        /// </summary>
+        /// <param name="resultType">Type of the result.</param>
+        public void ResultType(Type resultType)
         {
             _resultType = resultType;
         }
@@ -128,7 +135,32 @@ namespace NRules.RuleModel.Builders
         AggregateElement IBuilder<AggregateElement>.Build()
         {
             PatternElement sourceElement = _sourceBuilder?.Build();
-            var aggregateElement = Element.Aggregate(_resultType, _name, _expressions, sourceElement, _customFactoryType);
+
+            AggregateElement aggregateElement;
+            if (string.Equals(_name, AggregateElement.CollectName))
+            {
+                aggregateElement = Element.Collect(_resultType, sourceElement);
+            }
+            else if (string.Equals(_name, AggregateElement.GroupByName))
+            {
+                var keySelector = _expressions["KeySelector"];
+                var elementSelector = _expressions["ElementSelector"];
+                aggregateElement = Element.GroupBy(_resultType, keySelector, elementSelector, sourceElement);
+            }
+            else if (string.Equals(_name, AggregateElement.ProjectName))
+            {
+                var selector = _expressions["Selector"];
+                aggregateElement = Element.Project(_resultType, selector, sourceElement);
+            }
+            else if (string.Equals(_name, AggregateElement.FlattenName))
+            {
+                var selector = _expressions["Selector"];
+                aggregateElement = Element.Flatten(_resultType, selector, sourceElement);
+            }
+            else
+            {
+                aggregateElement = Element.Aggregate(_resultType, _name, _expressions, sourceElement, _customFactoryType);
+            }
             return aggregateElement;
         }
 

@@ -375,17 +375,29 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Creates an element that represents results of an expression evaluation.
         /// </summary>
-        /// <param name="valueType">Type of the expression result.</param>
+        /// <param name="resultType">Type of the expression result.</param>
         /// <param name="expression">Binding expression.</param>
         /// <returns>Created element.</returns>
-        public static BindingElement Binding(Type valueType, LambdaExpression expression)
+        public static BindingElement Binding(Type resultType, LambdaExpression expression)
         {
-            if (valueType == null)
-                throw new ArgumentNullException(nameof(valueType), "Binding value type not provided");
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression), "Binding expression not provided");
+            if (resultType == null)
+                throw new ArgumentNullException(nameof(resultType), "Binding result type not provided");
 
-            var element = new BindingElement(valueType, expression);
+            var element = new BindingElement(resultType, expression);
+            ElementValidator.ValidateBinding(element);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates an element that represents results of an expression evaluation.
+        /// </summary>
+        /// <param name="expression">Binding expression.</param>
+        /// <returns>Created element.</returns>
+        public static BindingElement Binding(LambdaExpression expression)
+        {
+            var element = Binding(expression.ReturnType, expression);
             return element;
         }
 
@@ -424,22 +436,9 @@ namespace NRules.RuleModel.Builders
 
             var expressionElements = expressions.Select(x => ToNamedExpression(x.Key, x.Value));
             var expressionMap = new ExpressionMap(expressionElements);
+
             var element = new AggregateElement(resultType, name, expressionMap, source, customFactoryType);
-            switch (name)
-            {
-                case AggregateElement.CollectName:
-                    ElementValidator.ValidateCollectAggregate(element);
-                    break;
-                case AggregateElement.GroupByName:
-                    ElementValidator.ValidateGroupByAggregate(element);
-                    break;
-                case AggregateElement.ProjectName:
-                    ElementValidator.ValidateProjectAggregate(element);
-                    break;
-                case AggregateElement.FlattenName:
-                    ElementValidator.ValidateFlattenAggregate(element);
-                    break;
-            }
+            ElementValidator.ValidateAggregate(element);
             return element;
         }
 
@@ -450,8 +449,24 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static AggregateElement Collect(PatternElement source)
         {
-            var enumerableType = typeof(IEnumerable<>);
-            var resultType = enumerableType.MakeGenericType(source.ValueType);
+            var element = Collect(null, source);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates an element that aggregates matching facts into a collection.
+        /// </summary>
+        /// <param name="resultType">Type of the aggregate result.</param>
+        /// <param name="source">Pattern that matches facts for aggregation.</param>
+        /// <returns>Created element.</returns>
+        public static AggregateElement Collect(Type resultType, PatternElement source)
+        {
+            if (resultType == null)
+            {
+                var enumerableType = typeof(IEnumerable<>);
+                resultType = enumerableType.MakeGenericType(source.ValueType);
+            }
+
             var expressions = new Dictionary<string, LambdaExpression>();
             var element = Aggregate(resultType, AggregateElement.CollectName, expressions, source);
             return element;
@@ -466,8 +481,31 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static AggregateElement GroupBy(LambdaExpression keySelector, LambdaExpression elementSelector, PatternElement source)
         {
-            var groupingType = typeof(IGrouping<,>);
-            var resultType = groupingType.MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
+            var element = GroupBy(null, keySelector, elementSelector, source);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates an element that aggregates matching facts into groups.
+        /// </summary>
+        /// <param name="resultType">Type of the aggregate result.</param>
+        /// <param name="keySelector">Expression that extracts grouping keys from source element.</param>
+        /// <param name="elementSelector">Expression that extracts elements to put into resulting groups.</param>
+        /// <param name="source">Pattern that matches facts for aggregation.</param>
+        /// <returns>Created element.</returns>
+        public static AggregateElement GroupBy(Type resultType, LambdaExpression keySelector, LambdaExpression elementSelector, PatternElement source)
+        {
+            if (keySelector == null)
+                throw new ArgumentNullException(nameof(keySelector), "GroupBy key selector not provided");
+            if (elementSelector == null)
+                throw new ArgumentNullException(nameof(elementSelector), "GroupBy element selector not provided");
+
+            if (resultType == null)
+            {
+                var groupingType = typeof(IGrouping<,>);
+                resultType = groupingType.MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
+            }
+
             var expressions = new Dictionary<string, LambdaExpression>
             {
                 {"KeySelector", keySelector},
@@ -485,7 +523,27 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static AggregateElement Project(LambdaExpression selector, PatternElement source)
         {
-            var resultType = selector.ReturnType;
+            var element = Project(null, selector, source);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates an element that projects matching facts into different elements.
+        /// </summary>
+        /// <param name="resultType">Type of the aggregate result.</param>
+        /// <param name="selector">Expression that translates a matching element into a different element.</param>
+        /// <param name="source">Pattern that matches facts for aggregation.</param>
+        /// <returns>Created element.</returns>
+        public static AggregateElement Project(Type resultType, LambdaExpression selector, PatternElement source)
+        {
+            if (selector == null)
+                throw new ArgumentNullException(nameof(selector), "Projection selector not provided");
+
+            if (resultType == null)
+            {
+                resultType = selector.ReturnType;
+            }
+
             var expressions = new Dictionary<string, LambdaExpression>
             {
                 {"Selector", selector}
@@ -497,13 +555,15 @@ namespace NRules.RuleModel.Builders
         /// <summary>
         /// Creates an element that flattens collections of elements from matching facts into a single set of facts.
         /// </summary>
+        /// <param name="resultType">Type of the aggregate result.</param>
         /// <param name="selector">Expression that selects a collection of elements from a matching fact.</param>
         /// <param name="source">Pattern that matches facts for aggregation.</param>
         /// <returns>Created element.</returns>
-        public static AggregateElement Flatten(LambdaExpression selector, PatternElement source)
+        public static AggregateElement Flatten(Type resultType, LambdaExpression selector, PatternElement source)
         {
-            var enumerableType = selector.ReturnType;
-            var resultType = enumerableType.GenericTypeArguments[0];
+            if (selector == null)
+                throw new ArgumentNullException(nameof(selector), "Flattening selector not provided");
+
             var expressions = new Dictionary<string, LambdaExpression>
             {
                 {"Selector", selector}

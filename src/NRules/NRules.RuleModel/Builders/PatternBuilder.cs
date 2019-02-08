@@ -65,6 +65,7 @@ namespace NRules.RuleModel.Builders
         public void Aggregate(AggregateBuilder builder)
         {
             AssertSingleSource();
+            builder.ResultType(Declaration.Type);
             _sourceBuilder = builder;
         }
 
@@ -75,7 +76,8 @@ namespace NRules.RuleModel.Builders
         public AggregateBuilder Aggregate()
         {
             AssertSingleSource();
-            var builder = new AggregateBuilder(Declaration.Type);
+            var builder = new AggregateBuilder();
+            builder.ResultType(Declaration.Type);
             _sourceBuilder = builder;
             return builder;
         }
@@ -98,6 +100,7 @@ namespace NRules.RuleModel.Builders
         public void Binding(BindingBuilder builder)
         {
             AssertSingleSource();
+            builder.ResultType(Declaration.Type);
             _sourceBuilder = builder;
         }
 
@@ -107,7 +110,8 @@ namespace NRules.RuleModel.Builders
         /// <returns>Binding builder.</returns>
         public BindingBuilder Binding()
         {
-            var builder = new BindingBuilder(Declaration.Type);
+            var builder = new BindingBuilder();
+            builder.ResultType(Declaration.Type);
             _sourceBuilder = builder;
             return builder;
         }

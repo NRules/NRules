@@ -17,7 +17,7 @@ namespace NRules.Aggregators
         public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
         {
             var sourceType = element.Source.ValueType;
-            //Flatten selector is X -> IEnumerable<Y>
+            //Flatten selector is Source -> IEnumerable<Result>
             var resultType = element.ResultType;
             Type aggregatorType = typeof(FlatteningAggregator<,>).MakeGenericType(sourceType, resultType);
 
