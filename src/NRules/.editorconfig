@@ -1,7 +1,0 @@
-# Top-most EditorConfig file
-root = true
-
-# Tab indentation
-[*.cs]
-indent_style = space
-indent_size = 4
