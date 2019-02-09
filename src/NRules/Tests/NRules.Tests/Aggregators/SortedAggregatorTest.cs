@@ -86,11 +86,11 @@ namespace NRules.Tests.Aggregators
             var target = CreateTarget();
 
             // Act
-            var facts = AsFact(new TestFact(3), new TestFact(1));
+            var facts = AsFact(new TestFact(1), new TestFact(1));
             var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             // Assert
-            AssertAggregationResult(result, AggregationAction.Added, 1, 3);
+            AssertAggregationResult(result, AggregationAction.Added, 1, 1);
         }
 
         [Fact]

@@ -8,7 +8,7 @@ using NRules.RuleModel;
 namespace NRules.Aggregators
 {
     /// <summary>
-    /// Aggregator factory for projection aggregator.
+    /// Aggregator factory for sorted aggregator.
     /// </summary>
     internal class SortedAggregatorFactory : IAggregatorFactory
     {

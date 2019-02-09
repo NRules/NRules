@@ -31,6 +31,7 @@ namespace NRules.Aggregators
         public void RemoveFact(IFact fact)
         {
             var key = _keyMap[fact];
+            _keyMap.Remove(fact);
 
             var list = _items[key];
             list.Remove(fact);

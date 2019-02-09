@@ -7,13 +7,13 @@ namespace NRules.Aggregators
     /// <summary>
     /// Aggregate that adds matching facts into a collection sorted by a given key selector and sort direction.
     /// </summary>
-    /// <typeparam name="TElement">Type of elements to collect.</typeparam>
+    /// <typeparam name="TSource">Type of source element.</typeparam>
     /// <typeparam name="TKey">Type of key used in the key selector for sorting.</typeparam>
-    internal class SortedAggregator<TElement, TKey> : IAggregator
+    internal class SortedAggregator<TSource, TKey> : IAggregator
     {
         private readonly SortDirection _sortDirection;
         private readonly IAggregateExpression _keySelector;
-        private readonly SortedFactCollection<TElement, TKey> _sortedFactCollection;
+        private readonly SortedFactCollection<TSource, TKey> _sortedFactCollection;
         private bool _created = false;
 
         public SortedAggregator(IAggregateExpression keySelector, SortDirection sortDirection)
@@ -23,7 +23,7 @@ namespace NRules.Aggregators
 
             var defaultComparer = (IComparer<TKey>)Comparer<TKey>.Default;
             var comparer = sortDirection == SortDirection.Ascending ? defaultComparer : new ReverseComparer<TKey>(defaultComparer);
-            _sortedFactCollection = new SortedFactCollection<TElement, TKey>(comparer);
+            _sortedFactCollection = new SortedFactCollection<TSource, TKey>(comparer);
         }
 
         public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
