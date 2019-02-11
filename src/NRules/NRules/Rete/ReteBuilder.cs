@@ -67,7 +67,7 @@ namespace NRules.Rete
                 if (context.AlphaSource != null)
                 {
                     BuildJoinNode(context);
-                } 
+                }
                 Visit(context, childElement);
             }
         }
@@ -177,7 +177,7 @@ namespace NRules.Rete
 
             var node = context.BetaSource
                 .Sinks.OfType<JoinNode>()
-                .FirstOrDefault(x => 
+                .FirstOrDefault(x =>
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
                     ConditionComparer.AreEqual(x.Conditions, betaConditions));
@@ -235,7 +235,7 @@ namespace NRules.Rete
             if (node == null)
             {
                 var aggregatorFactory = BuildAggregatorFactory(context, element);
-                node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name, 
+                node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name,
                     element.ExpressionMap, aggregatorFactory, context.HasSubnet);
             }
             BuildBetaMemoryNode(context, node);
@@ -324,6 +324,9 @@ namespace NRules.Rete
                     break;
                 case AggregateElement.FlattenName:
                     factory = new FlatteningAggregatorFactory();
+                    break;
+                case AggregateElement.SortName:
+                    factory = new SortedAggregatorFactory();
                     break;
                 default:
                     factory = GetCustomFactory(element);

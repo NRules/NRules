@@ -12,6 +12,7 @@ namespace NRules.RuleModel
         public const string GroupByName = "GroupBy";
         public const string ProjectName = "Project";
         public const string FlattenName = "Flatten";
+        public const string SortName = "Sort";
 
         /// <summary>
         /// Fact source of the aggregate.
