@@ -135,32 +135,7 @@ namespace NRules.RuleModel.Builders
         AggregateElement IBuilder<AggregateElement>.Build()
         {
             PatternElement sourceElement = _sourceBuilder?.Build();
-
-            AggregateElement aggregateElement;
-            if (string.Equals(_name, AggregateElement.CollectName))
-            {
-                aggregateElement = Element.Collect(_resultType, sourceElement);
-            }
-            else if (string.Equals(_name, AggregateElement.GroupByName))
-            {
-                var keySelector = _expressions["KeySelector"];
-                var elementSelector = _expressions["ElementSelector"];
-                aggregateElement = Element.GroupBy(_resultType, keySelector, elementSelector, sourceElement);
-            }
-            else if (string.Equals(_name, AggregateElement.ProjectName))
-            {
-                var selector = _expressions["Selector"];
-                aggregateElement = Element.Project(_resultType, selector, sourceElement);
-            }
-            else if (string.Equals(_name, AggregateElement.FlattenName))
-            {
-                var selector = _expressions["Selector"];
-                aggregateElement = Element.Flatten(_resultType, selector, sourceElement);
-            }
-            else
-            {
-                aggregateElement = Element.Aggregate(_resultType, _name, _expressions, sourceElement, _customFactoryType);
-            }
+            AggregateElement aggregateElement = Element.Aggregate(_resultType, _name, _expressions, sourceElement, _customFactoryType);
             return aggregateElement;
         }
 
