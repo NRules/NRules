@@ -9,7 +9,7 @@ namespace NRules.Rete
         bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact);
     }
 
-    internal class BetaCondition : IBetaCondition, IEquatable<BetaCondition>
+    internal sealed class BetaCondition : IBetaCondition, IEquatable<BetaCondition>
     {
         private readonly LambdaExpression _expression;
         private readonly IndexMap _factMap;

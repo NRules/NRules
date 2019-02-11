@@ -26,7 +26,7 @@ namespace NRules.Rete
 
         public IEnumerable<ITerminalNode> AddRule(IRuleDefinition rule)
         {
-            var ruleDeclarations = rule.LeftHandSide.Declarations.ToList();
+            var ruleDeclarations = rule.LeftHandSide.Exports.ToList();
             var terminals = new List<ITerminalNode>();
             rule.LeftHandSide.Match(
                 and =>
@@ -108,14 +108,14 @@ namespace NRules.Rete
                 context.RegisterDeclaration(element.Declaration);
 
                 BuildTypeNode(context, element.ValueType);
-                var alphaConditions = element.Conditions.Where(x => x.References.Count() == 1).ToList();
+                var alphaConditions = element.Conditions.Where(x => x.Imports.Count() == 1).ToList();
                 foreach (var alphaCondition in alphaConditions)
                 {
                     BuildSelectionNode(context, alphaCondition);
                 }
                 BuildAlphaMemoryNode(context);
 
-                var betaConditions = element.Conditions.Where(x => x.References.Count() > 1).ToList();
+                var betaConditions = element.Conditions.Where(x => x.Imports.Count() > 1).ToList();
                 if (betaConditions.Count > 0)
                 {
                     BuildJoinNode(context, betaConditions);

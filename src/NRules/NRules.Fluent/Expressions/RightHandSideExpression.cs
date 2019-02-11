@@ -10,17 +10,18 @@ namespace NRules.Fluent.Expressions
     internal class RightHandSideExpression : IRightHandSideExpression
     {
         private int _linkedCount = 0;
-        private readonly RuleBuilder _builder;
+        private readonly ActionGroupBuilder _builder;
+        private readonly SymbolStack _symbolStack;
 
-        public RightHandSideExpression(RuleBuilder builder)
+        public RightHandSideExpression(ActionGroupBuilder builder, SymbolStack symbolStack)
         {
             _builder = builder;
+            _symbolStack = symbolStack;
         }
 
         public IRightHandSideExpression Action(Expression<Action<IContext>> action, ActionTrigger actionTrigger)
         {
-            var rightHandSide = _builder.RightHandSide();
-            rightHandSide.DslAction(rightHandSide.Declarations, action, actionTrigger);
+            _builder.DslAction(_symbolStack.Scope.Declarations, action, actionTrigger);
             return this;
         }
 

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace NRules.RuleModel
 {
@@ -34,14 +33,15 @@ namespace NRules.RuleModel
         /// </summary>
         public ExpressionMap ExpressionMap { get; }
 
-        internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, string name, ExpressionMap expressionMap, PatternElement source,
-            Type customFactoryType)
-            : base(declarations, resultType)
+        internal AggregateElement(Type resultType, string name, ExpressionMap expressionMap, PatternElement source, Type customFactoryType)
+            : base(resultType)
         {
             Name = name;
             ExpressionMap = expressionMap;
             Source = source;
             CustomFactoryType = customFactoryType;
+
+            AddImports(source);
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

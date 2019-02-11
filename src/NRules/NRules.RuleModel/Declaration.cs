@@ -4,27 +4,21 @@ using System.Diagnostics;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Pattern declaration.
+    /// Rule element declaration.
     /// </summary>
-    [DebuggerDisplay("{FullName}: {Type}")]
-    public class Declaration : IEquatable<Declaration>
+    [DebuggerDisplay("{Name}: {Type}")]
+    public sealed class Declaration : IEquatable<Declaration>
     {
-        internal Declaration(Type type, string name, string scopeName)
+        internal Declaration(Type type, string name)
         {
             Type = type;
             Name = name;
-            FullName = scopeName == null ? Name : scopeName + SymbolTable.ScopeSeparator + Name;
         }
 
         /// <summary>
         /// Symbol name.
         /// </summary>
         public string Name { get; }
-
-        /// <summary>
-        /// Symbol name qualified with full scope.
-        /// </summary>
-        public string FullName { get; }
 
         /// <summary>
         /// Symbol type.
@@ -40,7 +34,7 @@ namespace NRules.RuleModel
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(FullName, other.FullName);
+            return string.Equals(Name, other.Name);
         }
 
         public override bool Equals(object obj)
@@ -53,7 +47,7 @@ namespace NRules.RuleModel
 
         public override int GetHashCode()
         {
-            return FullName.GetHashCode();
+            return Name.GetHashCode();
         }
     }
 }

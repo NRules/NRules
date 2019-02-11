@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel
@@ -38,8 +38,13 @@ namespace NRules.RuleModel
     [DebuggerDisplay("{Expression.ToString()}")]
     public class ActionElement : ExpressionElement
     {
-        internal ActionElement(IEnumerable<Declaration> declarations, IEnumerable<Declaration> references, LambdaExpression expression, ActionTrigger actionTrigger)
-            : base(declarations, references, expression)
+        /// <summary>
+        /// Default value for action trigger.
+        /// </summary>
+        public const ActionTrigger DefaultTrigger = ActionTrigger.Activated | ActionTrigger.Reactivated;
+        
+        internal ActionElement(LambdaExpression expression, ActionTrigger actionTrigger)
+            : base(expression, expression.Parameters.Skip(1))
         {
             ActionTrigger = actionTrigger;
         }

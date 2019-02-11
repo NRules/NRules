@@ -1,25 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel.Builders
 {
     /// <summary>
-    /// Builder to compose a binding element that associates a pattern with a calculated expression.
+    /// Builder to compose a binding expression element.
     /// </summary>
-    public class BindingBuilder : PatternSourceElementBuilder, IBuilder<BindingElement>
+    public class BindingBuilder : RuleElementBuilder, IBuilder<BindingElement>
     {
-        private readonly Type _valueType;
+        private Type _resultType;
         private LambdaExpression _expression;
 
-        internal BindingBuilder(SymbolTable scope, Type valueType) : base(scope)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BindingBuilder"/>.
+        /// </summary>
+        public BindingBuilder()
         {
-            _valueType = valueType;
         }
 
         /// <summary>
-        /// Adds a calculated expression to the binding element.
+        /// Sets type of the result produced by the binding expression.
+        /// If not provided, this is set to the return type of the binding expression.
+        /// </summary>
+        /// <param name="resultType">Type of the result.</param>
+        public void ResultType(Type resultType)
+        {
+            _resultType = resultType;
+        }
+
+        /// <summary>
+        /// Sets a calculated expression on the binding element.
         /// </summary>
         /// <param name="expression">Expression to bind.</param>
         public void BindingExpression(LambdaExpression expression)
@@ -29,11 +39,8 @@ namespace NRules.RuleModel.Builders
 
         BindingElement IBuilder<BindingElement>.Build()
         {
-            if (_expression == null)
-                throw new ArgumentException($"BINDING element requires a binding expression.");
-
-            IEnumerable<Declaration> references = _expression.Parameters.Select(p => Scope.Lookup(p.Name, p.Type));
-            var element = new BindingElement(_valueType, Scope.VisibleDeclarations, references, _expression);
+            var resultType = _resultType ?? _expression?.ReturnType;
+            var element = Element.Binding(resultType, _expression);
             return element;
         }
     }

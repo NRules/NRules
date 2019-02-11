@@ -9,10 +9,11 @@ namespace NRules.RuleModel
     {
         private readonly List<ActionElement> _actions;
 
-        internal ActionGroupElement(IEnumerable<Declaration> declarations, IEnumerable<ActionElement> actions)
-            : base(declarations)
+        internal ActionGroupElement(IEnumerable<ActionElement> actions)
         {
             _actions = new List<ActionElement>(actions);
+
+            AddImports(_actions);
         }
 
         /// <summary>

@@ -146,7 +146,7 @@ $components = @{
         run = @{
             exe = @('net462\NRules.Benchmark.exe')
         }
-   };
+    };
     'Documentation' = @{
         name = 'Documentation'
         src_root = 'doc'

@@ -41,6 +41,17 @@ namespace NRules.RuleModel
             }
         }
 
+        /// <summary>
+        /// Retrieves expression by name.
+        /// </summary>
+        /// <param name="name">Expression name.</param>
+        /// <returns>Matching expression or <c>null</c>.</returns>
+        public NamedExpressionElement Find(string name)
+        {
+            _expressions.TryGetValue(name, out var result);
+            return result;
+        }
+
         public IEnumerator<NamedExpressionElement> GetEnumerator()
         {
             return _expressions.Values.GetEnumerator();

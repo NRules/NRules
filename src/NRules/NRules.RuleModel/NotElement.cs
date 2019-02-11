@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace NRules.RuleModel
 {
     /// <summary>
@@ -12,10 +10,11 @@ namespace NRules.RuleModel
         /// </summary>
         public RuleLeftElement Source { get; }
 
-        internal NotElement(IEnumerable<Declaration> declarations, RuleLeftElement source)
-            : base(declarations)
+        internal NotElement(RuleLeftElement source)
         {
             Source = source;
+
+            AddImports(source);
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

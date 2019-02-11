@@ -10,28 +10,39 @@ namespace NRules.RuleModel.Builders
     {
         private readonly List<DependencyElement> _dependencies = new List<DependencyElement>();
 
-        internal DependencyGroupBuilder(SymbolTable scope)
-            : base(scope)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependencyGroupBuilder"/>.
+        /// </summary>
+        public DependencyGroupBuilder()
         {
         }
 
         /// <summary>
-        /// Adds a dependency to the group.
+        /// Adds a dependency element to the group element.
+        /// </summary>
+        /// <param name="element">Element to add.</param>
+        public void Dependency(DependencyElement element)
+        {
+            _dependencies.Add(element);
+        }
+
+        /// <summary>
+        /// Adds a dependency to the group element.
         /// </summary>
         /// <param name="type">Dependency CLR type.</param>
         /// <param name="name">Dependency name.</param>
-        public void Dependency(Type type, string name)
+        /// <returns>Dependency declaration.</returns>
+        public Declaration Dependency(Type type, string name)
         {
-            Declaration declaration = Scope.Declare(type, name);
-            var dependency = new DependencyElement(declaration, Scope.VisibleDeclarations, type);
-            declaration.Target = dependency;
+            var dependency = Element.Dependency(type, DeclarationName(name));
             _dependencies.Add(dependency);
+            return dependency.Declaration;
         }
 
         DependencyGroupElement IBuilder<DependencyGroupElement>.Build()
         {
-            var actionGroup = new DependencyGroupElement(Scope.VisibleDeclarations, _dependencies);
-            return actionGroup;
+            var dependencyGroup = Element.DependencyGroup(_dependencies);
+            return dependencyGroup;
         }
     }
 }

@@ -18,14 +18,12 @@ namespace NRules.Fluent.Dsl
     {
         private readonly Lazy<IRuleDefinition> _definition;
         private readonly RuleBuilder _builder;
-        private readonly LeftHandSideExpression _lhsExpression;
-        private readonly RightHandSideExpression _rhsExpression;
+        private readonly SymbolStack _symbolStack;
 
         protected Rule()
         {
             _builder = new RuleBuilder();
-            _lhsExpression = new LeftHandSideExpression(_builder);
-            _rhsExpression = new RightHandSideExpression(_builder);
+            _symbolStack = new SymbolStack();
             _definition = new Lazy<IRuleDefinition>(BuildDefinition);
         }
 
@@ -55,7 +53,9 @@ namespace NRules.Fluent.Dsl
         /// <returns>Dependencies expression builder.</returns>
         protected IDependencyExpression Dependency()
         {
-            return new DependencyExpression(_builder);
+            var builder = _builder.Dependencies();
+            var expression = new DependencyExpression(builder, _symbolStack);
+            return expression;
         }
 
         /// <summary>
@@ -64,7 +64,9 @@ namespace NRules.Fluent.Dsl
         /// <returns>Filters expression builder.</returns>
         protected IFilterExpression Filter()
         {
-            return new FilterExpression(_builder);
+            var builder = _builder.Filters();
+            var expression = new FilterExpression(builder, _symbolStack);
+            return expression;
         }
 
         /// <summary>
@@ -73,7 +75,9 @@ namespace NRules.Fluent.Dsl
         /// <returns>Left hand side expression builder.</returns>
         protected ILeftHandSideExpression When()
         {
-            return _lhsExpression;
+            var builder = _builder.LeftHandSide();
+            var expression = new LeftHandSideExpression(builder, _symbolStack);
+            return expression;
         }
 
         /// <summary>
@@ -82,7 +86,9 @@ namespace NRules.Fluent.Dsl
         /// <returns>Right hand side expression builder.</returns>
         protected IRightHandSideExpression Then()
         {
-            return _rhsExpression;
+            var builder = _builder.RightHandSide();
+            var expression = new RightHandSideExpression(builder, _symbolStack);
+            return expression;
         }
 
         /// <summary>
@@ -97,11 +103,12 @@ namespace NRules.Fluent.Dsl
 
         private IRuleDefinition BuildDefinition()
         {
-            var metadata = new RuleMetadata(GetType());
+            var ruleType = GetType();
+            var metadata = new RuleMetadata(ruleType);
             _builder.Name(metadata.Name);
             _builder.Description(metadata.Description);
             _builder.Tags(metadata.Tags);
-            _builder.Property(RuleProperties.ClrType, GetType());
+            _builder.Property(RuleProperties.ClrType, ruleType);
 
             if (metadata.Priority.HasValue)
             {

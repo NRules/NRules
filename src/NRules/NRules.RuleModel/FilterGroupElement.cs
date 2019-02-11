@@ -9,10 +9,11 @@ namespace NRules.RuleModel
     {
         private readonly List<FilterElement> _filters;
 
-        internal FilterGroupElement(IEnumerable<Declaration> declarations, IEnumerable<FilterElement> filters)
-            : base(declarations)
+        internal FilterGroupElement(IEnumerable<FilterElement> filters)
         {
             _filters = new List<FilterElement>(filters);
+
+            AddImports(_filters);
         }
 
         /// <summary>

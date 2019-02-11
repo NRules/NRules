@@ -6,25 +6,37 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a forall element (universal quantifier).
     /// </summary>
-    public class ForAllBuilder : RuleLeftElementBuilder, IBuilder<ForAllElement>
+    public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
     {
-        private PatternBuilder _basePatternBuilder;
-        private readonly List<PatternBuilder> _patternBuilders = new List<PatternBuilder>();
+        private IBuilder<PatternElement> _sourceBuilder;
+        private readonly List<IBuilder<PatternElement>> _patternBuilders = new List<IBuilder<PatternElement>>();
 
-        internal ForAllBuilder(SymbolTable scope)
-            : base(scope.New("ForAll"))
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ForAllBuilder"/>.
+        /// </summary>
+        public ForAllBuilder()
         {
         }
 
         /// <summary>
-        /// Builder for the base pattern of this forall element.
+        /// Sets the base pattern of the forall element.
         /// </summary>
-        public PatternBuilder BasePatternBuilder => _basePatternBuilder;
+        /// <param name="element">Element to set as the base pattern.</param>
+        public void BasePattern(PatternElement element)
+        {
+            AssertSingleSource();
+            _sourceBuilder = BuilderAdapter.Create(element);
+        }
 
         /// <summary>
-        /// Pattern builders for this forall element.
+        /// Sets the base pattern builder of the forall element.
         /// </summary>
-        public IEnumerable<PatternBuilder> PatternBuilders => _patternBuilders;
+        /// <param name="builder">Element builder to set as the base pattern.</param>
+        public void BasePattern(PatternBuilder builder)
+        {
+            AssertSingleSource();
+            _sourceBuilder = builder;
+        }
 
         /// <summary>
         /// Creates a pattern builder that builds the base pattern of the forall element.
@@ -33,16 +45,32 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder BasePattern(Type type)
         {
-            if (_basePatternBuilder != null)
-            {
-                throw new InvalidOperationException("FORALL element can only have a single source");
-            }
-
-            Declaration declaration = Scope.Declare(type, null);
-            _basePatternBuilder = new PatternBuilder(Scope, declaration);
-            return _basePatternBuilder;
+            AssertSingleSource();
+            var declaration = new Declaration(type, DeclarationName(null));
+            var builder = new PatternBuilder(declaration);
+            _sourceBuilder = builder;
+            return builder;
         }
         
+        /// <summary>
+        /// Adds a pattern to the forall element.
+        /// </summary>
+        /// <param name="element">Element to add.</param>
+        public void Pattern(PatternElement element)
+        {
+            var builder = BuilderAdapter.Create(element);
+            _patternBuilders.Add(builder);
+        }
+
+        /// <summary>
+        /// Adds a pattern builder to the forall element.
+        /// </summary>
+        /// <param name="builder">Element builder to add.</param>
+        public void Pattern(PatternBuilder builder)
+        {
+            _patternBuilders.Add(builder);
+        }
+
         /// <summary>
         /// Creates a pattern builder that builds a pattern of the forall element.
         /// </summary>
@@ -50,37 +78,31 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type)
         {
-            Declaration declaration = Scope.Declare(type, null);
-            var patternBuilder = new PatternBuilder(Scope, declaration);
+            var declaration = new Declaration(type, DeclarationName(null));
+            var patternBuilder = new PatternBuilder(declaration);
             _patternBuilders.Add(patternBuilder);
             return patternBuilder;
         }
 
         ForAllElement IBuilder<ForAllElement>.Build()
         {
-            Validate();
-            IBuilder<PatternElement> basePatternBuilder = _basePatternBuilder;
-            PatternElement basePatternElement = basePatternBuilder.Build();
+            PatternElement basePatternElement = _sourceBuilder?.Build();
 
             var patternElements = new List<PatternElement>();
-            foreach (IBuilder<PatternElement> patternBuilder in _patternBuilders)
+            foreach (var patternBuilder in _patternBuilders)
             {
                 patternElements.Add(patternBuilder.Build());
             }
 
-            var forAllElement = new ForAllElement(Scope.VisibleDeclarations, basePatternElement, patternElements);
+            var forAllElement = Element.ForAll(basePatternElement, patternElements);
             return forAllElement;
         }
 
-        private void Validate()
+        private void AssertSingleSource()
         {
-            if (_basePatternBuilder == null)
+            if (_sourceBuilder != null)
             {
-                throw new InvalidOperationException("FORALL element base pattern is not provided");
-            }
-            if (_patternBuilders.Count < 1)
-            {
-                throw new InvalidOperationException("At least one additional FORALL pattern must be specified");
+                throw new InvalidOperationException("FORALL element can only have a single source");
             }
         }
     }

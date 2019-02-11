@@ -9,7 +9,7 @@ namespace NRules.Rete
         bool IsSatisfiedBy(IExecutionContext context, Fact fact);
     }
 
-    internal class AlphaCondition : IAlphaCondition, IEquatable<AlphaCondition>
+    internal sealed class AlphaCondition : IAlphaCondition, IEquatable<AlphaCondition>
     {
         private readonly LambdaExpression _expression;
         private readonly FastDelegate<Func<object, bool>> _compiledExpression;
