@@ -44,7 +44,7 @@ namespace NRules.Fluent.Expressions
 
                 var bindingBuilder = patternBuilder.Binding();
                 bindingBuilder.DslBindingExpression(_symbolStack.Scope.Declarations, source);
-                
+
                 _symbolStack.Scope.Add(patternBuilder.Declaration);
                 return patternBuilder;
             };
@@ -140,19 +140,10 @@ namespace NRules.Fluent.Expressions
             var previousBuildAction = _buildAction;
             _buildAction = name =>
             {
-                var patternBuilder = new PatternBuilder(typeof(IEnumerable<TSource>), name);
-
-                using (_symbolStack.Frame())
-                {
-                    var aggregateBuilder = patternBuilder.Aggregate();
-                    var sourceBuilder = previousBuildAction(null);
-                    var keySelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
-                    aggregateBuilder.Sort(keySelectorExpression, sortDirection);
-                    aggregateBuilder.Pattern(sourceBuilder);
-                }
-
-                _symbolStack.Scope.Add(patternBuilder.Declaration);
-                return patternBuilder;
+                var collectBuilder = (CollectPatternBuilder)previousBuildAction(null);
+                var keySelectorExpression = collectBuilder.SourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
+                collectBuilder.AggregateBuilder.Sort(keySelectorExpression, sortDirection);
+                return collectBuilder;
             };
         }
 
@@ -194,14 +185,12 @@ namespace NRules.Fluent.Expressions
             var previousBuildAction = _buildAction;
             _buildAction = name =>
             {
-                var patternBuilder = new PatternBuilder(typeof(IEnumerable<TSource>), name);
+                var patternBuilder = new CollectPatternBuilder(typeof(IEnumerable<TSource>), name);
 
                 using (_symbolStack.Frame())
                 {
-                    var aggregateBuilder = patternBuilder.Aggregate();
                     var sourceBuilder = previousBuildAction(null);
-                    aggregateBuilder.Collect();
-                    aggregateBuilder.Pattern(sourceBuilder);
+                    patternBuilder.Collect(sourceBuilder);
                 }
 
                 _symbolStack.Scope.Add(patternBuilder.Declaration);

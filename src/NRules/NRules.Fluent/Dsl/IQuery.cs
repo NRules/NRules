@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace NRules.Fluent.Dsl
 {
@@ -27,5 +28,13 @@ namespace NRules.Fluent.Dsl
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         IQueryBuilder Builder { get; }
+    }
+
+    /// <summary>
+    /// Intermediate query chain element used for Collect modifiers.
+    /// </summary>
+    /// <typeparam name="TSource">Type of the element the query operates on.</typeparam>
+    public interface ICollectQuery<out TSource> : IQuery<IEnumerable<TSource>>
+    {
     }
 }

@@ -49,7 +49,7 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType { TestProperty = 0 };
             var fact2 = new FactType { TestProperty = 10 };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             fact1.TestProperty = 5;
@@ -140,7 +140,7 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType { TestProperty = 2 };
             var fact2 = new FactType { TestProperty = 0 };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             fact2.TestProperty = 1;
@@ -205,6 +205,7 @@ namespace NRules.IntegrationTests
                 When()
                     .Query(() => collection, x => x
                         .Match<FactType>(f => f.TestProperty > 0)
+                        .Collect()
                         .OrderByDescending(f => f.TestProperty));
                 Then()
                     .Do(ctx => ctx.NoOp());

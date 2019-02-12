@@ -103,9 +103,10 @@ namespace NRules.IntegrationTests
                 When()
                     .Query(() => fact, x => x
                         .Match<FactType>(f => f.TestProperty > 0)
+                        .Collect()
                         .OrderBy(f => f.TestProperty)
                         .Where(f => f.Any())
-                        .Select(f => f.First())); 
+                        .Select(f => f.First()));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }
