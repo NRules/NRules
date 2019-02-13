@@ -34,7 +34,7 @@ namespace NRules.Fluent.Dsl
     /// Intermediate query chain element used for Collect modifiers.
     /// </summary>
     /// <typeparam name="TSource">Type of the element the query operates on.</typeparam>
-    public interface ICollectQuery<out TSource> : IQuery<IEnumerable<TSource>>
+    public interface ICollectQuery<out TSource> : IQuery<TSource>
     {
     }
 }

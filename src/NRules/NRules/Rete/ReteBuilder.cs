@@ -325,9 +325,6 @@ namespace NRules.Rete
                 case AggregateElement.FlattenName:
                     factory = new FlatteningAggregatorFactory();
                     break;
-                case AggregateElement.SortName:
-                    factory = new SortedAggregatorFactory();
-                    break;
                 default:
                     factory = GetCustomFactory(element);
                     break;
