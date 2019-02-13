@@ -79,9 +79,6 @@ namespace NRules.RuleModel.Builders
                 case AggregateElement.FlattenName:
                     ValidateFlattenAggregate(element);
                     break;
-                case AggregateElement.SortName:
-                    ValidateSortAggregate(element);
-                    break;
             }
         }
 
@@ -94,6 +91,31 @@ namespace NRules.RuleModel.Builders
             {
                 throw new ArgumentException(
                     $"Collect result must be a collection of source elements. ElementType={sourceType}, ResultType={resultType}");
+            }
+
+            var keySelectorAscending = element.ExpressionMap.Find("KeySelectorAscending")?.Expression;
+            var keySelectorDescending = element.ExpressionMap.Find("KeySelectorDescending")?.Expression;
+
+            if (keySelectorAscending != null && keySelectorDescending != null)
+            {
+                throw new ArgumentException(
+                    $"Must have a single key selector for sorting.");
+            }
+
+            var sortKeySelector = keySelectorAscending ?? keySelectorDescending;
+            if (sortKeySelector != null)
+            {
+                if (sortKeySelector.Parameters.Count == 0)
+                {
+                    throw new ArgumentException(
+                        $"Sort key selector must have at least one parameter. KeySelector={sortKeySelector}");
+                }
+                if (sortKeySelector.Parameters[0].Type != sourceType)
+                {
+                    throw new ArgumentException(
+                        "Sort key selector must have a parameter type that matches the aggregate source. " +
+                        $"KeySelector={sortKeySelector}, ExpectedType={sourceType}, ActualType={sortKeySelector.Parameters[0].Type}");
+                }
             }
         }
 
@@ -182,38 +204,6 @@ namespace NRules.RuleModel.Builders
                 throw new ArgumentException(
                     "Flattening selector must produce a collection of values that are assignable to the aggregation result. " +
                     $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}");
-            }
-        }
-
-        public static void ValidateSortAggregate(AggregateElement element)
-        {
-            var sourceType = element.Source.ValueType;
-            var keySelectorAscending = element.ExpressionMap.Find("KeySelectorAscending")?.Expression;
-            var keySelectorDescending = element.ExpressionMap.Find("KeySelectorDescending")?.Expression;
-
-            if (keySelectorAscending != null && keySelectorDescending != null)
-            {
-                throw new ArgumentException(
-                    $"Must have a single key selector for sorting.");
-            }
-
-            var keySelector = keySelectorAscending ?? keySelectorDescending;
-            if (keySelector == null)
-            {
-                throw new ArgumentException(
-                    $"Must have a key selector for sorting.");
-            }
-
-            if (keySelector.Parameters.Count == 0)
-            {
-                throw new ArgumentException(
-                    $"Sort key selector must have at least one parameter. KeySelector={keySelector}");
-            }
-            if (keySelector.Parameters[0].Type != sourceType)
-            {
-                throw new ArgumentException(
-                    "Sort key selector must have a parameter type that matches the aggregate source. " +
-                    $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}");
             }
         }
 
