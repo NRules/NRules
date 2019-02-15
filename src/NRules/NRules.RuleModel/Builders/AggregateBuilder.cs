@@ -94,7 +94,6 @@ namespace NRules.RuleModel.Builders
         /// <param name="sortDirection">Order to sort the aggregation in.</param>
         public void Sort(LambdaExpression keySelector, SortDirection sortDirection)
         {
-            _name = AggregateElement.SortName;
             var expressionName = sortDirection == SortDirection.Ascending ? "KeySelectorAscending" : "KeySelectorDescending";
             _expressions[expressionName] = keySelector;
         }

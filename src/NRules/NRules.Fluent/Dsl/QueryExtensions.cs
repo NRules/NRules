@@ -116,7 +116,7 @@ namespace NRules.Fluent.Dsl
         /// <param name="source">Query expression builder.</param>
         /// <param name="keySelector">Key selection expression used for sorting.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<IEnumerable<TSource>> OrderBy<TSource, TKey>(this IQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector)
+        public static IQuery<IEnumerable<TSource>> OrderBy<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
         {
             source.Builder.OrderBy(keySelector);
             return new QueryExpression<IEnumerable<TSource>>(source.Builder);
@@ -130,7 +130,7 @@ namespace NRules.Fluent.Dsl
         /// <param name="source">Query expression builder.</param>
         /// <param name="keySelector">Key selection expression used for sorting.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<IEnumerable<TSource>> OrderByDescending<TSource, TKey>(this IQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector)
+        public static IQuery<IEnumerable<TSource>> OrderByDescending<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
         {
             source.Builder.OrderByDescending(keySelector);
             return new QueryExpression<IEnumerable<TSource>>(source.Builder);
@@ -142,7 +142,7 @@ namespace NRules.Fluent.Dsl
         /// <typeparam name="TSource">Type of source facts.</typeparam>
         /// <param name="source">Query expression builder.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<IEnumerable<TSource>> Collect<TSource>(this IQuery<TSource> source)
+        public static ICollectQuery<IEnumerable<TSource>> Collect<TSource>(this IQuery<TSource> source)
         {
             source.Builder.Collect<TSource>();
             return new QueryExpression<IEnumerable<TSource>>(source.Builder);
