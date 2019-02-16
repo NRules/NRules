@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NRules.RuleModel;
 
 namespace NRules.Fluent.Dsl
 {
@@ -15,9 +16,8 @@ namespace NRules.Fluent.Dsl
         void Select<TSource, TResult>(Expression<Func<TSource, TResult>> selector);
         void SelectMany<TSource, TResult>(Expression<Func<TSource, IEnumerable<TResult>>> selector);
         void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector);
-        void OrderBy<TSource, TKey>(Expression<Func<TSource, TKey>> keySelector);
-        void OrderByDescending<TSource, TKey>(Expression<Func<TSource, TKey>> keySelector);
         void Collect<TSource>();
+        void OrderBy<TSource, TKey>(Expression<Func<TSource, TKey>> keySelector, SortDirection sortDirection);
         void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap);
         void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap, Type customFactoryType);
     }

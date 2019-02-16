@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NRules.RuleModel;
 
 namespace NRules.Fluent.Dsl
 {
@@ -109,34 +110,6 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
-        /// Aggregates matching facts into a collection sorted ascending by key.
-        /// </summary>
-        /// <typeparam name="TSource">Type of source facts.</typeparam>
-        /// <typeparam name="TKey">Type of sorting key.</typeparam>
-        /// <param name="source">Query expression builder.</param>
-        /// <param name="keySelector">Key selection expression used for sorting.</param>
-        /// <returns>Query expression builder.</returns>
-        public static IQuery<IEnumerable<TSource>> OrderBy<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
-        {
-            source.Builder.OrderBy(keySelector);
-            return new QueryExpression<IEnumerable<TSource>>(source.Builder);
-        }
-
-        /// <summary>
-        /// Aggregates matching facts into a collection sorted descending by key.
-        /// </summary>
-        /// <typeparam name="TSource">Type of source facts.</typeparam>
-        /// <typeparam name="TKey">Type of sorting key.</typeparam>
-        /// <param name="source">Query expression builder.</param>
-        /// <param name="keySelector">Key selection expression used for sorting.</param>
-        /// <returns>Query expression builder.</returns>
-        public static IQuery<IEnumerable<TSource>> OrderByDescending<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
-        {
-            source.Builder.OrderByDescending(keySelector);
-            return new QueryExpression<IEnumerable<TSource>>(source.Builder);
-        }
-
-        /// <summary>
         /// Aggregates matching facts into a collection.
         /// </summary>
         /// <typeparam name="TSource">Type of source facts.</typeparam>
@@ -145,6 +118,34 @@ namespace NRules.Fluent.Dsl
         public static ICollectQuery<IEnumerable<TSource>> Collect<TSource>(this IQuery<TSource> source)
         {
             source.Builder.Collect<TSource>();
+            return new QueryExpression<IEnumerable<TSource>>(source.Builder);
+        }
+
+        /// <summary>
+        /// Configures collected matching facts to be sorted ascending by key.
+        /// </summary>
+        /// <typeparam name="TSource">Type of source facts.</typeparam>
+        /// <typeparam name="TKey">Type of sorting key.</typeparam>
+        /// <param name="source">Query expression builder.</param>
+        /// <param name="keySelector">Key selection expression used for sorting.</param>
+        /// <returns>Query expression builder.</returns>
+        public static IQuery<IEnumerable<TSource>> OrderBy<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        {
+            source.Builder.OrderBy(keySelector, SortDirection.Ascending);
+            return new QueryExpression<IEnumerable<TSource>>(source.Builder);
+        }
+
+        /// <summary>
+        /// Configures collected matching facts to be sorted descending by key.
+        /// </summary>
+        /// <typeparam name="TSource">Type of source facts.</typeparam>
+        /// <typeparam name="TKey">Type of sorting key.</typeparam>
+        /// <param name="source">Query expression builder.</param>
+        /// <param name="keySelector">Key selection expression used for sorting.</param>
+        /// <returns>Query expression builder.</returns>
+        public static IQuery<IEnumerable<TSource>> OrderByDescending<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        {
+            source.Builder.OrderBy(keySelector, SortDirection.Descending);
             return new QueryExpression<IEnumerable<TSource>>(source.Builder);
         }
     }

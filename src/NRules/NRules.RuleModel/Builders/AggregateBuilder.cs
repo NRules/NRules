@@ -56,6 +56,17 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
+        /// Configure aggregator to order facts by key.
+        /// </summary>
+        /// <param name="keySelector">Key selection expression.</param>
+        /// <param name="sortDirection">Order to sort the aggregation in.</param>
+        public void OrderBy(LambdaExpression keySelector, SortDirection sortDirection)
+        {
+            var expressionName = sortDirection == SortDirection.Ascending ? "KeySelectorAscending" : "KeySelectorDescending";
+            _expressions[expressionName] = keySelector;
+        }
+
+        /// <summary>
         /// Configure group by aggregator.
         /// </summary>
         /// <param name="keySelector">Key selection expressions.</param>
@@ -85,17 +96,6 @@ namespace NRules.RuleModel.Builders
         {
             _name = AggregateElement.FlattenName;
             _expressions["Selector"] = selector;
-        }
-
-        /// <summary>
-        /// Configure sorted aggregator.
-        /// </summary>
-        /// <param name="keySelector">Key selection expression.</param>
-        /// <param name="sortDirection">Order to sort the aggregation in.</param>
-        public void Sort(LambdaExpression keySelector, SortDirection sortDirection)
-        {
-            var expressionName = sortDirection == SortDirection.Ascending ? "KeySelectorAscending" : "KeySelectorDescending";
-            _expressions[expressionName] = keySelector;
         }
 
         /// <summary>

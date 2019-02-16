@@ -99,7 +99,7 @@ namespace NRules.RuleModel.Builders
             if (keySelectorAscending != null && keySelectorDescending != null)
             {
                 throw new ArgumentException(
-                    $"Must have a single key selector for sorting.");
+                    "Must have a single key selector for sorting");
             }
 
             var sortKeySelector = keySelectorAscending ?? keySelectorDescending;
