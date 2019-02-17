@@ -30,7 +30,7 @@
 
         protected internal virtual void VisitAggregate(TContext context, AggregateElement element)
         {
-            foreach (var expression in element.ExpressionMap)
+            foreach (var expression in element.ExpressionCollection)
             {
                 expression.Accept(context, this);
             }

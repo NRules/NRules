@@ -129,11 +129,11 @@ namespace NRules.IntegrationTests
     {
         public static IQuery<TResult> CustomSelect<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, TResult>> selector)
         {
-            var expressionMap = new Dictionary<string, LambdaExpression>
+            var expressionCollection = new List<NamedLambdaExpression>
             {
-                {"Selector", selector}
+                new NamedLambdaExpression("Selector", selector)
             };
-            source.Builder.Aggregate<TSource,TResult>("CustomSelect", expressionMap);
+            source.Builder.Aggregate<TSource, TResult>("CustomSelect", expressionCollection);
             return new QueryExpression<TResult>(source.Builder);
         }
     }
@@ -142,14 +142,14 @@ namespace NRules.IntegrationTests
     {
         private Func<IAggregator> _factory;
         
-        public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
+        public void Compile(AggregateElement element, IEnumerable<NamedAggregateExpression> compiledExpressions)
         {
-            var selector = element.ExpressionMap["Selector"];
+            var selector = element.ExpressionCollection["Selector"];
             var sourceType = element.Source.ValueType;
             var resultType = selector.Expression.ReturnType;
             var aggregatorType = typeof(CustomSelectAggregator<,>).MakeGenericType(sourceType, resultType);
 
-            var compiledSelector = compiledExpressions["Selector"];
+            var compiledSelector = compiledExpressions.FindSingle("Selector");
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
                 Expression.New(ctor, Expression.Constant(compiledSelector)));

@@ -11,7 +11,7 @@ namespace NRules.RuleModel.Builders
     {
         private string _name;
         private Type _resultType;
-        private readonly Dictionary<string, LambdaExpression> _expressions = new Dictionary<string, LambdaExpression>();
+        private readonly List<NamedLambdaExpression> _expressions = new List<NamedLambdaExpression>();
         private Type _customFactoryType;
         private IBuilder<PatternElement> _sourceBuilder;
 
@@ -37,13 +37,10 @@ namespace NRules.RuleModel.Builders
         /// <param name="name">Name of the aggregator.</param>
         /// <param name="expressions">Named expressions used by the aggregator.</param>
         /// <param name="customFactoryType">The type of the custom aggregate factory</param>
-        public void Aggregator(string name, IDictionary<string, LambdaExpression> expressions, Type customFactoryType = null)
+        public void Aggregator(string name, IEnumerable<NamedLambdaExpression> expressions, Type customFactoryType = null)
         {
             _name = name;
-            foreach (var item in expressions)
-            {
-                _expressions[item.Key] = item.Value;
-            }
+            _expressions.AddRange(expressions);
             _customFactoryType = customFactoryType;
         }
 
@@ -63,7 +60,7 @@ namespace NRules.RuleModel.Builders
         public void OrderBy(LambdaExpression keySelector, SortDirection sortDirection)
         {
             var expressionName = sortDirection == SortDirection.Ascending ? "KeySelectorAscending" : "KeySelectorDescending";
-            _expressions[expressionName] = keySelector;
+            _expressions.Add(new NamedLambdaExpression(expressionName, keySelector));
         }
 
         /// <summary>
@@ -74,8 +71,8 @@ namespace NRules.RuleModel.Builders
         public void GroupBy(LambdaExpression keySelector, LambdaExpression elementSelector)
         {
             _name = AggregateElement.GroupByName;
-            _expressions["KeySelector"] = keySelector;
-            _expressions["ElementSelector"] = elementSelector;
+            _expressions.Add(new NamedLambdaExpression("KeySelector", keySelector));
+            _expressions.Add(new NamedLambdaExpression("ElementSelector", elementSelector));
         }
 
         /// <summary>
@@ -85,7 +82,7 @@ namespace NRules.RuleModel.Builders
         public void Project(LambdaExpression selector)
         {
             _name = AggregateElement.ProjectName;
-            _expressions["Selector"] = selector;
+            _expressions.Add(new NamedLambdaExpression("Selector", selector));
         }
 
         /// <summary>
@@ -95,7 +92,7 @@ namespace NRules.RuleModel.Builders
         public void Flatten(LambdaExpression selector)
         {
             _name = AggregateElement.FlattenName;
-            _expressions["Selector"] = selector;
+            _expressions.Add(new NamedLambdaExpression("Selector", selector));
         }
 
         /// <summary>

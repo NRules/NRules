@@ -81,7 +81,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<PatternElement>(context, element.Source);
             if (context.IsModified)
             {
-                var aggregateExpressions = element.ExpressionMap.ToDictionary(x => x.Name, x => x.Expression);
+                var aggregateExpressions = element.ExpressionCollection.Select(x => new NamedLambdaExpression(x.Name, x.Expression));
                 var newElement = Element.Aggregate(element.ResultType, element.Name, aggregateExpressions, source, element.CustomFactoryType);
                 Result(context, newElement);
             }

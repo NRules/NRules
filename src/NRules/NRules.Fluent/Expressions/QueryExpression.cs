@@ -170,12 +170,12 @@ namespace NRules.Fluent.Expressions
             };
         }
 
-        public void Aggregate<TSource, TResult>(string aggregateName, IDictionary<string, LambdaExpression> expressionMap)
+        public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<NamedLambdaExpression> expressionCollection)
         {
-            Aggregate<TSource, TResult>(aggregateName, expressionMap, null);
+            Aggregate<TSource, TResult>(aggregateName, expressionCollection, null);
         }
 
-        public void Aggregate<TSource, TResult>(string aggregateName, IDictionary<string, LambdaExpression> expressionMap, Type customFactoryType)
+        public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<NamedLambdaExpression> expressionCollection, Type customFactoryType)
         {
             var previousBuildAction = _buildAction;
             _buildAction = name =>
@@ -189,14 +189,14 @@ namespace NRules.Fluent.Expressions
                     var previousResult = previousBuildAction(null);
                     var sourceBuilder = previousResult.Pattern;
 
-                    var rewrittenExpressionMap = new Dictionary<string, LambdaExpression>();
-                    foreach (var item in expressionMap)
+                    var rewrittenExpressionCollection = new List<NamedLambdaExpression>();
+                    foreach (var item in expressionCollection)
                     {
-                        var expression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, item.Value);
-                        rewrittenExpressionMap[item.Key] = expression;
+                        var expression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, item.Expression);
+                        rewrittenExpressionCollection.Add(new NamedLambdaExpression(item.Name, expression));
                     }
 
-                    aggregateBuilder.Aggregator(aggregateName, rewrittenExpressionMap, customFactoryType);
+                    aggregateBuilder.Aggregator(aggregateName, rewrittenExpressionCollection, customFactoryType);
                     aggregateBuilder.Pattern(sourceBuilder);
 
                     result = new BuildResult(patternBuilder, aggregateBuilder, sourceBuilder);

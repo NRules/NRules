@@ -231,12 +231,12 @@ namespace NRules.Rete
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
                     x.Name == element.Name &&
-                    ExpressionMapComparer.AreEqual(x.ExpressionMap, element.ExpressionMap));
+                    ExpressionCollectionComparer.AreEqual(x.ExpressionCollection, element.ExpressionCollection));
             if (node == null)
             {
                 var aggregatorFactory = BuildAggregatorFactory(context, element);
                 node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name,
-                    element.ExpressionMap, aggregatorFactory, context.HasSubnet);
+                    element.ExpressionCollection, aggregatorFactory, context.HasSubnet);
             }
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
@@ -351,14 +351,14 @@ namespace NRules.Rete
             return factory;
         }
 
-        private static Dictionary<string, IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
+        private static IEnumerable<NamedAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
         {
             var declarations = context.Declarations.Concat(element.Source.Declaration).ToList();
-            var result = new Dictionary<string, IAggregateExpression>();
-            foreach (var expression in element.ExpressionMap)
+            var result = new List<NamedAggregateExpression>();
+            foreach (var expression in element.ExpressionCollection)
             {
                 var aggregateExpression = ExpressionCompiler.CompileAggregateExpression(expression, declarations);
-                result[expression.Name] = aggregateExpression;
+                result.Add(new NamedAggregateExpression(expression.Name, aggregateExpression));
             }
             return result;
         }

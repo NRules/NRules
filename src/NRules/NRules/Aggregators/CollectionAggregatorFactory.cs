@@ -14,19 +14,19 @@ namespace NRules.Aggregators
     {
         private Func<IAggregator> _factory;
 
-        public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
+        public void Compile(AggregateElement element, IEnumerable<NamedAggregateExpression> compiledExpressions)
         {
             var sourceType = element.Source.ValueType;
 
-            var ascendingSortSelector = element.ExpressionMap.Find("KeySelectorAscending");
-            var descendingSortSelector = element.ExpressionMap.Find("KeySelectorDescending");
+            var ascendingSortSelector = element.ExpressionCollection.FindSingleOrDefault("KeySelectorAscending");
+            var descendingSortSelector = element.ExpressionCollection.FindSingleOrDefault("KeySelectorDescending");
             if (ascendingSortSelector != null)
             {
-                _factory = CreateSortedAggregatorFactory(sourceType, SortDirection.Ascending, ascendingSortSelector, compiledExpressions["KeySelectorAscending"]);
+                _factory = CreateSortedAggregatorFactory(sourceType, SortDirection.Ascending, ascendingSortSelector, compiledExpressions.FindSingle("KeySelectorAscending"));
             }
             else if (descendingSortSelector != null)
             {
-                _factory = CreateSortedAggregatorFactory(sourceType, SortDirection.Descending, descendingSortSelector, compiledExpressions["KeySelectorDescending"]);
+                _factory = CreateSortedAggregatorFactory(sourceType, SortDirection.Descending, descendingSortSelector, compiledExpressions.FindSingle("KeySelectorDescending"));
             }
             else
             {
@@ -37,7 +37,7 @@ namespace NRules.Aggregators
             }
         }
 
-        Func<IAggregator> CreateSortedAggregatorFactory(Type sourceType, SortDirection sortDirection, NamedExpressionElement selector, IAggregateExpression compiledSelector)
+        static Func<IAggregator> CreateSortedAggregatorFactory(Type sourceType, SortDirection sortDirection, NamedExpressionElement selector, IAggregateExpression compiledSelector)
         {
             var resultType = selector.Expression.ReturnType;
             var aggregatorType = typeof(SortedAggregator<,>).MakeGenericType(sourceType, resultType);

@@ -14,14 +14,14 @@ namespace NRules.Aggregators
     {
         private Func<IAggregator> _factory;
 
-        public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
+        public void Compile(AggregateElement element, IEnumerable<NamedAggregateExpression> compiledExpressions)
         {
             var sourceType = element.Source.ValueType;
             //Flatten selector is Source -> IEnumerable<Result>
             var resultType = element.ResultType;
             Type aggregatorType = typeof(FlatteningAggregator<,>).MakeGenericType(sourceType, resultType);
 
-            var compiledSelector = compiledExpressions["Selector"];
+            var compiledSelector = compiledExpressions.FindSingle("Selector");
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
                 Expression.New(ctor, Expression.Constant(compiledSelector)));

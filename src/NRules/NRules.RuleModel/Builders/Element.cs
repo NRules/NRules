@@ -409,7 +409,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="expressions">Expressions used to construct aggregates from individual facts.</param>
         /// <param name="source">Pattern that matches facts for aggregation.</param>
         /// <returns>Created element.</returns>
-        public static AggregateElement Aggregate(Type resultType, string name, IDictionary<string, LambdaExpression> expressions, PatternElement source)
+        public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<NamedLambdaExpression> expressions, PatternElement source)
         {
             return Aggregate(resultType, name, expressions, source, null);
         }
@@ -423,7 +423,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="source">Pattern that matches facts for aggregation.</param>
         /// <param name="customFactoryType">Factory type used construct aggregators for this aggregation.</param>
         /// <returns>Created element.</returns>
-        public static AggregateElement Aggregate(Type resultType, string name, IDictionary<string, LambdaExpression> expressions, PatternElement source, Type customFactoryType)
+        public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<NamedLambdaExpression> expressions, PatternElement source, Type customFactoryType)
         {
             if (resultType == null)
                 throw new ArgumentNullException(nameof(resultType), "Aggregate result type not provided");
@@ -434,10 +434,10 @@ namespace NRules.RuleModel.Builders
             if (source == null)
                 throw new ArgumentNullException(nameof(source), "Aggregate source pattern not provided");
 
-            var expressionElements = expressions.Select(x => ToNamedExpression(x.Key, x.Value));
-            var expressionMap = new ExpressionMap(expressionElements);
+            var expressionElements = expressions.Select(x => new NamedExpressionElement(x));
+            var expressionCollection = new ExpressionCollection(expressionElements);
 
-            var element = new AggregateElement(resultType, name, expressionMap, source, customFactoryType);
+            var element = new AggregateElement(resultType, name, expressionCollection, source, customFactoryType);
             ElementValidator.ValidateAggregate(element);
             return element;
         }
@@ -467,7 +467,7 @@ namespace NRules.RuleModel.Builders
                 resultType = enumerableType.MakeGenericType(source.ValueType);
             }
 
-            var expressions = new Dictionary<string, LambdaExpression>();
+            var expressions = new List<NamedLambdaExpression>();
             var element = Aggregate(resultType, AggregateElement.CollectName, expressions, source);
             return element;
         }
@@ -506,10 +506,10 @@ namespace NRules.RuleModel.Builders
                 resultType = groupingType.MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
             }
 
-            var expressions = new Dictionary<string, LambdaExpression>
+            var expressions = new List<NamedLambdaExpression>
             {
-                {"KeySelector", keySelector},
-                {"ElementSelector", elementSelector}
+                new NamedLambdaExpression("KeySelector", keySelector),
+                new NamedLambdaExpression("ElementSelector", elementSelector)
             };
             var element = Aggregate(resultType, AggregateElement.GroupByName, expressions, source);
             return element;
@@ -544,9 +544,9 @@ namespace NRules.RuleModel.Builders
                 resultType = selector.ReturnType;
             }
 
-            var expressions = new Dictionary<string, LambdaExpression>
+            var expressions = new List<NamedLambdaExpression>
             {
-                {"Selector", selector}
+                new NamedLambdaExpression("Selector", selector)
             };
             var element = Aggregate(resultType, AggregateElement.ProjectName, expressions, source);
             return element;
@@ -564,9 +564,9 @@ namespace NRules.RuleModel.Builders
             if (selector == null)
                 throw new ArgumentNullException(nameof(selector), "Flattening selector not provided");
 
-            var expressions = new Dictionary<string, LambdaExpression>
+            var expressions = new List<NamedLambdaExpression>
             {
-                {"Selector", selector}
+                new NamedLambdaExpression("Selector", selector)
             };
             var element = Aggregate(resultType, AggregateElement.FlattenName, expressions, source);
             return element;
@@ -668,12 +668,6 @@ namespace NRules.RuleModel.Builders
         {
             var defaultTrigger = ActionTrigger.Activated | ActionTrigger.Reactivated;
             var element = Action(expression, defaultTrigger);
-            return element;
-        }
-
-        private static NamedExpressionElement ToNamedExpression(string name, LambdaExpression expression)
-        {
-            var element = new NamedExpressionElement(name, expression);
             return element;
         }
     }

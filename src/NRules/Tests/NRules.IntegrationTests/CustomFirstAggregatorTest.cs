@@ -95,8 +95,8 @@ namespace NRules.IntegrationTests
     {
         public static IQuery<TSource> First<TSource>(this IQuery<IEnumerable<TSource>> source)
         {
-            var expressionMap = new Dictionary<string, LambdaExpression>();
-            source.Builder.Aggregate<IEnumerable<TSource>, TSource>("First", expressionMap, typeof(CustomFirstAggregatorFactory));
+            var expressionCollection = new List<NamedLambdaExpression>();
+            source.Builder.Aggregate<IEnumerable<TSource>, TSource>("First", expressionCollection, typeof(CustomFirstAggregatorFactory));
             return new QueryExpression<TSource>(source.Builder);
         }
     }
@@ -105,7 +105,7 @@ namespace NRules.IntegrationTests
     {
         private Func<IAggregator> _factory;
 
-        public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
+        public void Compile(AggregateElement element, IEnumerable<NamedAggregateExpression> compiledExpressions)
         {
             var elementType = element.ResultType;
             var aggregatorType = typeof(CustomFirstAggregator<>).MakeGenericType(elementType);
