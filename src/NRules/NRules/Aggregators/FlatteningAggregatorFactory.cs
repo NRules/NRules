@@ -14,7 +14,7 @@ namespace NRules.Aggregators
     {
         private Func<IAggregator> _factory;
 
-        public void Compile(AggregateElement element, IEnumerable<NamedAggregateExpression> compiledExpressions)
+        public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
         {
             var sourceType = element.Source.ValueType;
             //Flatten selector is Source -> IEnumerable<Result>

@@ -170,12 +170,12 @@ namespace NRules.Fluent.Expressions
             };
         }
 
-        public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<NamedLambdaExpression> expressionCollection)
+        public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressionCollection)
         {
             Aggregate<TSource, TResult>(aggregateName, expressionCollection, null);
         }
 
-        public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<NamedLambdaExpression> expressionCollection, Type customFactoryType)
+        public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressionCollection, Type customFactoryType)
         {
             var previousBuildAction = _buildAction;
             _buildAction = name =>
@@ -189,11 +189,11 @@ namespace NRules.Fluent.Expressions
                     var previousResult = previousBuildAction(null);
                     var sourceBuilder = previousResult.Pattern;
 
-                    var rewrittenExpressionCollection = new List<NamedLambdaExpression>();
+                    var rewrittenExpressionCollection = new List<KeyValuePair<string, LambdaExpression>>();
                     foreach (var item in expressionCollection)
                     {
-                        var expression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, item.Expression);
-                        rewrittenExpressionCollection.Add(new NamedLambdaExpression(item.Name, expression));
+                        var expression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, item.Value);
+                        rewrittenExpressionCollection.Add(new KeyValuePair<string, LambdaExpression>(item.Key, expression));
                     }
 
                     aggregateBuilder.Aggregator(aggregateName, rewrittenExpressionCollection, customFactoryType);

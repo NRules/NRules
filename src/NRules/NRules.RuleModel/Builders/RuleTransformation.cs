@@ -33,7 +33,7 @@ namespace NRules.RuleModel.Builders
 
             if (lhsContext.IsModified || rhsContext.IsModified)
             {
-                var transformedRule = Element.RuleDefinition(rule.Name, rule.Description, rule.Priority, 
+                var transformedRule = Element.RuleDefinition(rule.Name, rule.Description, rule.Priority,
                     rule.Repeatability, rule.Tags, rule.Properties, rule.DependencyGroup, lhs, rule.FilterGroup, rhs);
                 return transformedRule;
             }
@@ -81,7 +81,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<PatternElement>(context, element.Source);
             if (context.IsModified)
             {
-                var aggregateExpressions = element.ExpressionCollection.Select(x => new NamedLambdaExpression(x.Name, x.Expression));
+                var aggregateExpressions = element.ExpressionCollection.Select(x => new KeyValuePair<string, LambdaExpression>(x.Name, x.Expression));
                 var newElement = Element.Aggregate(element.ResultType, element.Name, aggregateExpressions, source, element.CustomFactoryType);
                 Result(context, newElement);
             }
@@ -181,7 +181,7 @@ namespace NRules.RuleModel.Builders
 
             var result = Element.Not(
                 Element.AndGroup(
-                    new RuleLeftElement[] {basePattern}.Concat(negatedPatterns)));
+                    new RuleLeftElement[] { basePattern }.Concat(negatedPatterns)));
             Result(context, result);
         }
 

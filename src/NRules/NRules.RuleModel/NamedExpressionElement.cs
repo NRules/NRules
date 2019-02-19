@@ -7,10 +7,10 @@ namespace NRules.RuleModel
     /// </summary>
     public class NamedExpressionElement : ExpressionElement
     {
-        internal NamedExpressionElement(NamedLambdaExpression namedLambdaExpression) 
-            : base(namedLambdaExpression.Expression)
+        internal NamedExpressionElement(string name, LambdaExpression lambdaExpression)
+            : base(lambdaExpression)
         {
-            Name = namedLambdaExpression.Name;
+            Name = name;
         }
 
         /// <summary>

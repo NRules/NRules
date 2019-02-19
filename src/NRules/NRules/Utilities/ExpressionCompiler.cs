@@ -55,7 +55,7 @@ namespace NRules.Utilities
                 var optimizedExpression = optimizer.ConvertParameter(element.Expression);
                 var @delegate = optimizedExpression.Compile();
                 var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-                var expression = new AggregateFactExpression(element.Expression, fastDelegate);
+                var expression = new AggregateFactExpression(element.Name, element.Expression, fastDelegate);
                 return expression;
             }
             else
@@ -65,7 +65,7 @@ namespace NRules.Utilities
                 var @delegate = optimizedExpression.Compile();
                 var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
                 var factMap = IndexMap.CreateMap(element.Imports, declarationsList);
-                var expression = new AggregateExpression(element.Expression, fastDelegate, factMap);
+                var expression = new AggregateExpression(element.Name, element.Expression, fastDelegate, factMap);
                 return expression;
             }
         }
@@ -102,7 +102,7 @@ namespace NRules.Utilities
             var expression = new ActivationExpression(element.Expression, fastDelegate, factMap);
             return expression;
         }
-        
+
         private static FastDelegate<TDelegate> Create<TDelegate>(TDelegate @delegate, int parameterCount) where TDelegate : class
         {
             return new FastDelegate<TDelegate>(@delegate, parameterCount);
@@ -130,7 +130,7 @@ namespace NRules.Utilities
             /// <returns>Transformed expression.</returns>
             public Expression<TDelegate> ConvertParameter(LambdaExpression expression)
             {
-                _objectParameter = Expression.Parameter(typeof (object));
+                _objectParameter = Expression.Parameter(typeof(object));
                 _typedParameter = expression.Parameters.Single();
 
                 var body = Visit(expression.Body);

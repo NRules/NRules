@@ -351,14 +351,14 @@ namespace NRules.Rete
             return factory;
         }
 
-        private static IEnumerable<NamedAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
+        private static IEnumerable<IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
         {
             var declarations = context.Declarations.Concat(element.Source.Declaration).ToList();
-            var result = new List<NamedAggregateExpression>();
+            var result = new List<IAggregateExpression>();
             foreach (var expression in element.ExpressionCollection)
             {
                 var aggregateExpression = ExpressionCompiler.CompileAggregateExpression(expression, declarations);
-                result.Add(new NamedAggregateExpression(expression.Name, aggregateExpression));
+                result.Add(aggregateExpression);
             }
             return result;
         }
