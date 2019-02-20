@@ -8,13 +8,13 @@ namespace NRules.RuleModel
     /// <summary>
     /// Sorted readonly map of named expressions.
     /// </summary>
-    public class ExpressionMap : IEnumerable<NamedExpressionElement>
+    public class ExpressionCollection : IEnumerable<NamedExpressionElement>
     {
-        private readonly SortedDictionary<string, NamedExpressionElement> _expressions;
+        private readonly List<NamedExpressionElement> _expressions;
 
-        public ExpressionMap(IEnumerable<NamedExpressionElement> expressions)
+        public ExpressionCollection(IEnumerable<NamedExpressionElement> expressions)
         {
-            _expressions = new SortedDictionary<string, NamedExpressionElement>(expressions.ToDictionary(x => x.Name));
+            _expressions = new List<NamedExpressionElement>(expressions);
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace NRules.RuleModel
         public int Count => _expressions.Count;
 
         /// <summary>
-        /// Retrieves expression by name.
+        /// Retrieves single expression by name.
         /// </summary>
         /// <param name="name">Expression name.</param>
         /// <returns>Matching expression.</returns>
@@ -31,8 +31,8 @@ namespace NRules.RuleModel
         {
             get
             {
-                var found = _expressions.TryGetValue(name, out var result);
-                if (!found)
+                var result = FindSingleOrDefault(name);
+                if (result == null)
                 {
                     throw new ArgumentException(
                         $"Expression with the given name not found. Name={name}", nameof(name));
@@ -42,19 +42,28 @@ namespace NRules.RuleModel
         }
 
         /// <summary>
-        /// Retrieves expression by name.
+        /// Retrieves expressions by name.
+        /// </summary>
+        /// <param name="name">Expression name.</param>
+        /// <returns>Matching expression or empty IEnumerable.</returns>
+        public IEnumerable<NamedExpressionElement> Find(string name)
+        {
+            return _expressions.Where(e => e.Name == name);
+        }
+
+        /// <summary>
+        /// Retrieves only expression by name.
         /// </summary>
         /// <param name="name">Expression name.</param>
         /// <returns>Matching expression or <c>null</c>.</returns>
-        public NamedExpressionElement Find(string name)
+        public NamedExpressionElement FindSingleOrDefault(string name)
         {
-            _expressions.TryGetValue(name, out var result);
-            return result;
+            return Find(name).SingleOrDefault();
         }
 
         public IEnumerator<NamedExpressionElement> GetEnumerator()
         {
-            return _expressions.Values.GetEnumerator();
+            return _expressions.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

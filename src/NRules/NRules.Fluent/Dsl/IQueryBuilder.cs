@@ -18,7 +18,7 @@ namespace NRules.Fluent.Dsl
         void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector);
         void Collect<TSource>();
         void OrderBy<TSource, TKey>(Expression<Func<TSource, TKey>> keySelector, SortDirection sortDirection);
-        void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap);
-        void Aggregate<TSource, TResult>(string name, IDictionary<string, LambdaExpression> expressionMap, Type customFactoryType);
+        void Aggregate<TSource, TResult>(string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressionCollection);
+        void Aggregate<TSource, TResult>(string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressionCollection, Type customFactoryType);
     }
 }

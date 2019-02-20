@@ -17,7 +17,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
 
             //Act
@@ -32,7 +32,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactInsertedThenUpdated_FiresOnce()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
             Session.Update(fact);
 
@@ -48,7 +48,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
             Session.Retract(fact);
 
@@ -129,11 +129,11 @@ namespace NRules.IntegrationTests
     {
         public static IQuery<TResult> CustomSelect<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, TResult>> selector)
         {
-            var expressionMap = new Dictionary<string, LambdaExpression>
+            var expressionCollection = new List<KeyValuePair<string, LambdaExpression>>
             {
-                {"Selector", selector}
+                new KeyValuePair<string, LambdaExpression>("Selector", selector)
             };
-            source.Builder.Aggregate<TSource,TResult>("CustomSelect", expressionMap);
+            source.Builder.Aggregate<TSource, TResult>("CustomSelect", expressionCollection);
             return new QueryExpression<TResult>(source.Builder);
         }
     }
@@ -141,15 +141,15 @@ namespace NRules.IntegrationTests
     internal class CustomSelectAggregateFactory : IAggregatorFactory
     {
         private Func<IAggregator> _factory;
-        
-        public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
+
+        public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
         {
-            var selector = element.ExpressionMap["Selector"];
+            var selector = element.ExpressionCollection["Selector"];
             var sourceType = element.Source.ValueType;
             var resultType = selector.Expression.ReturnType;
             var aggregatorType = typeof(CustomSelectAggregator<,>).MakeGenericType(sourceType, resultType);
 
-            var compiledSelector = compiledExpressions["Selector"];
+            var compiledSelector = compiledExpressions.FindSingle("Selector");
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
                 Expression.New(ctor, Expression.Constant(compiledSelector)));

@@ -4,12 +4,12 @@ using NRules.Utilities;
 
 namespace NRules.Rete
 {
-    internal static class ExpressionMapComparer
+    internal static class ExpressionCollectionComparer
     {
-        public static bool AreEqual(ExpressionMap first, ExpressionMap second)
+        public static bool AreEqual(ExpressionCollection first, ExpressionCollection second)
         {
             if (first.Count != second.Count) return false;
-            //Assume values are sorted
+            //Values must be in same order
             var pairs = first.Zip(second, System.Tuple.Create);
             bool result = pairs.All(t =>
                 t.Item1.Name == t.Item2.Name &&

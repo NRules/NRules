@@ -43,7 +43,7 @@ namespace NRules.RuleModel.Builders
             var ruleProperties = new RuleProperty[0];
             var dependencyGroupElement = DependencyGroup();
             var filterGroupElement = FilterGroup();
-            var ruleDefinition = RuleDefinition(name, description, priority, RuleRepeatability.Repeatable, 
+            var ruleDefinition = RuleDefinition(name, description, priority, RuleRepeatability.Repeatable,
                 tags, ruleProperties, dependencyGroupElement, leftHandSide, filterGroupElement, rightHandSide);
             return ruleDefinition;
         }
@@ -62,23 +62,23 @@ namespace NRules.RuleModel.Builders
         /// <param name="filters">Rule's filter group element.</param>
         /// <param name="rightHandSide">Rule's right-hand side group element.</param>
         /// <returns>Created rule definition.</returns>
-        public static IRuleDefinition RuleDefinition(string name, string description, int priority, 
+        public static IRuleDefinition RuleDefinition(string name, string description, int priority,
             RuleRepeatability repeatability, IEnumerable<string> tags, IEnumerable<RuleProperty> properties,
             DependencyGroupElement dependencies, GroupElement leftHandSide, FilterGroupElement filters, ActionGroupElement rightHandSide)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Rule name not provided", nameof(name));
-            if (tags == null) 
+            if (tags == null)
                 throw new ArgumentNullException(nameof(tags), "Rule tags not provided");
-            if (properties == null) 
+            if (properties == null)
                 throw new ArgumentNullException(nameof(properties), "Rule properties not provided");
-            if (dependencies == null) 
+            if (dependencies == null)
                 throw new ArgumentNullException(nameof(dependencies), "Rule dependencies not provided");
-            if (leftHandSide == null) 
+            if (leftHandSide == null)
                 throw new ArgumentNullException(nameof(leftHandSide), "Rule left-hand side not provided");
-            if (filters == null) 
+            if (filters == null)
                 throw new ArgumentNullException(nameof(filters), "Rule filters not provided");
-            if (rightHandSide == null) 
+            if (rightHandSide == null)
                 throw new ArgumentNullException(nameof(rightHandSide), "Rule right-hand side not provided");
 
             var ruleDefinition = new RuleDefinition(name, description, priority, repeatability, tags, properties, dependencies, leftHandSide, filters, rightHandSide);
@@ -109,7 +109,7 @@ namespace NRules.RuleModel.Builders
         /// <seealso cref="DependencyElement"/>
         public static DependencyGroupElement DependencyGroup(IEnumerable<DependencyElement> dependencies)
         {
-            if (dependencies == null) 
+            if (dependencies == null)
                 throw new ArgumentNullException(nameof(dependencies), "Dependencies not provided");
 
             var element = new DependencyGroupElement(dependencies);
@@ -125,9 +125,9 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static DependencyElement Dependency(Type type, string name)
         {
-            if (type == null) 
+            if (type == null)
                 throw new ArgumentNullException(nameof(type), "Dependency type not provided");
-            if (string.IsNullOrEmpty(name)) 
+            if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(nameof(name), "Dependency name not provided");
 
             var declaration = new Declaration(type, name);
@@ -143,9 +143,9 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static DependencyElement Dependency(Declaration declaration, Type serviceType)
         {
-            if (declaration == null) 
+            if (declaration == null)
                 throw new ArgumentNullException(nameof(declaration), "Dependency declaration not provided");
-            if (serviceType == null) 
+            if (serviceType == null)
                 throw new ArgumentNullException(nameof(serviceType), "Dependency type not provided");
 
             var element = new DependencyElement(declaration, serviceType);
@@ -197,7 +197,7 @@ namespace NRules.RuleModel.Builders
         /// <see cref="RuleLeftElement"/>
         public static AndElement AndGroup(IEnumerable<RuleLeftElement> childElements)
         {
-            if (childElements == null) 
+            if (childElements == null)
                 throw new ArgumentNullException(nameof(childElements), "Child elements not provided");
 
             var element = new AndElement(childElements);
@@ -229,7 +229,7 @@ namespace NRules.RuleModel.Builders
         /// <see cref="RuleLeftElement"/>
         public static OrElement OrGroup(IEnumerable<RuleLeftElement> childElements)
         {
-            if (childElements == null) 
+            if (childElements == null)
                 throw new ArgumentNullException(nameof(childElements), "Child elements not provided");
 
             var element = new OrElement(childElements);
@@ -248,7 +248,7 @@ namespace NRules.RuleModel.Builders
         /// <see cref="RuleLeftElement"/>
         public static ExistsElement Exists(RuleLeftElement source)
         {
-            if (source == null) 
+            if (source == null)
                 throw new ArgumentNullException(nameof(source), "Source element not provided");
 
             var element = new ExistsElement(source);
@@ -262,7 +262,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static NotElement Not(RuleLeftElement source)
         {
-            if (source == null) 
+            if (source == null)
                 throw new ArgumentNullException(nameof(source), "Source element not provided");
 
             var element = new NotElement(source);
@@ -278,9 +278,9 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static ForAllElement ForAll(PatternElement basePattern, IEnumerable<PatternElement> patterns)
         {
-            if (basePattern == null) 
+            if (basePattern == null)
                 throw new ArgumentNullException(nameof(basePattern), "Base pattern not provided");
-            if (patterns == null) 
+            if (patterns == null)
                 throw new ArgumentNullException(nameof(patterns), "Patterns not provided");
 
             var forAllElement = new ForAllElement(basePattern, patterns);
@@ -327,9 +327,9 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static PatternElement Pattern(Type type, string name, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
         {
-            if (type == null) 
+            if (type == null)
                 throw new ArgumentNullException(nameof(type), "Pattern type not provided");
-            if (string.IsNullOrEmpty(name)) 
+            if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(nameof(name), "Pattern name not provided");
 
             var declaration = new Declaration(type, name);
@@ -346,16 +346,16 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static PatternElement Pattern(Declaration declaration, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
         {
-            if (declaration == null) 
+            if (declaration == null)
                 throw new ArgumentNullException(nameof(declaration), "Pattern declaration not provided");
-            if (conditions == null) 
+            if (conditions == null)
                 throw new ArgumentNullException(nameof(conditions), "Pattern conditions not provided");
 
             var element = new PatternElement(declaration, conditions, source);
             declaration.Target = element;
             return element;
         }
-        
+
         /// <summary>
         /// Creates a condition element that represents a condition applied to elements matched by a pattern.
         /// </summary>
@@ -363,7 +363,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static ConditionElement Condition(LambdaExpression expression)
         {
-            if (expression == null) 
+            if (expression == null)
                 throw new ArgumentNullException(nameof(expression), "Condition expression not provided");
             if (expression.ReturnType != typeof(bool))
                 throw new ArgumentException($"Pattern condition must return a Boolean result. Condition={expression}");
@@ -409,7 +409,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="expressions">Expressions used to construct aggregates from individual facts.</param>
         /// <param name="source">Pattern that matches facts for aggregation.</param>
         /// <returns>Created element.</returns>
-        public static AggregateElement Aggregate(Type resultType, string name, IDictionary<string, LambdaExpression> expressions, PatternElement source)
+        public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, PatternElement source)
         {
             return Aggregate(resultType, name, expressions, source, null);
         }
@@ -423,7 +423,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="source">Pattern that matches facts for aggregation.</param>
         /// <param name="customFactoryType">Factory type used construct aggregators for this aggregation.</param>
         /// <returns>Created element.</returns>
-        public static AggregateElement Aggregate(Type resultType, string name, IDictionary<string, LambdaExpression> expressions, PatternElement source, Type customFactoryType)
+        public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, PatternElement source, Type customFactoryType)
         {
             if (resultType == null)
                 throw new ArgumentNullException(nameof(resultType), "Aggregate result type not provided");
@@ -434,10 +434,10 @@ namespace NRules.RuleModel.Builders
             if (source == null)
                 throw new ArgumentNullException(nameof(source), "Aggregate source pattern not provided");
 
-            var expressionElements = expressions.Select(x => ToNamedExpression(x.Key, x.Value));
-            var expressionMap = new ExpressionMap(expressionElements);
+            var expressionElements = expressions.Select(x => new NamedExpressionElement(x.Key, x.Value));
+            var expressionCollection = new ExpressionCollection(expressionElements);
 
-            var element = new AggregateElement(resultType, name, expressionMap, source, customFactoryType);
+            var element = new AggregateElement(resultType, name, expressionCollection, source, customFactoryType);
             ElementValidator.ValidateAggregate(element);
             return element;
         }
@@ -467,7 +467,7 @@ namespace NRules.RuleModel.Builders
                 resultType = enumerableType.MakeGenericType(source.ValueType);
             }
 
-            var expressions = new Dictionary<string, LambdaExpression>();
+            var expressions = new List<KeyValuePair<string, LambdaExpression>>();
             var element = Aggregate(resultType, AggregateElement.CollectName, expressions, source);
             return element;
         }
@@ -508,8 +508,8 @@ namespace NRules.RuleModel.Builders
 
             var expressions = new Dictionary<string, LambdaExpression>
             {
-                {"KeySelector", keySelector},
-                {"ElementSelector", elementSelector}
+                { "KeySelector", keySelector },
+                { "ElementSelector", elementSelector }
             };
             var element = Aggregate(resultType, AggregateElement.GroupByName, expressions, source);
             return element;
@@ -546,7 +546,7 @@ namespace NRules.RuleModel.Builders
 
             var expressions = new Dictionary<string, LambdaExpression>
             {
-                {"Selector", selector}
+                { "Selector", selector }
             };
             var element = Aggregate(resultType, AggregateElement.ProjectName, expressions, source);
             return element;
@@ -566,7 +566,7 @@ namespace NRules.RuleModel.Builders
 
             var expressions = new Dictionary<string, LambdaExpression>
             {
-                {"Selector", selector}
+                { "Selector", selector }
             };
             var element = Aggregate(resultType, AggregateElement.FlattenName, expressions, source);
             return element;
@@ -668,12 +668,6 @@ namespace NRules.RuleModel.Builders
         {
             var defaultTrigger = ActionTrigger.Activated | ActionTrigger.Reactivated;
             var element = Action(expression, defaultTrigger);
-            return element;
-        }
-
-        private static NamedExpressionElement ToNamedExpression(string name, LambdaExpression expression)
-        {
-            var element = new NamedExpressionElement(name, expression);
             return element;
         }
     }
