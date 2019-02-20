@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -14,6 +12,11 @@ namespace NRules.Aggregators
     public interface IAggregateExpression
     {
         /// <summary>
+        /// Name of the aggregate expression.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// Invokes the expression with the given inputs.
         /// </summary>
         /// <param name="context">Aggregation context.</param>
@@ -21,39 +24,6 @@ namespace NRules.Aggregators
         /// <param name="fact">Fact being processed by the aggregate element.</param>
         /// <returns>Result of the expression.</returns>
         object Invoke(AggregationContext context, ITuple tuple, IFact fact);
-
-        /// <summary>
-        /// Name of the aggregate expression.
-        /// </summary>
-        string Name { get; }
-    }
-
-    /// <summary>
-    /// Extension methods used for working with collections of aggregate expressions.
-    /// </summary>
-    public static class IAggregateExpressionExtensions
-    {
-        /// <summary>
-        /// Get an enumerable of matching aggregate expressions.
-        /// </summary>
-        /// <param name="expressions">The list of aggregate expressions to search through.</param>
-        /// <param name="name">Name of the aggregate expressions to find.</param>
-        /// <returns></returns>
-        public static IEnumerable<IAggregateExpression> Find(this IEnumerable<IAggregateExpression> expressions, string name)
-        {
-            return expressions.Where(e => e.Name == name);
-        }
-
-        /// <summary>
-        /// Get a single matching aggregate expression.
-        /// </summary>
-        /// <param name="expressions">The list of aggregate expressions to search through.</param>
-        /// <param name="name">Name of the aggregate expression to find.</param>
-        /// <returns></returns>
-        public static IAggregateExpression FindSingle(this IEnumerable<IAggregateExpression> expressions, string name)
-        {
-            return expressions.Find(name).Single();
-        }
     }
 
     internal class AggregateFactExpression : IAggregateExpression
@@ -108,6 +78,8 @@ namespace NRules.Aggregators
             Name = name;
         }
 
+        public string Name { get; }
+
         public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
         {
             var args = new object[_compiledExpression.ArrayArgumentCount];
@@ -138,8 +110,6 @@ namespace NRules.Aggregators
                 context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, args, result, tuple, fact);
             }
         }
-
-        public string Name { get; }
 
         public override string ToString()
         {

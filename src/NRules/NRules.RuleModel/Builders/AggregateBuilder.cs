@@ -60,7 +60,7 @@ namespace NRules.RuleModel.Builders
         public void OrderBy(LambdaExpression keySelector, SortDirection sortDirection)
         {
             var expressionName = sortDirection == SortDirection.Ascending ? "KeySelectorAscending" : "KeySelectorDescending";
-            _expressions.Add(CreateNamedLambdaExpression(expressionName, keySelector));
+            AddExpression(expressionName, keySelector);
         }
 
         /// <summary>
@@ -71,8 +71,8 @@ namespace NRules.RuleModel.Builders
         public void GroupBy(LambdaExpression keySelector, LambdaExpression elementSelector)
         {
             _name = AggregateElement.GroupByName;
-            _expressions.Add(CreateNamedLambdaExpression("KeySelector", keySelector));
-            _expressions.Add(CreateNamedLambdaExpression("ElementSelector", elementSelector));
+            AddExpression("KeySelector", keySelector);
+            AddExpression("ElementSelector", elementSelector);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace NRules.RuleModel.Builders
         public void Project(LambdaExpression selector)
         {
             _name = AggregateElement.ProjectName;
-            _expressions.Add(CreateNamedLambdaExpression("Selector", selector));
+            AddExpression("Selector", selector);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace NRules.RuleModel.Builders
         public void Flatten(LambdaExpression selector)
         {
             _name = AggregateElement.FlattenName;
-            _expressions.Add(CreateNamedLambdaExpression("Selector", selector));
+            AddExpression("Selector", selector);
         }
 
         /// <summary>
@@ -148,9 +148,9 @@ namespace NRules.RuleModel.Builders
             return aggregateElement;
         }
 
-        private static KeyValuePair<string, LambdaExpression> CreateNamedLambdaExpression(string name, LambdaExpression lambdaExpression)
+        private void AddExpression(string name, LambdaExpression expression)
         {
-            return new KeyValuePair<string, LambdaExpression>(name, lambdaExpression);
+            _expressions.Add(new KeyValuePair<string, LambdaExpression>(name, expression));
         }
 
         private void AssertSingleSource()

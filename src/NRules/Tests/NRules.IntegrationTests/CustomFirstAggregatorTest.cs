@@ -95,8 +95,8 @@ namespace NRules.IntegrationTests
     {
         public static IQuery<TSource> First<TSource>(this IQuery<IEnumerable<TSource>> source)
         {
-            var expressionCollection = new List<KeyValuePair<string, LambdaExpression>>();
-            source.Builder.Aggregate<IEnumerable<TSource>, TSource>("First", expressionCollection, typeof(CustomFirstAggregatorFactory));
+            var expressions = new List<KeyValuePair<string, LambdaExpression>>();
+            source.Builder.Aggregate<IEnumerable<TSource>, TSource>("First", expressions, typeof(CustomFirstAggregatorFactory));
             return new QueryExpression<TSource>(source.Builder);
         }
     }

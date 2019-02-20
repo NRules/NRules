@@ -129,11 +129,11 @@ namespace NRules.IntegrationTests
     {
         public static IQuery<TResult> CustomSelect<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, TResult>> selector)
         {
-            var expressionCollection = new List<KeyValuePair<string, LambdaExpression>>
+            var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
                 new KeyValuePair<string, LambdaExpression>("Selector", selector)
             };
-            source.Builder.Aggregate<TSource, TResult>("CustomSelect", expressionCollection);
+            source.Builder.Aggregate<TSource, TResult>("CustomSelect", expressions);
             return new QueryExpression<TResult>(source.Builder);
         }
     }

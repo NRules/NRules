@@ -170,12 +170,12 @@ namespace NRules.Fluent.Expressions
             };
         }
 
-        public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressionCollection)
+        public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions)
         {
-            Aggregate<TSource, TResult>(aggregateName, expressionCollection, null);
+            Aggregate<TSource, TResult>(aggregateName, expressions, null);
         }
 
-        public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressionCollection, Type customFactoryType)
+        public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, Type customFactoryType)
         {
             var previousBuildAction = _buildAction;
             _buildAction = name =>
@@ -190,7 +190,7 @@ namespace NRules.Fluent.Expressions
                     var sourceBuilder = previousResult.Pattern;
 
                     var rewrittenExpressionCollection = new List<KeyValuePair<string, LambdaExpression>>();
-                    foreach (var item in expressionCollection)
+                    foreach (var item in expressions)
                     {
                         var expression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, item.Value);
                         rewrittenExpressionCollection.Add(new KeyValuePair<string, LambdaExpression>(item.Key, expression));
