@@ -515,8 +515,10 @@ namespace NRules
                 IActionContext actionContext = new ActionContext(this, activation);
 
                 _actionExecutor.Execute(_executionContext, actionContext);
-
                 ruleFiredCount++;
+
+                UnlinkFacts();
+
                 if (actionContext.IsHalted) break;
             }
             return ruleFiredCount;
