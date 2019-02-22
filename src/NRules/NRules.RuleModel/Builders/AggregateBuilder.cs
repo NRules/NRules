@@ -59,7 +59,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="sortDirection">Order to sort the aggregation in.</param>
         public void OrderBy(LambdaExpression keySelector, SortDirection sortDirection)
         {
-            var expressionName = sortDirection == SortDirection.Ascending ? "KeySelectorAscending" : "KeySelectorDescending";
+            var expressionName = sortDirection == SortDirection.Ascending ? AggregateElement.KeySelectorAscendingName : AggregateElement.KeySelectorDescendingName;
             AddExpression(expressionName, keySelector);
         }
 
@@ -71,8 +71,8 @@ namespace NRules.RuleModel.Builders
         public void GroupBy(LambdaExpression keySelector, LambdaExpression elementSelector)
         {
             _name = AggregateElement.GroupByName;
-            AddExpression("KeySelector", keySelector);
-            AddExpression("ElementSelector", elementSelector);
+            AddExpression(AggregateElement.KeySelectorName, keySelector);
+            AddExpression(AggregateElement.ElementSelectorName, elementSelector);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace NRules.RuleModel.Builders
         public void Project(LambdaExpression selector)
         {
             _name = AggregateElement.ProjectName;
-            AddExpression("Selector", selector);
+            AddExpression(AggregateElement.SelectorName, selector);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace NRules.RuleModel.Builders
         public void Flatten(LambdaExpression selector)
         {
             _name = AggregateElement.FlattenName;
-            AddExpression("Selector", selector);
+            AddExpression(AggregateElement.SelectorName, selector);
         }
 
         /// <summary>

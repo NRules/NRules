@@ -231,12 +231,12 @@ namespace NRules.Rete
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
                     x.Name == element.Name &&
-                    ExpressionCollectionComparer.AreEqual(x.Expressions, element.Expressions));
+                    ExpressionCollectionComparer.AreEqual(x.ExpressionCollection, element.ExpressionCollection));
             if (node == null)
             {
                 var aggregatorFactory = BuildAggregatorFactory(context, element);
                 node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name,
-                    element.Expressions, aggregatorFactory, context.HasSubnet);
+                    element.ExpressionCollection, aggregatorFactory, context.HasSubnet);
             }
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
@@ -355,7 +355,7 @@ namespace NRules.Rete
         {
             var declarations = context.Declarations.Concat(element.Source.Declaration).ToList();
             var result = new List<IAggregateExpression>();
-            foreach (var expression in element.Expressions)
+            foreach (var expression in element.ExpressionCollection)
             {
                 var aggregateExpression = ExpressionCompiler.CompileAggregateExpression(expression, declarations);
                 result.Add(aggregateExpression);

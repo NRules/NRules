@@ -144,7 +144,7 @@ namespace NRules.IntegrationTests
 
         public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
         {
-            var selector = element.Expressions["Selector"];
+            var selector = element.ExpressionCollection["Selector"];
             var sourceType = element.Source.ValueType;
             var resultType = selector.Expression.ReturnType;
             var aggregatorType = typeof(CustomSelectAggregator<,>).MakeGenericType(sourceType, resultType);

@@ -12,6 +12,12 @@ namespace NRules.RuleModel
         public const string ProjectName = "Project";
         public const string FlattenName = "Flatten";
 
+        public const string SelectorName = "Selector";
+        public const string ElementSelectorName = "ElementSelector";
+        public const string KeySelectorName = "KeySelector";
+        public const string KeySelectorAscendingName = "KeySelectorAscending";
+        public const string KeySelectorDescendingName = "KeySelectorDescending";
+
         /// <summary>
         /// Fact source of the aggregate.
         /// </summary>
@@ -30,13 +36,13 @@ namespace NRules.RuleModel
         /// <summary>
         /// Expressions used by the aggregate.
         /// </summary>
-        public ExpressionCollection Expressions { get; }
+        public ExpressionCollection ExpressionCollection { get; }
 
-        internal AggregateElement(Type resultType, string name, ExpressionCollection expressions, PatternElement source, Type customFactoryType)
+        internal AggregateElement(Type resultType, string name, ExpressionCollection expressionCollection, PatternElement source, Type customFactoryType)
             : base(resultType)
         {
             Name = name;
-            Expressions = expressions;
+            ExpressionCollection = expressionCollection;
             Source = source;
             CustomFactoryType = customFactoryType;
 

@@ -129,7 +129,7 @@ namespace NRules.Fluent.Dsl
         /// <param name="source">Query expression builder.</param>
         /// <param name="keySelector">Key selection expression used for sorting.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<IEnumerable<TSource>> OrderBy<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        public static IOrderedQuery<IEnumerable<TSource>> OrderBy<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
         {
             source.Builder.OrderBy(keySelector, SortDirection.Ascending);
             return new QueryExpression<IEnumerable<TSource>>(source.Builder);
@@ -143,7 +143,36 @@ namespace NRules.Fluent.Dsl
         /// <param name="source">Query expression builder.</param>
         /// <param name="keySelector">Key selection expression used for sorting.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<IEnumerable<TSource>> OrderByDescending<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        public static IOrderedQuery<IEnumerable<TSource>> OrderByDescending<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        {
+            source.Builder.OrderBy(keySelector, SortDirection.Descending);
+            return new QueryExpression<IEnumerable<TSource>>(source.Builder);
+        }
+
+
+        /// <summary>
+        /// Configures sorted matching facts to subsequently be sorted ascending by key.
+        /// </summary>
+        /// <typeparam name="TSource">Type of source facts.</typeparam>
+        /// <typeparam name="TKey">Type of sorting key.</typeparam>
+        /// <param name="source">Query expression builder.</param>
+        /// <param name="keySelector">Key selection expression used for sorting.</param>
+        /// <returns>Query expression builder.</returns>
+        public static IOrderedQuery<IEnumerable<TSource>> ThenBy<TSource, TKey>(this IOrderedQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        {
+            source.Builder.OrderBy(keySelector, SortDirection.Ascending);
+            return new QueryExpression<IEnumerable<TSource>>(source.Builder);
+        }
+
+        /// <summary>
+        /// Configures sorted matching facts to subsequently be sorted descending by key.
+        /// </summary>
+        /// <typeparam name="TSource">Type of source facts.</typeparam>
+        /// <typeparam name="TKey">Type of sorting key.</typeparam>
+        /// <param name="source">Query expression builder.</param>
+        /// <param name="keySelector">Key selection expression used for sorting.</param>
+        /// <returns>Query expression builder.</returns>
+        public static IOrderedQuery<IEnumerable<TSource>> ThenByDescending<TSource, TKey>(this IOrderedQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
         {
             source.Builder.OrderBy(keySelector, SortDirection.Descending);
             return new QueryExpression<IEnumerable<TSource>>(source.Builder);

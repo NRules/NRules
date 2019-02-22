@@ -36,4 +36,12 @@ namespace NRules.Fluent.Dsl
     public interface ICollectQuery<out TSource> : IQuery<TSource>
     {
     }
+
+    /// <summary>
+    /// Intermediate query chain element used for OrderBy modifiers.
+    /// </summary>
+    /// <typeparam name="TSource">Type of the element the query operates on.</typeparam>
+    public interface IOrderedQuery<out TSource> : IQuery<TSource>
+    {
+    }
 }
