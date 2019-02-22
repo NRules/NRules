@@ -222,7 +222,7 @@ namespace NRules.Tests.Aggregators
             var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
             var fact1 = new TestFact(1, "A");
             var fact2 = new TestFact(1, "B");
-            var facts = AsFact(fact1, fact1);
+            var facts = AsFact(fact1, fact2);
             target.Add(null, EmptyTuple(), facts);
 
             // Act
