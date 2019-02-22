@@ -506,10 +506,10 @@ namespace NRules.RuleModel.Builders
                 resultType = groupingType.MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
             }
 
-            var expressions = new Dictionary<string, LambdaExpression>
+            var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                { "KeySelector", keySelector },
-                { "ElementSelector", elementSelector }
+                new KeyValuePair<string, LambdaExpression>("KeySelector", keySelector),
+                new KeyValuePair<string, LambdaExpression>("ElementSelector", elementSelector)
             };
             var element = Aggregate(resultType, AggregateElement.GroupByName, expressions, source);
             return element;
@@ -544,9 +544,9 @@ namespace NRules.RuleModel.Builders
                 resultType = selector.ReturnType;
             }
 
-            var expressions = new Dictionary<string, LambdaExpression>
+            var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                { "Selector", selector }
+                new KeyValuePair<string, LambdaExpression>("Selector", selector)
             };
             var element = Aggregate(resultType, AggregateElement.ProjectName, expressions, source);
             return element;
@@ -564,9 +564,9 @@ namespace NRules.RuleModel.Builders
             if (selector == null)
                 throw new ArgumentNullException(nameof(selector), "Flattening selector not provided");
 
-            var expressions = new Dictionary<string, LambdaExpression>
+            var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                { "Selector", selector }
+                new KeyValuePair<string, LambdaExpression>("Selector", selector)
             };
             var element = Aggregate(resultType, AggregateElement.FlattenName, expressions, source);
             return element;

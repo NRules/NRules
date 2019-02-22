@@ -10,13 +10,13 @@ namespace NRules.Rete
         private readonly bool _isSubnetJoin;
 
         public string Name { get; }
-        public ExpressionCollection ExpressionCollection { get; }
+        public ExpressionCollection Expressions { get; }
 
-        public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, string name, ExpressionCollection expressionCollection, IAggregatorFactory aggregatorFactory, bool isSubnetJoin)
+        public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, string name, ExpressionCollection expressions, IAggregatorFactory aggregatorFactory, bool isSubnetJoin)
             : base(leftSource, rightSource)
         {
             Name = name;
-            ExpressionCollection = expressionCollection;
+            Expressions = expressions;
             _aggregatorFactory = aggregatorFactory;
             _isSubnetJoin = isSubnetJoin;
         }

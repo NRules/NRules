@@ -18,8 +18,8 @@ namespace NRules.Aggregators
         {
             var sourceType = element.Source.ValueType;
 
-            var ascendingSortSelector = element.ExpressionCollection.FindSingleOrDefault("KeySelectorAscending");
-            var descendingSortSelector = element.ExpressionCollection.FindSingleOrDefault("KeySelectorDescending");
+            var ascendingSortSelector = element.Expressions.FindSingleOrDefault("KeySelectorAscending");
+            var descendingSortSelector = element.Expressions.FindSingleOrDefault("KeySelectorDescending");
             if (ascendingSortSelector != null)
             {
                 _factory = CreateSortedAggregatorFactory(sourceType, SortDirection.Ascending, ascendingSortSelector, compiledExpressions.FindSingle("KeySelectorAscending"));
@@ -37,7 +37,7 @@ namespace NRules.Aggregators
             }
         }
 
-        static Func<IAggregator> CreateSortedAggregatorFactory(Type sourceType, SortDirection sortDirection, NamedExpressionElement selector, IAggregateExpression compiledSelector)
+        private static Func<IAggregator> CreateSortedAggregatorFactory(Type sourceType, SortDirection sortDirection, NamedExpressionElement selector, IAggregateExpression compiledSelector)
         {
             var resultType = selector.Expression.ReturnType;
             var aggregatorType = typeof(SortedAggregator<,>).MakeGenericType(sourceType, resultType);
