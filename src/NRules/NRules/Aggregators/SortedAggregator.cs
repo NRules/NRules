@@ -37,7 +37,7 @@ namespace NRules.Aggregators
         private readonly SortedFactCollection<TSource, TKey> _sortedFactCollection;
         private bool _created = false;
 
-        public SortedAggregatorBase(IComparer<TKey> comparer)
+        protected SortedAggregatorBase(IComparer<TKey> comparer)
         {
             _sortedFactCollection = new SortedFactCollection<TSource, TKey>(comparer);
         }

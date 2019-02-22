@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NRules.Aggregators;
 using NRules.RuleModel;
@@ -414,21 +415,21 @@ namespace NRules.Tests.Aggregators
                 () => target.Remove(null, EmptyTuple(), AsFact(new TestFact(1, "A"), new TestFact(1, "B"))));
         }
 
-        private MultiKeySortedAggregator<TestFact> CreateTarget_SortWithInt1AndInt2(SortDirection sortDirection1, SortDirection sortDirection2)
+        private static MultiKeySortedAggregator<TestFact> CreateTarget_SortWithInt1AndInt2(SortDirection sortDirection1, SortDirection sortDirection2)
         {
             var expression1 = new FactExpression<TestFact, int>(x => x.Int1);
             var expression2 = new FactExpression<TestFact, int>(x => x.Int2);
             return new MultiKeySortedAggregator<TestFact>(new[] { new SortCriteria(expression1, sortDirection1), new SortCriteria(expression2, sortDirection2) });
         }
 
-        private MultiKeySortedAggregator<TestFact> CreateTarget_SortWithInt1AndString(SortDirection sortDirectionInt, SortDirection sortDirectionString)
+        private static MultiKeySortedAggregator<TestFact> CreateTarget_SortWithInt1AndString(SortDirection sortDirectionInt, SortDirection sortDirectionString)
         {
             var expressionInt = new FactExpression<TestFact, int>(x => x.Int1);
             var expressionString = new FactExpression<TestFact, string>(x => x.String);
             return new MultiKeySortedAggregator<TestFact>(new[] { new SortCriteria(expressionInt, sortDirectionInt), new SortCriteria(expressionString, sortDirectionString) });
         }
 
-        private void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params TestFact[] orderedFacts)
+        private static void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params TestFact[] orderedFacts)
         {
             Assert.Equal(1, results.Length);
 
@@ -448,12 +449,12 @@ namespace NRules.Tests.Aggregators
             }
         }
 
-        private class TestFact
+        private class TestFact : IEquatable<TestFact>
         {
             public TestFact(int value1, int value2)
             {
                 Int1 = value1;
-                Int2 = value1;
+                Int2 = value2;
             }
 
             public TestFact(int value1, string stringValue)

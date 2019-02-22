@@ -149,7 +149,6 @@ namespace NRules.Fluent.Dsl
             return new QueryExpression<IEnumerable<TSource>>(source.Builder);
         }
 
-
         /// <summary>
         /// Configures sorted matching facts to subsequently be sorted ascending by key.
         /// </summary>
