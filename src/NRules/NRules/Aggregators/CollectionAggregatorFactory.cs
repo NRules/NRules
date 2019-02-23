@@ -8,7 +8,8 @@ using NRules.RuleModel;
 namespace NRules.Aggregators
 {
     /// <summary>
-    /// Aggregator factory for collection aggregator, including modifiers such as OrderBy.
+    /// Aggregator factory for collection aggregator.
+    /// Depending on supplied expressions this will create an ordered or an unordered fact aggregator.
     /// </summary>
     internal class CollectionAggregatorFactory : IAggregatorFactory
     {
