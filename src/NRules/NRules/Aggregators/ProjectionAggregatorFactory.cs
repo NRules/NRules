@@ -16,12 +16,12 @@ namespace NRules.Aggregators
 
         public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
         {
-            var selector = element.Expressions["Selector"];
+            var selector = element.Expressions[AggregateElement.SelectorName];
             var sourceType = element.Source.ValueType;
             var resultType = selector.Expression.ReturnType;
             Type aggregatorType = typeof(ProjectionAggregator<,>).MakeGenericType(sourceType, resultType);
 
-            var compiledSelector = compiledExpressions.FindSingle("Selector");
+            var compiledSelector = compiledExpressions.FindSingle(AggregateElement.SelectorName);
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
                 Expression.New(ctor, Expression.Constant(compiledSelector)));

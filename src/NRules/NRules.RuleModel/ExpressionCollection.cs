@@ -6,8 +6,8 @@ using System.Linq;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Ordered readonly collection of named expressions.
-    /// </summary>
+    /// Ordered readonly collection of named expressions. 
+    /// /// </summary>
     public class ExpressionCollection : IEnumerable<NamedExpressionElement>
     {
         private readonly List<NamedExpressionElement> _expressions;
@@ -52,7 +52,7 @@ namespace NRules.RuleModel
         }
 
         /// <summary>
-        /// Retrieves single expression by name.
+        /// Retrieves only expression by name.
         /// </summary>
         /// <param name="name">Expression name.</param>
         /// <returns>Matching expression or <c>null</c>.</returns>

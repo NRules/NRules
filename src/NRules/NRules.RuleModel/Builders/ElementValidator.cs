@@ -93,17 +93,10 @@ namespace NRules.RuleModel.Builders
                     $"Collect result must be a collection of source elements. ElementType={sourceType}, ResultType={resultType}");
             }
 
-            var keySelectorAscending = element.Expressions.FindSingleOrDefault("KeySelectorAscending")?.Expression;
-            var keySelectorDescending = element.Expressions.FindSingleOrDefault("KeySelectorDescending")?.Expression;
+            var keySelectorsAscending = element.Expressions.Find(AggregateElement.KeySelectorAscendingName);
+            var keySelectorsDescending = element.Expressions.Find(AggregateElement.KeySelectorDescendingName);
 
-            if (keySelectorAscending != null && keySelectorDescending != null)
-            {
-                throw new ArgumentException(
-                    "Must have a single key selector for sorting");
-            }
-
-            var sortKeySelector = keySelectorAscending ?? keySelectorDescending;
-            if (sortKeySelector != null)
+            foreach (var sortKeySelector in keySelectorsAscending.Concat(keySelectorsDescending).Select(x => x.Expression))
             {
                 if (sortKeySelector.Parameters.Count == 0)
                 {
@@ -123,7 +116,7 @@ namespace NRules.RuleModel.Builders
         {
             var sourceType = element.Source.ValueType;
             var resultType = element.ResultType;
-            var keySelector = element.Expressions["KeySelector"].Expression;
+            var keySelector = element.Expressions[AggregateElement.KeySelectorName].Expression;
             if (keySelector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
@@ -162,7 +155,7 @@ namespace NRules.RuleModel.Builders
         {
             var sourceType = element.Source.ValueType;
             var resultType = element.ResultType;
-            var selector = element.Expressions["Selector"].Expression;
+            var selector = element.Expressions[AggregateElement.SelectorName].Expression;
             if (selector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
@@ -186,7 +179,7 @@ namespace NRules.RuleModel.Builders
         {
             var sourceType = element.Source.ValueType;
             var resultType = element.ResultType;
-            var selector = element.Expressions["Selector"].Expression;
+            var selector = element.Expressions[AggregateElement.SelectorName].Expression;
             if (selector.Parameters.Count != 1)
             {
                 throw new ArgumentException(

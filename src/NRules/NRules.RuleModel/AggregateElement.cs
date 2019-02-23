@@ -12,6 +12,12 @@ namespace NRules.RuleModel
         public const string ProjectName = "Project";
         public const string FlattenName = "Flatten";
 
+        public const string SelectorName = "Selector";
+        public const string ElementSelectorName = "ElementSelector";
+        public const string KeySelectorName = "KeySelector";
+        public const string KeySelectorAscendingName = "KeySelectorAscending";
+        public const string KeySelectorDescendingName = "KeySelectorDescending";
+
         /// <summary>
         /// Fact source of the aggregate.
         /// </summary>

@@ -330,29 +330,29 @@ namespace NRules.Tests.Aggregators
                 () => target.Remove(null, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
         }
 
-        private SortedAggregator<TestFact, int> CreateTarget(SortDirection sortDirection = SortDirection.Ascending)
+        private static SortedAggregator<TestFact, int> CreateTarget(SortDirection sortDirection = SortDirection.Ascending)
         {
             var expression = new FactExpression<TestFact, int>(x => x.Id);
             return new SortedAggregator<TestFact, int>(expression, sortDirection);
         }
 
-        private SortedAggregator<TestFact, string> CreateTarget_SortByValue(SortDirection sortDirection = SortDirection.Ascending)
+        private static SortedAggregator<TestFact, string> CreateTarget_SortByValue(SortDirection sortDirection = SortDirection.Ascending)
         {
             var expression = new FactExpression<TestFact, string>(x => x.Value);
             return new SortedAggregator<TestFact, string>(expression, sortDirection);
         }
 
-        private void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params int[] orderedKeys)
+        private static void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params int[] orderedKeys)
         {
             AssertAggregationResult(results, action, f => f.Id, orderedKeys);
         }
 
-        private void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params string[] orderedKeys)
+        private static void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params string[] orderedKeys)
         {
             AssertAggregationResult(results, action, f => f.Value, orderedKeys);
         }
 
-        private void AssertAggregationResult<TKey>(AggregationResult[] results, AggregationAction action, Func<TestFact, TKey> keySelector, params TKey[] orderedKeys)
+        private static void AssertAggregationResult<TKey>(AggregationResult[] results, AggregationAction action, Func<TestFact, TKey> keySelector, params TKey[] orderedKeys)
         {
             Assert.Equal(1, results.Length);
 
