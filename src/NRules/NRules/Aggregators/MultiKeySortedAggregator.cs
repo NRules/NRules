@@ -5,30 +5,16 @@ using NRules.Utilities;
 
 namespace NRules.Aggregators
 {
-    /// <summary>
-    /// A key selecting expression and direction used for sorting
-    /// </summary>
     internal class SortCriteria
     {
-        /// <summary>
-        /// Details about the sort criteria used in a multi-key sort.
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <param name="direction"></param>
         public SortCriteria(IAggregateExpression expression, SortDirection direction)
         {
             KeySelector = expression;
             Direction = direction;
         }
 
-        /// <summary>
-        /// The key selection expression used for sorting. 
-        /// </summary>
         public IAggregateExpression KeySelector { get; }
 
-        /// <summary>
-        /// The direction to sort in.
-        /// </summary>
         public SortDirection Direction { get; }
     }
 
