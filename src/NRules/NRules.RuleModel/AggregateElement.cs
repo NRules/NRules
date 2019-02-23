@@ -36,13 +36,13 @@ namespace NRules.RuleModel
         /// <summary>
         /// Expressions used by the aggregate.
         /// </summary>
-        public ExpressionCollection ExpressionCollection { get; }
+        public ExpressionCollection Expressions { get; }
 
-        internal AggregateElement(Type resultType, string name, ExpressionCollection expressionCollection, PatternElement source, Type customFactoryType)
+        internal AggregateElement(Type resultType, string name, ExpressionCollection expressions, PatternElement source, Type customFactoryType)
             : base(resultType)
         {
             Name = name;
-            ExpressionCollection = expressionCollection;
+            Expressions = expressions;
             Source = source;
             CustomFactoryType = customFactoryType;
 

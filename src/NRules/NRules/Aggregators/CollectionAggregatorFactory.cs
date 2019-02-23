@@ -24,7 +24,7 @@ namespace NRules.Aggregators
                 if (sortCriteriaKeySelectors.Length == 1)
                 {
                     var keySelector = sortCriteriaKeySelectors[0];
-                    _factory = CreateSingleKeySortedAggregatorFactory(sourceType, GetSortDirection(keySelector.Name), element.ExpressionCollection.FindSingleOrDefault(keySelector.Name), keySelector);
+                    _factory = CreateSingleKeySortedAggregatorFactory(sourceType, GetSortDirection(keySelector.Name), element.Expressions.FindSingleOrDefault(keySelector.Name), keySelector);
                 }
                 else
                 {

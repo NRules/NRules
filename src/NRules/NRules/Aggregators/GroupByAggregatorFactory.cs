@@ -16,8 +16,8 @@ namespace NRules.Aggregators
 
         public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
         {
-            var keySelector = element.ExpressionCollection[AggregateElement.KeySelectorName];
-            var elementSelector = element.ExpressionCollection[AggregateElement.ElementSelectorName];
+            var keySelector = element.Expressions[AggregateElement.KeySelectorName];
+            var elementSelector = element.Expressions[AggregateElement.ElementSelectorName];
 
             var sourceType = element.Source.ValueType;
             var keyType = keySelector.Expression.ReturnType;

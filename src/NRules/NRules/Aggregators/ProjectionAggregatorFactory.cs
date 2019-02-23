@@ -16,7 +16,7 @@ namespace NRules.Aggregators
 
         public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
         {
-            var selector = element.ExpressionCollection[AggregateElement.SelectorName];
+            var selector = element.Expressions[AggregateElement.SelectorName];
             var sourceType = element.Source.ValueType;
             var resultType = selector.Expression.ReturnType;
             Type aggregatorType = typeof(ProjectionAggregator<,>).MakeGenericType(sourceType, resultType);

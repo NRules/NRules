@@ -6,8 +6,8 @@ using System.Linq;
 namespace NRules.RuleModel
 {
     /// <summary>
-    /// Sorted readonly map of named expressions.
-    /// </summary>
+    /// Ordered readonly collection of named expressions. 
+    /// /// </summary>
     public class ExpressionCollection : IEnumerable<NamedExpressionElement>
     {
         private readonly List<NamedExpressionElement> _expressions;
@@ -18,7 +18,7 @@ namespace NRules.RuleModel
         }
 
         /// <summary>
-        /// Number of expressions in the map.
+        /// Number of expressions in the collection.
         /// </summary>
         public int Count => _expressions.Count;
 
