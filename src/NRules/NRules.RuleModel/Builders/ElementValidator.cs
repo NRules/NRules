@@ -129,7 +129,7 @@ namespace NRules.RuleModel.Builders
                     $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}");
             }
 
-            var elementSelector = element.Expressions["ElementSelector"].Expression;
+            var elementSelector = element.Expressions[AggregateElement.ElementSelectorName].Expression;
             if (elementSelector.Parameters.Count == 0)
             {
                 throw new ArgumentException(

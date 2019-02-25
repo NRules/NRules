@@ -508,8 +508,8 @@ namespace NRules.RuleModel.Builders
 
             var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                new KeyValuePair<string, LambdaExpression>("KeySelector", keySelector),
-                new KeyValuePair<string, LambdaExpression>("ElementSelector", elementSelector)
+                new KeyValuePair<string, LambdaExpression>(AggregateElement.KeySelectorName, keySelector),
+                new KeyValuePair<string, LambdaExpression>(AggregateElement.ElementSelectorName, elementSelector)
             };
             var element = Aggregate(resultType, AggregateElement.GroupByName, expressions, source);
             return element;
@@ -546,7 +546,7 @@ namespace NRules.RuleModel.Builders
 
             var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                new KeyValuePair<string, LambdaExpression>("Selector", selector)
+                new KeyValuePair<string, LambdaExpression>(AggregateElement.SelectorName, selector)
             };
             var element = Aggregate(resultType, AggregateElement.ProjectName, expressions, source);
             return element;
@@ -566,7 +566,7 @@ namespace NRules.RuleModel.Builders
 
             var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                new KeyValuePair<string, LambdaExpression>("Selector", selector)
+                new KeyValuePair<string, LambdaExpression>(AggregateElement.SelectorName, selector)
             };
             var element = Aggregate(resultType, AggregateElement.FlattenName, expressions, source);
             return element;
