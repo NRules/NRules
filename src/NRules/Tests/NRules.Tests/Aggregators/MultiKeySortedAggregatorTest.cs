@@ -419,14 +419,18 @@ namespace NRules.Tests.Aggregators
         {
             var expression1 = new FactExpression<TestFact, int>(x => x.Int1);
             var expression2 = new FactExpression<TestFact, int>(x => x.Int2);
-            return new MultiKeySortedAggregator<TestFact>(new[] { new SortCriteria(expression1, sortDirection1), new SortCriteria(expression2, sortDirection2) });
+            var sortCondition1 = new SortCondition(AggregateElement.KeySelectorAscendingName, sortDirection1, expression1);
+            var sortCondition2 = new SortCondition(AggregateElement.KeySelectorAscendingName, sortDirection2, expression2);
+            return new MultiKeySortedAggregator<TestFact>(new[] { sortCondition1, sortCondition2 });
         }
 
         private static MultiKeySortedAggregator<TestFact> CreateTarget_SortWithInt1AndString(SortDirection sortDirectionInt, SortDirection sortDirectionString)
         {
             var expressionInt = new FactExpression<TestFact, int>(x => x.Int1);
             var expressionString = new FactExpression<TestFact, string>(x => x.String);
-            return new MultiKeySortedAggregator<TestFact>(new[] { new SortCriteria(expressionInt, sortDirectionInt), new SortCriteria(expressionString, sortDirectionString) });
+            var sortCondition1 = new SortCondition(AggregateElement.KeySelectorAscendingName, sortDirectionInt, expressionInt);
+            var sortCondition2 = new SortCondition(AggregateElement.KeySelectorAscendingName, sortDirectionString, expressionString);
+            return new MultiKeySortedAggregator<TestFact>(new[] { sortCondition1, sortCondition2 });
         }
 
         private static void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params TestFact[] orderedFacts)

@@ -19,18 +19,20 @@ namespace NRules.Aggregators
         {
             var sourceType = element.Source.ValueType;
 
-            var sortCriteriaKeySelectors = compiledExpressions.Where(x => x.Name == AggregateElement.KeySelectorAscendingName || x.Name == AggregateElement.KeySelectorDescendingName).ToArray();
-            if (sortCriteriaKeySelectors.Any())
+            var sortConditions = compiledExpressions
+                .Where(x => x.Name == AggregateElement.KeySelectorAscendingName || x.Name == AggregateElement.KeySelectorDescendingName)
+                .Select(x => new SortCondition(x.Name, GetSortDirection(x.Name), x)).ToArray();
+            if (sortConditions.Any())
             {
-                if (sortCriteriaKeySelectors.Length == 1)
+                if (sortConditions.Length == 1)
                 {
-                    var keySelector = sortCriteriaKeySelectors[0];
-                    _factory = CreateSingleKeySortedAggregatorFactory(sourceType, GetSortDirection(keySelector.Name), element.Expressions.FindSingleOrDefault(keySelector.Name), keySelector);
+                    var sortCondition = sortConditions[0];
+                    var selectorElement = element.Expressions.FindSingleOrDefault(sortCondition.Name);
+                    _factory = CreateSingleKeySortedAggregatorFactory(sourceType, sortCondition.Direction, selectorElement, sortCondition.KeySelector);
                 }
                 else
                 {
-                    var sortCriteria = compiledExpressions.Select(x => new SortCriteria(x, GetSortDirection(x.Name))).ToArray();
-                    _factory = CreateMultiKeySortedAggregatorFactory(sourceType, sortCriteria);
+                    _factory = CreateMultiKeySortedAggregatorFactory(sourceType, sortConditions);
                 }
             }
             else
@@ -49,8 +51,8 @@ namespace NRules.Aggregators
 
         private static Func<IAggregator> CreateSingleKeySortedAggregatorFactory(Type sourceType, SortDirection sortDirection, NamedExpressionElement selector, IAggregateExpression compiledSelector)
         {
-            var resultType = selector.Expression.ReturnType;
-            var aggregatorType = typeof(SortedAggregator<,>).MakeGenericType(sourceType, resultType);
+            var keyType = selector.Expression.ReturnType;
+            var aggregatorType = typeof(SortedAggregator<,>).MakeGenericType(sourceType, keyType);
 
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
@@ -59,13 +61,13 @@ namespace NRules.Aggregators
             return factoryExpression.Compile();
         }
 
-        private static Func<IAggregator> CreateMultiKeySortedAggregatorFactory(Type sourceType, SortCriteria[] sortCriterias)
+        private static Func<IAggregator> CreateMultiKeySortedAggregatorFactory(Type sourceType, SortCondition[] sortConditions)
         {
             var aggregatorType = typeof(MultiKeySortedAggregator<>).MakeGenericType(sourceType);
 
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
-                Expression.New(ctor, Expression.Constant(sortCriterias)));
+                Expression.New(ctor, Expression.Constant(sortConditions)));
 
             return factoryExpression.Compile();
         }

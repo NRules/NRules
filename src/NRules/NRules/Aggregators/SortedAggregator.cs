@@ -9,40 +9,25 @@ namespace NRules.Aggregators
     /// </summary>
     /// <typeparam name="TSource">Type of source element.</typeparam>
     /// <typeparam name="TKey">Type of key used in the key selector for sorting.</typeparam>
-    internal class SortedAggregator<TSource, TKey> : SortedAggregatorBase<TSource, TKey>
+    internal class SortedAggregator<TSource, TKey> : IAggregator
     {
+        private readonly SortedFactCollection<TSource, TKey> _sortedFactCollection;
         private readonly IAggregateExpression _keySelector;
+        private bool _created = false;
 
         public SortedAggregator(IAggregateExpression keySelector, SortDirection sortDirection)
-            : base(GetComparer(sortDirection))
         {
             _keySelector = keySelector;
+            var comparer = CreateComparer(sortDirection);
+            _sortedFactCollection = new SortedFactCollection<TSource, TKey>(comparer);
         }
 
-        private static IComparer<TKey> GetComparer(SortDirection sortDirection)
+        private static IComparer<TKey> CreateComparer(SortDirection sortDirection)
         {
             var defaultComparer = (IComparer<TKey>)Comparer<TKey>.Default;
             var comparer = sortDirection == SortDirection.Ascending ? defaultComparer : new ReverseComparer<TKey>(defaultComparer);
             return comparer;
         }
-
-        protected override TKey GetKey(AggregationContext context, ITuple tuple, IFact fact)
-        {
-            return (TKey)_keySelector.Invoke(context, tuple, fact);
-        }
-    }
-
-    internal abstract class SortedAggregatorBase<TSource, TKey> : IAggregator
-    {
-        private readonly SortedFactCollection<TSource, TKey> _sortedFactCollection;
-        private bool _created = false;
-
-        protected SortedAggregatorBase(IComparer<TKey> comparer)
-        {
-            _sortedFactCollection = new SortedFactCollection<TSource, TKey>(comparer);
-        }
-
-        protected abstract TKey GetKey(AggregationContext context, ITuple tuple, IFact fact);
 
         public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
@@ -71,7 +56,7 @@ namespace NRules.Aggregators
         {
             foreach (var fact in facts)
             {
-                var key = GetKey(context, tuple, fact);
+                var key = (TKey)_keySelector.Invoke(context, tuple, fact);
                 _sortedFactCollection.AddFact(key, fact);
             }
         }
@@ -82,7 +67,7 @@ namespace NRules.Aggregators
             {
                 _sortedFactCollection.RemoveFact(fact);
 
-                var key = GetKey(context, tuple, fact);
+                var key = (TKey)_keySelector.Invoke(context, tuple, fact);
                 _sortedFactCollection.AddFact(key, fact);
             }
         }
