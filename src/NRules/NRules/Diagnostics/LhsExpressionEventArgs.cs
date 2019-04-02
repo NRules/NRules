@@ -23,11 +23,13 @@ namespace NRules.Diagnostics
         /// <param name="result">Expression result.</param>
         /// <param name="tuple">Tuple related to the event.</param>
         /// <param name="fact">Fact related to the event.</param>
-        public LhsExpressionEventArgs(Expression expression, Exception exception, object[] arguments, object result, ITuple tuple, IFact fact)
+        /// <param name="rules">Rules that contain the expression that generated the event.</param>
+        public LhsExpressionEventArgs(Expression expression, Exception exception, object[] arguments, object result, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
             : base(expression, exception, arguments, result)
         {
             _tuple = tuple;
             _fact = fact;
+            Rules = rules;
         }
 
         /// <summary>
@@ -39,11 +41,13 @@ namespace NRules.Diagnostics
         /// <param name="result">Expression result.</param>
         /// <param name="tuple">Tuple related to the event.</param>
         /// <param name="fact">Fact related to the event.</param>
-        public LhsExpressionEventArgs(Expression expression, Exception exception, object argument, object result, ITuple tuple, IFact fact)
+        /// <param name="rules">Rules that contain the expression that generated the event.</param>
+        public LhsExpressionEventArgs(Expression expression, Exception exception, object argument, object result, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
             : base(expression, exception, argument, result)
         {
             _tuple = tuple;
             _fact = fact;
+            Rules = rules;
         }
 
         /// <summary>
@@ -67,5 +71,10 @@ namespace NRules.Diagnostics
                 }
             }
         }
+
+        /// <summary>
+        /// Rules that contain the expression that generated the event.
+        /// </summary>
+        public IEnumerable<IRuleDefinition> Rules { get; }
     }
 }

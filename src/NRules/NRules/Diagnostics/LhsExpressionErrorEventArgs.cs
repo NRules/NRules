@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NRules.RuleModel;
 
@@ -17,8 +18,9 @@ namespace NRules.Diagnostics
         /// <param name="arguments">Expression arguments.</param>
         /// <param name="tuple">Tuple related to the event.</param>
         /// <param name="fact">Fact related to the event.</param>
-        public LhsExpressionErrorEventArgs(Expression expression, Exception exception, object[] arguments, ITuple tuple, IFact fact)
-            : base(expression, exception, arguments, null, tuple, fact)
+        /// <param name="rules">Rules that contain the expression that generated the event.</param>
+        public LhsExpressionErrorEventArgs(Expression expression, Exception exception, object[] arguments, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
+            : base(expression, exception, arguments, null, tuple, fact, rules)
         {
         }
         
@@ -30,8 +32,9 @@ namespace NRules.Diagnostics
         /// <param name="argument">Expression argument.</param>
         /// <param name="tuple">Tuple related to the event.</param>
         /// <param name="fact">Fact related to the event.</param>
-        public LhsExpressionErrorEventArgs(Expression expression, Exception exception, object argument, ITuple tuple, IFact fact)
-            : base(expression, exception, argument, null, tuple, fact)
+        /// <param name="rules">Rules that contain the expression that generated the event.</param>
+        public LhsExpressionErrorEventArgs(Expression expression, Exception exception, object argument, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
+            : base(expression, exception, argument, null, tuple, fact, rules)
         {
         }
 

@@ -6,7 +6,7 @@ namespace NRules.Rete
 {
     internal interface IBetaCondition
     {
-        bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact);
+        bool IsSatisfiedBy(IExecutionContext context, NodeDebugInfo nodeInfo, Tuple leftTuple, Fact rightFact);
     }
 
     internal sealed class BetaCondition : IBetaCondition, IEquatable<BetaCondition>
@@ -22,7 +22,7 @@ namespace NRules.Rete
             _compiledExpression = compiledExpression;
         }
 
-        public bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact)
+        public bool IsSatisfiedBy(IExecutionContext context, NodeDebugInfo nodeInfo, Tuple leftTuple, Fact rightFact)
         {
             var args = new object[_compiledExpression.ArrayArgumentCount];
             int index = leftTuple.Count - 1;
@@ -44,7 +44,7 @@ namespace NRules.Rete
             {
                 exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, args, leftTuple, rightFact, ref isHandled);
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, args, leftTuple, rightFact, nodeInfo, ref isHandled);
                 if (!isHandled)
                 {
                     throw new RuleLhsExpressionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
@@ -53,7 +53,7 @@ namespace NRules.Rete
             }
             finally
             {
-                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, args, result, leftTuple, rightFact);
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, args, result, leftTuple, rightFact, nodeInfo);
             }
         }
 

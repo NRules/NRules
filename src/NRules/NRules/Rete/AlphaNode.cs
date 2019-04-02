@@ -8,8 +8,10 @@ namespace NRules.Rete
         protected AlphaNode()
         {
             ChildNodes = new List<AlphaNode>();
+            NodeInfo = new NodeDebugInfo();
         }
 
+        public NodeDebugInfo NodeInfo { get; }
         public AlphaMemoryNode MemoryNode { get; set; }
 
         [DebuggerDisplay("Count = {ChildNodes.Count}")]

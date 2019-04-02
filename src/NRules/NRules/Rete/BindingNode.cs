@@ -64,7 +64,7 @@ namespace NRules.Rete
         {
             try
             {
-                var value = BindingExpression.Invoke(context, tuple);
+                var value = BindingExpression.Invoke(context, NodeInfo, tuple);
                 var fact = new Fact(value, ResultType);
                 tuple.SetState(this, fact);
                 toAssert.Add(tuple, fact);
@@ -83,7 +83,7 @@ namespace NRules.Rete
         {
             try
             {
-                var value = BindingExpression.Invoke(context, tuple);
+                var value = BindingExpression.Invoke(context, NodeInfo, tuple);
                 fact.RawObject = value;
                 toUpdate.Add(tuple, fact);
             }

@@ -6,7 +6,7 @@ namespace NRules.Rete
 {
     internal interface IAlphaCondition
     {
-        bool IsSatisfiedBy(IExecutionContext context, Fact fact);
+        bool IsSatisfiedBy(IExecutionContext context, NodeDebugInfo nodeInfo, Fact fact);
     }
 
     internal sealed class AlphaCondition : IAlphaCondition, IEquatable<AlphaCondition>
@@ -20,7 +20,7 @@ namespace NRules.Rete
             _compiledExpression = compiledExpression;
         }
 
-        public bool IsSatisfiedBy(IExecutionContext context, Fact fact)
+        public bool IsSatisfiedBy(IExecutionContext context, NodeDebugInfo nodeInfo, Fact fact)
         {
             var factValue = fact.Object;
             Exception exception = null;
@@ -34,7 +34,7 @@ namespace NRules.Rete
             {
                 exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, factValue, null, fact, ref isHandled);
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, factValue, null, fact, nodeInfo, ref isHandled);
                 if (!isHandled)
                 {
                     throw new RuleLhsExpressionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
@@ -43,7 +43,7 @@ namespace NRules.Rete
             }
             finally
             {
-                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, factValue, result, null, fact);
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, factValue, result, null, fact, nodeInfo);
             }
         }
 

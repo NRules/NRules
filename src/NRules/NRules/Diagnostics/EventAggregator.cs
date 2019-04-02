@@ -2,6 +2,7 @@ using System;
 using System.Linq.Expressions;
 using NRules.AgendaFilters;
 using NRules.Extensibility;
+using NRules.Rete;
 using NRules.RuleModel;
 
 namespace NRules.Diagnostics
@@ -128,10 +129,10 @@ namespace NRules.Diagnostics
         void RaiseFactUpdated(ISession session, IFact fact);
         void RaiseFactRetracting(ISession session, IFact fact);
         void RaiseFactRetracted(ISession session, IFact fact);
-        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, ITuple tuple, IFact fact);
-        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, ITuple tuple, IFact fact);
-        void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, ref bool isHandled);
-        void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, ITuple tuple, IFact fact, ref bool isHandled);
+        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo);
+        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo);
+        void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo, ref bool isHandled);
+        void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo, ref bool isHandled);
         void RaiseAgendaExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, IMatch match);
         void RaiseAgendaExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match, ref bool isHandled);
         void RaiseRhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match);
@@ -290,59 +291,59 @@ namespace NRules.Diagnostics
             _parent?.RaiseFactRetracted(session, fact);
         }
 
-        public void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, ITuple tuple, IFact fact)
+        public void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo)
         {
-            var hanlder = LhsExpressionEvaluatedEvent;
-            if (hanlder != null)
+            var handler = LhsExpressionEvaluatedEvent;
+            if (handler != null)
             {
-                var @event = new LhsExpressionEventArgs(expression, exception, argument, result, tuple, fact);
-                hanlder(session, @event);
+                var @event = new LhsExpressionEventArgs(expression, exception, argument, result, tuple, fact, nodeInfo.Rules);
+                handler(session, @event);
             }
-            _parent?.RaiseLhsExpressionEvaluated(session, exception, expression, argument, result, tuple, fact);
+            _parent?.RaiseLhsExpressionEvaluated(session, exception, expression, argument, result, tuple, fact, nodeInfo);
         }
 
-        public void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, ITuple tuple, IFact fact)
+        public void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo)
         {
-            var hanlder = LhsExpressionEvaluatedEvent;
-            if (hanlder != null)
+            var handler = LhsExpressionEvaluatedEvent;
+            if (handler != null)
             {
-                var @event = new LhsExpressionEventArgs(expression, exception, arguments, result, tuple, fact);
-                hanlder(session, @event);
+                var @event = new LhsExpressionEventArgs(expression, exception, arguments, result, tuple, fact, nodeInfo.Rules);
+                handler(session, @event);
             }
-            _parent?.RaiseLhsExpressionEvaluated(session, exception, expression, arguments, result, tuple, fact);
+            _parent?.RaiseLhsExpressionEvaluated(session, exception, expression, arguments, result, tuple, fact, nodeInfo);
         }
 
-        public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, ref bool isHandled)
+        public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo, ref bool isHandled)
         {
-            var hanlder = LhsExpressionFailedEvent;
-            if (hanlder != null)
+            var handler = LhsExpressionFailedEvent;
+            if (handler != null)
             {
-                var @event = new LhsExpressionErrorEventArgs(expression, exception, argument, tuple, fact);
-                hanlder(session, @event);
+                var @event = new LhsExpressionErrorEventArgs(expression, exception, argument, tuple, fact, nodeInfo.Rules);
+                handler(session, @event);
                 isHandled |= @event.IsHandled;
             }
-            _parent?.RaiseLhsExpressionFailed(session, exception, expression, argument, tuple, fact, ref isHandled);
+            _parent?.RaiseLhsExpressionFailed(session, exception, expression, argument, tuple, fact, nodeInfo, ref isHandled);
         }
 
-        public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, ITuple tuple, IFact fact, ref bool isHandled)
+        public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo, ref bool isHandled)
         {
-            var hanlder = LhsExpressionFailedEvent;
-            if (hanlder != null)
+            var handler = LhsExpressionFailedEvent;
+            if (handler != null)
             {
-                var @event = new LhsExpressionErrorEventArgs(expression, exception, arguments, tuple, fact);
-                hanlder(session, @event);
+                var @event = new LhsExpressionErrorEventArgs(expression, exception, arguments, tuple, fact, nodeInfo.Rules);
+                handler(session, @event);
                 isHandled |= @event.IsHandled;
             }
-            _parent?.RaiseLhsExpressionFailed(session, exception, expression, arguments, tuple, fact, ref isHandled);
+            _parent?.RaiseLhsExpressionFailed(session, exception, expression, arguments, tuple, fact, nodeInfo, ref isHandled);
         }
 
         public void RaiseAgendaExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, IMatch match)
         {
-            var hanlder = AgendaExpressionEvaluatedEvent;
-            if (hanlder != null)
+            var handler = AgendaExpressionEvaluatedEvent;
+            if (handler != null)
             {
                 var @event = new AgendaExpressionEventArgs(expression, exception, arguments, result, match);
-                hanlder(session, @event);
+                handler(session, @event);
             }
             _parent?.RaiseAgendaExpressionEvaluated(session, exception, expression, arguments, result, match);
         }
@@ -361,11 +362,11 @@ namespace NRules.Diagnostics
         
         public void RaiseRhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match)
         {
-            var hanlder = RhsExpressionEvaluatedEvent;
-            if (hanlder != null)
+            var handler = RhsExpressionEvaluatedEvent;
+            if (handler != null)
             {
                 var @event = new RhsExpressionEventArgs(expression, exception, arguments, match);
-                hanlder(session, @event);
+                handler(session, @event);
             }
             _parent?.RaiseRhsExpressionEvaluated(session, exception, expression, arguments, match);
         }

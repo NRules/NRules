@@ -34,7 +34,7 @@ namespace NRules.Rete
         {
             foreach (var condition in Conditions)
             {
-                if (!condition.IsSatisfiedBy(context, left, right)) return false;
+                if (!condition.IsSatisfiedBy(context, NodeInfo, left, right)) return false;
             }
             return true;
         }

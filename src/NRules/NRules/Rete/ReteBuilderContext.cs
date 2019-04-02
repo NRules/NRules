@@ -7,18 +7,21 @@ namespace NRules.Rete
     {
         private readonly List<Declaration> _declarations;
 
-        public ReteBuilderContext(DummyNode dummyNode)
+        public ReteBuilderContext(IRuleDefinition rule, DummyNode dummyNode)
         {
+            Rule = rule;
             _declarations = new List<Declaration>();
             BetaSource = dummyNode;
         }
 
         public ReteBuilderContext(ReteBuilderContext context)
         {
+            Rule = context.Rule;
             BetaSource = context.BetaSource;
             _declarations = new List<Declaration>(context._declarations);
         }
 
+        public IRuleDefinition Rule { get; }
         public IEnumerable<Declaration> Declarations => _declarations;
 
         public AlphaNode CurrentAlphaNode { get; set; }
