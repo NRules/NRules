@@ -28,7 +28,7 @@ namespace NRules.Rete
             var aggregation = new Aggregation();
             foreach (var set in joinedSets)
             {
-                var matchingFacts = GetMatchingFacts(context, set);
+                var matchingFacts = set.Facts;
                 IFactAggregator aggregator = CreateFactAggregator(set.Tuple);
                 AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
             }
@@ -45,17 +45,17 @@ namespace NRules.Rete
                 IFactAggregator aggregator = GetFactAggregator(set.Tuple);
                 if (aggregator != null)
                 {
-                    if (_isSubnetJoin && HasRightFacts(context, set))
+                    if (_isSubnetJoin && set.Facts.Count > 0)
                     {
                         //Update already propagated from the right
                         continue;
                     }
-                    var matchingFacts = GetMatchingFacts(context, set);
+                    var matchingFacts = set.Facts;
                     UpdateInAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
                 }
                 else
                 {
-                    var matchingFacts = GetMatchingFacts(context, set);
+                    var matchingFacts = set.Facts;
                     aggregator = CreateFactAggregator(set.Tuple);
                     AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
                 }
@@ -85,7 +85,7 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                var matchingFacts = GetMatchingFacts(context, set);
+                var matchingFacts = set.Facts;
                 if (matchingFacts.Count > 0)
                 {
                     IFactAggregator aggregator = GetFactAggregator(set.Tuple);
@@ -94,7 +94,7 @@ namespace NRules.Rete
                         aggregator = CreateFactAggregator(set.Tuple);
 
                         var originalSet = JoinedSet(context, set.Tuple);
-                        var matchingOriginalFacts = GetMatchingFacts(context, originalSet);
+                        var matchingOriginalFacts = originalSet.Facts;
                         AddToAggregate(aggregationContext, aggregator, aggregation, originalSet.Tuple, matchingOriginalFacts);
                     }
 
@@ -112,7 +112,7 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                var matchingFacts = GetMatchingFacts(context, set);
+                var matchingFacts = set.Facts;
                 if (matchingFacts.Count > 0)
                 {
                     IFactAggregator aggregator = GetFactAggregator(set.Tuple);
@@ -123,7 +123,7 @@ namespace NRules.Rete
                     else
                     {
                         var fullSet = JoinedSet(context, set.Tuple);
-                        var allMatchingFacts = GetMatchingFacts(context, fullSet);
+                        var allMatchingFacts = fullSet.Facts;
                         aggregator = CreateFactAggregator(fullSet.Tuple);
                         AddToAggregate(aggregationContext, aggregator, aggregation, fullSet.Tuple, allMatchingFacts);
                     }
@@ -140,7 +140,7 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 if (set.Facts.Count == 0) continue;
-                var matchingFacts = GetMatchingFacts(context, set);
+                var matchingFacts = set.Facts;
                 if (matchingFacts.Count > 0)
                 {
                     IFactAggregator aggregator = GetFactAggregator(set.Tuple);
@@ -156,17 +156,6 @@ namespace NRules.Rete
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.VisitAggregateNode(context, this);
-        }
-
-        private List<Fact> GetMatchingFacts(IExecutionContext context, TupleFactSet set)
-        {
-            var matchingFacts = new List<Fact>();
-            foreach (var fact in set.Facts)
-            {
-                if (MatchesConditions(context, set.Tuple, fact))
-                    matchingFacts.Add(fact);
-            }
-            return matchingFacts;
         }
 
         private void AddToAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IList<Fact> facts)
@@ -186,7 +175,7 @@ namespace NRules.Rete
             }
         }
 
-        private void UpdateInAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, List<Fact> facts)
+        private void UpdateInAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IList<Fact> facts)
         {
             try
             {
@@ -265,18 +254,6 @@ namespace NRules.Rete
         {
             var factAggregator = tuple.RemoveState<IFactAggregator>(this);
             return factAggregator;
-        }
-
-        private bool HasRightFacts(IExecutionContext context, TupleFactSet set)
-        {
-            foreach (var fact in set.Facts)
-            {
-                if (MatchesConditions(context, set.Tuple, fact))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }

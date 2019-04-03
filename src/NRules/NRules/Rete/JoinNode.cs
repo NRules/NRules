@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace NRules.Rete
 {
@@ -6,10 +7,14 @@ namespace NRules.Rete
     {
         private readonly bool _isSubnetJoin;
 
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        public IList<IBetaCondition> Conditions { get; }
+
         public JoinNode(ITupleSource leftSource, IObjectSource rightSource, bool isSubnetJoin)
             : base(leftSource, rightSource)
         {
             _isSubnetJoin = isSubnetJoin;
+            Conditions = new List<IBetaCondition>();
         }
 
         public override void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
@@ -104,6 +109,16 @@ namespace NRules.Rete
                 toRetract.Add(set.Tuple, fact);
             }
             MemoryNode.PropagateRetract(context, toRetract);
+        }
+
+        private bool MatchesConditions(IExecutionContext context, Tuple left, Fact right)
+        {
+            foreach (var condition in Conditions)
+            {
+                if (!condition.IsSatisfiedBy(context, NodeInfo, left, right))
+                    return false;
+            }
+            return true;
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)

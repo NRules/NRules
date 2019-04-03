@@ -12,9 +12,6 @@ namespace NRules.Rete
         public ITupleSource LeftSource { get; }
         public IObjectSource RightSource { get; }
 
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public IList<IBetaCondition> Conditions { get; }
-
         protected BinaryBetaNode(ITupleSource leftSource, IObjectSource rightSource)
         {
             LeftSource = leftSource;
@@ -22,22 +19,11 @@ namespace NRules.Rete
 
             LeftSource.Attach(this);
             RightSource.Attach(this);
-
-            Conditions = new List<IBetaCondition>();
         }
 
         public abstract void PropagateAssert(IExecutionContext context, IList<Fact> facts);
         public abstract void PropagateUpdate(IExecutionContext context, IList<Fact> facts);
         public abstract void PropagateRetract(IExecutionContext context, IList<Fact> facts);
-
-        protected bool MatchesConditions(IExecutionContext context, Tuple left, Fact right)
-        {
-            foreach (var condition in Conditions)
-            {
-                if (!condition.IsSatisfiedBy(context, NodeInfo, left, right)) return false;
-            }
-            return true;
-        }
 
         protected TupleFactSet JoinedSet(IExecutionContext context, Tuple tuple)
         {

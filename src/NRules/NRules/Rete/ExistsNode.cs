@@ -17,10 +17,7 @@ namespace NRules.Rete
                 var quantifier = set.Tuple.CreateQuantifier(this);
                 foreach (var fact in set.Facts)
                 {
-                    if (MatchesConditions(context, set.Tuple, fact))
-                    {
-                        quantifier.Value++;
-                    }
+                    quantifier.Value++;
                 }
                 if (quantifier.Value > 0)
                 {
@@ -66,10 +63,7 @@ namespace NRules.Rete
                 int startingCount = quantifier.Value;
                 foreach (var fact in set.Facts)
                 {
-                    if (MatchesConditions(context, set.Tuple, fact))
-                    {
-                        quantifier.Value++;
-                    }
+                    quantifier.Value++;
                 }
                 if (startingCount == 0 && quantifier.Value > 0)
                 {
@@ -94,10 +88,7 @@ namespace NRules.Rete
                 int startingCount = quantifier.Value;
                 foreach (var fact in set.Facts)
                 {
-                    if (MatchesConditions(context, set.Tuple, fact))
-                    {
-                        quantifier.Value--;
-                    }
+                    quantifier.Value--;
                 }
                 if (startingCount > 0 && quantifier.Value == 0)
                 {
