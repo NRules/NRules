@@ -15,7 +15,7 @@ namespace NRules.Rete
             source.Attach(this);
         }
 
-        public void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
+        public void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
         {
             var toAssert = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)
@@ -30,7 +30,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
+        public void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
         {
             var toUpdate = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)
@@ -44,7 +44,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
+        public void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
         {
             var toRetract = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)

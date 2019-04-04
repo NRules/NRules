@@ -5,9 +5,9 @@ namespace NRules.Rete
     internal interface IBetaMemoryNode : ITupleSource, INode
     {
         IEnumerable<ITupleSink> Sinks { get; }
-        void PropagateAssert(IExecutionContext context, ITupleFactList tupleFactList);
-        void PropagateUpdate(IExecutionContext context, ITupleFactList tupleFactList);
-        void PropagateRetract(IExecutionContext context, ITupleFactList tupleFactList);
+        void PropagateAssert(IExecutionContext context, TupleFactList tupleFactList);
+        void PropagateUpdate(IExecutionContext context, TupleFactList tupleFactList);
+        void PropagateRetract(IExecutionContext context, TupleFactList tupleFactList);
     }
 
     internal class BetaMemoryNode : IBetaMemoryNode
@@ -16,7 +16,7 @@ namespace NRules.Rete
 
         public IEnumerable<ITupleSink> Sinks => _sinks;
 
-        public void PropagateAssert(IExecutionContext context, ITupleFactList tupleFactList)
+        public void PropagateAssert(IExecutionContext context, TupleFactList tupleFactList)
         {
             if (tupleFactList.Count == 0) return;
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
@@ -32,7 +32,7 @@ namespace NRules.Rete
             PropagateAssertInternal(context, memory, toAssert);
         }
 
-        public void PropagateUpdate(IExecutionContext context, ITupleFactList tupleFactList)
+        public void PropagateUpdate(IExecutionContext context, TupleFactList tupleFactList)
         {
             if (tupleFactList.Count == 0) return;
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
@@ -58,7 +58,7 @@ namespace NRules.Rete
             PropagateUpdateInternal(context, toUpdate);
         }
 
-        public void PropagateRetract(IExecutionContext context, ITupleFactList tupleFactList)
+        public void PropagateRetract(IExecutionContext context, TupleFactList tupleFactList)
         {
             if (tupleFactList.Count == 0) return;
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);

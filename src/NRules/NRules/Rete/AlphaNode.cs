@@ -19,7 +19,7 @@ namespace NRules.Rete
 
         public abstract bool IsSatisfiedBy(IExecutionContext context, Fact fact);
 
-        public void PropagateAssert(IExecutionContext context, IList<Fact> facts)
+        public void PropagateAssert(IExecutionContext context, List<Fact> facts)
         {
             var toAssert = new List<Fact>();
             foreach (var fact in facts)
@@ -38,7 +38,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateUpdate(IExecutionContext context, IList<Fact> facts)
+        public void PropagateUpdate(IExecutionContext context, List<Fact> facts)
         {
             var toUpdate = new List<Fact>();
             var toRetract = new List<Fact>();
@@ -64,7 +64,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateRetract(IExecutionContext context, IList<Fact> facts)
+        public void PropagateRetract(IExecutionContext context, List<Fact> facts)
         {
             foreach (var childNode in ChildNodes)
             {
@@ -73,7 +73,7 @@ namespace NRules.Rete
             MemoryNode?.PropagateRetract(context, facts);
         }
 
-        protected virtual void UnsatisfiedFactUpdate(IExecutionContext context, IList<Fact> facts)
+        protected virtual void UnsatisfiedFactUpdate(IExecutionContext context, List<Fact> facts)
         {
             PropagateRetract(context, facts);
         }

@@ -13,7 +13,7 @@ namespace NRules.Rete
 
         public IEnumerable<IObjectSink> Sinks => _sinks;
 
-        public void PropagateAssert(IExecutionContext context, IList<Fact> facts)
+        public void PropagateAssert(IExecutionContext context, List<Fact> facts)
         {
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             foreach (var sink in _sinks)
@@ -23,7 +23,7 @@ namespace NRules.Rete
             memory.Add(facts);
         }
 
-        public void PropagateUpdate(IExecutionContext context, IList<Fact> facts)
+        public void PropagateUpdate(IExecutionContext context, List<Fact> facts)
         {
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             var toUpdate = new List<Fact>();
@@ -48,7 +48,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateRetract(IExecutionContext context, IList<Fact> facts)
+        public void PropagateRetract(IExecutionContext context, List<Fact> facts)
         {
             IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             var toRetract = new List<Fact>(facts.Count);

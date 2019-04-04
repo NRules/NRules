@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace NRules.Rete
@@ -21,9 +20,9 @@ namespace NRules.Rete
             RightSource.Attach(this);
         }
 
-        public abstract void PropagateAssert(IExecutionContext context, IList<Fact> facts);
-        public abstract void PropagateUpdate(IExecutionContext context, IList<Fact> facts);
-        public abstract void PropagateRetract(IExecutionContext context, IList<Fact> facts);
+        public abstract void PropagateAssert(IExecutionContext context, List<Fact> facts);
+        public abstract void PropagateUpdate(IExecutionContext context, List<Fact> facts);
+        public abstract void PropagateRetract(IExecutionContext context, List<Fact> facts);
 
         protected TupleFactSet JoinedSet(IExecutionContext context, Tuple tuple)
         {
@@ -38,7 +37,7 @@ namespace NRules.Rete
             return new TupleFactSet(tuple, facts);
         }
 
-        protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, IList<Tuple> tuples)
+        protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, List<Tuple> tuples)
         {
             if (tuples.Count == 0) return EmptySetList;
             int level = tuples[0].Level;
@@ -54,7 +53,7 @@ namespace NRules.Rete
             return CrossJoin(tuples, facts);
         }
 
-        protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, IList<Fact> facts)
+        protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, List<Fact> facts)
         {
             var tuples = LeftSource.GetTuples(context).ToList();
             if (tuples.Count == 0) return EmptySetList;
@@ -86,7 +85,7 @@ namespace NRules.Rete
             return tupleFactSet;
         }
 
-        private IEnumerable<TupleFactSet> CrossJoin(IList<Tuple> tuples, IList<Fact> facts)
+        private IEnumerable<TupleFactSet> CrossJoin(IList<Tuple> tuples, List<Fact> facts)
         {
             var sets = new List<TupleFactSet>();
             foreach (var tuple in tuples)
@@ -96,7 +95,7 @@ namespace NRules.Rete
             return sets;
         }
 
-        private IDictionary<long, List<Fact>> GroupFacts(IList<Fact> facts, int level)
+        private IDictionary<long, List<Fact>> GroupFacts(List<Fact> facts, int level)
         {
             if (facts.Count == 0 || !facts[0].IsWrapperFact) return EmptyGroups;
 
@@ -105,14 +104,14 @@ namespace NRules.Rete
             var factGroups = new Dictionary<long, List<Fact>>();
             foreach (var fact in facts)
             {
-                var wrapperfact = (WrapperFact) fact;
-                long groupId = wrapperfact.WrappedTuple.GetGroupId(level);
+                var wrapperFact = (WrapperFact) fact;
+                long groupId = wrapperFact.WrappedTuple.GetGroupId(level);
                 if (!factGroups.TryGetValue(groupId, out var factGroup))
                 {
                     factGroup = new List<Fact>();
                     factGroups[groupId] = factGroup;
                 }
-                factGroup.Add(wrapperfact);
+                factGroup.Add(wrapperFact);
             }
             return factGroups;
         }

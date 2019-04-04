@@ -45,7 +45,7 @@ namespace NRules.Tests
             // Assert
             _network.Verify(x => x.PropagateAssert(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
-                    It.Is<IList<Fact>>(p => p.Count == 1 && p[0].Object == fact)),
+                    It.Is<List<Fact>>(p => p.Count == 1 && p[0].Object == fact)),
                 Times.Exactly(1));
         }
 
@@ -63,7 +63,7 @@ namespace NRules.Tests
             // Assert
             _network.Verify(x => x.PropagateAssert(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
-                    It.Is<IList<Fact>>(p => p.Count == 2 && p[0].Object == facts[0] && p[1].Object == facts[1])),
+                    It.Is<List<Fact>>(p => p.Count == 2 && p[0].Object == facts[0] && p[1].Object == facts[1])),
                 Times.Exactly(1));
         }
 
@@ -82,7 +82,7 @@ namespace NRules.Tests
             // Assert
             _network.Verify(x => x.PropagateUpdate(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
-                    It.Is<IList<Fact>>(p => p.Count == 1 && p[0] == factWrapper)),
+                    It.Is<List<Fact>>(p => p.Count == 1 && p[0] == factWrapper)),
                 Times.Exactly(1));
         }
 
@@ -102,7 +102,7 @@ namespace NRules.Tests
             // Assert
             _network.Verify(x => x.PropagateUpdate(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
-                    It.Is<IList<Fact>>(p => p.Count == 2 && p[0] == factWrappers[0] && p[1] == factWrappers[1])),
+                    It.Is<List<Fact>>(p => p.Count == 2 && p[0] == factWrappers[0] && p[1] == factWrappers[1])),
                 Times.Exactly(1));
         }
 
@@ -121,7 +121,7 @@ namespace NRules.Tests
             // Assert
             _network.Verify(x => x.PropagateRetract(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
-                    It.Is<IList<Fact>>(p => p.Count == 1 && p[0] == factWrapper)),
+                    It.Is<List<Fact>>(p => p.Count == 1 && p[0] == factWrapper)),
                 Times.Exactly(1));
         }
 
@@ -141,7 +141,7 @@ namespace NRules.Tests
             // Assert
             _network.Verify(x => x.PropagateRetract(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
-                    It.Is<IList<Fact>>(p => p.Count == 2 && p[0] == factWrappers[0] && p[1] == factWrappers[1])),
+                    It.Is<List<Fact>>(p => p.Count == 2 && p[0] == factWrappers[0] && p[1] == factWrappers[1])),
                 Times.Exactly(1));
         }
 

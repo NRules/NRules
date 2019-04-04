@@ -4,8 +4,8 @@ namespace NRules.Rete
 {
     internal interface IObjectSink : INode
     {
-        void PropagateAssert(IExecutionContext context, IList<Fact> facts);
-        void PropagateUpdate(IExecutionContext context, IList<Fact> facts);
-        void PropagateRetract(IExecutionContext context, IList<Fact> facts);
+        void PropagateAssert(IExecutionContext context, List<Fact> facts);
+        void PropagateUpdate(IExecutionContext context, List<Fact> facts);
+        void PropagateRetract(IExecutionContext context, List<Fact> facts);
     }
 }

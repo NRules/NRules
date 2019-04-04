@@ -4,9 +4,9 @@ namespace NRules.Rete
 {
     internal interface INetwork
     {
-        void PropagateAssert(IExecutionContext context, IList<Fact> factObjects);
-        void PropagateUpdate(IExecutionContext context, IList<Fact> factObjects);
-        void PropagateRetract(IExecutionContext context, IList<Fact> factObjects);
+        void PropagateAssert(IExecutionContext context, List<Fact> factObjects);
+        void PropagateUpdate(IExecutionContext context, List<Fact> factObjects);
+        void PropagateRetract(IExecutionContext context, List<Fact> factObjects);
         void Activate(IExecutionContext context);
         void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);
     }
@@ -22,7 +22,7 @@ namespace NRules.Rete
             _dummyNode = dummyNode;
         }
 
-        public void PropagateAssert(IExecutionContext context, IList<Fact> facts)
+        public void PropagateAssert(IExecutionContext context, List<Fact> facts)
         {
             foreach (var fact in facts)
             {
@@ -37,7 +37,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateUpdate(IExecutionContext context, IList<Fact> facts)
+        public void PropagateUpdate(IExecutionContext context, List<Fact> facts)
         {
             foreach (var fact in facts)
             {
@@ -52,7 +52,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateRetract(IExecutionContext context, IList<Fact> facts)
+        public void PropagateRetract(IExecutionContext context, List<Fact> facts)
         {
             foreach (var fact in facts)
             {

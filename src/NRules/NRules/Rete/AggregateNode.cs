@@ -21,7 +21,7 @@ namespace NRules.Rete
             _isSubnetJoin = isSubnetJoin;
         }
 
-        public override void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
+        public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
         {
             var aggregationContext = new AggregationContext(context.Session, context.EventAggregator, NodeInfo);
             var joinedSets = JoinedSets(context, tuples);
@@ -35,7 +35,7 @@ namespace NRules.Rete
             PropagateAggregation(context, aggregation);
         }
 
-        public override void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
+        public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
         {
             var aggregationContext = new AggregationContext(context.Session, context.EventAggregator, NodeInfo);
             var joinedSets = JoinedSets(context, tuples);
@@ -63,7 +63,7 @@ namespace NRules.Rete
             PropagateAggregation(context, aggregation);
         }
 
-        public override void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
+        public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
         {
             var aggregation = new Aggregation();
             foreach (var tuple in tuples)
@@ -77,7 +77,7 @@ namespace NRules.Rete
             PropagateAggregation(context, aggregation);
         }
 
-        public override void PropagateAssert(IExecutionContext context, IList<Fact> facts)
+        public override void PropagateAssert(IExecutionContext context, List<Fact> facts)
         {
             var aggregationContext = new AggregationContext(context.Session, context.EventAggregator, NodeInfo);
             var joinedSets = JoinedSets(context, facts);
@@ -104,7 +104,7 @@ namespace NRules.Rete
             PropagateAggregation(context, aggregation);
         }
 
-        public override void PropagateUpdate(IExecutionContext context, IList<Fact> facts)
+        public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
         {
             var aggregationContext = new AggregationContext(context.Session, context.EventAggregator, NodeInfo);
             var joinedSets = JoinedSets(context, facts);
@@ -132,7 +132,7 @@ namespace NRules.Rete
             PropagateAggregation(context, aggregation);
         }
 
-        public override void PropagateRetract(IExecutionContext context, IList<Fact> facts)
+        public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
         {
             var aggregationContext = new AggregationContext(context.Session, context.EventAggregator, NodeInfo);
             var joinedSets = JoinedSets(context, facts);
@@ -192,7 +192,7 @@ namespace NRules.Rete
             }
         }
 
-        private void RetractFromAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IList<Fact> facts)
+        private void RetractFromAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, List<Fact> facts)
         {
             try
             {

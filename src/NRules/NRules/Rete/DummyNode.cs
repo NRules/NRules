@@ -38,17 +38,17 @@ namespace NRules.Rete
             visitor.VisitDummyNode(context, this);
         }
 
-        public void PropagateAssert(IExecutionContext context, ITupleFactList tupleFactList)
+        public void PropagateAssert(IExecutionContext context, TupleFactList tupleFactList)
         {
             //Do nothing
         }
 
-        public void PropagateUpdate(IExecutionContext context, ITupleFactList tupleFactList)
+        public void PropagateUpdate(IExecutionContext context, TupleFactList tupleFactList)
         {
             //Do nothing
         }
 
-        public void PropagateRetract(IExecutionContext context, ITupleFactList tupleFactList)
+        public void PropagateRetract(IExecutionContext context, TupleFactList tupleFactList)
         {
             //Do nothing
         }
