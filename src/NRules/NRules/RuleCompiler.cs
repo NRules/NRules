@@ -66,7 +66,7 @@ namespace NRules
         {
             var transformation = new RuleTransformation();
             var transformedRule = transformation.Transform(ruleDefinition);
-            var ruleDeclarations = transformedRule.LeftHandSide.Declarations.ToList();
+            var ruleDeclarations = transformedRule.LeftHandSide.Exports.ToList();
             var ruleDependencies = transformedRule.DependencyGroup.Dependencies.Select(x => x.Declaration).ToList();
 
             IEnumerable<IRuleDependency> dependencies = CompileDependencies(transformedRule);

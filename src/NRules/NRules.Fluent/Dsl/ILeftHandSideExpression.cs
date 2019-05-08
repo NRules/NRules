@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 namespace NRules.Fluent.Dsl
 {
     /// <summary>
-    /// Rule's left hand side (conditions) expression builder.
+    /// Rule's left-hand side (conditions) expression builder.
     /// </summary>
     public interface ILeftHandSideExpression
     {

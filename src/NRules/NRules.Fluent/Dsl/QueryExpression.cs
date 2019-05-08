@@ -4,7 +4,7 @@
     /// Expression builder for queries.
     /// </summary>
     /// <typeparam name="TSource">Type of query source.</typeparam>
-    public class QueryExpression<TSource> : IQuery<TSource>
+    public class QueryExpression<TSource> : IQuery<TSource>, ICollectQuery<TSource>, IOrderedQuery<TSource>
     {
         /// <summary>
         /// Constructs a query expression builder that wraps a <see cref="IQueryBuilder"/>.

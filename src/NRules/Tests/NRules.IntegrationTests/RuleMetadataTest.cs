@@ -243,7 +243,7 @@ namespace NRules.IntegrationTests
         }
 
         [Name("Rule with metadata"), Fluent.Dsl.Description("Rule description")]
-        [Tag("Test"), Tag("Metadata")]
+        [TestTag, Tag("Metadata")]
         [Priority(100)]
         public class RuleWithMetadata : Rule
         {
@@ -305,6 +305,13 @@ namespace NRules.IntegrationTests
                 Then()
                     .Do(ctx => ctx.NoOp());
             }
+        }
+    }
+
+    public class TestTagAttribute : TagAttribute
+    {
+        public TestTagAttribute() : base("Test")
+        {
         }
     }
 }

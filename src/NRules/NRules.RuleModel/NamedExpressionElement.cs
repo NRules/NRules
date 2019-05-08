@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel
@@ -8,8 +7,8 @@ namespace NRules.RuleModel
     /// </summary>
     public class NamedExpressionElement : ExpressionElement
     {
-        internal NamedExpressionElement(string name, IEnumerable<Declaration> declarations, IEnumerable<Declaration> references, LambdaExpression expression) 
-            : base(declarations, references, expression)
+        internal NamedExpressionElement(string name, LambdaExpression lambdaExpression)
+            : base(lambdaExpression)
         {
             Name = name;
         }

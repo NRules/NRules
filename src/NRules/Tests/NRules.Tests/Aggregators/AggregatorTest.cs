@@ -34,6 +34,7 @@ namespace NRules.Tests.Aggregators
 
             public Type Type { get; }
             public object Value { get; set; }
+            public IFactSource Source { get; set; }
         }
     }
 
@@ -46,9 +47,11 @@ namespace NRules.Tests.Aggregators
             _func = func;
         }
 
-        public object Invoke(ITuple tuple, IFact fact)
+        public string Name { get; }
+
+        public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
         {
-            return _func((TFact) fact.Value);
+            return _func((TFact)fact.Value);
         }
     }
 }

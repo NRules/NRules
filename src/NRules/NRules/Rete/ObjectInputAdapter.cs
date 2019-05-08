@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace NRules.Rete
 {
@@ -16,7 +15,7 @@ namespace NRules.Rete
             source.Attach(this);
         }
 
-        public void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
+        public void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
         {
             var toAssert = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)
@@ -31,7 +30,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
+        public void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
         {
             var toUpdate = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)
@@ -45,17 +44,21 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
+        public void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
         {
             var toRetract = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)
             {
-                var wrapperFact = tuple.RemoveStateOrThrow<WrapperFact>(this);
+                var wrapperFact = tuple.GetStateOrThrow<WrapperFact>(this);
                 toRetract.Add(wrapperFact);
             }
             foreach (var sink in _sinks)
             {
                 sink.PropagateRetract(context, toRetract);
+            }
+            foreach (var tuple in tuples)
+            {
+                tuple.RemoveStateOrThrow<WrapperFact>(this);
             }
         }
 

@@ -32,7 +32,7 @@ namespace NRules.IntegrationTests
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load(x => x.From(typeof (string)));
+            target.Load(x => x.From(typeof(string)));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
@@ -46,8 +46,19 @@ namespace NRules.IntegrationTests
             RuleRepository target = CreateTarget();
 
             //Act - Assert
-            var ex = Assert.Throws<RuleDefinitionException>(() => target.Load(x => x.NestedTypes().From(typeof (EmptyRule))));
-            Assert.Equal(typeof (EmptyRule), ex.RuleType);
+            var ex = Assert.Throws<RuleDefinitionException>(() => target.Load(x => x.NestedTypes().From(typeof(EmptyRule))));
+            Assert.Equal(typeof(EmptyRule), ex.RuleType);
+        }
+
+        [Fact]
+        public void Load_NoActionRule_Throws()
+        {
+            //Arrange
+            RuleRepository target = CreateTarget();
+
+            //Act - Assert
+            var ex = Assert.Throws<RuleDefinitionException>(() => target.Load(x => x.NestedTypes().From(typeof(NoActionRule))));
+            Assert.Equal(typeof(NoActionRule), ex.RuleType);
         }
 
         [Fact]
@@ -57,8 +68,8 @@ namespace NRules.IntegrationTests
             RuleRepository target = CreateTarget();
 
             //Act - Assert
-            var ex = Assert.Throws<RuleActivationException>(() => target.Load(x => x.NestedTypes().From(typeof (CannotActivateRule))));
-            Assert.Equal(typeof (CannotActivateRule), ex.RuleType);
+            var ex = Assert.Throws<RuleActivationException>(() => target.Load(x => x.NestedTypes().From(typeof(CannotActivateRule))));
+            Assert.Equal(typeof(CannotActivateRule), ex.RuleType);
         }
 
         [Fact]
@@ -71,7 +82,7 @@ namespace NRules.IntegrationTests
             target.Load(x => x
                 .NestedTypes()
                 .From(ThisAssembly)
-                .Where(r => r.RuleType == typeof (ValidRule))
+                .Where(r => r.RuleType == typeof(ValidRule))
                 .To("Test"));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
@@ -89,7 +100,7 @@ namespace NRules.IntegrationTests
             target.Load(x => x
                 .NestedTypes()
                 .From(ThisAssembly)
-                .Where(r => r.RuleType == typeof (ValidRule)));
+                .Where(r => r.RuleType == typeof(ValidRule)));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
@@ -111,7 +122,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             Assert.Equal(1, ruleSet.Rules.Count());
-            Assert.Equal(typeof (ValidRule).FullName, ruleSet.Rules.First().Name);
+            Assert.Equal(typeof(ValidRule).FullName, ruleSet.Rules.First().Name);
         }
 
         [Fact]
@@ -130,6 +141,28 @@ namespace NRules.IntegrationTests
             //Assert
             Assert.Equal(1, ruleSet.Rules.Count());
             Assert.Equal("Rule with metadata", ruleSet.Rules.First().Name);
+        }
+
+        [Fact]
+        public void Add_RuleInstanceInRuleSet_AddedToRepository()
+        {
+            //Arrange
+            var rule = new ValidRule();
+
+            var factory = new RuleDefinitionFactory();
+            var ruleDefinition = factory.Create(rule);
+            
+            var ruleSet = new RuleSet("MyRuleSet");
+            ruleSet.Add(ruleDefinition);
+
+            RuleRepository target = CreateTarget();
+
+            //Act
+            target.Add(ruleSet);
+
+            //Assert
+            Assert.Equal(1, ruleSet.Rules.Count());
+            Assert.Equal(typeof(ValidRule).FullName, ruleSet.Rules.First().Name);
         }
 
         private Assembly ThisAssembly => GetType().GetTypeInfo().Assembly;
@@ -159,6 +192,15 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
+            }
+        }
+
+        public class NoActionRule : Rule
+        {
+            public override void Define()
+            {
+                When()
+                    .Match<FactType>();
             }
         }
 

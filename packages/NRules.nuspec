@@ -13,7 +13,7 @@
     <summary>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm with rules authored in C# using internal DSL.</summary>
     <description>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm. NRules is an inference engine that, among other features, supports forward chaining, negative, existential and universal quantifiers. Rules are authored in C# using internal DSL.</description>
     <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
-    <copyright>Copyright 2012-2018 Sergiy Nikolayev. All rights reserved.</copyright>
+    <copyright>Copyright 2012-2019 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>rules engine inference rete business dsl</tags>
     <dependencies>
       <dependency id="NRules.Runtime" version="[$version$]" />

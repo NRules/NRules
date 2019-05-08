@@ -5,19 +5,36 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose an existential element.
     /// </summary>
-    public class ExistsBuilder : RuleLeftElementBuilder, IBuilder<ExistsElement>
+    public class ExistsBuilder : RuleElementBuilder, IBuilder<ExistsElement>
     {
-        private RuleLeftElementBuilder _sourceBuilder;
+        private IBuilder<RuleLeftElement> _sourceBuilder;
 
-        internal ExistsBuilder(SymbolTable scope)
-            : base(scope.New("Exists"))
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExistsBuilder"/>.
+        /// </summary>
+        public ExistsBuilder()
         {
         }
 
         /// <summary>
-        /// Builder for the source of this element.
+        /// Sets a pattern as the source of the existential element.
         /// </summary>
-        public RuleLeftElementBuilder SourceBuilder => _sourceBuilder;
+        /// <param name="element">Element to set as the source.</param>
+        public void Pattern(PatternElement element)
+        {
+            AssertSingleSource();
+            _sourceBuilder = BuilderAdapter.Create(element);
+        }
+
+        /// <summary>
+        /// Sets a pattern builder as the source of the existential element.
+        /// </summary>
+        /// <param name="builder">Element builder to set as the source.</param>
+        public void Pattern(PatternBuilder builder)
+        {
+            AssertSingleSource();
+            _sourceBuilder = builder;
+        }
 
         /// <summary>
         /// Creates a pattern builder that builds the source of the existential element.
@@ -27,7 +44,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
-            Declaration declaration = Scope.Declare(type, name);
+            var declaration = new Declaration(type, DeclarationName(name));
             return Pattern(declaration);
         }
 
@@ -39,39 +56,51 @@ namespace NRules.RuleModel.Builders
         public PatternBuilder Pattern(Declaration declaration)
         {
             AssertSingleSource();
-            var sourceBuilder = new PatternBuilder(Scope, declaration);
+            var sourceBuilder = new PatternBuilder(declaration);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
 
         /// <summary>
-        /// Creates a group builder that builds a group as part of the current element.
+        /// Sets a group as the source of the existential element.
+        /// </summary>
+        /// <param name="element">Element to set as the source.</param>
+        public void Group(GroupElement element)
+        {
+            AssertSingleSource();
+            var builder = BuilderAdapter.Create(element);
+            _sourceBuilder = builder;
+        }
+
+        /// <summary>
+        /// Sets a group builder as the source of the existential element.
+        /// </summary>
+        /// <param name="builder">Element builder to set as the source.</param>
+        public void Group(GroupBuilder builder)
+        {
+            AssertSingleSource();
+            _sourceBuilder = builder;
+        }
+
+        /// <summary>
+        /// Creates a group builder that builds a group as the source of the existential element.
         /// </summary>
         /// <param name="groupType">Group type.</param>
         /// <returns>Group builder.</returns>
         public GroupBuilder Group(GroupType groupType)
         {
             AssertSingleSource();
-            var sourceBuilder = new GroupBuilder(Scope, groupType);
+            var sourceBuilder = new GroupBuilder();
+            sourceBuilder.GroupType(groupType);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
 
         ExistsElement IBuilder<ExistsElement>.Build()
         {
-            Validate();
-            var builder = (IBuilder<RuleLeftElement>)_sourceBuilder;
-            RuleLeftElement sourceElement = builder.Build();
-            var existsElement = new ExistsElement(Scope.VisibleDeclarations, sourceElement);
+            var sourceElement = _sourceBuilder?.Build();
+            var existsElement = Element.Exists(sourceElement);
             return existsElement;
-        }
-
-        private void Validate()
-        {
-            if (_sourceBuilder == null)
-            {
-                throw new InvalidOperationException("EXISTS element source is not provided");
-            }
         }
 
         private void AssertSingleSource()

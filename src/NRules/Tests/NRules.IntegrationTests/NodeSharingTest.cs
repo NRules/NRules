@@ -34,7 +34,7 @@ namespace NRules.IntegrationTests
             var count = snapshot.Nodes.Count(x => x.NodeType == NodeType.Join);
 
             //Assert
-            Assert.Equal(4, count);
+            Assert.Equal(3, count);
         }
 
         [Fact]

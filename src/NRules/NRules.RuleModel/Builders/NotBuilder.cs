@@ -5,19 +5,36 @@ namespace NRules.RuleModel.Builders
     /// <summary>
     /// Builder to compose a negative existential element.
     /// </summary>
-    public class NotBuilder : RuleLeftElementBuilder, IBuilder<NotElement>
+    public class NotBuilder : RuleElementBuilder, IBuilder<NotElement>
     {
-        private RuleLeftElementBuilder _sourceBuilder;
+        private IBuilder<RuleLeftElement> _sourceBuilder;
 
-        internal NotBuilder(SymbolTable scope)
-            : base(scope.New("Not"))
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotBuilder"/>.
+        /// </summary>
+        public NotBuilder()
         {
         }
 
         /// <summary>
-        /// Builder for the source of this element.
+        /// Sets a pattern as the source of the negative existential element.
         /// </summary>
-        public RuleLeftElementBuilder SourceBuilder => _sourceBuilder;
+        /// <param name="element">Element to set as the source.</param>
+        public void Pattern(PatternElement element)
+        {
+            AssertSingleSource();
+            _sourceBuilder = BuilderAdapter.Create(element);
+        }
+
+        /// <summary>
+        /// Sets a pattern builder as the source of the negative existential element.
+        /// </summary>
+        /// <param name="builder">Element builder to set as the source.</param>
+        public void Pattern(PatternBuilder builder)
+        {
+            AssertSingleSource();
+            _sourceBuilder = builder;
+        }
 
         /// <summary>
         /// Creates a pattern builder that builds the source of the negative existential element.
@@ -27,7 +44,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
-            Declaration declaration = Scope.Declare(type, name);
+            var declaration = new Declaration(type, DeclarationName(name));
             return Pattern(declaration);
         }
 
@@ -39,51 +56,51 @@ namespace NRules.RuleModel.Builders
         public PatternBuilder Pattern(Declaration declaration)
         {
             AssertSingleSource();
-            var sourceBuilder = new PatternBuilder(Scope, declaration);
+            var sourceBuilder = new PatternBuilder(declaration);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
 
         /// <summary>
-        /// Creates a group builder that builds a group as part of the current element.
+        /// Sets a group as the source of the negative existential element.
+        /// </summary>
+        /// <param name="element">Element to set as the source.</param>
+        public void Group(GroupElement element)
+        {
+            AssertSingleSource();
+            var builder = BuilderAdapter.Create(element);
+            _sourceBuilder = builder;
+        }
+
+        /// <summary>
+        /// Sets a group builder as the source of the negative existential element.
+        /// </summary>
+        /// <param name="builder">Element builder to set as the source.</param>
+        public void Group(GroupBuilder builder)
+        {
+            AssertSingleSource();
+            _sourceBuilder = builder;
+        }
+
+        /// <summary>
+        /// Creates a group builder that builds a group as the source of the negative existential element.
         /// </summary>
         /// <param name="groupType">Group type.</param>
         /// <returns>Group builder.</returns>
         public GroupBuilder Group(GroupType groupType)
         {
             AssertSingleSource();
-            var sourceBuilder = new GroupBuilder(Scope, groupType);
-            _sourceBuilder = sourceBuilder;
-            return sourceBuilder;
-        }
-
-        /// <summary>
-        /// Creates a builder for a forall element as part of the current element.
-        /// </summary>
-        /// <returns>Forall builder.</returns>
-        public ForAllBuilder ForAll()
-        {
-            AssertSingleSource();
-            var sourceBuilder = new ForAllBuilder(Scope);
+            var sourceBuilder = new GroupBuilder();
+            sourceBuilder.GroupType(groupType);
             _sourceBuilder = sourceBuilder;
             return sourceBuilder;
         }
 
         NotElement IBuilder<NotElement>.Build()
         {
-            Validate();
-            var builder = (IBuilder<RuleLeftElement>)_sourceBuilder;
-            RuleLeftElement sourceElement = builder.Build();
-            var notElement = new NotElement(Scope.VisibleDeclarations, sourceElement);
+            var sourceElement = _sourceBuilder?.Build();
+            var notElement = Element.Not(sourceElement);
             return notElement;
-        }
-
-        private void Validate()
-        {
-            if (_sourceBuilder == null)
-            {
-                throw new InvalidOperationException("NOT element source is not provided");
-            }
         }
 
         private void AssertSingleSource()

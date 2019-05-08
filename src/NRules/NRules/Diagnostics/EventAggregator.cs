@@ -1,11 +1,9 @@
 using System;
 using System.Linq.Expressions;
 using NRules.AgendaFilters;
-using NRules.Aggregators;
 using NRules.Extensibility;
 using NRules.Rete;
 using NRules.RuleModel;
-using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Diagnostics
 {
@@ -78,38 +76,44 @@ namespace NRules.Diagnostics
         event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
 
         /// <summary>
-        /// Raised when condition evaluation threw an exception.
-        /// Gives observer of the event control over handling of the exception.
+        /// Raised when left-hand side expression is evaluated.
+        /// This event is raised on both, successful expression evaluations, and on exceptions.
         /// </summary>
-        event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
+        event EventHandler<LhsExpressionEventArgs> LhsExpressionEvaluatedEvent;
 
         /// <summary>
-        /// Raised when binding expression evaluation threw an exception.
+        /// Raised when left-hand side expression evaluation threw an exception.
         /// Gives observer of the event control over handling of the exception.
         /// </summary>
-        event EventHandler<BindingErrorEventArgs> BindingFailedEvent;
+        event EventHandler<LhsExpressionErrorEventArgs> LhsExpressionFailedEvent;
 
         /// <summary>
-        /// Raised when aggregate expression evaluation threw an exception.
-        /// Gives observer of the event control over handling of the exception.
+        /// Raised when agenda expression is evaluated.
+        /// This event is raised on both, successful expression evaluations, and on exceptions.
         /// </summary>
-        /// <seealso cref="IAggregator"/>
-        event EventHandler<AggregateErrorEventArgs> AggregateFailedEvent;
+        /// <seealso cref="IAgendaFilter"/>
+        event EventHandler<AgendaExpressionEventArgs> AgendaExpressionEvaluatedEvent;
 
         /// <summary>
-        /// Raised when agenda filter execution threw an exception.
+        /// Raised when agenda expression evaluation threw an exception.
         /// Gives observer of the event control over handling of the exception.
         /// </summary>
         /// <seealso cref="IAgendaFilter"/>
-        event EventHandler<AgendaErrorEventArgs> AgendaFilterFailedEvent;
+        event EventHandler<AgendaExpressionErrorEventArgs> AgendaExpressionFailedEvent;
 
         /// <summary>
-        /// Raised when action execution threw an exception.
+        /// Raised when right-hand side expression is evaluated.
+        /// This event is raised on both, successful expression evaluations, and on exceptions.
+        /// </summary>
+        /// <seealso cref="IActionInterceptor"/>
+        event EventHandler<RhsExpressionEventArgs> RhsExpressionEvaluatedEvent;
+
+        /// <summary>
+        /// Raised when right-hand side expression evaluation threw an exception.
         /// Gives observer of the event control over handling of the exception.
         /// </summary>
-        /// <remarks>This event is not raised when actions are invoked via <see cref="IActionInterceptor"/>.</remarks>
         /// <seealso cref="IActionInterceptor"/>
-        event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
+        event EventHandler<RhsExpressionErrorEventArgs> RhsExpressionFailedEvent;
     }
 
     internal interface IEventAggregator : IEventProvider
@@ -119,17 +123,20 @@ namespace NRules.Diagnostics
         void RaiseActivationDeleted(ISession session, Activation activation);
         void RaiseRuleFiring(ISession session, Activation activation);
         void RaiseRuleFired(ISession session, Activation activation);
-        void RaiseFactInserting(ISession session, Fact fact);
-        void RaiseFactInserted(ISession session, Fact fact);
-        void RaiseFactUpdating(ISession session, Fact fact);
-        void RaiseFactUpdated(ISession session, Fact fact);
-        void RaiseFactRetracting(ISession session, Fact fact);
-        void RaiseFactRetracted(ISession session, Fact fact);
-        void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled);
-        void RaiseBindingFailed(ISession session, Exception exception, Expression expression, Tuple tuple, ref bool isHandled);
-        void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, ITuple tuple, IFact fact, ref bool isHandled);
-        void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
-        void RaiseActionFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled);
+        void RaiseFactInserting(ISession session, IFact fact);
+        void RaiseFactInserted(ISession session, IFact fact);
+        void RaiseFactUpdating(ISession session, IFact fact);
+        void RaiseFactUpdated(ISession session, IFact fact);
+        void RaiseFactRetracting(ISession session, IFact fact);
+        void RaiseFactRetracted(ISession session, IFact fact);
+        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo);
+        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo);
+        void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo, ref bool isHandled);
+        void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo, ref bool isHandled);
+        void RaiseAgendaExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, IMatch match);
+        void RaiseAgendaExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match, ref bool isHandled);
+        void RaiseRhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match);
+        void RaiseRhsExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match, ref bool isHandled);
     }
 
     internal class EventAggregator : IEventAggregator
@@ -147,11 +154,12 @@ namespace NRules.Diagnostics
         public event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactRetractingEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
-        public event EventHandler<ConditionErrorEventArgs> ConditionFailedEvent;
-        public event EventHandler<BindingErrorEventArgs> BindingFailedEvent;
-        public event EventHandler<AggregateErrorEventArgs> AggregateFailedEvent;
-        public event EventHandler<AgendaErrorEventArgs> AgendaFilterFailedEvent;
-        public event EventHandler<ActionErrorEventArgs> ActionFailedEvent;
+        public event EventHandler<LhsExpressionEventArgs> LhsExpressionEvaluatedEvent;
+        public event EventHandler<LhsExpressionErrorEventArgs> LhsExpressionFailedEvent;
+        public event EventHandler<AgendaExpressionEventArgs> AgendaExpressionEvaluatedEvent;
+        public event EventHandler<AgendaExpressionErrorEventArgs> AgendaExpressionFailedEvent;
+        public event EventHandler<RhsExpressionEventArgs> RhsExpressionEvaluatedEvent;
+        public event EventHandler<RhsExpressionErrorEventArgs> RhsExpressionFailedEvent;
 
         public EventAggregator()
         {
@@ -217,7 +225,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseRuleFired(session, activation);
         }
 
-        public void RaiseFactInserting(ISession session, Fact fact)
+        public void RaiseFactInserting(ISession session, IFact fact)
         {
             var handler = FactInsertingEvent;
             if (handler != null)
@@ -228,7 +236,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseFactInserting(session, fact);
         }
 
-        public void RaiseFactInserted(ISession session, Fact fact)
+        public void RaiseFactInserted(ISession session, IFact fact)
         {
             var handler = FactInsertedEvent;
             if (handler != null)
@@ -239,7 +247,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseFactInserted(session, fact);
         }
 
-        public void RaiseFactUpdating(ISession session, Fact fact)
+        public void RaiseFactUpdating(ISession session, IFact fact)
         {
             var handler = FactUpdatingEvent;
             if (handler != null)
@@ -250,7 +258,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseFactUpdating(session, fact);
         }
 
-        public void RaiseFactUpdated(ISession session, Fact fact)
+        public void RaiseFactUpdated(ISession session, IFact fact)
         {
             var handler = FactUpdatedEvent;
             if (handler != null)
@@ -261,7 +269,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseFactUpdated(session, fact);
         }
 
-        public void RaiseFactRetracting(ISession session, Fact fact)
+        public void RaiseFactRetracting(ISession session, IFact fact)
         {
             var handler = FactRetractingEvent;
             if (handler != null)
@@ -272,7 +280,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseFactRetracting(session, fact);
         }
 
-        public void RaiseFactRetracted(ISession session, Fact fact)
+        public void RaiseFactRetracted(ISession session, IFact fact)
         {
             var handler = FactRetractedEvent;
             if (handler != null)
@@ -283,64 +291,96 @@ namespace NRules.Diagnostics
             _parent?.RaiseFactRetracted(session, fact);
         }
 
-        public void RaiseConditionFailed(ISession session, Exception exception, Expression expression, Tuple tuple, Fact fact, ref bool isHandled)
+        public void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo)
         {
-            var hanlder = ConditionFailedEvent;
-            if (hanlder != null)
-            {
-                var @event = new ConditionErrorEventArgs(exception, expression, tuple, fact);
-                hanlder(session, @event);
-                isHandled |= @event.IsHandled;
-            }
-            _parent?.RaiseConditionFailed(session, exception, expression, tuple, fact, ref isHandled);
-        }
-
-        public void RaiseBindingFailed(ISession session, Exception exception, Expression expression, Tuple tuple, ref bool isHandled)
-        {
-            var hanlder = BindingFailedEvent;
-            if (hanlder != null)
-            {
-                var @event = new BindingErrorEventArgs(exception, expression, tuple);
-                hanlder(session, @event);
-                isHandled |= @event.IsHandled;
-            }
-            _parent?.RaiseBindingFailed(session, exception, expression, tuple, ref isHandled);
-        }
-
-        public void RaiseAggregateFailed(ISession session, Exception exception, Expression expression, ITuple tuple, IFact fact, ref bool isHandled)
-        {
-            var hanlder = AggregateFailedEvent;
-            if (hanlder != null)
-            {
-                var @event = new AggregateErrorEventArgs(exception, expression, tuple, fact);
-                hanlder(session, @event);
-                isHandled |= @event.IsHandled;
-            }
-            _parent?.RaiseAggregateFailed(session, exception, expression, tuple, fact, ref isHandled);
-        }
-
-        public void RaiseAgendaFilterFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled)
-        {
-            var handler = AgendaFilterFailedEvent;
+            var handler = LhsExpressionEvaluatedEvent;
             if (handler != null)
             {
-                var @event = new AgendaErrorEventArgs(exception, expression, activation);
+                var @event = new LhsExpressionEventArgs(expression, exception, argument, result, tuple, fact, nodeInfo.Rules);
+                handler(session, @event);
+            }
+            _parent?.RaiseLhsExpressionEvaluated(session, exception, expression, argument, result, tuple, fact, nodeInfo);
+        }
+
+        public void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo)
+        {
+            var handler = LhsExpressionEvaluatedEvent;
+            if (handler != null)
+            {
+                var @event = new LhsExpressionEventArgs(expression, exception, arguments, result, tuple, fact, nodeInfo.Rules);
+                handler(session, @event);
+            }
+            _parent?.RaiseLhsExpressionEvaluated(session, exception, expression, arguments, result, tuple, fact, nodeInfo);
+        }
+
+        public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo, ref bool isHandled)
+        {
+            var handler = LhsExpressionFailedEvent;
+            if (handler != null)
+            {
+                var @event = new LhsExpressionErrorEventArgs(expression, exception, argument, tuple, fact, nodeInfo.Rules);
                 handler(session, @event);
                 isHandled |= @event.IsHandled;
             }
-            _parent?.RaiseAgendaFilterFailed(session, exception, expression, activation, ref isHandled);
+            _parent?.RaiseLhsExpressionFailed(session, exception, expression, argument, tuple, fact, nodeInfo, ref isHandled);
         }
 
-        public void RaiseActionFailed(ISession session, Exception exception, Expression expression, Activation activation, ref bool isHandled)
+        public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo, ref bool isHandled)
         {
-            var handler = ActionFailedEvent;
+            var handler = LhsExpressionFailedEvent;
             if (handler != null)
             {
-                var @event = new ActionErrorEventArgs(exception, expression, activation);
+                var @event = new LhsExpressionErrorEventArgs(expression, exception, arguments, tuple, fact, nodeInfo.Rules);
                 handler(session, @event);
                 isHandled |= @event.IsHandled;
             }
-            _parent?.RaiseActionFailed(session, exception, expression, activation, ref isHandled);
+            _parent?.RaiseLhsExpressionFailed(session, exception, expression, arguments, tuple, fact, nodeInfo, ref isHandled);
+        }
+
+        public void RaiseAgendaExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, IMatch match)
+        {
+            var handler = AgendaExpressionEvaluatedEvent;
+            if (handler != null)
+            {
+                var @event = new AgendaExpressionEventArgs(expression, exception, arguments, result, match);
+                handler(session, @event);
+            }
+            _parent?.RaiseAgendaExpressionEvaluated(session, exception, expression, arguments, result, match);
+        }
+
+        public void RaiseAgendaExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match, ref bool isHandled)
+        {
+            var handler = AgendaExpressionFailedEvent;
+            if (handler != null)
+            {
+                var @event = new AgendaExpressionErrorEventArgs(expression, exception, arguments, match);
+                handler(session, @event);
+                isHandled |= @event.IsHandled;
+            }
+            _parent?.RaiseAgendaExpressionFailed(session, exception, expression, arguments, match, ref isHandled);
+        }
+        
+        public void RaiseRhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match)
+        {
+            var handler = RhsExpressionEvaluatedEvent;
+            if (handler != null)
+            {
+                var @event = new RhsExpressionEventArgs(expression, exception, arguments, match);
+                handler(session, @event);
+            }
+            _parent?.RaiseRhsExpressionEvaluated(session, exception, expression, arguments, match);
+        }
+
+        public void RaiseRhsExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match, ref bool isHandled)
+        {
+            var handler = RhsExpressionFailedEvent;
+            if (handler != null)
+            {
+                var @event = new RhsExpressionErrorEventArgs(expression, exception, arguments, match);
+                handler(session, @event);
+                isHandled |= @event.IsHandled;
+            }
+            _parent?.RaiseRhsExpressionFailed(session, exception, expression, arguments, match, ref isHandled);
         }
     }
 }

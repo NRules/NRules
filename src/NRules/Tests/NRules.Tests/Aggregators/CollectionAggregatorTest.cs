@@ -16,7 +16,7 @@ namespace NRules.Tests.Aggregators
 
             //Act
             var facts = AsFact(new TestFact(1), new TestFact(2));
-            var result = target.Add(EmptyTuple(), facts).ToArray();
+            var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -33,7 +33,7 @@ namespace NRules.Tests.Aggregators
 
             //Act
             var facts = AsFact(new TestFact[0]);
-            var result = target.Add(EmptyTuple(), facts).ToArray();
+            var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -50,7 +50,7 @@ namespace NRules.Tests.Aggregators
 
             //Act
             var facts = AsFact(new TestFact(1), new TestFact(2));
-            var result = target.Add(EmptyTuple(), facts).ToArray();
+            var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -67,7 +67,7 @@ namespace NRules.Tests.Aggregators
 
             //Act
             var facts = AsFact(new TestFact(1), new TestFact(1));
-            var result = target.Add(EmptyTuple(), facts).ToArray();
+            var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -81,11 +81,11 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(EmptyTuple(), AsFact(new TestFact(1)));
+            target.Add(null, EmptyTuple(), AsFact(new TestFact(1)));
 
             //Act
             var facts = AsFact(new TestFact(2), new TestFact(3));
-            var result = target.Add(EmptyTuple(), facts).ToArray();
+            var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -100,10 +100,10 @@ namespace NRules.Tests.Aggregators
             //Arrange
             var target = CreateTarget();
             var facts = AsFact(new TestFact(1), new TestFact(2));
-            target.Add(EmptyTuple(), facts);
+            target.Add(null, EmptyTuple(), facts);
 
             //Act
-            var result = target.Modify(EmptyTuple(), facts).ToArray();
+            var result = target.Modify(null, EmptyTuple(), facts).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -118,12 +118,12 @@ namespace NRules.Tests.Aggregators
             //Arrange
             var target = CreateTarget();
             var facts = AsFact(new TestFact(1), new TestFact(2));
-            target.Add(EmptyTuple(), facts);
+            target.Add(null, EmptyTuple(), facts);
 
             //Act
             facts[0].Value = new TestFact(3);
             facts[1].Value = new TestFact(4);
-            var result = target.Modify(EmptyTuple(), facts).ToArray();
+            var result = target.Modify(null, EmptyTuple(), facts).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -138,10 +138,10 @@ namespace NRules.Tests.Aggregators
             //Arrange
             var target = CreateTarget();
             var facts = AsFact(new TestFact(1), new TestFact(1));
-            target.Add(EmptyTuple(), facts);
+            target.Add(null, EmptyTuple(), facts);
 
             //Act
-            var result = target.Modify(EmptyTuple(), facts).ToArray();
+            var result = target.Modify(null, EmptyTuple(), facts).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -156,11 +156,11 @@ namespace NRules.Tests.Aggregators
             //Arrange
             var target = CreateTarget();
             var facts = AsFact(new TestFact(1), new TestFact(2));
-            target.Add(EmptyTuple(), facts);
+            target.Add(null, EmptyTuple(), facts);
 
             //Act - Assert
             Assert.Throws<KeyNotFoundException>(
-                () => target.Modify(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
+                () => target.Modify(null, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
         }
 
         [Fact]
@@ -169,11 +169,11 @@ namespace NRules.Tests.Aggregators
             //Arrange
             var target = CreateTarget();
             var facts = AsFact(new TestFact(1), new TestFact(2), new TestFact(3));
-            target.Add(EmptyTuple(), facts);
+            target.Add(null, EmptyTuple(), facts);
 
             //Act
             var toRemove = facts.Take(2).ToArray();
-            var result = target.Remove(EmptyTuple(), toRemove).ToArray();
+            var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -189,13 +189,13 @@ namespace NRules.Tests.Aggregators
             //Arrange
             var target = CreateTarget();
             var facts = AsFact(new TestFact(1), new TestFact(2), new TestFact(3));
-            target.Add(EmptyTuple(), facts);
+            target.Add(null, EmptyTuple(), facts);
 
             //Act
             facts[0].Value = new TestFact(3);
             facts[1].Value = new TestFact(4);
             var toRemove = facts.Take(2).ToArray();
-            var result = target.Remove(EmptyTuple(), toRemove).ToArray();
+            var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -211,11 +211,11 @@ namespace NRules.Tests.Aggregators
             //Arrange
             var target = CreateTarget();
             var facts = AsFact(new TestFact(1), new TestFact(2), new TestFact(2));
-            target.Add(EmptyTuple(), facts);
+            target.Add(null, EmptyTuple(), facts);
 
             //Act
             var toRemove = facts.Take(2).ToArray();
-            var result = target.Remove(EmptyTuple(), toRemove).ToArray();
+            var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
 
             //Assert
             Assert.Equal(1, result.Length);
@@ -230,11 +230,11 @@ namespace NRules.Tests.Aggregators
         {
             //Arrange
             var target = CreateTarget();
-            target.Add(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2)));
+            target.Add(null, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2)));
 
             //Act - Assert
             Assert.Throws<KeyNotFoundException>(
-                () => target.Remove(EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
+                () => target.Remove(null, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
         }
 
         private CollectionAggregator<TestFact> CreateTarget()

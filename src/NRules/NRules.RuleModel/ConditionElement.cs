@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel
@@ -10,8 +9,8 @@ namespace NRules.RuleModel
     [DebuggerDisplay("{Expression.ToString()}")]
     public class ConditionElement : ExpressionElement
     {
-        internal ConditionElement(IEnumerable<Declaration> declarations, IEnumerable<Declaration> references, LambdaExpression expression)
-            : base(declarations, references, expression)
+        internal ConditionElement(LambdaExpression expression)
+            : base(expression)
         {
         }
 

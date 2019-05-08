@@ -6,10 +6,10 @@ namespace NRules.Rete
 {
     internal interface IBetaCondition
     {
-        bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact);
+        bool IsSatisfiedBy(IExecutionContext context, NodeDebugInfo nodeInfo, Tuple leftTuple, Fact rightFact);
     }
 
-    internal class BetaCondition : IBetaCondition, IEquatable<BetaCondition>
+    internal sealed class BetaCondition : IBetaCondition, IEquatable<BetaCondition>
     {
         private readonly LambdaExpression _expression;
         private readonly IndexMap _factMap;
@@ -22,7 +22,7 @@ namespace NRules.Rete
             _compiledExpression = compiledExpression;
         }
 
-        public bool IsSatisfiedBy(IExecutionContext context, Tuple leftTuple, Fact rightFact)
+        public bool IsSatisfiedBy(IExecutionContext context, NodeDebugInfo nodeInfo, Tuple leftTuple, Fact rightFact)
         {
             var args = new object[_compiledExpression.ArrayArgumentCount];
             int index = leftTuple.Count - 1;
@@ -33,19 +33,27 @@ namespace NRules.Rete
             }
             IndexMap.SetElementAt(args, _factMap[leftTuple.Count], rightFact.Object);
 
+            Exception exception = null;
+            bool result = false;
             try
             {
-                return _compiledExpression.Delegate(args);
+                result = _compiledExpression.Delegate(args);
+                return result;
             }
             catch (Exception e)
             {
+                exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseConditionFailed(context.Session, e, _expression, leftTuple, rightFact, ref isHandled);
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, args, leftTuple, rightFact, nodeInfo, ref isHandled);
                 if (!isHandled)
                 {
-                    throw new RuleConditionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
+                    throw new RuleLhsExpressionEvaluationException("Failed to evaluate condition", _expression.ToString(), e);
                 }
                 return false;
+            }
+            finally
+            {
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, args, result, leftTuple, rightFact, nodeInfo);
             }
         }
 

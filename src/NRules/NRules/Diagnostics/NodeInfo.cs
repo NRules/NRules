@@ -75,7 +75,7 @@ namespace NRules.Diagnostics
 
         internal static NodeInfo Create(AggregateNode node)
         {
-            var expressions = node.ExpressionMap.Select(e => $"{e.Name}={e.Expression.ToString()}");
+            var expressions = node.Expressions.Select(e => $"{e.Name}={e.Expression.ToString()}");
             return new NodeInfo(NodeType.Aggregate, node.Name, Empty, expressions, Empty);
         }
 

@@ -17,7 +17,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
 
             //Act
@@ -32,7 +32,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactInsertedThenUpdated_FiresOnce()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
             Session.Update(fact);
 
@@ -48,7 +48,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactAssertedAndRetracted_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
             Session.Retract(fact);
 
@@ -129,11 +129,11 @@ namespace NRules.IntegrationTests
     {
         public static IQuery<TResult> CustomSelect<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, TResult>> selector)
         {
-            var expressionMap = new Dictionary<string, LambdaExpression>
+            var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                {"Selector", selector}
+                new KeyValuePair<string, LambdaExpression>("Selector", selector)
             };
-            source.Builder.Aggregate<TSource,TResult>("CustomSelect", expressionMap);
+            source.Builder.Aggregate<TSource, TResult>("CustomSelect", expressions);
             return new QueryExpression<TResult>(source.Builder);
         }
     }
@@ -141,15 +141,15 @@ namespace NRules.IntegrationTests
     internal class CustomSelectAggregateFactory : IAggregatorFactory
     {
         private Func<IAggregator> _factory;
-        
-        public void Compile(AggregateElement element, IDictionary<string, IAggregateExpression> compiledExpressions)
+
+        public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
         {
-            var selector = element.ExpressionMap["Selector"];
+            var selector = element.Expressions["Selector"];
             var sourceType = element.Source.ValueType;
             var resultType = selector.Expression.ReturnType;
             var aggregatorType = typeof(CustomSelectAggregator<,>).MakeGenericType(sourceType, resultType);
 
-            var compiledSelector = compiledExpressions["Selector"];
+            var compiledSelector = compiledExpressions.FindSingle("Selector");
             var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
                 Expression.New(ctor, Expression.Constant(compiledSelector)));
@@ -172,32 +172,32 @@ namespace NRules.IntegrationTests
             _selector = selector;
         }
 
-        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var value = _selector.Invoke(tuple, fact);
+                var value = _selector.Invoke(context, tuple, fact);
                 _sourceToValue[fact] = value;
-                results.Add(AggregationResult.Added(value));
+                results.Add(AggregationResult.Added(value, Enumerable.Repeat(fact, 1)));
             }
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var value = _selector.Invoke(tuple, fact);
+                var value = _selector.Invoke(context, tuple, fact);
                 var oldValue = (TResult)_sourceToValue[fact];
                 _sourceToValue[fact] = value;
-                results.Add(AggregationResult.Modified(value, oldValue));
+                results.Add(AggregationResult.Modified(value, oldValue, Enumerable.Repeat(fact, 1)));
             }
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var results = new List<AggregationResult>();
             foreach (var fact in facts)

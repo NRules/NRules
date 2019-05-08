@@ -20,5 +20,10 @@ namespace NRules.Extensibility
         /// Invokes the action.
         /// </summary>
         void Invoke();
+
+        /// <summary>
+        /// Activation events that trigger this action.
+        /// </summary>
+        ActionTrigger Trigger { get; }
     }
 }

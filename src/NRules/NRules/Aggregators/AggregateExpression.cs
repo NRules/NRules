@@ -12,12 +12,18 @@ namespace NRules.Aggregators
     public interface IAggregateExpression
     {
         /// <summary>
+        /// Name of the aggregate expression.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// Invokes the expression with the given inputs.
         /// </summary>
+        /// <param name="context">Aggregation context.</param>
         /// <param name="tuple">Partial match up to the aggregate element.</param>
         /// <param name="fact">Fact being processed by the aggregate element.</param>
         /// <returns>Result of the expression.</returns>
-        object Invoke(ITuple tuple, IFact fact);
+        object Invoke(AggregationContext context, ITuple tuple, IFact fact);
     }
 
     internal class AggregateFactExpression : IAggregateExpression
@@ -25,23 +31,35 @@ namespace NRules.Aggregators
         private readonly LambdaExpression _expression;
         private readonly FastDelegate<Func<object, object>> _compiledExpression;
 
-        public AggregateFactExpression(LambdaExpression expression, FastDelegate<Func<object, object>> compiledExpression)
+        public AggregateFactExpression(string name, LambdaExpression expression, FastDelegate<Func<object, object>> compiledExpression)
         {
+            Name = name;
             _expression = expression;
             _compiledExpression = compiledExpression;
         }
 
-        public object Invoke(ITuple tuple, IFact fact)
+        public string Name { get; }
+
+        public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
         {
+            var factValue = fact.Value;
+            Exception exception = null;
+            object result = null;
             try
             {
-                var factValue = fact.Value;
-                var result = _compiledExpression.Delegate(factValue);
+                result = _compiledExpression.Delegate(factValue);
                 return result;
             }
             catch (Exception e)
             {
-                throw new AggregateExpressionException(e, _expression, tuple, fact);
+                exception = e;
+                bool isHandled = false;
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, factValue, tuple, fact, context.NodeInfo, ref isHandled);
+                throw new ExpressionEvaluationException(e, _expression, isHandled);
+            }
+            finally
+            {
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, factValue, result, tuple, fact, context.NodeInfo);
             }
         }
     }
@@ -52,14 +70,17 @@ namespace NRules.Aggregators
         private readonly IndexMap _factMap;
         private readonly FastDelegate<Func<object[], object>> _compiledExpression;
 
-        public AggregateExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap factMap)
+        public AggregateExpression(string name, LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap factMap)
         {
             _expression = expression;
             _factMap = factMap;
             _compiledExpression = compiledExpression;
+            Name = name;
         }
 
-        public object Invoke(ITuple tuple, IFact fact)
+        public string Name { get; }
+
+        public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
         {
             var args = new object[_compiledExpression.ArrayArgumentCount];
             int index = tuple.Count - 1;
@@ -70,14 +91,23 @@ namespace NRules.Aggregators
             }
             IndexMap.SetElementAt(args, _factMap[tuple.Count], fact.Value);
 
+            Exception exception = null;
+            object result = null;
             try
             {
-                var result = _compiledExpression.Delegate(args);
+                result = _compiledExpression.Delegate(args);
                 return result;
             }
             catch (Exception e)
             {
-                throw new AggregateExpressionException(e, _expression, tuple, fact);
+                exception = e;
+                bool isHandled = false;
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, args, tuple, fact, context.NodeInfo, ref isHandled);
+                throw new ExpressionEvaluationException(e, _expression, isHandled);
+            }
+            finally
+            {
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, args, result, tuple, fact, context.NodeInfo);
             }
         }
 

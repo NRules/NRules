@@ -17,21 +17,17 @@ namespace NRules.RuleModel.Builders
         private RuleRepeatability _repeatability = RuleDefinition.DefaultRepeatability;
         private readonly List<string> _tags = new List<string>();
         private readonly List<RuleProperty> _properties = new List<RuleProperty>();
-        private readonly DependencyGroupBuilder _dependencyGrouipBuilder;
-        private readonly FilterGroupBuilder _filterGroupBuilder;
-        private readonly GroupBuilder _conditionGroupBuilder;
-        private readonly ActionGroupBuilder _actionGroupBuilder;
+
+        private DependencyGroupBuilder _dependencyGroupBuilder;
+        private GroupBuilder _lhsBuilder;
+        private FilterGroupBuilder _filterGroupBuilder;
+        private ActionGroupBuilder _rhsBuilder;
 
         /// <summary>
         /// Constructs an empty rule builder.
         /// </summary>
         public RuleBuilder()
         {
-            var rootScope = new SymbolTable();
-            _dependencyGrouipBuilder = new DependencyGroupBuilder(rootScope);
-            _filterGroupBuilder = new FilterGroupBuilder(rootScope);
-            _conditionGroupBuilder = new GroupBuilder(rootScope, GroupType.And);
-            _actionGroupBuilder = new ActionGroupBuilder(rootScope);
         }
 
         /// <summary>
@@ -115,7 +111,46 @@ namespace NRules.RuleModel.Builders
         /// <returns>Dependencies builder.</returns>
         public DependencyGroupBuilder Dependencies()
         {
-            return _dependencyGrouipBuilder;
+            if (_dependencyGroupBuilder == null)
+                _dependencyGroupBuilder = new DependencyGroupBuilder();
+
+            return _dependencyGroupBuilder;
+        }
+
+        /// <summary>
+        /// Sets dependencies builder.
+        /// </summary>
+        /// <param name="builder">Builder to set.</param>
+        public void Dependencies(DependencyGroupBuilder builder)
+        {
+            if (_dependencyGroupBuilder != null)
+                throw new ArgumentException("Builder for dependencies is already set", nameof(builder));
+
+            _dependencyGroupBuilder = builder;
+        }
+
+        /// <summary>
+        /// Retrieves left-hand side builder (conditions).
+        /// </summary>
+        /// <returns>Left hand side builder.</returns>
+        public GroupBuilder LeftHandSide()
+        {
+            if (_lhsBuilder == null)
+                _lhsBuilder = new GroupBuilder();
+
+            return _lhsBuilder;
+        }
+
+        /// <summary>
+        /// Sets left-hand side builder (conditions).
+        /// </summary>
+        /// <param name="builder">Builder to set.</param>
+        public void LeftHandSide(GroupBuilder builder)
+        {
+            if (_lhsBuilder != null)
+                throw new ArgumentException("Builder for left-hand side is already set", nameof(builder));
+
+            _lhsBuilder = builder;
         }
 
         /// <summary>
@@ -124,25 +159,46 @@ namespace NRules.RuleModel.Builders
         /// <returns>Filters builder.</returns>
         public FilterGroupBuilder Filters()
         {
+            if (_filterGroupBuilder == null)
+                _filterGroupBuilder = new FilterGroupBuilder();
+
             return _filterGroupBuilder;
         }
 
         /// <summary>
-        /// Retrieves left hand side builder (conditions).
+        /// Sets filters builder.
         /// </summary>
-        /// <returns>Left hand side builder.</returns>
-        public GroupBuilder LeftHandSide()
+        /// <param name="builder">Builder to set.</param>
+        public void Filters(FilterGroupBuilder builder)
         {
-            return _conditionGroupBuilder;
+            if (_filterGroupBuilder != null)
+                throw new ArgumentException($"Builder for filters is already set", nameof(builder));
+
+            _filterGroupBuilder = builder;
         }
 
         /// <summary>
-        /// Retrieves right hand side builder (actions).
+        /// Retrieves right-hand side builder (actions).
         /// </summary>
         /// <returns>Right hand side builder.</returns>
         public ActionGroupBuilder RightHandSide()
         {
-            return _actionGroupBuilder;
+            if (_rhsBuilder == null)
+                _rhsBuilder = new ActionGroupBuilder();
+
+            return _rhsBuilder;
+        }
+
+        /// <summary>
+        /// Sets right-hand side builder.
+        /// </summary>
+        /// <param name="builder">Builder to set.</param>
+        public void RightHandSide(ActionGroupBuilder builder)
+        {
+            if (_rhsBuilder != null)
+                throw new ArgumentException($"Builder for right-hand side is already set", nameof(builder));
+
+            _rhsBuilder = builder;
         }
 
         /// <summary>
@@ -151,30 +207,24 @@ namespace NRules.RuleModel.Builders
         /// <returns>Rule definition.</returns>
         public IRuleDefinition Build()
         {
-            Validate();
-
-            IBuilder<DependencyGroupElement> dependencyGroupBuilder = _dependencyGrouipBuilder;
-            DependencyGroupElement dependencies = dependencyGroupBuilder.Build();
+            IBuilder<DependencyGroupElement> dependencyGroupBuilder = _dependencyGroupBuilder;
+            DependencyGroupElement dependencies = dependencyGroupBuilder?.Build()
+                ?? Element.DependencyGroup();
 
             IBuilder<FilterGroupElement> filterGroupBuilder = _filterGroupBuilder;
-            FilterGroupElement filters = filterGroupBuilder.Build();
+            FilterGroupElement filters = filterGroupBuilder?.Build()
+                ?? Element.FilterGroup();
 
-            IBuilder<GroupElement> conditionGroupBuilder = _conditionGroupBuilder;
-            GroupElement conditions = conditionGroupBuilder.Build();
+            IBuilder<GroupElement> lhsBuilder = _lhsBuilder;
+            GroupElement lhs = lhsBuilder?.Build()
+                ?? Element.AndGroup();
 
-            IBuilder<ActionGroupElement> actionGroupBuilder = _actionGroupBuilder;
-            ActionGroupElement actions = actionGroupBuilder.Build();
+            IBuilder<ActionGroupElement> rhsBuilder = _rhsBuilder;
+            ActionGroupElement rhs = rhsBuilder?.Build()
+                ?? Element.ActionGroup();
 
-            var ruleDefinition = new RuleDefinition(_name, _description, _priority, _repeatability, _tags, _properties, dependencies, filters, conditions, actions);
+            var ruleDefinition = Element.RuleDefinition(_name, _description, _priority, _repeatability, _tags, _properties, dependencies, lhs, filters, rhs);
             return ruleDefinition;
-        }
-
-        private void Validate()
-        {
-            if (string.IsNullOrEmpty(_name))
-            {
-                throw new InvalidOperationException("Rule name not specified");
-            }
         }
     }
 }

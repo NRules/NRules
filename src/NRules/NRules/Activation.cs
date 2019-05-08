@@ -17,7 +17,9 @@ namespace NRules
     public class Activation : IMatch
     {
         private Dictionary<object, object> _stateMap;
-        
+
+        internal event EventHandler<ActivationEventArgs> OnRuleFiring;
+
         internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap factMap)
         {
             CompiledRule = compiledRule;
@@ -35,9 +37,44 @@ namespace NRules
         /// </summary>
         public IEnumerable<IFactMatch> Facts => GetMatchedFacts();
 
+        /// <summary>
+        /// Event that triggered the match.
+        /// </summary>
+        public MatchTrigger Trigger { get; private set; }
+
         internal ICompiledRule CompiledRule { get; }
         internal Tuple Tuple { get; }
         internal IndexMap FactMap { get; }
+
+        internal bool IsEnqueued { get; set; }
+        internal bool HasFired { get; set; }
+
+        internal void Insert()
+        {
+            Trigger = MatchTrigger.Created;
+        }
+
+        internal void Update()
+        {
+            Trigger = HasFired ? MatchTrigger.Updated : MatchTrigger.Created;
+        }
+
+        internal void Remove()
+        {
+            Trigger = HasFired ? MatchTrigger.Removed : MatchTrigger.None;
+        }
+
+        internal void Clear()
+        {
+            HasFired = false;
+            Trigger = MatchTrigger.None;
+        }
+
+        internal void RuleFiring()
+        {
+            OnRuleFiring?.Invoke(this, new ActivationEventArgs(this));
+            HasFired = Trigger != MatchTrigger.Removed;
+        }
 
         internal T GetState<T>(object key)
         {
@@ -78,11 +115,13 @@ namespace NRules
             public Declaration Declaration { get; }
             public Type Type { get; private set; }
             public object Value { get; private set; }
+            public IFactSource Source { get; private set; }
 
             public void SetFact(Fact fact)
             {
                 Type = fact.FactType.AsType();
                 Value = fact.Object;
+                Source = fact.Source;
             }
         }
     }

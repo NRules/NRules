@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace NRules.RuleModel.Builders
 {
     /// <summary>
@@ -7,16 +5,13 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public abstract class RuleElementBuilder
     {
-        internal SymbolTable Scope { get; }
+        private int _declarationCounter = 0;
 
-        internal RuleElementBuilder(SymbolTable scope)
+        protected string DeclarationName(string name)
         {
-            Scope = scope;
+            _declarationCounter++;
+            string declarationName = name ?? $"$var{_declarationCounter}$";
+            return declarationName;
         }
-
-        /// <summary>
-        /// Pattern declarations visible by the element being built.
-        /// </summary>
-        public IEnumerable<Declaration> Declarations => Scope.VisibleDeclarations;
     }
 }

@@ -24,7 +24,7 @@ namespace NRules
         }
 
         public IRuleDefinition Rule => CompiledRule.Definition;
-        public IEnumerable<IFactMatch> Facts => Activation.Facts;
+        public IMatch Match => Activation;
         public ICompiledRule CompiledRule => Activation.CompiledRule;
 
         public Activation Activation { get; }
@@ -92,17 +92,50 @@ namespace NRules
 
         public void InsertLinked(object key, object fact)
         {
-            _session.InsertLinked(Activation, key, fact);
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (fact == null)
+                throw new ArgumentNullException(nameof(fact));
+            
+            var keyedFact = new KeyValuePair<object, object>(key, fact);
+            InsertAllLinked(new[] {keyedFact});
+        }
+
+        public void InsertAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
+        {
+            _session.InsertLinked(Activation, keyedFacts);
         }
 
         public void UpdateLinked(object key, object fact)
         {
-            _session.UpdateLinked(Activation, key, fact);
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (fact == null)
+                throw new ArgumentNullException(nameof(fact));
+
+            var keyedFact = new KeyValuePair<object, object>(key, fact);
+            UpdateAllLinked(new[] {keyedFact});
+        }
+
+        public void UpdateAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
+        {
+            _session.UpdateLinked(Activation, keyedFacts);
         }
 
         public void RetractLinked(object key, object fact)
         {
-            _session.RetractLinked(Activation, key, fact);
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (fact == null)
+                throw new ArgumentNullException(nameof(fact));
+
+            var keyedFact = new KeyValuePair<object, object>(key, fact);
+            RetractAllLinked(new[] {keyedFact});
+        }
+
+        public void RetractAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
+        {
+            _session.RetractLinked(Activation, keyedFacts);
         }
 
         public object Resolve(Type serviceType)

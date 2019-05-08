@@ -53,6 +53,19 @@ namespace NRules.Fluent
             ruleSet.Add(rules);
         }
 
+        /// <summary>
+        /// Adds a new rule set to the rule repository.
+        /// </summary>
+        /// <param name="ruleSet">Rule set to add.</param>
+        /// <exception cref="ArgumentException">A rule set with the same name already exists.</exception>
+        public void Add(IRuleSet ruleSet)
+        {
+            if (_ruleSets.Any(x => x.Name == ruleSet.Name))
+                throw new ArgumentException($"Rule set with the same name already exists. Name={ruleSet.Name}");
+
+            _ruleSets.Add(ruleSet);
+        }
+
         private IRuleSet GetRuleSet(string ruleSetName)
         {
             IRuleSet ruleSet = _ruleSets.SingleOrDefault(rs => rs.Name == ruleSetName);

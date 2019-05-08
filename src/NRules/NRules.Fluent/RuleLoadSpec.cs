@@ -156,9 +156,10 @@ namespace NRules.Fluent
 
         public IEnumerable<IRuleDefinition> Load()
         {
-            var ruleDefinitions = GetRuleTypes()
-                .SelectMany(Activate)
-                .Select(BuildDefinition);
+            var rules = GetRuleTypes()
+                .SelectMany(Activate);
+            var factory = new RuleDefinitionFactory();
+            var ruleDefinitions = factory.Create(rules);
             return ruleDefinitions;
         }
 
@@ -187,19 +188,7 @@ namespace NRules.Fluent
             }
         }
 
-        private static IRuleDefinition BuildDefinition(Rule rule)
-        {
-            try
-            {
-                return rule.GetDefinition();
-            }
-            catch (Exception e)
-            {
-                throw new RuleDefinitionException("Failed to build rule definition", rule.GetType(), e);
-            }
-        }
-
-        internal bool IsFilterSet()
+        private bool IsFilterSet()
         {
             return _filter != null;
         }

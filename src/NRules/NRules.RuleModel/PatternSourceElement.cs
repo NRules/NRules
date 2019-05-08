@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace NRules.RuleModel
 {
@@ -13,8 +12,7 @@ namespace NRules.RuleModel
         /// </summary>
         public Type ResultType { get; }
 
-        internal PatternSourceElement(IEnumerable<Declaration> declarations, Type resultType)
-            : base(declarations)
+        internal PatternSourceElement(Type resultType)
         {
             ResultType = resultType;
         }

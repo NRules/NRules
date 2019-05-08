@@ -7,18 +7,20 @@ namespace NRules.Fluent.Expressions
 {
     internal class DependencyExpression : IDependencyExpression
     {
-        private readonly RuleBuilder _builder;
+        private readonly DependencyGroupBuilder _builder;
+        private readonly SymbolStack _symbolStack;
 
-        public DependencyExpression(RuleBuilder builder)
+        public DependencyExpression(DependencyGroupBuilder builder, SymbolStack symbolStack)
         {
             _builder = builder;
+            _symbolStack = symbolStack;
         }
 
         public IDependencyExpression Resolve<TDependency>(Expression<Func<TDependency>> alias)
         {
             var symbol = alias.ToParameterExpression();
-            var dependencies = _builder.Dependencies();
-            dependencies.Dependency(symbol.Type, symbol.Name);
+            var declaration = _builder.Dependency(symbol.Type, symbol.Name);
+            _symbolStack.Scope.Add(declaration);
             return this;
         }
     }

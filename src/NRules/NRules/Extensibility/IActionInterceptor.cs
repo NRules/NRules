@@ -12,7 +12,7 @@ namespace NRules.Extensibility
     /// </summary>
     /// <remarks>
     /// When actions are invoked via <c>IActionInterceptor</c>, exceptions thrown by actions
-    /// are not wrapped into <see cref="RuleActionEvaluationException"/>. It is the responsibility
+    /// are not wrapped into <see cref="RuleRhsExpressionEvaluationException"/>. It is the responsibility
     /// of the interceptor to handle the exceptions.
     /// Exceptions thrown from the interceptor are not handled by the engine and just propagate up the stack.
     /// </remarks>

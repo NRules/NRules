@@ -3,7 +3,7 @@ param (
     [string]$component = 'Core'
 )
 
-$version = '0.8.4'
+$version = '0.9.0'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -146,7 +146,7 @@ $components = @{
         run = @{
             exe = @('net462\NRules.Benchmark.exe')
         }
-   };
+    };
     'Documentation' = @{
         name = 'Documentation'
         src_root = 'doc'

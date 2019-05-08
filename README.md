@@ -26,4 +26,4 @@ Use the following resources to get up and running with NRules.
 See [Contributor Guide](CONTRIBUTING.md) for the guidelines on how to contribute to the project.
 
 ---
-Copyright &copy; 2012-2018 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).
+Copyright &copy; 2012-2019 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).

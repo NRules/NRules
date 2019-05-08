@@ -15,9 +15,9 @@ namespace NRules.RuleModel
         IRuleDefinition Rule { get; }
 
         /// <summary>
-        /// Retrieves matched facts.
+        /// Current rule match.
         /// </summary>
-        IEnumerable<IFactMatch> Facts { get; }
+        IMatch Match { get; }
 
         /// <summary>
         /// Halts rules execution. The engine continues execution of the current rule and exits the execution cycle.
@@ -109,11 +109,24 @@ namespace NRules.RuleModel
         void InsertLinked(object key, object fact);
 
         /// <summary>
+        /// Inserts new facts and links them to the current rule activation.
+        /// The facts will be automatically retracted if this activation is removed.
+        /// </summary>
+        /// <param name="keyedFacts">Keyed facts to insert. Keys must be unique for a given rule.</param>
+        void InsertAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts);
+
+        /// <summary>
         /// Updates existing fact that's linked to the current rule activation.
         /// </summary>
         /// <param name="key">Key for the linked fact. Must be unique for a given rule.</param>
         /// <param name="fact">Fact to update.</param>
         void UpdateLinked(object key, object fact);
+
+        /// <summary>
+        /// Updates existing facts that are linked to the current rule activation.
+        /// </summary>
+        /// <param name="keyedFacts">Keyed facts to update. Keys must be unique for a given rule.</param>
+        void UpdateAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts);
 
         /// <summary>
         /// Retracts existing fact that's linked to the current rule activation.
@@ -125,6 +138,16 @@ namespace NRules.RuleModel
         /// <param name="key">Key for the linked fact. Must be unique for a given rule.</param>
         /// <param name="fact">Fact to retract.</param>
         void RetractLinked(object key, object fact);
+
+        /// <summary>
+        /// Retracts existing facts that are linked to the current rule activation.
+        /// </summary>
+        /// <remarks>Linked facts are retracted automatically, when activation is deleted, but 
+        /// this method can be used in complex scenarios, when linked facts need to be retracted explicitly,
+        /// prior to activation getting deleted.
+        /// </remarks>
+        /// <param name="keyedFacts">Keyed facts to retract. Keys must be unique for a given rule.</param>
+        void RetractAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts);
 
         /// <summary>
         /// Resolves a registered service (normally via an IoC container).

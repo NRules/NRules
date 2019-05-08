@@ -24,11 +24,8 @@ namespace NRules.Collections
 
         public PriorityQueue(IComparer<TPriority> comparer)
         {
-            if (comparer == null)
-                throw new ArgumentNullException(nameof(comparer));
-
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
             _baseHeap = new List<KeyValuePair<TPriority, TValue>>();
-            _comparer = comparer;
         }
 
         public void Enqueue(TPriority priority, TValue value)

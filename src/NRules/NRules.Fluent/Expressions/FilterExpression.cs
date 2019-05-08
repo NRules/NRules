@@ -8,31 +8,31 @@ namespace NRules.Fluent.Expressions
 {
     internal class FilterExpression : IFilterExpression
     {
-        private readonly RuleBuilder _builder;
+        private readonly FilterGroupBuilder _builder;
+        private readonly SymbolStack _symbolStack;
 
-        public FilterExpression(RuleBuilder builder)
+        public FilterExpression(FilterGroupBuilder builder, SymbolStack symbolStack)
         {
             _builder = builder;
+            _symbolStack = symbolStack;
         }
 
         public IFilterExpression OnChange(params Expression<Func<object>>[] keySelectors)
         {
-            var filters = _builder.Filters();
             foreach (var keySelector in keySelectors)
             {
-                var expression = keySelector.DslExpression(filters.Declarations);
-                filters.Filter(FilterType.KeyChange, expression);
+                var expression = keySelector.DslExpression(_symbolStack.Scope.Declarations);
+                _builder.Filter(FilterType.KeyChange, expression);
             }
             return this;
         }
 
         public IFilterExpression Where(params Expression<Func<bool>>[] predicates)
         {
-            var filters = _builder.Filters();
             foreach (var predicate in predicates)
             {
-                var expression = predicate.DslExpression(filters.Declarations);
-                filters.Filter(FilterType.Predicate, expression);
+                var expression = predicate.DslExpression(_symbolStack.Scope.Declarations);
+                _builder.Filter(FilterType.Predicate, expression);
             }
             return this;
         }

@@ -1,4 +1,5 @@
-﻿using NRules.Diagnostics;
+﻿using System.Collections.Generic;
+using NRules.Diagnostics;
 
 namespace NRules
 {
@@ -9,6 +10,7 @@ namespace NRules
         IAgendaInternal Agenda { get; }
         IEventAggregator EventAggregator { get; }
         IIdGenerator IdGenerator { get; }
+        Queue<Activation> UnlinkQueue { get; }
     }
 
     internal class ExecutionContext : IExecutionContext
@@ -20,6 +22,7 @@ namespace NRules
             Agenda = agenda;
             EventAggregator = eventAggregator;
             IdGenerator = idGenerator;
+            UnlinkQueue = new Queue<Activation>();
         }
 
         public ISessionInternal Session { get; }
@@ -27,5 +30,6 @@ namespace NRules
         public IAgendaInternal Agenda { get; }
         public IEventAggregator EventAggregator { get; }
         public IIdGenerator IdGenerator { get; }
+        public Queue<Activation> UnlinkQueue { get; }
     }
 }

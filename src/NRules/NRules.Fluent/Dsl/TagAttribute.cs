@@ -7,8 +7,11 @@ namespace NRules.Fluent.Dsl
     /// A rule class can have multiple tag attributes, and also inherits tag attributes from its parent classes.
     /// Tags can be used to filter rules when loading them through fluent load specification.
     /// </summary>
+    /// <remarks>
+    /// A custom tag attribute class could be inherited from the <see cref="TagAttribute"/> to provide strongly-typed version of a tag.
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-    public sealed class TagAttribute : Attribute
+    public class TagAttribute : Attribute
     {
         public TagAttribute(string value)
         {

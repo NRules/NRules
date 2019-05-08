@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace NRules.RuleModel
 {
@@ -12,6 +11,12 @@ namespace NRules.RuleModel
         public const string GroupByName = "GroupBy";
         public const string ProjectName = "Project";
         public const string FlattenName = "Flatten";
+
+        public const string SelectorName = "Selector";
+        public const string ElementSelectorName = "ElementSelector";
+        public const string KeySelectorName = "KeySelector";
+        public const string KeySelectorAscendingName = "KeySelectorAscending";
+        public const string KeySelectorDescendingName = "KeySelectorDescending";
 
         /// <summary>
         /// Fact source of the aggregate.
@@ -31,16 +36,17 @@ namespace NRules.RuleModel
         /// <summary>
         /// Expressions used by the aggregate.
         /// </summary>
-        public ExpressionMap ExpressionMap { get; }
+        public ExpressionCollection Expressions { get; }
 
-        internal AggregateElement(IEnumerable<Declaration> declarations, Type resultType, string name, ExpressionMap expressionMap, PatternElement source,
-            Type customFactoryType)
-            : base(declarations, resultType)
+        internal AggregateElement(Type resultType, string name, ExpressionCollection expressions, PatternElement source, Type customFactoryType)
+            : base(resultType)
         {
             Name = name;
-            ExpressionMap = expressionMap;
+            Expressions = expressions;
             Source = source;
             CustomFactoryType = customFactoryType;
+
+            AddImports(source);
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)

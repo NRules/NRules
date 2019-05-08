@@ -11,7 +11,7 @@
 
         public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
-            return Condition.IsSatisfiedBy(context, fact);
+            return Condition.IsSatisfiedBy(context, NodeInfo, fact);
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)

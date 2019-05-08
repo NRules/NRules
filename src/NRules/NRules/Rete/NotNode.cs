@@ -8,7 +8,7 @@ namespace NRules.Rete
         {
         }
 
-        public override void PropagateAssert(IExecutionContext context, IList<Tuple> tuples)
+        public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
         {
             var joinedSets = JoinedSets(context, tuples);
             var toAssert = new TupleFactList();
@@ -17,10 +17,7 @@ namespace NRules.Rete
                 var quantifier = set.Tuple.CreateQuantifier(this);
                 foreach (var fact in set.Facts)
                 {
-                    if (MatchesConditions(context, set.Tuple, fact))
-                    {
-                        quantifier.Value++;
-                    }
+                    quantifier.Value++;
                 }
                 if (quantifier.Value == 0)
                 {
@@ -30,7 +27,7 @@ namespace NRules.Rete
             MemoryNode.PropagateAssert(context, toAssert);
         }
 
-        public override void PropagateUpdate(IExecutionContext context, IList<Tuple> tuples)
+        public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
         {
             var toUpdate = new TupleFactList();
             foreach (var tuple in tuples)
@@ -43,7 +40,7 @@ namespace NRules.Rete
             MemoryNode.PropagateUpdate(context, toUpdate);
         }
 
-        public override void PropagateRetract(IExecutionContext context, IList<Tuple> tuples)
+        public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
         {
             var toRetract = new TupleFactList();
             foreach (var tuple in tuples)
@@ -56,7 +53,7 @@ namespace NRules.Rete
             MemoryNode.PropagateRetract(context, toRetract);
         }
 
-        public override void PropagateAssert(IExecutionContext context, IList<Fact> facts)
+        public override void PropagateAssert(IExecutionContext context, List<Fact> facts)
         {
             var joinedSets = JoinedSets(context, facts);
             var toRetract = new TupleFactList();
@@ -66,10 +63,7 @@ namespace NRules.Rete
                 int startingCount = quantifier.Value;
                 foreach (var fact in set.Facts)
                 {
-                    if (MatchesConditions(context, set.Tuple, fact))
-                    {
-                        quantifier.Value++;
-                    }
+                    quantifier.Value++;
                 }
                 if (startingCount == 0 && quantifier.Value > 0)
                 {
@@ -79,12 +73,12 @@ namespace NRules.Rete
             MemoryNode.PropagateRetract(context, toRetract);
         }
 
-        public override void PropagateUpdate(IExecutionContext context, IList<Fact> facts)
+        public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
         {
             //Do nothing
         }
 
-        public override void PropagateRetract(IExecutionContext context, IList<Fact> facts)
+        public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
         {
             var joinedSets = JoinedSets(context, facts);
             var toAssert = new TupleFactList();
@@ -94,10 +88,7 @@ namespace NRules.Rete
                 int startingCount = quantifier.Value;
                 foreach (var fact in set.Facts)
                 {
-                    if (MatchesConditions(context, set.Tuple, fact))
-                    {
-                        quantifier.Value--;
-                    }
+                    quantifier.Value--;
                 }
                 if (startingCount > 0 && quantifier.Value == 0)
                 {

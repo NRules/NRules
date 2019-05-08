@@ -26,14 +26,14 @@ namespace NRules.Aggregators
             _elementSelector = elementSelector;
         }
 
-        public IEnumerable<AggregationResult> Add(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var key = (TKey)_keySelector.Invoke(tuple, fact);
-                var element = (TElement)_elementSelector.Invoke(tuple, fact);
+                var key = (TKey)_keySelector.Invoke(context, tuple, fact);
+                var element = (TElement)_elementSelector.Invoke(context, tuple, fact);
                 _sourceToKey[fact] = key;
                 _sourceToElement[fact] = element;
                 var result = Add(fact, key, element);
@@ -47,14 +47,14 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Modify(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
             foreach (var fact in facts)
             {
-                var key = (TKey)_keySelector.Invoke(tuple, fact);
-                var element = (TElement)_elementSelector.Invoke(tuple, fact);
+                var key = (TKey)_keySelector.Invoke(context, tuple, fact);
+                var element = (TElement)_elementSelector.Invoke(context, tuple, fact);
                 var oldKey = _sourceToKey[fact];
                 var oldElement = _sourceToElement[fact];
                 _sourceToKey[fact] = key;
@@ -87,7 +87,7 @@ namespace NRules.Aggregators
                     else if (previousResult.Action == AggregationAction.Removed ||
                              result2.Action == AggregationAction.Added)
                     {
-                        resultLookup[key] = AggregationResult.Modified(previousResult.Aggregate);
+                        resultLookup[key] = AggregationResult.Modified(previousResult.Aggregate, previousResult.Aggregate, previousResult.Source);
                     }
                 }
             }
@@ -95,7 +95,7 @@ namespace NRules.Aggregators
             return results;
         }
 
-        public IEnumerable<AggregationResult> Remove(ITuple tuple, IEnumerable<IFact> facts)
+        public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
@@ -124,12 +124,12 @@ namespace NRules.Aggregators
                 _groups[key] = group;
 
                 group.Add(fact, element);
-                return AggregationResult.Added(group);
+                return AggregationResult.Added(group, group.Facts);
             }
 
             group.Add(fact, element);
             group.Key = key;
-            return AggregationResult.Modified(group);
+            return AggregationResult.Modified(group, group, group.Facts);
         }
 
         private AggregationResult Modify(IFact fact, TKey key, TElement element)
@@ -137,7 +137,7 @@ namespace NRules.Aggregators
             var group = _groups[key];
             group.Modify(fact, element);
             group.Key = key;
-            return AggregationResult.Modified(group);
+            return AggregationResult.Modified(group, group, group.Facts);
         }
 
         private AggregationResult Remove(IFact fact, TKey key, TElement element)
@@ -149,7 +149,7 @@ namespace NRules.Aggregators
                 _groups.Remove(key);
                 return AggregationResult.Removed(group);
             }
-            return AggregationResult.Modified(group);
+            return AggregationResult.Modified(group, group, group.Facts);
         }
 
         private static IEnumerable<AggregationResult> GetResults(IEnumerable<TKey> keys, DefaultKeyMap<TKey, AggregationResult> lookup)
