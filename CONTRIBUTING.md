@@ -8,14 +8,14 @@ Contributions to NRules, whether new features or bug fixes, are welcome and are 
 
 - **File an issue.** Either suggest a feature or note a defect. If it's a new feature, explain the motivation behind it and how you think it should work. If it's a defect, include a description and reproduction (ideally one or more failing unit tests).
 - **Design discussion.** For new features, some discussion on the issue will take place to determine if it's something that should be included with NRules. For defects, discussion may happen around whether the issue is truly a defect or if the behavior is correct.
-- **Implementation.** Fork the repository. For feature development, create a feature branch (`feature-something`) and implement the change. For small defects, it's ok to make the change directly on the `develop` branch. Large bug fixes should be implemented on a defect branch (`xyz-something`, where xyz is the issue number).
+- **Implementation.** Fork the repository, implement and test the change.
 - **Pull request.** Create a pull request on the `develop` branch of the repository to submit changes. Pull requests need to pass the CI build and follow coding standards. All pull requests should include accompanying unit tests to verify the work.
 - **Code review.** Some iteration may take place requiring updates to the pull request.
 - **Pull request acceptance.** The pull request will be accepted into the `develop` branch and pushed to `master` with the next release.
 
 ### Questions
 
-If you just want to ask a question about how to use NRules, instead of creating an issue consider asking your question at [Stack Overflow](http://stackoverflow.com/questions/tagged/nrules), [Discussion Group](http://groups.google.com/group/nrules-users) or [Gitter Chat](https://gitter.im/NRules/NRules).
+If you just want to ask a question about how to use NRules, instead of creating an issue consider asking your question on [Stack Overflow](http://stackoverflow.com/questions/tagged/nrules), [Discussion Group](http://groups.google.com/group/nrules-users) or [Gitter Chat](https://gitter.im/NRules/NRules).
 
 ## License
 
@@ -29,14 +29,14 @@ By contributing to NRules, you assert that:
 
 ### Development Environment
 
-- Visual Studio 2017 (with latest patches/updates).
+- Visual Studio 2019 (with latest patches/updates).
 - [Sandcastle Help File Builder](https://github.com/EWSoftware/SHFB)
 
 ### Dependencies
 
 NRules core assemblies depend *only* on the .NET Base Class Library (BCL). It should be possible to build the project straight out of Git (no additional installation needs to take place on the developer's machine). This means NuGet package references (which should be restored during the build process).
 
-Integration and extension projects may have additional dependencies, consistent with the nature of the project.
+Integration and extension projects may have additional dependencies, consistent with the nature of those projects.
 
 Unit tests are written in xUnit and Moq.
 
