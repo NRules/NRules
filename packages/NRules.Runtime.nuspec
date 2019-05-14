@@ -6,7 +6,7 @@
     <title>NRules.Runtime, Execution Engine for NRules</title>
     <authors>Sergiy Nikolayev</authors>
     <owners>Sergiy Nikolayev</owners>
-    <licenseUrl>https://github.com/NRules/NRules/blob/master/LICENSE.txt</licenseUrl>
+    <license type="expression">MIT</license>
     <projectUrl>http://nrules.net</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/NRules/NRules.media/master/Logo/Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
