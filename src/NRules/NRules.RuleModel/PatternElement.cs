@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace NRules.RuleModel
 {
@@ -8,17 +7,17 @@ namespace NRules.RuleModel
     /// </summary>
     public class PatternElement : RuleLeftElement
     {
-        private readonly List<ConditionElement> _conditions;
+        public const string ConditionName = "Condition";
 
-        internal PatternElement(Declaration declaration, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
+        internal PatternElement(Declaration declaration, ExpressionCollection expressions, PatternSourceElement source)
         {
             Declaration = declaration;
             ValueType = declaration.Type;
-            _conditions = new List<ConditionElement>(conditions);
+            Expressions = expressions;
             Source = source;
 
             AddExport(declaration);
-            AddImports(_conditions);
+            AddImports(expressions);
             AddImports(source);
         }
 
@@ -38,9 +37,9 @@ namespace NRules.RuleModel
         public Type ValueType { get; }
 
         /// <summary>
-        /// List of conditions the pattern checks.
+        /// Expressions used by the pattern to match elements.
         /// </summary>
-        public IEnumerable<ConditionElement> Conditions => _conditions;
+        public ExpressionCollection Expressions { get; }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
         {

@@ -102,20 +102,21 @@ namespace NRules.Rete
 
         protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
         {
+            var conditions = element.Expressions.Find(PatternElement.ConditionName).ToList();
             if (element.Source == null)
             {
                 context.CurrentAlphaNode = _root;
                 context.RegisterDeclaration(element.Declaration);
 
                 BuildTypeNode(context, element, element.ValueType);
-                var alphaConditions = element.Conditions.Where(x => x.Imports.Count() == 1).ToList();
+                var alphaConditions = conditions.Where(x => x.Imports.Count() == 1).ToList();
                 foreach (var alphaCondition in alphaConditions)
                 {
                     BuildSelectionNode(context, alphaCondition);
                 }
                 BuildAlphaMemoryNode(context);
 
-                var betaConditions = element.Conditions.Where(x => x.Imports.Count() > 1).ToList();
+                var betaConditions = conditions.Where(x => x.Imports.Count() > 1).ToList();
                 if (betaConditions.Count > 0)
                 {
                     BuildJoinNode(context, element, betaConditions);
@@ -123,12 +124,12 @@ namespace NRules.Rete
             }
             else
             {
-                if (element.Conditions.Any())
+                if (conditions.Any())
                 {
                     BuildSubnet(context, element.Source);
                     context.RegisterDeclaration(element.Declaration);
 
-                    BuildJoinNode(context, element, element.Conditions);
+                    BuildJoinNode(context, element, conditions);
                 }
                 else
                 {
@@ -163,7 +164,7 @@ namespace NRules.Rete
             context.AlphaSource = subnetContext.AlphaSource;
         }
 
-        private void BuildJoinNode(ReteBuilderContext context, RuleElement element, IEnumerable<ConditionElement> conditions = null)
+        private void BuildJoinNode(ReteBuilderContext context, RuleElement element, IEnumerable<ExpressionElement> conditions = null)
         {
             var betaConditions = new List<IBetaCondition>();
             if (conditions != null)
@@ -286,7 +287,7 @@ namespace NRules.Rete
             context.CurrentAlphaNode = node;
         }
 
-        private void BuildSelectionNode(ReteBuilderContext context, ConditionElement element)
+        private void BuildSelectionNode(ReteBuilderContext context, ExpressionElement element)
         {
             var alphaCondition = ExpressionCompiler.CompileAlphaCondition(element);
             SelectionNode node = context.CurrentAlphaNode

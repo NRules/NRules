@@ -12,7 +12,7 @@ namespace NRules.Utilities
 {
     internal abstract class ExpressionCompiler
     {
-        public static IAlphaCondition CompileAlphaCondition(ConditionElement element)
+        public static IAlphaCondition CompileAlphaCondition(ExpressionElement element)
         {
             var optimizer = new ExpressionSingleParameterOptimizer<Func<object, bool>>();
             var optimizedExpression = optimizer.ConvertParameter(element.Expression);
@@ -22,7 +22,7 @@ namespace NRules.Utilities
             return condition;
         }
 
-        public static IBetaCondition CompileBetaCondition(ConditionElement element, IEnumerable<Declaration> declarations)
+        public static IBetaCondition CompileBetaCondition(ExpressionElement element, IEnumerable<Declaration> declarations)
         {
             var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], bool>>();
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);

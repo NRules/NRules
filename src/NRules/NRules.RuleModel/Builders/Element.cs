@@ -297,11 +297,11 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="type">Type of facts matched by the pattern.</param>
         /// <param name="name">Pattern name.</param>
-        /// <param name="conditions">Condition elements that represent conditions applied to the facts matched by the pattern.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
         /// <returns>Created element.</returns>
-        public static PatternElement Pattern(Type type, string name, IEnumerable<ConditionElement> conditions)
+        public static PatternElement Pattern(Type type, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions)
         {
-            var element = Pattern(type, name, conditions, null);
+            var element = Pattern(type, name, expressions, null);
             return element;
         }
 
@@ -309,11 +309,11 @@ namespace NRules.RuleModel.Builders
         /// Creates a pattern element that represents a match of facts in rules engine's working memory.
         /// </summary>
         /// <param name="declaration">Declaration that references the pattern.</param>
-        /// <param name="conditions">Condition elements that represent conditions applied to the facts matched by the pattern.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
         /// <returns>Created element.</returns>
-        public static PatternElement Pattern(Declaration declaration, IEnumerable<ConditionElement> conditions)
+        public static PatternElement Pattern(Declaration declaration, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions)
         {
-            var element = Pattern(declaration, conditions, null);
+            var element = Pattern(declaration, expressions, null);
             return element;
         }
 
@@ -322,10 +322,10 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="type">Type of elements matched by the pattern.</param>
         /// <param name="name">Pattern name.</param>
-        /// <param name="conditions">Condition elements that represent conditions applied to the elements matched by the pattern.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
         /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
         /// <returns>Created element.</returns>
-        public static PatternElement Pattern(Type type, string name, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
+        public static PatternElement Pattern(Type type, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, PatternSourceElement source)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type), "Pattern type not provided");
@@ -333,7 +333,7 @@ namespace NRules.RuleModel.Builders
                 throw new ArgumentNullException(nameof(name), "Pattern name not provided");
 
             var declaration = new Declaration(type, name);
-            var element = Pattern(declaration, conditions, source);
+            var element = Pattern(declaration, expressions, source);
             return element;
         }
 
@@ -341,17 +341,55 @@ namespace NRules.RuleModel.Builders
         /// Creates a pattern element that represents a match over results of the source element.
         /// </summary>
         /// <param name="declaration">Declaration that references the pattern.</param>
-        /// <param name="conditions">Condition elements that represent conditions applied to the elements matched by the pattern.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
         /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
         /// <returns>Created element.</returns>
-        public static PatternElement Pattern(Declaration declaration, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
+        public static PatternElement Pattern(Declaration declaration, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, PatternSourceElement source)
+        {
+            if (expressions == null)
+                throw new ArgumentNullException(nameof(expressions), "Pattern expressions not provided");
+
+            var expressionElements = expressions.Select(x => new NamedExpressionElement(x.Key, x.Value));
+            var element = Pattern(declaration, expressionElements, source);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates a pattern element that represents a match over results of the source element.
+        /// </summary>
+        /// <param name="type">Type of elements matched by the pattern.</param>
+        /// <param name="name">Pattern name.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
+        /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
+        /// <returns>Created element.</returns>
+        public static PatternElement Pattern(Type type, string name, IEnumerable<NamedExpressionElement> expressions, PatternSourceElement source)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type), "Pattern type not provided");
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name), "Pattern name not provided");
+
+            var declaration = new Declaration(type, name);
+            var element = Pattern(declaration, expressions, source);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates a pattern element that represents a match over results of the source element.
+        /// </summary>
+        /// <param name="declaration">Declaration that references the pattern.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
+        /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
+        /// <returns>Created element.</returns>
+        public static PatternElement Pattern(Declaration declaration, IEnumerable<NamedExpressionElement> expressions, PatternSourceElement source)
         {
             if (declaration == null)
                 throw new ArgumentNullException(nameof(declaration), "Pattern declaration not provided");
-            if (conditions == null)
-                throw new ArgumentNullException(nameof(conditions), "Pattern conditions not provided");
+            if (expressions == null)
+                throw new ArgumentNullException(nameof(expressions), "Pattern expressions not provided");
 
-            var element = new PatternElement(declaration, conditions, source);
+            var expressionCollection = new ExpressionCollection(expressions);
+            var element = new PatternElement(declaration, expressionCollection, source);
             declaration.Target = element;
             return element;
         }
@@ -425,6 +463,38 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, PatternElement source, Type customFactoryType)
         {
+            if (expressions == null)
+                throw new ArgumentNullException(nameof(expressions), "Aggregate expressions not provided");
+
+            var expressionElements = expressions.Select(x => new NamedExpressionElement(x.Key, x.Value));
+            var element = Aggregate(resultType, name, expressionElements, source, customFactoryType);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates an element that represents an aggregation of facts.
+        /// </summary>
+        /// <param name="resultType">Type of the aggregate result.</param>
+        /// <param name="name">Aggregate name.</param>
+        /// <param name="expressions">Expressions used to construct aggregates from individual facts.</param>
+        /// <param name="source">Pattern that matches facts for aggregation.</param>
+        /// <returns>Created element.</returns>
+        public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<NamedExpressionElement> expressions, PatternElement source)
+        {
+            return Aggregate(resultType, name, expressions, source, null);
+        }
+
+        /// <summary>
+        /// Creates an element that represents an aggregation of facts.
+        /// </summary>
+        /// <param name="resultType">Type of the aggregate result.</param>
+        /// <param name="name">Aggregate name.</param>
+        /// <param name="expressions">Expressions used to construct aggregates from individual facts.</param>
+        /// <param name="source">Pattern that matches facts for aggregation.</param>
+        /// <param name="customFactoryType">Factory type used construct aggregators for this aggregation.</param>
+        /// <returns>Created element.</returns>
+        public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<NamedExpressionElement> expressions, PatternElement source, Type customFactoryType)
+        {
             if (resultType == null)
                 throw new ArgumentNullException(nameof(resultType), "Aggregate result type not provided");
             if (string.IsNullOrEmpty(name))
@@ -434,9 +504,7 @@ namespace NRules.RuleModel.Builders
             if (source == null)
                 throw new ArgumentNullException(nameof(source), "Aggregate source pattern not provided");
 
-            var expressionElements = expressions.Select(x => new NamedExpressionElement(x.Key, x.Value));
-            var expressionCollection = new ExpressionCollection(expressionElements);
-
+            var expressionCollection = new ExpressionCollection(expressions);
             var element = new AggregateElement(resultType, name, expressionCollection, source, customFactoryType);
             ElementValidator.ValidateAggregate(element);
             return element;

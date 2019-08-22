@@ -63,11 +63,10 @@ namespace NRules.RuleModel.Builders
 
         protected internal override void VisitPattern(Context context, PatternElement element)
         {
-            var conditions = element.Conditions.Select(x => Transform<ConditionElement>(context, x)).ToList();
             var source = Transform<PatternSourceElement>(context, element.Source);
             if (context.IsModified)
             {
-                var newElement = Element.Pattern(element.Declaration, conditions, source);
+                var newElement = Element.Pattern(element.Declaration, element.Expressions, source);
                 Result(context, newElement);
             }
         }
@@ -81,8 +80,7 @@ namespace NRules.RuleModel.Builders
             var source = Transform<PatternElement>(context, element.Source);
             if (context.IsModified)
             {
-                var aggregateExpressions = element.Expressions.Select(x => new KeyValuePair<string, LambdaExpression>(x.Name, x.Expression));
-                var newElement = Element.Aggregate(element.ResultType, element.Name, aggregateExpressions, source, element.CustomFactoryType);
+                var newElement = Element.Aggregate(element.ResultType, element.Name, element.Expressions, source, element.CustomFactoryType);
                 Result(context, newElement);
             }
         }
@@ -164,18 +162,18 @@ namespace NRules.RuleModel.Builders
             {
                 var parameter = pattern.Declaration.ToParameterExpression();
 
-                var conditions = new List<ConditionElement>
+                var expressions = new List<NamedExpressionElement>
                 {
                     Element.Condition(
                         Expression.Lambda(
                             Expression.ReferenceEqual(baseParameter, parameter),
                             baseParameter, parameter))
                 };
-                conditions.AddRange(pattern.Conditions);
+                expressions.AddRange(pattern.Expressions);
 
                 negatedPatterns.Add(
                     Element.Not(
-                        Element.Pattern(pattern.Declaration, conditions, pattern.Source)
+                        Element.Pattern(pattern.Declaration, expressions, pattern.Source)
                     ));
             }
 
