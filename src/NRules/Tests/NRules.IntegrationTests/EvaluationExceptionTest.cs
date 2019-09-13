@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using NRules.Extensibility;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
@@ -212,6 +213,25 @@ namespace NRules.IntegrationTests
             Session.Fire();
         }
 
+        [Fact]
+        public void Fire_ActionErrorNoErrorHandlerWithInterceptor_ThrowsBareException()
+        {
+            //Arrange
+            Session.ActionInterceptor = new PassThroughActionInterceptor();
+            GetRuleInstance<TestRule>().Action = ThrowAction;
+
+            Expression expression = null;
+            IList<IFactMatch> facts = null;
+            Session.Events.RhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
+            Session.Events.RhsExpressionFailedEvent += (sender, args) => facts = args.Match.Facts.ToList();
+
+            var fact = new FactType { TestProperty = "Valid Value" };
+            Session.Insert(fact);
+
+            //Act - Assert
+            Assert.Throws<InvalidOperationException>(() => Session.Fire());
+        }
+
         protected override void SetUpRules()
         {
             SetUpRule<TestRule>();
@@ -247,6 +267,17 @@ namespace NRules.IntegrationTests
 
                 Then()
                     .Do(ctx => Action());
+            }
+        }
+
+        public class PassThroughActionInterceptor : IActionInterceptor
+        {
+            public void Intercept(IContext context, IEnumerable<IActionInvocation> actions)
+            {
+                foreach (var action in actions)
+                {
+                    action.Invoke();
+                }
             }
         }
     }
