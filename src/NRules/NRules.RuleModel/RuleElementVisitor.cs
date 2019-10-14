@@ -72,7 +72,7 @@
 
         private void VisitGroup(TContext context, GroupElement element)
         {
-            foreach (RuleLeftElement childElement in element.ChildElements)
+            foreach (var childElement in element.ChildElements)
             {
                 childElement.Accept(context, this);
             }

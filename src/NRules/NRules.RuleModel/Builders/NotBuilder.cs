@@ -7,7 +7,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class NotBuilder : RuleElementBuilder, IBuilder<NotElement>
     {
-        private IBuilder<RuleLeftElement> _sourceBuilder;
+        private IBuilder<RuleElement> _sourceBuilder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotBuilder"/>.

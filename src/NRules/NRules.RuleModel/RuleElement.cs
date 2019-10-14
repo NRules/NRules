@@ -12,6 +12,11 @@ namespace NRules.RuleModel
         private readonly HashSet<Declaration> _imports;
 
         /// <summary>
+        /// Element type of this rule element.
+        /// </summary>
+        public abstract ElementType ElementType { get; }
+
+        /// <summary>
         /// Rule element declarations exported to the outer scope.
         /// </summary>
         public IEnumerable<Declaration> Exports => _exports;

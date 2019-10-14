@@ -5,11 +5,11 @@ namespace NRules.RuleModel
     /// <summary>
     /// Rule element that represents a pattern that matches facts.
     /// </summary>
-    public class PatternElement : RuleLeftElement
+    public class PatternElement : RuleElement
     {
         public const string ConditionName = "Condition";
 
-        internal PatternElement(Declaration declaration, ExpressionCollection expressions, PatternSourceElement source)
+        internal PatternElement(Declaration declaration, ExpressionCollection expressions, RuleElement source)
         {
             Declaration = declaration;
             ValueType = declaration.Type;
@@ -21,6 +21,9 @@ namespace NRules.RuleModel
             AddImports(source);
         }
 
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.Pattern;
+
         /// <summary>
         /// Declaration that references the pattern.
         /// </summary>
@@ -29,7 +32,7 @@ namespace NRules.RuleModel
         /// <summary>
         /// Optional pattern source element.
         /// </summary>
-        public PatternSourceElement Source { get; }
+        public RuleElement Source { get; }
 
         /// <summary>
         /// Type of the values that the pattern matches.

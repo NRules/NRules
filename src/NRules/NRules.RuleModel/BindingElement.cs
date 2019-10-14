@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel
@@ -7,21 +6,21 @@ namespace NRules.RuleModel
     /// <summary>
     /// Rule element that represents results of an expression.
     /// </summary>
-    public class BindingElement : PatternSourceElement
+    public class BindingElement : ExpressionElement
     {
         internal BindingElement(Type resultType, LambdaExpression expression) 
-            : base(resultType)
+            : base(expression)
         {
-            Expression = expression;
-
-            var imports = expression.Parameters.Select(p => p.ToDeclaration());
-            AddImports(imports);
+            ResultType = resultType;
         }
+
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.Binding;
         
         /// <summary>
-        /// Binding expression.
+        /// Type of the result that this rule element yields.
         /// </summary>
-        public LambdaExpression Expression { get; }
+        public Type ResultType { get; }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
         {

@@ -195,7 +195,7 @@ namespace NRules.Rete
             context.ResetAlphaSource();
         }
 
-        private void BuildNotNode(ReteBuilderContext context, RuleLeftElement element)
+        private void BuildNotNode(ReteBuilderContext context, RuleElement element)
         {
             var node = context.AlphaSource
                 .Sinks.OfType<NotNode>()

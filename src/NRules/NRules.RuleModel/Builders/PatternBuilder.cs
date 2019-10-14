@@ -10,7 +10,7 @@ namespace NRules.RuleModel.Builders
     public class PatternBuilder : RuleElementBuilder, IBuilder<PatternElement>
     {
         private readonly List<KeyValuePair<string, LambdaExpression>> _expressions = new List<KeyValuePair<string, LambdaExpression>>();
-        private IBuilder<PatternSourceElement> _sourceBuilder;
+        private IBuilder<RuleElement> _sourceBuilder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatternBuilder"/>.

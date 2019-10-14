@@ -3,14 +3,17 @@ namespace NRules.RuleModel
     /// <summary>
     /// Negative existential quantifier.
     /// </summary>
-    public class NotElement : RuleLeftElement
+    public class NotElement : RuleElement
     {
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.Not;
+
         /// <summary>
         /// Fact source of the not element.
         /// </summary>
-        public RuleLeftElement Source { get; }
+        public RuleElement Source { get; }
 
-        internal NotElement(RuleLeftElement source)
+        internal NotElement(RuleElement source)
         {
             Source = source;
 

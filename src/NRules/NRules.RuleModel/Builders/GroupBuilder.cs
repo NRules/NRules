@@ -24,7 +24,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
     {
-        private readonly List<IBuilder<RuleLeftElement>> _nestedBuilders = new List<IBuilder<RuleLeftElement>>();
+        private readonly List<IBuilder<RuleElement>> _nestedBuilders = new List<IBuilder<RuleElement>>();
         private GroupType _groupType;
 
         /// <summary>
@@ -210,10 +210,10 @@ namespace NRules.RuleModel.Builders
 
         GroupElement IBuilder<GroupElement>.Build()
         {
-            var childElements = new List<RuleLeftElement>();
+            var childElements = new List<RuleElement>();
             foreach (var builder in _nestedBuilders)
             {
-                RuleLeftElement childElement = builder.Build();
+                var childElement = builder.Build();
                 childElements.Add(childElement);
             }
             var groupElement = Element.Group(_groupType, childElements);

@@ -15,6 +15,9 @@ namespace NRules.RuleModel
             Name = name;
         }
 
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.NamedExpression;
+
         /// <summary>
         /// Expression name.
         /// </summary>

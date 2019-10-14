@@ -16,6 +16,9 @@ namespace NRules.RuleModel
             AddImports(_filters);
         }
 
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.FilterGroup;
+
         /// <summary>
         /// List of filters the group element contains.
         /// </summary>
