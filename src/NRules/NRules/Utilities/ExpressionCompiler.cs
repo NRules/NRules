@@ -12,25 +12,57 @@ namespace NRules.Utilities
 {
     internal abstract class ExpressionCompiler
     {
-        public static IAlphaCondition CompileAlphaCondition(ExpressionElement element)
+        public static ILhsExpression<TResult> CompileLhsExpression<TResult>(ExpressionElement element, List<Declaration> declarations)
         {
-            var optimizer = new ExpressionSingleParameterOptimizer<Func<object, bool>>();
+            if (element.Imports.Count() == 1 &&
+                Equals(element.Imports.Single(), declarations.Last()))
+            {
+                return CompileLhsFactExpression<TResult>(element);
+            }
+            return CompileLhsTupleFactExpression<TResult>(element, declarations);
+        }
+
+        public static ILhsFactExpression<TResult> CompileLhsFactExpression<TResult>(ExpressionElement element)
+        {
+            var optimizer = new ExpressionSingleParameterOptimizer<Func<object, TResult>>();
             var optimizedExpression = optimizer.ConvertParameter(element.Expression);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var condition = new AlphaCondition(element.Expression, fastDelegate);
-            return condition;
+            var expression = new LhsFactExpression<TResult>(element.Expression, fastDelegate);
+            return expression;
         }
 
-        public static IBetaCondition CompileBetaCondition(ExpressionElement element, IEnumerable<Declaration> declarations)
+        public static ILhsTupleExpression<TResult> CompileLhsTupleExpression<TResult>(ExpressionElement element, IEnumerable<Declaration> declarations)
         {
-            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], bool>>();
+            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], TResult>>();
             var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
             var @delegate = optimizedExpression.Compile();
             var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
             var factMap = IndexMap.CreateMap(element.Imports, declarations);
-            var condition = new BetaCondition(element.Expression, fastDelegate, factMap);
-            return condition;
+            var expression = new LhsTupleExpression<TResult>(element.Expression, fastDelegate, factMap);
+            return expression;
+        }
+
+        public static ILhsExpression<TResult> CompileLhsTupleFactExpression<TResult>(ExpressionElement element, IEnumerable<Declaration> declarations)
+        {
+            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], TResult>>();
+            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
+            var @delegate = optimizedExpression.Compile();
+            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+            var factMap = IndexMap.CreateMap(element.Imports, declarations);
+            var expression = new LhsExpression<TResult>(element.Expression, fastDelegate, factMap);
+            return expression;
+        }
+
+        public static IActivationExpression<TResult> CompileActivationExpression<TResult>(ExpressionElement element, IEnumerable<Declaration> declarations)
+        {
+            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], TResult>>();
+            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
+            var @delegate = optimizedExpression.Compile();
+            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
+            var factMap = IndexMap.CreateMap(element.Imports, declarations);
+            var expression = new ActivationExpression<TResult>(element.Expression, fastDelegate, factMap);
+            return expression;
         }
 
         public static IRuleAction CompileAction(ActionElement element, IEnumerable<Declaration> declarations, IEnumerable<Declaration> dependencies)
@@ -45,61 +77,10 @@ namespace NRules.Utilities
             return action;
         }
 
-        public static IAggregateExpression CompileAggregateExpression(NamedExpressionElement element, IEnumerable<Declaration> declarations)
+        public static IAggregateExpression CompileAggregateExpression(NamedExpressionElement element, List<Declaration> declarations)
         {
-            var declarationsList = declarations.ToList();
-            if (element.Imports.Count() == 1 &&
-                Equals(element.Imports.Single(), declarationsList.Last()))
-            {
-                var optimizer = new ExpressionSingleParameterOptimizer<Func<object, object>>();
-                var optimizedExpression = optimizer.ConvertParameter(element.Expression);
-                var @delegate = optimizedExpression.Compile();
-                var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-                var expression = new AggregateFactExpression(element.Name, element.Expression, fastDelegate);
-                return expression;
-            }
-            else
-            {
-                var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], object>>();
-                var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
-                var @delegate = optimizedExpression.Compile();
-                var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-                var factMap = IndexMap.CreateMap(element.Imports, declarationsList);
-                var expression = new AggregateExpression(element.Name, element.Expression, fastDelegate, factMap);
-                return expression;
-            }
-        }
-
-        public static IBindingExpression CompileBindingExpression(BindingElement element, IEnumerable<Declaration> declarations)
-        {
-            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], object>>();
-            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
-            var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factMap = IndexMap.CreateMap(element.Imports, declarations);
-            var expression = new BindingExpression(element.Expression, fastDelegate, factMap);
-            return expression;
-        }
-
-        public static IActivationCondition CompileFilterCondition(FilterElement element, IEnumerable<Declaration> declarations)
-        {
-            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], bool>>();
-            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
-            var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factMap = IndexMap.CreateMap(element.Imports, declarations);
-            var expression = new ActivationCondition(element.Expression, fastDelegate, factMap);
-            return expression;
-        }
-
-        public static IActivationExpression CompileFilterExpression(FilterElement element, IEnumerable<Declaration> declarations)
-        {
-            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], object>>();
-            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
-            var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factMap = IndexMap.CreateMap(element.Imports, declarations);
-            var expression = new ActivationExpression(element.Expression, fastDelegate, factMap);
+            var compiledExpression = CompileLhsExpression<object>(element, declarations);
+            var expression = new AggregateExpression(element.Name, compiledExpression);
             return expression;
         }
 

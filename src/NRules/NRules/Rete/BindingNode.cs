@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using NRules.RuleModel;
 
 namespace NRules.Rete
 {
     internal class BindingNode : BetaNode
     {
-        public IBindingExpression BindingExpression { get; }
+        private readonly ILhsTupleExpression<object> _compiledExpression;
+
+        public ExpressionElement ExpressionElement { get; }
         public Type ResultType { get; }
         public ITupleSource Source { get; }
-
-        public BindingNode(IBindingExpression bindingExpression, Type resultType, ITupleSource source)
+        
+        public BindingNode(ExpressionElement expressionElement, ILhsTupleExpression<object> compiledExpression, Type resultType, ITupleSource source)
         {
-            BindingExpression = bindingExpression;
+            ExpressionElement = expressionElement;
+            _compiledExpression = compiledExpression;
             ResultType = resultType;
             Source = source;
 
@@ -64,7 +68,7 @@ namespace NRules.Rete
         {
             try
             {
-                var value = BindingExpression.Invoke(context, NodeInfo, tuple);
+                var value = _compiledExpression.Invoke(context, NodeInfo, tuple);
                 var fact = new Fact(value, ResultType);
                 tuple.SetState(this, fact);
                 toAssert.Add(tuple, fact);
@@ -83,7 +87,7 @@ namespace NRules.Rete
         {
             try
             {
-                var value = BindingExpression.Invoke(context, NodeInfo, tuple);
+                var value = _compiledExpression.Invoke(context, NodeInfo, tuple);
                 fact.RawObject = value;
                 toUpdate.Add(tuple, fact);
             }

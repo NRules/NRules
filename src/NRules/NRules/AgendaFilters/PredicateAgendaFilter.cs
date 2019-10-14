@@ -4,11 +4,11 @@ namespace NRules.AgendaFilters
 {
     internal class PredicateAgendaFilter : IAgendaFilter
     {
-        private readonly List<IActivationCondition> _conditions;
+        private readonly List<IActivationExpression<bool>> _conditions;
 
-        public PredicateAgendaFilter(IEnumerable<IActivationCondition> conditions)
+        public PredicateAgendaFilter(IEnumerable<IActivationExpression<bool>> conditions)
         {
-            _conditions = new List<IActivationCondition>(conditions);
+            _conditions = new List<IActivationExpression<bool>>(conditions);
         }
 
         public bool Accept(AgendaContext context, Activation activation)

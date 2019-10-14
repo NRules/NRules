@@ -1,5 +1,4 @@
-﻿using NRules.Diagnostics;
-using NRules.Rete;
+﻿using NRules.Rete;
 
 namespace NRules.Aggregators
 {
@@ -8,14 +7,12 @@ namespace NRules.Aggregators
     /// </summary>
     public class AggregationContext
     {
-        internal ISessionInternal Session { get; }
-        internal IEventAggregator EventAggregator { get; }
+        internal IExecutionContext ExecutionContext { get; }
         internal NodeDebugInfo NodeInfo { get; }
 
-        internal AggregationContext(ISessionInternal session, IEventAggregator eventAggregator, NodeDebugInfo nodeInfo)
+        internal AggregationContext(IExecutionContext executionContext, NodeDebugInfo nodeInfo)
         {
-            Session = session;
-            EventAggregator = eventAggregator;
+            ExecutionContext = executionContext;
             NodeInfo = nodeInfo;
         }
     }

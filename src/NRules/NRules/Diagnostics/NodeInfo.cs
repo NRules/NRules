@@ -47,7 +47,7 @@ namespace NRules.Diagnostics
         
         internal static NodeInfo Create(SelectionNode node)
         {
-            var conditions = new[] {node.Condition.ToString()};
+            var conditions = new[] {node.ExpressionElement.Expression.ToString()};
             return new NodeInfo(NodeType.Selection, string.Empty, conditions, Empty, Empty);
         }
 
@@ -59,7 +59,7 @@ namespace NRules.Diagnostics
 
         internal static NodeInfo Create(JoinNode node)
         {
-            var conditions = node.Conditions.Select(c => c.ToString());
+            var conditions = node.ExpressionElements.Select(c => c.Expression.ToString());
             return new NodeInfo(NodeType.Join, string.Empty, conditions, Empty, Empty);
         }
 
@@ -86,7 +86,7 @@ namespace NRules.Diagnostics
 
         internal static NodeInfo Create(BindingNode node)
         {
-            var expressions = new[] {node.BindingExpression.ToString()};
+            var expressions = new[] {node.ExpressionElement.Expression.ToString()};
             return new NodeInfo(NodeType.Binding, string.Empty, Empty, expressions, Empty);
         }
 

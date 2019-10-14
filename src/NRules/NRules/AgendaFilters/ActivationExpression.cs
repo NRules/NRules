@@ -5,25 +5,25 @@ using NRules.Utilities;
 
 namespace NRules.AgendaFilters
 {
-    internal interface IActivationExpression
+    internal interface IActivationExpression<out TResult>
     {
-        object Invoke(AgendaContext context, Activation activation);
+        TResult Invoke(AgendaContext context, Activation activation);
     }
 
-    internal class ActivationExpression : IActivationExpression
+    internal class ActivationExpression<TResult> : IActivationExpression<TResult>
     {
         private readonly LambdaExpression _expression;
-        private readonly FastDelegate<Func<object[], object>> _compiledExpression;
+        private readonly FastDelegate<Func<object[], TResult>> _compiledExpression;
         private readonly IndexMap _tupleFactMap;
 
-        public ActivationExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap tupleFactMap)
+        public ActivationExpression(LambdaExpression expression, FastDelegate<Func<object[], TResult>> compiledExpression, IndexMap tupleFactMap)
         {
             _expression = expression;
             _compiledExpression = compiledExpression;
             _tupleFactMap = tupleFactMap;
         }
 
-        public object Invoke(AgendaContext context, Activation activation)
+        public TResult Invoke(AgendaContext context, Activation activation)
         {
             var tuple = activation.Tuple;
             var activationFactMap = activation.FactMap;
@@ -39,7 +39,7 @@ namespace NRules.AgendaFilters
             }
 
             Exception exception = null;
-            object result = null;
+            TResult result = default;
             try
             {
                 result = _compiledExpression.Delegate.Invoke(args);

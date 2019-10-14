@@ -6,11 +6,11 @@ namespace NRules.AgendaFilters
     internal class KeyChangeAgendaFilter : IAgendaFilter
     {
         private const string KeyName = "ChangeKeys";
-        private readonly List<IActivationExpression> _keySelectors;
+        private readonly List<IActivationExpression<object>> _keySelectors;
 
-        public KeyChangeAgendaFilter(IEnumerable<IActivationExpression> keySelectors)
+        public KeyChangeAgendaFilter(IEnumerable<IActivationExpression<object>> keySelectors)
         {
-            _keySelectors = new List<IActivationExpression>(keySelectors);
+            _keySelectors = new List<IActivationExpression<object>>(keySelectors);
         }
 
         public bool Accept(AgendaContext context, Activation activation)

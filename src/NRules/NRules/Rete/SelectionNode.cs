@@ -1,17 +1,35 @@
-﻿namespace NRules.Rete
+﻿using NRules.RuleModel;
+
+namespace NRules.Rete
 {
     internal class SelectionNode : AlphaNode
     {
-        public IAlphaCondition Condition { get; }
+        private readonly ILhsFactExpression<bool> _compiledExpression;
 
-        public SelectionNode(IAlphaCondition condition)
+        public ExpressionElement ExpressionElement { get; }
+
+        public SelectionNode(ExpressionElement expressionElement, ILhsFactExpression<bool> compiledExpression)
         {
-            Condition = condition;
+            ExpressionElement = expressionElement;
+            _compiledExpression = compiledExpression;
         }
 
         public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {
-            return Condition.IsSatisfiedBy(context, NodeInfo, fact);
+            try
+            {
+                return _compiledExpression.Invoke(context, NodeInfo, fact);
+            }
+            catch (ExpressionEvaluationException e)
+            {
+                if (!e.IsHandled)
+                {
+                    throw new RuleLhsExpressionEvaluationException(
+                        "Failed to evaluate condition", e.Expression.ToString(), e.InnerException);
+                }
+
+                return false;
+            }
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)

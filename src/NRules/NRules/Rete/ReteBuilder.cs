@@ -102,7 +102,8 @@ namespace NRules.Rete
 
         protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
         {
-            var conditions = element.Expressions.Find(PatternElement.ConditionName).ToList();
+            var conditions = element.Expressions.Find(PatternElement.ConditionName)
+                .Cast<ExpressionElement>().ToList();
             if (element.Source == null)
             {
                 context.CurrentAlphaNode = _root;
@@ -164,31 +165,24 @@ namespace NRules.Rete
             context.AlphaSource = subnetContext.AlphaSource;
         }
 
-        private void BuildJoinNode(ReteBuilderContext context, RuleElement element, IEnumerable<ExpressionElement> conditions = null)
+        private void BuildJoinNode(ReteBuilderContext context, RuleElement element, List<ExpressionElement> conditions = null)
         {
-            var betaConditions = new List<IBetaCondition>();
-            if (conditions != null)
-            {
-                foreach (var condition in conditions)
-                {
-                    var betaCondition = ExpressionCompiler.CompileBetaCondition(condition, context.Declarations);
-                    betaConditions.Add(betaCondition);
-                }
-            }
-
+            var expressionElements = conditions ?? new List<ExpressionElement>();
             var node = context.BetaSource
                 .Sinks.OfType<JoinNode>()
                 .FirstOrDefault(x =>
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
-                    ConditionComparer.AreEqual(x.Conditions, betaConditions));
+                    ExpressionElementComparer.AreEqual(x.ExpressionElements, expressionElements));
             if (node == null)
             {
-                node = new JoinNode(context.BetaSource, context.AlphaSource, context.HasSubnet);
-                foreach (var betaCondition in betaConditions)
+                var compiledExpressions = new List<ILhsExpression<bool>>(expressionElements.Count);
+                foreach (var expressionElement in expressionElements)
                 {
-                    node.Conditions.Add(betaCondition);
+                    var compiledExpression = ExpressionCompiler.CompileLhsTupleFactExpression<bool>(expressionElement, context.Declarations);
+                    compiledExpressions.Add(compiledExpression);
                 }
+                node = new JoinNode(context.BetaSource, context.AlphaSource, expressionElements, compiledExpressions, context.HasSubnet);
             }
             node.NodeInfo.Add(context.Rule, element);
             BuildBetaMemoryNode(context, node);
@@ -235,7 +229,7 @@ namespace NRules.Rete
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
                     x.Name == element.Name &&
-                    ExpressionCollectionComparer.AreEqual(x.Expressions, element.Expressions));
+                    ExpressionElementComparer.AreEqual(x.Expressions, element.Expressions));
             if (node == null)
             {
                 var aggregatorFactory = BuildAggregatorFactory(context, element);
@@ -252,11 +246,11 @@ namespace NRules.Rete
             var node = context.BetaSource
                 .Sinks.OfType<BindingNode>()
                 .FirstOrDefault(x =>
-                    ExpressionComparer.AreEqual(x.BindingExpression.Expression, element.Expression));
+                    ExpressionElementComparer.AreEqual(x.ExpressionElement, element));
             if (node == null)
             {
-                var bindingExpression = ExpressionCompiler.CompileBindingExpression(element, context.Declarations);
-                node = new BindingNode(bindingExpression, element.ResultType, context.BetaSource);
+                var compiledExpression = ExpressionCompiler.CompileLhsTupleExpression<object>(element, context.Declarations);
+                node = new BindingNode(element, compiledExpression, element.ResultType, context.BetaSource);
             }
             node.NodeInfo.Add(context.Rule, element);
             BuildBetaMemoryNode(context, node);
@@ -289,14 +283,14 @@ namespace NRules.Rete
 
         private void BuildSelectionNode(ReteBuilderContext context, ExpressionElement element)
         {
-            var alphaCondition = ExpressionCompiler.CompileAlphaCondition(element);
             SelectionNode node = context.CurrentAlphaNode
                 .ChildNodes.OfType<SelectionNode>()
-                .FirstOrDefault(sn => sn.Condition.Equals(alphaCondition));
+                .FirstOrDefault(sn => ExpressionElementComparer.AreEqual(sn.ExpressionElement, element));
 
             if (node == null)
             {
-                node = new SelectionNode(alphaCondition);
+                var compiledExpression = ExpressionCompiler.CompileLhsFactExpression<bool>(element);
+                node = new SelectionNode(element, compiledExpression);
                 context.CurrentAlphaNode.ChildNodes.Add(node);
             }
             node.NodeInfo.Add(context.Rule, element);
@@ -362,7 +356,7 @@ namespace NRules.Rete
         private static IEnumerable<IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
         {
             var declarations = context.Declarations.Concat(element.Source.Declaration).ToList();
-            var result = new List<IAggregateExpression>();
+            var result = new List<IAggregateExpression>(element.Expressions.Count);
             foreach (var expression in element.Expressions)
             {
                 var aggregateExpression = ExpressionCompiler.CompileAggregateExpression(expression, declarations);

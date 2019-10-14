@@ -99,18 +99,18 @@ namespace NRules
 
         private IRuleFilter CompileFilters(IRuleDefinition ruleDefinition, IList<Declaration> ruleDeclarations)
         {
-            var conditions = new List<IActivationCondition>();
-            var keySelectors = new List<IActivationExpression>();
+            var conditions = new List<IActivationExpression<bool>>();
+            var keySelectors = new List<IActivationExpression<object>>();
             foreach (var filter in ruleDefinition.FilterGroup.Filters)
             {
                 switch (filter.FilterType)
                 {
                     case FilterType.Predicate:
-                        var condition = ExpressionCompiler.CompileFilterCondition(filter, ruleDeclarations);
+                        var condition = ExpressionCompiler.CompileActivationExpression<bool>(filter, ruleDeclarations);
                         conditions.Add(condition);
                         break;
                     case FilterType.KeyChange:
-                        var keySelector = ExpressionCompiler.CompileFilterExpression(filter, ruleDeclarations);
+                        var keySelector = ExpressionCompiler.CompileActivationExpression<object>(filter, ruleDeclarations);
                         keySelectors.Add(keySelector);
                         break;
                     default:
