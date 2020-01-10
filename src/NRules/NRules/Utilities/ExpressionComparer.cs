@@ -122,9 +122,7 @@ namespace NRules.Utilities
             LambdaExpression rootX, LambdaExpression rootY)
         {
             return x.Count() == y.Count()
-                   && x.Select((b, i) => new { Binding = b, Index = i })
-                       .Join(y.Select((b, i) => new { Binding = b, Index = i }),
-                           o => o.Index, o => o.Index, (xb, yb) => new { X = xb.Binding, Y = yb.Binding })
+                   && x.Zip(y, (first, second) => new {X = first, Y = second})
                        .All(o => MemberBindingsEqual(o.X, o.Y, rootX, rootY));
         }
 
@@ -132,18 +130,15 @@ namespace NRules.Utilities
             LambdaExpression rootX, LambdaExpression rootY)
         {
             return x.Count() == y.Count()
-                   && x.Select((b, i) => new { Binding = b, Index = i })
-                       .Join(y.Select((b, i) => new { Binding = b, Index = i }),
-                           o => o.Index, o => o.Index, (xb, yb) => new { X = xb.Binding, Y = yb.Binding })
+                   && x.Zip(y, (first, second) => new {X = first, Y = second})
                        .All(o => ElementInitsEqual(o.X, o.Y, rootX, rootY));
         }
 
-        private static bool CollectionsEqual(IEnumerable<Expression> x, IEnumerable<Expression> y, LambdaExpression rootX, LambdaExpression rootY)
+        private static bool CollectionsEqual(IEnumerable<Expression> x, IEnumerable<Expression> y,
+            LambdaExpression rootX, LambdaExpression rootY)
         {
             return x.Count() == y.Count()
-                   && x.Select((e, i) => new { Expr = e, Index = i })
-                       .Join(y.Select((e, i) => new { Expr = e, Index = i }),
-                             o => o.Index, o => o.Index, (xe, ye) => new { X = xe.Expr, Y = ye.Expr })
+                   && x.Zip(y, (first, second) => new {X = first, Y = second})
                        .All(o => ExpressionEqual(o.X, o.Y, rootX, rootY));
         }
 
