@@ -82,6 +82,16 @@ namespace NRules
         IFactResult TryInsertAll(IEnumerable<object> facts);
 
         /// <summary>
+        /// Inserts new facts to the rules engine memory if the facts don't exist.
+        /// If any of the facts exists in the engine, the behavior is defined by <see cref="BatchOptions"/>.
+        /// </summary>
+        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <param name="facts">Facts to insert.</param>
+        /// <param name="options">Options that define behavior of the batch operation.</param>
+        /// <returns>Result of facts insertion.</returns>
+        IFactResult TryInsertAll(IEnumerable<object> facts, BatchOptions options);
+
+        /// <summary>
         /// Inserts new fact to the rules engine memory.
         /// </summary>
         /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
@@ -112,6 +122,16 @@ namespace NRules
         /// <param name="facts">Facts to update.</param>
         /// <returns>Result of facts update.</returns>
         IFactResult TryUpdateAll(IEnumerable<object> facts);
+
+        /// <summary>
+        /// Updates existing facts in the rules engine memory if the facts exist.
+        /// If any of the facts don't exist in the engine, the behavior is defined by <see cref="BatchOptions"/>.
+        /// </summary>
+        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <param name="facts">Facts to update.</param>
+        /// <param name="options">Options that define behavior of the batch operation.</param>
+        /// <returns>Result of facts update.</returns>
+        IFactResult TryUpdateAll(IEnumerable<object> facts, BatchOptions options);
 
         /// <summary>
         /// Updates existing fact in the rules engine memory.
@@ -145,6 +165,16 @@ namespace NRules
         /// <param name="facts">Facts to remove.</param>
         /// <returns>Result of facts removal.</returns>
         IFactResult TryRetractAll(IEnumerable<object> facts);
+
+        /// <summary>
+        /// Removes existing facts from the rules engine memory if the facts exist.
+        /// If any of the facts don't exist in the engine, the behavior is defined by <see cref="BatchOptions"/>.
+        /// </summary>
+        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <param name="facts">Facts to remove.</param>
+        /// <param name="options">Options that define behavior of the batch operation.</param>
+        /// <returns>Result of facts removal.</returns>
+        IFactResult TryRetractAll(IEnumerable<object> facts, BatchOptions options);
 
         /// <summary>
         /// Removes existing fact from the rules engine memory.
@@ -251,6 +281,11 @@ namespace NRules
 
         public IFactResult TryInsertAll(IEnumerable<object> facts)
         {
+            return TryInsertAll(facts, BatchOptions.AllOrNothing);
+        }
+
+        public IFactResult TryInsertAll(IEnumerable<object> facts, BatchOptions options)
+        {
             if (facts == null)
             {
                 throw new ArgumentNullException(nameof(facts));
@@ -273,7 +308,7 @@ namespace NRules
             }
 
             var result = new FactResult(failed);
-            if (result.FailedCount == 0)
+            if (result.FailedCount == 0 || options == BatchOptions.SkipFailed)
             {
                 foreach (var fact in toPropagate)
                 {
@@ -309,6 +344,11 @@ namespace NRules
 
         public IFactResult TryUpdateAll(IEnumerable<object> facts)
         {
+            return TryUpdateAll(facts, BatchOptions.AllOrNothing);
+        }
+
+        public IFactResult TryUpdateAll(IEnumerable<object> facts, BatchOptions options)
+        {
             if (facts == null)
             {
                 throw new ArgumentNullException(nameof(facts));
@@ -331,7 +371,7 @@ namespace NRules
             }
 
             var result = new FactResult(failed);
-            if (result.FailedCount == 0)
+            if (result.FailedCount == 0 || options == BatchOptions.SkipFailed)
             {
                 foreach (var fact in toPropagate)
                 {
@@ -367,6 +407,11 @@ namespace NRules
 
         public IFactResult TryRetractAll(IEnumerable<object> facts)
         {
+            return TryRetractAll(facts, BatchOptions.AllOrNothing);
+        }
+
+        public IFactResult TryRetractAll(IEnumerable<object> facts, BatchOptions options)
+        {
             if (facts == null)
             {
                 throw new ArgumentNullException(nameof(facts));
@@ -388,7 +433,7 @@ namespace NRules
             }
 
             var result = new FactResult(failed);
-            if (result.FailedCount == 0)
+            if (result.FailedCount == 0 || options == BatchOptions.SkipFailed)
             {
                 _network.PropagateRetract(_executionContext, toPropagate);
 
