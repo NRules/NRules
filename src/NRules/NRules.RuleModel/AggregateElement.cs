@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NRules.RuleModel
 {
@@ -55,6 +57,7 @@ namespace NRules.RuleModel
             CustomFactoryType = customFactoryType;
 
             AddImports(source);
+            AddImports(expressions.SelectMany(x => x.Imports.Except(source.Exports)));
         }
 
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
