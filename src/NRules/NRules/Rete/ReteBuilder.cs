@@ -96,8 +96,20 @@ namespace NRules.Rete
 
         protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
         {
-            BuildSubnet(context, element.Source);
-            BuildAggregateNode(context, element);
+            var isJoined = element.Imports.Any();
+            if (isJoined)
+            {
+                BuildSubnet(context, element.Source);
+                BuildAggregateNode(context, element);
+            }
+            else
+            {
+                var newContext = new ReteBuilderContext(context.Rule, _dummyNode);
+                BuildSubnet(newContext, element.Source);
+                BuildAggregateNode(newContext, element);
+                BuildAdapter(newContext);
+                context.AlphaSource = newContext.AlphaSource;
+            }
         }
 
         protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
@@ -127,10 +139,26 @@ namespace NRules.Rete
             {
                 if (conditions.Any())
                 {
-                    BuildSubnet(context, element.Source);
-                    context.RegisterDeclaration(element.Declaration);
+                    var isJoined = element.Imports.Any();
+                    if (isJoined)
+                    {
+                        BuildSubnet(context, element.Source);
+                        context.RegisterDeclaration(element.Declaration);
 
-                    BuildJoinNode(context, element, conditions);
+                        BuildJoinNode(context, element, conditions);
+                    }
+                    else
+                    {
+                        var newContext = new ReteBuilderContext(context.Rule, _dummyNode);
+                        BuildSubnet(newContext, element.Source);
+                        newContext.RegisterDeclaration(element.Declaration);
+                    
+                        BuildJoinNode(newContext, element, conditions);
+                        BuildAdapter(newContext);
+                    
+                        context.AlphaSource = newContext.AlphaSource;
+                        context.RegisterDeclaration(element.Declaration);
+                    }
                 }
                 else
                 {
@@ -148,21 +176,27 @@ namespace NRules.Rete
         private void BuildSubnet(ReteBuilderContext context, RuleElement element)
         {
             var subnetContext = new ReteBuilderContext(context);
+
             Visit(subnetContext, element);
 
             if (subnetContext.AlphaSource == null)
             {
-                var adapter = subnetContext.BetaSource
-                    .Sinks.OfType<ObjectInputAdapter>()
-                    .SingleOrDefault();
-                if (adapter == null)
-                {
-                    adapter = new ObjectInputAdapter(subnetContext.BetaSource);
-                }
-                subnetContext.AlphaSource = adapter;
+                BuildAdapter(subnetContext);
                 context.HasSubnet = true;
             }
             context.AlphaSource = subnetContext.AlphaSource;
+        }
+
+        private static void BuildAdapter(ReteBuilderContext context)
+        {
+            var adapter = context.BetaSource
+                .Sinks.OfType<ObjectInputAdapter>()
+                .SingleOrDefault();
+            if (adapter == null)
+            {
+                adapter = new ObjectInputAdapter(context.BetaSource);
+            }
+            context.AlphaSource = adapter;
         }
 
         private void BuildJoinNode(ReteBuilderContext context, RuleElement element, List<ExpressionElement> conditions = null)

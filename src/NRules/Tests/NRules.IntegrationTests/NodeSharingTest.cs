@@ -24,7 +24,7 @@ namespace NRules.IntegrationTests
         }
 
         [Fact]
-        public void Session_BetaJoinNodes_OnePerPattern()
+        public void Session_BetaJoinNodes_CorrectCount()
         {
             //Arrange
             var snapshotProvider = (ISessionSnapshotProvider) Session;
@@ -34,7 +34,7 @@ namespace NRules.IntegrationTests
             var count = snapshot.Nodes.Count(x => x.NodeType == NodeType.Join);
 
             //Assert
-            Assert.Equal(3, count);
+            Assert.Equal(4, count);
         }
 
         [Fact]
