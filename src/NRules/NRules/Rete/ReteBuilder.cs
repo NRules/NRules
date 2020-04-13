@@ -49,17 +49,6 @@ namespace NRules.Rete
             return terminals;
         }
 
-        private TerminalNode BuildTerminalNode(ReteBuilderContext context, RuleElement element, IEnumerable<Declaration> ruleDeclarations)
-        {
-            if (context.AlphaSource != null)
-            {
-                BuildJoinNode(context, element);
-            }
-            var factMap = IndexMap.CreateMap(ruleDeclarations, context.Declarations);
-            var terminalNode = new TerminalNode(context.BetaSource, factMap);
-            return terminalNode;
-        }
-
         protected override void VisitAnd(ReteBuilderContext context, AndElement element)
         {
             foreach (var childElement in element.ChildElements)
@@ -84,32 +73,20 @@ namespace NRules.Rete
 
         protected override void VisitNot(ReteBuilderContext context, NotElement element)
         {
-            BuildSubnet(context, element.Source);
+            VisitSource(context, element, element.Source);
             BuildNotNode(context, element);
         }
 
         protected override void VisitExists(ReteBuilderContext context, ExistsElement element)
         {
-            BuildSubnet(context, element.Source);
+            VisitSource(context, element, element.Source);
             BuildExistsNode(context, element);
         }
 
         protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
         {
-            var isJoined = element.Imports.Any();
-            if (isJoined)
-            {
-                BuildSubnet(context, element.Source);
-                BuildAggregateNode(context, element);
-            }
-            else
-            {
-                var newContext = new ReteBuilderContext(context.Rule, _dummyNode);
-                BuildSubnet(newContext, element.Source);
-                BuildAggregateNode(newContext, element);
-                BuildAdapter(newContext);
-                context.AlphaSource = newContext.AlphaSource;
-            }
+            VisitSource(context, element, element.Source);
+            BuildAggregateNode(context, element);
         }
 
         protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
@@ -142,21 +119,21 @@ namespace NRules.Rete
                     var isJoined = element.Imports.Any();
                     if (isJoined)
                     {
-                        BuildSubnet(context, element.Source);
-                        context.RegisterDeclaration(element.Declaration);
+                        BuildSubnet(context, element);
 
+                        context.RegisterDeclaration(element.Declaration);
                         BuildJoinNode(context, element, conditions);
                     }
                     else
                     {
-                        var newContext = new ReteBuilderContext(context.Rule, _dummyNode);
-                        BuildSubnet(newContext, element.Source);
-                        newContext.RegisterDeclaration(element.Declaration);
-                    
-                        BuildJoinNode(newContext, element, conditions);
-                        BuildAdapter(newContext);
-                    
-                        context.AlphaSource = newContext.AlphaSource;
+                        var joinContext = new ReteBuilderContext(context.Rule, _dummyNode);
+                        BuildSubnet(joinContext, element);
+
+                        joinContext.RegisterDeclaration(element.Declaration);
+                        BuildJoinNode(joinContext, element, conditions);
+                        BuildAdapter(joinContext);
+                        context.AlphaSource = joinContext.AlphaSource;
+                        
                         context.RegisterDeclaration(element.Declaration);
                     }
                 }
@@ -173,20 +150,47 @@ namespace NRules.Rete
             BuildBindingNode(context, element);
         }
 
-        private void BuildSubnet(ReteBuilderContext context, RuleElement element)
+        private void VisitSource(ReteBuilderContext context, RuleElement element, RuleElement source)
         {
-            var subnetContext = new ReteBuilderContext(context);
+            var isJoined = source.Imports.Any();
+            var subnetContext = isJoined ? new ReteBuilderContext(context) : new ReteBuilderContext(context.Rule, _dummyNode);
 
-            Visit(subnetContext, element);
+            Visit(subnetContext, source);
 
             if (subnetContext.AlphaSource == null)
             {
                 BuildAdapter(subnetContext);
-                context.HasSubnet = true;
+                context.HasSubnet = isJoined;
             }
             context.AlphaSource = subnetContext.AlphaSource;
         }
 
+        private TerminalNode BuildTerminalNode(ReteBuilderContext context, RuleElement element, IEnumerable<Declaration> ruleDeclarations)
+        {
+            if (context.AlphaSource != null)
+            {
+                BuildJoinNode(context, element);
+            }
+            var factMap = IndexMap.CreateMap(ruleDeclarations, context.Declarations);
+            var terminalNode = new TerminalNode(context.BetaSource, factMap);
+            return terminalNode;
+        }
+
+        private void BuildSubnet(ReteBuilderContext context, PatternElement element)
+        {
+            var isJoined = element.Imports.Any();
+            var subnetContext = isJoined ? new ReteBuilderContext(context) : new ReteBuilderContext(context.Rule, _dummyNode);
+
+            Visit(subnetContext, element.Source);
+
+            if (subnetContext.AlphaSource == null)
+            {
+                BuildAdapter(subnetContext);
+                context.HasSubnet = isJoined;
+            }
+            context.AlphaSource = subnetContext.AlphaSource;
+        }
+        
         private static void BuildAdapter(ReteBuilderContext context)
         {
             var adapter = context.BetaSource
