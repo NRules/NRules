@@ -12,6 +12,7 @@ namespace NRules
         IEnumerable<Declaration> Declarations { get; }
         IEnumerable<IRuleAction> Actions { get; }
         IEnumerable<IRuleDependency> Dependencies { get; }
+        bool HasDependencies { get; }
         IRuleFilter Filter { get; }
         ActionTrigger ActionTriggers { get; }
     }
@@ -25,13 +26,12 @@ namespace NRules
 
         public CompiledRule(IRuleDefinition definition, IEnumerable<Declaration> declarations, IEnumerable<IRuleAction> actions, IEnumerable<IRuleDependency> dependencies, IRuleFilter filter)
         {
-            Priority = definition.Priority;
-            Repeatability = definition.Repeatability;
             Definition = definition;
             Filter = filter;
             _declarations = new List<Declaration>(declarations);
             _actions = new List<IRuleAction>(actions);
             _dependencies = new List<IRuleDependency>(dependencies);
+            HasDependencies = _dependencies.Count > 0;
 
             foreach (var ruleAction in _actions)
             {
@@ -39,9 +39,10 @@ namespace NRules
             }
         }
 
-        public int Priority { get; }
-        public RuleRepeatability Repeatability { get; }
+        public int Priority => Definition.Priority;
+        public RuleRepeatability Repeatability => Definition.Repeatability;
         public IRuleDefinition Definition { get; }
+        public bool HasDependencies { get; }
         public IRuleFilter Filter { get; }
         public ActionTrigger ActionTriggers { get; }
 

@@ -20,7 +20,6 @@ namespace NRules
         private readonly LambdaExpression _expression;
         private readonly IndexMap _tupleFactMap;
         private readonly IndexMap _dependencyFactMap;
-        private readonly ActionTrigger _actionTrigger;
         private readonly FastDelegate<Action<IContext, object[]>> _compiledExpression;
 
         public RuleAction(LambdaExpression expression, FastDelegate<Action<IContext, object[]>> compiledExpression,
@@ -29,12 +28,12 @@ namespace NRules
             _expression = expression;
             _tupleFactMap = tupleFactMap;
             _dependencyFactMap = dependencyFactMap;
-            _actionTrigger = actionTrigger;
+            Trigger = actionTrigger;
             _compiledExpression = compiledExpression;
         }
 
         public Expression Expression => _expression;
-        public ActionTrigger Trigger => _actionTrigger;
+        public ActionTrigger Trigger { get; }
 
         public object[] GetArguments(IExecutionContext executionContext, IActionContext actionContext)
         {
@@ -52,6 +51,9 @@ namespace NRules
                 IndexMap.SetElementAt(args, mappedIndex, fact.Object);
                 index--;
             }
+
+            if (!compiledRule.HasDependencies)
+                return args;
 
             index = 0;
             var dependencyResolver = executionContext.Session.DependencyResolver;
