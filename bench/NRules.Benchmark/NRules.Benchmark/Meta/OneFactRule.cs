@@ -1,9 +1,9 @@
 ﻿using BenchmarkDotNet.Attributes;
 using NRules.Fluent.Dsl;
 
-namespace NRules.Benchmark
+namespace NRules.Benchmark.Meta
 {
-    public class BenchmarkOneFactRule : BenchmarkBase
+    public class OneFactRule : BenchmarkBase
     {
         private TestFact[] _facts;
 
@@ -15,11 +15,11 @@ namespace NRules.Benchmark
             _facts = new TestFact[FactCount];
             for (int i = 0; i < FactCount; i++)
             {
-                _facts[i] = new TestFact{StringProperty = $"Valid {i}", IntProperty = i};
+                _facts[i] = new TestFact{IntProperty = i};
             }
         }
 
-        [Params(10, 100, 1000, 10000)]
+        [Params(10, 100, 1000)]
         public int FactCount { get; set; }
 
         [Benchmark]
@@ -50,7 +50,6 @@ namespace NRules.Benchmark
 
         private class TestFact
         {
-            public string StringProperty { get; set; }
             public int IntProperty { get; set; }
         }
 
@@ -62,7 +61,6 @@ namespace NRules.Benchmark
 
                 When()
                     .Match(() => fact, 
-                        x => x.StringProperty.StartsWith("Valid"), 
                         x => x.IntProperty % 2 == 0);
 
                 Then()

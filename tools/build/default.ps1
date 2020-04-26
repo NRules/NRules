@@ -56,7 +56,7 @@ task PatchFiles {
         Write-Host "Using secure signing key." -ForegroundColor Magenta
         $publicKey = Get-Content $secureHash
         $publicKey = $publicKey.Trim()
-        Update-InternalsVisible $srcDir $publicKey
+        Update-InternalsVisible $baseDir $publicKey
         Copy-Item $secureKey -Destination $signingKey -Force
     } else {
         Write-Host "Secure signing key does not exist. Using development key." -ForegroundColor Yellow
@@ -72,7 +72,7 @@ task ResetPatch {
     
     $publicKey = Get-Content $devHash
     $publicKey = $publicKey.Trim()
-    Update-InternalsVisible $srcDir $publicKey
+    Update-InternalsVisible $baseDir $publicKey
     Copy-Item $devKey -Destination $signingKey -Force
 }
 

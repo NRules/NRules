@@ -1,8 +1,11 @@
-﻿using NRules.Fluent;
+﻿using BenchmarkDotNet.Attributes;
+using NRules.Fluent;
 using NRules.Fluent.Dsl;
 
-namespace NRules.Benchmark
+namespace NRules.Benchmark.Meta
 {
+    [MemoryDiagnoser]
+    [ShortRunJob, WarmupCount(1)]
     public abstract class BenchmarkBase
     {
         protected ISessionFactory Factory { get; set; }

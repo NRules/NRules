@@ -1,10 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\..\Common.props" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net472;netcoreapp2.0</TargetFrameworks>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\SigningKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,25 +17,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.10.12" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="NRules">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.RuleModel.dll</HintPath>
-    </Reference>
+    <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="BenchmarkDotNet.Artifacts\**" />
     <EmbeddedResource Remove="BenchmarkDotNet.Artifacts\**" />
     <None Remove="BenchmarkDotNet.Artifacts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\NRules\NRules.Fluent\NRules.Fluent.csproj" />
+    <ProjectReference Include="..\..\..\src\NRules\NRules.RuleModel\NRules.RuleModel.csproj" />
+    <ProjectReference Include="..\..\..\src\NRules\NRules\NRules.csproj" />
   </ItemGroup>
 
 </Project>
