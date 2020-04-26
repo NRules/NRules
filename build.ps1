@@ -136,10 +136,15 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net472')
+            frameworks = @('net472', 'netcoreapp2.0')
             'net472' = @{
                 include = @(
                     "NRules.Benchmark\bin\$configuration\net472"
+                )
+            }
+            'netcoreapp2.0' = @{
+                include = @(
+                    "NRules.Benchmark\bin\$configuration\netcoreapp2.0"
                 )
             }
         }
