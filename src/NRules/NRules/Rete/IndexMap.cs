@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using NRules.RuleModel;
 using NRules.Utilities;
 
@@ -11,7 +12,7 @@ namespace NRules.Rete
     {
         private readonly int[] _map;
 
-        public IndexMap(int[] map)
+        private IndexMap(int[] map)
         {
             _map = map;
         }

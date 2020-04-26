@@ -10,7 +10,7 @@ using NRules.RuleModel;
 
 namespace NRules.Utilities
 {
-    internal abstract class ExpressionCompiler
+    internal static class ExpressionCompiler
     {
         public static ILhsExpression<TResult> CompileLhsExpression<TResult>(ExpressionElement element, List<Declaration> declarations)
         {
