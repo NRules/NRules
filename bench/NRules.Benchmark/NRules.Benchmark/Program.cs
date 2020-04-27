@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
+using NRules.Benchmark.Expressions;
 using NRules.Benchmark.Meta;
 
 namespace NRules.Benchmark
@@ -7,10 +8,13 @@ namespace NRules.Benchmark
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<OneFactRule>();
-            BenchmarkRunner.Run<TwoFactJoinRule>();
-            BenchmarkRunner.Run<TwoFactAggregateRule>();
-            BenchmarkRunner.Run<MultipleRules>();
+            BenchmarkRunner.Run<BenchmarkOneFactRule>();
+            BenchmarkRunner.Run<BenchmarkTwoFactJoinRule>();
+            BenchmarkRunner.Run<BenchmarkTwoFactAggregateRule>();
+            BenchmarkRunner.Run<BenchmarkMultipleRules>();
+
+            BenchmarkRunner.Run<BenchmarkLhsExpression>();
+            BenchmarkRunner.Run<BenchmarkRuleAction>();
         }
     }
 }

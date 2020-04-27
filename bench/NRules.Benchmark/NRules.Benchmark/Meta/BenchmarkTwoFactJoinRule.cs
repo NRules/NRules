@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using NRules.Fluent.Dsl;
 
 namespace NRules.Benchmark.Meta
 {
-    public class TwoFactAggregateRule : BenchmarkBase
+    public class BenchmarkTwoFactJoinRule : BenchmarkBase
     {
         private TestFact1[] _facts1;
         private TestFact2[] _facts2;
@@ -79,16 +78,14 @@ namespace NRules.Benchmark.Meta
             public override void Define()
             {
                 TestFact1 fact1 = null;
-                IEnumerable<TestFact2> group = null;
+                TestFact2 fact2 = null;
 
                 When()
-                    .Match(() => fact1,
+                    .Match(() => fact1, 
                         x => x.IntProperty % 2 == 0)
-                    .Query(() => group, q => q
-                        .Match<TestFact2>(
-                            x => x.IntProperty % 2 == 0)
-                        .Where(x => x.IntProperty % 2 == fact1.IntProperty % 4)
-                        .GroupBy(x => x.IntProperty % 10));
+                    .Match(() => fact2, 
+                        x => x.IntProperty % 2 == 0,
+                        x => x.IntProperty % 2 == fact1.IntProperty % 4);
 
                 Then()
                     .Do(_ => Nothing());

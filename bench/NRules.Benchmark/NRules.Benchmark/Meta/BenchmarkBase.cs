@@ -4,6 +4,7 @@ using NRules.Fluent.Dsl;
 
 namespace NRules.Benchmark.Meta
 {
+    [BenchmarkCategory("Meta")]
     [MemoryDiagnoser]
     [ShortRunJob, WarmupCount(1)]
     public abstract class BenchmarkBase

@@ -7,10 +7,8 @@ using NRules.RuleModel.Builders;
 
 namespace NRules.Benchmark.Meta
 {
-    [ShortRunJob, WarmupCount(1)]
-    public class MultipleRules
+    public class BenchmarkMultipleRules : BenchmarkBase
     {
-        private ISessionFactory Factory { get; set; }
         private TestFact1[] _facts1;
 
         [GlobalSetup]

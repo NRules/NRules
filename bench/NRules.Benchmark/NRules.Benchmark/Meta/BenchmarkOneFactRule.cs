@@ -3,7 +3,7 @@ using NRules.Fluent.Dsl;
 
 namespace NRules.Benchmark.Meta
 {
-    public class OneFactRule : BenchmarkBase
+    public class BenchmarkOneFactRule : BenchmarkBase
     {
         private TestFact[] _facts;
 
