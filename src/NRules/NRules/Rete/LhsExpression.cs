@@ -25,42 +25,43 @@ namespace NRules.Rete
         private readonly LambdaExpression _expression;
         private readonly IndexMap _factMap;
         private readonly FastDelegate<Func<object[], TResult>> _compiledExpression;
+        private readonly object[] _args;
 
         public LhsExpression(LambdaExpression expression, FastDelegate<Func<object[], TResult>> compiledExpression, IndexMap factMap)
         {
             _expression = expression;
             _factMap = factMap;
             _compiledExpression = compiledExpression;
+            _args = new object[_compiledExpression.ArrayArgumentCount];
         }
 
         public TResult Invoke(IExecutionContext context, NodeDebugInfo nodeInfo, ITuple tuple, IFact fact)
         {
-            var args = new object[_compiledExpression.ArrayArgumentCount];
             int index = tuple.Count - 1;
             foreach (var tupleFact in tuple.Facts)
             {
-                IndexMap.SetElementAt(args, _factMap[index], tupleFact.Value);
+                IndexMap.SetElementAt(_args, _factMap[index], tupleFact.Value);
                 index--;
             }
-            IndexMap.SetElementAt(args, _factMap[tuple.Count], fact.Value);
+            IndexMap.SetElementAt(_args, _factMap[tuple.Count], fact.Value);
 
             Exception exception = null;
             TResult result = default;
             try
             {
-                result = _compiledExpression.Delegate(args);
+                result = _compiledExpression.Delegate(_args);
                 return result;
             }
             catch (Exception e)
             {
                 exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, args, tuple, fact, nodeInfo, ref isHandled);
+                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, _args, tuple, fact, nodeInfo, ref isHandled);
                 throw new ExpressionEvaluationException(e, _expression, isHandled);
             }
             finally
             {
-                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, args, result, tuple, fact, nodeInfo);
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, _args, result, tuple, fact, nodeInfo);
             }
         }
     }
