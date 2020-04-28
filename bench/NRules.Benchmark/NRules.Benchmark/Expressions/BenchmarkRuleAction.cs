@@ -10,6 +10,7 @@ using NRules.Utilities;
 
 namespace NRules.Benchmark.Expressions
 {
+    [BenchmarkCategory("Micro", "Expressions")]
     public class BenchmarkRuleAction : BenchmarkBase
     {
         private readonly IActionContext _actionContext;

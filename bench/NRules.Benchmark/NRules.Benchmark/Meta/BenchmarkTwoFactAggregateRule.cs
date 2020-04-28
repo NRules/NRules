@@ -4,6 +4,7 @@ using NRules.Fluent.Dsl;
 
 namespace NRules.Benchmark.Meta
 {
+    [BenchmarkCategory("Meta")]
     public class BenchmarkTwoFactAggregateRule : BenchmarkBase
     {
         private TestFact1[] _facts1;

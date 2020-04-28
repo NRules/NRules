@@ -148,8 +148,10 @@ $components = @{
                 )
             }
         }
-        run = @{
-            exe = @('net472\NRules.Benchmark.exe')
+        bench = @{
+            frameworks = @('net472')
+            exe = 'NRules.Benchmark.exe'
+            categories = @('Micro')
         }
     };
     'Documentation' = @{

@@ -4,7 +4,6 @@ using NRules.Rete;
 
 namespace NRules.Benchmark.Expressions
 {
-    [BenchmarkCategory("Micro", "Expressions")]
     [MemoryDiagnoser]
     public abstract class BenchmarkBase
     {

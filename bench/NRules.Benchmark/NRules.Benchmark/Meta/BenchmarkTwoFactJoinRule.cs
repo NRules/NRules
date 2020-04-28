@@ -3,6 +3,7 @@ using NRules.Fluent.Dsl;
 
 namespace NRules.Benchmark.Meta
 {
+    [BenchmarkCategory("Meta")]
     public class BenchmarkTwoFactJoinRule : BenchmarkBase
     {
         private TestFact1[] _facts1;

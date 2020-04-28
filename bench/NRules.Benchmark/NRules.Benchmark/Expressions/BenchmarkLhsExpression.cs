@@ -9,6 +9,7 @@ using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Benchmark.Expressions
 {
+    [BenchmarkCategory("Micro", "Expressions")]
     public class BenchmarkLhsExpression : BenchmarkBase
     {
         private readonly NodeDebugInfo _nodeInfo;

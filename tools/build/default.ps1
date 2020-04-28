@@ -146,10 +146,13 @@ task Build -depends Compile, Test, ResetPatch -precondition { return $component.
     }
 }
 
-task Run -depends Build -precondition { return $component.ContainsKey('run') } {
-    foreach ($exe in $component.run.exe) {
-        $exeFile = "$binariesDir\$exe"
-        exec { &$exeFile }
+task Bench -depends Build -precondition { return $component.ContainsKey('bench') } {
+    $exe = $component.bench.exe
+    $categories = $component.bench.categories -join ","
+    foreach ($framework in $component.bench.frameworks) {
+        $exeFile = "$binariesDir\$framework\$exe"
+        $artifacts = "$buildDir\bench\$framework"
+        exec { &$exeFile --join --anyCategories=$categories --artifacts=$artifacts }
     }
 }
 
