@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using NRules.RuleModel;
 
 namespace NRules
@@ -21,12 +22,13 @@ namespace NRules
         /// Use <see cref="RuleCompiler"/> explicitly if only need to compile a subset of rules.
         /// </summary>
         /// <param name="repository">Rule repository.</param>
+        /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
         /// <returns>Session factory.</returns>
         /// <seealso cref="RuleCompiler"/>
-        public static ISessionFactory Compile(this IRuleRepository repository)
+        public static ISessionFactory Compile(this IRuleRepository repository, CancellationToken cancellationToken = default)
         {
             var compiler = new RuleCompiler();
-            ISessionFactory factory = compiler.Compile(repository.GetRules());
+            ISessionFactory factory = compiler.Compile(repository.GetRules(), cancellationToken);
             return factory;
         }
     }

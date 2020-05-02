@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using NRules.Diagnostics;
 using NRules.Extensibility;
 using NRules.Rete;
@@ -194,18 +195,20 @@ namespace NRules
 
         /// <summary>
         /// Starts rules execution cycle.
-        /// This method blocks until there are no more rules to fire.
+        /// This method blocks until there are no more rules to fire or cancellation is requested.
         /// </summary>
+        /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
         /// <returns>Number of rules that fired.</returns>
-        int Fire();
+        int Fire(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Starts rules execution cycle.
-        /// This method blocks until maximum number of rules fired or there are no more rules to fire.
+        /// This method blocks until maximum number of rules fired, cancellation is requested or there are no more rules to fire.
         /// </summary>
         /// <param name="maxRulesNumber">Maximum number of rules to fire.</param>
+        /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
         /// <returns>Number of rules that fired.</returns>
-        int Fire(int maxRulesNumber);
+        int Fire(int maxRulesNumber, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Creates a LINQ query to retrieve facts of a given type from the rules engine's memory.
@@ -558,25 +561,25 @@ namespace NRules
             }
         }
 
-        public int Fire()
+        public int Fire(CancellationToken cancellationToken = default)
         {
-            return Fire(Int32.MaxValue);
+            return Fire(Int32.MaxValue, cancellationToken);
         }
 
-        public int Fire(int maxRulesNumber)
+        public int Fire(int maxRulesNumber, CancellationToken cancellationToken = default)
         {
             int ruleFiredCount = 0;
             while (!_agenda.IsEmpty && ruleFiredCount < maxRulesNumber)
             {
                 Activation activation = _agenda.Pop();
-                IActionContext actionContext = new ActionContext(this, activation);
+                IActionContext actionContext = new ActionContext(this, activation, cancellationToken);
 
                 _actionExecutor.Execute(_executionContext, actionContext);
                 ruleFiredCount++;
 
                 UnlinkFacts();
 
-                if (actionContext.IsHalted) break;
+                if (actionContext.IsHalted || cancellationToken.IsCancellationRequested) break;
             }
             return ruleFiredCount;
         }
