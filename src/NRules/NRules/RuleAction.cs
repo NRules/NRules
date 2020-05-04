@@ -21,7 +21,6 @@ namespace NRules
         private readonly IndexMap _tupleFactMap;
         private readonly IndexMap _dependencyFactMap;
         private readonly FastDelegate<Action<IContext, object[]>> _compiledExpression;
-        private readonly object[] _args;
 
         public RuleAction(LambdaExpression expression, FastDelegate<Action<IContext, object[]>> compiledExpression,
             IndexMap tupleFactMap, IndexMap dependencyFactMap, ActionTrigger actionTrigger)
@@ -31,7 +30,6 @@ namespace NRules
             _dependencyFactMap = dependencyFactMap;
             Trigger = actionTrigger;
             _compiledExpression = compiledExpression;
-            _args = new object[_compiledExpression.ArrayArgumentCount];
         }
 
         public Expression Expression => _expression;
@@ -43,17 +41,19 @@ namespace NRules
             var activation = actionContext.Activation;
             var tuple = activation.Tuple;
 
+            var args = new object[_compiledExpression.ArrayArgumentCount];
+
             int index = tuple.Count - 1;
             var activationFactMap = activation.FactMap;
             foreach (var fact in tuple.Facts)
             {
                 var mappedIndex = _tupleFactMap[activationFactMap[index]];
-                IndexMap.SetElementAt(_args, mappedIndex, fact.Object);
+                IndexMap.SetElementAt(args, mappedIndex, fact.Object);
                 index--;
             }
 
             if (!compiledRule.HasDependencies)
-                return _args;
+                return args;
 
             index = 0;
             var dependencyResolver = executionContext.Session.DependencyResolver;
@@ -64,12 +64,12 @@ namespace NRules
                 if (mappedIndex >= 0)
                 {
                     var resolvedDependency = dependency.Factory(dependencyResolver, resolutionContext);
-                    IndexMap.SetElementAt(_args, mappedIndex, resolvedDependency);
+                    IndexMap.SetElementAt(args, mappedIndex, resolvedDependency);
                 }
                 index++;
             }
 
-            return _args;
+            return args;
         }
 
         public void Invoke(IExecutionContext executionContext, IActionContext actionContext, object[] arguments)
