@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using BenchmarkDotNet.Attributes;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -26,7 +27,7 @@ namespace NRules.Benchmark.Expressions
             var tuple = ToTuple("abcd", 4, 1.0m);
             var map = IndexMap.CreateMap(element.Imports, element.Imports);
             var activation = new Activation(compiledRule, tuple, map);
-            _actionContext = new ActionContext(Context.Session, activation);
+            _actionContext = new ActionContext(Context.Session, activation, CancellationToken.None);
         }
 
         [Benchmark]
