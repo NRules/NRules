@@ -18,15 +18,15 @@ namespace NRules
     internal class RuleAction : IRuleAction
     {
         private readonly LambdaExpression _expression;
-        private readonly IndexMap _tupleFactMap;
+        private readonly IndexMap _expressionFactMap;
         private readonly IndexMap _dependencyFactMap;
         private readonly FastDelegate<Action<IContext, object[]>> _compiledExpression;
 
         public RuleAction(LambdaExpression expression, FastDelegate<Action<IContext, object[]>> compiledExpression,
-            IndexMap tupleFactMap, IndexMap dependencyFactMap, ActionTrigger actionTrigger)
+            IndexMap expressionFactMap, IndexMap dependencyFactMap, ActionTrigger actionTrigger)
         {
             _expression = expression;
-            _tupleFactMap = tupleFactMap;
+            _expressionFactMap = expressionFactMap;
             _dependencyFactMap = dependencyFactMap;
             Trigger = actionTrigger;
             _compiledExpression = compiledExpression;
@@ -44,11 +44,12 @@ namespace NRules
             var args = new object[_compiledExpression.ArrayArgumentCount];
 
             int index = tuple.Count - 1;
-            var activationFactMap = activation.FactMap;
-            foreach (var fact in tuple.Facts)
+            var tupleFactMap = activation.FactMap;
+            var enumerator = tuple.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                var mappedIndex = _tupleFactMap[activationFactMap[index]];
-                IndexMap.SetElementAt(args, mappedIndex, fact.Object);
+                var mappedIndex = _expressionFactMap[tupleFactMap[index]];
+                IndexMap.SetElementAt(args, mappedIndex, enumerator.Current.Object);
                 index--;
             }
 
@@ -91,7 +92,8 @@ namespace NRules
             }
             finally
             {
-                executionContext.EventAggregator.RaiseRhsExpressionEvaluated(executionContext.Session, exception, _expression, arguments, actionContext.Activation);
+                if (executionContext.EventAggregator.TraceEnabled)
+                    executionContext.EventAggregator.RaiseRhsExpressionEvaluated(executionContext.Session, exception, _expression, arguments, actionContext.Activation);
             }
         }
     }

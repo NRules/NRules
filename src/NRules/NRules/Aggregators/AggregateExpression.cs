@@ -37,7 +37,7 @@ namespace NRules.Aggregators
 
         public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
         {
-            return _compiledExpression.Invoke(context.ExecutionContext, context.NodeInfo, tuple, fact);
+            return _compiledExpression.Invoke(context.ExecutionContext, context.NodeInfo, tuple as Tuple, fact as Fact);
         }
     }
 }

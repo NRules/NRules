@@ -95,11 +95,12 @@ namespace NRules
         {
             var matches = CompiledRule.Declarations.Select(x => new FactMatch(x)).ToArray();
             int index = Tuple.Count - 1;
-            foreach (var fact in Tuple.Facts)
+            var enumerator = Tuple.GetEnumerator();
+            while (enumerator.MoveNext())
             {
                 int factIndex = FactMap[index];
                 var factMatch = matches[factIndex];
-                factMatch.SetFact(fact);
+                factMatch.SetFact(enumerator.Current);
                 index--;
             }
             return matches;

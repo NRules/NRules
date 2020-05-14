@@ -14,27 +14,28 @@ namespace NRules.AgendaFilters
     {
         private readonly LambdaExpression _expression;
         private readonly FastDelegate<Func<object[], TResult>> _compiledExpression;
-        private readonly IndexMap _tupleFactMap;
+        private readonly IndexMap _expressionFactMap;
 
-        public ActivationExpression(LambdaExpression expression, FastDelegate<Func<object[], TResult>> compiledExpression, IndexMap tupleFactMap)
+        public ActivationExpression(LambdaExpression expression, FastDelegate<Func<object[], TResult>> compiledExpression, IndexMap expressionFactMap)
         {
             _expression = expression;
             _compiledExpression = compiledExpression;
-            _tupleFactMap = tupleFactMap;
+            _expressionFactMap = expressionFactMap;
         }
 
         public TResult Invoke(AgendaContext context, Activation activation)
         {
             var tuple = activation.Tuple;
-            var activationFactMap = activation.FactMap;
+            var tupleFactMap = activation.FactMap;
 
             var args = new object[_compiledExpression.ArrayArgumentCount];
 
             int index = tuple.Count - 1;
-            foreach (var fact in tuple.Facts)
+            var enumerator = tuple.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                var mappedIndex = _tupleFactMap[activationFactMap[index]];
-                IndexMap.SetElementAt(args, mappedIndex, fact.Object);
+                var mappedIndex = _expressionFactMap[tupleFactMap[index]];
+                IndexMap.SetElementAt(args, mappedIndex, enumerator.Current.Object);
                 index--;
             }
 
@@ -54,7 +55,8 @@ namespace NRules.AgendaFilters
             }
             finally
             {
-                context.EventAggregator.RaiseAgendaExpressionEvaluated(context.Session, exception, _expression, args, result, activation);
+                if (context.EventAggregator.TraceEnabled)
+                    context.EventAggregator.RaiseAgendaExpressionEvaluated(context.Session, exception, _expression, args, result, activation);
             }
         }
     }

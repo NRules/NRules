@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using NRules.RuleModel;
 using NRules.Utilities;
 
@@ -17,6 +16,7 @@ namespace NRules.Rete
             _map = map;
         }
 
+        public int Length => _map.Length;
         public int this[int index] => (index >= 0 && index < _map.Length) ? _map[index] : -1;
 
         public static void SetElementAt(object[] target, int index, object value)

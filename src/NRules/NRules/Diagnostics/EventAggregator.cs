@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using System.Threading;
 using NRules.AgendaFilters;
 using NRules.Extensibility;
 using NRules.Rete;
@@ -118,6 +119,7 @@ namespace NRules.Diagnostics
 
     internal interface IEventAggregator : IEventProvider
     {
+        bool TraceEnabled { get; }
         void RaiseActivationCreated(ISession session, Activation activation);
         void RaiseActivationUpdated(ISession session, Activation activation);
         void RaiseActivationDeleted(ISession session, Activation activation);
@@ -129,19 +131,24 @@ namespace NRules.Diagnostics
         void RaiseFactUpdated(ISession session, IFact fact);
         void RaiseFactRetracting(ISession session, IFact fact);
         void RaiseFactRetracted(ISession session, IFact fact);
-        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo);
-        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo);
         void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object argument, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo, ref bool isHandled);
         void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo, ref bool isHandled);
-        void RaiseAgendaExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, IMatch match);
+        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object argument, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo);
+        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, ITuple tuple, IFact fact, NodeDebugInfo nodeInfo);
         void RaiseAgendaExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match, ref bool isHandled);
-        void RaiseRhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match);
+        void RaiseAgendaExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, object result, IMatch match);
         void RaiseRhsExpressionFailed(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match, ref bool isHandled);
+        void RaiseRhsExpressionEvaluated(ISession session, Exception exception, Expression expression, object[] arguments, IMatch match);
     }
 
     internal class EventAggregator : IEventAggregator
     {
         private readonly IEventAggregator _parent;
+        private volatile int _traceSubscriberCount = 0;
+
+        private event EventHandler<LhsExpressionEventArgs> LhsExpressionEvaluatedEvent;
+        private event EventHandler<AgendaExpressionEventArgs> AgendaExpressionEvaluatedEvent;
+        private event EventHandler<RhsExpressionEventArgs> RhsExpressionEvaluatedEvent;
 
         public event EventHandler<AgendaEventArgs> ActivationCreatedEvent;
         public event EventHandler<AgendaEventArgs> ActivationUpdatedEvent;
@@ -154,12 +161,51 @@ namespace NRules.Diagnostics
         public event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactRetractingEvent;
         public event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
-        public event EventHandler<LhsExpressionEventArgs> LhsExpressionEvaluatedEvent;
         public event EventHandler<LhsExpressionErrorEventArgs> LhsExpressionFailedEvent;
-        public event EventHandler<AgendaExpressionEventArgs> AgendaExpressionEvaluatedEvent;
         public event EventHandler<AgendaExpressionErrorEventArgs> AgendaExpressionFailedEvent;
-        public event EventHandler<RhsExpressionEventArgs> RhsExpressionEvaluatedEvent;
         public event EventHandler<RhsExpressionErrorEventArgs> RhsExpressionFailedEvent;
+
+        event EventHandler<LhsExpressionEventArgs> IEventProvider.LhsExpressionEvaluatedEvent
+        {
+            add
+            {
+                Interlocked.Increment(ref _traceSubscriberCount);
+                LhsExpressionEvaluatedEvent += value;
+            }
+            remove
+            {
+                LhsExpressionEvaluatedEvent -= value;
+                Interlocked.Decrement(ref _traceSubscriberCount);
+            }
+        }
+
+        event EventHandler<AgendaExpressionEventArgs> IEventProvider.AgendaExpressionEvaluatedEvent
+        {
+            add
+            {
+                Interlocked.Increment(ref _traceSubscriberCount);
+                AgendaExpressionEvaluatedEvent += value;
+            }
+            remove
+            {
+                AgendaExpressionEvaluatedEvent -= value;
+                Interlocked.Decrement(ref _traceSubscriberCount);
+            }
+        }
+
+        event EventHandler<RhsExpressionEventArgs> IEventProvider.RhsExpressionEvaluatedEvent
+        {
+            add
+            {
+                Interlocked.Increment(ref _traceSubscriberCount);
+                RhsExpressionEvaluatedEvent += value;
+            }
+            remove
+            {
+                RhsExpressionEvaluatedEvent -= value;
+                Interlocked.Decrement(ref _traceSubscriberCount);
+            }
+        }
 
         public EventAggregator()
         {
@@ -169,6 +215,8 @@ namespace NRules.Diagnostics
         {
             _parent = eventAggregator;
         }
+
+        public bool TraceEnabled => _traceSubscriberCount > 0 || (_parent != null && _parent.TraceEnabled);
 
         public void RaiseActivationCreated(ISession session, Activation activation)
         {
