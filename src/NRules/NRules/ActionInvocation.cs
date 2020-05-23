@@ -10,21 +10,20 @@ namespace NRules
         private readonly IActionContext _actionContext;
         private readonly IRuleAction _action;
 
-        public ActionInvocation(IExecutionContext executionContext, IActionContext actionContext, IRuleAction action, object[] arguments)
+        public ActionInvocation(IExecutionContext executionContext, IActionContext actionContext, IRuleAction action)
         {
             _executionContext = executionContext;
             _actionContext = actionContext;
             _action = action;
-            Arguments = arguments;
         }
 
-        public object[] Arguments { get; }
+        public object[] Arguments => null;
         public Expression Expression => _action.Expression;
         public ActionTrigger Trigger => _action.Trigger;
 
         public void Invoke()
         {
-            _action.Invoke(_executionContext, _actionContext, Arguments);
+            _action.Invoke(_executionContext, _actionContext);
         }
     }
 }

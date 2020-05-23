@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NRules.Extensibility;
 using NRules.Rete;
+using NRules.RuleModel;
 using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Utilities
@@ -14,6 +16,7 @@ namespace NRules.Utilities
         private static readonly MethodInfo MoveNextMethod;
         private static readonly PropertyInfo CurrentProperty;
         private static readonly PropertyInfo FactValueProperty;
+        private static readonly MethodInfo ResolveMethod;
 
         static ExpressionOptimizer()
         {
@@ -25,11 +28,8 @@ namespace NRules.Utilities
                 .GetDeclaredProperty(nameof(Tuple.Enumerator.Current));
             FactValueProperty = typeof(Fact).GetTypeInfo()
                 .GetDeclaredProperty(nameof(Fact.Object));
-        }
-
-        public static Expression<TDelegate> Optimize<TDelegate>(LambdaExpression expression)
-        {
-            return Optimize<TDelegate>(expression, null, tupleInput: false, factInput: true);
+            ResolveMethod = typeof(IDependencyResolver).GetTypeInfo()
+                .GetDeclaredMethod(nameof(IDependencyResolver.Resolve));
         }
 
         public static Expression<TDelegate> Optimize<TDelegate>(LambdaExpression expression,
@@ -44,12 +44,27 @@ namespace NRules.Utilities
             var parts = new ExpressionParts(expression, startIndex);
 
             if (tupleInput)
-                UnwrapTuple(parts, indexMap, factInput);
+                UnwrapTuple(parts, indexMap, factInput ? indexMap.Length - 1 : indexMap.Length);
 
-            if (factInput && indexMap != null)
+            if (factInput)
                 UnwrapFact(parts, indexMap);
-            else if (factInput)
-                UnwrapFact(parts);
+
+            var invocation = EnsureReturnType(expression.Body, typeof(TDelegate));
+            parts.Body.Add(invocation);
+
+            var optimizedLambda = Expression.Lambda<TDelegate>(
+                Expression.Block(parts.BodyParameters, parts.Body),
+                parts.InputParameters);
+            return optimizedLambda;
+        }
+
+        public static Expression<TDelegate> Optimize<TDelegate>(LambdaExpression expression,
+            IndexMap factIndexMap, List<DependencyElement> dependencies, IndexMap dependencyIndexMap)
+        {
+            var parts = new ExpressionParts(expression, 1);
+            
+            UnwrapTuple(parts, factIndexMap, factIndexMap.Length);
+            ResolveDependencies(parts, dependencies, dependencyIndexMap);
 
             var invocation = EnsureReturnType(expression.Body, typeof(TDelegate));
             parts.Body.Add(invocation);
@@ -62,7 +77,7 @@ namespace NRules.Utilities
 
         private static void UnwrapFact(ExpressionParts parts, IndexMap indexMap)
         {
-            var factParameter = Expression.Parameter(typeof(Fact), "fact");
+            var factParameter = Expression.Parameter(typeof(Fact), "<fact>");
             parts.InputParameters.Add(factParameter);
 
             var parameterIndex = indexMap[indexMap.Length - 1];
@@ -75,19 +90,12 @@ namespace NRules.Utilities
             }
         }
 
-        private static void UnwrapFact(ExpressionParts parts)
+        private static void UnwrapTuple(ExpressionParts parts, IndexMap indexMap, int tupleSize)
         {
-            var factParameter = Expression.Parameter(typeof(Fact), "fact");
-            parts.InputParameters.Add(factParameter);
-
-            parts.Body.Add(
-                AssignFactValue(factParameter, parts.BodyParameters[0]));
-        }
-
-        private static void UnwrapTuple(ExpressionParts parts, IndexMap indexMap, bool factInput)
-        {
-            var tupleParameter = Expression.Parameter(typeof(Tuple), "tuple");
+            var tupleParameter = Expression.Parameter(typeof(Tuple), "<tuple>");
             parts.InputParameters.Add(tupleParameter);
+
+            if (tupleSize <= 0) return;
 
             var enumerator = Expression.Variable(typeof(Tuple.Enumerator), "<enumerator>");
             parts.BodyParameters.Add(enumerator);
@@ -95,21 +103,46 @@ namespace NRules.Utilities
             parts.Body.Add(
                 Expression.Assign(enumerator, Expression.Call(tupleParameter, GetEnumeratorMethod)));
 
-            int tupleSize = indexMap.Length - 1;
-            if (factInput) tupleSize--;
-            for (int i = tupleSize; i >= 0; i--)
+            var intermediateParts = new List<Expression>(tupleSize);
+            for (int i = tupleSize - 1; i >= 0; i--)
             {
-                parts.Body.Add(
+                intermediateParts.Add(
                     Expression.Call(enumerator, MoveNextMethod));
 
                 var parameterIndex = indexMap[i];
                 if (parameterIndex >= 0)
                 {
+                    parts.Body.AddRange(intermediateParts);
+                    intermediateParts.Clear();
+
                     var bodyParameter = parts.BodyParameters[parameterIndex];
 
                     var currentFact = Expression.Property(enumerator, CurrentProperty);
                     parts.Body.Add(
                         AssignFactValue(currentFact, bodyParameter));
+                }
+            }
+        }
+
+        private static void ResolveDependencies(ExpressionParts parts, 
+            List<DependencyElement> dependencies, IndexMap indexMap)
+        {
+            var resolverParameter = Expression.Parameter(typeof(IDependencyResolver), "<resolver>");
+            parts.InputParameters.Add(resolverParameter);
+            var resolutionContextParameter = Expression.Parameter(typeof(IResolutionContext), "<resolutionContext>");
+            parts.InputParameters.Add(resolutionContextParameter);
+
+            for (int i = 0; i <= indexMap.Length; i++)
+            {
+                var parameterIndex = indexMap[i];
+                if (parameterIndex >= 0)
+                {
+                    var parameter = parts.BodyParameters[parameterIndex];
+                    var parameterType = dependencies[i].ServiceType;
+                    var resolveDependency = Expression.Call(
+                        resolverParameter, ResolveMethod, resolutionContextParameter, Expression.Constant(parameterType));
+                    parts.Body.Add(
+                        Expression.Assign(parameter, Expression.Convert(resolveDependency, parameterType)));
                 }
             }
         }

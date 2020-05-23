@@ -22,7 +22,7 @@ namespace NRules.Rete
         }
 
         public IRuleDefinition Rule { get; }
-        public IEnumerable<Declaration> Declarations => _declarations;
+        public List<Declaration> Declarations => _declarations;
 
         public AlphaNode CurrentAlphaNode { get; set; }
         public IAlphaMemoryNode AlphaSource { get; set; }

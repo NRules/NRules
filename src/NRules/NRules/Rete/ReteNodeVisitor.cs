@@ -61,12 +61,7 @@ namespace NRules.Rete
         {
             VisitBetaNode(context, node);
         }
-
-        protected internal virtual void VisitTerminalNode(TContext context, TerminalNode node)
-        {
-            Visit(context, node.RuleNode);
-        }
-
+        
         protected internal virtual void VisitObjectInputAdapter(TContext context, ObjectInputAdapter node)
         {
             foreach (var objectSink in node.Sinks)

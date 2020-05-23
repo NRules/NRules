@@ -52,8 +52,7 @@ namespace NRules
             {
                 if (!trigger.Matches(action.Trigger)) continue;
 
-                var args = action.GetArguments(executionContext, actionContext);
-                var invocation = new ActionInvocation(executionContext, actionContext, action, args);
+                var invocation = new ActionInvocation(executionContext, actionContext, action);
                 invocations.Add(invocation);
             }
             return invocations;

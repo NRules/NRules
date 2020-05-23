@@ -20,11 +20,10 @@ namespace NRules
 
         internal event EventHandler<ActivationEventArgs> OnRuleFiring;
 
-        internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap factMap)
+        internal Activation(ICompiledRule compiledRule, Tuple tuple)
         {
             CompiledRule = compiledRule;
             Tuple = tuple;
-            FactMap = factMap;
         }
 
         /// <summary>
@@ -44,7 +43,6 @@ namespace NRules
 
         internal ICompiledRule CompiledRule { get; }
         internal Tuple Tuple { get; }
-        internal IndexMap FactMap { get; }
 
         internal bool IsEnqueued { get; set; }
         internal bool HasFired { get; set; }
@@ -98,7 +96,7 @@ namespace NRules
             var enumerator = Tuple.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                int factIndex = FactMap[index];
+                int factIndex = CompiledRule.FactMap[index];
                 var factMatch = matches[factIndex];
                 factMatch.SetFact(enumerator.Current);
                 index--;

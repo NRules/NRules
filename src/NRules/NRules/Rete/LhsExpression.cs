@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using NRules.Utilities;
 
 namespace NRules.Rete
 {
@@ -22,9 +21,9 @@ namespace NRules.Rete
     internal sealed class LhsExpression<TResult> : ILhsExpression<TResult>
     {
         private readonly LambdaExpression _expression;
-        private readonly FastDelegate<Func<Tuple, Fact, TResult>> _compiledExpression;
+        private readonly Func<Tuple, Fact, TResult> _compiledExpression;
 
-        public LhsExpression(LambdaExpression expression, FastDelegate<Func<Tuple, Fact, TResult>> compiledExpression)
+        public LhsExpression(LambdaExpression expression, Func<Tuple, Fact, TResult> compiledExpression)
         {
             _expression = expression;
             _compiledExpression = compiledExpression;
@@ -36,7 +35,7 @@ namespace NRules.Rete
             TResult result = default;
             try
             {
-                result = _compiledExpression.Delegate(tuple, fact);
+                result = _compiledExpression(tuple, fact);
                 return result;
             }
             catch (Exception e)
@@ -57,9 +56,9 @@ namespace NRules.Rete
     internal sealed class LhsFactExpression<TResult> : ILhsFactExpression<TResult>
     {
         private readonly LambdaExpression _expression;
-        private readonly FastDelegate<Func<Fact, TResult>> _compiledExpression;
+        private readonly Func<Fact, TResult> _compiledExpression;
 
-        public LhsFactExpression(LambdaExpression expression, FastDelegate<Func<Fact, TResult>> compiledExpression)
+        public LhsFactExpression(LambdaExpression expression, Func<Fact, TResult> compiledExpression)
         {
             _expression = expression;
             _compiledExpression = compiledExpression;
@@ -76,7 +75,7 @@ namespace NRules.Rete
             TResult result = default;
             try
             {
-                result = _compiledExpression.Delegate(fact);
+                result = _compiledExpression(fact);
                 return result;
             }
             catch (Exception e)
@@ -97,9 +96,9 @@ namespace NRules.Rete
     internal sealed class LhsTupleExpression<TResult> : ILhsTupleExpression<TResult>
     {
         private readonly LambdaExpression _expression;
-        private readonly FastDelegate<Func<Tuple, TResult>> _compiledExpression;
+        private readonly Func<Tuple, TResult> _compiledExpression;
 
-        public LhsTupleExpression(LambdaExpression expression, FastDelegate<Func<Tuple, TResult>> compiledExpression)
+        public LhsTupleExpression(LambdaExpression expression, Func<Tuple, TResult> compiledExpression)
         {
             _expression = expression;
             _compiledExpression = compiledExpression;
@@ -116,7 +115,7 @@ namespace NRules.Rete
             TResult result = default;
             try
             {
-                result = _compiledExpression.Delegate(tuple);
+                result = _compiledExpression(tuple);
                 return result;
             }
             catch (Exception e)
