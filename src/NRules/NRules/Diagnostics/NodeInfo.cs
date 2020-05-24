@@ -21,7 +21,6 @@ namespace NRules.Diagnostics
         Not,
         Binding,
         BetaMemory,
-        Terminal,
         Rule,
     }
 
@@ -95,11 +94,6 @@ namespace NRules.Diagnostics
             var tuples = memory.Tuples.Select(
                 t => string.Join(" || ", t.OrderedFacts().Select(f => f.Value).ToArray()));
             return new NodeInfo(NodeType.BetaMemory, string.Empty, Empty, Empty, tuples);
-        }
-
-        internal static NodeInfo Create(TerminalNode node)
-        {
-            return new NodeInfo(NodeType.Terminal, string.Empty);
         }
 
         internal static NodeInfo Create(RuleNode node)

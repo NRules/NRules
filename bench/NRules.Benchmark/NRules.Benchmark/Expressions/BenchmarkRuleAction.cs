@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -21,20 +22,19 @@ namespace NRules.Benchmark.Expressions
         {
             Expression<Action<IContext, string, int, decimal>> expression = (c, s, i, d) => PerformAction(c, s, i, d);
             var element = Element.Action(expression);
-            _ruleAction = ExpressionCompiler.CompileAction(element, element.Imports.ToList(), new Declaration[0]);
-
-            var compiledRule = new CompiledRule(null, element.Imports, new []{_ruleAction}, new IRuleDependency[0], null);
-            var tuple = ToTuple("abcd", 4, 1.0m);
             var map = IndexMap.CreateMap(element.Imports, element.Imports);
-            var activation = new Activation(compiledRule, tuple, map);
+            _ruleAction = ExpressionCompiler.CompileAction(element, element.Imports.ToList(), new List<DependencyElement>(), map);
+
+            var compiledRule = new CompiledRule(null, element.Imports, new []{_ruleAction}, null, map);
+            var tuple = ToTuple("abcd", 4, 1.0m);
+            var activation = new Activation(compiledRule, tuple);
             _actionContext = new ActionContext(Context.Session, activation, CancellationToken.None);
         }
 
         [Benchmark]
         public void EvaluateExpression()
         {
-            var args = _ruleAction.GetArguments(Context, _actionContext);
-            _ruleAction.Invoke(Context, _actionContext, args);
+            _ruleAction.Invoke(Context, _actionContext);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

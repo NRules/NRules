@@ -14,19 +14,33 @@ namespace NRules.Benchmark.Expressions
     {
         private readonly NodeDebugInfo _nodeInfo;
         private readonly ILhsExpression<bool> _lhsExpression;
+        private readonly ILhsTupleExpression<bool> _lhsTupleExpression;
+        private readonly ILhsFactExpression<bool> _lhsFactExpression;
         private readonly Tuple _tuple;
+        private readonly Fact _fact;
 
         public BenchmarkLhsExpression()
         {
             _nodeInfo = new NodeDebugInfo();
-            Expression<Func<string, int, decimal, bool>> expression = (s, i, d) => s.Length == i;
-            var element = Element.Condition(expression);
-            _lhsExpression = ExpressionCompiler.CompileLhsExpression<bool>(element, element.Imports.ToList());
-
+            Expression<Func<string, int, decimal, bool>> betaExpression = (s, i, d) => s.Length == i;
+            var betaElement = Element.Condition(betaExpression);
+            _lhsExpression = ExpressionCompiler.CompileLhsTupleFactExpression<bool>(betaElement, betaElement.Imports.ToList());
+            _lhsTupleExpression = ExpressionCompiler.CompileLhsTupleExpression<bool>(betaElement, betaElement.Imports.ToList());
             _tuple = ToTuple("abcd", 4, 1.0m);
+
+            Expression<Func<string, bool>> alphaExpression = s => s.Length == 1;
+            var alphaElement = Element.Condition(alphaExpression);
+            _lhsFactExpression = ExpressionCompiler.CompileLhsFactExpression<bool>(alphaElement);
+            _fact = new Fact("abcd");
         }
 
         [Benchmark]
-        public bool EvaluateExpression() => _lhsExpression.Invoke(Context, _nodeInfo, _tuple.LeftTuple, _tuple.RightFact);
+        public bool EvaluateTupleFactExpression() => _lhsExpression.Invoke(Context, _nodeInfo, _tuple.LeftTuple, _tuple.RightFact);
+  
+        [Benchmark]
+        public bool EvaluateTupleExpression() => _lhsTupleExpression.Invoke(Context, _nodeInfo, _tuple); 
+        
+        [Benchmark]
+        public bool EvaluateFactExpression() => _lhsFactExpression.Invoke(Context, _nodeInfo, _fact);
     }
 }

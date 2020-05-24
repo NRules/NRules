@@ -505,7 +505,7 @@ namespace NRules.Tests
         {
             var rule = new Mock<ICompiledRule>();
             rule.Setup(x => x.Actions).Returns(new IRuleAction[0]);
-            var activation = new Activation(rule.Object, null, null);
+            var activation = new Activation(rule.Object, null);
             return activation;
         }
     }

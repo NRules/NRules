@@ -17,7 +17,8 @@ namespace NRules.IntegrationTests
             Session.Insert(fact);
 
             //Act - Assert
-            Assert.Throws<InvalidOperationException>(() => Session.Fire());
+            var ex = Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
+            Assert.IsType<InvalidOperationException>(ex.InnerException);
         }
 
         [Fact]

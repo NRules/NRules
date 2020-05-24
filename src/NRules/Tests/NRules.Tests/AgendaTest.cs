@@ -47,7 +47,7 @@ namespace NRules.Tests
         {
             // Arrange
             var rule = MockRule();
-            var activation = new Activation(rule, new Tuple(0), null);
+            var activation = new Activation(rule, new Tuple(0));
             var target = CreateTarget();
 
             target.Add(_context.Object, activation);
@@ -67,7 +67,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject {Value = "Test"};
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
 
             // Act
@@ -88,7 +88,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject {Value = "Test"};
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.AddFilter(new AcceptingFilter());
 
@@ -106,7 +106,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject {Value = "Test"};
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.AddFilter(new RejectingFilter());
 
@@ -124,7 +124,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject {Value = "Test"};
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.AddFilter(new AcceptingFilter());
             target.AddFilter(new RejectingFilter());
@@ -143,7 +143,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject {Value = "Test"};
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.AddFilter(rule.Definition, new AcceptingFilter());
 
@@ -161,7 +161,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject {Value = "Test"};
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.AddFilter(rule.Definition, new RejectingFilter());
 
@@ -181,7 +181,7 @@ namespace NRules.Tests
             var rule2 = MockRule();
             var factObject = new FactObject { Value = "Test" };
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule1, tuple, null);
+            var activation = new Activation(rule1, tuple);
             var target = CreateTarget();
             target.AddFilter(rule2.Definition, new RejectingFilter());
 
@@ -199,7 +199,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject { Value = "Test" };
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.Add(_context.Object, activation);
 
@@ -222,7 +222,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject { Value = "Test" };
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.Add(_context.Object, activation);
             target.Pop();
@@ -244,7 +244,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject { Value = "Test" };
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.Add(_context.Object, activation);
 
@@ -265,7 +265,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject { Value = "Test" };
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.Add(_context.Object, activation);
             target.Pop();
@@ -286,7 +286,7 @@ namespace NRules.Tests
             var rule = MockRule();
             var factObject = new FactObject { Value = "Test" };
             var tuple = CreateTuple(factObject);
-            var activation = new Activation(rule, tuple, null);
+            var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.Add(_context.Object, activation);
 
@@ -305,8 +305,8 @@ namespace NRules.Tests
             // Arrange
             var rule1 = MockRule();
             var rule2 = MockRule();
-            var activation1 = new Activation(rule1, new Tuple(0), null);
-            var activation2 = new Activation(rule2, new Tuple(0), null);
+            var activation1 = new Activation(rule1, new Tuple(0));
+            var activation2 = new Activation(rule2, new Tuple(0));
             var target = CreateTarget();
 
             // Act
@@ -325,7 +325,7 @@ namespace NRules.Tests
         {
             // Arrange
             var rule = MockRule();
-            var activation = new Activation(rule, new Tuple(0), null);
+            var activation = new Activation(rule, new Tuple(0));
             var target = CreateTarget();
 
             target.Add(_context.Object, activation);
@@ -353,7 +353,7 @@ namespace NRules.Tests
         {
             // Arrange
             var rule = MockRule();
-            var activation = new Activation(rule, new Tuple(0), null);
+            var activation = new Activation(rule, new Tuple(0));
             var target = CreateTarget();
 
             target.Add(_context.Object, activation);
