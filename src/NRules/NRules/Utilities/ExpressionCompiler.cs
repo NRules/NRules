@@ -27,7 +27,8 @@ namespace NRules.Utilities
             var optimizedExpression = ExpressionOptimizer.Optimize<Func<Fact, TResult>>(
                 element.Expression, IndexMap.Unit, tupleInput: false, factInput: true);
             var @delegate = optimizedExpression.Compile();
-            var expression = new LhsFactExpression<TResult>(element.Expression, @delegate);
+            var argumentMap = new ArgumentMap(IndexMap.Unit, 1);
+            var expression = new LhsFactExpression<TResult>(element.Expression, @delegate, argumentMap);
             return expression;
         }
 
@@ -37,7 +38,8 @@ namespace NRules.Utilities
             var optimizedExpression = ExpressionOptimizer.Optimize<Func<Tuple, TResult>>(
                 element.Expression, factMap, tupleInput: true, factInput: false);
             var @delegate = optimizedExpression.Compile();
-            var expression = new LhsTupleExpression<TResult>(element.Expression, @delegate);
+            var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count);
+            var expression = new LhsTupleExpression<TResult>(element.Expression, @delegate, argumentMap);
             return expression;
         }
 
@@ -47,7 +49,8 @@ namespace NRules.Utilities
             var optimizedExpression = ExpressionOptimizer.Optimize<Func<Tuple, Fact, TResult>>(
                 element.Expression, factMap, tupleInput: true, factInput: true);
             var @delegate = optimizedExpression.Compile();
-            var expression = new LhsExpression<TResult>(element.Expression, @delegate);
+            var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count);
+            var expression = new LhsExpression<TResult>(element.Expression, @delegate, argumentMap);
             return expression;
         }
 
@@ -59,7 +62,8 @@ namespace NRules.Utilities
             var optimizedExpression = ExpressionOptimizer.Optimize<Func<Tuple, TResult>>(
                 element.Expression, factMap, tupleInput: true, factInput: false);
             var @delegate = optimizedExpression.Compile();
-            var expression = new ActivationExpression<TResult>(element.Expression, @delegate);
+            var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count);
+            var expression = new ActivationExpression<TResult>(element.Expression, @delegate, argumentMap);
             return expression;
         }
 
@@ -76,7 +80,8 @@ namespace NRules.Utilities
                     .Optimize<Action<IContext, Tuple, IDependencyResolver, IResolutionContext>>(
                         element.Expression, factMap, dependencies, dependencyIndexMap);
                 var @delegate = optimizedExpression.Compile();
-                var action = new RuleActionWithDependencies(element.Expression, @delegate, element.ActionTrigger);
+                var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count - 1);
+                var action = new RuleActionWithDependencies(element.Expression, @delegate, argumentMap, element.ActionTrigger);
                 return action;
             }
             else
@@ -84,7 +89,8 @@ namespace NRules.Utilities
                 var optimizedExpression = ExpressionOptimizer.Optimize<Action<IContext, Tuple>>(
                     element.Expression, 1, factMap, tupleInput: true, factInput: false);
                 var @delegate = optimizedExpression.Compile();
-                var action = new RuleAction(element.Expression, @delegate, element.ActionTrigger);
+                var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count - 1);
+                var action = new RuleAction(element.Expression, @delegate, argumentMap, element.ActionTrigger);
                 return action;
             }
         }

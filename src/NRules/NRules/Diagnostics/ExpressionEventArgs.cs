@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NRules.Utilities;
 
 namespace NRules.Diagnostics
 {
@@ -10,22 +11,7 @@ namespace NRules.Diagnostics
     public class ExpressionEventArgs : EventArgs
     {
         private readonly object[] _arguments;
-        private readonly object _argument;
-
-        /// <summary>
-        /// Initializes a new instance of the <c>ExpressionEventArgs</c> class.
-        /// </summary>
-        /// <param name="expression">Expression that caused the event.</param>
-        /// <param name="exception">Exception thrown during expression evaluation.</param>
-        /// <param name="argument">Argument passed to expression during evaluation.</param>
-        /// <param name="result">Result of expression evaluation.</param>
-        public ExpressionEventArgs(Expression expression, Exception exception, object argument, object result)
-        {
-            _argument = argument;
-            Expression = expression;
-            Exception = exception;
-            Result = result;
-        }
+        private readonly IArguments _lazyArguments;
 
         /// <summary>
         /// Initializes a new instance of the <c>ExpressionEventArgs</c> class.
@@ -37,6 +23,14 @@ namespace NRules.Diagnostics
         public ExpressionEventArgs(Expression expression, Exception exception, object[] arguments, object result)
         {
             _arguments = arguments;
+            Expression = expression;
+            Exception = exception;
+            Result = result;
+        }
+        
+        internal ExpressionEventArgs(Expression expression, Exception exception, IArguments arguments, object result)
+        {
+            _lazyArguments = arguments;
             Expression = expression;
             Exception = exception;
             Result = result;
@@ -55,23 +49,7 @@ namespace NRules.Diagnostics
         /// <summary>
         /// Arguments passed to the expression during evaluation.
         /// </summary>
-        public IEnumerable<object> Arguments
-        {
-            get
-            {
-                if (_arguments != null)
-                {
-                    foreach (var argument in _arguments)
-                    {
-                        yield return argument;
-                    }
-                }
-                else
-                {
-                    yield return _argument;
-                }
-            }
-        }
+        public virtual IEnumerable<object> Arguments => _lazyArguments?.GetValues() ?? _arguments;
 
         /// <summary>
         /// Result of expression evaluation.

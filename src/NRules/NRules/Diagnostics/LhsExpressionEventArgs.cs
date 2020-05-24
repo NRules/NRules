@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using NRules.Rete;
 using NRules.RuleModel;
+using NRules.Utilities;
 
 namespace NRules.Diagnostics
 {
@@ -32,18 +33,8 @@ namespace NRules.Diagnostics
             Rules = rules;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <c>LhsExpressionEventArgs</c> class.
-        /// </summary>
-        /// <param name="expression">Expression related to the event.</param>
-        /// <param name="exception">Exception related to the event.</param>
-        /// <param name="argument">Expression argument.</param>
-        /// <param name="result">Expression result.</param>
-        /// <param name="tuple">Tuple related to the event.</param>
-        /// <param name="fact">Fact related to the event.</param>
-        /// <param name="rules">Rules that contain the expression that generated the event.</param>
-        public LhsExpressionEventArgs(Expression expression, Exception exception, object argument, object result, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
-            : base(expression, exception, argument, result)
+        internal LhsExpressionEventArgs(Expression expression, Exception exception, IArguments arguments, object result, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
+            : base(expression, exception, arguments, result)
         {
             _tuple = tuple;
             _fact = fact;

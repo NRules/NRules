@@ -80,7 +80,7 @@ namespace NRules
             {
                 return (T)value;
             }
-            return default(T);
+            return default;
         }
 
         internal void SetState(object key, object value)

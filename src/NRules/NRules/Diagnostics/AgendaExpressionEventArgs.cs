@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using NRules.RuleModel;
+using NRules.Utilities;
 
 namespace NRules.Diagnostics
 {
@@ -21,6 +22,12 @@ namespace NRules.Diagnostics
         /// <param name="result">Expression result.</param>
         /// <param name="match">Rule match related to the event.</param>
         public AgendaExpressionEventArgs(Expression expression, Exception exception, object[] arguments, object result, IMatch match)
+            : base(expression, exception, arguments, result)
+        {
+            _match = match;
+        }
+        
+        internal AgendaExpressionEventArgs(Expression expression, Exception exception, IArguments arguments, object result, IMatch match)
             : base(expression, exception, arguments, result)
         {
             _match = match;
