@@ -6,10 +6,7 @@ namespace NRules.Benchmark
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<BenchmarkOneFactRule>();
-            BenchmarkRunner.Run<BenchmarkTwoFactJoinRule>();
-            BenchmarkRunner.Run<BenchmarkTwoFactAggregateRule>();
-            BenchmarkRunner.Run<BenchmarkRuleCount>();
+            BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
         }
     }
 }

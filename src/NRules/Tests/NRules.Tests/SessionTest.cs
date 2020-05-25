@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Moq;
 using NRules.Diagnostics;
 using NRules.Extensibility;
@@ -393,6 +394,106 @@ namespace NRules.Tests
             Assert.Equal(1, actual);
         }
 
+        [Fact]
+        public void Fire_CancellationRequested()
+        {
+            using (var cancellationSource = new CancellationTokenSource())
+            {
+                // Arrange
+                var hitCount = 0;
+                var target = CreateTarget();
+                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda
+                    .Setup(x => x.IsEmpty)
+                    .Returns(() =>
+                    {
+                        if (++hitCount == 2)
+                        {
+                            cancellationSource.Cancel();
+                        }
+
+                        return hitCount < 5 ? false : true;
+                    });
+
+                // Act
+                var actual = target.Fire(cancellationSource.Token);
+
+                // Assert
+                Assert.Equal(2, actual);
+                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
+            }
+        }
+
+        [Fact]
+        public void Fire_CancellationRequested_WithMaxRules()
+        {
+            using (var cancellationSource = new CancellationTokenSource())
+            {
+                // Arrange
+                var hitCount = 0;
+                var target = CreateTarget();
+                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda
+                    .Setup(x => x.IsEmpty)
+                    .Returns(() =>
+                    {
+                        if (++hitCount == 2)
+                        {
+                            cancellationSource.Cancel();
+                        }
+
+                        return hitCount < 5 ? false : true;
+                    });
+
+                // Act
+                var actual = target.Fire(5, cancellationSource.Token);
+
+                // Assert
+                Assert.Equal(2, actual);
+                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
+            }
+        }
+
+        [Fact]
+        public void Fire_PassesCancellationTokenToActionContext()
+        {
+            using (var cancellationSource = new CancellationTokenSource())
+            {
+                // Arrange
+                var target = CreateTarget();
+                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda.SetupSequence(x => x.IsEmpty)
+                    .Returns(false).Returns(true);
+
+                // Act
+                var actual = target.Fire(cancellationSource.Token);
+
+                // Assert
+                Assert.Equal(1, actual);
+                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
+            }
+        }
+
+        [Fact]
+        public void Fire_PassesCancellationTokenToActionContext_WithMaxRules()
+        {
+            using (var cancellationSource = new CancellationTokenSource())
+            {
+                // Arrange
+                var target = CreateTarget();
+                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda.SetupSequence(x => x.IsEmpty)
+                    .Returns(false).Returns(true);
+
+                // Act
+                var actual = target.Fire(2, cancellationSource.Token);
+
+                // Assert
+                Assert.Equal(1, actual);
+                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
+            }
+        }
+
         private Session CreateTarget()
         {
             var session = new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, 
@@ -404,7 +505,7 @@ namespace NRules.Tests
         {
             var rule = new Mock<ICompiledRule>();
             rule.Setup(x => x.Actions).Returns(new IRuleAction[0]);
-            var activation = new Activation(rule.Object, null, null);
+            var activation = new Activation(rule.Object, null);
             return activation;
         }
     }

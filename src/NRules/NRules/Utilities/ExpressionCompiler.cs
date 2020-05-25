@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using NRules.AgendaFilters;
 using NRules.Aggregators;
+using NRules.Extensibility;
 using NRules.Rete;
 using NRules.RuleModel;
+using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Utilities
 {
-    internal abstract class ExpressionCompiler
+    internal static class ExpressionCompiler
     {
         public static ILhsExpression<TResult> CompileLhsExpression<TResult>(ExpressionElement element, List<Declaration> declarations)
         {
@@ -24,152 +24,82 @@ namespace NRules.Utilities
 
         public static ILhsFactExpression<TResult> CompileLhsFactExpression<TResult>(ExpressionElement element)
         {
-            var optimizer = new ExpressionSingleParameterOptimizer<Func<object, TResult>>();
-            var optimizedExpression = optimizer.ConvertParameter(element.Expression);
+            var optimizedExpression = ExpressionOptimizer.Optimize<Func<Fact, TResult>>(
+                element.Expression, IndexMap.Unit, tupleInput: false, factInput: true);
             var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var expression = new LhsFactExpression<TResult>(element.Expression, fastDelegate);
+            var argumentMap = new ArgumentMap(IndexMap.Unit, 1);
+            var expression = new LhsFactExpression<TResult>(element.Expression, @delegate, argumentMap);
             return expression;
         }
 
-        public static ILhsTupleExpression<TResult> CompileLhsTupleExpression<TResult>(ExpressionElement element, IEnumerable<Declaration> declarations)
+        public static ILhsTupleExpression<TResult> CompileLhsTupleExpression<TResult>(ExpressionElement element, List<Declaration> declarations)
         {
-            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], TResult>>();
-            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
-            var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
             var factMap = IndexMap.CreateMap(element.Imports, declarations);
-            var expression = new LhsTupleExpression<TResult>(element.Expression, fastDelegate, factMap);
+            var optimizedExpression = ExpressionOptimizer.Optimize<Func<Tuple, TResult>>(
+                element.Expression, factMap, tupleInput: true, factInput: false);
+            var @delegate = optimizedExpression.Compile();
+            var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count);
+            var expression = new LhsTupleExpression<TResult>(element.Expression, @delegate, argumentMap);
             return expression;
         }
 
-        public static ILhsExpression<TResult> CompileLhsTupleFactExpression<TResult>(ExpressionElement element, IEnumerable<Declaration> declarations)
+        public static ILhsExpression<TResult> CompileLhsTupleFactExpression<TResult>(ExpressionElement element, List<Declaration> declarations)
         {
-            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], TResult>>();
-            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
-            var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
             var factMap = IndexMap.CreateMap(element.Imports, declarations);
-            var expression = new LhsExpression<TResult>(element.Expression, fastDelegate, factMap);
+            var optimizedExpression = ExpressionOptimizer.Optimize<Func<Tuple, Fact, TResult>>(
+                element.Expression, factMap, tupleInput: true, factInput: true);
+            var @delegate = optimizedExpression.Compile();
+            var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count);
+            var expression = new LhsExpression<TResult>(element.Expression, @delegate, argumentMap);
             return expression;
         }
 
-        public static IActivationExpression<TResult> CompileActivationExpression<TResult>(ExpressionElement element, IEnumerable<Declaration> declarations)
+        public static IActivationExpression<TResult> CompileActivationExpression<TResult>(ExpressionElement element,
+            List<Declaration> declarations, IndexMap tupleFactMap)
         {
-            var optimizer = new ExpressionMultiParameterOptimizer<Func<object[], TResult>>();
-            var optimizedExpression = optimizer.CompactParameters(element.Expression, 0);
+            var activationFactMap = IndexMap.CreateMap(element.Imports, declarations);
+            var factMap = IndexMap.Compose(tupleFactMap, activationFactMap);
+            var optimizedExpression = ExpressionOptimizer.Optimize<Func<Tuple, TResult>>(
+                element.Expression, factMap, tupleInput: true, factInput: false);
             var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count);
-            var factMap = IndexMap.CreateMap(element.Imports, declarations);
-            var expression = new ActivationExpression<TResult>(element.Expression, fastDelegate, factMap);
+            var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count);
+            var expression = new ActivationExpression<TResult>(element.Expression, @delegate, argumentMap);
             return expression;
         }
 
-        public static IRuleAction CompileAction(ActionElement element, IEnumerable<Declaration> declarations, IEnumerable<Declaration> dependencies)
+        public static IRuleAction CompileAction(ActionElement element, List<Declaration> declarations,
+            List<DependencyElement> dependencies, IndexMap tupleFactMap)
         {
-            var optimizer = new ExpressionMultiParameterOptimizer<Action<IContext, object[]>>();
-            var optimizedExpression = optimizer.CompactParameters(element.Expression, 1);
-            var @delegate = optimizedExpression.Compile();
-            var fastDelegate = Create(@delegate, element.Expression.Parameters.Count - 1);
-            var tupleFactMap = IndexMap.CreateMap(element.Imports, declarations);
-            var dependencyIndexMap = IndexMap.CreateMap(element.Imports, dependencies);
-            var action = new RuleAction(element.Expression, fastDelegate, tupleFactMap, dependencyIndexMap, element.ActionTrigger);
-            return action;
-        }
+            var activationFactMap = IndexMap.CreateMap(element.Imports, declarations);
+            var factMap = IndexMap.Compose(tupleFactMap, activationFactMap);
 
+            var dependencyIndexMap = IndexMap.CreateMap(element.Imports, dependencies.Select(x => x.Declaration));
+            if (dependencyIndexMap.HasData)
+            {
+                var optimizedExpression = ExpressionOptimizer
+                    .Optimize<Action<IContext, Tuple, IDependencyResolver, IResolutionContext>>(
+                        element.Expression, factMap, dependencies, dependencyIndexMap);
+                var @delegate = optimizedExpression.Compile();
+                var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count - 1);
+                var action = new RuleActionWithDependencies(element.Expression, @delegate, argumentMap, element.ActionTrigger);
+                return action;
+            }
+            else
+            {
+                var optimizedExpression = ExpressionOptimizer.Optimize<Action<IContext, Tuple>>(
+                    element.Expression, 1, factMap, tupleInput: true, factInput: false);
+                var @delegate = optimizedExpression.Compile();
+                var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count - 1);
+                var action = new RuleAction(element.Expression, @delegate, argumentMap, element.ActionTrigger);
+                return action;
+            }
+        }
+        
         public static IAggregateExpression CompileAggregateExpression(NamedExpressionElement element, List<Declaration> declarations)
         {
             var compiledExpression = CompileLhsExpression<object>(element, declarations);
             var expression = new AggregateExpression(element.Name, compiledExpression);
             return expression;
-        }
-
-        private static FastDelegate<TDelegate> Create<TDelegate>(TDelegate @delegate, int parameterCount) where TDelegate : class
-        {
-            return new FastDelegate<TDelegate>(@delegate, parameterCount);
-        }
-
-        private static Expression EnsureReturnType(Expression expression, Type delegateType)
-        {
-            var returnType = delegateType.GetTypeInfo().GetDeclaredMethod(nameof(Action.Invoke)).ReturnType;
-            if (returnType == typeof(void)) return expression;
-            if (expression.Type == returnType) return expression;
-            var convertedExpression = Expression.Convert(expression, returnType);
-            return convertedExpression;
-        }
-
-        private class ExpressionSingleParameterOptimizer<TDelegate> : ExpressionVisitor
-        {
-            private ParameterExpression _objectParameter;
-            private ParameterExpression _typedParameter;
-
-            /// <summary>
-            /// Transforms expression from single typed parameter to single object parameter,
-            /// which allows execution w/o reflection.
-            /// </summary>
-            /// <param name="expression">Expression to transform.</param>
-            /// <returns>Transformed expression.</returns>
-            public Expression<TDelegate> ConvertParameter(LambdaExpression expression)
-            {
-                _objectParameter = Expression.Parameter(typeof(object));
-                _typedParameter = expression.Parameters.Single();
-
-                var body = Visit(expression.Body);
-                var convertedBody = EnsureReturnType(body, typeof(TDelegate));
-
-                Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(convertedBody, _objectParameter);
-                return optimizedLambda;
-            }
-
-            protected override Expression VisitParameter(ParameterExpression node)
-            {
-                if (node == _typedParameter)
-                {
-                    UnaryExpression parameterValue = Expression.Convert(_objectParameter, node.Type);
-                    return parameterValue;
-                }
-                return node;
-            }
-        }
-
-        private class ExpressionMultiParameterOptimizer<TDelegate> : ExpressionVisitor
-        {
-            private ParameterExpression _arrayParameter;
-            private Dictionary<ParameterExpression, int> _indexMap;
-
-            /// <summary>
-            /// Transforms expression from multi-parameter to single array parameter,
-            /// which allows execution w/o reflection.
-            /// </summary>
-            /// <param name="expression">Expression to transform.</param>
-            /// <param name="startIndex">Index of the first parameter to compact into an array.</param>
-            /// <returns>Transformed expression.</returns>
-            public Expression<TDelegate> CompactParameters(LambdaExpression expression, int startIndex)
-            {
-                _arrayParameter = Expression.Parameter(typeof(object[]));
-                _indexMap = expression.Parameters.Skip(startIndex).ToIndexMap();
-
-                var parameters = expression.Parameters.Take(startIndex).ToList();
-                parameters.Add(_arrayParameter);
-
-                var body = Visit(expression.Body);
-                var convertedBody = EnsureReturnType(body, typeof(TDelegate));
-
-                Expression<TDelegate> optimizedLambda = Expression.Lambda<TDelegate>(convertedBody, parameters);
-                return optimizedLambda;
-            }
-
-            protected override Expression VisitParameter(ParameterExpression node)
-            {
-                int index = _indexMap.IndexOrDefault(node);
-                if (index >= 0)
-                {
-                    BinaryExpression arrayLookup = Expression.ArrayIndex(_arrayParameter, Expression.Constant(index));
-                    UnaryExpression parameterValue = Expression.Convert(arrayLookup, node.Type);
-                    return parameterValue;
-                }
-                return node;
-            }
         }
     }
 }

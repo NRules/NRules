@@ -1,9 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Benchmark", "NRules.Benchmark\NRules.Benchmark.csproj", "{619CD7C1-6FBD-45B6-BFB1-E46340989A8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Benchmark", "NRules.Benchmark\NRules.Benchmark.csproj", "{619CD7C1-6FBD-45B6-BFB1-E46340989A8F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C7A9E936-6A47-47D9-8A5F-814CF410B9C2} = {C7A9E936-6A47-47D9-8A5F-814CF410B9C2}
+		{7C2F5EAF-CA19-4DB8-AF30-62F844E580DD} = {7C2F5EAF-CA19-4DB8-AF30-62F844E580DD}
+		{43AA9EC1-4E57-4E63-B50D-C7EDFEC6D00F} = {43AA9EC1-4E57-4E63-B50D-C7EDFEC6D00F}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules", "..\..\src\NRules\NRules\NRules.csproj", "{43AA9EC1-4E57-4E63-B50D-C7EDFEC6D00F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.RuleModel", "..\..\src\NRules\NRules.RuleModel\NRules.RuleModel.csproj", "{C7A9E936-6A47-47D9-8A5F-814CF410B9C2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Fluent", "..\..\src\NRules\NRules.Fluent\NRules.Fluent.csproj", "{7C2F5EAF-CA19-4DB8-AF30-62F844E580DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +26,18 @@ Global
 		{619CD7C1-6FBD-45B6-BFB1-E46340989A8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{619CD7C1-6FBD-45B6-BFB1-E46340989A8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{619CD7C1-6FBD-45B6-BFB1-E46340989A8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43AA9EC1-4E57-4E63-B50D-C7EDFEC6D00F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43AA9EC1-4E57-4E63-B50D-C7EDFEC6D00F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43AA9EC1-4E57-4E63-B50D-C7EDFEC6D00F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43AA9EC1-4E57-4E63-B50D-C7EDFEC6D00F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7A9E936-6A47-47D9-8A5F-814CF410B9C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7A9E936-6A47-47D9-8A5F-814CF410B9C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7A9E936-6A47-47D9-8A5F-814CF410B9C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7A9E936-6A47-47D9-8A5F-814CF410B9C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C2F5EAF-CA19-4DB8-AF30-62F844E580DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C2F5EAF-CA19-4DB8-AF30-62F844E580DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C2F5EAF-CA19-4DB8-AF30-62F844E580DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C2F5EAF-CA19-4DB8-AF30-62F844E580DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

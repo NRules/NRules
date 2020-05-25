@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using NRules.AgendaFilters;
 using NRules.Aggregators;
 using NRules.Rete;
@@ -26,10 +27,11 @@ namespace NRules
         /// Compiles a collection of rules into a session factory.
         /// </summary>
         /// <param name="ruleDefinitions">Rules to compile.</param>
+        /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
         /// <returns>Session factory.</returns>
         /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
         /// <seealso cref="IRuleRepository"/>
-        public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
+        public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions, CancellationToken cancellationToken = default)
         {
             IReteBuilder reteBuilder = new ReteBuilder(_aggregatorRegistry);
             var compiledRules = new List<ICompiledRule>();
@@ -38,12 +40,14 @@ namespace NRules
                 try
                 {
                     var compiledRule = CompileRule(reteBuilder, ruleDefinition);
-                    compiledRules.Add(compiledRule);
+                    compiledRules.AddRange(compiledRule);
                 }
                 catch (Exception e)
                 {
                     throw new RuleCompilationException("Failed to compile rule", ruleDefinition.Name, e);
                 }
+
+                if (cancellationToken.IsCancellationRequested) break;
             }
 
             INetwork network = reteBuilder.Build();
@@ -55,49 +59,46 @@ namespace NRules
         /// Compiles rules from rule sets into a session factory.
         /// </summary>
         /// <param name="ruleSets">Rule sets to compile.</param>
+        /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
         /// <returns>Session factory.</returns>
-        public ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets)
+        public ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets, CancellationToken cancellationToken = default)
         {
             var rules = ruleSets.SelectMany(x => x.Rules);
-            return Compile(rules);
+            return Compile(rules, cancellationToken);
         }
 
-        private ICompiledRule CompileRule(IReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
+        private IEnumerable<ICompiledRule> CompileRule(IReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
         {
+            var rules = new List<ICompiledRule>();
+
             var transformation = new RuleTransformation();
             var transformedRule = transformation.Transform(ruleDefinition);
             var ruleDeclarations = transformedRule.LeftHandSide.Exports.ToList();
-            var ruleDependencies = transformedRule.DependencyGroup.Dependencies.Select(x => x.Declaration).ToList();
 
-            IEnumerable<IRuleDependency> dependencies = CompileDependencies(transformedRule);
-            IEnumerable<ITerminalNode> terminals = reteBuilder.AddRule(transformedRule);
+            var dependencies = transformedRule.DependencyGroup.Dependencies.ToList();
+            var terminals = reteBuilder.AddRule(transformedRule);
 
-            IRuleFilter filter = CompileFilters(transformedRule, ruleDeclarations);
-            
-            var rightHandSide = transformedRule.RightHandSide;
-            var actions = new List<IRuleAction>();
-            foreach (var action in rightHandSide.Actions)
+            foreach (var terminal in terminals)
             {
-                var ruleAction = ExpressionCompiler.CompileAction(action, ruleDeclarations, ruleDependencies);
-                actions.Add(ruleAction);
+                IRuleFilter filter = CompileFilters(transformedRule, ruleDeclarations, terminal.FactMap);
+
+                var rightHandSide = transformedRule.RightHandSide;
+                var actions = new List<IRuleAction>();
+                foreach (var action in rightHandSide.Actions)
+                {
+                    var ruleAction = ExpressionCompiler.CompileAction(action, ruleDeclarations, dependencies, terminal.FactMap);
+                    actions.Add(ruleAction);
+                }
+
+                var rule = new CompiledRule(ruleDefinition, ruleDeclarations, actions, filter, terminal.FactMap);
+                BuildRuleNode(rule, terminal);
+                rules.Add(rule);
             }
 
-            var rule = new CompiledRule(ruleDefinition, ruleDeclarations, actions, dependencies, filter);
-            BuildRuleNode(rule, terminals);
-
-            return rule;
+            return rules;
         }
 
-        private IEnumerable<IRuleDependency> CompileDependencies(IRuleDefinition ruleDefinition)
-        {
-            foreach (var dependency in ruleDefinition.DependencyGroup.Dependencies)
-            {
-                var compiledDependency = new RuleDependency(dependency.Declaration, dependency.ServiceType);
-                yield return compiledDependency;
-            }
-        }
-
-        private IRuleFilter CompileFilters(IRuleDefinition ruleDefinition, IList<Declaration> ruleDeclarations)
+        private IRuleFilter CompileFilters(IRuleDefinition ruleDefinition, List<Declaration> ruleDeclarations, IndexMap tupleFactMap)
         {
             var conditions = new List<IActivationExpression<bool>>();
             var keySelectors = new List<IActivationExpression<object>>();
@@ -106,11 +107,11 @@ namespace NRules
                 switch (filter.FilterType)
                 {
                     case FilterType.Predicate:
-                        var condition = ExpressionCompiler.CompileActivationExpression<bool>(filter, ruleDeclarations);
+                        var condition = ExpressionCompiler.CompileActivationExpression<bool>(filter, ruleDeclarations, tupleFactMap);
                         conditions.Add(condition);
                         break;
                     case FilterType.KeyChange:
-                        var keySelector = ExpressionCompiler.CompileActivationExpression<object>(filter, ruleDeclarations);
+                        var keySelector = ExpressionCompiler.CompileActivationExpression<object>(filter, ruleDeclarations, tupleFactMap);
                         keySelectors.Add(keySelector);
                         break;
                     default:
@@ -121,13 +122,10 @@ namespace NRules
             return compiledFilter;
         }
 
-        private void BuildRuleNode(ICompiledRule compiledRule, IEnumerable<ITerminalNode> terminalNodes)
+        private void BuildRuleNode(ICompiledRule compiledRule, ITerminal terminal)
         {
             var ruleNode = new RuleNode(compiledRule);
-            foreach (var terminalNode in terminalNodes)
-            {
-                terminalNode.Attach(ruleNode);
-            }
+            terminal.Source.Attach(ruleNode);
         }
     }
 }

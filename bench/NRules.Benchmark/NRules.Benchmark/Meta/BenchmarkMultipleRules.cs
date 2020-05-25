@@ -5,11 +5,11 @@ using BenchmarkDotNet.Attributes;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
-namespace NRules.Benchmark
+namespace NRules.Benchmark.Meta
 {
-    public class BenchmarkRuleCount
+    [BenchmarkCategory("Meta")]
+    public class BenchmarkMultipleRules : BenchmarkBase
     {
-        private ISessionFactory Factory { get; set; }
         private TestFact1[] _facts1;
 
         [GlobalSetup]
@@ -28,14 +28,14 @@ namespace NRules.Benchmark
             _facts1 = new TestFact1[FactCount];
             for (int i = 0; i < FactCount; i++)
             {
-                _facts1[i] = new TestFact1{StringProperty = $"Valid {i}", IntProperty = i};
+                _facts1[i] = new TestFact1{IntProperty = i};
             }
         }
 
         [Params(10, 100, 1000)]
         public int RuleCount { get; set; }
 
-        [Params(1000)]
+        [Params(100)]
         public int FactCount { get; set; }
 
         [Benchmark]
@@ -66,7 +66,6 @@ namespace NRules.Benchmark
 
         private class TestFact1
         {
-            public string StringProperty { get; set; }
             public int IntProperty { get; set; }
         }
 
@@ -77,10 +76,8 @@ namespace NRules.Benchmark
 
             var group = builder.LeftHandSide();
             var pattern = group.Pattern(typeof(TestFact1), "fact1");
-            Expression<Func<TestFact1, bool>> condition1 = fact1 => fact1.StringProperty.StartsWith("Valid");
-            pattern.Condition(condition1);
-            Expression<Func<TestFact1, bool>> condition2 = fact1 => fact1.IntProperty % index == 0;
-            pattern.Condition(condition2);
+            Expression<Func<TestFact1, bool>> condition = fact1 => fact1.IntProperty % index == 0;
+            pattern.Condition(condition);
 
             var actions = builder.RightHandSide();
             Expression<Action<IContext>> action = ctx => Nothing();

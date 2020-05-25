@@ -2,8 +2,9 @@
 using BenchmarkDotNet.Attributes;
 using NRules.Fluent.Dsl;
 
-namespace NRules.Benchmark
+namespace NRules.Benchmark.Meta
 {
+    [BenchmarkCategory("Meta")]
     public class BenchmarkTwoFactAggregateRule : BenchmarkBase
     {
         private TestFact1[] _facts1;
@@ -17,13 +18,13 @@ namespace NRules.Benchmark
             _facts1 = new TestFact1[Fact1Count];
             for (int i = 0; i < Fact1Count; i++)
             {
-                _facts1[i] = new TestFact1{StringProperty = $"Valid {i}", IntProperty = i};
+                _facts1[i] = new TestFact1{IntProperty = i};
             }
 
             _facts2 = new TestFact2[Fact2Count];
             for (int i = 0; i < Fact2Count; i++)
             {
-                _facts2[i] = new TestFact2{StringProperty = $"Valid {i}", IntProperty = i};
+                _facts2[i] = new TestFact2{IntProperty = i};
             }
         }
 
@@ -66,13 +67,11 @@ namespace NRules.Benchmark
 
         private class TestFact1
         {
-            public string StringProperty { get; set; }
             public int IntProperty { get; set; }
         }
 
         private class TestFact2
         {
-            public string StringProperty { get; set; }
             public int IntProperty { get; set; }
         }
 
@@ -85,11 +84,9 @@ namespace NRules.Benchmark
 
                 When()
                     .Match(() => fact1,
-                        x => x.StringProperty.StartsWith("Valid"),
                         x => x.IntProperty % 2 == 0)
                     .Query(() => group, q => q
                         .Match<TestFact2>(
-                            x => x.StringProperty.StartsWith("Valid"),
                             x => x.IntProperty % 2 == 0)
                         .Where(x => x.IntProperty % 2 == fact1.IntProperty % 4)
                         .GroupBy(x => x.IntProperty % 10));

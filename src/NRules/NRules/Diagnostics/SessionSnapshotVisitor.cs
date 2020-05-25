@@ -107,14 +107,6 @@ namespace NRules.Diagnostics
             base.VisitBetaNode(builder, node);
         }
 
-        protected internal override void VisitTerminalNode(SnapshotBuilder builder, TerminalNode node)
-        {
-            if (builder.IsVisited(node)) return;
-            builder.AddNode(node, NodeInfo.Create);
-            builder.AddLink(node, node.RuleNode);
-            base.VisitTerminalNode(builder, node);
-        }
-
         protected internal override void VisitRuleNode(SnapshotBuilder builder, RuleNode node)
         {
             if (builder.IsVisited(node)) return;

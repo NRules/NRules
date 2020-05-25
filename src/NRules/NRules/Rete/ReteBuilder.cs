@@ -9,7 +9,7 @@ namespace NRules.Rete
 {
     internal interface IReteBuilder
     {
-        IEnumerable<ITerminalNode> AddRule(IRuleDefinition rule);
+        IEnumerable<ITerminal> AddRule(IRuleDefinition rule);
         INetwork Build();
     }
 
@@ -24,17 +24,17 @@ namespace NRules.Rete
             _aggregatorRegistry = aggregatorRegistry;
         }
 
-        public IEnumerable<ITerminalNode> AddRule(IRuleDefinition rule)
+        public IEnumerable<ITerminal> AddRule(IRuleDefinition rule)
         {
             var ruleDeclarations = rule.LeftHandSide.Exports.ToList();
-            var terminals = new List<ITerminalNode>();
+            var terminals = new List<ITerminal>();
             rule.LeftHandSide.Match(
                 and =>
                 {
                     var context = new ReteBuilderContext(rule, _dummyNode);
                     Visit(context, and);
-                    var terminalNode = BuildTerminalNode(context, and, ruleDeclarations);
-                    terminals.Add(terminalNode);
+                    var terminal = BuildTerminal(context, and, ruleDeclarations);
+                    terminals.Add(terminal);
                 },
                 or =>
                 {
@@ -42,11 +42,22 @@ namespace NRules.Rete
                     {
                         var context = new ReteBuilderContext(rule, _dummyNode);
                         Visit(context, childElement);
-                        var terminalNode = BuildTerminalNode(context, childElement, ruleDeclarations);
-                        terminals.Add(terminalNode);
+                        var terminal = BuildTerminal(context, childElement, ruleDeclarations);
+                        terminals.Add(terminal);
                     }
                 });
             return terminals;
+        }
+
+        private Terminal BuildTerminal(ReteBuilderContext context, RuleElement element, IEnumerable<Declaration> ruleDeclarations)
+        {
+            if (context.AlphaSource != null)
+            {
+                BuildJoinNode(context, element);
+            }
+            var factMap = IndexMap.CreateMap(ruleDeclarations, context.Declarations);
+            var terminalNode = new Terminal(context.BetaSource, factMap);
+            return terminalNode;
         }
 
         protected override void VisitAnd(ReteBuilderContext context, AndElement element)
@@ -165,17 +176,6 @@ namespace NRules.Rete
             context.AlphaSource = subnetContext.AlphaSource;
         }
 
-        private TerminalNode BuildTerminalNode(ReteBuilderContext context, RuleElement element, IEnumerable<Declaration> ruleDeclarations)
-        {
-            if (context.AlphaSource != null)
-            {
-                BuildJoinNode(context, element);
-            }
-            var factMap = IndexMap.CreateMap(ruleDeclarations, context.Declarations);
-            var terminalNode = new TerminalNode(context.BetaSource, factMap);
-            return terminalNode;
-        }
-
         private void BuildSubnet(ReteBuilderContext context, PatternElement element)
         {
             var isJoined = element.Imports.Any();
@@ -217,7 +217,7 @@ namespace NRules.Rete
                 var compiledExpressions = new List<ILhsExpression<bool>>(expressionElements.Count);
                 foreach (var expressionElement in expressionElements)
                 {
-                    var compiledExpression = ExpressionCompiler.CompileLhsTupleFactExpression<bool>(expressionElement, context.Declarations);
+                    var compiledExpression = ExpressionCompiler.CompileLhsExpression<bool>(expressionElement, context.Declarations);
                     compiledExpressions.Add(compiledExpression);
                 }
                 node = new JoinNode(context.BetaSource, context.AlphaSource, expressionElements, compiledExpressions, context.HasSubnet);

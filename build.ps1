@@ -136,15 +136,22 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net472')
+            frameworks = @('net472', 'netcoreapp2.0')
             'net472' = @{
                 include = @(
                     "NRules.Benchmark\bin\$configuration\net472"
                 )
             }
+            'netcoreapp2.0' = @{
+                include = @(
+                    "NRules.Benchmark\bin\$configuration\netcoreapp2.0"
+                )
+            }
         }
-        run = @{
-            exe = @('net472\NRules.Benchmark.exe')
+        bench = @{
+            frameworks = @('net472')
+            exe = 'NRules.Benchmark.exe'
+            categories = @('Micro')
         }
     };
     'Documentation' = @{
