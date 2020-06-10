@@ -178,7 +178,7 @@ namespace NRules.Rete
 
         private void BuildSubnet(ReteBuilderContext context, PatternElement element)
         {
-            var isJoined = element.Imports.Any();
+            var isJoined = element.Source.Imports.Any();
             var subnetContext = isJoined ? new ReteBuilderContext(context) : new ReteBuilderContext(context.Rule, _dummyNode);
 
             Visit(subnetContext, element.Source);
