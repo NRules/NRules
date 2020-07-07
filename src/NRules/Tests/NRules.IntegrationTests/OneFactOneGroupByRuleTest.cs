@@ -151,6 +151,33 @@ namespace NRules.IntegrationTests
             Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
             Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
         }
+        
+        [Fact]
+        public void Fire_TwoFactGroupsKeyChangedGroupRemovedAndReAddedThenNewFactInserted_FiresTwiceWithFactsInEachGroup()
+        {
+            //Arrange
+            var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
+            var fact2 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+            var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+
+            var facts = new[] {fact1, fact2, fact3};
+            Session.InsertAll(facts);
+
+            fact1.GroupProperty = 2;
+            fact3.GroupProperty = 1;
+            Session.UpdateAll(new object[] {fact1, fact3});
+
+            var fact4 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
+            Session.Insert(fact4);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertFiredTwice();
+            Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
+            Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
+        }
 
         [Fact]
         public void Fire_TwoFactsOneGroupAnotherFactFilteredOut_FiresOnceAggregateHasSource()

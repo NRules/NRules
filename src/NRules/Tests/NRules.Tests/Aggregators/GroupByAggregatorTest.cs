@@ -269,6 +269,10 @@ namespace NRules.Tests.Aggregators
             Assert.Equal(2, result.Length);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
             Assert.Equal(AggregationAction.Modified, result[1].Action);
+            Assert.Same(result[0].Previous, result[0].Aggregate);
+            Assert.Same(result[1].Previous, result[1].Aggregate);
+            Assert.Equal(1, ((IEnumerable<GroupElement>) result[0].Aggregate).Count());
+            Assert.Equal(2, ((IEnumerable<GroupElement>) result[1].Aggregate).Count());
         }
 
         [Fact]
