@@ -580,6 +580,50 @@ namespace NRules.Tests.Utilities
             AssertNotEqual(first, second);
         }
 
+        [Fact]
+        public void AreEqual_EquivalentSubtractMemberBinding_True()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value1 - x.Value2).Day;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value1 - x.Value2).Day;
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentSubtractMemberBinding_True()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value1 - x.Value2).Day;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value1 - x.Value2).Year;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_EquivalentAddMemberBinding_True()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value1 + x.Value2).Day;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value1 + x.Value2).Day;
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentAddMemberBinding_True()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value1 + x.Value2).Day;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value1 + x.Value2).Year;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
         private static void AssertEqual(Expression first, Expression second)
         {
             //Act
@@ -627,11 +671,15 @@ namespace NRules.Tests.Utilities
         public interface ISomeFact
         {
             int Value { get; set; }
+            DateTime Value1 { get; set; }
+            TimeSpan Value2 { get; set; }
         }
 
         public class SomeOtherFact : ISomeFact
         {
             int ISomeFact.Value { get; set; }
+            public DateTime Value1 { get; set; }
+            public TimeSpan Value2 { get; set; }
         }
 
         public class SomeClass

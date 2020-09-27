@@ -191,6 +191,15 @@ namespace NRules.Utilities
                 case ExpressionType.Parameter:
                 case ExpressionType.MemberAccess:
                 case ExpressionType.Convert:
+                case ExpressionType.Add:
+                case ExpressionType.AddChecked:
+                case ExpressionType.Subtract:
+                case ExpressionType.SubtractChecked:
+                case ExpressionType.Multiply:
+                case ExpressionType.MultiplyChecked:
+                case ExpressionType.Divide:
+                case ExpressionType.Modulo:
+                case ExpressionType.Power:
                     return Equals(x.Member, y.Member) && ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
                 case ExpressionType.New:
                 case ExpressionType.Call:
