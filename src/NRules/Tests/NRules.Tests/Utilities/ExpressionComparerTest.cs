@@ -592,7 +592,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Fact]
-        public void AreEqual_NonEquivalentSubtractMemberBinding_True()
+        public void AreEqual_NonEquivalentSubtractMemberBinding_False()
         {
             //Arrange
             Expression<Func<ISomeFact, int>> first = x => (x.Value1 - x.Value2).Day;
@@ -614,7 +614,7 @@ namespace NRules.Tests.Utilities
         }
 
         [Fact]
-        public void AreEqual_NonEquivalentAddMemberBinding_True()
+        public void AreEqual_NonEquivalentAddMemberBinding_False()
         {
             //Arrange
             Expression<Func<ISomeFact, int>> first = x => (x.Value1 + x.Value2).Day;
