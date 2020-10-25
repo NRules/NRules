@@ -142,7 +142,7 @@ namespace NRules
 
             if (context.Session.GetLinkedKeys(activation).Any())
             {
-                context.UnlinkQueue.Enqueue(activation);
+                context.Session.QueueRetractLinked(activation);
             }
         }
 

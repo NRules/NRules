@@ -111,6 +111,12 @@ namespace NRules.IntegrationTests.TestAssets
             Assert.Equal(2, _firedRulesMap[rule.Name].Count);
         }
 
+        protected void AssertFiredTimes<T>(int value)
+        {
+            var rule = _ruleMap[typeof(T)];
+            Assert.Equal(value, _firedRulesMap[rule.Name].Count);
+        }
+
         protected void AssertDidNotFire<T>()
         {
             var rule = _ruleMap[typeof(T)];

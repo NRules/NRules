@@ -106,7 +106,7 @@ namespace NRules
 
         public void InsertAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
         {
-            _session.InsertLinked(Activation, keyedFacts);
+            _session.QueueInsertLinked(Activation, keyedFacts);
         }
 
         public void UpdateLinked(object key, object fact)
@@ -122,7 +122,7 @@ namespace NRules
 
         public void UpdateAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
         {
-            _session.UpdateLinked(Activation, keyedFacts);
+            _session.QueueUpdateLinked(Activation, keyedFacts);
         }
 
         public void RetractLinked(object key, object fact)
@@ -138,7 +138,7 @@ namespace NRules
 
         public void RetractAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
         {
-            _session.RetractLinked(Activation, keyedFacts);
+            _session.QueueRetractLinked(Activation, keyedFacts);
         }
 
         public object Resolve(Type serviceType)
