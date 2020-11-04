@@ -48,7 +48,7 @@ namespace NRules
             {
                 Activation current = _queue.Peek();
                 if (current.IsEnqueued && current.Trigger.Matches(current.CompiledRule.ActionTriggers)) return;
-                _queue.Dequeue();
+                Dequeue();
             }
         }
 
