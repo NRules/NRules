@@ -116,16 +116,6 @@ $components = @{
             tool = 'msbuild'
         }
     };
-    'Samples.ClaimsAdjudication' = @{
-        name = 'ClaimsAdjudication'
-        src_root = 'samples'
-        restore = @{
-            tool = 'nuget'
-        }
-        build = @{
-            tool = 'msbuild'
-        }
-    };
     'Benchmark' = @{
         name = 'NRules.Benchmark'
         src_root = 'bench'
