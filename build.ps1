@@ -20,7 +20,7 @@ $components = @{
         }
         test = @{
             location = 'Tests'
-            frameworks = @('net472', 'netcoreapp2.0')
+            frameworks = @('net48', 'netcoreapp3.1')
         }
         bin = @{
             frameworks = @('net45', 'netstandard1.0', 'netstandard2.0')
@@ -136,20 +136,20 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net472', 'netcoreapp2.0')
+            frameworks = @('net48', 'netcoreapp3.1')
             'net472' = @{
                 include = @(
-                    "NRules.Benchmark\bin\$configuration\net472"
+                    "NRules.Benchmark\bin\$configuration\net48"
                 )
             }
             'netcoreapp2.0' = @{
                 include = @(
-                    "NRules.Benchmark\bin\$configuration\netcoreapp2.0"
+                    "NRules.Benchmark\bin\$configuration\netcoreapp3.1"
                 )
             }
         }
         bench = @{
-            frameworks = @('net472')
+            frameworks = @('net48')
             exe = 'NRules.Benchmark.exe'
             categories = @('Micro')
         }
