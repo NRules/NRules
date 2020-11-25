@@ -121,7 +121,7 @@ function Install-DotNetCli([string] $location, [string] $version) {
     }
 
     if (!(Test-Path $location\dotnet-install.ps1)) {
-        $url = "https://raw.githubusercontent.com/dotnet/cli/v$version/scripts/obtain/dotnet-install.ps1"
+        $url = "https://dotnet.microsoft.com/download/dotnet-core/scripts/v1/dotnet-install.ps1"
         Invoke-WebRequest $url -OutFile "$location\dotnet-install.ps1"
     }
 
