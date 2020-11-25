@@ -13,7 +13,7 @@ namespace NRules.Rete
         public ExpressionCollection Expressions { get; }
 
         public AggregateNode(ITupleSource leftSource, IObjectSource rightSource, string name, ExpressionCollection expressions, IAggregatorFactory aggregatorFactory, bool isSubnetJoin)
-            : base(leftSource, rightSource)
+            : base(leftSource, rightSource, isSubnetJoin)
         {
             Name = name;
             Expressions = expressions;

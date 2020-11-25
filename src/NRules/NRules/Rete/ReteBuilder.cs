@@ -84,19 +84,19 @@ namespace NRules.Rete
 
         protected override void VisitNot(ReteBuilderContext context, NotElement element)
         {
-            BuildSubnet(context, element.Source);
+            VisitSource(context, element, element.Source);
             BuildNotNode(context, element);
         }
 
         protected override void VisitExists(ReteBuilderContext context, ExistsElement element)
         {
-            BuildSubnet(context, element.Source);
+            VisitSource(context, element, element.Source);
             BuildExistsNode(context, element);
         }
 
         protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
         {
-            BuildSubnet(context, element.Source);
+            VisitSource(context, element, element.Source);
             BuildAggregateNode(context, element);
         }
 
@@ -125,16 +125,35 @@ namespace NRules.Rete
             }
             else
             {
-                if (conditions.Any())
+                var isJoined = element.Imports.Any();
+                if (isJoined)
                 {
-                    BuildSubnet(context, element.Source);
-                    context.RegisterDeclaration(element.Declaration);
+                    if (conditions.Any())
+                    {
+                        BuildSubnet(context, element);
 
-                    BuildJoinNode(context, element, conditions);
+                        context.RegisterDeclaration(element.Declaration);
+                        BuildJoinNode(context, element, conditions);
+                    }
+                    else
+                    {
+                        Visit(context, element.Source);
+                        context.RegisterDeclaration(element.Declaration);
+                    }
                 }
                 else
                 {
-                    Visit(context, element.Source);
+                    var joinContext = new ReteBuilderContext(context.Rule, _dummyNode);
+                    BuildSubnet(joinContext, element);
+
+                    joinContext.RegisterDeclaration(element.Declaration);
+                    if (conditions.Any())
+                    {
+                        BuildJoinNode(joinContext, element, conditions);
+                        BuildAdapter(joinContext);
+                    }
+                    context.AlphaSource = joinContext.AlphaSource;
+
                     context.RegisterDeclaration(element.Declaration);
                 }
             }
@@ -145,24 +164,46 @@ namespace NRules.Rete
             BuildBindingNode(context, element);
         }
 
-        private void BuildSubnet(ReteBuilderContext context, RuleElement element)
+        private void VisitSource(ReteBuilderContext context, RuleElement element, RuleElement source)
         {
-            var subnetContext = new ReteBuilderContext(context);
-            Visit(subnetContext, element);
+            var isJoined = source.Imports.Any();
+            var subnetContext = isJoined ? new ReteBuilderContext(context) : new ReteBuilderContext(context.Rule, _dummyNode);
+
+            Visit(subnetContext, source);
 
             if (subnetContext.AlphaSource == null)
             {
-                var adapter = subnetContext.BetaSource
-                    .Sinks.OfType<ObjectInputAdapter>()
-                    .SingleOrDefault();
-                if (adapter == null)
-                {
-                    adapter = new ObjectInputAdapter(subnetContext.BetaSource);
-                }
-                subnetContext.AlphaSource = adapter;
-                context.HasSubnet = true;
+                BuildAdapter(subnetContext);
+                context.HasSubnet = isJoined;
             }
             context.AlphaSource = subnetContext.AlphaSource;
+        }
+
+        private void BuildSubnet(ReteBuilderContext context, PatternElement element)
+        {
+            var isJoined = element.Source.Imports.Any();
+            var subnetContext = isJoined ? new ReteBuilderContext(context) : new ReteBuilderContext(context.Rule, _dummyNode);
+
+            Visit(subnetContext, element.Source);
+
+            if (subnetContext.AlphaSource == null)
+            {
+                BuildAdapter(subnetContext);
+                context.HasSubnet = isJoined;
+            }
+            context.AlphaSource = subnetContext.AlphaSource;
+        }
+        
+        private static void BuildAdapter(ReteBuilderContext context)
+        {
+            var adapter = context.BetaSource
+                .Sinks.OfType<ObjectInputAdapter>()
+                .SingleOrDefault();
+            if (adapter == null)
+            {
+                adapter = new ObjectInputAdapter(context.BetaSource);
+            }
+            context.AlphaSource = adapter;
         }
 
         private void BuildJoinNode(ReteBuilderContext context, RuleElement element, List<ExpressionElement> conditions = null)

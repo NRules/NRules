@@ -101,6 +101,11 @@ namespace NRules.Diagnostics
             return new NodeInfo(NodeType.Rule, node.CompiledRule.Definition.Name);
         }
 
+        internal static NodeInfo Create(DummyNode node)
+        {
+            return new NodeInfo(NodeType.Dummy, string.Empty);
+        }
+
         internal NodeInfo(NodeType nodeType, string details)
             : this(nodeType, details, Empty, Empty, Empty)
         {

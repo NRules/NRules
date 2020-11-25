@@ -17,7 +17,7 @@ namespace NRules.Rete
             List<ExpressionElement> expressionElements,
             List<ILhsExpression<bool>> compiledExpressions,
             bool isSubnetJoin)
-            : base(leftSource, rightSource)
+            : base(leftSource, rightSource, isSubnetJoin)
         {
             _expressionElements = expressionElements;
             _compiledExpressions = compiledExpressions;
