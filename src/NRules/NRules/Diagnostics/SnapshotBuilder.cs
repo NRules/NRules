@@ -30,7 +30,7 @@ namespace NRules.Diagnostics
         {
             foreach (var target in targets)
             {
-                _links.Add(new Tuple<INode, INode>(source, target));
+                AddLink(source, target);
             }
         }
 

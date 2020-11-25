@@ -113,5 +113,17 @@ namespace NRules.Diagnostics
             builder.AddNode(node, NodeInfo.Create);
             base.VisitRuleNode(builder, node);
         }
+
+        protected internal override void VisitDummyNode(SnapshotBuilder builder, DummyNode node)
+        {
+            if (builder.IsVisited(node)) return;
+            builder.AddNode(node, NodeInfo.Create);
+            foreach (var sink in node.Sinks)
+            {
+                if (!builder.IsVisited(sink))
+                    builder.AddLink(node, sink);
+            }
+            base.VisitDummyNode(builder, node);
+        }
     }
 }

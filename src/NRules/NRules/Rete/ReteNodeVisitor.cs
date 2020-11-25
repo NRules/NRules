@@ -94,6 +94,10 @@ namespace NRules.Rete
 
         protected internal virtual void VisitDummyNode(TContext context, DummyNode node)
         {
+            foreach (var tupleSink in node.Sinks)
+            {
+                Visit(context, tupleSink);
+            }
         }
     }
 }
