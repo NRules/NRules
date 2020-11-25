@@ -125,10 +125,10 @@ namespace NRules.Rete
             }
             else
             {
-                if (conditions.Any())
+                var isJoined = element.Imports.Any();
+                if (isJoined)
                 {
-                    var isJoined = element.Imports.Any();
-                    if (isJoined)
+                    if (conditions.Any())
                     {
                         BuildSubnet(context, element);
 
@@ -137,20 +137,23 @@ namespace NRules.Rete
                     }
                     else
                     {
-                        var joinContext = new ReteBuilderContext(context.Rule, _dummyNode);
-                        BuildSubnet(joinContext, element);
-
-                        joinContext.RegisterDeclaration(element.Declaration);
-                        BuildJoinNode(joinContext, element, conditions);
-                        BuildAdapter(joinContext);
-                        context.AlphaSource = joinContext.AlphaSource;
-                        
+                        Visit(context, element.Source);
                         context.RegisterDeclaration(element.Declaration);
                     }
                 }
                 else
                 {
-                    Visit(context, element.Source);
+                    var joinContext = new ReteBuilderContext(context.Rule, _dummyNode);
+                    BuildSubnet(joinContext, element);
+
+                    joinContext.RegisterDeclaration(element.Declaration);
+                    if (conditions.Any())
+                    {
+                        BuildJoinNode(joinContext, element, conditions);
+                        BuildAdapter(joinContext);
+                    }
+                    context.AlphaSource = joinContext.AlphaSource;
+
                     context.RegisterDeclaration(element.Declaration);
                 }
             }

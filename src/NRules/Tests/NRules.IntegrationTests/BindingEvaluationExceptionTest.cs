@@ -146,8 +146,8 @@ namespace NRules.IntegrationTests
             SetUpRule<TestRule>();
         }
 
-        private static readonly Func<string> SuccessfulBinding = () => "value";
-        private static readonly Func<string> ThrowBinding = () => throw new InvalidOperationException("Binding failed");
+        private static readonly Func<FactType, string> SuccessfulBinding = f => "value";
+        private static readonly Func<FactType, string> ThrowBinding = f => throw new InvalidOperationException("Binding failed");
 
         public class FactType
         {
@@ -156,7 +156,7 @@ namespace NRules.IntegrationTests
 
         public class TestRule : Rule
         {
-            public Func<string> Binding = SuccessfulBinding;
+            public Func<FactType, string> Binding = SuccessfulBinding;
 
             public override void Define()
             {
@@ -164,8 +164,8 @@ namespace NRules.IntegrationTests
                 string binding = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"))
-                    .Let(() => binding, () => Binding());
+                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Let(() => binding, () => Binding(fact));
                 Then()
                     .Do(ctx => NoOp());
             }
