@@ -9,14 +9,14 @@ namespace NRules.Samples.MissManners.Rules
     {
         public override void Define()
         {
-            Context context = null;
-            LastSeat lastSeat = null;
-            Seating seating = null;
+            Context context = default;
+            LastSeat lastSeat = default;
+            Seating seating = default;
 
             When()
-                .Match<Context>(() => context, c => c.State == ContextState.CheckDone)
-                .Match<LastSeat>(() => lastSeat)
-                .Match<Seating>(() => seating, s => s.RightSeatId == lastSeat.SeatId);
+                .Match(() => context, c => c.State == ContextState.CheckDone)
+                .Match(() => lastSeat)
+                .Match(() => seating, s => s.RightSeatId == lastSeat.SeatId);
 
             Then()
                 .Do(ctx => context.SetState(ContextState.PrintResults))

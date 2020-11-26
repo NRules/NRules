@@ -2,9 +2,9 @@
 {
     public class Chosen
     {
-        public int Id { get; private set; }
-        public string GuestName { get; private set; }
-        public Hobby Hobby { get; private set; }
+        public int Id { get; }
+        public string GuestName { get; }
+        public Hobby Hobby { get; }
 
         public Chosen(int id, string guestName, Hobby hobby)
         {
@@ -15,7 +15,7 @@
 
         public override string ToString()
         {
-            return string.Format("Chosen={0}|{1}|{2}", Id, GuestName, Hobby.Name);
+            return $"Chosen={Id}|{GuestName}|{Hobby.Name}";
         }
     }
 }

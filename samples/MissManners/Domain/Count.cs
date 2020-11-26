@@ -15,7 +15,7 @@
 
         public override string ToString()
         {
-            return string.Format("[Count={0}]", Value);
+            return $"[Count={Value}]";
         }
     }
 }

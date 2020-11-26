@@ -9,14 +9,14 @@ namespace NRules.Samples.MissManners.Rules
     {
         public override void Define()
         {
-            Context context = null;
-            Guest guest = null;
-            Count count = null;
+            Context context = default;
+            Guest guest = default;
+            Count count = default;
 
             When()
-                .Match<Context>(() => context, c => c.State == ContextState.StartUp)
-                .Match<Guest>(() => guest)
-                .Match<Count>(() => count);
+                .Match(() => context, c => c.State == ContextState.StartUp)
+                .Match(() => guest)
+                .Match(() => count);
             Then()
                 .Do(ctx => AssignSeat(ctx, context, guest, count));
         }

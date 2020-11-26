@@ -9,12 +9,12 @@ namespace NRules.Samples.MissManners.Rules
     {
         public override void Define()
         {
-            Context context = null;
-            Seating seating = null;
+            Context context = default;
+            Seating seating = default;
 
             When()
-                .Match<Context>(() => context, c => c.State == ContextState.MakePath)
-                .Match<Seating>(() => seating, s => !s.PathDone);
+                .Match(() => context, c => c.State == ContextState.MakePath)
+                .Match(() => seating, s => !s.PathDone);
 
             Then()
                 .Do(ctx => CompletePath(ctx, context, seating));

@@ -15,13 +15,13 @@ namespace NRules.Samples.MissManners.Domain
             Hobby = hobby;
         }
 
-        public string Name { get; private set; }
-        public Gender Sex { get; private set; }
-        public Hobby Hobby { get; private set; }
+        public string Name { get; }
+        public Gender Sex { get; }
+        public Hobby Hobby { get; }
 
         public override string ToString()
         {
-            return string.Format("[G={0}{1}{2}]", Name, Sex == Gender.Male ? "M" : "F", Hobby.Name);
+            return $"[G={Name}{(Sex == Gender.Male ? "M" : "F")}{Hobby.Name}]";
         }
     }
 }

@@ -8,10 +8,10 @@ namespace NRules.Samples.MissManners.Rules
     {
         public override void Define()
         {
-            Context context = null;
+            Context context = default;
 
             When()
-                .Match<Context>(() => context, c => c.State == ContextState.CheckDone);
+                .Match(() => context, c => c.State == ContextState.CheckDone);
 
             Then()
                 .Do(ctx => context.SetState(ContextState.AssignSeats))

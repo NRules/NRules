@@ -2,9 +2,9 @@ namespace NRules.Samples.MissManners.Domain
 {
     public class Path
     {
-        public int Id { get; private set; }
-        public int SeatId { get; private set; }
-        public string GuestName { get; private set; }
+        public int Id { get; }
+        public int SeatId { get; }
+        public string GuestName { get; }
 
         public Path(int id, int seatId, string guestName)
         {
@@ -15,7 +15,7 @@ namespace NRules.Samples.MissManners.Domain
 
         public override string ToString()
         {
-            return string.Format("[Path={0}|{1}->{2}]", Id, GuestName, SeatId);
+            return $"[Path={Id}|{GuestName}->{SeatId}]";
         }
     }
 }

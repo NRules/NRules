@@ -2,13 +2,13 @@
 {
     public class Seating
     {
-        public int Id { get; private set; }
-        public int Pid { get; private set; }
+        public int Id { get; }
+        public int Pid { get; }
         public bool PathDone { get; private set; }
-        public int LeftSeatId { get; private set; }
-        public string LeftGuestName { get; private set; }
-        public int RightSeatId { get; private set; }
-        public string RightGuestName { get; private set; }
+        public int LeftSeatId { get; }
+        public string LeftGuestName { get; }
+        public int RightSeatId { get; }
+        public string RightGuestName { get; }
 
         public Seating(int id, int pid, bool pathDone, int leftSeatId, string leftGuestName, int rightSeatId, string rightGuestName)
         {
@@ -28,9 +28,7 @@
 
         public override string ToString()
         {
-            return string.Format("[Seating={0}|{1}|L({2}->{3})R({4}->{5})|?{6}]", 
-                Id, Pid, LeftGuestName, LeftSeatId, RightGuestName, RightSeatId,
-                PathDone ? "Y" : "N");
+            return $"[Seating={Id}|{Pid}|L({LeftGuestName}->{LeftSeatId})R({RightGuestName}->{RightSeatId})|?{(PathDone ? "Y" : "N")}]";
         }
     }
 }

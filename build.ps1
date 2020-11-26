@@ -99,21 +99,21 @@ $components = @{
         name = 'SimpleRules'
         src_root = 'samples'
         build = @{
-            tool = 'msbuild'
+            tool = 'dotnet'
         }
     };
     'Samples.MissManners' = @{
         name = 'MissManners'
         src_root = 'samples'
         build = @{
-            tool = 'msbuild'
+            tool = 'dotnet'
         }
     };
     'Samples.RuleBuilder' = @{
         name = 'RuleBuilder'
         src_root = 'samples'
         build = @{
-            tool = 'msbuild'
+            tool = 'dotnet'
         }
     };
     'Benchmark' = @{

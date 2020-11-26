@@ -4,7 +4,7 @@ namespace NRules.Samples.MissManners.Domain
 {
     public class Hobby : IEquatable<Hobby>
     {
-        public string Name { get; private set; }
+        public string Name { get; }
 
         public Hobby(string name)
         {

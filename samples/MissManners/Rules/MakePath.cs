@@ -10,14 +10,14 @@ namespace NRules.Samples.MissManners.Rules
     {
         public override void Define()
         {
-            Context context = null;
-            Seating seating = null;
-            Path path = null;
+            Context context = default;
+            Seating seating = default;
+            Path path = default;
 
             When()
-                .Match<Context>(() => context, c => c.State == ContextState.MakePath)
-                .Match<Seating>(() => seating, s => !s.PathDone)
-                .Match<Path>(() => path, p => p.Id == seating.Pid)
+                .Match(() => context, c => c.State == ContextState.MakePath)
+                .Match(() => seating, s => !s.PathDone)
+                .Match(() => path, p => p.Id == seating.Pid)
                 .Not<Path>(p => p.Id == seating.Id, p => p.GuestName == path.GuestName);
 
             Then()
