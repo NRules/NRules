@@ -2,13 +2,13 @@
 {
     public class Order
     {
-        public int Id { get; private set; }
-        public Customer Customer { get; private set; }
-        public int Quantity { get; private set; }
-        public double UnitPrice { get; private set; }
+        public int Id { get; }
+        public Customer Customer { get; }
+        public int Quantity { get; }
+        public double UnitPrice { get; }
         public double PercentDiscount { get; private set; }
-        public bool IsOpen { get; private set; }
-        public bool IsDiscounted { get { return PercentDiscount > 0; } }
+        public bool IsOpen { get; }
+        public bool IsDiscounted => PercentDiscount > 0;
 
         public double Amount { get; set; }
 

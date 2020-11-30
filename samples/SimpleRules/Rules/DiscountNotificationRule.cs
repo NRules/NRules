@@ -8,10 +8,10 @@ namespace NRules.Samples.SimpleRules.Rules
     {
         public override void Define()
         {
-            Customer customer = null;
+            Customer customer = default;
 
             When()
-                .Match<Customer>(() => customer)
+                .Match(() => customer)
                 .Exists<Order>(o => o.Customer == customer, o => o.PercentDiscount > 0.0);
 
             Then()

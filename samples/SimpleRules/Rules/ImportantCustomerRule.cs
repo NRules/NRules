@@ -8,13 +8,13 @@ namespace NRules.Samples.SimpleRules.Rules
     {
         public override void Define()
         {
-            Customer customer = null;
+            Customer customer = default;
 
             When()
             .Or(x => x
-                .Match<Customer>(() => customer, c => c.IsPreferred)
+                .Match(() => customer, c => c.IsPreferred)
                 .And(xx => xx
-                    .Match<Customer>(() => customer, c => !c.IsPreferred)
+                    .Match(() => customer, c => !c.IsPreferred)
                     .Exists<Order>(o => o.Customer == customer, o => o.Amount >= 1000.00)));
 
             Then()

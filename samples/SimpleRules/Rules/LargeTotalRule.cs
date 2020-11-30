@@ -10,12 +10,12 @@ namespace NRules.Samples.SimpleRules.Rules
     {
         public override void Define()
         {
-            Customer customer = null;
-            IEnumerable<Order> orders = null;
-            double total = 0;
+            Customer customer = default;
+            IEnumerable<Order> orders = default;
+            double total = default;
 
             When()
-                .Match<Customer>(() => customer, c => c.IsPreferred)
+                .Match(() => customer, c => c.IsPreferred)
                 .Query(() => orders, x => x
                     .Match<Order>(
                         o => o.Customer == customer,

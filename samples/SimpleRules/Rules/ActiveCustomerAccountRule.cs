@@ -8,12 +8,12 @@ namespace NRules.Samples.SimpleRules.Rules
     {
         public override void Define()
         {
-            Customer customer = null;
-            Account account = null;
+            Customer customer = default;
+            Account account = default;
 
             When()
-                .Match<Customer>(() => customer, c => c.IsPreferred)
-                .Match<Account>(() => account, a => a.Owner == customer, a => a.IsActive);
+                .Match(() => customer, c => c.IsPreferred)
+                .Match(() => account, a => a.Owner == customer, a => a.IsActive);
 
             Then()
                 .Do(ctx =>
