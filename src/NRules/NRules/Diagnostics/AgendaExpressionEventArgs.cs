@@ -11,8 +11,6 @@ namespace NRules.Diagnostics
     /// </summary>
     public class AgendaExpressionEventArgs : ExpressionEventArgs
     {
-        private readonly IMatch _match;
-
         /// <summary>
         /// Initializes a new instance of the <c>AgendaExpressionEventArgs</c> class.
         /// </summary>
@@ -24,23 +22,28 @@ namespace NRules.Diagnostics
         public AgendaExpressionEventArgs(Expression expression, Exception exception, object[] arguments, object result, IMatch match)
             : base(expression, exception, arguments, result)
         {
-            _match = match;
+            Match = match;
         }
         
         internal AgendaExpressionEventArgs(Expression expression, Exception exception, IArguments arguments, object result, IMatch match)
             : base(expression, exception, arguments, result)
         {
-            _match = match;
+            Match = match;
         }
 
         /// <summary>
         /// Rule related to the event.
         /// </summary>
-        public IRuleDefinition Rule => _match.Rule;
+        public IRuleDefinition Rule => Match.Rule;
 
         /// <summary>
         /// Facts related to the event.
         /// </summary>
-        public IEnumerable<IFactMatch> Facts => _match.Facts;
+        public IEnumerable<IFactMatch> Facts => Match.Facts;
+
+        /// <summary>
+        /// Rule match related to the event.
+        /// </summary>
+        public IMatch Match { get; }
     }
 }
