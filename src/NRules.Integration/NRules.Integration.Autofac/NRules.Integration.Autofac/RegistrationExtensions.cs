@@ -10,12 +10,15 @@ namespace NRules.Integration.Autofac
     public static class RegistrationExtensions
     {
         /// <summary>
-        /// Registers fluent rule classes with the container.
+        /// Registers fluent rule types with the container, registers <see cref="RuleRepository"/> with the container
+        /// and loads registered rules into the repository.
+        /// By default repository is registered as a single instance and is wired with a <see cref="IRuleActivator"/>.
         /// </summary>
         /// <param name="builder">Container builder.</param>
         /// <param name="scanAction">Configuration action on the rule type scanner.</param>
-        /// <returns>Rule types registered with the container.</returns>
-        public static Type[] RegisterRules(this ContainerBuilder builder, Action<IRuleTypeScanner> scanAction)
+        /// <returns>Registration builder for <see cref="RuleRepository"/> to specify additional registration configuration.</returns>
+        public static IRegistrationBuilder<RuleRepository, ConcreteReflectionActivatorData, SingleRegistrationStyle> 
+            RegisterRuleRepository(this ContainerBuilder builder, Action<IRuleTypeScanner> scanAction)
         {
             var scanner = new RuleTypeScanner();
             scanAction(scanner);
@@ -23,33 +26,24 @@ namespace NRules.Integration.Autofac
             builder.RegisterTypes(ruleTypes)
                 .AsSelf()
                 .InstancePerDependency();
-            return ruleTypes;
-        }
 
-        /// <summary>
-        /// Registers <see cref="RuleRepository"/> with the container. 
-        /// By default repository is registered as a single instance and is autowired with a <see cref="IRuleActivator"/>.
-        /// </summary>
-        /// <param name="builder">Container builder.</param>
-        /// <param name="initAction">Initialization action for the repository when it's created. This is the place to load rules.</param>
-        /// <returns>Registration builder for <see cref="RuleRepository"/> to specify additional registration configuration.</returns>
-        public static IRegistrationBuilder<RuleRepository, ConcreteReflectionActivatorData, SingleRegistrationStyle> 
-            RegisterRepository(this ContainerBuilder builder, Action<RuleRepository> initAction)
-        {
             builder.RegisterType<AutofacRuleActivator>()
                 .As<IRuleActivator>();
 
            return builder.RegisterType<RuleRepository>()
                 .As<IRuleRepository>()
-                .PropertiesAutowired()
                 .SingleInstance()
-                .OnActivating(e => initAction(e.Instance));
+                .OnActivating(e =>
+                {
+                    e.Instance.Activator = e.Context.Resolve<IRuleActivator>();
+                    e.Instance.Load(s => s.From(x => x.Type(ruleTypes)));
+                });
         }
 
         /// <summary>
         /// Registers <see cref="ISessionFactory"/> with the container.
         /// Requires that <see cref="IRuleRepository"/> is registered with the container.
-        /// By default session factory is registered as a single instance and is autowired with a <see cref="IDependencyResolver"/>.
+        /// By default session factory is registered as a single instance and is wired with a <see cref="IDependencyResolver"/>.
         /// </summary>
         /// <param name="builder">Container builder.</param>
         /// <returns>Registration builder for <see cref="ISessionFactory"/> to specify additional registration configuration.</returns>
@@ -61,7 +55,7 @@ namespace NRules.Integration.Autofac
 
         /// <summary>
         /// Registers <see cref="ISessionFactory"/> with the container.
-        /// By default session factory is registered as a single instance and is autowired with a <see cref="IDependencyResolver"/>.
+        /// By default session factory is registered as a single instance and is wired with a <see cref="IDependencyResolver"/>.
         /// </summary>
         /// <param name="builder">Container builder.</param>
         /// <param name="compileFunc">Compile function that creates an instance of <see cref="ISessionFactory"/>.</param>
@@ -75,12 +69,12 @@ namespace NRules.Integration.Autofac
             return builder.Register(compileFunc)
                 .As<ISessionFactory>()
                 .SingleInstance()
-                .PropertiesAutowired();
+                .OnActivating(e => e.Instance.DependencyResolver = e.Context.Resolve<IDependencyResolver>());
         }
 
         /// <summary>
         /// Registers <see cref="ISession"/> with the container.
-        /// By default session is registered as an instance per lifetime scope and is autowired with a <see cref="IDependencyResolver"/>.
+        /// By default session is registered as an instance per lifetime scope.
         /// </summary>
         /// <param name="builder">Container builder.</param>
         /// <returns>Registration builder for <see cref="ISession"/> to specify additional registration configuration.</returns>
@@ -92,7 +86,7 @@ namespace NRules.Integration.Autofac
 
         /// <summary>
         /// Registers <see cref="ISession"/> with the container.
-        /// By default session is registered as an instance per lifetime scope and is autowired with a <see cref="IDependencyResolver"/>.
+        /// By default session is registered as an instance per lifetime scope.
         /// </summary>
         /// <param name="builder">Container builder.</param>
         /// <param name="factoryFunc">Factory function that creates an instance of <see cref="ISession"/>.</param>
@@ -102,7 +96,6 @@ namespace NRules.Integration.Autofac
         {
             return builder.Register(factoryFunc)
                 .As<ISession>()
-                .PropertiesAutowired()
                 .InstancePerLifetimeScope();
         }
     }

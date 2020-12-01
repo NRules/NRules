@@ -3,7 +3,7 @@
   <Import Project="..\..\..\..\Common.props" />
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\SigningKey.snk</AssemblyOriginatorKeyFile>
@@ -15,18 +15,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="3.3.1" />
+    <PackageReference Include="Autofac" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="NRules">
-      <HintPath>..\..\..\..\binaries\NRules\net45\NRules.dll</HintPath>
+      <HintPath>..\..\..\..\binaries\NRules\$(TargetFramework)\NRules.dll</HintPath>
     </Reference>
     <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\..\binaries\NRules\net45\NRules.Fluent.dll</HintPath>
+      <HintPath>..\..\..\..\binaries\NRules\$(TargetFramework)\NRules.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\..\binaries\NRules\net45\NRules.RuleModel.dll</HintPath>
+      <HintPath>..\..\..\..\binaries\NRules\$(TargetFramework)\NRules.RuleModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   

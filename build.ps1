@@ -82,10 +82,10 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net45')
-            'net45' = @{
+            frameworks = @('netstandard2.0')
+            'netstandard2.0' = @{
                 include = @(
-                    "NRules.Integration.Autofac\bin\$configuration\net45"
+                    "NRules.Integration.Autofac\bin\$configuration\netstandard2.0"
                 )
             }
         }
