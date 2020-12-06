@@ -210,11 +210,26 @@ namespace NRules
 
         /// <summary>
         /// Starts rules execution cycle.
+        /// This method blocks until there are no more rules to fire.
+        /// </summary>
+        /// <returns>Number of rules that fired.</returns>
+        int Fire();
+
+        /// <summary>
+        /// Starts rules execution cycle.
         /// This method blocks until there are no more rules to fire or cancellation is requested.
         /// </summary>
         /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
         /// <returns>Number of rules that fired.</returns>
-        int Fire(CancellationToken cancellationToken = default(CancellationToken));
+        int Fire(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Starts rules execution cycle.
+        /// This method blocks until maximum number of rules fired or there are no more rules to fire.
+        /// </summary>
+        /// <param name="maxRulesNumber">Maximum number of rules to fire.</param>
+        /// <returns>Number of rules that fired.</returns>
+        int Fire(int maxRulesNumber);
 
         /// <summary>
         /// Starts rules execution cycle.
@@ -223,7 +238,7 @@ namespace NRules
         /// <param name="maxRulesNumber">Maximum number of rules to fire.</param>
         /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
         /// <returns>Number of rules that fired.</returns>
-        int Fire(int maxRulesNumber, CancellationToken cancellationToken = default(CancellationToken));
+        int Fire(int maxRulesNumber, CancellationToken cancellationToken);
 
         /// <summary>
         /// Creates a LINQ query to retrieve facts of a given type from the rules engine's memory.
@@ -631,12 +646,22 @@ namespace NRules
             QueueRetractLinked(activation, keyedFacts);
         }
 
-        public int Fire(CancellationToken cancellationToken = default)
+        public int Fire()
+        {
+            return Fire(default(CancellationToken));
+        }
+
+        public int Fire(CancellationToken cancellationToken)
         {
             return Fire(Int32.MaxValue, cancellationToken);
         }
 
-        public int Fire(int maxRulesNumber, CancellationToken cancellationToken = default)
+        public int Fire(int maxRulesNumber)
+        {
+            return Fire(maxRulesNumber, default);
+        }
+
+        public int Fire(int maxRulesNumber, CancellationToken cancellationToken)
         {
             int ruleFiredCount = 0;
             while (!_agenda.IsEmpty && ruleFiredCount < maxRulesNumber)

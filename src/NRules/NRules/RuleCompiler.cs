@@ -27,6 +27,18 @@ namespace NRules
         /// Compiles a collection of rules into a session factory.
         /// </summary>
         /// <param name="ruleDefinitions">Rules to compile.</param>
+        /// <returns>Session factory.</returns>
+        /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
+        /// <seealso cref="IRuleRepository"/>
+        public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
+        {
+            return Compile(ruleDefinitions, default);
+        }
+
+        /// <summary>
+        /// Compiles a collection of rules into a session factory.
+        /// </summary>
+        /// <param name="ruleDefinitions">Rules to compile.</param>
         /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
         /// <returns>Session factory.</returns>
         /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
@@ -59,9 +71,21 @@ namespace NRules
         /// Compiles rules from rule sets into a session factory.
         /// </summary>
         /// <param name="ruleSets">Rule sets to compile.</param>
+        /// <returns>Session factory.</returns>
+        /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
+        public ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets)
+        {
+            return Compile(ruleSets, default);
+        }
+
+        /// <summary>
+        /// Compiles rules from rule sets into a session factory.
+        /// </summary>
+        /// <param name="ruleSets">Rule sets to compile.</param>
         /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
         /// <returns>Session factory.</returns>
-        public ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets, CancellationToken cancellationToken = default)
+        /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
+        public ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets, CancellationToken cancellationToken)
         {
             var rules = ruleSets.SelectMany(x => x.Rules);
             return Compile(rules, cancellationToken);
