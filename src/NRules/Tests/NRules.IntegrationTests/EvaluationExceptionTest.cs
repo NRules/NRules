@@ -28,7 +28,7 @@ namespace NRules.IntegrationTests
             //Act - Assert
             var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact));
             Assert.NotNull(expression);
-            Assert.Equal(1, facts.Count);
+            Assert.Single(facts);
             Assert.Same(fact, facts.First().Value);
             Assert.IsType<InvalidOperationException>(ex.InnerException);
         }
@@ -154,7 +154,7 @@ namespace NRules.IntegrationTests
             //Act - Assert
             var ex = Assert.Throws<AgendaExpressionEvaluationException>(() => Session.Insert(fact));
             Assert.NotNull(expression);
-            Assert.Equal(1, facts.Count);
+            Assert.Single(facts);
             Assert.Same(fact, facts.First().Value);
             Assert.IsType<InvalidOperationException>(ex.InnerException);
         }
@@ -193,7 +193,7 @@ namespace NRules.IntegrationTests
             //Act - Assert
             var ex = Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
             Assert.NotNull(expression);
-            Assert.Equal(1, facts.Count());
+            Assert.Single(facts);
             Assert.Same(fact, facts.First().Value);
             Assert.IsType<InvalidOperationException>(ex.InnerException);
         }

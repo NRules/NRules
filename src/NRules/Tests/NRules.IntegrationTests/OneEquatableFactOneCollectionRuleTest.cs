@@ -43,7 +43,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(1, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Single(GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(1, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Single(GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(0, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]
@@ -126,7 +126,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(1, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Single(GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]

@@ -49,7 +49,7 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredTwice<ForwardChainingFirstRule>();
             AssertFiredTwice<ForwardChainingSecondRule>();
-            Assert.Equal(1, result.Count());
+            Assert.Single(result);
             Assert.Equal(LinkedFactAction.Insert, result.ElementAt(0).Action);
             Assert.Equal(2, result.ElementAt(0).FactCount);
         }
@@ -71,7 +71,7 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredTwice<ForwardChainingFirstRule>();
             AssertFiredTwice<ForwardChainingSecondRule>();
-            Assert.Equal(1, result.Count());
+            Assert.Single(result);
             Assert.Equal(LinkedFactAction.Insert, result.ElementAt(0).Action);
             Assert.Equal(2, result.ElementAt(0).FactCount);
         }
@@ -123,7 +123,7 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredTimes<ForwardChainingFirstRule>(18);
             AssertFiredTimes<ForwardChainingSecondRule>(18);
-            Assert.Equal(1, result.Count());
+            Assert.Single(result);
             Assert.Equal(LinkedFactAction.Update, result.ElementAt(0).Action);
             Assert.Equal(9, result.ElementAt(0).FactCount);
         }
@@ -147,7 +147,7 @@ namespace NRules.IntegrationTests
             //Assert
             AssertDidNotFire<ForwardChainingFirstRule>();
             AssertDidNotFire<ForwardChainingSecondRule>();
-            Assert.Equal(0, result.Count());
+            Assert.Empty(result);
         }
 
         [Fact]
@@ -175,7 +175,7 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredTimes<ForwardChainingFirstRule>(4);
             AssertFiredTimes<ForwardChainingSecondRule>(2);
-            Assert.Equal(1, result.Count());
+            Assert.Single(result);
             Assert.Equal(LinkedFactAction.Retract, result.ElementAt(0).Action);
             Assert.Equal(2, result.ElementAt(0).FactCount);
         }
@@ -204,7 +204,7 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredTimes<ForwardChainingFirstRule>(2);
             AssertFiredTimes<ForwardChainingSecondRule>(2);
-            Assert.Equal(0, result.Count());
+            Assert.Empty(result);
         }
 
         [Fact]
@@ -232,7 +232,7 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredTimes<ForwardChainingFirstRule>(2);
             AssertFiredTimes<ForwardChainingSecondRule>(2);
-            Assert.Equal(1, result.Count());
+            Assert.Single(result);
             Assert.Equal(LinkedFactAction.Retract, result.ElementAt(0).Action);
             Assert.Equal(2, result.ElementAt(0).FactCount);
         }

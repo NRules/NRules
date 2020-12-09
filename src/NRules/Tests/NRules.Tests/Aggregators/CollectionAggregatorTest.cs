@@ -19,7 +19,7 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Added, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
             Assert.Equal(2, aggregate.Count());
@@ -36,10 +36,10 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Added, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
-            Assert.Equal(0, aggregate.Count());
+            Assert.Empty(aggregate);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Added, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
             Assert.Equal(2, aggregate.Count());
@@ -70,7 +70,7 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Added, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
             Assert.Equal(2, aggregate.Count());
@@ -88,7 +88,7 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
             Assert.Equal(3, aggregate.Count());
@@ -106,7 +106,7 @@ namespace NRules.Tests.Aggregators
             var result = target.Modify(null, EmptyTuple(), facts).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
             Assert.Equal(2, aggregate.Count());
@@ -126,7 +126,7 @@ namespace NRules.Tests.Aggregators
             var result = target.Modify(null, EmptyTuple(), facts).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
             Assert.Equal(2, aggregate.Count());
@@ -144,7 +144,7 @@ namespace NRules.Tests.Aggregators
             var result = target.Modify(null, EmptyTuple(), facts).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
             Assert.Equal(2, aggregate.Count());
@@ -176,10 +176,10 @@ namespace NRules.Tests.Aggregators
             var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
-            Assert.Equal(1, aggregate.Count());
+            Assert.Single(aggregate);
             Assert.Equal(3, aggregate.ElementAt(0).Id);
         }
 
@@ -198,10 +198,10 @@ namespace NRules.Tests.Aggregators
             var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
-            Assert.Equal(1, aggregate.Count());
+            Assert.Single(aggregate);
             Assert.Equal(3, aggregate.ElementAt(0).Id);
         }
 
@@ -218,10 +218,10 @@ namespace NRules.Tests.Aggregators
             var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
 
             //Assert
-            Assert.Equal(1, result.Length);
+            Assert.Single(result);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate = (IEnumerable<TestFact>) result[0].Aggregate;
-            Assert.Equal(1, aggregate.Count());
+            Assert.Single(aggregate);
             Assert.Equal(2, aggregate.ElementAt(0).Id);
         }
 

@@ -30,7 +30,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(1, GetFiredFact<IEnumerable<FactType>>().Count());
+            Assert.Single(GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]

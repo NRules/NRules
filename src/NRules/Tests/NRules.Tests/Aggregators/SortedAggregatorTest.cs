@@ -354,7 +354,7 @@ namespace NRules.Tests.Aggregators
 
         private static void AssertAggregationResult<TKey>(AggregationResult[] results, AggregationAction action, Func<TestFact, TKey> keySelector, params TKey[] orderedKeys)
         {
-            Assert.Equal(1, results.Length);
+            Assert.Single(results);
 
             var result = results[0];
             var distinctKeys = orderedKeys.Distinct().ToArray();

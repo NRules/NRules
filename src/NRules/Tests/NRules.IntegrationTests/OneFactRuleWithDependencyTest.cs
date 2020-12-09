@@ -43,8 +43,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(true, service1Called);
-            Assert.Equal(true, service2Called);
+            Assert.True(service1Called);
+            Assert.True(service2Called);
         }
 
         [Fact]

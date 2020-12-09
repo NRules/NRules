@@ -53,8 +53,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(0).Count());
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(1).Count());
+            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
+            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
         }
 
         [Fact]
@@ -75,8 +75,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(0).Count());
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(1).Count());
+            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
+            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
         }
 
         [Fact]
@@ -95,8 +95,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(0).Count());
-            Assert.Equal(1, GetFiredFact<IGrouping<string, FactType>>(1).Count());
+            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
+            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredOnce();
             var firedGroup = GetFiredFact<IGrouping<string, FactType>>();
-            Assert.Equal(1, firedGroup.Count());
+            Assert.Single(firedGroup);
             Assert.Equal("Valid Value Group2", firedGroup.Key);
         }
 

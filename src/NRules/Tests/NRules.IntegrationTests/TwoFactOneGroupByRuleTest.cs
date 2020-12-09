@@ -26,8 +26,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(0).Count());
-            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(1).Count());
+            Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(0));
+            Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(1));
         }
 
         [Fact]
@@ -64,8 +64,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(0).Count());
-            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(1).Count());
+            Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(0));
+            Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(1));
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>().Count());
+            Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>());
         }
 
         [Fact]
@@ -227,8 +227,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredTwice();
-            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(0).Count());
-            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(1).Count());
+            Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(0));
+            Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(1));
         }
 
         [Fact]
@@ -458,7 +458,7 @@ namespace NRules.IntegrationTests
             //Assert
             AssertFiredTwice();
             Assert.Equal("Group 1|Group 1", GetFiredFact<IGrouping<string, GroupElement>>(0).Key);
-            Assert.Equal(1, GetFiredFact<IGrouping<string, GroupElement>>(0).Count());
+            Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(0));
             Assert.Equal("Group 1|Group 2", GetFiredFact<IGrouping<string, GroupElement>>(1).Key);
             Assert.Equal(2, GetFiredFact<IGrouping<string, GroupElement>>(1).Count());
         }
