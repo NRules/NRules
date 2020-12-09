@@ -47,17 +47,17 @@ namespace NRules
         internal bool IsEnqueued { get; set; }
         internal bool HasFired { get; set; }
 
-        internal void Insert()
+        internal void OnInsert()
         {
             Trigger = MatchTrigger.Created;
         }
 
-        internal void Update()
+        internal void OnUpdate()
         {
             Trigger = HasFired ? MatchTrigger.Updated : MatchTrigger.Created;
         }
 
-        internal void Remove()
+        internal void OnRemove()
         {
             Trigger = HasFired ? MatchTrigger.Removed : MatchTrigger.None;
         }
