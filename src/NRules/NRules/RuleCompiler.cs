@@ -39,11 +39,11 @@ namespace NRules
         /// Compiles a collection of rules into a session factory.
         /// </summary>
         /// <param name="ruleDefinitions">Rules to compile.</param>
-        /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
+        /// <param name="cancellationToken">Enables cooperative cancellation of the rules compilation.</param>
         /// <returns>Session factory.</returns>
         /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
         /// <seealso cref="IRuleRepository"/>
-        public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions, CancellationToken cancellationToken = default)
+        public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions, CancellationToken cancellationToken)
         {
             IReteBuilder reteBuilder = new ReteBuilder(_aggregatorRegistry);
             var compiledRules = new List<ICompiledRule>();
@@ -82,7 +82,7 @@ namespace NRules
         /// Compiles rules from rule sets into a session factory.
         /// </summary>
         /// <param name="ruleSets">Rule sets to compile.</param>
-        /// <param name="cancellationToken">Enables cooperative cancellation of the rules execution cycle.</param>
+        /// <param name="cancellationToken">Enables cooperative cancellation of the rules compilation.</param>
         /// <returns>Session factory.</returns>
         /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
         public ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets, CancellationToken cancellationToken)
