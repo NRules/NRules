@@ -1,6 +1,4 @@
-﻿using System;
-using NRules.Collections;
-using NRules.RuleModel;
+﻿using NRules.Collections;
 using NRules.Utilities;
 
 namespace NRules
