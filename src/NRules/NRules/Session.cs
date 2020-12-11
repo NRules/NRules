@@ -77,7 +77,9 @@ namespace NRules
         /// <summary>
         /// Inserts new facts to the rules engine memory.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="facts">Facts to insert.</param>
         /// <exception cref="ArgumentException">If any fact already exists in working memory.</exception>
         void InsertAll(IEnumerable<object> facts);
@@ -86,7 +88,9 @@ namespace NRules
         /// Inserts new facts to the rules engine memory if the facts don't exist.
         /// If any of the facts exists in the engine, none of the facts are inserted.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="facts">Facts to insert.</param>
         /// <returns>Result of facts insertion.</returns>
         IFactResult TryInsertAll(IEnumerable<object> facts);
@@ -95,7 +99,9 @@ namespace NRules
         /// Inserts new facts to the rules engine memory if the facts don't exist.
         /// If any of the facts exists in the engine, the behavior is defined by <see cref="BatchOptions"/>.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="facts">Facts to insert.</param>
         /// <param name="options">Options that define behavior of the batch operation.</param>
         /// <returns>Result of facts insertion.</returns>
@@ -104,7 +110,9 @@ namespace NRules
         /// <summary>
         /// Inserts new fact to the rules engine memory.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="fact">Facts to insert.</param>
         /// <exception cref="ArgumentException">If fact already exists in working memory.</exception>
         void Insert(object fact);
@@ -112,6 +120,9 @@ namespace NRules
         /// <summary>
         /// Inserts a fact to the rules engine memory if the fact does not exist.
         /// </summary>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="fact">Fact to insert.</param>
         /// <returns>Whether the fact was inserted or not.</returns>
         bool TryInsert(object fact);
@@ -119,7 +130,9 @@ namespace NRules
         /// <summary>
         /// Updates existing facts in the rules engine memory.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="facts">Facts to update.</param>
         /// <exception cref="ArgumentException">If any fact does not exist in working memory.</exception>
         void UpdateAll(IEnumerable<object> facts);
@@ -128,7 +141,9 @@ namespace NRules
         /// Updates existing facts in the rules engine memory if the facts exist.
         /// If any of the facts don't exist in the engine, none of the facts are updated.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="facts">Facts to update.</param>
         /// <returns>Result of facts update.</returns>
         IFactResult TryUpdateAll(IEnumerable<object> facts);
@@ -137,7 +152,9 @@ namespace NRules
         /// Updates existing facts in the rules engine memory if the facts exist.
         /// If any of the facts don't exist in the engine, the behavior is defined by <see cref="BatchOptions"/>.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="facts">Facts to update.</param>
         /// <param name="options">Options that define behavior of the batch operation.</param>
         /// <returns>Result of facts update.</returns>
@@ -146,7 +163,9 @@ namespace NRules
         /// <summary>
         /// Updates existing fact in the rules engine memory.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="fact">Fact to update.</param>
         /// <exception cref="ArgumentException">If fact does not exist in working memory.</exception>
         void Update(object fact);
@@ -154,7 +173,9 @@ namespace NRules
         /// <summary>
         /// Updates a fact in the rules engine memory if the fact exists.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="fact">Fact to update.</param>
         /// <returns>Whether the fact was updated or not.</returns>
         bool TryUpdate(object fact);
@@ -162,7 +183,9 @@ namespace NRules
         /// <summary>
         /// Removes existing facts from the rules engine memory.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="facts">Facts to remove.</param>
         /// <exception cref="ArgumentException">If any fact does not exist in working memory.</exception>
         void RetractAll(IEnumerable<object> facts);
@@ -171,7 +194,9 @@ namespace NRules
         /// Removes existing facts from the rules engine memory if the facts exist.
         /// If any of the facts don't exist in the engine, none of the facts are removed.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="facts">Facts to remove.</param>
         /// <returns>Result of facts removal.</returns>
         IFactResult TryRetractAll(IEnumerable<object> facts);
@@ -180,7 +205,9 @@ namespace NRules
         /// Removes existing facts from the rules engine memory if the facts exist.
         /// If any of the facts don't exist in the engine, the behavior is defined by <see cref="BatchOptions"/>.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="facts">Facts to remove.</param>
         /// <param name="options">Options that define behavior of the batch operation.</param>
         /// <returns>Result of facts removal.</returns>
@@ -189,7 +216,9 @@ namespace NRules
         /// <summary>
         /// Removes existing fact from the rules engine memory.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="fact">Fact to remove.</param>
         /// <exception cref="ArgumentException">If fact does not exist in working memory.</exception>
         void Retract(object fact);
@@ -197,7 +226,9 @@ namespace NRules
         /// <summary>
         /// Removes a fact from the rules engine memory if the fact exists.
         /// </summary>
-        /// <remarks>Bulk session operations are more performant than individual operations on a set of facts.</remarks>
+        /// <remarks>
+        /// Bulk session operations are more performant than individual operations on a set of facts.
+        /// </remarks>
         /// <param name="facts">Fact to remove.</param>
         /// <returns>Whether the fact was retracted or not.</returns>
         bool TryRetract(object facts);
@@ -675,8 +706,8 @@ namespace NRules
                 }
                 finally
                 {
-				    ruleFiredCount++;
-					if (AutoPropagateLinkedFacts) PropagateLinked();
+                    ruleFiredCount++;
+                    if (AutoPropagateLinkedFacts) PropagateLinked();
                 }
 
                 if (actionContext.IsHalted || cancellationToken.IsCancellationRequested) break;
