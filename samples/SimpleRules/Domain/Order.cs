@@ -6,9 +6,8 @@
         public Customer Customer { get; }
         public int Quantity { get; }
         public double UnitPrice { get; }
-        public double PercentDiscount { get; private set; }
-        public bool IsOpen { get; }
-        public bool IsDiscounted => PercentDiscount > 0;
+        public double PercentDiscount { get; set; }
+        public bool IsOpen { get; set; }
 
         public double Amount { get; set; }
 
@@ -19,11 +18,6 @@
             Quantity = quantity;
             UnitPrice = unitPrice;
             IsOpen = true;
-        }
-
-        public void ApplyDiscount(double percentDiscount)
-        {
-            PercentDiscount = percentDiscount;
         }
     }
 }

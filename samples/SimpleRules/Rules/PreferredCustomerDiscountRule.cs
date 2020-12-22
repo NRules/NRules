@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.Samples.SimpleRules.Domain;
@@ -20,13 +19,12 @@ namespace NRules.Samples.SimpleRules.Rules
                     .Match<Order>(
                         o => o.Customer == customer,
                         o => o.IsOpen,
-                        o => !o.IsDiscounted)
+                        o => o.PercentDiscount == 0.0)
                     .Collect()
                     .Where(c => c.Any()));
 
             Then()
                 .Do(ctx => ApplyDiscount(orders, 10.0))
-                .Do(ctx => LogOrders(orders))
                 .Do(ctx => orders.ToList().ForEach(ctx.Update));
         }
 
@@ -34,14 +32,8 @@ namespace NRules.Samples.SimpleRules.Rules
         {
             foreach (var order in orders)
             {
-                order.ApplyDiscount(discount);
+                order.PercentDiscount = discount;
             }
-        }
-
-        private static void LogOrders(IEnumerable<Order> orders)
-        {
-            Console.WriteLine("Discount applied to orders {0}", 
-                string.Join(",", orders.Select(o => o.Id)));
         }
     }
 }
