@@ -9,8 +9,8 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class PatternBuilder : RuleElementBuilder, IBuilder<PatternElement>
     {
-        private readonly List<ConditionElement> _conditions = new List<ConditionElement>();
-        private IBuilder<PatternSourceElement> _sourceBuilder;
+        private readonly List<KeyValuePair<string, LambdaExpression>> _expressions = new List<KeyValuePair<string, LambdaExpression>>();
+        private IBuilder<RuleElement> _sourceBuilder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatternBuilder"/>.
@@ -38,8 +38,7 @@ namespace NRules.RuleModel.Builders
         /// Names and types of the expression parameters must match the names and types defined in the pattern declarations.</param>
         public void Condition(LambdaExpression expression)
         {
-            var condition = Element.Condition(expression);
-            _conditions.Add(condition);
+            AddExpression(PatternElement.ConditionName, expression);
         }
 
         /// <summary>
@@ -119,8 +118,13 @@ namespace NRules.RuleModel.Builders
         PatternElement IBuilder<PatternElement>.Build()
         {
             var source = _sourceBuilder?.Build();
-            var patternElement = Element.Pattern(Declaration, _conditions, source);
+            var patternElement = Element.Pattern(Declaration, _expressions, source);
             return patternElement;
+        }
+
+        private void AddExpression(string name, LambdaExpression expression)
+        {
+            _expressions.Add(new KeyValuePair<string, LambdaExpression>(name, expression));
         }
 
         private void AssertSingleSource()

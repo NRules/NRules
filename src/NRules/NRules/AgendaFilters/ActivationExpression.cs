@@ -1,60 +1,48 @@
 using System;
 using System.Linq.Expressions;
-using NRules.Rete;
 using NRules.Utilities;
+using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.AgendaFilters
 {
-    internal interface IActivationExpression
+    internal interface IActivationExpression<out TResult>
     {
-        object Invoke(AgendaContext context, Activation activation);
+        TResult Invoke(AgendaContext context, Activation activation);
     }
 
-    internal class ActivationExpression : IActivationExpression
+    internal class ActivationExpression<TResult> : IActivationExpression<TResult>
     {
         private readonly LambdaExpression _expression;
-        private readonly FastDelegate<Func<object[], object>> _compiledExpression;
-        private readonly IndexMap _tupleFactMap;
+        private readonly Func<Tuple, TResult> _compiledExpression;
+        private readonly IArgumentMap _argumentMap;
 
-        public ActivationExpression(LambdaExpression expression, FastDelegate<Func<object[], object>> compiledExpression, IndexMap tupleFactMap)
+        public ActivationExpression(LambdaExpression expression, Func<Tuple, TResult> compiledExpression, IArgumentMap argumentMap)
         {
             _expression = expression;
             _compiledExpression = compiledExpression;
-            _tupleFactMap = tupleFactMap;
+            _argumentMap = argumentMap;
         }
 
-        public object Invoke(AgendaContext context, Activation activation)
+        public TResult Invoke(AgendaContext context, Activation activation)
         {
-            var tuple = activation.Tuple;
-            var activationFactMap = activation.FactMap;
-
-            var args = new object[_compiledExpression.ArrayArgumentCount];
-
-            int index = tuple.Count - 1;
-            foreach (var fact in tuple.Facts)
-            {
-                var mappedIndex = _tupleFactMap[activationFactMap[index]];
-                IndexMap.SetElementAt(args, mappedIndex, fact.Object);
-                index--;
-            }
-
             Exception exception = null;
-            object result = null;
+            TResult result = default;
             try
             {
-                result = _compiledExpression.Delegate.Invoke(args);
+                result = _compiledExpression.Invoke(activation.Tuple);
                 return result;
             }
             catch (Exception e)
             {
                 exception = e;
                 bool isHandled = false;
-                context.EventAggregator.RaiseAgendaExpressionFailed(context.Session, e, _expression, args, activation, ref isHandled);
+                context.EventAggregator.RaiseAgendaExpressionFailed(context.Session, e, _expression, _argumentMap, activation, ref isHandled);
                 throw new ExpressionEvaluationException(e, _expression, isHandled);
             }
             finally
             {
-                context.EventAggregator.RaiseAgendaExpressionEvaluated(context.Session, exception, _expression, args, result, activation);
+                if (context.EventAggregator.TraceEnabled)
+                    context.EventAggregator.RaiseAgendaExpressionEvaluated(context.Session, exception, _expression, _argumentMap, result, activation);
             }
         }
     }

@@ -435,7 +435,7 @@ namespace NRules.Tests.Aggregators
 
         private static void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params TestFact[] orderedFacts)
         {
-            Assert.Equal(1, results.Length);
+            Assert.Single(results);
 
             var result = results[0];
             Assert.Equal(action, result.Action);

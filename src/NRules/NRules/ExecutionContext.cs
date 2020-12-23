@@ -10,7 +10,6 @@ namespace NRules
         IAgendaInternal Agenda { get; }
         IEventAggregator EventAggregator { get; }
         IIdGenerator IdGenerator { get; }
-        Queue<Activation> UnlinkQueue { get; }
     }
 
     internal class ExecutionContext : IExecutionContext

@@ -105,7 +105,6 @@ namespace NRules.Debugger.Visualizer
             categories.Add(Category(NodeType.BetaMemory, "Green"));
             categories.Add(Category(NodeType.Adapter, "Silver"));
             categories.Add(Category(NodeType.Binding, "LightBlue"));
-            categories.Add(Category(NodeType.Terminal, "Silver"));
             categories.Add(Category(NodeType.Rule, "Purple"));
         }
 

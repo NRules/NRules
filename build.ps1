@@ -3,7 +3,7 @@ param (
     [string]$component = 'Core'
 )
 
-$version = '0.9.0'
+$version = '0.9.1'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -20,7 +20,7 @@ $components = @{
         }
         test = @{
             location = 'Tests'
-            frameworks = @('net462', 'netcoreapp1.0', 'netcoreapp2.0')
+            frameworks = @('net48', 'netcoreapp3.1')
         }
         bin = @{
             frameworks = @('net45', 'netstandard1.0', 'netstandard2.0')
@@ -82,10 +82,10 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net45')
-            'net45' = @{
+            frameworks = @('netstandard2.0')
+            'netstandard2.0' = @{
                 include = @(
-                    "NRules.Integration.Autofac\bin\$configuration\net45"
+                    "NRules.Integration.Autofac\bin\$configuration\netstandard2.0"
                 )
             }
         }
@@ -99,31 +99,21 @@ $components = @{
         name = 'SimpleRules'
         src_root = 'samples'
         build = @{
-            tool = 'msbuild'
+            tool = 'dotnet'
         }
     };
     'Samples.MissManners' = @{
         name = 'MissManners'
         src_root = 'samples'
         build = @{
-            tool = 'msbuild'
+            tool = 'dotnet'
         }
     };
     'Samples.RuleBuilder' = @{
         name = 'RuleBuilder'
         src_root = 'samples'
         build = @{
-            tool = 'msbuild'
-        }
-    };
-    'Samples.ClaimsAdjudication' = @{
-        name = 'ClaimsAdjudication'
-        src_root = 'samples'
-        restore = @{
-            tool = 'nuget'
-        }
-        build = @{
-            tool = 'msbuild'
+            tool = 'dotnet'
         }
     };
     'Benchmark' = @{
@@ -136,15 +126,22 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net462')
-            'net462' = @{
+            frameworks = @('net48', 'netcoreapp3.1')
+            'net472' = @{
                 include = @(
-                    "NRules.Benchmark\bin\$configuration\net462"
+                    "NRules.Benchmark\bin\$configuration\net48"
+                )
+            }
+            'netcoreapp2.0' = @{
+                include = @(
+                    "NRules.Benchmark\bin\$configuration\netcoreapp3.1"
                 )
             }
         }
-        run = @{
-            exe = @('net462\NRules.Benchmark.exe')
+        bench = @{
+            frameworks = @('net48')
+            exe = 'NRules.Benchmark.exe'
+            categories = @('Micro')
         }
     };
     'Documentation' = @{

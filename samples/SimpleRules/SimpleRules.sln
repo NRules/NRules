@@ -3,20 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleRules", "SimpleRules\SimpleRules.csproj", "{A40A15F2-290D-4C18-85BE-D686FE35601E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleRules", "SimpleRules.csproj", "{A40A15F2-290D-4C18-85BE-D686FE35601E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x86 = Debug|x86
-		Release|x86 = Release|x86
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A40A15F2-290D-4C18-85BE-D686FE35601E}.Debug|x86.ActiveCfg = Debug|x86
-		{A40A15F2-290D-4C18-85BE-D686FE35601E}.Debug|x86.Build.0 = Debug|x86
-		{A40A15F2-290D-4C18-85BE-D686FE35601E}.Release|x86.ActiveCfg = Release|x86
-		{A40A15F2-290D-4C18-85BE-D686FE35601E}.Release|x86.Build.0 = Release|x86
+		{A40A15F2-290D-4C18-85BE-D686FE35601E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A40A15F2-290D-4C18-85BE-D686FE35601E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A40A15F2-290D-4C18-85BE-D686FE35601E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A40A15F2-290D-4C18-85BE-D686FE35601E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CA23394C-46CC-4DA0-8A03-10DD0D86FF05}
 	EndGlobalSection
 EndGlobal

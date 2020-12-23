@@ -11,7 +11,19 @@ namespace NRules.RuleModel
         private readonly HashSet<Declaration> _exports;
         private readonly HashSet<Declaration> _imports;
 
+        /// <summary>
+        /// Element type of this rule element.
+        /// </summary>
+        public abstract ElementType ElementType { get; }
+
+        /// <summary>
+        /// Rule element declarations exported to the outer scope.
+        /// </summary>
         public IEnumerable<Declaration> Exports => _exports;
+
+        /// <summary>
+        /// Rule element declarations imported from the outer scope.
+        /// </summary>
         public IEnumerable<Declaration> Imports => _imports;
 
         internal RuleElement()
@@ -20,49 +32,38 @@ namespace NRules.RuleModel
             _imports = new HashSet<Declaration>();
         }
 
-        protected void AddImport(Declaration declaration)
-        {
-            AddImports(new[] {declaration});
-        }
-
-        protected void AddImports(IEnumerable<Declaration> declarations)
+        internal void AddImports(IEnumerable<Declaration> declarations)
         {
             var imports = declarations.Except(_exports);
             _imports.UnionWith(imports);
         }
 
-        protected void AddImports(RuleElement element)
+        internal void AddImports(RuleElement element)
         {
             if (element != null)
                 AddImports(new[] {element});
         }
 
-        protected void AddImports(IEnumerable<RuleElement> elements)
+        internal void AddImports(IEnumerable<RuleElement> elements)
         {
             var imports = elements.SelectMany(x => x.Imports);
             AddImports(imports);
         }
 
-        protected void AddExport(Declaration declaration)
-        {
-            AddExports(new[] {declaration});
-        }
-
-        protected void AddExports(IEnumerable<Declaration> declarations)
+        internal void AddExports(IEnumerable<Declaration> declarations)
         {
             _exports.UnionWith(declarations);
         }
 
-        protected void AddExports(RuleElement element)
-        {
-            if (element != null)
-                AddExports(new[] {element});
-        }
-
-        protected void AddExports(IEnumerable<RuleElement> elements)
+        internal void AddExports(IEnumerable<RuleElement> elements)
         {
             var exports = elements.SelectMany(x => x.Exports);
             AddExports(exports);
+        }
+
+        internal void AddExport(Declaration declaration)
+        {
+            AddExports(new[] {declaration});
         }
 
         internal abstract void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor);

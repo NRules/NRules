@@ -159,7 +159,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="groupType">Type of the group element.</param>
         /// <param name="childElements">Child elements contained in the group.</param>
         /// <returns>Created element.</returns>
-        public static GroupElement Group(GroupType groupType, IEnumerable<RuleLeftElement> childElements)
+        public static GroupElement Group(GroupType groupType, IEnumerable<RuleElement> childElements)
         {
             GroupElement element;
             switch (groupType)
@@ -182,8 +182,8 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="childElements">Child elements contained in the group.</param>
         /// <returns>Created element.</returns>
-        /// <see cref="RuleLeftElement"/>
-        public static AndElement AndGroup(params RuleLeftElement[] childElements)
+        /// <see cref="RuleElement"/>
+        public static AndElement AndGroup(params RuleElement[] childElements)
         {
             var element = AndGroup(childElements.AsEnumerable());
             return element;
@@ -194,17 +194,14 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="childElements">Child elements contained in the group.</param>
         /// <returns>Created element.</returns>
-        /// <see cref="RuleLeftElement"/>
-        public static AndElement AndGroup(IEnumerable<RuleLeftElement> childElements)
+        /// <see cref="RuleElement"/>
+        public static AndElement AndGroup(IEnumerable<RuleElement> childElements)
         {
             if (childElements == null)
                 throw new ArgumentNullException(nameof(childElements), "Child elements not provided");
 
             var element = new AndElement(childElements);
-            if (!element.ChildElements.Any())
-            {
-                throw new InvalidOperationException("Group element AND requires at least one child element");
-            }
+            ElementValidator.ValidateGroup(element);
             ElementValidator.ValidateUniqueDeclarations(element.ChildElements);
             return element;
         }
@@ -214,8 +211,8 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="childElements">Child elements contained in the group.</param>
         /// <returns>Created element.</returns>
-        /// <see cref="RuleLeftElement"/>
-        public static OrElement OrGroup(params RuleLeftElement[] childElements)
+        /// <see cref="RuleElement"/>
+        public static OrElement OrGroup(params RuleElement[] childElements)
         {
             var element = OrGroup(childElements.AsEnumerable());
             return element;
@@ -226,17 +223,14 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="childElements">Child elements contained in the group.</param>
         /// <returns>Created element.</returns>
-        /// <see cref="RuleLeftElement"/>
-        public static OrElement OrGroup(IEnumerable<RuleLeftElement> childElements)
+        /// <see cref="RuleElement"/>
+        public static OrElement OrGroup(IEnumerable<RuleElement> childElements)
         {
             if (childElements == null)
                 throw new ArgumentNullException(nameof(childElements), "Child elements not provided");
 
             var element = new OrElement(childElements);
-            if (!element.ChildElements.Any())
-            {
-                throw new InvalidOperationException("Group element AND requires at least one child element");
-            }
+            ElementValidator.ValidateGroup(element);
             return element;
         }
 
@@ -245,13 +239,14 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="source">Source element to apply the existential quantifier to.</param>
         /// <returns>Created element.</returns>
-        /// <see cref="RuleLeftElement"/>
-        public static ExistsElement Exists(RuleLeftElement source)
+        /// <see cref="RuleElement"/>
+        public static ExistsElement Exists(RuleElement source)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source), "Source element not provided");
 
             var element = new ExistsElement(source);
+            ElementValidator.ValidateExists(element);
             return element;
         }
 
@@ -260,12 +255,13 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="source">Source element to apply the negative existential quantifier to.</param>
         /// <returns>Created element.</returns>
-        public static NotElement Not(RuleLeftElement source)
+        public static NotElement Not(RuleElement source)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source), "Source element not provided");
 
             var element = new NotElement(source);
+            ElementValidator.ValidateNot(element);
             return element;
         }
 
@@ -283,13 +279,9 @@ namespace NRules.RuleModel.Builders
             if (patterns == null)
                 throw new ArgumentNullException(nameof(patterns), "Patterns not provided");
 
-            var forAllElement = new ForAllElement(basePattern, patterns);
-            if (!forAllElement.Patterns.Any())
-            {
-                throw new InvalidOperationException("At least one FORALL pattern must be specified");
-            }
-
-            return forAllElement;
+            var element = new ForAllElement(basePattern, patterns);
+            ElementValidator.ValidateForAll(element);
+            return element;
         }
 
         /// <summary>
@@ -297,11 +289,11 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="type">Type of facts matched by the pattern.</param>
         /// <param name="name">Pattern name.</param>
-        /// <param name="conditions">Condition elements that represent conditions applied to the facts matched by the pattern.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
         /// <returns>Created element.</returns>
-        public static PatternElement Pattern(Type type, string name, IEnumerable<ConditionElement> conditions)
+        public static PatternElement Pattern(Type type, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions)
         {
-            var element = Pattern(type, name, conditions, null);
+            var element = Pattern(type, name, expressions, null);
             return element;
         }
 
@@ -309,11 +301,11 @@ namespace NRules.RuleModel.Builders
         /// Creates a pattern element that represents a match of facts in rules engine's working memory.
         /// </summary>
         /// <param name="declaration">Declaration that references the pattern.</param>
-        /// <param name="conditions">Condition elements that represent conditions applied to the facts matched by the pattern.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
         /// <returns>Created element.</returns>
-        public static PatternElement Pattern(Declaration declaration, IEnumerable<ConditionElement> conditions)
+        public static PatternElement Pattern(Declaration declaration, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions)
         {
-            var element = Pattern(declaration, conditions, null);
+            var element = Pattern(declaration, expressions, null);
             return element;
         }
 
@@ -322,10 +314,10 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="type">Type of elements matched by the pattern.</param>
         /// <param name="name">Pattern name.</param>
-        /// <param name="conditions">Condition elements that represent conditions applied to the elements matched by the pattern.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
         /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
         /// <returns>Created element.</returns>
-        public static PatternElement Pattern(Type type, string name, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
+        public static PatternElement Pattern(Type type, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, RuleElement source)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type), "Pattern type not provided");
@@ -333,7 +325,7 @@ namespace NRules.RuleModel.Builders
                 throw new ArgumentNullException(nameof(name), "Pattern name not provided");
 
             var declaration = new Declaration(type, name);
-            var element = Pattern(declaration, conditions, source);
+            var element = Pattern(declaration, expressions, source);
             return element;
         }
 
@@ -341,18 +333,57 @@ namespace NRules.RuleModel.Builders
         /// Creates a pattern element that represents a match over results of the source element.
         /// </summary>
         /// <param name="declaration">Declaration that references the pattern.</param>
-        /// <param name="conditions">Condition elements that represent conditions applied to the elements matched by the pattern.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
         /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
         /// <returns>Created element.</returns>
-        public static PatternElement Pattern(Declaration declaration, IEnumerable<ConditionElement> conditions, PatternSourceElement source)
+        public static PatternElement Pattern(Declaration declaration, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, RuleElement source)
+        {
+            if (expressions == null)
+                throw new ArgumentNullException(nameof(expressions), "Pattern expressions not provided");
+
+            var expressionElements = expressions.Select(x => new NamedExpressionElement(x.Key, x.Value));
+            var element = Pattern(declaration, expressionElements, source);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates a pattern element that represents a match over results of the source element.
+        /// </summary>
+        /// <param name="type">Type of elements matched by the pattern.</param>
+        /// <param name="name">Pattern name.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
+        /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
+        /// <returns>Created element.</returns>
+        public static PatternElement Pattern(Type type, string name, IEnumerable<NamedExpressionElement> expressions, RuleElement source)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type), "Pattern type not provided");
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name), "Pattern name not provided");
+
+            var declaration = new Declaration(type, name);
+            var element = Pattern(declaration, expressions, source);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates a pattern element that represents a match over results of the source element.
+        /// </summary>
+        /// <param name="declaration">Declaration that references the pattern.</param>
+        /// <param name="expressions">Expressions used by the pattern to match elements.</param>
+        /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
+        /// <returns>Created element.</returns>
+        public static PatternElement Pattern(Declaration declaration, IEnumerable<NamedExpressionElement> expressions, RuleElement source)
         {
             if (declaration == null)
                 throw new ArgumentNullException(nameof(declaration), "Pattern declaration not provided");
-            if (conditions == null)
-                throw new ArgumentNullException(nameof(conditions), "Pattern conditions not provided");
+            if (expressions == null)
+                throw new ArgumentNullException(nameof(expressions), "Pattern expressions not provided");
 
-            var element = new PatternElement(declaration, conditions, source);
+            var expressionCollection = new ExpressionCollection(expressions);
+            var element = new PatternElement(declaration, expressionCollection, source);
             declaration.Target = element;
+            ElementValidator.ValidatePattern(element);
             return element;
         }
 
@@ -425,6 +456,38 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, PatternElement source, Type customFactoryType)
         {
+            if (expressions == null)
+                throw new ArgumentNullException(nameof(expressions), "Aggregate expressions not provided");
+
+            var expressionElements = expressions.Select(x => new NamedExpressionElement(x.Key, x.Value));
+            var element = Aggregate(resultType, name, expressionElements, source, customFactoryType);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates an element that represents an aggregation of facts.
+        /// </summary>
+        /// <param name="resultType">Type of the aggregate result.</param>
+        /// <param name="name">Aggregate name.</param>
+        /// <param name="expressions">Expressions used to construct aggregates from individual facts.</param>
+        /// <param name="source">Pattern that matches facts for aggregation.</param>
+        /// <returns>Created element.</returns>
+        public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<NamedExpressionElement> expressions, PatternElement source)
+        {
+            return Aggregate(resultType, name, expressions, source, null);
+        }
+
+        /// <summary>
+        /// Creates an element that represents an aggregation of facts.
+        /// </summary>
+        /// <param name="resultType">Type of the aggregate result.</param>
+        /// <param name="name">Aggregate name.</param>
+        /// <param name="expressions">Expressions used to construct aggregates from individual facts.</param>
+        /// <param name="source">Pattern that matches facts for aggregation.</param>
+        /// <param name="customFactoryType">Factory type used construct aggregators for this aggregation.</param>
+        /// <returns>Created element.</returns>
+        public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<NamedExpressionElement> expressions, PatternElement source, Type customFactoryType)
+        {
             if (resultType == null)
                 throw new ArgumentNullException(nameof(resultType), "Aggregate result type not provided");
             if (string.IsNullOrEmpty(name))
@@ -434,9 +497,7 @@ namespace NRules.RuleModel.Builders
             if (source == null)
                 throw new ArgumentNullException(nameof(source), "Aggregate source pattern not provided");
 
-            var expressionElements = expressions.Select(x => new NamedExpressionElement(x.Key, x.Value));
-            var expressionCollection = new ExpressionCollection(expressionElements);
-
+            var expressionCollection = new ExpressionCollection(expressions);
             var element = new AggregateElement(resultType, name, expressionCollection, source, customFactoryType);
             ElementValidator.ValidateAggregate(element);
             return element;

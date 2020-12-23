@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using NRules.Rete;
 using NRules.RuleModel;
 
 namespace NRules
@@ -11,9 +12,9 @@ namespace NRules
         IRuleDefinition Definition { get; }
         IEnumerable<Declaration> Declarations { get; }
         IEnumerable<IRuleAction> Actions { get; }
-        IEnumerable<IRuleDependency> Dependencies { get; }
         IRuleFilter Filter { get; }
         ActionTrigger ActionTriggers { get; }
+        IndexMap FactMap { get; }
     }
 
     [DebuggerDisplay("{Definition.Name}")]
@@ -21,17 +22,14 @@ namespace NRules
     {
         private readonly List<Declaration> _declarations;
         private readonly List<IRuleAction> _actions;
-        private readonly List<IRuleDependency> _dependencies;
 
-        public CompiledRule(IRuleDefinition definition, IEnumerable<Declaration> declarations, IEnumerable<IRuleAction> actions, IEnumerable<IRuleDependency> dependencies, IRuleFilter filter)
+        public CompiledRule(IRuleDefinition definition, IEnumerable<Declaration> declarations, IEnumerable<IRuleAction> actions, IRuleFilter filter, IndexMap factMap)
         {
-            Priority = definition.Priority;
-            Repeatability = definition.Repeatability;
             Definition = definition;
             Filter = filter;
+            FactMap = factMap;
             _declarations = new List<Declaration>(declarations);
             _actions = new List<IRuleAction>(actions);
-            _dependencies = new List<IRuleDependency>(dependencies);
 
             foreach (var ruleAction in _actions)
             {
@@ -39,14 +37,14 @@ namespace NRules
             }
         }
 
-        public int Priority { get; }
-        public RuleRepeatability Repeatability { get; }
+        public int Priority => Definition.Priority;
+        public RuleRepeatability Repeatability => Definition.Repeatability;
         public IRuleDefinition Definition { get; }
         public IRuleFilter Filter { get; }
         public ActionTrigger ActionTriggers { get; }
+        public IndexMap FactMap { get; }
 
         public IEnumerable<Declaration> Declarations => _declarations;
         public IEnumerable<IRuleAction> Actions => _actions;
-        public IEnumerable<IRuleDependency> Dependencies => _dependencies;
     }
 }

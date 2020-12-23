@@ -75,6 +75,7 @@ namespace NRules.Rete
         public void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
         {
             visitor.Visit(context, _root);
+            visitor.Visit(context, _dummyNode);
         }
     }
 }

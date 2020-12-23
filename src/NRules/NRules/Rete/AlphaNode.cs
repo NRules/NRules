@@ -19,7 +19,7 @@ namespace NRules.Rete
 
         public abstract bool IsSatisfiedBy(IExecutionContext context, Fact fact);
 
-        public void PropagateAssert(IExecutionContext context, List<Fact> facts)
+        public virtual void PropagateAssert(IExecutionContext context, List<Fact> facts)
         {
             var toAssert = new List<Fact>();
             foreach (var fact in facts)
@@ -38,7 +38,7 @@ namespace NRules.Rete
             }
         }
 
-        public void PropagateUpdate(IExecutionContext context, List<Fact> facts)
+        public virtual void PropagateUpdate(IExecutionContext context, List<Fact> facts)
         {
             var toUpdate = new List<Fact>();
             var toRetract = new List<Fact>();
@@ -49,33 +49,33 @@ namespace NRules.Rete
                 else
                     toRetract.Add(fact);
             }
-
-            if (toUpdate.Count > 0)
-            {
-                foreach (var childNode in ChildNodes)
-                {
-                    childNode.PropagateUpdate(context, toUpdate);
-                }
-                MemoryNode?.PropagateUpdate(context, toUpdate);
-            }
-            if (toRetract.Count > 0)
-            {
-                UnsatisfiedFactUpdate(context, toRetract);
-            }
+            PropagateUpdateInternal(context, toUpdate);
+            PropagateRetractInternal(context, toRetract);
         }
 
-        public void PropagateRetract(IExecutionContext context, List<Fact> facts)
+        public virtual void PropagateRetract(IExecutionContext context, List<Fact> facts)
         {
+            PropagateRetractInternal(context, facts);
+        }
+
+        protected void PropagateUpdateInternal(IExecutionContext context, List<Fact> facts)
+        {
+            if (facts.Count == 0) return;
+            foreach (var childNode in ChildNodes)
+            {
+                childNode.PropagateUpdate(context, facts);
+            }
+            MemoryNode?.PropagateUpdate(context, facts);
+        }
+
+        protected void PropagateRetractInternal(IExecutionContext context, List<Fact> facts)
+        {
+            if (facts.Count == 0) return;
             foreach (var childNode in ChildNodes)
             {
                 childNode.PropagateRetract(context, facts);
             }
             MemoryNode?.PropagateRetract(context, facts);
-        }
-
-        protected virtual void UnsatisfiedFactUpdate(IExecutionContext context, List<Fact> facts)
-        {
-            PropagateRetract(context, facts);
         }
 
         public abstract void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);

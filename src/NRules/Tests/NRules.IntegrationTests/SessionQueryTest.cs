@@ -16,7 +16,7 @@ namespace NRules.IntegrationTests
             var facts = query.ToList();
 
             //Assert
-            Assert.Equal(0, facts.Count);
+            Assert.Empty(facts);
         }
 
         [Fact]
@@ -31,7 +31,7 @@ namespace NRules.IntegrationTests
             var facts = query.ToList();
 
             //Assert
-            Assert.Equal(1, facts.Count);
+            Assert.Single(facts);
             Assert.Same(fact1, facts[0]);
         }
 
@@ -64,7 +64,7 @@ namespace NRules.IntegrationTests
             var facts = query.ToList();
 
             //Assert
-            Assert.Equal(1, facts.Count);
+            Assert.Single(facts);
             Assert.Equal(fact1.TestProperty, facts[0].JoinProperty);
         }
 

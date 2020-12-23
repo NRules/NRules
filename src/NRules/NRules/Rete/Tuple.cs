@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -96,22 +97,9 @@ namespace NRules.Rete
         /// Facts contained in the tuple in reverse order (fast iteration over linked list).
         /// Reverse collection to get facts in their actual order.
         /// </summary>
-        public IEnumerable<Fact> Facts
-        {
-            get
-            {
-                var tuple = this;
-                while (tuple != null)
-                {
-                    if (tuple.RightFact != null)
-                        yield return tuple.RightFact;
+        public IEnumerable<IFact> Facts => new Enumerable(this);
 
-                    tuple = tuple.LeftTuple;
-                }
-            }
-        }
-
-        IEnumerable<IFact> ITuple.Facts => Facts;
+        public Enumerator GetEnumerator() => new Enumerator(this);
 
         internal class TupleDebugView
         {
@@ -119,9 +107,60 @@ namespace NRules.Rete
 
             public TupleDebugView(Tuple tuple)
             {
-                var facts = string.Join(" || ", tuple.Facts.Reverse().Select(f => f.Object).ToArray());
+                var facts = string.Join(" || ", tuple.Facts.Reverse().Select(f => f.Value).ToArray());
                 Facts = $"[{facts}]";
             }
+        }
+
+        internal class Enumerable : IEnumerable<Fact>, IEnumerator<Fact>
+        {
+            private readonly Tuple _tuple;
+            private Enumerator _enumerator;
+
+            public Enumerable(Tuple tuple)
+            {
+                _tuple = tuple;
+                _enumerator = new Enumerator(tuple);
+            }
+
+            public IEnumerator<Fact> GetEnumerator()
+            {
+                return this;
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public void Dispose() {}
+            public bool MoveNext() => _enumerator.MoveNext();
+            public void Reset() => _enumerator = new Enumerator(_tuple);
+            public Fact Current => _enumerator.Current;
+            object IEnumerator.Current => Current;
+        }
+
+        internal struct Enumerator
+        {
+            private Tuple _tuple;
+
+            public Enumerator(Tuple tuple)
+            {
+                _tuple = tuple;
+                Current = null;
+            }
+
+            public bool MoveNext()
+            {
+                do
+                {
+                    Current = _tuple.RightFact;
+                    _tuple = _tuple.LeftTuple;
+                } while (Current == null && _tuple != null);
+                return Current != null;
+            }
+
+            public Fact Current { get; private set; }
         }
     }
 }

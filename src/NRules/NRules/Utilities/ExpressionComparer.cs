@@ -74,6 +74,20 @@ namespace NRules.Utilities
                 return nx.Constructor == ny.Constructor
                        && CollectionsEqual(nx.Arguments, ny.Arguments, rootX, rootY);
             }
+            if (x is MemberInitExpression)
+            {
+                var mix = (MemberInitExpression)x;
+                var miy = (MemberInitExpression)y;
+                return ExpressionEqual(mix.NewExpression, miy.NewExpression, rootX, rootY)
+                       && MemberBindingCollectionsEqual(mix.Bindings, miy.Bindings, rootX, rootY);
+            }
+            if (x is ListInitExpression)
+            {
+                var lix = (ListInitExpression)x;
+                var liy = (ListInitExpression)y;
+                return ExpressionEqual(lix.NewExpression, liy.NewExpression, rootX, rootY)
+                       && ElementInitCollectionsEqual(lix.Initializers, liy.Initializers, rootX, rootY);
+            }
             if (x is ConstantExpression)
             {
                 var cx = (ConstantExpression)x;
@@ -104,13 +118,60 @@ namespace NRules.Utilities
             throw new NotImplementedException(x.ToString());
         }
 
-        private static bool CollectionsEqual(IEnumerable<Expression> x, IEnumerable<Expression> y, LambdaExpression rootX, LambdaExpression rootY)
+        private static bool MemberBindingCollectionsEqual(IEnumerable<MemberBinding> x, IEnumerable<MemberBinding> y,
+            LambdaExpression rootX, LambdaExpression rootY)
         {
             return x.Count() == y.Count()
-                   && x.Select((e, i) => new { Expr = e, Index = i })
-                       .Join(y.Select((e, i) => new { Expr = e, Index = i }),
-                             o => o.Index, o => o.Index, (xe, ye) => new { X = xe.Expr, Y = ye.Expr })
+                   && x.Zip(y, (first, second) => new {X = first, Y = second})
+                       .All(o => MemberBindingsEqual(o.X, o.Y, rootX, rootY));
+        }
+
+        private static bool ElementInitCollectionsEqual(IEnumerable<ElementInit> x, IEnumerable<ElementInit> y,
+            LambdaExpression rootX, LambdaExpression rootY)
+        {
+            return x.Count() == y.Count()
+                   && x.Zip(y, (first, second) => new {X = first, Y = second})
+                       .All(o => ElementInitsEqual(o.X, o.Y, rootX, rootY));
+        }
+
+        private static bool CollectionsEqual(IEnumerable<Expression> x, IEnumerable<Expression> y,
+            LambdaExpression rootX, LambdaExpression rootY)
+        {
+            return x.Count() == y.Count()
+                   && x.Zip(y, (first, second) => new {X = first, Y = second})
                        .All(o => ExpressionEqual(o.X, o.Y, rootX, rootY));
+        }
+
+        private static bool ElementInitsEqual(ElementInit x, ElementInit y, LambdaExpression rootX,
+            LambdaExpression rootY)
+        {
+            return Equals(x.AddMethod, y.AddMethod)
+                   && CollectionsEqual(x.Arguments, y.Arguments, rootX, rootY);
+        }
+
+        private static bool MemberBindingsEqual(MemberBinding x, MemberBinding y, LambdaExpression rootX,
+            LambdaExpression rootY)
+        {
+            if (x.BindingType != y.BindingType)
+                return false;
+
+            switch (x.BindingType)
+            {
+                case MemberBindingType.Assignment:
+                    var max = (MemberAssignment)x;
+                    var may = (MemberAssignment)y;
+                    return ExpressionEqual(max.Expression, may.Expression, rootX, rootY);
+                case MemberBindingType.MemberBinding:
+                    var mmbx = (MemberMemberBinding)x;
+                    var mmby = (MemberMemberBinding)y;
+                    return MemberBindingCollectionsEqual(mmbx.Bindings, mmby.Bindings, rootX, rootY);
+                case MemberBindingType.ListBinding:
+                    var mlbx = (MemberListBinding)x;
+                    var mlby = (MemberListBinding)y;
+                    return ElementInitCollectionsEqual(mlbx.Initializers, mlby.Initializers, rootX, rootY);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private static bool MemberExpressionsEqual(MemberExpression x, MemberExpression y, LambdaExpression rootX, LambdaExpression rootY)
@@ -130,6 +191,15 @@ namespace NRules.Utilities
                 case ExpressionType.Parameter:
                 case ExpressionType.MemberAccess:
                 case ExpressionType.Convert:
+                case ExpressionType.Add:
+                case ExpressionType.AddChecked:
+                case ExpressionType.Subtract:
+                case ExpressionType.SubtractChecked:
+                case ExpressionType.Multiply:
+                case ExpressionType.MultiplyChecked:
+                case ExpressionType.Divide:
+                case ExpressionType.Modulo:
+                case ExpressionType.Power:
                     return Equals(x.Member, y.Member) && ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
                 case ExpressionType.New:
                 case ExpressionType.Call:

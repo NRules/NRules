@@ -7,10 +7,10 @@ namespace NRules.RuleModel
     /// Pattern condition element.
     /// </summary>
     [DebuggerDisplay("{Expression.ToString()}")]
-    public class ConditionElement : ExpressionElement
+    public class ConditionElement : NamedExpressionElement
     {
         internal ConditionElement(LambdaExpression expression)
-            : base(expression)
+            : base(PatternElement.ConditionName, expression)
         {
         }
 

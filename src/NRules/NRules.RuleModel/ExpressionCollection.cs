@@ -61,6 +61,9 @@ namespace NRules.RuleModel
             return Find(name).SingleOrDefault();
         }
 
+        /// <summary>
+        /// Returns an enumerator for the contained expression elements.
+        /// </summary>
         public IEnumerator<NamedExpressionElement> GetEnumerator()
         {
             return _expressions.GetEnumerator();

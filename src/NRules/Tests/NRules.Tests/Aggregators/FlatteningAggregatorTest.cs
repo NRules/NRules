@@ -65,7 +65,7 @@ namespace NRules.Tests.Aggregators
             var result = target.Add(null, EmptyTuple(), facts).ToArray();
 
             //Assert
-            Assert.Equal(0, result.Length);
+            Assert.Empty(result);
         }
 
         [Fact]

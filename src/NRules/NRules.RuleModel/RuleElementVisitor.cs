@@ -13,9 +13,9 @@
 
         protected internal virtual void VisitPattern(TContext context, PatternElement element)
         {
-            foreach (ConditionElement condition in element.Conditions)
+            foreach (var expression in element.Expressions)
             {
-                condition.Accept(context, this);
+                expression.Accept(context, this);
             }
             element.Source?.Accept(context, this);
         }
@@ -72,7 +72,7 @@
 
         private void VisitGroup(TContext context, GroupElement element)
         {
-            foreach (RuleLeftElement childElement in element.ChildElements)
+            foreach (var childElement in element.ChildElements)
             {
                 childElement.Accept(context, this);
             }

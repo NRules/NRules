@@ -169,7 +169,7 @@ namespace NRules.Tests.RuleModel
             Assert.Equal("Duplicate declarations. Declaration=variable1", ex.Message);
         }
 
-        public static void NoOp()
+        internal static void NoOp()
         {
         }
 

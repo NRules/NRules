@@ -41,7 +41,7 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(1, matches.Length);
+            Assert.Single(matches);
             Assert.Same(fact, matches[0].Value);
         }
 

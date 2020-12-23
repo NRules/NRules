@@ -29,6 +29,9 @@ namespace NRules.RuleModel
             FilterType = filterType;
         }
 
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.Filter;
+
         /// <summary>
         /// Type of rule match filter.
         /// </summary>

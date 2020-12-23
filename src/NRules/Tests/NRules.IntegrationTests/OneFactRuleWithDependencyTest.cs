@@ -17,7 +17,8 @@ namespace NRules.IntegrationTests
             Session.Insert(fact);
 
             //Act - Assert
-            Assert.Throws<InvalidOperationException>(() => Session.Fire());
+            var ex = Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
+            Assert.IsType<InvalidOperationException>(ex.InnerException);
         }
 
         [Fact]
@@ -42,8 +43,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Equal(true, service1Called);
-            Assert.Equal(true, service2Called);
+            Assert.True(service1Called);
+            Assert.True(service2Called);
         }
 
         [Fact]

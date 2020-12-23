@@ -15,6 +15,9 @@ namespace NRules.RuleModel
             AddExport(declaration);
         }
 
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.Dependency;
+
         /// <summary>
         /// Declaration that references the dependency.
         /// </summary>

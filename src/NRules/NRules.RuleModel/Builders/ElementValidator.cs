@@ -200,6 +200,21 @@ namespace NRules.RuleModel.Builders
             }
         }
 
+        public static void ValidatePattern(PatternElement element)
+        {
+            if (element.Source != null)
+            {
+                switch (element.Source.ElementType)
+                {
+                    case ElementType.Aggregate:
+                    case ElementType.Binding:
+                        break;
+                    default:
+                        throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
+                }
+            }
+        }
+
         public static void ValidateBinding(BindingElement element)
         {
             var resultType = element.ResultType;
@@ -207,6 +222,63 @@ namespace NRules.RuleModel.Builders
             if (!resultType.GetTypeInfo().IsAssignableFrom(expressionReturnType.GetTypeInfo()))
             {
                 throw new ArgumentException($"Binding expression not assignable to result type. ResultType={resultType}, ExpressionResult={expressionReturnType}");
+            }
+        }
+
+        public static void ValidateGroup(GroupElement element)
+        {
+            if (!element.ChildElements.Any())
+            {
+                throw new InvalidOperationException("Group element requires at least one child element");
+            }
+            foreach (var childElement in element.ChildElements)
+            {
+                switch (childElement.ElementType)
+                {
+                    case ElementType.Pattern:
+                    case ElementType.And:
+                    case ElementType.Or:
+                    case ElementType.Not:
+                    case ElementType.Exists:
+                    case ElementType.ForAll:
+                        break;
+                    default:
+                        throw new ArgumentException($"Invalid element in the group. ElementType={childElement.ElementType}");
+                }
+            }
+        }
+
+        public static void ValidateExists(ExistsElement element)
+        {
+            switch (element.Source.ElementType)
+            {
+                case ElementType.Pattern:
+                case ElementType.And:
+                case ElementType.Or:
+                    break;
+                default:
+                    throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
+            }
+        }
+
+        public static void ValidateNot(NotElement element)
+        {
+            switch (element.Source.ElementType)
+            {
+                case ElementType.Pattern:
+                case ElementType.And:
+                case ElementType.Or:
+                    break;
+                default:
+                    throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
+            }
+        }
+
+        public static void ValidateForAll(ForAllElement element)
+        {
+            if (!element.Patterns.Any())
+            {
+                throw new InvalidOperationException("At least one FORALL pattern must be specified");
             }
         }
     }

@@ -16,6 +16,9 @@ namespace NRules.RuleModel
             AddExports(_dependencies);
         }
 
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.DependencyGroup;
+
         /// <summary>
         /// List of dependencies the group element contains.
         /// </summary>

@@ -29,7 +29,7 @@ namespace NRules.IntegrationTests
             session.Insert(fact1);
 
             //Assert
-            Assert.Equal(1, handledEvents.Count);
+            Assert.Single(handledEvents);
             var eventArgs = handledEvents[0];
             Assert.Collection(eventArgs.Arguments, x => Assert.Same(fact1, x));
             Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Same(fact1, x));
@@ -54,7 +54,7 @@ namespace NRules.IntegrationTests
 
             //Act - Assert
             var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => session.Insert(fact1));
-            Assert.Equal(1, handledEvents.Count);
+            Assert.Single(handledEvents);
             var eventArgs = handledEvents[0];
             Assert.Collection(eventArgs.Arguments, x => Assert.Same(fact1, x));
             Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Same(fact1, x));
@@ -171,7 +171,7 @@ namespace NRules.IntegrationTests
             session.Fire();
 
             //Assert
-            Assert.Equal(1, handledEvents.Count);
+            Assert.Single(handledEvents);
             var eventArgs = handledEvents[0];
             Assert.Collection(eventArgs.Arguments, x => Assert.Equal(6, x));
             Assert.Collection(eventArgs.Facts.Select(x => x.Value), x => Assert.Equal(fact1, x), x => Assert.Equal("123456", x), x => Assert.Equal(6, x));
@@ -202,7 +202,7 @@ namespace NRules.IntegrationTests
             session.Fire();
 
             //Assert
-            Assert.Equal(1, handledEvents.Count);
+            Assert.Single(handledEvents);
             var eventArgs = handledEvents[0];
             Assert.Collection(eventArgs.Arguments, x => Assert.Equal(fact1, x), x => Assert.Equal("1234567890A", x));
             Assert.Collection(eventArgs.Match.Facts.Select(x => x.Value), x => Assert.Equal(fact1, x), x => Assert.Equal("1234567890A", x), x => Assert.Equal(11, x));

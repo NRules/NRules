@@ -201,7 +201,7 @@ namespace NRules.IntegrationTests
             string[] actual = rule.Tags.ToArray();
 
             //Assert
-            Assert.Equal(0, actual.Length);
+            Assert.Empty(actual);
         }
 
         [Fact]

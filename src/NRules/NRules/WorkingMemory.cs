@@ -115,8 +115,6 @@ namespace NRules
 
             factMap.Remove(key);
             if (factMap.Count == 0) _linkedFactMap.Remove(activation);
-
-            RemoveFact(fact);
         }
 
         public IAlphaMemory GetNodeMemory(IAlphaMemoryNode node)

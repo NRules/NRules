@@ -21,9 +21,26 @@ namespace NRules.Rete
             return isMatchingType;
         }
 
-        protected override void UnsatisfiedFactUpdate(IExecutionContext context, List<Fact> facts)
+        public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
         {
-            //Do nothing, since fact type will never change
+            var toUpdate = new List<Fact>();
+            foreach (var fact in facts)
+            {
+                if (IsSatisfiedBy(context, fact))
+                    toUpdate.Add(fact);
+            }
+            PropagateUpdateInternal(context, toUpdate);
+        }
+
+        public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
+        {
+            var toRetract = new List<Fact>();
+            foreach (var fact in facts)
+            {
+                if (IsSatisfiedBy(context, fact))
+                    toRetract.Add(fact);
+            }
+            PropagateRetractInternal(context, toRetract);
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)

@@ -78,7 +78,7 @@ namespace NRules.Rete
             if (!_aggregateFactMap.TryGetValue(result.Previous ?? result.Aggregate, out var fact))
             {
                 throw new InvalidOperationException(
-                    $"Fact for aggregate object does not exist. AggregatorTye={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
+                    $"Fact for aggregate object does not exist. AggregatorType={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
             }
 
             fact.Source = new AggregateFactSource(result.Source);
@@ -96,7 +96,7 @@ namespace NRules.Rete
             if (!_aggregateFactMap.TryGetValue(result.Aggregate, out var fact))
             {
                 throw new InvalidOperationException(
-                    $"Fact for aggregate object does not exist. AggregatorTye={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
+                    $"Fact for aggregate object does not exist. AggregatorType={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
             }
 
             _aggregateFactMap.Remove(fact.RawObject);

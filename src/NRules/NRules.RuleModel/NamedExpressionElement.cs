@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace NRules.RuleModel
@@ -5,6 +6,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Expression with a name used by an aggregator.
     /// </summary>
+    [DebuggerDisplay("{Name}={Expression.ToString()}")]
     public class NamedExpressionElement : ExpressionElement
     {
         internal NamedExpressionElement(string name, LambdaExpression lambdaExpression)
@@ -12,6 +14,9 @@ namespace NRules.RuleModel
         {
             Name = name;
         }
+
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.NamedExpression;
 
         /// <summary>
         /// Expression name.

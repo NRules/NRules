@@ -40,44 +40,45 @@ namespace NRules.Fluent.Expressions
             var context = yield.Parameters[0];
             var linkedFact = Expression.Parameter(typeof(TFact));
             var yieldUpdate = Expression.Lambda<Func<IContext, TFact, TFact>>(yield.Body, context, linkedFact);
-            return Yield(yield, yieldUpdate);
+            var action = CreateYieldAction(yield, yieldUpdate);
+            return Do(action);
         }
 
         public IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yieldInsert, Expression<Func<IContext, TFact, TFact>> yieldUpdate)
         {
+            var action = CreateYieldAction(yieldInsert, yieldUpdate);
+            return Do(action);
+        }
+
+        public Expression<Action<IContext>> CreateYieldAction<TFact>(Expression<Func<IContext, TFact>> yieldInsert, Expression<Func<IContext, TFact, TFact>> yieldUpdate)
+        {
             _linkedCount++;
-            var linkedFact = Expression.Parameter(typeof(TFact), "$temp");
+            var context = yieldInsert.Parameters[0];
+            var linkedFact = Expression.Parameter(typeof(TFact));
             var linkedKey = Expression.Constant($"$linkedkey{_linkedCount}$");
 
-            var insertContext = yieldInsert.Parameters[0];
-            var insertAction = Expression.Lambda<Action<IContext>>(
-                Expression.Block(
-                    new[] {linkedFact},
-                    Expression.Assign(linkedFact, Expression.Invoke(yieldInsert, insertContext)),
-                    Expression.Call(insertContext,
-                        typeof(IContext).GetTypeInfo().GetDeclaredMethod(nameof(IContext.InsertLinked)),
-                        linkedKey, linkedFact)),
-                insertContext);
-
-            var updateContext = yieldUpdate.Parameters[0];
-            var updateAction = Expression.Lambda<Action<IContext>>(
+            var action = Expression.Lambda<Action<IContext>>(
                 Expression.Block(
                     new[] {linkedFact},
                     Expression.Assign(linkedFact,
                         Expression.Convert(
-                            Expression.Call(updateContext,
+                            Expression.Call(context,
                                 typeof(IContext).GetTypeInfo().GetDeclaredMethod(nameof(IContext.GetLinked)),
                                 linkedKey),
                             typeof(TFact))),
-                    Expression.Assign(linkedFact, Expression.Invoke(yieldUpdate, updateContext, linkedFact)),
-                    Expression.Call(updateContext,
-                        typeof(IContext).GetTypeInfo().GetDeclaredMethod(nameof(IContext.UpdateLinked)),
-                        linkedKey, linkedFact)),
-                updateContext);
-
-            var rhs = Action(insertAction, ActionTrigger.Activated)
-                .Action(updateAction, ActionTrigger.Reactivated);
-            return rhs;
+                    Expression.IfThenElse(
+                        Expression.Equal(linkedFact, Expression.Constant(null)),
+                        Expression.Call(context,
+                            typeof(IContext).GetTypeInfo().GetDeclaredMethod(nameof(IContext.InsertLinked)), linkedKey,
+                            yieldInsert.Body),
+                        Expression.Block(
+                            Expression.Assign(linkedFact, Expression.Invoke(yieldUpdate, context, linkedFact)),
+                            Expression.Call(context,
+                                typeof(IContext).GetTypeInfo().GetDeclaredMethod(nameof(IContext.UpdateLinked)),
+                                linkedKey, linkedFact)))
+                ),
+                context);
+            return action;
         }
     }
 }

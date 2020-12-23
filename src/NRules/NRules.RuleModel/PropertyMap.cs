@@ -59,6 +59,10 @@ namespace NRules.RuleModel
             return found;
         }
 
+        /// <summary>
+        /// Returns an enumerator for the contained rule properties.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<RuleProperty> GetEnumerator()
         {
             return _properties.Values.GetEnumerator();

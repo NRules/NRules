@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using Moq;
 using NRules.Diagnostics;
 using NRules.Extensibility;
@@ -68,6 +69,71 @@ namespace NRules.Tests
         }
 
         [Fact]
+        public void InsertAll_SomeFactsExist_Throws()
+        {
+            // Arrange
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], null}
+            };
+            var target = CreateTarget();
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
+
+            // Act - Assert
+            Assert.Throws<ArgumentException>(() => target.InsertAll(facts));
+        }
+
+        [Fact]
+        public void TryInsertAll_SomeFactsExistOptionsAllOrNothing_DoesNotPropagateAssert()
+        {
+            // Arrange
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], null}
+            };
+            var target = CreateTarget();
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
+
+            // Act
+            var result = target.TryInsertAll(facts, BatchOptions.AllOrNothing);
+
+            // Assert
+            Assert.Equal(1, result.FailedCount);
+            _network.Verify(x => x.PropagateAssert(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.IsAny<List<Fact>>()),
+                Times.Never());
+        }
+
+        [Fact]
+        public void TryInsertAll_SomeFactsExistOptionsSkipFailed_PropagatesAssertForNonFailed()
+        {
+            // Arrange
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], null}
+            };
+            var target = CreateTarget();
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
+
+            // Act
+            var result = target.TryInsertAll(facts, BatchOptions.SkipFailed);
+
+            // Assert
+            Assert.Equal(1, result.FailedCount);
+            _network.Verify(x => x.PropagateAssert(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.Is<List<Fact>>(p => p.Count == 1 && p[0].Object == facts[1])),
+                Times.Exactly(1));
+        }
+
+        [Fact]
         public void Update_FactExists_PropagatesUpdate()
         {
             // Arrange
@@ -82,19 +148,22 @@ namespace NRules.Tests
             // Assert
             _network.Verify(x => x.PropagateUpdate(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
-                    It.Is<List<Fact>>(p => p.Count == 1 && p[0] == factWrapper)),
+                    It.Is<List<Fact>>(p => p.Count == 1 && p[0].Object == fact)),
                 Times.Exactly(1));
         }
 
         [Fact]
-        public void UpdateAll_Called_PropagatesUpdate()
+        public void UpdateAll_FactsExist_PropagatesUpdate()
         {
             // Arrange
-            var facts = new[] {new object(), new object()};
-            var factWrappers = new[] {new Fact(facts[0]), new Fact(facts[1])};
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], new Fact(facts[1])}
+            };
             var target = CreateTarget();
-            var factLookup = factWrappers.ToDictionary(x => x.Object, x => x);
-            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factLookup[x]);
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
 
             // Act
             target.UpdateAll(facts);
@@ -102,7 +171,72 @@ namespace NRules.Tests
             // Assert
             _network.Verify(x => x.PropagateUpdate(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
-                    It.Is<List<Fact>>(p => p.Count == 2 && p[0] == factWrappers[0] && p[1] == factWrappers[1])),
+                    It.Is<List<Fact>>(p => p.Count == 2 && p[0].Object == facts[0] && p[1].Object == facts[1])),
+                Times.Exactly(1));
+        }
+
+        [Fact]
+        public void UpdateAll_SomeFactsDoNotExist_Throws()
+        {
+            // Arrange
+            var facts = new[] {new object(), new object()};
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], null}
+            };
+            var target = CreateTarget();
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
+
+            // Act - Assert
+            Assert.Throws<ArgumentException>(() => target.UpdateAll(facts));
+        }
+
+        [Fact]
+        public void TryUpdateAll_SomeFactsDoNotExistOptionsAllOrNothing_DoesNotPropagateUpdate()
+        {
+            // Arrange
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], null}
+            };
+            var target = CreateTarget();
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
+
+            // Act
+            var result = target.TryUpdateAll(facts, BatchOptions.AllOrNothing);
+
+            // Assert
+            Assert.Equal(1, result.FailedCount);
+            _network.Verify(x => x.PropagateUpdate(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.IsAny<List<Fact>>()),
+                Times.Never());
+        }
+
+        [Fact]
+        public void TryUpdateAll_SomeFactsDoNotExistOptionsSkipFailed_PropagateUpdateNonFailed()
+        {
+            // Arrange
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], null}
+            };
+            var target = CreateTarget();
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
+
+            // Act
+            var result = target.TryUpdateAll(facts, BatchOptions.SkipFailed);
+
+            // Assert
+            Assert.Equal(1, result.FailedCount);
+            _network.Verify(x => x.PropagateUpdate(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.Is<List<Fact>>(p => p.Count == 1 && p[0].Object == facts[0])),
                 Times.Exactly(1));
         }
 
@@ -126,14 +260,17 @@ namespace NRules.Tests
         }
 
         [Fact]
-        public void RetractAll_Called_PropagatesRetract()
+        public void RetractAll_FactsExist_PropagatesRetract()
         {
             // Arrange
             var facts = new[] { new object(), new object() };
-            var factWrappers = new[] { new Fact(facts[0]), new Fact(facts[1]) };
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], new Fact(facts[1])}
+            };
             var target = CreateTarget();
-            var factLookup = factWrappers.ToDictionary(x => x.Object, x => x);
-            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factLookup[x]);
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
 
             // Act
             target.RetractAll(facts);
@@ -141,7 +278,73 @@ namespace NRules.Tests
             // Assert
             _network.Verify(x => x.PropagateRetract(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
-                    It.Is<List<Fact>>(p => p.Count == 2 && p[0] == factWrappers[0] && p[1] == factWrappers[1])),
+                    It.Is<List<Fact>>(p => p.Count == 2 && p[0].Object == facts[0] && p[1].Object == facts[1])),
+                Times.Exactly(1));
+        }
+
+        [Fact]
+        public void RetractAll_SomeFactsDoNotExist_Throws()
+        {
+            // Arrange
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], null}
+            };
+            var target = CreateTarget();
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
+
+            // Act - Assert
+            Assert.Throws<ArgumentException>(() => target.RetractAll(facts));
+        }
+
+
+        [Fact]
+        public void TryRetractAll_SomeFactsDoNotExistOptionsAllOrNothing_DoesNotPropagateRetract()
+        {
+            // Arrange
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], null}
+            };
+            var target = CreateTarget();
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
+
+            // Act
+            var result = target.TryRetractAll(facts, BatchOptions.AllOrNothing);
+
+            // Assert
+            Assert.Equal(1, result.FailedCount);
+            _network.Verify(x => x.PropagateRetract(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.IsAny<List<Fact>>()),
+                Times.Never());
+        }
+
+        [Fact]
+        public void TryRetractAll_SomeFactsDoNotExistOptionsSkipFailed_PropagateRetractNonFailed()
+        {
+            // Arrange
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new Dictionary<object, Fact>
+            {
+                {facts[0], new Fact(facts[0])},
+                {facts[1], null}
+            };
+            var target = CreateTarget();
+            _workingMemory.Setup(x => x.GetFact(It.IsAny<object>())).Returns<object>(x => factWrappers[x]);
+
+            // Act
+            var result = target.TryRetractAll(facts, BatchOptions.SkipFailed);
+
+            // Assert
+            Assert.Equal(1, result.FailedCount);
+            _network.Verify(x => x.PropagateRetract(
+                    It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
+                    It.Is<List<Fact>>(p => p.Count == 1 && p[0].Object == facts[0])),
                 Times.Exactly(1));
         }
 
@@ -191,6 +394,106 @@ namespace NRules.Tests
             Assert.Equal(1, actual);
         }
 
+        [Fact]
+        public void Fire_CancellationRequested()
+        {
+            using (var cancellationSource = new CancellationTokenSource())
+            {
+                // Arrange
+                var hitCount = 0;
+                var target = CreateTarget();
+                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda
+                    .Setup(x => x.IsEmpty)
+                    .Returns(() =>
+                    {
+                        if (++hitCount == 2)
+                        {
+                            cancellationSource.Cancel();
+                        }
+
+                        return hitCount < 5 ? false : true;
+                    });
+
+                // Act
+                var actual = target.Fire(cancellationSource.Token);
+
+                // Assert
+                Assert.Equal(2, actual);
+                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
+            }
+        }
+
+        [Fact]
+        public void Fire_CancellationRequested_WithMaxRules()
+        {
+            using (var cancellationSource = new CancellationTokenSource())
+            {
+                // Arrange
+                var hitCount = 0;
+                var target = CreateTarget();
+                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda
+                    .Setup(x => x.IsEmpty)
+                    .Returns(() =>
+                    {
+                        if (++hitCount == 2)
+                        {
+                            cancellationSource.Cancel();
+                        }
+
+                        return hitCount < 5 ? false : true;
+                    });
+
+                // Act
+                var actual = target.Fire(5, cancellationSource.Token);
+
+                // Assert
+                Assert.Equal(2, actual);
+                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
+            }
+        }
+
+        [Fact]
+        public void Fire_PassesCancellationTokenToActionContext()
+        {
+            using (var cancellationSource = new CancellationTokenSource())
+            {
+                // Arrange
+                var target = CreateTarget();
+                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda.SetupSequence(x => x.IsEmpty)
+                    .Returns(false).Returns(true);
+
+                // Act
+                var actual = target.Fire(cancellationSource.Token);
+
+                // Assert
+                Assert.Equal(1, actual);
+                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
+            }
+        }
+
+        [Fact]
+        public void Fire_PassesCancellationTokenToActionContext_WithMaxRules()
+        {
+            using (var cancellationSource = new CancellationTokenSource())
+            {
+                // Arrange
+                var target = CreateTarget();
+                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda.SetupSequence(x => x.IsEmpty)
+                    .Returns(false).Returns(true);
+
+                // Act
+                var actual = target.Fire(2, cancellationSource.Token);
+
+                // Assert
+                Assert.Equal(1, actual);
+                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
+            }
+        }
+
         private Session CreateTarget()
         {
             var session = new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, 
@@ -202,7 +505,7 @@ namespace NRules.Tests
         {
             var rule = new Mock<ICompiledRule>();
             rule.Setup(x => x.Actions).Returns(new IRuleAction[0]);
-            var activation = new Activation(rule.Object, null, null);
+            var activation = new Activation(rule.Object, null);
             return activation;
         }
     }

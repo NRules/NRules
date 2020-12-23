@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace NRules.RuleModel.Builders
 {
     /// <summary>
@@ -5,13 +7,16 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public abstract class RuleElementBuilder
     {
-        private int _declarationCounter = 0;
+        private static int _declarationCounter = 0;
 
         protected string DeclarationName(string name)
         {
-            _declarationCounter++;
-            string declarationName = name ?? $"$var{_declarationCounter}$";
-            return declarationName;
+            if (string.IsNullOrEmpty(name))
+            {
+                var counter = Interlocked.Increment(ref _declarationCounter);
+                return $"$var{counter}$";
+            }
+            return name;
         }
     }
 }

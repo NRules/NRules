@@ -9,7 +9,7 @@ namespace NRules.Aggregators
     internal class DefaultKeyMap<TKey, TValue>
     {
         private readonly Dictionary<TKey, TValue> _map = new Dictionary<TKey, TValue>();
-        private readonly TKey _defaultKey = default(TKey);
+        private readonly TKey _defaultKey = default;
         private TValue _defaultValue;
         private bool _hasDefault = false;
 
@@ -30,7 +30,7 @@ namespace NRules.Aggregators
             {
                 if (_hasDefault)
                 {
-                    _defaultValue = default(TValue);
+                    _defaultValue = default;
                     _hasDefault = false;
                     return true;
                 }

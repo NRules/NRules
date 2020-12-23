@@ -20,11 +20,10 @@ namespace NRules
 
         internal event EventHandler<ActivationEventArgs> OnRuleFiring;
 
-        internal Activation(ICompiledRule compiledRule, Tuple tuple, IndexMap factMap)
+        internal Activation(ICompiledRule compiledRule, Tuple tuple)
         {
             CompiledRule = compiledRule;
             Tuple = tuple;
-            FactMap = factMap;
         }
 
         /// <summary>
@@ -44,22 +43,21 @@ namespace NRules
 
         internal ICompiledRule CompiledRule { get; }
         internal Tuple Tuple { get; }
-        internal IndexMap FactMap { get; }
 
         internal bool IsEnqueued { get; set; }
         internal bool HasFired { get; set; }
 
-        internal void Insert()
+        internal void OnInsert()
         {
             Trigger = MatchTrigger.Created;
         }
 
-        internal void Update()
+        internal void OnUpdate()
         {
             Trigger = HasFired ? MatchTrigger.Updated : MatchTrigger.Created;
         }
 
-        internal void Remove()
+        internal void OnRemove()
         {
             Trigger = HasFired ? MatchTrigger.Removed : MatchTrigger.None;
         }
@@ -82,7 +80,7 @@ namespace NRules
             {
                 return (T)value;
             }
-            return default(T);
+            return default;
         }
 
         internal void SetState(object key, object value)
@@ -95,11 +93,12 @@ namespace NRules
         {
             var matches = CompiledRule.Declarations.Select(x => new FactMatch(x)).ToArray();
             int index = Tuple.Count - 1;
-            foreach (var fact in Tuple.Facts)
+            var enumerator = Tuple.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                int factIndex = FactMap[index];
+                int factIndex = CompiledRule.FactMap[index];
                 var factMatch = matches[factIndex];
-                factMatch.SetFact(fact);
+                factMatch.SetFact(enumerator.Current);
                 index--;
             }
             return matches;

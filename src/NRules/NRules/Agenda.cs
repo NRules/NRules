@@ -97,7 +97,7 @@ namespace NRules
 
         public void Add(IExecutionContext context, Activation activation)
         {
-            activation.Insert();
+            activation.OnInsert();
             if (Accept(context, activation))
             {
                 _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
@@ -116,7 +116,7 @@ namespace NRules
                 return;
             }
 
-            activation.Update();
+            activation.OnUpdate();
             if (Accept(context, activation))
             {
                 _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
@@ -129,7 +129,7 @@ namespace NRules
 
         public void Remove(IExecutionContext context, Activation activation)
         {
-            activation.Remove();
+            activation.OnRemove();
             if (activation.Trigger.Matches(activation.CompiledRule.ActionTriggers) &&
                 activation.HasFired)
             {
@@ -142,7 +142,7 @@ namespace NRules
 
             if (context.Session.GetLinkedKeys(activation).Any())
             {
-                context.UnlinkQueue.Enqueue(activation);
+                context.Session.QueueRetractLinked(activation);
             }
         }
 

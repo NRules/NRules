@@ -492,6 +492,138 @@ namespace NRules.Tests.Utilities
             AssertNotEqual(first, second);
         }
 
+        [Fact]
+        public void AreEqual_EquivalentMemberAssignment_True()
+        {
+            //Arrange
+            Expression<Func<SomeClassWithProperty>> first = () => new SomeClassWithProperty { Value = "A" };
+            Expression<Func<SomeClassWithProperty>> second = () => new SomeClassWithProperty { Value = "A" };
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentMemberAssignment_False()
+        {
+            //Arrange
+            Expression<Func<SomeClassWithProperty>> first = () => new SomeClassWithProperty { Value = "A" };
+            Expression<Func<SomeClassWithProperty>> second = () => new SomeClassWithProperty { Value = "B" };
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_EquivalentListInitExpression_True()
+        {
+            //Arrange
+            Expression<Func<IEnumerable<string>>> first = () => new List<string> { "A" };
+            Expression<Func<IEnumerable<string>>> second = () => new List<string> { "A" };
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentListInitExpression_False()
+        {
+            //Arrange
+            Expression<Func<IEnumerable<string>>> first = () => new List<string> { "A" };
+            Expression<Func<IEnumerable<string>>> second = () => new List<string> { "B" };
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_EquivalentMemberListBinding_True()
+        {
+            //Arrange
+            Expression<Func<SomeClassWithListProperty>> first = () => new SomeClassWithListProperty() { List = { "A" } };
+            Expression<Func<SomeClassWithListProperty>> second = () => new SomeClassWithListProperty { List = { "A" } };
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentMemberListBinding_False()
+        {
+            //Arrange
+            Expression<Func<SomeClassWithListProperty>> first = () => new SomeClassWithListProperty() { List = { "A" } };
+            Expression<Func<SomeClassWithListProperty>> second = () => new SomeClassWithListProperty { List = { "B" } };
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_EquivalentMemberMemberBinding_True()
+        {
+            //Arrange
+            Expression<Func<SomeClassWithComplexProperty>> first = () => new SomeClassWithComplexProperty { Value = { Value = "A" } };
+            Expression<Func<SomeClassWithComplexProperty>> second = () => new SomeClassWithComplexProperty { Value = { Value = "A" } };
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentMemberMemberBinding_False()
+        {
+            //Arrange
+            Expression<Func<SomeClassWithComplexProperty>> first = () => new SomeClassWithComplexProperty { Value = { Value = "A" } };
+            Expression<Func<SomeClassWithComplexProperty>> second = () => new SomeClassWithComplexProperty { Value = { Value = "B" } };
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_EquivalentSubtractMemberBinding_True()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value1 - x.Value2).Day;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value1 - x.Value2).Day;
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentSubtractMemberBinding_False()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value1 - x.Value2).Day;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value1 - x.Value2).Year;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_EquivalentAddMemberBinding_True()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value1 + x.Value2).Day;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value1 + x.Value2).Day;
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentAddMemberBinding_False()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value1 + x.Value2).Day;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value1 + x.Value2).Year;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
         private static void AssertEqual(Expression first, Expression second)
         {
             //Act
@@ -539,11 +671,15 @@ namespace NRules.Tests.Utilities
         public interface ISomeFact
         {
             int Value { get; set; }
+            DateTime Value1 { get; set; }
+            TimeSpan Value2 { get; set; }
         }
 
         public class SomeOtherFact : ISomeFact
         {
             int ISomeFact.Value { get; set; }
+            public DateTime Value1 { get; set; }
+            public TimeSpan Value2 { get; set; }
         }
 
         public class SomeClass
@@ -559,6 +695,21 @@ namespace NRules.Tests.Utilities
             {
                 return new SomeClass();
             }
+        }
+
+        public class SomeClassWithProperty
+        {
+            public string Value { get; set; }
+        }
+
+        public class SomeClassWithListProperty
+        {
+            public List<string> List { get; set; } = new List<string>();
+        }
+
+        public class SomeClassWithComplexProperty
+        {
+            public SomeClassWithProperty Value { get; set; } = new SomeClassWithProperty();
         }
     }
 }

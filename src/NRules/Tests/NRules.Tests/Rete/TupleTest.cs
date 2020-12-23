@@ -61,7 +61,7 @@ namespace NRules.Tests.Rete
             var tuple3 = new Tuple(0, tuple2, new Fact(3));
 
             //Act
-            var target = tuple3.Facts.Select(f => f.Object).ToArray();
+            var target = tuple3.Facts.Select(f => f.Value).ToArray();
 
             //Assert
             Assert.Equal(3, target.Length);
@@ -80,7 +80,7 @@ namespace NRules.Tests.Rete
             var target = tuple.Facts.ToArray();
 
             //Assert
-            Assert.Equal(1, target.Length);
+            Assert.Single(target);
             Assert.Equal(tuple.RightFact, target[0]);
         }
 
@@ -94,7 +94,7 @@ namespace NRules.Tests.Rete
             var target = tuple.Facts.ToArray();
 
             //Assert
-            Assert.Equal(0, target.Length);
+            Assert.Empty(target);
         }
     }
 }

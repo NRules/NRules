@@ -81,7 +81,7 @@ namespace NRules.IntegrationTests.TestAssets
 
         protected void AssertFiredOnce()
         {
-            Assert.Equal(1, _firedRulesMap.First().Value.Count);
+            Assert.Single(_firedRulesMap.First().Value);
         }
 
         protected void AssertFiredTwice()
@@ -96,13 +96,13 @@ namespace NRules.IntegrationTests.TestAssets
 
         protected void AssertDidNotFire()
         {
-            Assert.Equal(0, _firedRulesMap.First().Value.Count);
+            Assert.Empty(_firedRulesMap.First().Value);
         }
 
         protected void AssertFiredOnce<T>()
         {
             var rule = _ruleMap[typeof (T)];
-            Assert.Equal(1, _firedRulesMap[rule.Name].Count);
+            Assert.Single(_firedRulesMap[rule.Name]);
         }
 
         protected void AssertFiredTwice<T>()
@@ -111,10 +111,16 @@ namespace NRules.IntegrationTests.TestAssets
             Assert.Equal(2, _firedRulesMap[rule.Name].Count);
         }
 
+        protected void AssertFiredTimes<T>(int value)
+        {
+            var rule = _ruleMap[typeof(T)];
+            Assert.Equal(value, _firedRulesMap[rule.Name].Count);
+        }
+
         protected void AssertDidNotFire<T>()
         {
             var rule = _ruleMap[typeof(T)];
-            Assert.Equal(0, _firedRulesMap[rule.Name].Count);
+            Assert.Empty(_firedRulesMap[rule.Name]);
         }
 
         private class InstanceActivator : IRuleActivator

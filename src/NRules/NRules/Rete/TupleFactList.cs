@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace NRules.Rete
@@ -37,12 +36,6 @@ namespace NRules.Rete
                 bool hasNextTuple = _tupleEnumerator.MoveNext();
                 bool hasNextFact = _factEnumerator.MoveNext();
                 return hasNextTuple && hasNextFact;
-            }
-
-            public void Reset()
-            {
-                ((IEnumerator)_tupleEnumerator).Reset();
-                ((IEnumerator)_factEnumerator).Reset();
             }
         }
 

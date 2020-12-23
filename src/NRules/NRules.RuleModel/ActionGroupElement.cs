@@ -5,7 +5,7 @@ namespace NRules.RuleModel
     /// <summary>
     /// Rule element that groups actions that run when the rule fires.
     /// </summary>
-    public class ActionGroupElement : RuleRightElement
+    public class ActionGroupElement : RuleElement
     {
         private readonly List<ActionElement> _actions;
 
@@ -15,6 +15,9 @@ namespace NRules.RuleModel
 
             AddImports(_actions);
         }
+
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.ActionGroup;
 
         /// <summary>
         /// List of actions the group element contains.

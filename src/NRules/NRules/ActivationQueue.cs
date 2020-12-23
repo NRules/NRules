@@ -1,6 +1,4 @@
-﻿using System;
-using NRules.Collections;
-using NRules.RuleModel;
+﻿using NRules.Collections;
 using NRules.Utilities;
 
 namespace NRules
@@ -48,7 +46,7 @@ namespace NRules
             {
                 Activation current = _queue.Peek();
                 if (current.IsEnqueued && current.Trigger.Matches(current.CompiledRule.ActionTriggers)) return;
-                _queue.Dequeue();
+                Dequeue();
             }
         }
 

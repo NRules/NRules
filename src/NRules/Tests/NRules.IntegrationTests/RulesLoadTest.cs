@@ -22,7 +22,7 @@ namespace NRules.IntegrationTests
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.Equal(0, ruleSet.Rules.Count());
+            Assert.Empty(ruleSet.Rules);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace NRules.IntegrationTests
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.Equal(0, ruleSet.Rules.Count());
+            Assert.Empty(ruleSet.Rules);
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace NRules.IntegrationTests
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.Equal(1, ruleSet.Rules.Count());
+            Assert.Single(ruleSet.Rules);
             Assert.Equal(typeof(ValidRule).FullName, ruleSet.Rules.First().Name);
         }
 
@@ -139,7 +139,7 @@ namespace NRules.IntegrationTests
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
-            Assert.Equal(1, ruleSet.Rules.Count());
+            Assert.Single(ruleSet.Rules);
             Assert.Equal("Rule with metadata", ruleSet.Rules.First().Name);
         }
 
@@ -161,7 +161,7 @@ namespace NRules.IntegrationTests
             target.Add(ruleSet);
 
             //Assert
-            Assert.Equal(1, ruleSet.Rules.Count());
+            Assert.Single(ruleSet.Rules);
             Assert.Equal(typeof(ValidRule).FullName, ruleSet.Rules.First().Name);
         }
 

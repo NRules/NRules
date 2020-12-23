@@ -4,8 +4,8 @@ param (
 
 properties {
     $version = $null
-    $sdkVersion = "2.1.4"
-    $nugetVersion = "4.4.1"
+    $sdkVersion = "3.1.404"
+    $nugetVersion = "5.8.0"
     $configuration = "Release"
     $baseDir = $null
 }
@@ -31,10 +31,7 @@ task Init {
     $script:pkgOutDir = "$buildDir\packages\$compName"
     $script:packagesDir = "$baseDir\packages"
     $script:toolsDir = "$baseDir\tools"
-    
-    $frameworkRoot = Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
-    $frameworkRoot = $frameworkRoot + "v4.0.30319"
-    $script:msbuild = $frameworkRoot + "\msbuild.exe"
+    $script:msbuild = Get-Msbuild
     
     Install-DotNetCli $toolsDir\.dotnet $sdkVersion
     Install-NuGet $toolsDir\.nuget $nugetVersion
@@ -56,7 +53,7 @@ task PatchFiles {
         Write-Host "Using secure signing key." -ForegroundColor Magenta
         $publicKey = Get-Content $secureHash
         $publicKey = $publicKey.Trim()
-        Update-InternalsVisible $srcDir $publicKey
+        Update-InternalsVisible $baseDir $publicKey
         Copy-Item $secureKey -Destination $signingKey -Force
     } else {
         Write-Host "Secure signing key does not exist. Using development key." -ForegroundColor Yellow
@@ -72,7 +69,7 @@ task ResetPatch {
     
     $publicKey = Get-Content $devHash
     $publicKey = $publicKey.Trim()
-    Update-InternalsVisible $srcDir $publicKey
+    Update-InternalsVisible $baseDir $publicKey
     Copy-Item $devKey -Destination $signingKey -Force
 }
 
@@ -146,10 +143,13 @@ task Build -depends Compile, Test, ResetPatch -precondition { return $component.
     }
 }
 
-task Run -depends Build -precondition { return $component.ContainsKey('run') } {
-    foreach ($exe in $component.run.exe) {
-        $exeFile = "$binariesDir\$exe"
-        exec { &$exeFile }
+task Bench -depends Build -precondition { return $component.ContainsKey('bench') } {
+    $exe = $component.bench.exe
+    $categories = $component.bench.categories -join ","
+    foreach ($framework in $component.bench.frameworks) {
+        $exeFile = "$binariesDir\$framework\$exe"
+        $artifacts = "$buildDir\bench\$framework"
+        exec { &$exeFile --join --anyCategories=$categories --artifacts=$artifacts }
     }
 }
 

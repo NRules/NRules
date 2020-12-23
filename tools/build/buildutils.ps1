@@ -1,23 +1,31 @@
-﻿function Delete-Directory($directoryName) {
+﻿function Create-Directory([string] $directoryName) {
+    New-Item $directoryName -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
+}
+
+function Delete-Directory([string] $directoryName) {
     Remove-Item -Force -Recurse $directoryName -ErrorAction SilentlyContinue
 }
 
-function Delete-File($fileName) {
+function Delete-File([string] $fileName) {
     if ($fileName) {
         Remove-Item $fileName -Force -ErrorAction SilentlyContinue | Out-Null
     } 
 }
- 
-function Create-Directory($directoryName) {
-    New-Item $directoryName -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
-}
 
-function Get-RegistryValues($key) {
-    (Get-Item $key -ErrorAction SilentlyContinue).GetValueNames()
-}
-
-function Get-RegistryValue($key, $value) {
-    (Get-ItemProperty $key $value -ErrorAction SilentlyContinue).$value
+function Get-Msbuild() {
+    $vsRoot = "${env:ProgramFiles(x86)}\Microsoft Visual Studio"
+    $msbuild = "msbuild.exe"
+    if (Test-Path $vsRoot) {
+        Get-ChildItem -Path $vsRoot | Where {$_ -match "^\d+$"} | Sort-Object -Descending |% {
+            $vsPath = "$vsRoot\$_"
+            Get-ChildItem -Path $vsPath |% {
+                $msbuildPath = "$vsPath\$_\MSBuild\Current\Bin"
+                $msbuild = "$msbuildPath\msbuild.exe"
+                return
+            }
+        }
+    }
+    return $msbuild
 }
 
 function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
@@ -121,7 +129,7 @@ function Install-DotNetCli([string] $location, [string] $version) {
     }
 
     if (!(Test-Path $location\dotnet-install.ps1)) {
-        $url = "https://raw.githubusercontent.com/dotnet/cli/v$version/scripts/obtain/dotnet-install.ps1"
+        $url = "https://dotnet.microsoft.com/download/dotnet-core/scripts/v1/dotnet-install.ps1"
         Invoke-WebRequest $url -OutFile "$location\dotnet-install.ps1"
     }
 

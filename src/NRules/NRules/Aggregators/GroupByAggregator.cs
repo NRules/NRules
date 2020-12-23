@@ -51,6 +51,7 @@ namespace NRules.Aggregators
         {
             var keys = new List<TKey>();
             var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
+            var removedKeys = new HashSet<TKey>();
             foreach (var fact in facts)
             {
                 var key = (TKey)_keySelector.Invoke(context, tuple, fact);
@@ -71,10 +72,14 @@ namespace NRules.Aggregators
                 }
                 else
                 {
-                    var result1 = Remove(fact, oldKey, oldElement);
+                    var result1 = RemoveElementOnly(fact, oldKey, oldElement);
                     if (!resultLookup.ContainsKey(oldKey))
                     {
                         keys.Add(oldKey);
+                    }
+                    if (result1.Action == AggregationAction.Removed)
+                    {
+                        removedKeys.Add(oldKey);
                     }
                     resultLookup[oldKey] = result1;
 
@@ -84,13 +89,19 @@ namespace NRules.Aggregators
                         keys.Add(key);
                         resultLookup[key] = result2;
                     }
-                    else if (previousResult.Action == AggregationAction.Removed ||
-                             result2.Action == AggregationAction.Added)
+                    else if (previousResult.Action == AggregationAction.Removed)
                     {
-                        resultLookup[key] = AggregationResult.Modified(previousResult.Aggregate, previousResult.Aggregate, previousResult.Source);
+                        resultLookup[key] = result2;
+                        removedKeys.Remove(key);
                     }
                 }
             }
+
+            foreach (var removedKey in removedKeys)
+            {
+                _groups.Remove(removedKey);
+            }
+
             var results = GetResults(keys, resultLookup);
             return results;
         }
@@ -147,6 +158,17 @@ namespace NRules.Aggregators
             if (group.Count == 0)
             {
                 _groups.Remove(key);
+                return AggregationResult.Removed(group);
+            }
+            return AggregationResult.Modified(group, group, group.Facts);
+        }
+
+        private AggregationResult RemoveElementOnly(IFact fact, TKey key, TElement element)
+        {
+            var group = _groups[key];
+            group.Remove(fact, element);
+            if (group.Count == 0)
+            {
                 return AggregationResult.Removed(group);
             }
             return AggregationResult.Modified(group, group, group.Facts);

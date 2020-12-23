@@ -107,19 +107,23 @@ namespace NRules.Diagnostics
             base.VisitBetaNode(builder, node);
         }
 
-        protected internal override void VisitTerminalNode(SnapshotBuilder builder, TerminalNode node)
-        {
-            if (builder.IsVisited(node)) return;
-            builder.AddNode(node, NodeInfo.Create);
-            builder.AddLink(node, node.RuleNode);
-            base.VisitTerminalNode(builder, node);
-        }
-
         protected internal override void VisitRuleNode(SnapshotBuilder builder, RuleNode node)
         {
             if (builder.IsVisited(node)) return;
             builder.AddNode(node, NodeInfo.Create);
             base.VisitRuleNode(builder, node);
+        }
+
+        protected internal override void VisitDummyNode(SnapshotBuilder builder, DummyNode node)
+        {
+            if (builder.IsVisited(node)) return;
+            builder.AddNode(node, NodeInfo.Create);
+            foreach (var sink in node.Sinks)
+            {
+                if (!builder.IsVisited(sink))
+                    builder.AddLink(node, sink);
+            }
+            base.VisitDummyNode(builder, node);
         }
     }
 }

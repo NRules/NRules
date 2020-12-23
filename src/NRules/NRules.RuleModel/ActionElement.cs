@@ -53,7 +53,10 @@ namespace NRules.RuleModel
         /// Activation events that trigger this action.
         /// </summary>
         public ActionTrigger ActionTrigger { get; }
-        
+
+        /// <inheritdoc cref="RuleElement.ElementType"/>
+        public override ElementType ElementType => ElementType.Action;
+
         internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
         {
             visitor.VisitAction(context, this);

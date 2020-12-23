@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using NRules.Extensibility;
 using NRules.RuleModel;
 
@@ -16,10 +17,11 @@ namespace NRules
     {
         private readonly ISessionInternal _session;
 
-        public ActionContext(ISessionInternal session, Activation activation)
+        public ActionContext(ISessionInternal session, Activation activation, CancellationToken cancellationToken)
         {
             _session = session;
             Activation = activation;
+            CancellationToken = cancellationToken;
             IsHalted = false;
         }
 
@@ -28,6 +30,7 @@ namespace NRules
         public ICompiledRule CompiledRule => Activation.CompiledRule;
 
         public Activation Activation { get; }
+        public CancellationToken CancellationToken { get; }
         public bool IsHalted { get; private set; }
 
         public void Halt()
@@ -103,7 +106,7 @@ namespace NRules
 
         public void InsertAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
         {
-            _session.InsertLinked(Activation, keyedFacts);
+            _session.QueueInsertLinked(Activation, keyedFacts);
         }
 
         public void UpdateLinked(object key, object fact)
@@ -119,7 +122,7 @@ namespace NRules
 
         public void UpdateAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
         {
-            _session.UpdateLinked(Activation, keyedFacts);
+            _session.QueueUpdateLinked(Activation, keyedFacts);
         }
 
         public void RetractLinked(object key, object fact)
@@ -135,7 +138,7 @@ namespace NRules
 
         public void RetractAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
         {
-            _session.RetractLinked(Activation, keyedFacts);
+            _session.QueueRetractLinked(Activation, keyedFacts);
         }
 
         public object Resolve(Type serviceType)

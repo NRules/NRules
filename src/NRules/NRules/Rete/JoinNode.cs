@@ -1,20 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using NRules.RuleModel;
 
 namespace NRules.Rete
 {
     internal class JoinNode : BinaryBetaNode
     {
+        private readonly List<ExpressionElement> _expressionElements;
+        private readonly List<ILhsExpression<bool>> _compiledExpressions;
         private readonly bool _isSubnetJoin;
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public IList<IBetaCondition> Conditions { get; }
+        public IEnumerable<ExpressionElement> ExpressionElements => _expressionElements;
 
-        public JoinNode(ITupleSource leftSource, IObjectSource rightSource, bool isSubnetJoin)
-            : base(leftSource, rightSource)
+        public JoinNode(ITupleSource leftSource, IObjectSource rightSource,
+            List<ExpressionElement> expressionElements,
+            List<ILhsExpression<bool>> compiledExpressions,
+            bool isSubnetJoin)
+            : base(leftSource, rightSource, isSubnetJoin)
         {
+            _expressionElements = expressionElements;
+            _compiledExpressions = compiledExpressions;
             _isSubnetJoin = isSubnetJoin;
-            Conditions = new List<IBetaCondition>();
         }
 
         public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
@@ -113,12 +120,25 @@ namespace NRules.Rete
 
         private bool MatchesConditions(IExecutionContext context, Tuple left, Fact right)
         {
-            foreach (var condition in Conditions)
+            try
             {
-                if (!condition.IsSatisfiedBy(context, NodeInfo, left, right))
-                    return false;
+                foreach (var expression in _compiledExpressions)
+                {
+                    if (!expression.Invoke(context, NodeInfo, left, right))
+                        return false;
+                }
+                return true;
             }
-            return true;
+            catch (ExpressionEvaluationException e)
+            {
+                if (!e.IsHandled)
+                {
+                    throw new RuleLhsExpressionEvaluationException(
+                        "Failed to evaluate condition", e.Expression.ToString(), e.InnerException);
+                }
+
+                return false;
+            }
         }
 
         public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
