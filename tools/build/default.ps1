@@ -31,10 +31,7 @@ task Init {
     $script:pkgOutDir = "$buildDir\packages\$compName"
     $script:packagesDir = "$baseDir\packages"
     $script:toolsDir = "$baseDir\tools"
-    
-    $frameworkRoot = Get-RegistryValue 'HKLM:\SOFTWARE\Microsoft\.NETFramework\' 'InstallRoot' 
-    $frameworkRoot = $frameworkRoot + "v4.0.30319"
-    $script:msbuild = $frameworkRoot + "\msbuild.exe"
+    $script:msbuild = Get-Msbuild
     
     Install-DotNetCli $toolsDir\.dotnet $sdkVersion
     Install-NuGet $toolsDir\.nuget $nugetVersion
