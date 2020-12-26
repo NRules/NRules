@@ -7,7 +7,7 @@
     <authors>Sergiy Nikolayev</authors>
     <owners>Sergiy Nikolayev</owners>
     <license type="expression">MIT</license>
-    <projectUrl>http://nrules.net</projectUrl>
+    <projectUrl>https://nrules.net</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/NRules/NRules.media/master/Logo/Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Execution engine (runtime) for the NRules rules engine.</summary>
