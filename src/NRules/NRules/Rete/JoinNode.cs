@@ -6,20 +6,22 @@ namespace NRules.Rete
 {
     internal class JoinNode : BinaryBetaNode
     {
-        private readonly List<ExpressionElement> _expressionElements;
         private readonly List<ILhsExpression<bool>> _compiledExpressions;
         private readonly bool _isSubnetJoin;
 
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public IEnumerable<ExpressionElement> ExpressionElements => _expressionElements;
+        public List<Declaration> Declarations { get; }
+        public List<ExpressionElement> ExpressionElements { get; }
 
-        public JoinNode(ITupleSource leftSource, IObjectSource rightSource,
+        public JoinNode(ITupleSource leftSource, 
+            IObjectSource rightSource,
+            List<Declaration> declarations,
             List<ExpressionElement> expressionElements,
             List<ILhsExpression<bool>> compiledExpressions,
             bool isSubnetJoin)
             : base(leftSource, rightSource, isSubnetJoin)
         {
-            _expressionElements = expressionElements;
+            Declarations = declarations;
+            ExpressionElements = expressionElements;
             _compiledExpressions = compiledExpressions;
             _isSubnetJoin = isSubnetJoin;
         }

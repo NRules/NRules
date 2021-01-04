@@ -214,7 +214,9 @@ namespace NRules.Rete
                 .FirstOrDefault(x =>
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
-                    ExpressionElementComparer.AreEqual(x.ExpressionElements, expressionElements));
+                    ExpressionElementComparer.AreEqual(
+                        x.Declarations, x.ExpressionElements, 
+                        context.Declarations, expressionElements));
             if (node == null)
             {
                 var compiledExpressions = new List<ILhsExpression<bool>>(expressionElements.Count);
@@ -223,7 +225,7 @@ namespace NRules.Rete
                     var compiledExpression = ExpressionCompiler.CompileLhsExpression<bool>(expressionElement, context.Declarations);
                     compiledExpressions.Add(compiledExpression);
                 }
-                node = new JoinNode(context.BetaSource, context.AlphaSource, expressionElements, compiledExpressions, context.HasSubnet);
+                node = new JoinNode(context.BetaSource, context.AlphaSource, context.Declarations.ToList(), expressionElements, compiledExpressions, context.HasSubnet);
             }
             node.NodeInfo.Add(context.Rule, element);
             BuildBetaMemoryNode(context, node);
@@ -270,12 +272,14 @@ namespace NRules.Rete
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
                     x.Name == element.Name &&
-                    ExpressionElementComparer.AreEqual(x.Expressions, element.Expressions));
+                    ExpressionElementComparer.AreEqual(
+                        x.Declarations, x.Expressions,
+                        context.Declarations, element.Expressions));
             if (node == null)
             {
                 var aggregatorFactory = BuildAggregatorFactory(context, element);
                 node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name,
-                    element.Expressions, aggregatorFactory, context.HasSubnet);
+                    context.Declarations.ToList(), element.Expressions, aggregatorFactory, context.HasSubnet);
             }
             node.NodeInfo.Add(context.Rule, element);
             BuildBetaMemoryNode(context, node);
