@@ -80,9 +80,9 @@ namespace NRules.Rete
         {
             if (tuples.Count > 0)
             {
-                foreach (var sink in _sinks)
+                for (int i = 0; i < _sinks.Count; i++)
                 {
-                    sink.PropagateAssert(context, tuples);
+                    _sinks[i].PropagateAssert(context, tuples);
                 }
                 foreach (var childTuple in tuples)
                 {
@@ -95,9 +95,9 @@ namespace NRules.Rete
         {
             if (tuples.Count > 0)
             {
-                foreach (var sink in _sinks)
+                for (int i = 0; i < _sinks.Count; i++)
                 {
-                    sink.PropagateUpdate(context, tuples);
+                    _sinks[i].PropagateUpdate(context, tuples);
                 }
             }
         }
@@ -106,13 +106,13 @@ namespace NRules.Rete
         {
             if (tuples.Count > 0)
             {
-                foreach (var sink in _sinks)
-                {
-                    sink.PropagateRetract(context, tuples);
-                }
                 foreach (var childTuple in tuples)
                 {
                     memory.Remove(childTuple);
+                }
+                for (int i = _sinks.Count - 1; i >= 0; i--)
+                {
+                    _sinks[i].PropagateRetract(context, tuples);
                 }
             }
         }
