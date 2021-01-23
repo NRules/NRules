@@ -39,7 +39,7 @@ namespace NRules.Rete
             var toRetract = new TupleFactList();
             foreach (var tuple in tuples)
             {
-                var fact = tuple.GetState<Fact>(this);
+                var fact = context.WorkingMemory.GetState<Fact>(this, tuple);
                 if (fact != null)
                 {
                     UpdateBinding(context, tuple, fact, toUpdate, toRetract);
@@ -59,7 +59,7 @@ namespace NRules.Rete
             var toRetract = new TupleFactList();
             foreach (var tuple in tuples)
             {
-                RetractBinding(tuple, toRetract);
+                RetractBinding(context, tuple, toRetract);
             }
             MemoryNode.PropagateRetract(context, toRetract);
         }
@@ -70,7 +70,7 @@ namespace NRules.Rete
             {
                 var value = _compiledExpression.Invoke(context, NodeInfo, tuple);
                 var fact = new Fact(value, ResultType);
-                tuple.SetState(this, fact);
+                context.WorkingMemory.SetState(this, tuple, fact);
                 toAssert.Add(tuple, fact);
             }
             catch (ExpressionEvaluationException e)
@@ -98,13 +98,13 @@ namespace NRules.Rete
                     throw new RuleLhsExpressionEvaluationException("Failed to evaluate binding expression",
                         e.Expression.ToString(), e.InnerException);
                 }
-                RetractBinding(tuple, toRetract);
+                RetractBinding(context, tuple, toRetract);
             }
         }
 
-        private void RetractBinding(Tuple tuple, TupleFactList toRetract)
+        private void RetractBinding(IExecutionContext context, Tuple tuple, TupleFactList toRetract)
         {
-            var fact = tuple.RemoveState<Fact>(this);
+            var fact = context.WorkingMemory.RemoveState<Fact>(this, tuple);
             if (fact != null)
             {
                 toRetract.Add(tuple, fact);

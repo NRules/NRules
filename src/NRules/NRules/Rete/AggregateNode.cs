@@ -37,7 +37,7 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 var matchingFacts = set.Facts;
-                IFactAggregator aggregator = CreateFactAggregator(set.Tuple);
+                IFactAggregator aggregator = CreateFactAggregator(context, set.Tuple);
                 AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
             }
             PropagateAggregation(context, aggregation);
@@ -50,7 +50,7 @@ namespace NRules.Rete
             var aggregation = new Aggregation();
             foreach (var set in joinedSets)
             {
-                IFactAggregator aggregator = GetFactAggregator(set.Tuple);
+                IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
                 if (aggregator != null)
                 {
                     if (_isSubnetJoin && set.Facts.Count > 0)
@@ -64,7 +64,7 @@ namespace NRules.Rete
                 else
                 {
                     var matchingFacts = set.Facts;
-                    aggregator = CreateFactAggregator(set.Tuple);
+                    aggregator = CreateFactAggregator(context, set.Tuple);
                     AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
                 }
             }
@@ -76,7 +76,7 @@ namespace NRules.Rete
             var aggregation = new Aggregation();
             foreach (var tuple in tuples)
             {
-                IFactAggregator aggregator = RemoveFactAggregator(tuple);
+                IFactAggregator aggregator = RemoveFactAggregator(context, tuple);
                 if (aggregator != null)
                 {
                     aggregation.Remove(tuple, aggregator.AggregateFacts);
@@ -96,10 +96,10 @@ namespace NRules.Rete
                 var matchingFacts = set.Facts;
                 if (matchingFacts.Count > 0)
                 {
-                    IFactAggregator aggregator = GetFactAggregator(set.Tuple);
+                    IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
                     if (aggregator == null)
                     {
-                        aggregator = CreateFactAggregator(set.Tuple);
+                        aggregator = CreateFactAggregator(context, set.Tuple);
 
                         var originalSet = JoinedSet(context, set.Tuple);
                         var matchingOriginalFacts = originalSet.Facts;
@@ -123,7 +123,7 @@ namespace NRules.Rete
                 var matchingFacts = set.Facts;
                 if (matchingFacts.Count > 0)
                 {
-                    IFactAggregator aggregator = GetFactAggregator(set.Tuple);
+                    IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
                     if (aggregator != null)
                     {
                         UpdateInAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
@@ -132,7 +132,7 @@ namespace NRules.Rete
                     {
                         var fullSet = JoinedSet(context, set.Tuple);
                         var allMatchingFacts = fullSet.Facts;
-                        aggregator = CreateFactAggregator(fullSet.Tuple);
+                        aggregator = CreateFactAggregator(context, fullSet.Tuple);
                         AddToAggregate(aggregationContext, aggregator, aggregation, fullSet.Tuple, allMatchingFacts);
                     }
                 }
@@ -151,7 +151,7 @@ namespace NRules.Rete
                 var matchingFacts = set.Facts;
                 if (matchingFacts.Count > 0)
                 {
-                    IFactAggregator aggregator = GetFactAggregator(set.Tuple);
+                    IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
                     if (aggregator != null)
                     {
                         RetractFromAggregate(aggregationContext, aggregator, aggregation, set.Tuple, set.Facts);
@@ -179,7 +179,7 @@ namespace NRules.Rete
                     throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
                         e.Expression.ToString(), e.InnerException);
                 }
-                ResetAggregator(aggregation, tuple, aggregator);
+                ResetAggregator(context.ExecutionContext, aggregation, tuple, aggregator);
             }
         }
 
@@ -196,7 +196,7 @@ namespace NRules.Rete
                     throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
                         e.Expression.ToString(), e.InnerException);
                 }
-                ResetAggregator(aggregation, tuple, aggregator);
+                ResetAggregator(context.ExecutionContext, aggregation, tuple, aggregator);
             }
         }
 
@@ -213,13 +213,13 @@ namespace NRules.Rete
                     throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
                         e.Expression.ToString(), e.InnerException);
                 }
-                ResetAggregator(aggregation, tuple, aggregator);
+                ResetAggregator(context.ExecutionContext, aggregation, tuple, aggregator);
             }
         }
 
-        private void ResetAggregator(Aggregation aggregation, Tuple tuple, IFactAggregator aggregator)
+        private void ResetAggregator(IExecutionContext context, Aggregation aggregation, Tuple tuple, IFactAggregator aggregator)
         {
-            tuple.RemoveState<IFactAggregator>(this);
+            context.WorkingMemory.RemoveState<IFactAggregator>(this, tuple);
             aggregation.Remove(tuple, aggregator.AggregateFacts);
         }
 
@@ -244,23 +244,23 @@ namespace NRules.Rete
             }
         }
 
-        private IFactAggregator CreateFactAggregator(Tuple tuple)
+        private IFactAggregator CreateFactAggregator(IExecutionContext context, Tuple tuple)
         {
             var aggregator = _aggregatorFactory.Create();
             var factAggregator = new FactAggregator(aggregator);
-            tuple.SetState(this, factAggregator);
+            context.WorkingMemory.SetState(this, tuple, factAggregator);
             return factAggregator;
         }
 
-        private IFactAggregator GetFactAggregator(Tuple tuple)
+        private IFactAggregator GetFactAggregator(IExecutionContext context, Tuple tuple)
         {
-            var factAggregator = tuple.GetState<IFactAggregator>(this);
+            var factAggregator = context.WorkingMemory.GetState<IFactAggregator>(this, tuple);
             return factAggregator;
         }
 
-        private IFactAggregator RemoveFactAggregator(Tuple tuple)
+        private IFactAggregator RemoveFactAggregator(IExecutionContext context, Tuple tuple)
         {
-            var factAggregator = tuple.RemoveState<IFactAggregator>(this);
+            var factAggregator = context.WorkingMemory.RemoveState<IFactAggregator>(this, tuple);
             return factAggregator;
         }
     }
