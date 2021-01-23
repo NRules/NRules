@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NRules.Collections;
 
 namespace NRules.Rete
@@ -13,10 +14,8 @@ namespace NRules.Rete
 
     internal class BetaMemory : IBetaMemory
     {
-        private static readonly Fact NullFact = new Fact();
-
         private readonly OrderedHashSet<Tuple> _tuples = new OrderedHashSet<Tuple>();
-        private readonly Dictionary<Tuple, Dictionary<Fact, Tuple>> _parentToChildMap = new Dictionary<Tuple, Dictionary<Fact, Tuple>>(); 
+        private readonly Dictionary<Key, Tuple> _parentToChildMap = new Dictionary<Key, Tuple>(); 
 
         public IEnumerable<Tuple> Tuples => _tuples;
 
@@ -34,32 +33,52 @@ namespace NRules.Rete
 
         public Tuple FindTuple(Tuple leftTuple, Fact rightFact)
         {
-            if (_parentToChildMap.TryGetValue(leftTuple, out var subMap))
-            {
-                subMap.TryGetValue(rightFact ?? NullFact, out var childTuple);
-                return childTuple;
-            }
-            return null;
+            var key = new Key(leftTuple, rightFact);
+            _parentToChildMap.TryGetValue(key, out var childTuple);
+            return childTuple;
         }
 
         private void AddMapping(Tuple tuple)
         {
             if (tuple.LeftTuple == null) return;
-            if (!_parentToChildMap.TryGetValue(tuple.LeftTuple, out var subMap))
-            {
-                subMap = new Dictionary<Fact, Tuple>();
-                _parentToChildMap[tuple.LeftTuple] = subMap;
-            }
-            subMap[tuple.RightFact ?? NullFact] = tuple;
+            var key = new Key(tuple.LeftTuple, tuple.RightFact);
+            _parentToChildMap[key] = tuple;
         }
 
         private void RemoveMapping(Tuple tuple)
         {
             if (tuple.LeftTuple == null) return;
-            if (_parentToChildMap.TryGetValue(tuple.LeftTuple, out var subMap))
+            var key = new Key(tuple.LeftTuple, tuple.RightFact);
+            _parentToChildMap.Remove(key);
+        }
+
+        private readonly struct Key : IEquatable<Key>
+        {
+            private readonly Tuple _tuple;
+            private readonly Fact _fact;
+
+            public Key(Tuple tuple, Fact fact)
             {
-                subMap.Remove(tuple.RightFact ?? NullFact);
-                if (subMap.Count == 0) _parentToChildMap.Remove(tuple.LeftTuple);
+                _tuple = tuple;
+                _fact = fact;
+            }
+
+            public bool Equals(Key other)
+            {
+                return ReferenceEquals(_tuple, other._tuple) && ReferenceEquals(_fact, other._fact);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Key other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (_tuple.GetHashCode() * 397) ^ (_fact != null ? _fact.GetHashCode() : 0);
+                }
             }
         }
     }
