@@ -36,7 +36,7 @@ namespace NRules.Integration.Autofac
                 .OnActivating(e =>
                 {
                     e.Instance.Activator = e.Context.Resolve<IRuleActivator>();
-                    e.Instance.Load(s => s.From(x => x.Type(ruleTypes)));
+                    e.Instance.Load(s => s.From(scanAction));
                 });
         }
 
