@@ -19,6 +19,7 @@ namespace NRules.Tests
         private readonly Mock<IIdGenerator> _idGenerator;
         private readonly Mock<IDependencyResolver> _dependencyResolver;
         private readonly Mock<IActionInterceptor> _actionInterceptor;
+        private readonly Mock<IExecutionContext> _context;
             
         public SessionTest()
         {
@@ -30,6 +31,7 @@ namespace NRules.Tests
             _idGenerator = new Mock<IIdGenerator>();
             _dependencyResolver = new Mock<IDependencyResolver>();
             _actionInterceptor = new Mock<IActionInterceptor>();
+            _context = new Mock<IExecutionContext>();
         }
 
         [Fact]
@@ -367,7 +369,7 @@ namespace NRules.Tests
         {
             // Arrange
             var target = CreateTarget();
-            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+            _agenda.Setup(x => x.Pop(_context.Object)).Returns(StubActivation());
             _agenda.SetupSequence(x => x.IsEmpty)
                 .Returns(false).Returns(false).Returns(true);
 
@@ -383,7 +385,7 @@ namespace NRules.Tests
         {
             // Arrange
             var target = CreateTarget();
-            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+            _agenda.Setup(x => x.Pop(_context.Object)).Returns(StubActivation());
             _agenda.SetupSequence(x => x.IsEmpty)
                 .Returns(false).Returns(false).Returns(true);
 
@@ -402,7 +404,7 @@ namespace NRules.Tests
                 // Arrange
                 var hitCount = 0;
                 var target = CreateTarget();
-                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda.Setup(x => x.Pop(_context.Object)).Returns(StubActivation());
                 _agenda
                     .Setup(x => x.IsEmpty)
                     .Returns(() =>
@@ -412,7 +414,7 @@ namespace NRules.Tests
                             cancellationSource.Cancel();
                         }
 
-                        return hitCount < 5 ? false : true;
+                        return hitCount >= 5;
                     });
 
                 // Act
@@ -432,7 +434,7 @@ namespace NRules.Tests
                 // Arrange
                 var hitCount = 0;
                 var target = CreateTarget();
-                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda.Setup(x => x.Pop(_context.Object)).Returns(StubActivation());
                 _agenda
                     .Setup(x => x.IsEmpty)
                     .Returns(() =>
@@ -442,7 +444,7 @@ namespace NRules.Tests
                             cancellationSource.Cancel();
                         }
 
-                        return hitCount < 5 ? false : true;
+                        return hitCount >= 5;
                     });
 
                 // Act
@@ -461,7 +463,7 @@ namespace NRules.Tests
             {
                 // Arrange
                 var target = CreateTarget();
-                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda.Setup(x => x.Pop(_context.Object)).Returns(StubActivation());
                 _agenda.SetupSequence(x => x.IsEmpty)
                     .Returns(false).Returns(true);
 
@@ -481,7 +483,7 @@ namespace NRules.Tests
             {
                 // Arrange
                 var target = CreateTarget();
-                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+                _agenda.Setup(x => x.Pop(_context.Object)).Returns(StubActivation());
                 _agenda.SetupSequence(x => x.IsEmpty)
                     .Returns(false).Returns(true);
 

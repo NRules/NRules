@@ -39,7 +39,7 @@ namespace NRules.Tests
             var target = CreateTarget();
 
             // Act - Assert
-            Assert.Throws<InvalidOperationException>(() => target.Pop());
+            Assert.Throws<InvalidOperationException>(() => target.Pop(_context.Object));
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace NRules.Tests
             target.Add(_context.Object, activation);
 
             // Act
-            var actualActivation = target.Pop();
+            var actualActivation = target.Pop(_context.Object);
 
             // Assert
             Assert.True(target.IsEmpty);
@@ -75,7 +75,7 @@ namespace NRules.Tests
 
             // Assert
             Assert.False(target.IsEmpty);
-            var actualActivation = target.Pop();
+            var actualActivation = target.Pop(_context.Object);
             Assert.Equal(rule, actualActivation.CompiledRule);
             Assert.Equal(factObject, actualActivation.Tuple.RightFact.Object);
             Assert.True(target.IsEmpty);
@@ -209,7 +209,7 @@ namespace NRules.Tests
 
             // Assert
             Assert.False(target.IsEmpty);
-            var actualActivation = target.Pop();
+            var actualActivation = target.Pop(_context.Object);
             Assert.Equal(rule, actualActivation.CompiledRule);
             Assert.Equal(factObject.Value, ((FactObject)actualActivation.Tuple.RightFact.Object).Value);
             Assert.True(target.IsEmpty);
@@ -225,14 +225,14 @@ namespace NRules.Tests
             var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.Add(_context.Object, activation);
-            target.Pop();
+            target.Pop(_context.Object);
  
             // Act
             target.Modify(_context.Object, activation);
 
             // Assert
             Assert.False(target.IsEmpty);
-            var actualActivation = target.Pop();
+            var actualActivation = target.Pop(_context.Object);
             Assert.Equal(rule, actualActivation.CompiledRule);
             Assert.True(target.IsEmpty);
         }
@@ -268,7 +268,7 @@ namespace NRules.Tests
             var activation = new Activation(rule, tuple);
             var target = CreateTarget();
             target.Add(_context.Object, activation);
-            target.Pop();
+            target.Pop(_context.Object);
 
             target.AddFilter(new RejectingFilter());
 
@@ -315,9 +315,9 @@ namespace NRules.Tests
 
             // Assert
             Assert.False(target.IsEmpty);
-            Assert.Equal(rule1, target.Pop().CompiledRule);
+            Assert.Equal(rule1, target.Pop(_context.Object).CompiledRule);
             Assert.False(target.IsEmpty);
-            Assert.Equal(rule2, target.Pop().CompiledRule);
+            Assert.Equal(rule2, target.Pop(_context.Object).CompiledRule);
         }
 
         [Fact]

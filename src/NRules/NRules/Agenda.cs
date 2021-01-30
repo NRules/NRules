@@ -48,7 +48,7 @@ namespace NRules
 
     internal interface IAgendaInternal : IAgenda
     {
-        Activation Pop();
+        Activation Pop(IExecutionContext context);
         void Add(IExecutionContext context, Activation activation);
         void Modify(IExecutionContext context, Activation activation);
         void Remove(IExecutionContext context, Activation activation);
@@ -88,10 +88,10 @@ namespace NRules
             filters.Add(filter);
         }
 
-        public Activation Pop()
+        public Activation Pop(IExecutionContext context)
         {
             Activation activation = _activationQueue.Dequeue();
-            activation.RuleFiring();
+            OnRuleFiring(context, activation);
             return activation;
         }
 
@@ -148,7 +148,7 @@ namespace NRules
 
         private bool Accept(IExecutionContext context, Activation activation)
         {
-            var agendaContext = new AgendaContext(context.Session, context.EventAggregator);
+            var agendaContext = new AgendaContext(context);
             try
             {
                 return AcceptActivation(agendaContext, activation);
@@ -176,6 +176,22 @@ namespace NRules
                 if (!filter.Accept(context, activation)) return false;
             }
             return true;
+        }
+
+        private void OnRuleFiring(IExecutionContext context, Activation activation)
+        {
+            activation.OnRuleFiring();
+
+            var agendaContext = new AgendaContext(context);
+            foreach (var filter in _globalFilters.OfType<IStatefulAgendaFilter>())
+            {
+                filter.OnFiring(agendaContext, activation);
+            }
+            if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters)) return;
+            foreach (var filter in ruleFilters.OfType<IStatefulAgendaFilter>())
+            {
+                filter.OnFiring(agendaContext, activation);
+            }
         }
     }
 }

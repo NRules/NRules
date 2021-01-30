@@ -697,7 +697,7 @@ namespace NRules
             int ruleFiredCount = 0;
             while (!_agenda.IsEmpty && ruleFiredCount < maxRulesNumber)
             {
-                Activation activation = _agenda.Pop();
+                Activation activation = _agenda.Pop(_executionContext);
                 IActionContext actionContext = new ActionContext(this, activation, cancellationToken);
 
                 try

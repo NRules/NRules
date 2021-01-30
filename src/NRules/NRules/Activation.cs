@@ -16,10 +16,6 @@ namespace NRules
     [DebuggerDisplay("{Rule.Name} FactCount={Tuple.Count}")]
     public class Activation : IMatch
     {
-        private Dictionary<object, object> _stateMap;
-
-        internal event EventHandler<ActivationEventArgs> OnRuleFiring;
-
         internal Activation(ICompiledRule compiledRule, Tuple tuple)
         {
             CompiledRule = compiledRule;
@@ -68,25 +64,9 @@ namespace NRules
             Trigger = MatchTrigger.None;
         }
 
-        internal void RuleFiring()
+        internal void OnRuleFiring()
         {
-            OnRuleFiring?.Invoke(this, new ActivationEventArgs(this));
             HasFired = Trigger != MatchTrigger.Removed;
-        }
-
-        internal T GetState<T>(object key)
-        {
-            if (_stateMap != null && _stateMap.TryGetValue(key, out var value))
-            {
-                return (T)value;
-            }
-            return default;
-        }
-
-        internal void SetState(object key, object value)
-        {
-            if (_stateMap == null) _stateMap = new Dictionary<object, object>();
-            _stateMap[key] = value;
         }
 
         private FactMatch[] GetMatchedFacts()

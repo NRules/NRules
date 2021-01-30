@@ -3,10 +3,10 @@ using System.Linq;
 
 namespace NRules.AgendaFilters
 {
-    internal class KeyChangeAgendaFilter : IAgendaFilter
+    internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
     {
-        private const string KeyName = "ChangeKeys";
         private readonly List<IActivationExpression<object>> _keySelectors;
+        private readonly Dictionary<Activation, ChangeKeys> _changeKeys = new Dictionary<Activation, ChangeKeys>();
 
         public KeyChangeAgendaFilter(IEnumerable<IActivationExpression<object>> keySelectors)
         {
@@ -15,12 +15,10 @@ namespace NRules.AgendaFilters
 
         public bool Accept(AgendaContext context, Activation activation)
         {
-            var keys = activation.GetState<ChangeKeys>(KeyName);
-            if (keys == null)
+            if (!_changeKeys.TryGetValue(activation, out var keys))
             {
                 keys = new ChangeKeys();
-                activation.SetState(KeyName, keys);
-                activation.OnRuleFiring += OnRuleFiring;
+                _changeKeys[activation] = keys;
             }
 
             keys.New = _keySelectors.Select(selector => selector.Invoke(context, activation)).ToList();
@@ -42,10 +40,9 @@ namespace NRules.AgendaFilters
             return accept;
         }
 
-        private void OnRuleFiring(object sender, ActivationEventArgs args)
+        public void OnFiring(AgendaContext context, Activation activation)
         {
-            var keys = args.Activation.GetState<ChangeKeys>(KeyName);
-            if (keys != null)
+            if (_changeKeys.TryGetValue(activation, out var keys))
             {
                 keys.Current = keys.New;
             }
