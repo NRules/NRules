@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.AgendaFilters
 {
@@ -15,19 +15,24 @@ namespace NRules.AgendaFilters
 
         public bool Accept(AgendaContext context, Activation activation)
         {
+            bool initial = false;
             if (!_changeKeys.TryGetValue(activation, out var keys))
             {
-                keys = new ChangeKeys();
+                initial = true;
+                keys = new ChangeKeys(_keySelectors.Count);
                 _changeKeys[activation] = keys;
             }
 
-            keys.New = _keySelectors.Select(selector => selector.Invoke(context, activation)).ToList();
+            for (int i = 0; i < _keySelectors.Count; i++)
+            {
+                keys.New[i] = _keySelectors[i].Invoke(context, activation);
+            }
             bool accept = true;
 
-            if (keys.Current != null)
+            if (!initial)
             {
                 accept = false;
-                for (int i = 0; i < keys.Current.Count; i++)
+                for (int i = 0; i < keys.Current.Length; i++)
                 {
                     if (!Equals(keys.Current[i], keys.New[i]))
                     {
@@ -44,14 +49,20 @@ namespace NRules.AgendaFilters
         {
             if (_changeKeys.TryGetValue(activation, out var keys))
             {
-                keys.Current = keys.New;
+                Array.Copy(keys.New, keys.Current, keys.Current.Length);
             }
         }
 
-        private class ChangeKeys
+        private readonly struct ChangeKeys
         {
-            public List<object> Current { get; set; }
-            public List<object> New { get; set; }
+            public ChangeKeys(int size)
+            {
+                Current = new object[size];
+                New = new object[size];
+            }
+
+            public object[] Current { get; }
+            public object[] New { get; }
         }
     }
 }
