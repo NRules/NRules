@@ -15,7 +15,7 @@ namespace NRules.Rete
         public AlphaMemoryNode MemoryNode { get; set; }
 
         [DebuggerDisplay("Count = {ChildNodes.Count}")]
-        public IList<AlphaNode> ChildNodes { get; }
+        public List<AlphaNode> ChildNodes { get; }
 
         public abstract bool IsSatisfiedBy(IExecutionContext context, Fact fact);
 

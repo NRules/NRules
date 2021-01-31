@@ -7,8 +7,8 @@ namespace NRules.Rete
     internal interface IBetaMemory
     {
         IEnumerable<Tuple> Tuples { get; }
-        void Add(Tuple tuple);
-        void Remove(Tuple tuple);
+        void Add(List<Tuple> tuples);
+        void Remove(List<Tuple> tuples);
         Tuple FindTuple(Tuple leftTuple, Fact rightFact);
     }
 
@@ -19,16 +19,22 @@ namespace NRules.Rete
 
         public IEnumerable<Tuple> Tuples => _tuples;
 
-        public void Add(Tuple tuple)
+        public void Add(List<Tuple> tuples)
         {
-            _tuples.Add(tuple);
-            AddMapping(tuple);
+            foreach (var tuple in tuples)
+            {
+                _tuples.Add(tuple);
+                AddMapping(tuple);
+            }
         }
 
-        public void Remove(Tuple tuple)
+        public void Remove(List<Tuple> tuples)
         {
-            _tuples.Remove(tuple);
-            RemoveMapping(tuple);
+            foreach (var tuple in tuples)
+            {
+                _tuples.Remove(tuple);
+                RemoveMapping(tuple);
+            }
         }
 
         public Tuple FindTuple(Tuple leftTuple, Fact rightFact)
