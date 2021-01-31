@@ -15,10 +15,7 @@ namespace NRules.Rete
             foreach (var set in joinedSets)
             {
                 var quantifier = context.CreateQuantifier(this, set.Tuple);
-                foreach (var fact in set.Facts)
-                {
-                    quantifier.Value++;
-                }
+                quantifier.Value += set.Facts.Count;
                 if (quantifier.Value == 0)
                 {
                     toAssert.Add(set.Tuple, null);
@@ -61,10 +58,7 @@ namespace NRules.Rete
             {
                 var quantifier = context.GetQuantifier(this, set.Tuple);
                 int startingCount = quantifier.Value;
-                foreach (var fact in set.Facts)
-                {
-                    quantifier.Value++;
-                }
+                quantifier.Value += set.Facts.Count;
                 if (startingCount == 0 && quantifier.Value > 0)
                 {
                     toRetract.Add(set.Tuple, null);
@@ -86,10 +80,7 @@ namespace NRules.Rete
             {
                 var quantifier = context.GetQuantifier(this, set.Tuple);
                 int startingCount = quantifier.Value;
-                foreach (var fact in set.Facts)
-                {
-                    quantifier.Value--;
-                }
+                quantifier.Value -= set.Facts.Count;
                 if (startingCount > 0 && quantifier.Value == 0)
                 {
                     toAssert.Add(set.Tuple, null);
