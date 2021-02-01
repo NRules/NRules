@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using NRules.Collections;
 
 namespace NRules.Rete
 {
@@ -14,7 +13,7 @@ namespace NRules.Rete
 
     internal class BetaMemory : IBetaMemory
     {
-        private readonly OrderedHashSet<Tuple> _tuples = new OrderedHashSet<Tuple>();
+        private readonly HashSet<Tuple> _tuples = new HashSet<Tuple>();
         private readonly Dictionary<Key, Tuple> _parentToChildMap = new Dictionary<Key, Tuple>(); 
 
         public IEnumerable<Tuple> Tuples => _tuples;

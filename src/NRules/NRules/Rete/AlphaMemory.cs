@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using NRules.Collections;
 
 namespace NRules.Rete
 {
@@ -13,7 +12,7 @@ namespace NRules.Rete
 
     internal class AlphaMemory : IAlphaMemory
     {
-        private readonly OrderedHashSet<Fact> _facts = new OrderedHashSet<Fact>();
+        private readonly HashSet<Fact> _facts = new HashSet<Fact>();
 
         public IEnumerable<Fact> Facts => _facts;
 
