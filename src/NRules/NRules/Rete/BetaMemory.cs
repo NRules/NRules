@@ -14,7 +14,7 @@ namespace NRules.Rete
     internal class BetaMemory : IBetaMemory
     {
         private readonly HashSet<Tuple> _tuples = new HashSet<Tuple>();
-        private readonly Dictionary<Key, Tuple> _parentToChildMap = new Dictionary<Key, Tuple>(); 
+        private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new Dictionary<TupleFactKey, Tuple>(); 
 
         public IEnumerable<Tuple> Tuples => _tuples;
 
@@ -38,7 +38,7 @@ namespace NRules.Rete
 
         public Tuple FindTuple(Tuple leftTuple, Fact rightFact)
         {
-            var key = new Key(leftTuple, rightFact);
+            var key = new TupleFactKey(leftTuple, rightFact);
             _parentToChildMap.TryGetValue(key, out var childTuple);
             return childTuple;
         }
@@ -46,36 +46,36 @@ namespace NRules.Rete
         private void AddMapping(Tuple tuple)
         {
             if (tuple.LeftTuple == null) return;
-            var key = new Key(tuple.LeftTuple, tuple.RightFact);
+            var key = new TupleFactKey(tuple.LeftTuple, tuple.RightFact);
             _parentToChildMap[key] = tuple;
         }
 
         private void RemoveMapping(Tuple tuple)
         {
             if (tuple.LeftTuple == null) return;
-            var key = new Key(tuple.LeftTuple, tuple.RightFact);
+            var key = new TupleFactKey(tuple.LeftTuple, tuple.RightFact);
             _parentToChildMap.Remove(key);
         }
 
-        private readonly struct Key : IEquatable<Key>
+        private readonly struct TupleFactKey : IEquatable<TupleFactKey>
         {
             private readonly Tuple _tuple;
             private readonly Fact _fact;
 
-            public Key(Tuple tuple, Fact fact)
+            public TupleFactKey(Tuple tuple, Fact fact)
             {
                 _tuple = tuple;
                 _fact = fact;
             }
 
-            public bool Equals(Key other)
+            public bool Equals(TupleFactKey other)
             {
                 return ReferenceEquals(_tuple, other._tuple) && ReferenceEquals(_fact, other._fact);
             }
 
             public override bool Equals(object obj)
             {
-                return obj is Key other && Equals(other);
+                return obj is TupleFactKey other && Equals(other);
             }
 
             public override int GetHashCode()
