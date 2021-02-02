@@ -24,7 +24,7 @@ namespace NRules.Rete
             {
                 var activation = new Activation(CompiledRule, tuple);
                 context.WorkingMemory.SetState(this, tuple, activation);
-                context.Agenda.Add(context, activation);
+                context.Agenda.Add(activation);
                 context.EventAggregator.RaiseActivationCreated(context.Session, activation);
             }
         }
@@ -34,7 +34,7 @@ namespace NRules.Rete
             foreach (var tuple in tuples)
             {
                 var activation = context.WorkingMemory.GetStateOrThrow<Activation>(this, tuple);
-                context.Agenda.Modify(context, activation);
+                context.Agenda.Modify(activation);
                 context.EventAggregator.RaiseActivationUpdated(context.Session, activation);
             }
         }
@@ -44,7 +44,7 @@ namespace NRules.Rete
             foreach (var tuple in tuples)
             {
                 var activation = context.WorkingMemory.RemoveStateOrThrow<Activation>(this, tuple);
-                context.Agenda.Remove(context, activation);
+                context.Agenda.Remove(activation);
                 context.EventAggregator.RaiseActivationDeleted(context.Session, activation);
             }
         }

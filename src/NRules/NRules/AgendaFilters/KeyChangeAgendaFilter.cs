@@ -45,12 +45,17 @@ namespace NRules.AgendaFilters
             return accept;
         }
 
-        public void OnFiring(AgendaContext context, Activation activation)
+        public void Select(AgendaContext context, Activation activation)
         {
             if (_changeKeys.TryGetValue(activation, out var keys))
             {
                 Array.Copy(keys.New, keys.Current, keys.Current.Length);
             }
+        }
+
+        public void Remove(AgendaContext context, Activation activation)
+        {
+            _changeKeys.Remove(activation);
         }
 
         private readonly struct ChangeKeys

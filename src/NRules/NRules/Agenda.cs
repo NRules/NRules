@@ -48,17 +48,21 @@ namespace NRules
 
     internal interface IAgendaInternal : IAgenda
     {
-        Activation Pop(IExecutionContext context);
-        void Add(IExecutionContext context, Activation activation);
-        void Modify(IExecutionContext context, Activation activation);
-        void Remove(IExecutionContext context, Activation activation);
+        void Initialize(IExecutionContext context);
+        Activation Pop();
+        void Add(Activation activation);
+        void Modify(Activation activation);
+        void Remove(Activation activation);
     }
 
     internal class Agenda : IAgendaInternal
     {
         private readonly ActivationQueue _activationQueue = new ActivationQueue();
         private readonly List<IAgendaFilter> _globalFilters = new List<IAgendaFilter>();
+        private readonly List<IStatefulAgendaFilter> _globalStatefulFilters = new List<IStatefulAgendaFilter>();
         private readonly Dictionary<IRuleDefinition, List<IAgendaFilter>> _ruleFilters = new Dictionary<IRuleDefinition, List<IAgendaFilter>>();
+        private readonly Dictionary<IRuleDefinition, List<IStatefulAgendaFilter>> _ruleStatefulFilters = new Dictionary<IRuleDefinition, List<IStatefulAgendaFilter>>();
+        private AgendaContext _context;
 
         public bool IsEmpty => !_activationQueue.HasActive();
 
@@ -76,6 +80,9 @@ namespace NRules
         public void AddFilter(IAgendaFilter filter)
         {
             _globalFilters.Add(filter);
+
+            if (filter is IStatefulAgendaFilter saf)
+                _globalStatefulFilters.Add(saf);
         }
 
         public void AddFilter(IRuleDefinition rule, IAgendaFilter filter)
@@ -86,19 +93,35 @@ namespace NRules
                 _ruleFilters.Add(rule, filters);
             }
             filters.Add(filter);
+
+            if (filter is IStatefulAgendaFilter saf)
+            {
+                if (!_ruleStatefulFilters.TryGetValue(rule, out var statefulFilters))
+                {
+                    statefulFilters = new List<IStatefulAgendaFilter>();
+                    _ruleStatefulFilters.Add(rule, statefulFilters);
+                }
+                statefulFilters.Add(saf);
+            }
         }
 
-        public Activation Pop(IExecutionContext context)
+        public void Initialize(IExecutionContext context)
+        {
+            _context = new AgendaContext(context);
+        }
+
+        public Activation Pop()
         {
             Activation activation = _activationQueue.Dequeue();
-            OnRuleFiring(context, activation);
+            activation.OnSelect();
+            SelectActivation(activation);
             return activation;
         }
 
-        public void Add(IExecutionContext context, Activation activation)
+        public void Add(Activation activation)
         {
             activation.OnInsert();
-            if (Accept(context, activation))
+            if (Accept(activation))
             {
                 _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
             }
@@ -108,7 +131,7 @@ namespace NRules
             }
         }
 
-        public void Modify(IExecutionContext context, Activation activation)
+        public void Modify(Activation activation)
         {
             if (activation.CompiledRule.Repeatability == RuleRepeatability.NonRepeatable &&
                 activation.HasFired)
@@ -117,7 +140,7 @@ namespace NRules
             }
 
             activation.OnUpdate();
-            if (Accept(context, activation))
+            if (Accept(activation))
             {
                 _activationQueue.Enqueue(activation.CompiledRule.Priority, activation);
             }
@@ -127,9 +150,10 @@ namespace NRules
             }
         }
 
-        public void Remove(IExecutionContext context, Activation activation)
+        public void Remove(Activation activation)
         {
             activation.OnRemove();
+            RemoveActivation(activation);
             if (activation.Trigger.Matches(activation.CompiledRule.ActionTriggers) &&
                 activation.HasFired)
             {
@@ -140,18 +164,17 @@ namespace NRules
                 _activationQueue.Remove(activation);
             }
 
-            if (context.Session.GetLinkedKeys(activation).Any())
+            if (_context.Session.GetLinkedKeys(activation).Any())
             {
-                context.Session.QueueRetractLinked(activation);
+                _context.Session.QueueRetractLinked(activation);
             }
         }
 
-        private bool Accept(IExecutionContext context, Activation activation)
+        private bool Accept(Activation activation)
         {
-            var agendaContext = new AgendaContext(context);
             try
             {
-                return AcceptActivation(agendaContext, activation);
+                return AcceptActivation(activation);
             }
             catch (ExpressionEvaluationException e)
             {
@@ -164,33 +187,43 @@ namespace NRules
             }
         }
 
-        private bool AcceptActivation(AgendaContext context, Activation activation)
+        private bool AcceptActivation(Activation activation)
         {
             foreach (var filter in _globalFilters)
             {
-                if (!filter.Accept(context, activation)) return false;
+                if (!filter.Accept(_context, activation)) return false;
             }
             if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters)) return true;
             foreach (var filter in ruleFilters)
             {
-                if (!filter.Accept(context, activation)) return false;
+                if (!filter.Accept(_context, activation)) return false;
             }
             return true;
         }
 
-        private void OnRuleFiring(IExecutionContext context, Activation activation)
+        private void SelectActivation(Activation activation)
         {
-            activation.OnRuleFiring();
-
-            var agendaContext = new AgendaContext(context);
-            foreach (var filter in _globalFilters.OfType<IStatefulAgendaFilter>())
+            foreach (var filter in _globalStatefulFilters)
             {
-                filter.OnFiring(agendaContext, activation);
+                filter.Select(_context, activation);
             }
-            if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters)) return;
-            foreach (var filter in ruleFilters.OfType<IStatefulAgendaFilter>())
+            if (!_ruleStatefulFilters.TryGetValue(activation.Rule, out var ruleStatefulFilters)) return;
+            foreach (var filter in ruleStatefulFilters)
             {
-                filter.OnFiring(agendaContext, activation);
+                filter.Select(_context, activation);
+            }
+        }
+
+        private void RemoveActivation(Activation activation)
+        {
+            foreach (var filter in _globalStatefulFilters)
+            {
+                filter.Remove(_context, activation);
+            }
+            if (!_ruleStatefulFilters.TryGetValue(activation.Rule, out var ruleStatefulFilters)) return;
+            foreach (var filter in ruleStatefulFilters)
+            {
+                filter.Remove(_context, activation);
             }
         }
     }

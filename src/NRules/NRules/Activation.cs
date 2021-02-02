@@ -58,15 +58,15 @@ namespace NRules
             Trigger = HasFired ? MatchTrigger.Removed : MatchTrigger.None;
         }
 
+        internal void OnSelect()
+        {
+            HasFired = Trigger != MatchTrigger.Removed;
+        }
+
         internal void Clear()
         {
             HasFired = false;
             Trigger = MatchTrigger.None;
-        }
-
-        internal void OnRuleFiring()
-        {
-            HasFired = Trigger != MatchTrigger.Removed;
         }
 
         private FactMatch[] GetMatchedFacts()
