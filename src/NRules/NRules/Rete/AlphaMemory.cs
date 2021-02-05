@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using NRules.Collections;
 
 namespace NRules.Rete
 {
@@ -7,13 +6,13 @@ namespace NRules.Rete
     {
         IEnumerable<Fact> Facts { get; }
         bool Contains(Fact fact);
-        void Add(IEnumerable<Fact> facts);
-        void Remove(IEnumerable<Fact> facts);
+        void Add(List<Fact> facts);
+        void Remove(List<Fact> facts);
     }
 
     internal class AlphaMemory : IAlphaMemory
     {
-        private readonly OrderedHashSet<Fact> _facts = new OrderedHashSet<Fact>();
+        private readonly HashSet<Fact> _facts = new HashSet<Fact>();
 
         public IEnumerable<Fact> Facts => _facts;
 
@@ -22,26 +21,20 @@ namespace NRules.Rete
             return _facts.Contains(fact);
         }
 
-        public void Add(Fact fact)
-        {
-            _facts.Add(fact);
-        }
-
-        public void Add(IEnumerable<Fact> facts)
+        public void Add(List<Fact> facts)
         {
             foreach (var fact in facts)
-                Add(fact);
+            {
+                _facts.Add(fact);
+            }
         }
 
-        public void Remove(Fact fact)
-        {
-            _facts.Remove(fact);
-        }
-
-        public void Remove(IEnumerable<Fact> facts)
+        public void Remove(List<Fact> facts)
         {
             foreach (var fact in facts)
-                Remove(fact);
+            {
+                _facts.Remove(fact);
+            }
         }
     }
 }

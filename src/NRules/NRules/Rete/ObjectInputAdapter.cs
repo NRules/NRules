@@ -21,7 +21,7 @@ namespace NRules.Rete
             foreach (var tuple in tuples)
             {
                 var wrapperFact = new WrapperFact(tuple);
-                tuple.SetState(this, wrapperFact);
+                context.WorkingMemory.SetState(this, tuple, wrapperFact);
                 toAssert.Add(wrapperFact);
             }
             foreach (var sink in _sinks)
@@ -35,7 +35,7 @@ namespace NRules.Rete
             var toUpdate = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)
             {
-                var wrapperFact = tuple.GetStateOrThrow<WrapperFact>(this);
+                var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, tuple);
                 toUpdate.Add(wrapperFact);
             }
             foreach (var sink in _sinks)
@@ -49,7 +49,7 @@ namespace NRules.Rete
             var toRetract = new List<Fact>(tuples.Count);
             foreach (var tuple in tuples)
             {
-                var wrapperFact = tuple.GetStateOrThrow<WrapperFact>(this);
+                var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, tuple);
                 toRetract.Add(wrapperFact);
             }
             foreach (var sink in _sinks)
@@ -58,7 +58,7 @@ namespace NRules.Rete
             }
             foreach (var tuple in tuples)
             {
-                tuple.RemoveStateOrThrow<WrapperFact>(this);
+                context.WorkingMemory.RemoveStateOrThrow<WrapperFact>(this, tuple);
             }
         }
 
@@ -68,7 +68,7 @@ namespace NRules.Rete
             var sourceFacts = new List<Fact>();
             foreach (var sourceTuple in sourceTuples)
             {
-                var wrapperFact = sourceTuple.GetStateOrThrow<WrapperFact>(this);
+                var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, sourceTuple);
                 sourceFacts.Add(wrapperFact);
             }
             return sourceFacts;

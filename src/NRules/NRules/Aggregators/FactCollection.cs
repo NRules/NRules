@@ -49,7 +49,7 @@ namespace NRules.Aggregators
 
         public IEnumerable<IFact> Facts => _facts;
 
-        private class NodePair
+        private readonly struct NodePair
         {
             public NodePair(IFact fact, TElement element)
             {

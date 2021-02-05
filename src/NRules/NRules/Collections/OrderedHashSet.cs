@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace NRules.Collections
 {
-    internal class OrderedHashSet<TValue> : ICollection<TValue>
+    internal class OrderedHashSet<TValue> : IEnumerable<TValue>
     {
-        private readonly IDictionary<TValue, LinkedListNode<TValue>> _dictionary;
+        private readonly Dictionary<TValue, LinkedListNode<TValue>> _dictionary;
         private readonly LinkedList<TValue> _linkedList;
 
         public OrderedHashSet()
@@ -20,12 +20,6 @@ namespace NRules.Collections
         }
 
         public int Count => _dictionary.Count;
-        public bool IsReadOnly => _dictionary.IsReadOnly;
-
-        void ICollection<TValue>.Add(TValue item)
-        {
-            Add(item);
-        }
 
         public void Clear()
         {
@@ -55,11 +49,6 @@ namespace NRules.Collections
         public bool Contains(TValue item)
         {
             return _dictionary.ContainsKey(item);
-        }
-
-        public void CopyTo(TValue[] array, int arrayIndex)
-        {
-            _linkedList.CopyTo(array, arrayIndex);
         }
 
         public bool Add(TValue item)

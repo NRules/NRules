@@ -337,6 +337,7 @@ namespace NRules
 
         internal void Activate()
         {
+            _agenda.Initialize(_executionContext);
             _network.Activate(_executionContext);
         }
 

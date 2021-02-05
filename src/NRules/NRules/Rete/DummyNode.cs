@@ -19,7 +19,7 @@ namespace NRules.Rete
             {
                 sink.PropagateAssert(context, tupleList);
             }
-            memory.Add(tuple);
+            memory.Add(tupleList);
         }
 
         public IEnumerable<Tuple> GetTuples(IExecutionContext context)

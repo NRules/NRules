@@ -84,10 +84,7 @@ namespace NRules.Rete
                 {
                     _sinks[i].PropagateAssert(context, tuples);
                 }
-                foreach (var childTuple in tuples)
-                {
-                    memory.Add(childTuple);
-                }
+                memory.Add(tuples);
             }
         }
 
@@ -105,11 +102,8 @@ namespace NRules.Rete
         private void PropagateRetractInternal(IExecutionContext context, IBetaMemory memory, List<Tuple> tuples)
         {
             if (tuples.Count > 0)
-            {
-                foreach (var childTuple in tuples)
-                {
-                    memory.Remove(childTuple);
-                }
+            { 
+                memory.Remove(tuples);
                 for (int i = _sinks.Count - 1; i >= 0; i--)
                 {
                     _sinks[i].PropagateRetract(context, tuples);

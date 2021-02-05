@@ -1,12 +1,12 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.AgendaFilters
 {
-    internal class KeyChangeAgendaFilter : IAgendaFilter
+    internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
     {
-        private const string KeyName = "ChangeKeys";
         private readonly List<IActivationExpression<object>> _keySelectors;
+        private readonly Dictionary<Activation, ChangeKeys> _changeKeys = new Dictionary<Activation, ChangeKeys>();
 
         public KeyChangeAgendaFilter(IEnumerable<IActivationExpression<object>> keySelectors)
         {
@@ -15,21 +15,24 @@ namespace NRules.AgendaFilters
 
         public bool Accept(AgendaContext context, Activation activation)
         {
-            var keys = activation.GetState<ChangeKeys>(KeyName);
-            if (keys == null)
+            bool initial = false;
+            if (!_changeKeys.TryGetValue(activation, out var keys))
             {
-                keys = new ChangeKeys();
-                activation.SetState(KeyName, keys);
-                activation.OnRuleFiring += OnRuleFiring;
+                initial = true;
+                keys = new ChangeKeys(_keySelectors.Count);
+                _changeKeys[activation] = keys;
             }
 
-            keys.New = _keySelectors.Select(selector => selector.Invoke(context, activation)).ToList();
+            for (int i = 0; i < _keySelectors.Count; i++)
+            {
+                keys.New[i] = _keySelectors[i].Invoke(context, activation);
+            }
             bool accept = true;
 
-            if (keys.Current != null)
+            if (!initial)
             {
                 accept = false;
-                for (int i = 0; i < keys.Current.Count; i++)
+                for (int i = 0; i < keys.Current.Length; i++)
                 {
                     if (!Equals(keys.Current[i], keys.New[i]))
                     {
@@ -42,19 +45,29 @@ namespace NRules.AgendaFilters
             return accept;
         }
 
-        private void OnRuleFiring(object sender, ActivationEventArgs args)
+        public void Select(AgendaContext context, Activation activation)
         {
-            var keys = args.Activation.GetState<ChangeKeys>(KeyName);
-            if (keys != null)
+            if (_changeKeys.TryGetValue(activation, out var keys))
             {
-                keys.Current = keys.New;
+                Array.Copy(keys.New, keys.Current, keys.Current.Length);
             }
         }
 
-        private class ChangeKeys
+        public void Remove(AgendaContext context, Activation activation)
         {
-            public List<object> Current { get; set; }
-            public List<object> New { get; set; }
+            _changeKeys.Remove(activation);
+        }
+
+        private readonly struct ChangeKeys
+        {
+            public ChangeKeys(int size)
+            {
+                Current = new object[size];
+                New = new object[size];
+            }
+
+            public object[] Current { get; }
+            public object[] New { get; }
         }
     }
 }

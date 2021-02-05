@@ -412,7 +412,7 @@ namespace NRules.Tests
                             cancellationSource.Cancel();
                         }
 
-                        return hitCount < 5 ? false : true;
+                        return hitCount >= 5;
                     });
 
                 // Act
@@ -442,7 +442,7 @@ namespace NRules.Tests
                             cancellationSource.Cancel();
                         }
 
-                        return hitCount < 5 ? false : true;
+                        return hitCount >= 5;
                     });
 
                 // Act

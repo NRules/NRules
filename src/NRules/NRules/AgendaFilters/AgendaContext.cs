@@ -10,10 +10,10 @@ namespace NRules.AgendaFilters
         internal ISessionInternal Session { get; }
         internal IEventAggregator EventAggregator { get; }
 
-        internal AgendaContext(ISessionInternal session, IEventAggregator eventAggregator)
+        internal AgendaContext(IExecutionContext context)
         {
-            Session = session;
-            EventAggregator = eventAggregator;
+            Session = context.Session;
+            EventAggregator = context.EventAggregator;
         }
     }
 }
