@@ -3,7 +3,7 @@
   <Import Project="..\..\..\Common.props" />
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,13 +19,13 @@
 
   <ItemGroup>
     <Reference Include="NRules">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.dll</HintPath>
+      <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.dll</HintPath>
     </Reference>
     <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.Fluent.dll</HintPath>
+      <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.RuleModel.dll</HintPath>
+      <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.RuleModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   

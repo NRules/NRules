@@ -23,26 +23,19 @@ $components = @{
             frameworks = @('net48', 'netcoreapp3.1')
         }
         bin = @{
-            frameworks = @('net45', 'netstandard1.0', 'netstandard2.0')
-            'net45' = @{
-                include = @(
-                    "NRules\bin\$configuration\net45",
-                    "NRules.Fluent\bin\$configuration\net45",
-                    "NRules.RuleModel\bin\$configuration\net45"
-                )
-            }
-            'netstandard1.0' = @{
-                include = @(
-                    "NRules\bin\$configuration\netstandard1.0",
-                    "NRules.Fluent\bin\$configuration\netstandard1.0",
-                    "NRules.RuleModel\bin\$configuration\netstandard1.0"
-                )
-            }
+            frameworks = @('netstandard2.0', 'netstandard2.1')
             'netstandard2.0' = @{
                 include = @(
                     "NRules\bin\$configuration\netstandard2.0",
                     "NRules.Fluent\bin\$configuration\netstandard2.0",
                     "NRules.RuleModel\bin\$configuration\netstandard2.0"
+                )
+            }
+            'netstandard2.1' = @{
+                include = @(
+                    "NRules\bin\$configuration\netstandard2.1",
+                    "NRules.Fluent\bin\$configuration\netstandard2.1",
+                    "NRules.RuleModel\bin\$configuration\netstandard2.1"
                 )
             }
         }
@@ -64,10 +57,10 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net45')
-            'net45' = @{
+            frameworks = @('net462')
+            'net462' = @{
                 include = @(
-                    "NRules.Debugger.Visualizer\bin\$configuration\net45"
+                    "NRules.Debugger.Visualizer\bin\$configuration\net462"
                 )
             }
         }
@@ -82,10 +75,15 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('netstandard2.0')
+            frameworks = @('netstandard2.0', 'netstandard2.1')
             'netstandard2.0' = @{
                 include = @(
                     "NRules.Integration.Autofac\bin\$configuration\netstandard2.0"
+                )
+            }
+            'netstandard2.1' = @{
+                include = @(
+                    "NRules.Integration.Autofac\bin\$configuration\netstandard2.1"
                 )
             }
         }
