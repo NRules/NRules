@@ -130,12 +130,12 @@ $components = @{
         }
         bin = @{
             frameworks = @('net48', 'netcoreapp3.1')
-            'net472' = @{
+            'net48' = @{
                 include = @(
                     "NRules.Benchmark\bin\$configuration\net48"
                 )
             }
-            'netcoreapp2.0' = @{
+            'netcoreapp3.1' = @{
                 include = @(
                     "NRules.Benchmark\bin\$configuration\netcoreapp3.1"
                 )
