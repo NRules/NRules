@@ -23,7 +23,7 @@ $components = @{
             frameworks = @('net48', 'netcoreapp3.1')
         }
         bin = @{
-            frameworks = @('netstandard2.0', 'netstandard2.1')
+            artifacts = @('netstandard2.0', 'netstandard2.1')
             'netstandard2.0' = @{
                 include = @(
                     "NRules\bin\$configuration\netstandard2.0",
@@ -57,17 +57,18 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net472', 'netstandard2.0')
-            'net472' = @{
+            artifacts = @('debugger-side', 'debuggee-side-netstandard2.0')
+            'debugger-side' = @{
                 include = @(
                     "NRules.Debugger.Visualizer\bin\$configuration\net472\NRules.Debugger.Visualizer.dll"
                 )
                 output = "."
             }
-            'netstandard2.0' = @{
+            'debuggee-side-netstandard2.0' = @{
                 include = @(
                     "NRules.Debugger.Visualizer.DebuggeeSide\bin\$configuration\netstandard2.0\NRules.Debugger.Visualizer.DebuggeeSide.dll"
                 )
+                output = "netstandard2.0"
             }
         }
     };
@@ -81,7 +82,7 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('netstandard2.0', 'netstandard2.1')
+            artifacts = @('netstandard2.0', 'netstandard2.1')
             'netstandard2.0' = @{
                 include = @(
                     "NRules.Integration.Autofac\bin\$configuration\netstandard2.0"
@@ -130,7 +131,7 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net48', 'netcoreapp3.1')
+            artifacts = @('net48', 'netcoreapp3.1')
             'net48' = @{
                 include = @(
                     "NRules.Benchmark\bin\$configuration\net48"
