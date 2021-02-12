@@ -57,10 +57,15 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net462')
-            'net462' = @{
+            frameworks = @('net472', 'netstandard2.0')
+            'net472' = @{
                 include = @(
-                    "NRules.Debugger.Visualizer\bin\$configuration\net462"
+                    "NRules.Debugger.Visualizer\bin\$configuration\net472\NRules.Debugger.Visualizer.dll"
+                )
+            }
+            'netstandard2.0' = @{
+                include = @(
+                    "NRules.Debugger.Visualizer.DebuggeeSide\bin\$configuration\netstandard2.0\NRules.Debugger.Visualizer.DebuggeeSide.dll"
                 )
             }
         }
@@ -152,19 +157,23 @@ $components = @{
     };
 }
 
-$core = @('NRules', 'NRules.Debugger.Visualizer')
+$core = @('NRules')
+$visualizer = @('NRules.Debugger.Visualizer')
 $integration = $components.keys | where { $_.StartsWith("NRules.Integration") }
 $samples = $components.keys | where { $_.StartsWith("Samples.") }
 
 $componentList = @()
 if ($component -eq "Core") {
     $componentList += $core
+} elseif ($component -eq "Visualizer") {
+    $componentList += $visualizer
 } elseif ($component -eq "Integration") {
     $componentList += $integration
 } elseif ($component -eq "Samples") {
     $componentList += $samples
 } elseif ($component -eq "All") {
     $componentList += $core
+    $componentList += $visualizer
     $componentList += $integration
     $componentList += $samples
 } else {

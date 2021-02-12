@@ -136,9 +136,12 @@ task Build -depends Compile, Test, ResetPatch -precondition { return $component.
     foreach ($framework in $component.bin.frameworks) {
         $destDir = "$binariesDir\$framework"
         Create-Directory $destDir
-        foreach ($include_dir in $component.bin.$framework.include) {
-            $sourceDir = "$srcDir\$include_dir"
-            Get-ChildItem "$sourceDir\**" | Copy-Item -Destination $destDir -Force
+        foreach ($item in $component.bin.$framework.include) {
+            $itemPath = "$srcDir\$item"
+            if (Test-Path -Path $itemPath -PathType Container) {
+                $itemPath = "$itemPath\**"
+            }
+            Get-ChildItem $itemPath | Copy-Item -Destination $destDir -Force
         }
     }
 }
