@@ -134,7 +134,11 @@ task Build -depends Compile, Test, ResetPatch -precondition { return $component.
     }
     Create-Directory $binariesDir
     foreach ($framework in $component.bin.frameworks) {
-        $destDir = "$binariesDir\$framework"
+        $outputDir = $framework
+        if ($component.bin.$framework.ContainsKey('output')) {
+            $outputDir = $component.bin.$framework.output
+        }
+        $destDir = "$binariesDir\$outputDir"
         Create-Directory $destDir
         foreach ($item in $component.bin.$framework.include) {
             $itemPath = "$srcDir\$item"

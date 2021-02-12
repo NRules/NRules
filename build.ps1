@@ -62,6 +62,7 @@ $components = @{
                 include = @(
                     "NRules.Debugger.Visualizer\bin\$configuration\net472\NRules.Debugger.Visualizer.dll"
                 )
+                output = "."
             }
             'netstandard2.0' = @{
                 include = @(
