@@ -9,6 +9,10 @@ namespace NRules.Fluent.Expressions
 {
     internal class RightHandSideExpression : IRightHandSideExpression
     {
+        private static readonly MethodInfo GetLinkedMethod = typeof(IContext).GetMethod(nameof(IContext.GetLinked));
+        private static readonly MethodInfo InsertLinkedMethod = typeof(IContext).GetMethod(nameof(IContext.InsertLinked));
+        private static readonly MethodInfo UpdateLinkedMethod = typeof(IContext).GetMethod(nameof(IContext.UpdateLinked));
+
         private int _linkedCount = 0;
         private readonly ActionGroupBuilder _builder;
         private readonly SymbolStack _symbolStack;
@@ -63,18 +67,18 @@ namespace NRules.Fluent.Expressions
                     Expression.Assign(linkedFact,
                         Expression.Convert(
                             Expression.Call(context,
-                                typeof(IContext).GetTypeInfo().GetDeclaredMethod(nameof(IContext.GetLinked)),
+                                GetLinkedMethod,
                                 linkedKey),
                             typeof(TFact))),
                     Expression.IfThenElse(
                         Expression.Equal(linkedFact, Expression.Constant(null)),
                         Expression.Call(context,
-                            typeof(IContext).GetTypeInfo().GetDeclaredMethod(nameof(IContext.InsertLinked)), linkedKey,
+                            InsertLinkedMethod, linkedKey,
                             yieldInsert.Body),
                         Expression.Block(
                             Expression.Assign(linkedFact, Expression.Invoke(yieldUpdate, context, linkedFact)),
                             Expression.Call(context,
-                                typeof(IContext).GetTypeInfo().GetDeclaredMethod(nameof(IContext.UpdateLinked)),
+                                UpdateLinkedMethod,
                                 linkedKey, linkedFact)))
                 ),
                 context);

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace NRules.RuleModel.Builders
 {
@@ -87,7 +86,7 @@ namespace NRules.RuleModel.Builders
             var sourceType = element.Source.ValueType;
             var resultType = element.ResultType;
             var expectedResultType = typeof(IEnumerable<>).MakeGenericType(sourceType);
-            if (!expectedResultType.GetTypeInfo().IsAssignableFrom(resultType.GetTypeInfo()))
+            if (!expectedResultType.IsAssignableFrom(resultType))
             {
                 throw new ArgumentException(
                     $"Collect result must be a collection of source elements. ElementType={sourceType}, ResultType={resultType}");
@@ -143,7 +142,7 @@ namespace NRules.RuleModel.Builders
             }
 
             var groupType = typeof(IGrouping<,>).MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
-            if (!resultType.GetTypeInfo().IsAssignableFrom(groupType.GetTypeInfo()))
+            if (!resultType.IsAssignableFrom(groupType))
             {
                 throw new ArgumentException(
                     "GroupBy key/element selectors must produce a grouping assignable to the aggregation result. " +
@@ -167,7 +166,7 @@ namespace NRules.RuleModel.Builders
                     "Projection selector must have its first parameter type that matches the aggregate source. " +
                     $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}");
             }
-            if (!resultType.GetTypeInfo().IsAssignableFrom(selector.ReturnType.GetTypeInfo()))
+            if (!resultType.IsAssignableFrom(selector.ReturnType))
             {
                 throw new ArgumentException(
                     "Projection selector must produce a value assignable to the aggregation result. " +
@@ -192,7 +191,7 @@ namespace NRules.RuleModel.Builders
                     $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}");
             }
             var resultCollectionType = typeof(IEnumerable<>).MakeGenericType(resultType);
-            if (!resultCollectionType.GetTypeInfo().IsAssignableFrom(selector.ReturnType.GetTypeInfo()))
+            if (!resultCollectionType.IsAssignableFrom(selector.ReturnType))
             {
                 throw new ArgumentException(
                     "Flattening selector must produce a collection of values that are assignable to the aggregation result. " +
@@ -219,7 +218,7 @@ namespace NRules.RuleModel.Builders
         {
             var resultType = element.ResultType;
             var expressionReturnType = element.Expression.ReturnType;
-            if (!resultType.GetTypeInfo().IsAssignableFrom(expressionReturnType.GetTypeInfo()))
+            if (!resultType.IsAssignableFrom(expressionReturnType))
             {
                 throw new ArgumentException($"Binding expression not assignable to result type. ResultType={resultType}, ExpressionResult={expressionReturnType}");
             }

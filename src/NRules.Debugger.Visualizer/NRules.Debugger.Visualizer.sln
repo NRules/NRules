@@ -1,51 +1,42 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5FD32CBA-26E2-46D3-B10A-E6C4133EE341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Debugger.Visualizer", "NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.csproj", "{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Debugger.Visualizer.DebuggeeSide", "NRules.Debugger.Visualizer.DebuggeeSide\NRules.Debugger.Visualizer.DebuggeeSide.csproj", "{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Debugger.Visualizer.Tests", "NRules.Debugger.Visualizer.Tests\NRules.Debugger.Visualizer.Tests.csproj", "{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Debugger.Visualizer.Tests", "NRules.Debugger.Visualizer.Tests\NRules.Debugger.Visualizer.Tests.csproj", "{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Debugger.Visualizer", "NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.csproj", "{057D1CD8-5E7F-4DB6-AE1A-78F51573173E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|Mixed Platforms = Debug|Mixed Platforms
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|Mixed Platforms = Release|Mixed Platforms
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{D5BB85E9-0CB2-4595-AC1A-E77A42456DC0}.Release|x86.ActiveCfg = Release|Any CPU
 		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Debug|x86.Build.0 = Debug|Any CPU
 		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Release|x86.ActiveCfg = Release|Any CPU
-		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}.Release|x86.Build.0 = Release|Any CPU
+		{057D1CD8-5E7F-4DB6-AE1A-78F51573173E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{057D1CD8-5E7F-4DB6-AE1A-78F51573173E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{057D1CD8-5E7F-4DB6-AE1A-78F51573173E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{057D1CD8-5E7F-4DB6-AE1A-78F51573173E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4A9AF362-C65E-4591-9B3F-74F5921DDCD1} = {5FD32CBA-26E2-46D3-B10A-E6C4133EE341}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7682B0E8-13DF-4B60-B806-D4B82CE184CB}
 	EndGlobalSection
 EndGlobal

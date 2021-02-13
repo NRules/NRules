@@ -133,12 +133,19 @@ task Build -depends Compile, Test, ResetPatch -precondition { return $component.
         return
     }
     Create-Directory $binariesDir
-    foreach ($framework in $component.bin.frameworks) {
-        $destDir = "$binariesDir\$framework"
+    foreach ($artifact in $component.bin.artifacts) {
+        $outputDir = $artifact
+        if ($component.bin.$artifact.ContainsKey('output')) {
+            $outputDir = $component.bin.$artifact.output
+        }
+        $destDir = "$binariesDir\$outputDir"
         Create-Directory $destDir
-        foreach ($include_dir in $component.bin.$framework.include) {
-            $sourceDir = "$srcDir\$include_dir"
-            Get-ChildItem "$sourceDir\**" | Copy-Item -Destination $destDir -Force
+        foreach ($item in $component.bin.$artifact.include) {
+            $itemPath = "$srcDir\$item"
+            if (Test-Path -Path $itemPath -PathType Container) {
+                $itemPath = "$itemPath\**"
+            }
+            Get-ChildItem $itemPath | Copy-Item -Destination $destDir -Force
         }
     }
 }

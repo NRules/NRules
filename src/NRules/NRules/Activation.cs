@@ -98,7 +98,7 @@ namespace NRules
 
             public void SetFact(Fact fact)
             {
-                Type = fact.FactType.AsType();
+                Type = fact.FactType;
                 Value = fact.Object;
                 Source = fact.Source;
             }

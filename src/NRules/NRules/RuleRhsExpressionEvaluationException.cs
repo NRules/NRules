@@ -5,9 +5,7 @@ namespace NRules
     /// <summary>
     /// Represents errors that occur while evaluating rule right-hand side expresson.
     /// </summary>
-#if (NET45 || NETSTANDARD2_0)
-    [System.Serializable]
-#endif
+    [Serializable]
     public class RuleRhsExpressionEvaluationException : RuleExpressionEvaluationException
     {
         internal RuleRhsExpressionEvaluationException(string message, string ruleName, string expression, Exception innerException)
@@ -16,7 +14,6 @@ namespace NRules
             RuleName = ruleName;
         }
 
-#if (NET45 || NETSTANDARD2_0)
         [System.Security.SecuritySafeCritical]
         protected RuleRhsExpressionEvaluationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)
@@ -34,7 +31,6 @@ namespace NRules
             base.GetObjectData(info, context);
             info.AddValue("RuleName", RuleName, typeof(string));
         }
-#endif
 
         /// <summary>
         /// Rule that caused exception.

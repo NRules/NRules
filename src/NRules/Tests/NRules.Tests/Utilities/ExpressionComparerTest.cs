@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NRules.Utilities;
 using Xunit;
 
@@ -428,7 +427,7 @@ namespace NRules.Tests.Utilities
         public void AreEqual_EquivalentInvocationExpression_True()
         {
             //Arrange
-            var methodInfo = GetType().GetTypeInfo().DeclaredMethods
+            var methodInfo = GetType().GetMethods()
                 .First(info => info.IsStatic && info.Name == "StaticMethod"
                                && info.GetParameters().Length == 1);
 

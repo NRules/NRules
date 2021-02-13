@@ -1,8 +1,13 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using System.Xml;
 using Microsoft.VisualStudio.DebuggerVisualizers;
-using NRules.Diagnostics;
+using NRules.Debugger.Visualizer;
+
+[assembly: DebuggerVisualizer(
+    typeof(SessionVisualizer),
+    "NRules.Debugger.Visualizer.SessionObjectSource, NRules.Debugger.Visualizer.DebuggeeSide",
+    TargetTypeName = "NRules.Session, NRules",
+    Description = "NRules Session Visualizer")]
 
 namespace NRules.Debugger.Visualizer
 {
@@ -10,13 +15,9 @@ namespace NRules.Debugger.Visualizer
     {
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            var snapshot = (SessionSnapshot) objectProvider.GetObject();
-            var dgmlWriter = new DgmlWriter(snapshot);
+            var snapshot = (string) objectProvider.GetObject();
             string fileName = Path.Combine(Path.GetTempPath(), "session.dgml");
-            using (var xmlWriter = XmlWriter.Create(fileName))
-            {
-                dgmlWriter.WriteTo(xmlWriter);
-            }
+            File.WriteAllText(fileName, snapshot);
             Process.Start(fileName);
         }
     }

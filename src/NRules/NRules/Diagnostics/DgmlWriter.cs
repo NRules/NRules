@@ -2,16 +2,23 @@
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using NRules.Diagnostics;
 
-namespace NRules.Debugger.Visualizer
+namespace NRules.Diagnostics
 {
+    /// <summary>
+    /// Creates a <see href="https://en.wikipedia.org/wiki/DGML">DGML</see> document writer
+    /// that can be used to serialize a Rete graph for a given rules session into XML.
+    /// </summary>
     public class DgmlWriter
     {
         private readonly Dictionary<NodeInfo, int> _idMap;
         private readonly SessionSnapshot _snapshot;
         private readonly XNamespace _namespace = XNamespace.Get("http://schemas.microsoft.com/vs/2009/dgml");
 
+        /// <summary>
+        /// Creates an instance of a <c>DgmlWriter</c> for a given session snapshot.
+        /// </summary>
+        /// <param name="snapshot">Rules session snapshot.</param>
         public DgmlWriter(SessionSnapshot snapshot)
         {
             _snapshot = snapshot;
@@ -21,6 +28,11 @@ namespace NRules.Debugger.Visualizer
                 .ToDictionary(x => x.Node, x => x.Index);
         }
 
+        /// <summary>
+        /// Writes DGML graph representing a given rules session to the provided
+        /// <see cref="XmlWriter"/>.
+        /// </summary>
+        /// <param name="writer"><see cref="XmlWriter"/> to write the session to.</param>
         public void WriteTo(XmlWriter writer)
         {
             var document = new XDocument(new XDeclaration("1.0", "utf-8", null));

@@ -1,19 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\..\Common.props" />
+
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <OutputType>Exe</OutputType>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <RootNamespace>NRules.Debugger.Visualizer</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NRules.Debugger.Visualizer.DebuggeeSide\NRules.Debugger.Visualizer.DebuggeeSide.csproj" />
-    <ProjectReference Include="..\NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.csproj" />
+    <Compile Include="..\..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
-      <HintPath>\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
+      <HintPath>\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Packages\Debugger\Visualizers\netstandard2.0\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
     </Reference>
     <Reference Include="NRules">
       <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.dll</HintPath>
@@ -25,5 +26,5 @@
       <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.RuleModel.dll</HintPath>
     </Reference>
   </ItemGroup>
-
+  
 </Project>

@@ -1,11 +1,11 @@
+using System;
+
 namespace NRules.Diagnostics
 {
     /// <summary>
     /// Link between nodes in the rete network graph.
     /// </summary>
-#if (NET45 || NETSTANDARD2_0)
-    [System.Serializable]
-#endif
+    [Serializable]
     public class LinkInfo
     {
         /// <summary>
