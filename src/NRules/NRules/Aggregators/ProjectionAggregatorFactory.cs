@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators
@@ -22,7 +21,7 @@ namespace NRules.Aggregators
             Type aggregatorType = typeof(ProjectionAggregator<,>).MakeGenericType(sourceType, resultType);
 
             var compiledSelector = compiledExpressions.FindSingle(AggregateElement.SelectorName);
-            var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
+            var ctor = aggregatorType.GetConstructors().Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
                 Expression.New(ctor, Expression.Constant(compiledSelector)));
             _factory = factoryExpression.Compile();

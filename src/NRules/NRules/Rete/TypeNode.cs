@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace NRules.Rete
 {
@@ -10,10 +9,10 @@ namespace NRules.Rete
     {
         public TypeNode(Type filterType)
         {
-            FilterType = filterType.GetTypeInfo();
+            FilterType = filterType;
         }
 
-        public TypeInfo FilterType { get; }
+        public Type FilterType { get; }
 
         public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
         {

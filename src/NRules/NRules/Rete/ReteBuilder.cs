@@ -315,7 +315,7 @@ namespace NRules.Rete
         {
             TypeNode node = context.CurrentAlphaNode
                 .ChildNodes.OfType<TypeNode>()
-                .FirstOrDefault(tn => tn.FilterType.AsType() == declarationType);
+                .FirstOrDefault(tn => tn.FilterType == declarationType);
 
             if (node == null)
             {

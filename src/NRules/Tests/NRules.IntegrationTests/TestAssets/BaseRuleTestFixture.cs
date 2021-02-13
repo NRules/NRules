@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using NRules.Diagnostics;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
@@ -59,7 +58,7 @@ namespace NRules.IntegrationTests.TestAssets
             var rule = _ruleMap.Single().Value;
             var firedRule = _firedRulesMap[rule.Name];
             var x = firedRule.Last();
-            return x.Facts.Where(f => typeof(T).GetTypeInfo().IsAssignableFrom(f.Declaration.Type.GetTypeInfo())).Select(f => (T) f.Value);
+            return x.Facts.Where(f => typeof(T).IsAssignableFrom(f.Declaration.Type)).Select(f => (T) f.Value);
         }
 
         protected T GetFiredFact<T>()
@@ -67,7 +66,7 @@ namespace NRules.IntegrationTests.TestAssets
             var rule = _ruleMap.Single().Value;
             var firedRule = _firedRulesMap[rule.Name];
             var x = firedRule.Last();
-            return (T)x.Facts.First(f => typeof(T).GetTypeInfo().IsAssignableFrom(f.Declaration.Type.GetTypeInfo())).Value;
+            return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Declaration.Type)).Value;
         }
 
         protected T GetFiredFact<T>(int instanceNumber)
@@ -75,7 +74,7 @@ namespace NRules.IntegrationTests.TestAssets
             var rule = _ruleMap.Single().Value;
             var firedRule = _firedRulesMap[rule.Name];
             var x = firedRule.ElementAt(instanceNumber);
-            return (T)x.Facts.First(f => typeof(T).GetTypeInfo().IsAssignableFrom(f.Declaration.Type.GetTypeInfo())).Value;
+            return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Declaration.Type)).Value;
         }
 
         protected void AssertFiredOnce()

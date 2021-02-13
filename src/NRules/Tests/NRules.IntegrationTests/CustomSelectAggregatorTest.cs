@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NRules.Aggregators;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -150,7 +149,7 @@ namespace NRules.IntegrationTests
             var aggregatorType = typeof(CustomSelectAggregator<,>).MakeGenericType(sourceType, resultType);
 
             var compiledSelector = compiledExpressions.FindSingle("Selector");
-            var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
+            var ctor = aggregatorType.GetConstructors().Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
                 Expression.New(ctor, Expression.Constant(compiledSelector)));
             _factory = factoryExpression.Compile();
