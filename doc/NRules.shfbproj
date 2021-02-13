@@ -43,7 +43,7 @@
     <MaximumGroupParts>20</MaximumGroupParts>
     <Preliminary>False</Preliminary>
     <FooterText>&amp;lt%3ba href=&amp;quot%3bhttps://github.com/NRules/NRules&amp;quot%3b&amp;gt%3bView NRules on GitHub&amp;lt%3b/a&amp;gt%3b</FooterText>
-    <CopyrightHref>https://github.com/NRules/NRules/blob/master/LICENSE.txt</CopyrightHref>
+    <CopyrightHref>https://github.com/NRules/NRules/blob/main/LICENSE.txt</CopyrightHref>
     <CopyrightText>License and Copyright Information</CopyrightText>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <VisibleItems>ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, EditorBrowsableNever, NonBrowsable</VisibleItems>
