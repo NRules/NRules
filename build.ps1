@@ -185,7 +185,7 @@ if ($component -eq "Core") {
 Import-Module .\tools\build\psake.psm1
 $baseDir = Resolve-Path .
 $componentList | % {
-    Invoke-psake .\tools\build\default.ps1 $target -properties @{version=$version;configuration=$configuration;baseDir=$baseDir} -parameters @{component=$components[$_]}
+    Invoke-psake .\tools\build\psakefile.ps1 $target -properties @{version=$version;configuration=$configuration;baseDir=$baseDir} -parameters @{component=$components[$_]}
     if (-not $psake.build_success) {
         break
     }
