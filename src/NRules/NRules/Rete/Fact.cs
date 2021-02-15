@@ -71,15 +71,15 @@ namespace NRules.Rete
         {
         }
 
-        public override Type FactType => WrappedTuple.RightFact.FactType;
-        public override object Object => WrappedTuple.RightFact.Object;
+        public override Type FactType => WrappedTuple.RightFact?.FactType;
+        public override object Object => WrappedTuple.RightFact?.Object;
         public Tuple WrappedTuple => (Tuple) RawObject;
         public override bool IsWrapperFact => true;
 
         public override IFactSource Source
         {
-            get => WrappedTuple.RightFact.Source;
-            set => WrappedTuple.RightFact.Source = value;
+            get => WrappedTuple.RightFact?.Source;
+            set {}
         }
     }
 }
