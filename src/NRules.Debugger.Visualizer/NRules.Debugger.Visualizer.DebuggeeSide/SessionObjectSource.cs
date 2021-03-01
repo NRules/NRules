@@ -8,7 +8,7 @@ namespace NRules.Debugger.Visualizer
     {
         public override void GetData(object target, Stream outgoingData)
         {
-            var session = (ISession) target;
+            var session = (ISessionSchemaProvider) target;
             var schema = session.GetSchema();
             var dgmlWriter = new DgmlWriter(schema);
             var contents = dgmlWriter.GetContents();
