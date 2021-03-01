@@ -296,10 +296,7 @@ namespace NRules
         void QueueRetractLinked(Activation activation);
     }
 
-    /// <summary>
-    /// See <see cref="ISession"/>.
-    /// </summary>
-    public sealed class Session : ISessionInternal
+    internal sealed class Session : ISessionInternal
     {
         private static readonly ILinkedFactSet[] EmptyLinkedFactResult = new ILinkedFactSet[0];
 

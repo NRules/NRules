@@ -75,7 +75,7 @@ namespace NRules
         ISession CreateSession(Action<ISession> initializationAction);
     }
 
-    internal class SessionFactory : ISessionFactory
+    internal sealed class SessionFactory : ISessionFactory
     {
         private readonly INetwork _network;
         private readonly List<ICompiledRule> _compiledRules;
