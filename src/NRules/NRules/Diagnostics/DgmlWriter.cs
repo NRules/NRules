@@ -235,8 +235,8 @@ namespace NRules.Diagnostics
             foreach (var reteNode in reteNodes)
             {
                 if (reteNode.NodeType == NodeType.Root) yield return reteNode;
-                if (reteNode.NodeType == NodeType.Dummy) yield return reteNode;
-                if (Accept(reteNode)) yield return reteNode;
+                else if (reteNode.NodeType == NodeType.Dummy) yield return reteNode;
+                else if (Accept(reteNode)) yield return reteNode;
             }
         }
         
@@ -245,7 +245,7 @@ namespace NRules.Diagnostics
             foreach (var reteLink in reteLinks)
             {
                 if (Accept(reteLink.Source)) yield return reteLink;
-                if (Accept(reteLink.Target)) yield return reteLink;
+                else if (Accept(reteLink.Target)) yield return reteLink;
             }
         }
 
