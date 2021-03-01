@@ -176,13 +176,13 @@ namespace NRules.Diagnostics
             if (nodeMetrics == null) return;
 
             if (nodeMetrics.ElementCount.HasValue)
-                node.Add(new XAttribute("Perf.ElementCount", nodeMetrics.ElementCount.Value));
-            node.Add(new XAttribute("Perf.InsertCount", nodeMetrics.InsertCount));
-            node.Add(new XAttribute("Perf.UpdateCount", nodeMetrics.UpdateCount));
-            node.Add(new XAttribute("Perf.RetractCount", nodeMetrics.RetractCount));
-            node.Add(new XAttribute("Perf.InsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds));
-            node.Add(new XAttribute("Perf.UpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds));
-            node.Add(new XAttribute("Perf.RetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds));
+                node.Add(new XAttribute("Perf_ElementCount", nodeMetrics.ElementCount.Value));
+            node.Add(new XAttribute("Perf_InsertCount", nodeMetrics.InsertCount));
+            node.Add(new XAttribute("Perf_UpdateCount", nodeMetrics.UpdateCount));
+            node.Add(new XAttribute("Perf_RetractCount", nodeMetrics.RetractCount));
+            node.Add(new XAttribute("Perf_InsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds));
+            node.Add(new XAttribute("Perf_UpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds));
+            node.Add(new XAttribute("Perf_RetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds));
         }
 
         private void WriteLinks(XElement links)
