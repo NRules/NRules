@@ -8,6 +8,11 @@ using NRules.Debugger.Visualizer;
     "NRules.Debugger.Visualizer.SessionObjectSource, NRules.Debugger.Visualizer.DebuggeeSide",
     TargetTypeName = "NRules.Session, NRules",
     Description = "NRules Session Visualizer")]
+[assembly: DebuggerVisualizer(
+    typeof(SessionVisualizer),
+    "NRules.Debugger.Visualizer.SessionPerformanceObjectSource, NRules.Debugger.Visualizer.DebuggeeSide",
+    TargetTypeName = "NRules.Session, NRules",
+    Description = "NRules Session Performance Visualizer")]
 
 namespace NRules.Debugger.Visualizer
 {

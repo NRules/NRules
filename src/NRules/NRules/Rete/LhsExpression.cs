@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Linq.Expressions;
+using NRules.Diagnostics;
 using NRules.Utilities;
 
 namespace NRules.Rete
 {
     internal interface ILhsExpression<out TResult>
     {
-        TResult Invoke(IExecutionContext context, NodeDebugInfo nodeInfo, Tuple tuple, Fact fact);
+        TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact);
     }
 
     internal interface ILhsFactExpression<out TResult> : ILhsExpression<TResult>
     {
-        TResult Invoke(IExecutionContext context, NodeDebugInfo nodeInfo, Fact fact);
+        TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Fact fact);
     }
 
     internal interface ILhsTupleExpression<out TResult> : ILhsExpression<TResult>
     {
-        TResult Invoke(IExecutionContext context, NodeDebugInfo nodeInfo, Tuple tuple);
+        TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple);
     }
 
     internal sealed class LhsExpression<TResult> : ILhsExpression<TResult>
@@ -32,7 +33,7 @@ namespace NRules.Rete
             _argumentMap = argumentMap;
         }
 
-        public TResult Invoke(IExecutionContext context, NodeDebugInfo nodeInfo, Tuple tuple, Fact fact)
+        public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
         {
             Exception exception = null;
             TResult result = default;
@@ -69,12 +70,12 @@ namespace NRules.Rete
             _argumentMap = argumentMap;
         }
 
-        public TResult Invoke(IExecutionContext context, NodeDebugInfo nodeInfo, Fact fact)
+        public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Fact fact)
         {
             return Invoke(context, nodeInfo, null, fact);
         }
 
-        public TResult Invoke(IExecutionContext context, NodeDebugInfo nodeInfo, Tuple tuple, Fact fact)
+        public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
         {
             Exception exception = null;
             TResult result = default;
@@ -111,12 +112,12 @@ namespace NRules.Rete
             _argumentMap = argumentMap;
         }
 
-        public TResult Invoke(IExecutionContext context, NodeDebugInfo nodeInfo, Tuple tuple)
+        public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple)
         {
             return Invoke(context, nodeInfo, tuple, null);
         }
 
-        public TResult Invoke(IExecutionContext context, NodeDebugInfo nodeInfo, Tuple tuple, Fact fact)
+        public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
         {
             Exception exception = null;
             TResult result = default;

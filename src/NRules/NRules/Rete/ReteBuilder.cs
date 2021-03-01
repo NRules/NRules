@@ -9,19 +9,29 @@ namespace NRules.Rete
 {
     internal interface IReteBuilder
     {
+        int GetNodeId();
         IEnumerable<ITerminal> AddRule(IRuleDefinition rule);
         INetwork Build();
     }
 
     internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilder
     {
-        private readonly RootNode _root = new RootNode();
-        private readonly DummyNode _dummyNode = new DummyNode();
+        private readonly RootNode _root;
+        private readonly DummyNode _dummyNode;
         private readonly AggregatorRegistry _aggregatorRegistry;
+
+        private int _nextNodeId = 1;
 
         public ReteBuilder(AggregatorRegistry aggregatorRegistry)
         {
+            _root = new RootNode {Id = GetNodeId()};
+            _dummyNode = new DummyNode {Id = GetNodeId()};
             _aggregatorRegistry = aggregatorRegistry;
+        }
+
+        public int GetNodeId()
+        {
+            return _nextNodeId++;
         }
 
         public IEnumerable<ITerminal> AddRule(IRuleDefinition rule)
@@ -53,7 +63,7 @@ namespace NRules.Rete
         {
             if (context.AlphaSource != null)
             {
-                BuildJoinNode(context, element);
+                BuildJoinNode(context);
             }
             var factMap = IndexMap.CreateMap(ruleDeclarations, context.Declarations);
             var terminalNode = new Terminal(context.BetaSource, factMap);
@@ -66,7 +76,7 @@ namespace NRules.Rete
             {
                 if (context.AlphaSource != null)
                 {
-                    BuildJoinNode(context, childElement);
+                    BuildJoinNode(context);
                 }
                 Visit(context, childElement);
             }
@@ -120,7 +130,7 @@ namespace NRules.Rete
                 var betaConditions = conditions.Where(x => x.Imports.Count() > 1).ToList();
                 if (betaConditions.Count > 0)
                 {
-                    BuildJoinNode(context, element, betaConditions);
+                    BuildJoinNode(context, betaConditions);
                 }
             }
             else
@@ -133,7 +143,7 @@ namespace NRules.Rete
                         BuildSubnet(context, element);
 
                         context.RegisterDeclaration(element.Declaration);
-                        BuildJoinNode(context, element, conditions);
+                        BuildJoinNode(context, conditions);
                     }
                     else
                     {
@@ -149,7 +159,7 @@ namespace NRules.Rete
                     joinContext.RegisterDeclaration(element.Declaration);
                     if (conditions.Any())
                     {
-                        BuildJoinNode(joinContext, element, conditions);
+                        BuildJoinNode(joinContext, conditions);
                         BuildAdapter(joinContext);
                     }
                     context.AlphaSource = joinContext.AlphaSource;
@@ -194,7 +204,7 @@ namespace NRules.Rete
             context.AlphaSource = subnetContext.AlphaSource;
         }
         
-        private static void BuildAdapter(ReteBuilderContext context)
+        private void BuildAdapter(ReteBuilderContext context)
         {
             var adapter = context.BetaSource
                 .Sinks.OfType<ObjectInputAdapter>()
@@ -202,11 +212,13 @@ namespace NRules.Rete
             if (adapter == null)
             {
                 adapter = new ObjectInputAdapter(context.BetaSource);
+                adapter.Id = GetNodeId();
             }
+            adapter.NodeInfo.Add(context.Rule);
             context.AlphaSource = adapter;
         }
 
-        private void BuildJoinNode(ReteBuilderContext context, RuleElement element, List<ExpressionElement> conditions = null)
+        private void BuildJoinNode(ReteBuilderContext context, List<ExpressionElement> conditions = null)
         {
             var expressionElements = conditions ?? new List<ExpressionElement>();
             var node = context.BetaSource
@@ -226,8 +238,9 @@ namespace NRules.Rete
                     compiledExpressions.Add(compiledExpression);
                 }
                 node = new JoinNode(context.BetaSource, context.AlphaSource, context.Declarations.ToList(), expressionElements, compiledExpressions, context.HasSubnet);
+                node.Id = GetNodeId();
             }
-            node.NodeInfo.Add(context.Rule, element);
+            node.NodeInfo.Add(context.Rule);
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
         }
@@ -242,8 +255,9 @@ namespace NRules.Rete
             if (node == null)
             {
                 node = new NotNode(context.BetaSource, context.AlphaSource);
+                node.Id = GetNodeId();
             }
-            node.NodeInfo.Add(context.Rule, element);
+            node.NodeInfo.Add(context.Rule);
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
         }
@@ -258,8 +272,9 @@ namespace NRules.Rete
             if (node == null)
             {
                 node = new ExistsNode(context.BetaSource, context.AlphaSource);
+                node.Id = GetNodeId();
             }
-            node.NodeInfo.Add(context.Rule, element);
+            node.NodeInfo.Add(context.Rule);
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
         }
@@ -280,8 +295,9 @@ namespace NRules.Rete
                 var aggregatorFactory = BuildAggregatorFactory(context, element);
                 node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name,
                     context.Declarations.ToList(), element.Expressions, aggregatorFactory, context.HasSubnet);
+                node.Id = GetNodeId();
             }
-            node.NodeInfo.Add(context.Rule, element);
+            node.NodeInfo.Add(context.Rule);
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
         }
@@ -296,18 +312,23 @@ namespace NRules.Rete
             {
                 var compiledExpression = ExpressionCompiler.CompileLhsTupleExpression<object>(element, context.Declarations);
                 node = new BindingNode(element, compiledExpression, element.ResultType, context.BetaSource);
+                node.Id = GetNodeId();
             }
-            node.NodeInfo.Add(context.Rule, element);
+            node.NodeInfo.Add(context.Rule);
             BuildBetaMemoryNode(context, node);
             context.ResetAlphaSource();
         }
 
         private void BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
         {
-            if (betaNode.MemoryNode == null)
+            BetaMemoryNode memoryNode = betaNode.MemoryNode;
+            if (memoryNode == null)
             {
-                betaNode.MemoryNode = new BetaMemoryNode();
+                memoryNode = new BetaMemoryNode();
+                memoryNode.Id = GetNodeId();
+                betaNode.MemoryNode = memoryNode;
             }
+            betaNode.MemoryNode.NodeInfo.Add(context.Rule);
             context.BetaSource = betaNode.MemoryNode;
         }
 
@@ -320,9 +341,10 @@ namespace NRules.Rete
             if (node == null)
             {
                 node = new TypeNode(declarationType);
+                node.Id = GetNodeId();
                 context.CurrentAlphaNode.ChildNodes.Add(node);
             }
-            node.NodeInfo.Add(context.Rule, element);
+            node.NodeInfo.Add(context.Rule);
             context.CurrentAlphaNode = node;
         }
 
@@ -336,22 +358,23 @@ namespace NRules.Rete
             {
                 var compiledExpression = ExpressionCompiler.CompileLhsFactExpression<bool>(element);
                 node = new SelectionNode(element, compiledExpression);
+                node.Id = GetNodeId();
                 context.CurrentAlphaNode.ChildNodes.Add(node);
             }
-            node.NodeInfo.Add(context.Rule, element);
+            node.NodeInfo.Add(context.Rule);
             context.CurrentAlphaNode = node;
         }
 
         private void BuildAlphaMemoryNode(ReteBuilderContext context)
         {
             AlphaMemoryNode memoryNode = context.CurrentAlphaNode.MemoryNode;
-
             if (memoryNode == null)
             {
                 memoryNode = new AlphaMemoryNode();
+                memoryNode.Id = GetNodeId();
                 context.CurrentAlphaNode.MemoryNode = memoryNode;
             }
-
+            memoryNode.NodeInfo.Add(context.Rule);
             context.AlphaSource = memoryNode;
         }
 

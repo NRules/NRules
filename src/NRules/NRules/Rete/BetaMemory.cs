@@ -6,6 +6,7 @@ namespace NRules.Rete
     internal interface IBetaMemory
     {
         IEnumerable<Tuple> Tuples { get; }
+        int TupleCount { get; }
         void Add(List<Tuple> tuples);
         void Remove(List<Tuple> tuples);
         Tuple FindTuple(Tuple leftTuple, Fact rightFact);
@@ -17,6 +18,7 @@ namespace NRules.Rete
         private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new Dictionary<TupleFactKey, Tuple>(); 
 
         public IEnumerable<Tuple> Tuples => _tuples;
+        public int TupleCount => _tuples.Count;
 
         public void Add(List<Tuple> tuples)
         {

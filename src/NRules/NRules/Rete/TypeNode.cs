@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using NRules.Diagnostics;
 
 namespace NRules.Rete
 {
@@ -23,22 +24,32 @@ namespace NRules.Rete
         public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
         {
             var toUpdate = new List<Fact>();
-            foreach (var fact in facts)
+            using (var counter = PerfCounter.Update(context, this))
             {
-                if (IsSatisfiedBy(context, fact))
-                    toUpdate.Add(fact);
+                foreach (var fact in facts)
+                {
+                    if (IsSatisfiedBy(context, fact))
+                        toUpdate.Add(fact);
+                }
+                counter.AddItems(facts.Count);
             }
+
             PropagateUpdateInternal(context, toUpdate);
         }
 
         public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
         {
             var toRetract = new List<Fact>();
-            foreach (var fact in facts)
+            using (var counter = PerfCounter.Retract(context, this))
             {
-                if (IsSatisfiedBy(context, fact))
-                    toRetract.Add(fact);
+                foreach (var fact in facts)
+                {
+                    if (IsSatisfiedBy(context, fact))
+                        toRetract.Add(fact);
+                }
+                counter.AddItems(facts.Count);
             }
+
             PropagateRetractInternal(context, toRetract);
         }
 

@@ -1,31 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using NRules.Diagnostics;
 
 namespace NRules.Rete
 {
     internal abstract class AlphaNode : IObjectSink
     {
-        protected AlphaNode()
-        {
-            ChildNodes = new List<AlphaNode>();
-            NodeInfo = new NodeDebugInfo();
-        }
-
-        public NodeDebugInfo NodeInfo { get; }
+        public int Id { get; set; }
+        public NodeInfo NodeInfo { get; } = new NodeInfo();
         public AlphaMemoryNode MemoryNode { get; set; }
 
         [DebuggerDisplay("Count = {ChildNodes.Count}")]
-        public List<AlphaNode> ChildNodes { get; }
+        public List<AlphaNode> ChildNodes { get; } = new List<AlphaNode>();
 
         public abstract bool IsSatisfiedBy(IExecutionContext context, Fact fact);
 
         public virtual void PropagateAssert(IExecutionContext context, List<Fact> facts)
         {
             var toAssert = new List<Fact>();
-            foreach (var fact in facts)
+            using (var counter = PerfCounter.Assert(context, this))
             {
-                if (IsSatisfiedBy(context, fact))
-                    toAssert.Add(fact);
+                foreach (var fact in facts)
+                {
+                    if (IsSatisfiedBy(context, fact))
+                        toAssert.Add(fact);
+                }
+                counter.AddItems(facts.Count);
             }
 
             if (toAssert.Count > 0)
@@ -42,19 +42,28 @@ namespace NRules.Rete
         {
             var toUpdate = new List<Fact>();
             var toRetract = new List<Fact>();
-            foreach (var fact in facts)
+            using (var counter = PerfCounter.Update(context, this))
             {
-                if (IsSatisfiedBy(context, fact))
-                    toUpdate.Add(fact);
-                else
-                    toRetract.Add(fact);
+                foreach (var fact in facts)
+                {
+                    if (IsSatisfiedBy(context, fact))
+                        toUpdate.Add(fact);
+                    else
+                        toRetract.Add(fact);
+                }
+                counter.AddItems(facts.Count);
             }
+
             PropagateUpdateInternal(context, toUpdate);
             PropagateRetractInternal(context, toRetract);
         }
 
         public virtual void PropagateRetract(IExecutionContext context, List<Fact> facts)
         {
+            using (var counter = PerfCounter.Retract(context, this))
+            {
+                counter.AddItems(facts.Count);
+            }
             PropagateRetractInternal(context, facts);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.Diagnostics;
 
 namespace NRules.Rete
 {
@@ -9,6 +10,7 @@ namespace NRules.Rete
         void PropagateRetract(IExecutionContext context, List<Fact> factObjects);
         void Activate(IExecutionContext context);
         void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);
+        ReteGraph GetSchema();
     }
 
     internal class Network : INetwork
@@ -76,6 +78,14 @@ namespace NRules.Rete
         {
             visitor.Visit(context, _root);
             visitor.Visit(context, _dummyNode);
+        }
+
+        public ReteGraph GetSchema()
+        {
+            var builder = new SchemaBuilder();
+            var visitor = new SchemaReteVisitor();
+            Visit(builder, visitor);
+            return builder.Build();
         }
     }
 }

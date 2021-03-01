@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.Diagnostics;
 
 namespace NRules.Rete
 {
@@ -7,6 +8,8 @@ namespace NRules.Rete
         private readonly ITupleSource _source;
         private readonly List<IObjectSink> _sinks = new List<IObjectSink>();
 
+        public int Id { get; set; }
+        public NodeInfo NodeInfo { get; } = new NodeInfo();
         public IEnumerable<IObjectSink> Sinks => _sinks;
 
         public ObjectInputAdapter(IBetaMemoryNode source)

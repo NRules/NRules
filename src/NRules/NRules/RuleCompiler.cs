@@ -115,7 +115,8 @@ namespace NRules
                 }
 
                 var rule = new CompiledRule(ruleDefinition, ruleDeclarations, actions, filter, terminal.FactMap);
-                BuildRuleNode(rule, terminal);
+                var ruleNode = BuildRuleNode(rule, terminal);
+                ruleNode.Id = reteBuilder.GetNodeId();
                 rules.Add(rule);
             }
 
@@ -146,10 +147,12 @@ namespace NRules
             return compiledFilter;
         }
 
-        private void BuildRuleNode(ICompiledRule compiledRule, ITerminal terminal)
+        private RuleNode BuildRuleNode(ICompiledRule compiledRule, ITerminal terminal)
         {
             var ruleNode = new RuleNode(compiledRule);
+            ruleNode.NodeInfo.Add(compiledRule.Definition);
             terminal.Source.Attach(ruleNode);
+            return ruleNode;
         }
     }
 }
