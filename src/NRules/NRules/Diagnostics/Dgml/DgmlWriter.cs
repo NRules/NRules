@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace NRules.Diagnostics
+namespace NRules.Diagnostics.Dgml
 {
     /// <summary>
     /// Creates a <see href="https://en.wikipedia.org/wiki/DGML">DGML</see> document writer
@@ -32,7 +32,7 @@ namespace NRules.Diagnostics
         /// Writes DGML graph representing a given rules session to a file.
         /// </summary>
         /// <param name="fileName">File to write the session to.</param>
-        public void WriteTo(string fileName)
+        public void WriteAllText(string fileName)
         {
             string contents = GetContents();
             File.WriteAllText(fileName, contents);
@@ -43,7 +43,7 @@ namespace NRules.Diagnostics
         /// <see cref="XmlWriter"/>.
         /// </summary>
         /// <param name="writer"><see cref="XmlWriter"/> to write the session to.</param>
-        public void WriteTo(XmlWriter writer)
+        public void WriteXml(XmlWriter writer)
         {
             var document = GetDocument();
             document.WriteTo(writer);
@@ -58,16 +58,12 @@ namespace NRules.Diagnostics
             using var stringWriter = new Utf8StringWriter();
             var xmlWriter = new XmlTextWriter(stringWriter);
             xmlWriter.Formatting = Formatting.Indented;
-            WriteTo(xmlWriter);
+            WriteXml(xmlWriter);
             var contents = stringWriter.ToString();
             return contents;
         }
 
-        /// <summary>
-        /// Creates an <see cref="XDocument"/> with the serialized DGML graph.
-        /// </summary>
-        /// <returns>A new instance of <see cref="XDocument"/>.</returns>
-        public XDocument GetDocument()
+        private XDocument GetDocument()
         {
             var document = new XDocument(new XDeclaration("1.0", "utf-8", null));
             var root = new XElement(Name("DirectedGraph"), new XAttribute("Title", "ReteNetwork"));

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.DebuggerVisualizers;
 using NRules.Diagnostics;
+using NRules.Diagnostics.Dgml;
 
 namespace NRules.Debugger.Visualizer
 {
