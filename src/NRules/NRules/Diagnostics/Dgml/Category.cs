@@ -4,7 +4,12 @@ namespace NRules.Diagnostics.Dgml
 {
     internal class Category
     {
-        public string Id { get; set; }
+        public Category(string id)
+        {
+            Id = id;
+        }
+
+        public string Id { get; }
         public string Label { get; set; }
         public string Background { get; set; }
 

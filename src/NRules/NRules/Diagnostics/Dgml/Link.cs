@@ -5,8 +5,14 @@ namespace NRules.Diagnostics.Dgml
 {
     internal class Link
     {
-        public string Source { get; set; }
-        public string Target { get; set; }
+        public Link(string source, string target)
+        {
+            Source = source;
+            Target = target;
+        }
+
+        public string Source { get; }
+        public string Target { get; }
         public string Category { get; set; }
         public string Label { get; set; }
         public string Description { get; set; }

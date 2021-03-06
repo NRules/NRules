@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -66,16 +67,22 @@ namespace NRules.Diagnostics.Dgml
         private DirectedGraph CreateGraph()
         {
             var graph = new DirectedGraph {Title = "ReteNetwork"};
+            graph.Nodes.AddRange(CreateNodes(Filter(_schema.Nodes)));
+            graph.Links.AddRange(CreateLinks(Filter(_schema.Links)));
+            graph.Categories.AddRange(CreateCategories());
+            graph.Styles.AddRange(CreateStyles());
+            return graph;
+        }
 
-            foreach (var reteNode in Filter(_schema.Nodes))
+        private IEnumerable<Node> CreateNodes(IEnumerable<ReteNode> reteNodes)
+        {
+            foreach (var reteNode in reteNodes)
             {
-                var node = new Node
+                var node = new Node(Id(reteNode))
                 {
-                    Id = Id(reteNode),
                     Label = GetNodeLabel(reteNode),
                     Category = reteNode.NodeType.ToString()
                 };
-                graph.Nodes.Add(node);
 
                 node.Properties.Add("ElementType", reteNode.ElementType?.FullName);
 
@@ -100,33 +107,67 @@ namespace NRules.Diagnostics.Dgml
                 }
 
                 AddPerformanceMetrics(node, reteNode);
+                yield return node;
             }
+        }
 
-            foreach (var linkInfo in Filter(_schema.Links))
+        private IEnumerable<Link> CreateLinks(IEnumerable<ReteLink> reteLinks)
+        {
+            foreach (var linkInfo in reteLinks)
             {
-                var link = new Link
-                {
-                    Source = Id(linkInfo.Source),
-                    Target = Id(linkInfo.Target)
-                };
-                graph.Links.Add(link);
+                yield return new Link(Id(linkInfo.Source), Id(linkInfo.Target));
             }
+        }
 
-            graph.Categories.Add(new Category {Id = NodeType.Root.ToString(), Background = "Black"});
-            graph.Categories.Add(new Category {Id = NodeType.Type.ToString(), Background = "Orange"});
-            graph.Categories.Add(new Category {Id = NodeType.Selection.ToString(), Background = "Blue"});
-            graph.Categories.Add(new Category {Id = NodeType.AlphaMemory.ToString(), Background = "Red"});
-            graph.Categories.Add(new Category {Id = NodeType.Dummy.ToString(), Background = "Silver"});
-            graph.Categories.Add(new Category {Id = NodeType.Join.ToString(), Background = "Blue"});
-            graph.Categories.Add(new Category {Id = NodeType.Not.ToString(), Background = "Brown"});
-            graph.Categories.Add(new Category {Id = NodeType.Exists.ToString(), Background = "Brown"});
-            graph.Categories.Add(new Category {Id = NodeType.Aggregate.ToString(), Background = "Brown"});
-            graph.Categories.Add(new Category {Id = NodeType.BetaMemory.ToString(), Background = "Green"});
-            graph.Categories.Add(new Category {Id = NodeType.Adapter.ToString(), Background = "Silver"});
-            graph.Categories.Add(new Category {Id = NodeType.Binding.ToString(), Background = "LightBlue"});
-            graph.Categories.Add(new Category {Id = NodeType.Rule.ToString(), Background = "Purple"});
+        private static IEnumerable<Category> CreateCategories()
+        {
+            foreach (var nodeType in Enum.GetValues(typeof(NodeType)))
+            {
+                yield return new Category($"{nodeType}");
+            }
+        }
 
-            return graph;
+        private IEnumerable<Style> CreateStyles()
+        {
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Root}")
+                .Setter(nameof(Node.Background), value: "Black");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Dummy}")
+                .Setter(nameof(Node.Background), value: "Silver");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Type}")
+                .Setter(nameof(Node.Background), value: "Orange");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Selection}")
+                .Setter(nameof(Node.Background), value: "Blue");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.AlphaMemory}")
+                .Setter(nameof(Node.Background), value: "Red");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Join}")
+                .Setter(nameof(Node.Background), value: "Blue");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Not}")
+                .Setter(nameof(Node.Background), value: "Brown");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Exists}")
+                .Setter(nameof(Node.Background), value: "Brown");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Aggregate}")
+                .Setter(nameof(Node.Background), value: "Brown");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Adapter}")
+                .Setter(nameof(Node.Background), value: "Silver");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.BetaMemory}")
+                .Setter(nameof(Node.Background), value: "Green");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Binding}")
+                .Setter(nameof(Node.Background), value: "LightBlue");
+            yield return new Style(nameof(Node))
+                .HasCategory($"{NodeType.Rule}")
+                .Setter(nameof(Node.Background), value: "Purple");
         }
 
         /// <summary>
@@ -197,7 +238,7 @@ namespace NRules.Diagnostics.Dgml
 
         private string Id(ReteNode reteNode)
         {
-            return reteNode.Id.ToString();
+            return $"{reteNode.Id}";
         }
         
         private IEnumerable<ReteNode> Filter(ReteNode[] reteNodes)

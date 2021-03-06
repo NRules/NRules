@@ -5,12 +5,18 @@ namespace NRules.Diagnostics.Dgml
 {
     internal class Node
     {
-        public string Id { get; set; }
+        public Node(string id)
+        {
+            Id = id;
+        }
+
+        public string Id { get; }
         public string Label { get; set; }
         public string Category { get; set; }
         public string Group { get; set; }
         public string Description { get; set; }
         public string Reference { get; set; }
+        public string Background { get; set; }
         public Dictionary<string, object> Properties { get; } = new Dictionary<string, object>();
 
         public void WriteXml(XmlWriter writer)
@@ -22,6 +28,7 @@ namespace NRules.Diagnostics.Dgml
             writer.WriteAttributeIfNotNull(nameof(Group), Group);
             writer.WriteAttributeIfNotNull(nameof(Description), Description);
             writer.WriteAttributeIfNotNull(nameof(Reference), Reference);
+            writer.WriteAttributeIfNotNull(nameof(Background), Background);
             writer.WriteProperties(Properties);
             writer.WriteEndElement();
         }
