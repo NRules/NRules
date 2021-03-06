@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace NRules.Diagnostics.Dgml
 {
@@ -14,7 +13,6 @@ namespace NRules.Diagnostics.Dgml
     public class DgmlWriter
     {
         private readonly ReteGraph _schema;
-        private readonly XNamespace _namespace = XNamespace.Get("http://schemas.microsoft.com/vs/2009/dgml");
 
         private HashSet<string> _ruleNameFilter;
         private IMetricsProvider _metricsProvider;
@@ -45,8 +43,10 @@ namespace NRules.Diagnostics.Dgml
         /// <param name="writer"><see cref="XmlWriter"/> to write the session to.</param>
         public void WriteXml(XmlWriter writer)
         {
-            var document = GetDocument();
-            document.WriteTo(writer);
+            var graph = CreateGraph();
+            writer.WriteStartDocument();
+            graph.WriteXml(writer);
+            writer.WriteEndDocument();
         }
 
         /// <summary>
@@ -63,21 +63,70 @@ namespace NRules.Diagnostics.Dgml
             return contents;
         }
 
-        private XDocument GetDocument()
+        private DirectedGraph CreateGraph()
         {
-            var document = new XDocument(new XDeclaration("1.0", "utf-8", null));
-            var root = new XElement(Name("DirectedGraph"), new XAttribute("Title", "ReteNetwork"));
-            var nodes = new XElement(Name("Nodes"));
-            var links = new XElement(Name("Links"));
-            var categories = new XElement(Name("Categories"));
+            var graph = new DirectedGraph {Title = "ReteNetwork"};
 
-            WriteNodes(nodes);
-            WriteLinks(links);
-            WriteCategories(categories);
+            foreach (var reteNode in Filter(_schema.Nodes))
+            {
+                var node = new Node
+                {
+                    Id = Id(reteNode),
+                    Label = GetNodeLabel(reteNode),
+                    Category = reteNode.NodeType.ToString()
+                };
+                graph.Nodes.Add(node);
 
-            root.Add(nodes, links, categories);
-            document.Add(root);
-            return document;
+                node.Properties.Add("ElementType", reteNode.ElementType?.FullName);
+
+                foreach (var valueGroup in reteNode.Properties.GroupBy(x => x.Key, x => x.Value))
+                {
+                    var key = valueGroup.Key;
+                    var value = string.Join("; ", valueGroup);
+                    node.Properties.Add(key, value);
+                }
+
+                foreach (var expressionGroup in reteNode.Expressions.GroupBy(x => x.Key, x => x.Value))
+                {
+                    var key = expressionGroup.Key;
+                    var value = string.Join("; ", expressionGroup);
+                    node.Properties.Add(key, value);
+                }
+
+                if (reteNode.Rules.Length > 0)
+                {
+                    var value = string.Join("; ", reteNode.Rules.Select(x => x.Name));
+                    node.Properties.Add("Rule", value);
+                }
+
+                AddPerformanceMetrics(node, reteNode);
+            }
+
+            foreach (var linkInfo in Filter(_schema.Links))
+            {
+                var link = new Link
+                {
+                    Source = Id(linkInfo.Source),
+                    Target = Id(linkInfo.Target)
+                };
+                graph.Links.Add(link);
+            }
+
+            graph.Categories.Add(new Category {Id = NodeType.Root.ToString(), Background = "Black"});
+            graph.Categories.Add(new Category {Id = NodeType.Type.ToString(), Background = "Orange"});
+            graph.Categories.Add(new Category {Id = NodeType.Selection.ToString(), Background = "Blue"});
+            graph.Categories.Add(new Category {Id = NodeType.AlphaMemory.ToString(), Background = "Red"});
+            graph.Categories.Add(new Category {Id = NodeType.Dummy.ToString(), Background = "Silver"});
+            graph.Categories.Add(new Category {Id = NodeType.Join.ToString(), Background = "Blue"});
+            graph.Categories.Add(new Category {Id = NodeType.Not.ToString(), Background = "Brown"});
+            graph.Categories.Add(new Category {Id = NodeType.Exists.ToString(), Background = "Brown"});
+            graph.Categories.Add(new Category {Id = NodeType.Aggregate.ToString(), Background = "Brown"});
+            graph.Categories.Add(new Category {Id = NodeType.BetaMemory.ToString(), Background = "Green"});
+            graph.Categories.Add(new Category {Id = NodeType.Adapter.ToString(), Background = "Silver"});
+            graph.Categories.Add(new Category {Id = NodeType.Binding.ToString(), Background = "LightBlue"});
+            graph.Categories.Add(new Category {Id = NodeType.Rule.ToString(), Background = "Purple"});
+
+            return graph;
         }
 
         /// <summary>
@@ -99,131 +148,56 @@ namespace NRules.Diagnostics.Dgml
         {
             _metricsProvider = metricsProvider;
         }
-
-        private void WriteNodes(XElement nodes)
+        
+        private static string GetNodeLabel(ReteNode reteNode)
         {
-            foreach (var reteNode in Filter(_schema.Nodes))
+            var labelParts = new List<object>();
+            labelParts.Add(reteNode.NodeType.ToString());
+            switch (reteNode.NodeType)
             {
-                var labelParts = new List<object>();
-                labelParts.Add(reteNode.NodeType.ToString());
-                switch (reteNode.NodeType)
-                {
-                    case NodeType.Type:
-                        labelParts.Add(reteNode.ElementType.Name);
-                        break;
-                    case NodeType.Selection:
-                        labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
-                        break;
-                    case NodeType.Join:
-                        labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
-                        break;
-                    case NodeType.Aggregate:
-                        labelParts.Add(reteNode.Properties.Single(x => x.Key == "AggregateName").Value);
-                        labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Key}={x.Value.Body}"));
-                        break;
-                    case NodeType.Binding:
-                        labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
-                        break;
-                    case NodeType.Rule:
-                        labelParts.Add(reteNode.Rules.Single().Name);
-                        break;
-                }
-
-                var label = string.Join("\n", labelParts);
-                var node = new XElement(Name("Node"),
-                                        new XAttribute("Id", Id(reteNode)),
-                                        new XAttribute("Category", reteNode.NodeType),
-                                        new XAttribute("Label", label));
-
-                if (reteNode.ElementType?.FullName != null)
-                {
-                    node.Add(new XAttribute("ElementType", reteNode.ElementType.FullName));
-                }
-
-                foreach (var valueGroup in reteNode.Properties.GroupBy(x => x.Key, x => x.Value))
-                {
-                    var key = valueGroup.Key;
-                    var value = string.Join("; ", valueGroup);
-                    node.Add(new XAttribute(key, value));
-                }
-                
-                foreach (var expressionGroup in reteNode.Expressions.GroupBy(x => x.Key, x => x.Value))
-                {
-                    var key = expressionGroup.Key;
-                    var value = string.Join("; ", expressionGroup);
-                    node.Add(new XAttribute(key, value));
-                }
-
-                if (reteNode.Rules.Length > 0)
-                {
-                    var value = string.Join("; ", reteNode.Rules.Select(x => x.Name));
-                    node.Add(new XAttribute("Rule", value));
-                }
-
-                WritePerformanceMetrics(node, reteNode);
-
-                nodes.Add(node);
+                case NodeType.Type:
+                    labelParts.Add(reteNode.ElementType.Name);
+                    break;
+                case NodeType.Selection:
+                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
+                    break;
+                case NodeType.Join:
+                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
+                    break;
+                case NodeType.Aggregate:
+                    labelParts.Add(reteNode.Properties.Single(x => x.Key == "AggregateName").Value);
+                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Key}={x.Value.Body}"));
+                    break;
+                case NodeType.Binding:
+                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
+                    break;
+                case NodeType.Rule:
+                    labelParts.Add(reteNode.Rules.Single().Name);
+                    break;
             }
+
+            var label = string.Join("\n", labelParts);
+            return label;
         }
 
-        private void WritePerformanceMetrics(XElement node, ReteNode reteNode)
+        private void AddPerformanceMetrics(Node node, ReteNode reteNode)
         {
             INodeMetrics nodeMetrics = _metricsProvider?.FindByNodeId(reteNode.Id);
             if (nodeMetrics == null) return;
 
             if (nodeMetrics.ElementCount.HasValue)
-                node.Add(new XAttribute("Perf_ElementCount", nodeMetrics.ElementCount.Value));
-            node.Add(new XAttribute("Perf_InsertCount", nodeMetrics.InsertCount));
-            node.Add(new XAttribute("Perf_UpdateCount", nodeMetrics.UpdateCount));
-            node.Add(new XAttribute("Perf_RetractCount", nodeMetrics.RetractCount));
-            node.Add(new XAttribute("Perf_InsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds));
-            node.Add(new XAttribute("Perf_UpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds));
-            node.Add(new XAttribute("Perf_RetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds));
+                node.Properties.Add("Perf_ElementCount", nodeMetrics.ElementCount.Value);
+            node.Properties.Add("Perf_InsertCount", nodeMetrics.InsertCount);
+            node.Properties.Add("Perf_UpdateCount", nodeMetrics.UpdateCount);
+            node.Properties.Add("Perf_RetractCount", nodeMetrics.RetractCount);
+            node.Properties.Add("Perf_InsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds);
+            node.Properties.Add("Perf_UpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds);
+            node.Properties.Add("Perf_RetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds);
         }
 
-        private void WriteLinks(XElement links)
+        private string Id(ReteNode reteNode)
         {
-            foreach (var linkInfo in Filter(_schema.Links))
-            {
-                var link = new XElement(Name("Link"),
-                    new XAttribute("Source", Id(linkInfo.Source)),
-                    new XAttribute("Target", Id(linkInfo.Target)));
-                links.Add(link);
-            }
-        }
-
-        private void WriteCategories(XElement categories)
-        {
-            categories.Add(Category(NodeType.Root, "Black"));
-            categories.Add(Category(NodeType.Type, "Orange"));
-            categories.Add(Category(NodeType.Selection, "Blue"));
-            categories.Add(Category(NodeType.AlphaMemory, "Red"));
-            categories.Add(Category(NodeType.Dummy, "Silver"));
-            categories.Add(Category(NodeType.Join, "Blue"));
-            categories.Add(Category(NodeType.Not, "Brown"));
-            categories.Add(Category(NodeType.Exists, "Brown"));
-            categories.Add(Category(NodeType.Aggregate, "Brown"));
-            categories.Add(Category(NodeType.BetaMemory, "Green"));
-            categories.Add(Category(NodeType.Adapter, "Silver"));
-            categories.Add(Category(NodeType.Binding, "LightBlue"));
-            categories.Add(Category(NodeType.Rule, "Purple"));
-        }
-
-        private XElement Category(NodeType category, string background)
-        {
-            return new XElement(Name("Category"),
-                new XAttribute("Id", category.ToString()),
-                new XAttribute("Background", background));
-        }
-
-        private XName Name(string name)
-        {
-            return _namespace + name;
-        }
-
-        private int Id(ReteNode reteNode)
-        {
-            return reteNode.Id;
+            return reteNode.Id.ToString();
         }
         
         private IEnumerable<ReteNode> Filter(ReteNode[] reteNodes)
