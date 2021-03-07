@@ -17,6 +17,26 @@ namespace NRules.Diagnostics.Dgml
 
         private HashSet<string> _ruleNameFilter;
         private IMetricsProvider _metricsProvider;
+        
+        /// <summary>
+        /// Sets a filter for Rete graph nodes, such that only nodes that belong to the given
+        /// set of rules is serialized, along with the connecting graph edges.
+        /// </summary>
+        /// <param name="ruleNames">Set of rules to use as a filter, or <c>null</c> to remove the filter.</param>
+        public void SetRuleFilter(IEnumerable<string> ruleNames)
+        {
+            _ruleNameFilter = ruleNames == null ? null : new HashSet<string>(ruleNames);
+        }
+
+        /// <summary>
+        /// Sets the <see cref="IMetricsProvider"/> to retrieve performance metrics for serialized nodes,
+        /// so that performance metrics are included in the output.
+        /// </summary>
+        /// <param name="metricsProvider">Performance metrics provider or <c>null</c> to exclude performance metrics from the output.</param>
+        public void SetMetricsProvider(IMetricsProvider metricsProvider)
+        {
+            _metricsProvider = metricsProvider;
+        }
 
         /// <summary>
         /// Creates an instance of a <c>DgmlWriter</c> for a given session schema.
@@ -69,8 +89,13 @@ namespace NRules.Diagnostics.Dgml
             var graph = new DirectedGraph {Title = "ReteNetwork"};
             graph.Nodes.AddRange(CreateNodes(Filter(_schema.Nodes)));
             graph.Links.AddRange(CreateLinks(Filter(_schema.Links)));
-            graph.Categories.AddRange(CreateCategories());
-            graph.Styles.AddRange(CreateStyles());
+            graph.Categories.AddRange(CreateNodeTypeCategories());
+
+            if (_metricsProvider != null)
+                AddPerformanceMetrics(graph);
+            else
+                graph.Styles.AddRange(CreateSchemaStyles());
+
             return graph;
         }
 
@@ -106,7 +131,6 @@ namespace NRules.Diagnostics.Dgml
                     node.Properties.Add("Rule", value);
                 }
 
-                AddPerformanceMetrics(node, reteNode);
                 yield return node;
             }
         }
@@ -119,15 +143,102 @@ namespace NRules.Diagnostics.Dgml
             }
         }
 
-        private static IEnumerable<Category> CreateCategories()
+        private static IEnumerable<Category> CreateNodeTypeCategories()
         {
             foreach (var nodeType in Enum.GetValues(typeof(NodeType)))
             {
                 yield return new Category($"{nodeType}");
             }
         }
+        
+        private static string GetNodeLabel(ReteNode reteNode)
+        {
+            var labelParts = new List<object>();
+            labelParts.Add(reteNode.NodeType.ToString());
+            switch (reteNode.NodeType)
+            {
+                case NodeType.Type:
+                    labelParts.Add(reteNode.ElementType.Name);
+                    break;
+                case NodeType.Selection:
+                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
+                    break;
+                case NodeType.Join:
+                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
+                    break;
+                case NodeType.Aggregate:
+                    labelParts.Add(reteNode.Properties.Single(x => x.Key == "AggregateName").Value);
+                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Key}={x.Value.Body}"));
+                    break;
+                case NodeType.Binding:
+                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
+                    break;
+                case NodeType.Rule:
+                    labelParts.Add(reteNode.Rules.Single().Name);
+                    break;
+            }
 
-        private IEnumerable<Style> CreateStyles()
+            var label = string.Join("\n", labelParts);
+            return label;
+        }
+
+        private void AddPerformanceMetrics(DirectedGraph graph)
+        {
+            long maxTotalDurationMilliseconds = 0;
+            var reteNodeLookup = _schema.Nodes.ToDictionary(Id);
+            foreach (var node in graph.Nodes)
+            {
+                var reteNode = reteNodeLookup[node.Id];
+                INodeMetrics nodeMetrics = _metricsProvider?.FindByNodeId(reteNode.Id);
+                if (nodeMetrics == null) continue;
+
+                maxTotalDurationMilliseconds = Math.Max(maxTotalDurationMilliseconds,
+                    nodeMetrics.InsertDurationMilliseconds +
+                    nodeMetrics.UpdateDurationMilliseconds +
+                    nodeMetrics.RetractDurationMilliseconds);
+                AddPerformanceMetrics(node, nodeMetrics);
+            }
+
+            graph.Styles.AddRange(CreatePerformanceStyles(maxTotalDurationMilliseconds));
+        }
+
+        private void AddPerformanceMetrics(Node node, INodeMetrics nodeMetrics)
+        {
+            if (nodeMetrics.ElementCount.HasValue)
+                node.Properties.Add("Perf_ElementCount", nodeMetrics.ElementCount.Value);
+            node.Properties.Add("Perf_InsertCount", nodeMetrics.InsertCount);
+            node.Properties.Add("Perf_UpdateCount", nodeMetrics.UpdateCount);
+            node.Properties.Add("Perf_RetractCount", nodeMetrics.RetractCount);
+            node.Properties.Add("Perf_InsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds);
+            node.Properties.Add("Perf_UpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds);
+            node.Properties.Add("Perf_RetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds);
+            node.Properties.Add("Perf_TotalFactFlowCount", 
+                nodeMetrics.InsertCount + nodeMetrics.UpdateCount + nodeMetrics.RetractCount);
+            node.Properties.Add("Perf_TotalDurationMilliseconds",
+                nodeMetrics.InsertDurationMilliseconds + nodeMetrics.UpdateDurationMilliseconds + nodeMetrics.RetractDurationMilliseconds);
+        }
+        
+        private IEnumerable<Style> CreatePerformanceStyles(long maxTotalDurationMilliseconds)
+        {
+            yield return new Style("Link")
+                .Condition("Source.Perf_TotalFactFlowCount > 0")
+                .Setter(nameof(Link.StrokeThickness),
+                    expression: "Math.Min(25,Math.Max(1,Math.Log((Source.Perf_TotalFactFlowCount),2)))");
+            yield return new Style("Node")
+                .Condition($"HasCategory('{NodeType.AlphaMemory}') or HasCategory('{NodeType.BetaMemory}')")
+                .Condition("Perf_ElementCount > 0")
+                .Setter(nameof(Node.FontSize),
+                    expression: "Math.Min(72,Math.Max(8,8+4*Math.Log(Perf_ElementCount,2)))");
+            yield return new Style("Node")
+                .Condition("Perf_TotalDurationMilliseconds <= 100")
+                .Setter(nameof(Node.Background), value: "Green");
+            yield return new Style("Node")
+                .Condition("Perf_TotalDurationMilliseconds > 100")
+                .Setter(nameof(Node.Background),
+                    expression: $"Color.FromRgb(255, 255 - 255 * Perf_TotalDurationMilliseconds / {maxTotalDurationMilliseconds}, 0)");
+        }
+        
+        private IEnumerable<Style> CreateSchemaStyles()
         {
             yield return new Style(nameof(Node))
                 .HasCategory($"{NodeType.Root}")
@@ -169,77 +280,6 @@ namespace NRules.Diagnostics.Dgml
                 .HasCategory($"{NodeType.Rule}")
                 .Setter(nameof(Node.Background), value: "Purple");
         }
-
-        /// <summary>
-        /// Sets a filter for Rete graph nodes, such that only nodes that belong to the given
-        /// set of rules is serialized, along with the connecting graph edges.
-        /// </summary>
-        /// <param name="ruleNames">Set of rules to use as a filter, or <c>null</c> to remove the filter.</param>
-        public void SetRuleFilter(IEnumerable<string> ruleNames)
-        {
-            _ruleNameFilter = ruleNames == null ? null : new HashSet<string>(ruleNames);
-        }
-
-        /// <summary>
-        /// Sets the <see cref="IMetricsProvider"/> to retrieve performance metrics for serialized nodes,
-        /// so that performance metrics are included in the output.
-        /// </summary>
-        /// <param name="metricsProvider">Performance metrics provider or <c>null</c> to exclude performance metrics from the output.</param>
-        public void SetMetricsProvider(IMetricsProvider metricsProvider)
-        {
-            _metricsProvider = metricsProvider;
-        }
-        
-        private static string GetNodeLabel(ReteNode reteNode)
-        {
-            var labelParts = new List<object>();
-            labelParts.Add(reteNode.NodeType.ToString());
-            switch (reteNode.NodeType)
-            {
-                case NodeType.Type:
-                    labelParts.Add(reteNode.ElementType.Name);
-                    break;
-                case NodeType.Selection:
-                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
-                    break;
-                case NodeType.Join:
-                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
-                    break;
-                case NodeType.Aggregate:
-                    labelParts.Add(reteNode.Properties.Single(x => x.Key == "AggregateName").Value);
-                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Key}={x.Value.Body}"));
-                    break;
-                case NodeType.Binding:
-                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
-                    break;
-                case NodeType.Rule:
-                    labelParts.Add(reteNode.Rules.Single().Name);
-                    break;
-            }
-
-            var label = string.Join("\n", labelParts);
-            return label;
-        }
-
-        private void AddPerformanceMetrics(Node node, ReteNode reteNode)
-        {
-            INodeMetrics nodeMetrics = _metricsProvider?.FindByNodeId(reteNode.Id);
-            if (nodeMetrics == null) return;
-
-            if (nodeMetrics.ElementCount.HasValue)
-                node.Properties.Add("Perf_ElementCount", nodeMetrics.ElementCount.Value);
-            node.Properties.Add("Perf_InsertCount", nodeMetrics.InsertCount);
-            node.Properties.Add("Perf_UpdateCount", nodeMetrics.UpdateCount);
-            node.Properties.Add("Perf_RetractCount", nodeMetrics.RetractCount);
-            node.Properties.Add("Perf_InsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds);
-            node.Properties.Add("Perf_UpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds);
-            node.Properties.Add("Perf_RetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds);
-        }
-
-        private string Id(ReteNode reteNode)
-        {
-            return $"{reteNode.Id}";
-        }
         
         private IEnumerable<ReteNode> Filter(ReteNode[] reteNodes)
         {
@@ -267,6 +307,11 @@ namespace NRules.Diagnostics.Dgml
             if (reteNode.Rules.Any(r => _ruleNameFilter.Contains(r.Name)))
                 return true;
             return false;
+        }
+
+        private string Id(ReteNode reteNode)
+        {
+            return $"{reteNode.Id}";
         }
 
         private class Utf8StringWriter : StringWriter

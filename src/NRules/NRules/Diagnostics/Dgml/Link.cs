@@ -16,6 +16,7 @@ namespace NRules.Diagnostics.Dgml
         public string Category { get; set; }
         public string Label { get; set; }
         public string Description { get; set; }
+        public string StrokeThickness { get; set; }
         public Dictionary<string, object> Properties { get; } = new Dictionary<string, object>();
 
         public void WriteXml(XmlWriter writer)
@@ -26,6 +27,7 @@ namespace NRules.Diagnostics.Dgml
             writer.WriteAttributeIfNotNull(nameof(Category), Category);
             writer.WriteAttributeIfNotNull(nameof(Label), Label);
             writer.WriteAttributeIfNotNull(nameof(Description), Description);
+            writer.WriteAttributeIfNotNull(nameof(StrokeThickness), StrokeThickness);
             writer.WriteProperties(Properties);
             writer.WriteEndElement();
         }

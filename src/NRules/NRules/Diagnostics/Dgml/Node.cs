@@ -17,6 +17,7 @@ namespace NRules.Diagnostics.Dgml
         public string Description { get; set; }
         public string Reference { get; set; }
         public string Background { get; set; }
+        public string FontSize { get; set; }
         public Dictionary<string, object> Properties { get; } = new Dictionary<string, object>();
 
         public void WriteXml(XmlWriter writer)
@@ -29,6 +30,7 @@ namespace NRules.Diagnostics.Dgml
             writer.WriteAttributeIfNotNull(nameof(Description), Description);
             writer.WriteAttributeIfNotNull(nameof(Reference), Reference);
             writer.WriteAttributeIfNotNull(nameof(Background), Background);
+            writer.WriteAttributeIfNotNull(nameof(FontSize), FontSize);
             writer.WriteProperties(Properties);
             writer.WriteEndElement();
         }
