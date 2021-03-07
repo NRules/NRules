@@ -184,7 +184,8 @@ namespace NRules.Diagnostics.Dgml
 
         private void AddPerformanceMetrics(DirectedGraph graph)
         {
-            long maxTotalDurationMilliseconds = 0;
+            long maxDuration = 0;
+            long minDuration = Int64.MaxValue;
             var reteNodeLookup = _schema.Nodes.ToDictionary(Id);
             foreach (var node in graph.Nodes)
             {
@@ -192,14 +193,33 @@ namespace NRules.Diagnostics.Dgml
                 INodeMetrics nodeMetrics = _metricsProvider?.FindByNodeId(reteNode.Id);
                 if (nodeMetrics == null) continue;
 
-                maxTotalDurationMilliseconds = Math.Max(maxTotalDurationMilliseconds,
-                    nodeMetrics.InsertDurationMilliseconds +
-                    nodeMetrics.UpdateDurationMilliseconds +
-                    nodeMetrics.RetractDurationMilliseconds);
+                var totalDuration = nodeMetrics.InsertDurationMilliseconds +
+                                    nodeMetrics.UpdateDurationMilliseconds +
+                                    nodeMetrics.RetractDurationMilliseconds;
+                maxDuration = Math.Max(maxDuration, totalDuration);
+                minDuration = Math.Min(minDuration, totalDuration);
                 AddPerformanceMetrics(node, nodeMetrics);
             }
 
-            graph.Styles.AddRange(CreatePerformanceStyles(maxTotalDurationMilliseconds));
+            minDuration = Math.Min(minDuration, maxDuration);
+
+            graph.Properties.AddRange(
+                CreatePerformanceProperties());
+            graph.Styles.AddRange(
+                CreatePerformanceStyles(minDuration, maxDuration));
+        }
+
+        private IEnumerable<Property> CreatePerformanceProperties()
+        {
+            yield return new Property("Perf_ElementCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_InsertCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_UpdateCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_RetractCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_InsertDurationMilliseconds") {DataType = "System.Int64"};
+            yield return new Property("Perf_UpdateDurationMilliseconds") {DataType = "System.Int64"};
+            yield return new Property("Perf_RetractDurationMilliseconds") {DataType = "System.Int64"};
+            yield return new Property("Perf_TotalFactFlowCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_TotalDurationMilliseconds") {DataType = "System.Int64"};
         }
 
         private void AddPerformanceMetrics(Node node, INodeMetrics nodeMetrics)
@@ -218,24 +238,38 @@ namespace NRules.Diagnostics.Dgml
                 nodeMetrics.InsertDurationMilliseconds + nodeMetrics.UpdateDurationMilliseconds + nodeMetrics.RetractDurationMilliseconds);
         }
         
-        private IEnumerable<Style> CreatePerformanceStyles(long maxTotalDurationMilliseconds)
+        private IEnumerable<Style> CreatePerformanceStyles(long minDuration, long maxDuration)
         {
             yield return new Style("Link")
                 .Condition("Source.Perf_TotalFactFlowCount > 0")
                 .Setter(nameof(Link.StrokeThickness),
                     expression: "Math.Min(25,Math.Max(1,Math.Log((Source.Perf_TotalFactFlowCount),2)))");
+
             yield return new Style("Node")
                 .Condition($"HasCategory('{NodeType.AlphaMemory}') or HasCategory('{NodeType.BetaMemory}')")
                 .Condition("Perf_ElementCount > 0")
                 .Setter(nameof(Node.FontSize),
                     expression: "Math.Min(72,Math.Max(8,8+4*Math.Log(Perf_ElementCount,2)))");
+
+            var durationProperty = "Perf_TotalDurationMilliseconds";
+            maxDuration = Math.Max(50, maxDuration);
+            long midPoint = (minDuration + maxDuration) / 2;
+            int maxRed = 250;
+            int maxGreen = 200;
             yield return new Style("Node")
-                .Condition("Perf_TotalDurationMilliseconds <= 100")
-                .Setter(nameof(Node.Background), value: "Green");
+                .Condition($"{durationProperty} <= {midPoint}")
+                .Setter(nameof(Node.Foreground), value: "Black")
+                .Setter(nameof(Node.Background), 
+                    expression: $"Color.FromRgb({maxRed}*({durationProperty} - {minDuration})/{midPoint}, {maxGreen}, 0)");
             yield return new Style("Node")
-                .Condition("Perf_TotalDurationMilliseconds > 100")
+                .Condition($"{durationProperty} > {midPoint}")
+                .Setter(nameof(Node.Foreground), value: "Black")
                 .Setter(nameof(Node.Background),
-                    expression: $"Color.FromRgb(255, 255 - 255 * Perf_TotalDurationMilliseconds / {maxTotalDurationMilliseconds}, 0)");
+                    expression: $"Color.FromRgb({maxRed}, {maxGreen}*(1 - ({durationProperty} - {midPoint})/{midPoint}), 0)");
+            yield return new Style("Node")
+                .Setter(nameof(Node.Foreground), value: "Black")
+                .Setter(nameof(Node.Background),
+                    expression: $"Color.FromRgb(0, {maxGreen}, 0)");
         }
         
         private IEnumerable<Style> CreateSchemaStyles()
@@ -281,7 +315,7 @@ namespace NRules.Diagnostics.Dgml
                 .Setter(nameof(Node.Background), value: "Purple");
         }
         
-        private IEnumerable<ReteNode> Filter(ReteNode[] reteNodes)
+        private IEnumerable<ReteNode> Filter(IEnumerable<ReteNode> reteNodes)
         {
             foreach (var reteNode in reteNodes)
             {
@@ -291,7 +325,7 @@ namespace NRules.Diagnostics.Dgml
             }
         }
         
-        private IEnumerable<ReteLink> Filter(ReteLink[] reteLinks)
+        private IEnumerable<ReteLink> Filter(IEnumerable<ReteLink> reteLinks)
         {
             foreach (var reteLink in reteLinks)
             {
