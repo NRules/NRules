@@ -218,8 +218,6 @@ namespace NRules.Diagnostics.Dgml
             yield return new Property("Perf_InsertDurationMilliseconds") {DataType = "System.Int64"};
             yield return new Property("Perf_UpdateDurationMilliseconds") {DataType = "System.Int64"};
             yield return new Property("Perf_RetractDurationMilliseconds") {DataType = "System.Int64"};
-            yield return new Property("Perf_TotalFactFlowCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_TotalDurationMilliseconds") {DataType = "System.Int64"};
         }
 
         private void AddPerformanceMetrics(Node node, INodeMetrics nodeMetrics)
@@ -232,18 +230,15 @@ namespace NRules.Diagnostics.Dgml
             node.Properties.Add("Perf_InsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds);
             node.Properties.Add("Perf_UpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds);
             node.Properties.Add("Perf_RetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds);
-            node.Properties.Add("Perf_TotalFactFlowCount", 
-                nodeMetrics.InsertCount + nodeMetrics.UpdateCount + nodeMetrics.RetractCount);
-            node.Properties.Add("Perf_TotalDurationMilliseconds",
-                nodeMetrics.InsertDurationMilliseconds + nodeMetrics.UpdateDurationMilliseconds + nodeMetrics.RetractDurationMilliseconds);
         }
         
         private IEnumerable<Style> CreatePerformanceStyles(long minDuration, long maxDuration)
         {
+            var countProperty = "(Source.Perf_InsertCount+Source.Perf_UpdateCount+Source.Perf_RetractCount)";
             yield return new Style("Link")
-                .Condition("Source.Perf_TotalFactFlowCount > 0")
+                .Condition($"{countProperty} > 0")
                 .Setter(nameof(Link.StrokeThickness),
-                    expression: "Math.Min(25,Math.Max(1,Math.Log((Source.Perf_TotalFactFlowCount),2)))");
+                    expression: $"Math.Min(25,Math.Max(1,Math.Log({countProperty},2)))");
 
             yield return new Style("Node")
                 .Condition($"HasCategory('{NodeType.AlphaMemory}') or HasCategory('{NodeType.BetaMemory}')")
@@ -251,7 +246,7 @@ namespace NRules.Diagnostics.Dgml
                 .Setter(nameof(Node.FontSize),
                     expression: "Math.Min(72,Math.Max(8,8+4*Math.Log(Perf_ElementCount,2)))");
 
-            var durationProperty = "Perf_TotalDurationMilliseconds";
+            var durationProperty = "(Perf_InsertDurationMilliseconds+Perf_UpdateDurationMilliseconds+Perf_RetractDurationMilliseconds)";
             maxDuration = Math.Max(50, maxDuration);
             long midPoint = (minDuration + maxDuration) / 2;
             int maxRed = 250;
