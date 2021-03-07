@@ -4,7 +4,12 @@ namespace NRules.Diagnostics.Dgml
 {
     internal class Property
     {
-        public string Id { get; set; }
+        public Property(string id)
+        {
+            Id = id;
+        }
+
+        public string Id { get; }
         public string DataType { get; set; }
         public string Label { get; set; }
         public string Description { get; set; }
