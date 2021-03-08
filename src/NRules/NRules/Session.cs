@@ -41,7 +41,7 @@ namespace NRules
     /// This exception can also be observed as an event <see cref="IEventProvider.RhsExpressionFailedEvent"/>.</exception>
     /// <seealso cref="ISessionFactory"/>
     /// <threadsafety instance="false" />
-    public interface ISession
+    public interface ISession : ISessionSchemaProvider
     {
         /// <summary>
         /// Controls how the engine propagates linked facts from rules that insert/update/retract linked facts in their actions.
@@ -62,6 +62,11 @@ namespace NRules
         /// Use it to subscribe to various rules engine lifecycle events.
         /// </summary>
         IEventProvider Events { get; }
+
+        /// <summary>
+        /// Provider of session performance metrics for the current rule session.
+        /// </summary>
+        IMetricsProvider Metrics { get; }
 
         /// <summary>
         /// Rules dependency resolver for the current rules session.
@@ -291,10 +296,7 @@ namespace NRules
         void QueueRetractLinked(Activation activation);
     }
 
-    /// <summary>
-    /// See <see cref="ISession"/>.
-    /// </summary>
-    public sealed class Session : ISessionInternal, ISessionSnapshotProvider
+    internal sealed class Session : ISessionInternal
     {
         private static readonly ILinkedFactSet[] EmptyLinkedFactResult = new ILinkedFactSet[0];
 
@@ -302,6 +304,7 @@ namespace NRules
         private readonly INetwork _network;
         private readonly IWorkingMemory _workingMemory;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IMetricsAggregator _metricsAggregator;
         private readonly IActionExecutor _actionExecutor;
         private readonly IExecutionContext _executionContext;
         private readonly Queue<LinkedFactSet> _linkedFacts = new Queue<LinkedFactSet>();
@@ -311,6 +314,7 @@ namespace NRules
             IAgendaInternal agenda,
             IWorkingMemory workingMemory,
             IEventAggregator eventAggregator,
+            IMetricsAggregator metricsAggregator,
             IActionExecutor actionExecutor,
             IIdGenerator idGenerator,
             IDependencyResolver dependencyResolver,
@@ -320,8 +324,9 @@ namespace NRules
             _workingMemory = workingMemory;
             _agenda = agenda;
             _eventAggregator = eventAggregator;
+            _metricsAggregator = metricsAggregator;
             _actionExecutor = actionExecutor;
-            _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator, idGenerator);
+            _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator, _metricsAggregator, idGenerator);
             DependencyResolver = dependencyResolver;
             ActionInterceptor = actionInterceptor;
             AutoPropagateLinkedFacts = true;
@@ -330,6 +335,7 @@ namespace NRules
         public bool AutoPropagateLinkedFacts { get; set; }
         public IAgenda Agenda => _agenda;
         public IEventProvider Events => _eventAggregator;
+        public IMetricsProvider Metrics => _metricsAggregator;
         public IDependencyResolver DependencyResolver { get; set; }
         public IActionInterceptor ActionInterceptor { get; set; }
 
@@ -727,12 +733,6 @@ namespace NRules
             fact.RawObject = factObject;
         }
 
-        SessionSnapshot ISessionSnapshotProvider.GetSnapshot()
-        {
-            var builder = new SnapshotBuilder();
-            var visitor = new SessionSnapshotVisitor(_workingMemory);
-            _network.Visit(builder, visitor);
-            return builder.Build();
-        }
+        ReteGraph ISessionSchemaProvider.GetSchema() => _network.GetSchema();
     }
 }

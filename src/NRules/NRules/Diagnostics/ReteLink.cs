@@ -1,24 +1,21 @@
-using System;
-
 namespace NRules.Diagnostics
 {
     /// <summary>
     /// Link between nodes in the rete network graph.
     /// </summary>
-    [Serializable]
-    public class LinkInfo
+    public class ReteLink
     {
         /// <summary>
         /// Source node.
         /// </summary>
-        public NodeInfo Source { get; }
+        public ReteNode Source { get; }
 
         /// <summary>
         /// Target node.
         /// </summary>
-        public NodeInfo Target { get; }
+        public ReteNode Target { get; }
 
-        internal LinkInfo(NodeInfo source, NodeInfo target)
+        internal ReteLink(ReteNode source, ReteNode target)
         {
             Source = source;
             Target = target;

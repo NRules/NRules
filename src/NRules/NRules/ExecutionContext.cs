@@ -9,17 +9,24 @@ namespace NRules
         IWorkingMemory WorkingMemory { get; }
         IAgendaInternal Agenda { get; }
         IEventAggregator EventAggregator { get; }
+        IMetricsAggregator MetricsAggregator { get; }
         IIdGenerator IdGenerator { get; }
     }
 
     internal class ExecutionContext : IExecutionContext
     {
-        public ExecutionContext(ISessionInternal session, IWorkingMemory workingMemory, IAgendaInternal agenda, IEventAggregator eventAggregator, IIdGenerator idGenerator)
+        public ExecutionContext(ISessionInternal session, 
+            IWorkingMemory workingMemory, 
+            IAgendaInternal agenda, 
+            IEventAggregator eventAggregator, 
+            IMetricsAggregator metricsAggregator, 
+            IIdGenerator idGenerator)
         {
             Session = session;
             WorkingMemory = workingMemory;
             Agenda = agenda;
             EventAggregator = eventAggregator;
+            MetricsAggregator = metricsAggregator;
             IdGenerator = idGenerator;
             UnlinkQueue = new Queue<Activation>();
         }
@@ -28,6 +35,7 @@ namespace NRules
         public IWorkingMemory WorkingMemory { get; }
         public IAgendaInternal Agenda { get; }
         public IEventAggregator EventAggregator { get; }
+        public IMetricsAggregator MetricsAggregator { get; }
         public IIdGenerator IdGenerator { get; }
         public Queue<Activation> UnlinkQueue { get; }
     }

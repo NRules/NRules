@@ -13,11 +13,10 @@ namespace NRules.IntegrationTests
         public void Session_AlphaSelectionNodes_OnePerIntraCondition()
         {
             //Arrange
-            var snapshotProvider = (ISessionSnapshotProvider) Session;
-            var snapshot = snapshotProvider.GetSnapshot();
+            var schema = Session.GetSchema();
 
             //Act
-            var count = snapshot.Nodes.Count(x => x.NodeType == NodeType.Selection);
+            var count = schema.Nodes.Count(x => x.NodeType == NodeType.Selection);
 
             //Assert
             Assert.Equal(5, count);
@@ -27,11 +26,10 @@ namespace NRules.IntegrationTests
         public void Session_BetaJoinNodes_CorrectCount()
         {
             //Arrange
-            var snapshotProvider = (ISessionSnapshotProvider) Session;
-            var snapshot = snapshotProvider.GetSnapshot();
+            var schema = Session.GetSchema();
 
             //Act
-            var count = snapshot.Nodes.Count(x => x.NodeType == NodeType.Join);
+            var count = schema.Nodes.Count(x => x.NodeType == NodeType.Join);
 
             //Assert
             Assert.Equal(4, count);
@@ -41,11 +39,10 @@ namespace NRules.IntegrationTests
         public void Session_AggregateNodes_CorrectCount()
         {
             //Arrange
-            var snapshotProvider = (ISessionSnapshotProvider) Session;
-            var snapshot = snapshotProvider.GetSnapshot();
+            var schema = Session.GetSchema();
 
             //Act
-            var count = snapshot.Nodes.Count(x => x.NodeType == NodeType.Aggregate);
+            var count = schema.Nodes.Count(x => x.NodeType == NodeType.Aggregate);
 
             //Assert
             Assert.Equal(3, count);
@@ -55,11 +52,10 @@ namespace NRules.IntegrationTests
         public void Session_NotNodes_CorrectCount()
         {
             //Arrange
-            var snapshotProvider = (ISessionSnapshotProvider) Session;
-            var snapshot = snapshotProvider.GetSnapshot();
-
+            var schema = Session.GetSchema();
+ 
             //Act
-            var count = snapshot.Nodes.Count(x => x.NodeType == NodeType.Not);
+            var count = schema.Nodes.Count(x => x.NodeType == NodeType.Not);
 
             //Assert
             Assert.Equal(1, count);
@@ -69,11 +65,10 @@ namespace NRules.IntegrationTests
         public void Session_ExistsNodes_CorrectCount()
         {
             //Arrange
-            var snapshotProvider = (ISessionSnapshotProvider) Session;
-            var snapshot = snapshotProvider.GetSnapshot();
+            var schema = Session.GetSchema();
 
             //Act
-            var count = snapshot.Nodes.Count(x => x.NodeType == NodeType.Exists);
+            var count = schema.Nodes.Count(x => x.NodeType == NodeType.Exists);
 
             //Assert
             Assert.Equal(1, count);
@@ -83,11 +78,10 @@ namespace NRules.IntegrationTests
         public void Session_BindingNodes_CorrectCount()
         {
             //Arrange
-            var snapshotProvider = (ISessionSnapshotProvider) Session;
-            var snapshot = snapshotProvider.GetSnapshot();
+            var schema = Session.GetSchema();
 
             //Act
-            var count = snapshot.Nodes.Count(x => x.NodeType == NodeType.Binding);
+            var count = schema.Nodes.Count(x => x.NodeType == NodeType.Binding);
 
             //Assert
             Assert.Equal(1, count);

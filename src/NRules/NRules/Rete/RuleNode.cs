@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.Diagnostics;
 
 namespace NRules.Rete
 {
@@ -11,6 +12,8 @@ namespace NRules.Rete
 
     internal class RuleNode : IRuleNode, ITupleSink
     {
+        public int Id { get; set; }
+        public NodeInfo NodeInfo { get; } = new NodeInfo();
         public ICompiledRule CompiledRule { get; }
 
         public RuleNode(ICompiledRule compiledRule)
