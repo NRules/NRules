@@ -212,9 +212,12 @@ namespace NRules.Diagnostics.Dgml
         private IEnumerable<Property> CreatePerformanceProperties()
         {
             yield return new Property("Perf_ElementCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_InsertCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_UpdateCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_RetractCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_InsertInputCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_InsertOutputCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_UpdateInputCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_UpdateOutputCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_RetractInputCount") {DataType = "System.Int32"};
+            yield return new Property("Perf_RetractOutputCount") {DataType = "System.Int32"};
             yield return new Property("Perf_InsertDurationMilliseconds") {DataType = "System.Int64"};
             yield return new Property("Perf_UpdateDurationMilliseconds") {DataType = "System.Int64"};
             yield return new Property("Perf_RetractDurationMilliseconds") {DataType = "System.Int64"};
@@ -224,9 +227,12 @@ namespace NRules.Diagnostics.Dgml
         {
             if (nodeMetrics.ElementCount.HasValue)
                 node.Properties.Add("Perf_ElementCount", nodeMetrics.ElementCount.Value);
-            node.Properties.Add("Perf_InsertCount", nodeMetrics.InsertCount);
-            node.Properties.Add("Perf_UpdateCount", nodeMetrics.UpdateCount);
-            node.Properties.Add("Perf_RetractCount", nodeMetrics.RetractCount);
+            node.Properties.Add("Perf_InsertInputCount", nodeMetrics.InsertInputCount);
+            node.Properties.Add("Perf_InsertOutputCount", nodeMetrics.InsertOutputCount);
+            node.Properties.Add("Perf_UpdateInputCount", nodeMetrics.UpdateInputCount);
+            node.Properties.Add("Perf_UpdateOutputCount", nodeMetrics.UpdateOutputCount);
+            node.Properties.Add("Perf_RetractInputCount", nodeMetrics.RetractInputCount);
+            node.Properties.Add("Perf_RetractOutputCount", nodeMetrics.RetractOutputCount);
             node.Properties.Add("Perf_InsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds);
             node.Properties.Add("Perf_UpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds);
             node.Properties.Add("Perf_RetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds);
@@ -234,7 +240,7 @@ namespace NRules.Diagnostics.Dgml
         
         private IEnumerable<Style> CreatePerformanceStyles(long minDuration, long maxDuration)
         {
-            var countProperty = "(Source.Perf_InsertCount+Source.Perf_UpdateCount+Source.Perf_RetractCount)";
+            var countProperty = "(Source.Perf_InsertOutputCount+Source.Perf_UpdateOutputCount+Source.Perf_RetractOutputCount)";
             yield return new Style("Link")
                 .Condition($"{countProperty} > 0")
                 .Setter(nameof(Link.StrokeThickness),

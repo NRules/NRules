@@ -41,7 +41,8 @@ namespace NRules.Rete
                     }
                 }
 
-                counter.AddItems(toAssert.Count);
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(toAssert.Count);
             }
 
             MemoryNode.PropagateAssert(context, toAssert);
@@ -69,7 +70,8 @@ namespace NRules.Rete
                     }
                 }
 
-                counter.AddItems(toUpdate.Count + toRetract.Count);
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(toUpdate.Count + toRetract.Count);
             }
 
             MemoryNode.PropagateRetract(context, toRetract);
@@ -88,7 +90,8 @@ namespace NRules.Rete
                     toRetract.Add(set.Tuple, fact);
                 }
              
-                counter.AddItems(toRetract.Count);
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(toRetract.Count);
             }
 
             MemoryNode.PropagateRetract(context, toRetract);
@@ -109,7 +112,8 @@ namespace NRules.Rete
                     }
                 }
 
-                counter.AddItems(toAssert.Count);
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toAssert.Count);
             }
 
             MemoryNode.PropagateAssert(context, toAssert);
@@ -131,7 +135,8 @@ namespace NRules.Rete
                         toRetract.Add(set.Tuple, fact);
                 }
 
-                counter.AddItems(toUpdate.Count + toRetract.Count);
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toUpdate.Count + toRetract.Count);
             }
 
             MemoryNode.PropagateRetract(context, toRetract);
@@ -150,7 +155,8 @@ namespace NRules.Rete
                     toRetract.Add(set.Tuple, fact);
                 }
 
-                counter.AddItems(toRetract.Count);
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toRetract.Count);
             }
 
             MemoryNode.PropagateRetract(context, toRetract);

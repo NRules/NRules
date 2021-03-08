@@ -44,7 +44,8 @@ namespace NRules.Rete
                     AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, set.Facts);
                 }
 
-                counter.AddItems(tuples.Count);
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(aggregation.Count);
             }
 
             PropagateAggregation(context, aggregation);
@@ -78,7 +79,8 @@ namespace NRules.Rete
                     }
                 }
 
-                counter.AddItems(tuples.Count);
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(aggregation.Count);
             }
 
             PropagateAggregation(context, aggregation);
@@ -98,7 +100,8 @@ namespace NRules.Rete
                     }
                 }
 
-                counter.AddItems(tuples.Count);
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(aggregation.Count);
             }
 
             PropagateAggregation(context, aggregation);
@@ -128,7 +131,8 @@ namespace NRules.Rete
                     AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, set.Facts);
                 }
 
-                counter.AddItems(facts.Count);
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(aggregation.Count);
             }
 
             PropagateAggregation(context, aggregation);
@@ -158,7 +162,8 @@ namespace NRules.Rete
                     }
                 }
 
-                counter.AddItems(facts.Count);
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(aggregation.Count);
             }
 
             PropagateAggregation(context, aggregation);
@@ -182,7 +187,8 @@ namespace NRules.Rete
                     }
                 }
 
-                counter.AddItems(facts.Count);
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(aggregation.Count);
             }
 
             PropagateAggregation(context, aggregation);

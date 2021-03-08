@@ -74,9 +74,13 @@ namespace NRules.Rete
             {
                 sink.PropagateRetract(context, toRetract);
             }
-            foreach (var tuple in tuples)
+
+            using (PerfCounter.Retract(context, this))
             {
-                context.WorkingMemory.RemoveStateOrThrow<WrapperFact>(this, tuple);
+                foreach (var tuple in tuples)
+                {
+                    context.WorkingMemory.RemoveStateOrThrow<WrapperFact>(this, tuple);
+                }
             }
         }
 

@@ -43,7 +43,14 @@ namespace NRules.Diagnostics
             _stopwatch.Reset();
         }
 
-        public void AddItems(int count) => _nodeMetrics.InsertCount += count;
+        public void AddItems(int count)
+        {
+            AddInputs(count);
+            AddOutputs(count);
+        }
+
+        public void AddInputs(int count) => _nodeMetrics.InsertInputCount += count;
+        public void AddOutputs(int count) => _nodeMetrics.InsertOutputCount += count;
         public void SetCount(int count) => _nodeMetrics.ElementCount = count;
     }
 
@@ -65,7 +72,14 @@ namespace NRules.Diagnostics
             _stopwatch.Reset();
         }
 
-        public void AddItems(int count) => _nodeMetrics.UpdateCount += count;
+        public void AddItems(int count)
+        {
+            AddInputs(count);
+            AddOutputs(count);
+        }
+
+        public void AddInputs(int count) => _nodeMetrics.UpdateInputCount += count;
+        public void AddOutputs(int count) => _nodeMetrics.UpdateOutputCount += count;
         public void SetCount(int count) => _nodeMetrics.ElementCount = count;
     }
 
@@ -87,7 +101,14 @@ namespace NRules.Diagnostics
             _stopwatch.Reset();
         }
 
-        public void AddItems(int count) => _nodeMetrics.RetractCount += count;
+        public void AddItems(int count)
+        {
+            AddInputs(count);
+            AddOutputs(count);
+        }
+
+        public void AddInputs(int count) => _nodeMetrics.RetractInputCount += count;
+        public void AddOutputs(int count) => _nodeMetrics.RetractOutputCount += count;
         public void SetCount(int count) => _nodeMetrics.ElementCount = count;
     }
 }

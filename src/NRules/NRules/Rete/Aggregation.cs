@@ -8,24 +8,28 @@ namespace NRules.Rete
         private readonly List<AggregateList> _aggregateLists = new List<AggregateList>();
         private AggregateList _currentList;
 
-        public IList<AggregateList> AggregateLists => _aggregateLists;
+        public List<AggregateList> AggregateLists => _aggregateLists;
+        public int Count { get; private set; }
 
         public void Add(Tuple tuple, Fact aggregateFact)
         {
             var list = GetList(AggregationAction.Added);
             list.Add(tuple, aggregateFact);
+            Count++;
         }
 
         public void Modify(Tuple tuple, Fact aggregateFact)
         {
             var list = GetList(AggregationAction.Modified);
             list.Add(tuple, aggregateFact);
+            Count++;
         }
         
         public void Remove(Tuple tuple, Fact aggregateFact)
         {
             var list = GetList(AggregationAction.Removed);
             list.Add(tuple, aggregateFact);
+            Count++;
         }
 
         public void Remove(Tuple tuple, IEnumerable<Fact> aggregateFacts)
@@ -34,6 +38,7 @@ namespace NRules.Rete
             foreach (var aggregateFact in aggregateFacts)
             {
                 list.Add(tuple, aggregateFact);
+               Count++;
             }
         }
 

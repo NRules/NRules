@@ -50,7 +50,6 @@ namespace NRules.Rete
                 }
 
                 counter.AddItems(facts.Count);
-                counter.SetCount(memory.FactCount);
             }
 
             if (toUpdate.Count > 0)
@@ -78,8 +77,8 @@ namespace NRules.Rete
                         toRetract.Add(fact);
                 }
 
-                counter.AddItems(facts.Count);
-                counter.SetCount(memory.FactCount);
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toRetract.Count);
             }
 
             if (toRetract.Count > 0)
@@ -88,7 +87,12 @@ namespace NRules.Rete
                 {
                     sink.PropagateRetract(context, toRetract);
                 }
-                memory.Remove(toRetract);
+
+                using (var counter = PerfCounter.Retract(context, this))
+                {
+                    memory.Remove(toRetract);
+                    counter.SetCount(memory.FactCount);
+                }
             }
         }
 

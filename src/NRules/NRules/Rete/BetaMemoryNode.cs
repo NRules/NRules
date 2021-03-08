@@ -38,7 +38,6 @@ namespace NRules.Rete
                 }
                 
                 counter.AddItems(tupleFactList.Count);
-                counter.SetCount(memory.TupleCount);
             }
 
             PropagateAssertInternal(context, memory, toAssert);
@@ -71,7 +70,6 @@ namespace NRules.Rete
                 }
                 
                 counter.AddItems(tupleFactList.Count);
-                counter.SetCount(memory.TupleCount);
             }
 
             PropagateAssertInternal(context, memory, toAssert);
@@ -97,8 +95,8 @@ namespace NRules.Rete
                     }
                 }
                 
-                counter.AddItems(tupleFactList.Count);
-                counter.SetCount(memory.TupleCount);
+                counter.AddInputs(tupleFactList.Count);
+                counter.AddOutputs(toRetract.Count);
             }
 
             PropagateRetractInternal(context, memory, toRetract);
@@ -112,7 +110,12 @@ namespace NRules.Rete
                 {
                     _sinks[i].PropagateAssert(context, tuples);
                 }
-                memory.Add(tuples);
+
+                using (var counter = PerfCounter.Assert(context, this))
+                {
+                    memory.Add(tuples);
+                    counter.SetCount(memory.TupleCount);
+                }
             }
         }
 
@@ -130,8 +133,13 @@ namespace NRules.Rete
         private void PropagateRetractInternal(IExecutionContext context, IBetaMemory memory, List<Tuple> tuples)
         {
             if (tuples.Count > 0)
-            { 
-                memory.Remove(tuples);
+            {
+                using (var counter = PerfCounter.Retract(context, this))
+                {
+                    memory.Remove(tuples);
+                    counter.SetCount(memory.TupleCount);
+                }
+
                 for (int i = _sinks.Count - 1; i >= 0; i--)
                 {
                     _sinks[i].PropagateRetract(context, tuples);

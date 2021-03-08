@@ -31,7 +31,8 @@ namespace NRules.Rete
                     if (IsSatisfiedBy(context, fact))
                         toUpdate.Add(fact);
                 }
-                counter.AddItems(facts.Count);
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toUpdate.Count);
             }
 
             PropagateUpdateInternal(context, toUpdate);
@@ -47,7 +48,8 @@ namespace NRules.Rete
                     if (IsSatisfiedBy(context, fact))
                         toRetract.Add(fact);
                 }
-                counter.AddItems(facts.Count);
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toRetract.Count);
             }
 
             PropagateRetractInternal(context, toRetract);
