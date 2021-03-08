@@ -109,7 +109,7 @@ namespace NRules.Diagnostics.Dgml
                     Category = reteNode.NodeType.ToString()
                 };
 
-                node.Properties.Add("ElementType", reteNode.ElementType?.FullName);
+                node.Properties.Add("OutputType", reteNode.OutputType?.ToString());
 
                 foreach (var valueGroup in reteNode.Properties.GroupBy(x => x.Key, x => x.Value))
                 {
@@ -158,7 +158,7 @@ namespace NRules.Diagnostics.Dgml
             switch (reteNode.NodeType)
             {
                 case NodeType.Type:
-                    labelParts.Add(reteNode.ElementType.Name);
+                    labelParts.Add(reteNode.OutputType.Name);
                     break;
                 case NodeType.Selection:
                     labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));

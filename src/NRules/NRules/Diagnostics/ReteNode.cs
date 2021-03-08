@@ -45,9 +45,9 @@ namespace NRules.Diagnostics
         public NodeType NodeType { get; }
 
         /// <summary>
-        /// Type of element this node produces as output.
+        /// Type of elements the node produces as output.
         /// </summary>
-        public Type ElementType { get; }
+        public Type OutputType { get; }
 
         /// <summary>
         /// Properties associated with the node.
@@ -71,7 +71,8 @@ namespace NRules.Diagnostics
         
         internal static ReteNode Create(TypeNode node)
         {
-            return new ReteNode(node.Id, NodeType.Type, node.FilterType, rules: node.NodeInfo.Rules);
+            return new ReteNode(node.Id, NodeType.Type, outputType: node.FilterType, 
+                rules: node.NodeInfo.Rules);
         }
         
         internal static ReteNode Create(SelectionNode node)
@@ -80,20 +81,22 @@ namespace NRules.Diagnostics
             {
                 new KeyValuePair<string, LambdaExpression>("Condition", node.ExpressionElement.Expression)
             };
-            var elementType = node.ExpressionElement.Expression.Parameters.Single().Type;
-            return new ReteNode(node.Id, NodeType.Selection, elementType, null, conditions, node.NodeInfo.Rules);
+            return new ReteNode(node.Id, NodeType.Selection, outputType: node.NodeInfo.OutputType, 
+                expressions: conditions, rules: node.NodeInfo.Rules);
         }
 
         internal static ReteNode Create(AlphaMemoryNode node)
         {
-            return new ReteNode(node.Id, NodeType.AlphaMemory, rules: node.NodeInfo.Rules);
+            return new ReteNode(node.Id, NodeType.AlphaMemory, outputType: node.NodeInfo.OutputType,
+                rules: node.NodeInfo.Rules);
         }
 
         internal static ReteNode Create(JoinNode node)
         {
             var conditions = node.ExpressionElements.Select(c => 
                 new KeyValuePair<string, LambdaExpression>("Expression", c.Expression));
-            return new ReteNode(node.Id, NodeType.Join, null, null, conditions, node.NodeInfo.Rules);
+            return new ReteNode(node.Id, NodeType.Join, expressions: conditions,
+                rules: node.NodeInfo.Rules);
         }
 
         internal static ReteNode Create(NotNode node)
@@ -111,7 +114,8 @@ namespace NRules.Diagnostics
             var values = new[] {new KeyValuePair<string, object>("AggregateName", node.Name)};
             var expressions = node.Expressions.Select(e =>
                 new KeyValuePair<string, LambdaExpression>(e.Name, e.Expression));
-            return new ReteNode(node.Id, NodeType.Aggregate, null, values, expressions, node.NodeInfo.Rules);
+            return new ReteNode(node.Id, NodeType.Aggregate, outputType: node.NodeInfo.OutputType,
+                values: values, expressions: expressions, rules: node.NodeInfo.Rules);
         }
 
         internal static ReteNode Create(ObjectInputAdapter node)
@@ -125,7 +129,8 @@ namespace NRules.Diagnostics
             {
                 new KeyValuePair<string, LambdaExpression>("Expression", node.ExpressionElement.Expression)
             };
-            return new ReteNode(node.Id, NodeType.Binding, node.ResultType, null, expressions, node.NodeInfo.Rules);
+            return new ReteNode(node.Id, NodeType.Binding, outputType: node.ResultType, 
+                expressions: expressions, rules: node.NodeInfo.Rules);
         }
 
         internal static ReteNode Create(BetaMemoryNode node)
@@ -145,14 +150,14 @@ namespace NRules.Diagnostics
 
         internal ReteNode(int id, 
             NodeType nodeType, 
-            Type elementType = null, 
+            Type outputType = null, 
             IEnumerable<KeyValuePair<string, object>> values = null,
             IEnumerable<KeyValuePair<string, LambdaExpression>> expressions = null, 
             IEnumerable<IRuleDefinition> rules = null)
         {
             Id = id;
             NodeType = nodeType;
-            ElementType = elementType;
+            OutputType = outputType;
             Properties = values?.ToArray() ?? Array.Empty<KeyValuePair<string, object>>();
             Expressions = expressions?.ToArray() ?? Array.Empty<KeyValuePair<string, LambdaExpression>>();
             Rules = rules?.ToArray() ?? Array.Empty<IRuleDefinition>();

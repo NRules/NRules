@@ -296,6 +296,7 @@ namespace NRules.Rete
                 node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name,
                     context.Declarations.ToList(), element.Expressions, aggregatorFactory, context.HasSubnet);
                 node.Id = GetNodeId();
+                node.NodeInfo.OutputType = element.ResultType;
             }
             node.NodeInfo.Add(context.Rule);
             BuildBetaMemoryNode(context, node);
@@ -313,6 +314,7 @@ namespace NRules.Rete
                 var compiledExpression = ExpressionCompiler.CompileLhsTupleExpression<object>(element, context.Declarations);
                 node = new BindingNode(element, compiledExpression, element.ResultType, context.BetaSource);
                 node.Id = GetNodeId();
+                node.NodeInfo.OutputType = element.ResultType;
             }
             node.NodeInfo.Add(context.Rule);
             BuildBetaMemoryNode(context, node);
@@ -342,6 +344,7 @@ namespace NRules.Rete
             {
                 node = new TypeNode(declarationType);
                 node.Id = GetNodeId();
+                node.NodeInfo.OutputType = declarationType;
                 context.CurrentAlphaNode.ChildNodes.Add(node);
             }
             node.NodeInfo.Add(context.Rule);
@@ -359,6 +362,7 @@ namespace NRules.Rete
                 var compiledExpression = ExpressionCompiler.CompileLhsFactExpression<bool>(element);
                 node = new SelectionNode(element, compiledExpression);
                 node.Id = GetNodeId();
+                node.NodeInfo.OutputType = context.Declarations.Last().Type;
                 context.CurrentAlphaNode.ChildNodes.Add(node);
             }
             node.NodeInfo.Add(context.Rule);
@@ -372,6 +376,7 @@ namespace NRules.Rete
             {
                 memoryNode = new AlphaMemoryNode();
                 memoryNode.Id = GetNodeId();
+                memoryNode.NodeInfo.OutputType = context.Declarations.Last().Type;
                 context.CurrentAlphaNode.MemoryNode = memoryNode;
             }
             memoryNode.NodeInfo.Add(context.Rule);
