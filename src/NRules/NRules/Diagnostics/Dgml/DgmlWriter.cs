@@ -175,6 +175,7 @@ namespace NRules.Diagnostics.Dgml
                     break;
                 case NodeType.Rule:
                     labelParts.Add(reteNode.Rules.Single().Name);
+                    labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Key}={x.Value.Body}"));
                     break;
             }
 

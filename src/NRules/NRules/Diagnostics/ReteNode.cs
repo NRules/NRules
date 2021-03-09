@@ -140,7 +140,10 @@ namespace NRules.Diagnostics
 
         internal static ReteNode Create(RuleNode node)
         {
-            return new ReteNode(node.Id, NodeType.Rule, rules: node.NodeInfo.Rules);
+            var expressions = node.CompiledRule.Definition.FilterGroup.Filters.Select(e =>
+                new KeyValuePair<string, LambdaExpression>($"{e.FilterType}", e.Expression));
+            return new ReteNode(node.Id, NodeType.Rule, expressions: expressions,
+                rules: node.NodeInfo.Rules);
         }
 
         internal static ReteNode Create(DummyNode node)
