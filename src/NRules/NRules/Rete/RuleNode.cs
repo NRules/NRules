@@ -16,6 +16,7 @@ namespace NRules.Rete
 
         public void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
         {
+            using var counter = PerfCounter.Assert(context, this);
             foreach (var tuple in tuples)
             {
                 var activation = new Activation(CompiledRule, tuple);
@@ -23,26 +24,31 @@ namespace NRules.Rete
                 context.Agenda.Add(activation);
                 context.EventAggregator.RaiseActivationCreated(context.Session, activation);
             }
+            counter.AddItems(tuples.Count);
         }
 
         public void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
         {
+            using var counter = PerfCounter.Update(context, this);
             foreach (var tuple in tuples)
             {
                 var activation = context.WorkingMemory.GetStateOrThrow<Activation>(this, tuple);
                 context.Agenda.Modify(activation);
                 context.EventAggregator.RaiseActivationUpdated(context.Session, activation);
             }
+            counter.AddItems(tuples.Count);
         }
 
         public void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
         {
+            using var counter = PerfCounter.Retract(context, this);
             foreach (var tuple in tuples)
             {
                 var activation = context.WorkingMemory.RemoveStateOrThrow<Activation>(this, tuple);
                 context.Agenda.Remove(activation);
                 context.EventAggregator.RaiseActivationDeleted(context.Session, activation);
             }
+            counter.AddItems(tuples.Count);
         }
 
         public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
