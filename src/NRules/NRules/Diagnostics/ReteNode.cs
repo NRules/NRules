@@ -111,7 +111,7 @@ namespace NRules.Diagnostics
 
         internal static ReteNode Create(AggregateNode node)
         {
-            var values = new[] {new KeyValuePair<string, object>("AggregateName", node.Name)};
+            var values = new[] {new KeyValuePair<string, object>("Name", node.Name)};
             var expressions = node.Expressions.Select(e =>
                 new KeyValuePair<string, LambdaExpression>(e.Name, e.Expression));
             return new ReteNode(node.Id, NodeType.Aggregate, outputType: node.NodeInfo.OutputType,
@@ -141,7 +141,7 @@ namespace NRules.Diagnostics
         internal static ReteNode Create(RuleNode node)
         {
             var expressions = node.CompiledRule.Definition.FilterGroup.Filters.Select(e =>
-                new KeyValuePair<string, LambdaExpression>($"{e.FilterType}", e.Expression));
+                new KeyValuePair<string, LambdaExpression>($"Filter{e.FilterType}", e.Expression));
             return new ReteNode(node.Id, NodeType.Rule, expressions: expressions,
                 rules: node.NodeInfo.Rules);
         }

@@ -115,14 +115,14 @@ namespace NRules.Diagnostics.Dgml
                 {
                     var key = valueGroup.Key;
                     var value = string.Join("; ", valueGroup);
-                    node.Properties.Add(key, value);
+                    node.Properties.Add($"{reteNode.NodeType}{key}", value);
                 }
 
                 foreach (var expressionGroup in reteNode.Expressions.GroupBy(x => x.Key, x => x.Value))
                 {
                     var key = expressionGroup.Key;
                     var value = string.Join("; ", expressionGroup);
-                    node.Properties.Add(key, value);
+                    node.Properties.Add($"{reteNode.NodeType}{key}", value);
                 }
 
                 if (reteNode.Rules.Length > 0)
@@ -167,7 +167,7 @@ namespace NRules.Diagnostics.Dgml
                     labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
                     break;
                 case NodeType.Aggregate:
-                    labelParts.Add(reteNode.Properties.Single(x => x.Key == "AggregateName").Value);
+                    labelParts.Add(reteNode.Properties.Single(x => x.Key == "Name").Value);
                     labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Key}={x.Value.Body}"));
                     break;
                 case NodeType.Binding:
@@ -212,48 +212,49 @@ namespace NRules.Diagnostics.Dgml
 
         private IEnumerable<Property> CreatePerformanceProperties()
         {
-            yield return new Property("Perf_ElementCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_InsertInputCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_InsertOutputCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_UpdateInputCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_UpdateOutputCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_RetractInputCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_RetractOutputCount") {DataType = "System.Int32"};
-            yield return new Property("Perf_InsertDurationMilliseconds") {DataType = "System.Int64"};
-            yield return new Property("Perf_UpdateDurationMilliseconds") {DataType = "System.Int64"};
-            yield return new Property("Perf_RetractDurationMilliseconds") {DataType = "System.Int64"};
+            yield return new Property("PerfElementCount") {DataType = "System.Int32"};
+            yield return new Property("PerfInsertInputCount") {DataType = "System.Int32"};
+            yield return new Property("PerfInsertOutputCount") {DataType = "System.Int32"};
+            yield return new Property("PerfUpdateInputCount") {DataType = "System.Int32"};
+            yield return new Property("PerfUpdateOutputCount") {DataType = "System.Int32"};
+            yield return new Property("PerfRetractInputCount") {DataType = "System.Int32"};
+            yield return new Property("PerfRetractOutputCount") {DataType = "System.Int32"};
+            yield return new Property("PerfInsertDurationMilliseconds") {DataType = "System.Int64"};
+            yield return new Property("PerfUpdateDurationMilliseconds") {DataType = "System.Int64"};
+            yield return new Property("PerfRetractDurationMilliseconds") {DataType = "System.Int64"};
         }
 
         private void AddPerformanceMetrics(Node node, INodeMetrics nodeMetrics)
         {
             if (nodeMetrics.ElementCount.HasValue)
-                node.Properties.Add("Perf_ElementCount", nodeMetrics.ElementCount.Value);
-            node.Properties.Add("Perf_InsertInputCount", nodeMetrics.InsertInputCount);
-            node.Properties.Add("Perf_InsertOutputCount", nodeMetrics.InsertOutputCount);
-            node.Properties.Add("Perf_UpdateInputCount", nodeMetrics.UpdateInputCount);
-            node.Properties.Add("Perf_UpdateOutputCount", nodeMetrics.UpdateOutputCount);
-            node.Properties.Add("Perf_RetractInputCount", nodeMetrics.RetractInputCount);
-            node.Properties.Add("Perf_RetractOutputCount", nodeMetrics.RetractOutputCount);
-            node.Properties.Add("Perf_InsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds);
-            node.Properties.Add("Perf_UpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds);
-            node.Properties.Add("Perf_RetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds);
+                node.Properties.Add("PerfElementCount", nodeMetrics.ElementCount.Value);
+            node.Properties.Add("PerfInsertInputCount", nodeMetrics.InsertInputCount);
+            node.Properties.Add("PerfInsertOutputCount", nodeMetrics.InsertOutputCount);
+            node.Properties.Add("PerfUpdateInputCount", nodeMetrics.UpdateInputCount);
+            node.Properties.Add("PerfUpdateOutputCount", nodeMetrics.UpdateOutputCount);
+            node.Properties.Add("PerfRetractInputCount", nodeMetrics.RetractInputCount);
+            node.Properties.Add("PerfRetractOutputCount", nodeMetrics.RetractOutputCount);
+            node.Properties.Add("PerfInsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds);
+            node.Properties.Add("PerfUpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds);
+            node.Properties.Add("PerfRetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds);
         }
         
         private IEnumerable<Style> CreatePerformanceStyles(long minDuration, long maxDuration)
         {
-            var countProperty = "(Source.Perf_InsertOutputCount+Source.Perf_UpdateOutputCount+Source.Perf_RetractOutputCount)";
+            var flowProperty = "(Source.PerfInsertOutputCount+Source.PerfUpdateOutputCount+Source.PerfRetractOutputCount)";
             yield return new Style("Link")
-                .Condition($"{countProperty} > 0")
+                .Condition($"{flowProperty} > 0")
                 .Setter(nameof(Link.StrokeThickness),
-                    expression: $"Math.Min(25,Math.Max(1,Math.Log({countProperty},2)))");
+                    expression: $"Math.Min(25,Math.Max(1,Math.Log({flowProperty},2)))");
 
+            var countProperty = "PerfElementCount";
             yield return new Style("Node")
                 .Condition($"HasCategory('{NodeType.AlphaMemory}') or HasCategory('{NodeType.BetaMemory}')")
-                .Condition("Perf_ElementCount > 0")
+                .Condition($"{countProperty} > 0")
                 .Setter(nameof(Node.FontSize),
-                    expression: "Math.Min(72,Math.Max(8,8+4*Math.Log(Perf_ElementCount,2)))");
+                    expression: $"Math.Min(72,Math.Max(8,8+4*Math.Log({countProperty},2)))");
 
-            var durationProperty = "(Perf_InsertDurationMilliseconds+Perf_UpdateDurationMilliseconds+Perf_RetractDurationMilliseconds)";
+            var durationProperty = "(PerfInsertDurationMilliseconds+PerfUpdateDurationMilliseconds+PerfRetractDurationMilliseconds)";
             maxDuration = Math.Max(50, maxDuration);
             long midPoint = (minDuration + maxDuration) / 2;
             int maxRed = 250;
@@ -262,16 +263,16 @@ namespace NRules.Diagnostics.Dgml
                 .Condition($"{durationProperty} <= {midPoint}")
                 .Setter(nameof(Node.Foreground), value: "Black")
                 .Setter(nameof(Node.Background), 
-                    expression: $"Color.FromRgb({maxRed}*({durationProperty} - {minDuration})/{midPoint}, {maxGreen}, 0)");
+                    expression: $"Color.FromRgb({maxRed}*({durationProperty}-{minDuration})/{midPoint},{maxGreen},0)");
             yield return new Style("Node")
                 .Condition($"{durationProperty} > {midPoint}")
                 .Setter(nameof(Node.Foreground), value: "Black")
                 .Setter(nameof(Node.Background),
-                    expression: $"Color.FromRgb({maxRed}, {maxGreen}*(1 - ({durationProperty} - {midPoint})/{midPoint}), 0)");
+                    expression: $"Color.FromRgb({maxRed},{maxGreen}*(1-({durationProperty}-{midPoint})/{midPoint}),0)");
             yield return new Style("Node")
                 .Setter(nameof(Node.Foreground), value: "Black")
                 .Setter(nameof(Node.Background),
-                    expression: $"Color.FromRgb(0, {maxGreen}, 0)");
+                    expression: $"Color.FromRgb(0,{maxGreen},0)");
         }
         
         private IEnumerable<Style> CreateSchemaStyles()
