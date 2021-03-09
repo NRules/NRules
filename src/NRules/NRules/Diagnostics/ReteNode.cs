@@ -94,7 +94,7 @@ namespace NRules.Diagnostics
         internal static ReteNode Create(JoinNode node)
         {
             var conditions = node.ExpressionElements.Select(c => 
-                new KeyValuePair<string, LambdaExpression>("Expression", c.Expression));
+                new KeyValuePair<string, LambdaExpression>("Condition", c.Expression));
             return new ReteNode(node.Id, NodeType.Join, expressions: conditions,
                 rules: node.NodeInfo.Rules);
         }
