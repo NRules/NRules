@@ -3,14 +3,7 @@ using NRules.Diagnostics;
 
 namespace NRules.Rete
 {
-    internal interface IRuleNode : INode
-    {
-        void PropagateAssert(IExecutionContext context, List<Tuple> tuples);
-        void PropagateUpdate(IExecutionContext context, List<Tuple> tuples);
-        void PropagateRetract(IExecutionContext context, List<Tuple> tuples);
-    }
-
-    internal class RuleNode : IRuleNode, ITupleSink
+    internal class RuleNode : ITupleSink
     {
         public int Id { get; set; }
         public NodeInfo NodeInfo { get; } = new NodeInfo();
