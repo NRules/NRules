@@ -87,8 +87,8 @@ namespace NRules.Diagnostics.Dgml
         private DirectedGraph CreateGraph()
         {
             var graph = new DirectedGraph {Title = "ReteNetwork"};
-            graph.Nodes.AddRange(CreateNodes(Filter(_schema.Nodes)));
-            graph.Links.AddRange(CreateLinks(Filter(_schema.Links)));
+            graph.Nodes.AddRange(CreateNodes(Filter(_ruleNameFilter, _schema.Nodes)));
+            graph.Links.AddRange(CreateLinks(Filter(_ruleNameFilter, _schema.Links)));
             graph.Categories.AddRange(CreateNodeTypeCategories());
 
             if (_metricsProvider != null)
@@ -323,30 +323,33 @@ namespace NRules.Diagnostics.Dgml
                 .Setter(nameof(Node.Background), value: "Purple");
         }
         
-        private IEnumerable<ReteNode> Filter(IEnumerable<ReteNode> reteNodes)
+        private static IEnumerable<ReteNode> Filter(HashSet<string> ruleNameFilter, IEnumerable<ReteNode> reteNodes)
         {
             foreach (var reteNode in reteNodes)
             {
-                if (reteNode.NodeType == NodeType.Root) yield return reteNode;
-                else if (reteNode.NodeType == NodeType.Dummy) yield return reteNode;
-                else if (Accept(reteNode)) yield return reteNode;
-            }
-        }
-        
-        private IEnumerable<ReteLink> Filter(IEnumerable<ReteLink> reteLinks)
-        {
-            foreach (var reteLink in reteLinks)
-            {
-                if (Accept(reteLink.Source)) yield return reteLink;
-                else if (Accept(reteLink.Target)) yield return reteLink;
+                if (Accept(ruleNameFilter, reteNode)) yield return reteNode;
             }
         }
 
-        private bool Accept(ReteNode reteNode)
+        private static IEnumerable<ReteLink> Filter(HashSet<string> ruleNameFilter, IEnumerable<ReteLink> reteLinks)
         {
-            if (_ruleNameFilter == null)
+            foreach (var reteLink in reteLinks)
+            {
+                if (Accept(ruleNameFilter, reteLink.Source) &&
+                    Accept(ruleNameFilter, reteLink.Target))
+                    yield return reteLink;
+            }
+        }
+
+        private static bool Accept(HashSet<string> ruleNameFilter, ReteNode reteNode)
+        {
+            if (ruleNameFilter == null)
                 return true;
-            if (reteNode.Rules.Any(r => _ruleNameFilter.Contains(r.Name)))
+            if (reteNode.NodeType == NodeType.Root)
+                return true;
+            if (reteNode.NodeType == NodeType.Dummy)
+                return true;
+            if (reteNode.Rules.Any(r => ruleNameFilter.Contains(r.Name)))
                 return true;
             return false;
         }
