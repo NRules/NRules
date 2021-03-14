@@ -227,6 +227,9 @@ namespace NRules.Diagnostics.Dgml
             yield return new Property("PerfInsertDurationMilliseconds") {DataType = "System.Int64"};
             yield return new Property("PerfUpdateDurationMilliseconds") {DataType = "System.Int64"};
             yield return new Property("PerfRetractDurationMilliseconds") {DataType = "System.Int64"};
+            yield return new Property("PerfTotalInputCount") {DataType = "System.Int32"};
+            yield return new Property("PerfTotalOutputCount") {DataType = "System.Int32"};
+            yield return new Property("PerfTotalDurationMilliseconds") {DataType = "System.Int64"};
         }
 
         private void AddPerformanceMetrics(Node node, INodeMetrics nodeMetrics)
@@ -242,11 +245,17 @@ namespace NRules.Diagnostics.Dgml
             node.Properties.Add("PerfInsertDurationMilliseconds", nodeMetrics.InsertDurationMilliseconds);
             node.Properties.Add("PerfUpdateDurationMilliseconds", nodeMetrics.UpdateDurationMilliseconds);
             node.Properties.Add("PerfRetractDurationMilliseconds", nodeMetrics.RetractDurationMilliseconds);
+            node.Properties.Add("PerfTotalInputCount",
+                nodeMetrics.InsertInputCount + nodeMetrics.UpdateInputCount + nodeMetrics.RetractInputCount);
+            node.Properties.Add("PerfTotalOutputCount",
+                nodeMetrics.InsertOutputCount + nodeMetrics.UpdateOutputCount + nodeMetrics.RetractOutputCount);
+            node.Properties.Add("PerfTotalDurationMilliseconds",
+                nodeMetrics.InsertDurationMilliseconds + nodeMetrics.UpdateDurationMilliseconds + nodeMetrics.RetractDurationMilliseconds);
         }
         
         private IEnumerable<Style> CreatePerformanceStyles(long minDuration, long maxDuration)
         {
-            var flowProperty = "(Source.PerfInsertOutputCount+Source.PerfUpdateOutputCount+Source.PerfRetractOutputCount)";
+            var flowProperty = "Source.PerfTotalOutputCount";
             yield return new Style("Link")
                 .Condition($"{flowProperty} > 0")
                 .Setter(nameof(Link.StrokeThickness),
@@ -259,7 +268,7 @@ namespace NRules.Diagnostics.Dgml
                 .Setter(nameof(Node.FontSize),
                     expression: $"Math.Min(72,Math.Max(8,8+4*Math.Log({countProperty},2)))");
 
-            var durationProperty = "(PerfInsertDurationMilliseconds+PerfUpdateDurationMilliseconds+PerfRetractDurationMilliseconds)";
+            var durationProperty = "PerfTotalDurationMilliseconds";
             maxDuration = Math.Max(50, maxDuration);
             long basis = maxDuration - minDuration;
             int maxRed = 200;
