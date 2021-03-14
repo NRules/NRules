@@ -131,6 +131,11 @@ namespace NRules.Diagnostics.Dgml
                     node.Properties.Add("Rule", value);
                 }
 
+                if (reteNode.Rules.Length > 1)
+                {
+                    node.Properties.Add("Shared", true);
+                }
+
                 yield return node;
             }
         }
