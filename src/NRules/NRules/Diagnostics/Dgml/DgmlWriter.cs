@@ -268,12 +268,12 @@ namespace NRules.Diagnostics.Dgml
                 .Condition($"{durationProperty} <= {midPoint}")
                 .Setter(nameof(Node.Foreground), value: "Black")
                 .Setter(nameof(Node.Background), 
-                    expression: $"Color.FromRgb({maxRed}*({durationProperty}-{minDuration})/{midPoint},{maxGreen},0)");
+                    expression: $"Color.FromRgb(({maxRed}*({durationProperty}-{minDuration}))/{midPoint},{maxGreen},0)");
             yield return new Style("Node")
                 .Condition($"{durationProperty} > {midPoint}")
                 .Setter(nameof(Node.Foreground), value: "Black")
                 .Setter(nameof(Node.Background),
-                    expression: $"Color.FromRgb({maxRed},{maxGreen}*(1-({durationProperty}-{midPoint})/{midPoint}),0)");
+                    expression: $"Color.FromRgb({maxRed},({maxGreen}*({maxDuration}-{durationProperty}))/{midPoint},0)");
             yield return new Style("Node")
                 .Setter(nameof(Node.Foreground), value: "Black")
                 .Setter(nameof(Node.Background),
