@@ -261,20 +261,15 @@ namespace NRules.Diagnostics.Dgml
 
             var durationProperty = "(PerfInsertDurationMilliseconds+PerfUpdateDurationMilliseconds+PerfRetractDurationMilliseconds)";
             maxDuration = Math.Max(50, maxDuration);
-            long midPoint = (minDuration + maxDuration) / 2;
+            long basis = maxDuration - minDuration;
             int maxRed = 200;
             int maxGreen = 200;
             int maxBlue = 200;
             yield return new Style("Node")
-                .Condition($"{durationProperty} <= {midPoint}")
+                .Condition($"{durationProperty} > 0")
                 .Setter(nameof(Node.Foreground), value: "Black")
                 .Setter(nameof(Node.Background), 
-                    expression: $"Color.FromRgb({maxRed},{maxGreen},({maxBlue}*({midPoint}-{durationProperty}))/{midPoint})");
-            yield return new Style("Node")
-                .Condition($"{durationProperty} > {midPoint}")
-                .Setter(nameof(Node.Foreground), value: "Black")
-                .Setter(nameof(Node.Background),
-                    expression: $"Color.FromRgb({maxRed},({maxGreen}*({maxDuration}-{durationProperty}))/{midPoint},0)");
+                    expression: $"Color.FromRgb({maxRed},({maxGreen}*({maxDuration}-{durationProperty}))/{basis},({maxBlue}*({maxDuration}-{durationProperty}))/{basis})");
             yield return new Style("Node")
                 .Setter(nameof(Node.Foreground), value: "Black")
                 .Setter(nameof(Node.Background),
