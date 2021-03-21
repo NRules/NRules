@@ -19,14 +19,16 @@ namespace NRules.Rete
         private readonly RootNode _root;
         private readonly DummyNode _dummyNode;
         private readonly AggregatorRegistry _aggregatorRegistry;
+        private readonly IRuleExpressionCompiler _ruleExpressionCompiler;
 
         private int _nextNodeId = 1;
 
-        public ReteBuilder(AggregatorRegistry aggregatorRegistry)
+        public ReteBuilder(AggregatorRegistry aggregatorRegistry, IRuleExpressionCompiler ruleExpressionCompiler)
         {
             _root = new RootNode {Id = GetNodeId()};
             _dummyNode = new DummyNode {Id = GetNodeId()};
             _aggregatorRegistry = aggregatorRegistry;
+            _ruleExpressionCompiler = ruleExpressionCompiler;
         }
 
         public int GetNodeId()
@@ -234,7 +236,7 @@ namespace NRules.Rete
                 var compiledExpressions = new List<ILhsExpression<bool>>(expressionElements.Count);
                 foreach (var expressionElement in expressionElements)
                 {
-                    var compiledExpression = ExpressionCompiler.CompileLhsExpression<bool>(expressionElement, context.Declarations);
+                    var compiledExpression = _ruleExpressionCompiler.CompileLhsExpression<bool>(expressionElement, context.Declarations);
                     compiledExpressions.Add(compiledExpression);
                 }
                 node = new JoinNode(context.BetaSource, context.AlphaSource, context.Declarations.ToList(), expressionElements, compiledExpressions, context.HasSubnet);
@@ -311,7 +313,7 @@ namespace NRules.Rete
                     ExpressionElementComparer.AreEqual(x.ExpressionElement, element));
             if (node == null)
             {
-                var compiledExpression = ExpressionCompiler.CompileLhsTupleExpression<object>(element, context.Declarations);
+                var compiledExpression = _ruleExpressionCompiler.CompileLhsTupleExpression<object>(element, context.Declarations);
                 node = new BindingNode(element, compiledExpression, element.ResultType, context.BetaSource);
                 node.Id = GetNodeId();
                 node.NodeInfo.OutputType = element.ResultType;
@@ -359,7 +361,7 @@ namespace NRules.Rete
 
             if (node == null)
             {
-                var compiledExpression = ExpressionCompiler.CompileLhsFactExpression<bool>(element);
+                var compiledExpression = _ruleExpressionCompiler.CompileLhsFactExpression<bool>(element);
                 node = new SelectionNode(element, compiledExpression);
                 node.Id = GetNodeId();
                 node.NodeInfo.OutputType = context.Declarations.Last().Type;
@@ -426,13 +428,13 @@ namespace NRules.Rete
             return factory;
         }
 
-        private static IEnumerable<IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
+        private IEnumerable<IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
         {
             var declarations = context.Declarations.Concat(element.Source.Declaration).ToList();
             var result = new List<IAggregateExpression>(element.Expressions.Count);
             foreach (var expression in element.Expressions)
             {
-                var aggregateExpression = ExpressionCompiler.CompileAggregateExpression(expression, declarations);
+                var aggregateExpression = _ruleExpressionCompiler.CompileAggregateExpression(expression, declarations);
                 result.Add(aggregateExpression);
             }
             return result;
