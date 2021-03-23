@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using NRules.Rete;
 
 namespace NRules.Diagnostics
@@ -31,7 +30,6 @@ namespace NRules.Diagnostics
 
     internal interface IMetricsAggregator : IMetricsProvider
     {
-        Stopwatch Stopwatch { get; }
         NodeMetrics GetMetrics(INode node);
     }
 
@@ -49,8 +47,6 @@ namespace NRules.Diagnostics
         {
             return _metrics.Values;
         }
-
-        public Stopwatch Stopwatch { get; } = new Stopwatch();
 
         public NodeMetrics GetMetrics(INode node)
         {

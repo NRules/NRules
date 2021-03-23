@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using NRules.Rete;
 
 namespace NRules.Diagnostics
@@ -9,38 +8,36 @@ namespace NRules.Diagnostics
         public static AssertPerfCounter Assert(IExecutionContext context, INode node)
         {
             var nodeMetrics = context.MetricsAggregator.GetMetrics(node);
-            return new AssertPerfCounter(nodeMetrics, context.MetricsAggregator.Stopwatch);
+            return new AssertPerfCounter(nodeMetrics);
         }
         
         public static UpdatePerfCounter Update(IExecutionContext context, INode node)
         {
             var nodeMetrics = context.MetricsAggregator.GetMetrics(node);
-            return new UpdatePerfCounter(nodeMetrics, context.MetricsAggregator.Stopwatch);
+            return new UpdatePerfCounter(nodeMetrics);
         }
         
         public static RetractPerfCounter Retract(IExecutionContext context, INode node)
         {
             var nodeMetrics = context.MetricsAggregator.GetMetrics(node);
-            return new RetractPerfCounter(nodeMetrics, context.MetricsAggregator.Stopwatch);
+            return new RetractPerfCounter(nodeMetrics);
         }
     }
 
     internal readonly struct AssertPerfCounter : IDisposable
     {
         private readonly NodeMetrics _nodeMetrics;
-        private readonly Stopwatch _stopwatch;
+        private readonly long _startTicks;
 
-        public AssertPerfCounter(NodeMetrics nodeMetrics, Stopwatch stopwatch)
+        public AssertPerfCounter(NodeMetrics nodeMetrics)
         {
             _nodeMetrics = nodeMetrics;
-            _stopwatch = stopwatch;
-            _stopwatch.Start();
+            _startTicks = DateTime.UtcNow.Ticks;
         }
 
         public void Dispose()
         {
-            _nodeMetrics.InsertDurationMilliseconds += _stopwatch.ElapsedMilliseconds;
-            _stopwatch.Reset();
+            _nodeMetrics.InsertDurationMilliseconds += (DateTime.UtcNow.Ticks - _startTicks) / TimeSpan.TicksPerMillisecond;
         }
 
         public void AddItems(int count)
@@ -57,19 +54,17 @@ namespace NRules.Diagnostics
     internal readonly struct UpdatePerfCounter : IDisposable
     {
         private readonly NodeMetrics _nodeMetrics;
-        private readonly Stopwatch _stopwatch;
+        private readonly long _startTicks;
 
-        public UpdatePerfCounter(NodeMetrics nodeMetrics, Stopwatch stopwatch)
+        public UpdatePerfCounter(NodeMetrics nodeMetrics)
         {
             _nodeMetrics = nodeMetrics;
-            _stopwatch = stopwatch;
-            _stopwatch.Start();
+            _startTicks = DateTime.UtcNow.Ticks;
         }
 
         public void Dispose()
         {
-            _nodeMetrics.UpdateDurationMilliseconds += _stopwatch.ElapsedMilliseconds;
-            _stopwatch.Reset();
+            _nodeMetrics.UpdateDurationMilliseconds += (DateTime.UtcNow.Ticks - _startTicks) / TimeSpan.TicksPerMillisecond;
         }
 
         public void AddItems(int count)
@@ -86,19 +81,17 @@ namespace NRules.Diagnostics
     internal readonly struct RetractPerfCounter : IDisposable
     {
         private readonly NodeMetrics _nodeMetrics;
-        private readonly Stopwatch _stopwatch;
+        private readonly long _startTicks;
 
-        public RetractPerfCounter(NodeMetrics nodeMetrics, Stopwatch stopwatch)
+        public RetractPerfCounter(NodeMetrics nodeMetrics)
         {
             _nodeMetrics = nodeMetrics;
-            _stopwatch = stopwatch;
-            _stopwatch.Start();
+            _startTicks = DateTime.UtcNow.Ticks;
         }
 
         public void Dispose()
         {
-            _nodeMetrics.RetractDurationMilliseconds += _stopwatch.ElapsedMilliseconds;
-            _stopwatch.Reset();
+            _nodeMetrics.RetractDurationMilliseconds += (DateTime.UtcNow.Ticks - _startTicks) / TimeSpan.TicksPerMillisecond;
         }
 
         public void AddItems(int count)
