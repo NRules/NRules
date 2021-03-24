@@ -32,12 +32,12 @@ namespace NRules.Diagnostics
         public AssertPerfCounter(NodeMetrics nodeMetrics)
         {
             _nodeMetrics = nodeMetrics;
-            _startTicks = DateTime.UtcNow.Ticks;
+            _startTicks = Environment.TickCount;
         }
 
         public void Dispose()
         {
-            _nodeMetrics.InsertDurationMilliseconds += (DateTime.UtcNow.Ticks - _startTicks) / TimeSpan.TicksPerMillisecond;
+            _nodeMetrics.InsertDurationMilliseconds += unchecked(Environment.TickCount - _startTicks);
         }
 
         public void AddItems(int count)
@@ -59,12 +59,12 @@ namespace NRules.Diagnostics
         public UpdatePerfCounter(NodeMetrics nodeMetrics)
         {
             _nodeMetrics = nodeMetrics;
-            _startTicks = DateTime.UtcNow.Ticks;
+            _startTicks = Environment.TickCount;
         }
 
         public void Dispose()
         {
-            _nodeMetrics.UpdateDurationMilliseconds += (DateTime.UtcNow.Ticks - _startTicks) / TimeSpan.TicksPerMillisecond;
+            _nodeMetrics.UpdateDurationMilliseconds += unchecked(Environment.TickCount - _startTicks);
         }
 
         public void AddItems(int count)
@@ -86,12 +86,12 @@ namespace NRules.Diagnostics
         public RetractPerfCounter(NodeMetrics nodeMetrics)
         {
             _nodeMetrics = nodeMetrics;
-            _startTicks = DateTime.UtcNow.Ticks;
+            _startTicks = Environment.TickCount;
         }
 
         public void Dispose()
         {
-            _nodeMetrics.RetractDurationMilliseconds += (DateTime.UtcNow.Ticks - _startTicks) / TimeSpan.TicksPerMillisecond;
+            _nodeMetrics.RetractDurationMilliseconds += unchecked(Environment.TickCount - _startTicks);
         }
 
         public void AddItems(int count)
