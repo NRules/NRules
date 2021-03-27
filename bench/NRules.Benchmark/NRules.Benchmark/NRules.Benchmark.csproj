@@ -9,6 +9,7 @@
     <DebugSymbols>true</DebugSymbols>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\SigningKey.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

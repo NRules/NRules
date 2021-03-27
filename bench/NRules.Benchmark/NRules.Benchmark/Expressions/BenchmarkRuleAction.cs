@@ -20,10 +20,11 @@ namespace NRules.Benchmark.Expressions
 
         public BenchmarkRuleAction()
         {
+            var ruleExpressionCompiler = new RuleExpressionCompiler();
             Expression<Action<IContext, string, int, decimal>> expression = (c, s, i, d) => PerformAction(c, s, i, d);
             var element = Element.Action(expression);
             var map = IndexMap.CreateMap(element.Imports, element.Imports);
-            _ruleAction = ExpressionCompiler.CompileAction(element, element.Imports.ToList(), new List<DependencyElement>(), map);
+            _ruleAction = ruleExpressionCompiler.CompileAction(element, element.Imports.ToList(), new List<DependencyElement>(), map);
 
             var compiledRule = new CompiledRule(null, element.Imports, new []{_ruleAction}, null, map);
             var tuple = ToTuple("abcd", 4, 1.0m);
