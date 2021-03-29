@@ -41,7 +41,7 @@ namespace NRules.Collections
             _priorityQueue.Clear();
         }
 
-        private class OrderedKey<T>
+        private readonly struct OrderedKey<T>
         {
             public T Key { get; }
             public int Order { get; }

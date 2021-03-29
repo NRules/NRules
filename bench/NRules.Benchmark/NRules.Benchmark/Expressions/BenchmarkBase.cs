@@ -11,7 +11,7 @@ namespace NRules.Benchmark.Expressions
 
         protected BenchmarkBase()
         {
-            Context = new ExecutionContext(null, null, null, new EventAggregator(), null);
+            Context = new ExecutionContext(null, null, null, new EventAggregator(), null, null);
         }
 
         internal static Tuple ToTuple(params object[] values)

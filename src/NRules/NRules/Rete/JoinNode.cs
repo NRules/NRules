@@ -1,120 +1,164 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
+using NRules.Diagnostics;
 using NRules.RuleModel;
 
 namespace NRules.Rete
 {
     internal class JoinNode : BinaryBetaNode
     {
-        private readonly List<ExpressionElement> _expressionElements;
         private readonly List<ILhsExpression<bool>> _compiledExpressions;
         private readonly bool _isSubnetJoin;
 
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public IEnumerable<ExpressionElement> ExpressionElements => _expressionElements;
+        public List<Declaration> Declarations { get; }
+        public List<ExpressionElement> ExpressionElements { get; }
 
-        public JoinNode(ITupleSource leftSource, IObjectSource rightSource,
+        public JoinNode(ITupleSource leftSource, 
+            IObjectSource rightSource,
+            List<Declaration> declarations,
             List<ExpressionElement> expressionElements,
             List<ILhsExpression<bool>> compiledExpressions,
             bool isSubnetJoin)
             : base(leftSource, rightSource, isSubnetJoin)
         {
-            _expressionElements = expressionElements;
+            Declarations = declarations;
+            ExpressionElements = expressionElements;
             _compiledExpressions = compiledExpressions;
             _isSubnetJoin = isSubnetJoin;
         }
 
         public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
         {
-            var joinedSets = JoinedSets(context, tuples);
             var toAssert = new TupleFactList();
-            foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
+            using (var counter = PerfCounter.Assert(context, this))
             {
-                if (MatchesConditions(context, set.Tuple, fact))
+                var joinedSets = JoinedSets(context, tuples);
+                foreach (var set in joinedSets)
+                foreach (var fact in set.Facts)
                 {
-                    toAssert.Add(set.Tuple, fact);
+                    if (MatchesConditions(context, set.Tuple, fact))
+                    {
+                        toAssert.Add(set.Tuple, fact);
+                    }
                 }
+
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(toAssert.Count);
             }
+
             MemoryNode.PropagateAssert(context, toAssert);
         }
 
         public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
         {
             if (_isSubnetJoin) return;
-
-            var joinedSets = JoinedSets(context, tuples);
+            
             var toUpdate = new TupleFactList();
             var toRetract = new TupleFactList();
-            foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
+            using (var counter = PerfCounter.Update(context, this))
             {
-                if (MatchesConditions(context, set.Tuple, fact))
+                var joinedSets = JoinedSets(context, tuples);
+                foreach (var set in joinedSets)
+                foreach (var fact in set.Facts)
                 {
-                    toUpdate.Add(set.Tuple, fact);
+                    if (MatchesConditions(context, set.Tuple, fact))
+                    {
+                        toUpdate.Add(set.Tuple, fact);
+                    }
+                    else
+                    {
+                        toRetract.Add(set.Tuple, fact);
+                    }
                 }
-                else
-                {
-                    toRetract.Add(set.Tuple, fact);
-                }
+
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(toUpdate.Count + toRetract.Count);
             }
+
             MemoryNode.PropagateRetract(context, toRetract);
             MemoryNode.PropagateUpdate(context, toUpdate);
         }
 
         public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
         {
-            var joinedSets = JoinedSets(context, tuples);
             var toRetract = new TupleFactList();
-            foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
+            using (var counter = PerfCounter.Retract(context, this))
             {
-                toRetract.Add(set.Tuple, fact);
+                var joinedSets = JoinedSets(context, tuples);
+                foreach (var set in joinedSets)
+                foreach (var fact in set.Facts)
+                {
+                    toRetract.Add(set.Tuple, fact);
+                }
+             
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(toRetract.Count);
             }
+
             MemoryNode.PropagateRetract(context, toRetract);
         }
 
         public override void PropagateAssert(IExecutionContext context, List<Fact> facts)
         {
-            var joinedSets = JoinedSets(context, facts);
             var toAssert = new TupleFactList();
-            foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
+            using (var counter = PerfCounter.Assert(context, this))
             {
-                if (MatchesConditions(context, set.Tuple, fact))
+                var joinedSets = JoinedSets(context, facts);
+                foreach (var set in joinedSets)
+                foreach (var fact in set.Facts)
                 {
-                    toAssert.Add(set.Tuple, fact);
+                    if (MatchesConditions(context, set.Tuple, fact))
+                    {
+                        toAssert.Add(set.Tuple, fact);
+                    }
                 }
+
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toAssert.Count);
             }
+
             MemoryNode.PropagateAssert(context, toAssert);
         }
 
         public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
         {
-            var joinedSets = JoinedSets(context, facts);
             var toUpdate = new TupleFactList();
             var toRetract = new TupleFactList();
-            foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
+            using (var counter = PerfCounter.Update(context, this))
             {
-                if (MatchesConditions(context, set.Tuple, fact))
-                    toUpdate.Add(set.Tuple, fact);
-                else
-                    toRetract.Add(set.Tuple, fact);
+                var joinedSets = JoinedSets(context, facts);
+                foreach (var set in joinedSets)
+                foreach (var fact in set.Facts)
+                {
+                    if (MatchesConditions(context, set.Tuple, fact))
+                        toUpdate.Add(set.Tuple, fact);
+                    else
+                        toRetract.Add(set.Tuple, fact);
+                }
+
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toUpdate.Count + toRetract.Count);
             }
+
             MemoryNode.PropagateRetract(context, toRetract);
             MemoryNode.PropagateUpdate(context, toUpdate);
         }
 
         public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
         {
-            var joinedSets = JoinedSets(context, facts);
             var toRetract = new TupleFactList();
-            foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
+            using (var counter = PerfCounter.Retract(context, this))
             {
-                toRetract.Add(set.Tuple, fact);
+                var joinedSets = JoinedSets(context, facts);
+                foreach (var set in joinedSets)
+                foreach (var fact in set.Facts)
+                {
+                    toRetract.Add(set.Tuple, fact);
+                }
+
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toRetract.Count);
             }
+
             MemoryNode.PropagateRetract(context, toRetract);
         }
 

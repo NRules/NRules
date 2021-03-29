@@ -5,9 +5,7 @@ namespace NRules
     /// <summary>
     /// Represents errors that occur while evaluating expressions as part of rules execution.
     /// </summary>
-#if (NET45 || NETSTANDARD2_0)
-    [System.Serializable]
-#endif
+    [Serializable]
     public abstract class RuleExpressionEvaluationException : RuleExecutionException
     {
         internal RuleExpressionEvaluationException(string message, string expression, Exception innerException)
@@ -16,7 +14,6 @@ namespace NRules
             Expression = expression;
         }
 
-#if (NET45 || NETSTANDARD2_0)
         [System.Security.SecuritySafeCritical]
         protected RuleExpressionEvaluationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)
@@ -34,7 +31,6 @@ namespace NRules
             base.GetObjectData(info, context);
             info.AddValue("Expression", Expression, typeof(string));
         }
-#endif
 
         /// <summary>
         /// Expression that caused exception.

@@ -1,65 +1,91 @@
-﻿using System.Collections.Generic;
-using NRules.Collections;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NRules.Rete
 {
     internal interface IBetaMemory
     {
         IEnumerable<Tuple> Tuples { get; }
-        void Add(Tuple tuple);
-        void Remove(Tuple tuple);
+        int TupleCount { get; }
+        void Add(List<Tuple> tuples);
+        void Remove(List<Tuple> tuples);
         Tuple FindTuple(Tuple leftTuple, Fact rightFact);
     }
 
     internal class BetaMemory : IBetaMemory
     {
-        private static readonly Fact NullFact = new Fact();
-
-        private readonly OrderedHashSet<Tuple> _tuples = new OrderedHashSet<Tuple>();
-        private readonly Dictionary<Tuple, Dictionary<Fact, Tuple>> _parentToChildMap = new Dictionary<Tuple, Dictionary<Fact, Tuple>>(); 
+        private readonly HashSet<Tuple> _tuples = new HashSet<Tuple>();
+        private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new Dictionary<TupleFactKey, Tuple>(); 
 
         public IEnumerable<Tuple> Tuples => _tuples;
+        public int TupleCount => _tuples.Count;
 
-        public void Add(Tuple tuple)
+        public void Add(List<Tuple> tuples)
         {
-            _tuples.Add(tuple);
-            AddMapping(tuple);
+            foreach (var tuple in tuples)
+            {
+                _tuples.Add(tuple);
+                AddMapping(tuple);
+            }
         }
 
-        public void Remove(Tuple tuple)
+        public void Remove(List<Tuple> tuples)
         {
-            _tuples.Remove(tuple);
-            RemoveMapping(tuple);
+            foreach (var tuple in tuples)
+            {
+                _tuples.Remove(tuple);
+                RemoveMapping(tuple);
+            }
         }
 
         public Tuple FindTuple(Tuple leftTuple, Fact rightFact)
         {
-            if (_parentToChildMap.TryGetValue(leftTuple, out var subMap))
-            {
-                subMap.TryGetValue(rightFact ?? NullFact, out var childTuple);
-                return childTuple;
-            }
-            return null;
+            var key = new TupleFactKey(leftTuple, rightFact);
+            _parentToChildMap.TryGetValue(key, out var childTuple);
+            return childTuple;
         }
 
         private void AddMapping(Tuple tuple)
         {
             if (tuple.LeftTuple == null) return;
-            if (!_parentToChildMap.TryGetValue(tuple.LeftTuple, out var subMap))
-            {
-                subMap = new Dictionary<Fact, Tuple>();
-                _parentToChildMap[tuple.LeftTuple] = subMap;
-            }
-            subMap[tuple.RightFact ?? NullFact] = tuple;
+            var key = new TupleFactKey(tuple.LeftTuple, tuple.RightFact);
+            _parentToChildMap[key] = tuple;
         }
 
         private void RemoveMapping(Tuple tuple)
         {
             if (tuple.LeftTuple == null) return;
-            if (_parentToChildMap.TryGetValue(tuple.LeftTuple, out var subMap))
+            var key = new TupleFactKey(tuple.LeftTuple, tuple.RightFact);
+            _parentToChildMap.Remove(key);
+        }
+
+        private readonly struct TupleFactKey : IEquatable<TupleFactKey>
+        {
+            private readonly Tuple _tuple;
+            private readonly Fact _fact;
+
+            public TupleFactKey(Tuple tuple, Fact fact)
             {
-                subMap.Remove(tuple.RightFact ?? NullFact);
-                if (subMap.Count == 0) _parentToChildMap.Remove(tuple.LeftTuple);
+                _tuple = tuple;
+                _fact = fact;
+            }
+
+            public bool Equals(TupleFactKey other)
+            {
+                return ReferenceEquals(_tuple, other._tuple) && ReferenceEquals(_fact, other._fact);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is TupleFactKey other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (_tuple.GetHashCode() * 397) ^ (_fact != null ? _fact.GetHashCode() : 0);
+                }
             }
         }
     }

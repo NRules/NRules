@@ -132,8 +132,8 @@ namespace NRules.Diagnostics
         void RaiseFactUpdated(ISession session, Fact fact);
         void RaiseFactRetracting(ISession session, Fact fact);
         void RaiseFactRetracted(ISession session, Fact fact);
-        void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple tuple, Fact fact, NodeDebugInfo nodeInfo, ref bool isHandled);
-        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, object result, Tuple tuple, Fact fact, NodeDebugInfo nodeInfo);
+        void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple tuple, Fact fact, NodeInfo nodeInfo, ref bool isHandled);
+        void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, object result, Tuple tuple, Fact fact, NodeInfo nodeInfo);
         void RaiseAgendaExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Activation activation, ref bool isHandled);
         void RaiseAgendaExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, object result, Activation activation);
         void RaiseRhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Activation activation, ref bool isHandled);
@@ -338,7 +338,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseFactRetracted(session, fact);
         }
 
-        public void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, object result, Tuple tuple, Fact fact, NodeDebugInfo nodeInfo)
+        public void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, object result, Tuple tuple, Fact fact, NodeInfo nodeInfo)
         {
             var handler = LhsExpressionEvaluatedEvent;
             if (handler != null)
@@ -350,7 +350,7 @@ namespace NRules.Diagnostics
             _parent?.RaiseLhsExpressionEvaluated(session, exception, expression, argumentMap, result, tuple, fact, nodeInfo);
         }
 
-        public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple tuple, Fact fact, NodeDebugInfo nodeInfo, ref bool isHandled)
+        public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple tuple, Fact fact, NodeInfo nodeInfo, ref bool isHandled)
         {
             var handler = LhsExpressionFailedEvent;
             if (handler != null)

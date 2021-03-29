@@ -5,17 +5,17 @@ using NRules.Rete;
 
 namespace NRules.Diagnostics
 {
-    internal class SnapshotBuilder
+    internal class SchemaBuilder
     {
-        private readonly List<Tuple<INode, INode>> _links = new List<Tuple<INode, INode>>();
-        private readonly Dictionary<INode, NodeInfo> _nodeMap = new Dictionary<INode, NodeInfo>(); 
+        private readonly List<(INode source, INode target)> _links = new List<(INode, INode)>();
+        private readonly Dictionary<INode, ReteNode> _nodeMap = new Dictionary<INode, ReteNode>(); 
 
         public bool IsVisited(INode node)
         {
             return _nodeMap.ContainsKey(node);
         }
 
-        public void AddNode<TNode>(TNode node, Func<TNode, NodeInfo> ctor) where TNode : INode
+        public void AddNode<TNode>(TNode node, Func<TNode, ReteNode> ctor) where TNode : INode
         {
             var nodeInfo = ctor(node);
             _nodeMap.Add(node, nodeInfo);
@@ -23,7 +23,7 @@ namespace NRules.Diagnostics
 
         public void AddLink(INode source, INode target)
         {
-            _links.Add(new Tuple<INode, INode>(source, target));
+            _links.Add((source, target));
         }
 
         public void AddLinks(INode source, IEnumerable<INode> targets)
@@ -34,11 +34,11 @@ namespace NRules.Diagnostics
             }
         }
 
-        public SessionSnapshot Build()
+        public ReteGraph Build()
         {
             var nodes = _nodeMap.Values;
-            var links = _links.Select(x => new LinkInfo(_nodeMap[x.Item1], _nodeMap[x.Item2]));
-            return new SessionSnapshot(nodes, links);
+            var links = _links.Select(x => new ReteLink(_nodeMap[x.source], _nodeMap[x.target]));
+            return new ReteGraph(nodes, links);
         }
     }
 }

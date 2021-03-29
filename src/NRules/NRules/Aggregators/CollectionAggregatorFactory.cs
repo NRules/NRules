@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators
@@ -54,7 +53,7 @@ namespace NRules.Aggregators
             var keyType = selector.Expression.ReturnType;
             var aggregatorType = typeof(SortedAggregator<,>).MakeGenericType(sourceType, keyType);
 
-            var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
+            var ctor = aggregatorType.GetConstructors().Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
                 Expression.New(ctor, Expression.Constant(compiledSelector), Expression.Constant(sortDirection)));
 
@@ -65,7 +64,7 @@ namespace NRules.Aggregators
         {
             var aggregatorType = typeof(MultiKeySortedAggregator<>).MakeGenericType(sourceType);
 
-            var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
+            var ctor = aggregatorType.GetConstructors().Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
                 Expression.New(ctor, Expression.Constant(sortConditions)));
 

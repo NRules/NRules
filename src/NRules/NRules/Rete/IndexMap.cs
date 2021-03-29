@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using NRules.RuleModel;
@@ -7,7 +8,7 @@ using NRules.Utilities;
 namespace NRules.Rete
 {
     [DebuggerDisplay("[{string.Join(\" \",_map)}]")]
-    internal class IndexMap
+    internal class IndexMap : IEquatable<IndexMap>
     {
         private readonly int[] _map;
 
@@ -35,6 +36,33 @@ namespace NRules.Rete
         {
             var map = first._map.Select(x => second[x]).ToArray();
             return new IndexMap(map);
+        }
+        
+        public bool Equals(IndexMap other)
+        {
+            if (_map.Length != other._map.Length) 
+                return false;
+            
+            for (int i = 0; i < _map.Length; i++)
+            {
+                if (_map[i] != other._map[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((IndexMap) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return _map.Length;
         }
     }
 }

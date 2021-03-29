@@ -18,7 +18,7 @@ namespace NRules.IntegrationTests
             RuleRepository target = CreateTarget();
 
             //Act
-            target.Load(x => x.From(typeof(string).GetTypeInfo().Assembly));
+            target.Load(x => x.From(typeof(string).Assembly));
             IRuleSet ruleSet = target.GetRuleSets().First();
 
             //Assert
@@ -165,7 +165,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(typeof(ValidRule).FullName, ruleSet.Rules.First().Name);
         }
 
-        private Assembly ThisAssembly => GetType().GetTypeInfo().Assembly;
+        private Assembly ThisAssembly => GetType().Assembly;
 
         public RuleRepository CreateTarget()
         {

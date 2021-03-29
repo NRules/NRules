@@ -7,15 +7,19 @@
     <authors>Sergiy Nikolayev</authors>
     <owners>Sergiy Nikolayev</owners>
     <license type="expression">MIT</license>
-    <projectUrl>http://nrules.net</projectUrl>
+    <projectUrl>https://nrules.net</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/NRules/NRules.media/master/Logo/Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Autofac IoC container integration for NRules.</description>
     <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
-    <copyright>Copyright 2012-2020 Sergiy Nikolayev. All rights reserved.</copyright>
+    <copyright>Copyright 2012-2021 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>nrules autofac</tags>
     <dependencies>
       <group targetFramework="netstandard2.0">
+        <dependency id="NRules" version="[$version$]" />
+        <dependency id="Autofac" version="4.0.0" />
+      </group>
+      <group targetFramework="netstandard2.1">
         <dependency id="NRules" version="[$version$]" />
         <dependency id="Autofac" version="4.0.0" />
       </group>
@@ -25,5 +29,8 @@
     <file src="..\binaries\NRules.Integration.Autofac\netstandard2.0\NRules.Integration.Autofac.dll" target="lib\netstandard2.0" />
     <file src="..\binaries\NRules.Integration.Autofac\netstandard2.0\NRules.Integration.Autofac.xml" target="lib\netstandard2.0" />
     <file src="..\binaries\NRules.Integration.Autofac\netstandard2.0\NRules.Integration.Autofac.pdb" target="lib\netstandard2.0" />
+    <file src="..\binaries\NRules.Integration.Autofac\netstandard2.1\NRules.Integration.Autofac.dll" target="lib\netstandard2.1" />
+    <file src="..\binaries\NRules.Integration.Autofac\netstandard2.1\NRules.Integration.Autofac.xml" target="lib\netstandard2.1" />
+    <file src="..\binaries\NRules.Integration.Autofac\netstandard2.1\NRules.Integration.Autofac.pdb" target="lib\netstandard2.1" />
   </files>
 </package>

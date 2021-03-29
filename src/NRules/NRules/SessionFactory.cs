@@ -41,7 +41,7 @@ namespace NRules
     /// <seealso cref="ISession"/>
     /// <seealso cref="RuleCompiler"/>
     /// <threadsafety instance="true" />
-    public interface ISessionFactory
+    public interface ISessionFactory : ISessionSchemaProvider
     {
         /// <summary>
         /// Provider of events aggregated across all rule sessions. 
@@ -75,7 +75,7 @@ namespace NRules
         ISession CreateSession(Action<ISession> initializationAction);
     }
 
-    internal class SessionFactory : ISessionFactory
+    internal sealed class SessionFactory : ISessionFactory
     {
         private readonly INetwork _network;
         private readonly List<ICompiledRule> _compiledRules;
@@ -102,9 +102,10 @@ namespace NRules
             var agenda = CreateAgenda();
             var workingMemory = new WorkingMemory();
             var eventAggregator = new EventAggregator(_eventAggregator);
+            var metricsAggregator = new MetricsAggregator();
             var actionExecutor = new ActionExecutor();
             var idGenerator = new IdGenerator();
-            var session = new Session(_network, agenda, workingMemory, eventAggregator, actionExecutor, idGenerator, DependencyResolver, ActionInterceptor);
+            var session = new Session(_network, agenda, workingMemory, eventAggregator, metricsAggregator, actionExecutor, idGenerator, DependencyResolver, ActionInterceptor);
             initializationAction?.Invoke(session);
             session.Activate();
             return session;
@@ -139,5 +140,7 @@ namespace NRules
                 yield return filter;
             }
         }
+
+        ReteGraph ISessionSchemaProvider.GetSchema() => _network.GetSchema();
     }
 }

@@ -7,13 +7,13 @@
     <authors>Sergiy Nikolayev</authors>
     <owners>Sergiy Nikolayev</owners>
     <license type="expression">MIT</license>
-    <projectUrl>http://nrules.net</projectUrl>
+    <projectUrl>https://nrules.net</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/NRules/NRules.media/master/Logo/Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm with rules authored in C# using internal DSL.</summary>
     <description>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm. NRules is an inference engine that, among other features, supports forward chaining, negative, existential and universal quantifiers. Rules are authored in C# using internal DSL.</description>
     <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
-    <copyright>Copyright 2012-2020 Sergiy Nikolayev. All rights reserved.</copyright>
+    <copyright>Copyright 2012-2021 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>rules engine inference rete business dsl</tags>
     <dependencies>
       <dependency id="NRules.Runtime" version="[$version$]" />

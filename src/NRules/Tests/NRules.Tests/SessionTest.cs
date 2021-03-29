@@ -15,6 +15,7 @@ namespace NRules.Tests
         private readonly Mock<INetwork> _network;
         private readonly Mock<IWorkingMemory> _workingMemory;
         private readonly Mock<IEventAggregator> _eventAggregator;
+        private readonly Mock<IMetricsAggregator> _metricsAggregator;
         private readonly Mock<IActionExecutor> _actionExecutor;
         private readonly Mock<IIdGenerator> _idGenerator;
         private readonly Mock<IDependencyResolver> _dependencyResolver;
@@ -26,6 +27,7 @@ namespace NRules.Tests
             _network = new Mock<INetwork>();
             _workingMemory = new Mock<IWorkingMemory>();
             _eventAggregator = new Mock<IEventAggregator>();
+            _metricsAggregator = new Mock<IMetricsAggregator>();
             _actionExecutor = new Mock<IActionExecutor>();
             _idGenerator = new Mock<IIdGenerator>();
             _dependencyResolver = new Mock<IDependencyResolver>();
@@ -412,7 +414,7 @@ namespace NRules.Tests
                             cancellationSource.Cancel();
                         }
 
-                        return hitCount < 5 ? false : true;
+                        return hitCount >= 5;
                     });
 
                 // Act
@@ -442,7 +444,7 @@ namespace NRules.Tests
                             cancellationSource.Cancel();
                         }
 
-                        return hitCount < 5 ? false : true;
+                        return hitCount >= 5;
                     });
 
                 // Act
@@ -496,8 +498,9 @@ namespace NRules.Tests
 
         private Session CreateTarget()
         {
-            var session = new Session(_network.Object, _agenda.Object, _workingMemory.Object, _eventAggregator.Object, 
-                _actionExecutor.Object, _idGenerator.Object, _dependencyResolver.Object, _actionInterceptor.Object);
+            var session = new Session(_network.Object, _agenda.Object, _workingMemory.Object,
+                _eventAggregator.Object, _metricsAggregator.Object, _actionExecutor.Object,
+                _idGenerator.Object, _dependencyResolver.Object, _actionInterceptor.Object);
             return session;
         }
 

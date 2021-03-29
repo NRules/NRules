@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.Diagnostics;
 
 namespace NRules.Rete
 {
@@ -6,6 +7,8 @@ namespace NRules.Rete
     {
         private readonly List<ITupleSink> _sinks = new List<ITupleSink>();
 
+        public int Id { get; set; }
+        public NodeInfo NodeInfo { get; } = new NodeInfo();
         public IEnumerable<ITupleSink> Sinks => _sinks;
 
         public void Activate(IExecutionContext context)
@@ -19,7 +22,7 @@ namespace NRules.Rete
             {
                 sink.PropagateAssert(context, tupleList);
             }
-            memory.Add(tuple);
+            memory.Add(tupleList);
         }
 
         public IEnumerable<Tuple> GetTuples(IExecutionContext context)

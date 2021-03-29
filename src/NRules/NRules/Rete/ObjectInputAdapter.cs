@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.Diagnostics;
 
 namespace NRules.Rete
 {
@@ -7,6 +8,8 @@ namespace NRules.Rete
         private readonly ITupleSource _source;
         private readonly List<IObjectSink> _sinks = new List<IObjectSink>();
 
+        public int Id { get; set; }
+        public NodeInfo NodeInfo { get; } = new NodeInfo();
         public IEnumerable<IObjectSink> Sinks => _sinks;
 
         public ObjectInputAdapter(IBetaMemoryNode source)
@@ -18,12 +21,17 @@ namespace NRules.Rete
         public void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
         {
             var toAssert = new List<Fact>(tuples.Count);
-            foreach (var tuple in tuples)
+            using (var counter = PerfCounter.Assert(context, this))
             {
-                var wrapperFact = new WrapperFact(tuple);
-                tuple.SetState(this, wrapperFact);
-                toAssert.Add(wrapperFact);
+                foreach (var tuple in tuples)
+                {
+                    var wrapperFact = new WrapperFact(tuple);
+                    context.WorkingMemory.SetState(this, tuple, wrapperFact);
+                    toAssert.Add(wrapperFact);
+                }
+                counter.AddItems(tuples.Count);
             }
+
             foreach (var sink in _sinks)
             {
                 sink.PropagateAssert(context, toAssert);
@@ -33,11 +41,16 @@ namespace NRules.Rete
         public void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
         {
             var toUpdate = new List<Fact>(tuples.Count);
-            foreach (var tuple in tuples)
+            using (var counter = PerfCounter.Update(context, this))
             {
-                var wrapperFact = tuple.GetStateOrThrow<WrapperFact>(this);
-                toUpdate.Add(wrapperFact);
+                foreach (var tuple in tuples)
+                {
+                    var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, tuple);
+                    toUpdate.Add(wrapperFact);
+                }
+                counter.AddItems(tuples.Count);
             }
+
             foreach (var sink in _sinks)
             {
                 sink.PropagateUpdate(context, toUpdate);
@@ -47,18 +60,27 @@ namespace NRules.Rete
         public void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
         {
             var toRetract = new List<Fact>(tuples.Count);
-            foreach (var tuple in tuples)
+            using (var counter = PerfCounter.Retract(context, this))
             {
-                var wrapperFact = tuple.GetStateOrThrow<WrapperFact>(this);
-                toRetract.Add(wrapperFact);
+                foreach (var tuple in tuples)
+                {
+                    var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, tuple);
+                    toRetract.Add(wrapperFact);
+                }
+                counter.AddItems(tuples.Count);
             }
+
             foreach (var sink in _sinks)
             {
                 sink.PropagateRetract(context, toRetract);
             }
-            foreach (var tuple in tuples)
+
+            using (PerfCounter.Retract(context, this))
             {
-                tuple.RemoveStateOrThrow<WrapperFact>(this);
+                foreach (var tuple in tuples)
+                {
+                    context.WorkingMemory.RemoveStateOrThrow<WrapperFact>(this, tuple);
+                }
             }
         }
 
@@ -68,7 +90,7 @@ namespace NRules.Rete
             var sourceFacts = new List<Fact>();
             foreach (var sourceTuple in sourceTuples)
             {
-                var wrapperFact = sourceTuple.GetStateOrThrow<WrapperFact>(this);
+                var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, sourceTuple);
                 sourceFacts.Add(wrapperFact);
             }
             return sourceFacts;

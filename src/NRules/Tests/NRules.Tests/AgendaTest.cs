@@ -50,7 +50,7 @@ namespace NRules.Tests
             var activation = new Activation(rule, new Tuple(0));
             var target = CreateTarget();
 
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Act
             var actualActivation = target.Pop();
@@ -71,7 +71,7 @@ namespace NRules.Tests
             var target = CreateTarget();
 
             // Act
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Assert
             Assert.False(target.IsEmpty);
@@ -93,7 +93,7 @@ namespace NRules.Tests
             target.AddFilter(new AcceptingFilter());
 
             // Act
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Assert
             Assert.False(target.IsEmpty);
@@ -111,7 +111,7 @@ namespace NRules.Tests
             target.AddFilter(new RejectingFilter());
 
             // Act
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Assert
             Assert.True(target.IsEmpty);
@@ -130,7 +130,7 @@ namespace NRules.Tests
             target.AddFilter(new RejectingFilter());
 
             // Act
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Assert
             Assert.True(target.IsEmpty);
@@ -148,7 +148,7 @@ namespace NRules.Tests
             target.AddFilter(rule.Definition, new AcceptingFilter());
 
             // Act
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Assert
             Assert.False(target.IsEmpty);
@@ -166,7 +166,7 @@ namespace NRules.Tests
             target.AddFilter(rule.Definition, new RejectingFilter());
 
             // Act
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Assert
             Assert.True(target.IsEmpty);
@@ -186,7 +186,7 @@ namespace NRules.Tests
             target.AddFilter(rule2.Definition, new RejectingFilter());
 
             // Act
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Assert
             Assert.False(target.IsEmpty);
@@ -201,11 +201,11 @@ namespace NRules.Tests
             var tuple = CreateTuple(factObject);
             var activation = new Activation(rule, tuple);
             var target = CreateTarget();
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Act
             factObject.Value = "New Value";
-            target.Modify(_context.Object, activation);
+            target.Modify(activation);
 
             // Assert
             Assert.False(target.IsEmpty);
@@ -224,11 +224,11 @@ namespace NRules.Tests
             var tuple = CreateTuple(factObject);
             var activation = new Activation(rule, tuple);
             var target = CreateTarget();
-            target.Add(_context.Object, activation);
+            target.Add(activation);
             target.Pop();
  
             // Act
-            target.Modify(_context.Object, activation);
+            target.Modify(activation);
 
             // Assert
             Assert.False(target.IsEmpty);
@@ -246,13 +246,13 @@ namespace NRules.Tests
             var tuple = CreateTuple(factObject);
             var activation = new Activation(rule, tuple);
             var target = CreateTarget();
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             target.AddFilter(new RejectingFilter());
 
             // Act
             factObject.Value = "New Value";
-            target.Modify(_context.Object, activation);
+            target.Modify(activation);
 
             // Assert
             Assert.True(target.IsEmpty);
@@ -267,13 +267,13 @@ namespace NRules.Tests
             var tuple = CreateTuple(factObject);
             var activation = new Activation(rule, tuple);
             var target = CreateTarget();
-            target.Add(_context.Object, activation);
+            target.Add(activation);
             target.Pop();
 
             target.AddFilter(new RejectingFilter());
 
             // Act
-            target.Modify(_context.Object, activation);
+            target.Modify(activation);
 
             // Assert
             Assert.True(target.IsEmpty);
@@ -288,12 +288,12 @@ namespace NRules.Tests
             var tuple = CreateTuple(factObject);
             var activation = new Activation(rule, tuple);
             var target = CreateTarget();
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             _session.Setup(x => x.GetLinkedKeys(activation)).Returns(new object[0]);
 
             // Act
-            target.Remove(_context.Object, activation);
+            target.Remove(activation);
 
             // Assert
             Assert.True(target.IsEmpty);
@@ -310,8 +310,8 @@ namespace NRules.Tests
             var target = CreateTarget();
 
             // Act
-            target.Add(_context.Object, activation1);
-            target.Add(_context.Object, activation2);
+            target.Add(activation1);
+            target.Add(activation2);
 
             // Assert
             Assert.False(target.IsEmpty);
@@ -321,14 +321,14 @@ namespace NRules.Tests
         }
 
         [Fact]
-        public void Peek_AgendaHasActivations_ReturnsActivationAgendaRamainsNonEmpty()
+        public void Peek_AgendaHasActivations_ReturnsActivationAgendaRemainsNonEmpty()
         {
             // Arrange
             var rule = MockRule();
             var activation = new Activation(rule, new Tuple(0));
             var target = CreateTarget();
 
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Act
             var actualActivation = target.Peek();
@@ -356,7 +356,7 @@ namespace NRules.Tests
             var activation = new Activation(rule, new Tuple(0));
             var target = CreateTarget();
 
-            target.Add(_context.Object, activation);
+            target.Add(activation);
 
             // Act
             target.Clear();
@@ -367,7 +367,9 @@ namespace NRules.Tests
 
         private Agenda CreateTarget()
         {
-            return new Agenda();
+            var agenda = new Agenda();
+            agenda.Initialize(_context.Object);
+            return agenda;
         }
 
         private static ICompiledRule MockRule()

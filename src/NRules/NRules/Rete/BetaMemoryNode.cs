@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.Diagnostics;
 
 namespace NRules.Rete
 {
@@ -14,19 +15,29 @@ namespace NRules.Rete
     {
         private readonly List<ITupleSink> _sinks = new List<ITupleSink>();
 
+        public int Id { get; set; }
+        public NodeInfo NodeInfo { get; } = new NodeInfo();
         public IEnumerable<ITupleSink> Sinks => _sinks;
 
         public void PropagateAssert(IExecutionContext context, TupleFactList tupleFactList)
         {
             if (tupleFactList.Count == 0) return;
+
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             var toAssert = new List<Tuple>();
-            var enumerator = tupleFactList.GetEnumerator();
-            while (enumerator.MoveNext())
+
+            using (var counter = PerfCounter.Assert(context, this))
             {
-                var childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact);
-                childTuple.GroupId = enumerator.CurrentTuple.Id;
-                toAssert.Add(childTuple);
+                var enumerator = tupleFactList.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    var childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple,
+                        enumerator.CurrentFact);
+                    childTuple.GroupId = enumerator.CurrentTuple.Id;
+                    toAssert.Add(childTuple);
+                }
+                
+                counter.AddItems(tupleFactList.Count);
             }
 
             PropagateAssertInternal(context, memory, toAssert);
@@ -35,23 +46,30 @@ namespace NRules.Rete
         public void PropagateUpdate(IExecutionContext context, TupleFactList tupleFactList)
         {
             if (tupleFactList.Count == 0) return;
+
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             var toAssert = new List<Tuple>();
             var toUpdate = new List<Tuple>();
-            var enumerator = tupleFactList.GetEnumerator();
-            while (enumerator.MoveNext())
+
+            using (var counter = PerfCounter.Update(context, this))
             {
-                Tuple childTuple = memory.FindTuple(enumerator.CurrentTuple, enumerator.CurrentFact);
-                if (childTuple == null)
+                var enumerator = tupleFactList.GetEnumerator();
+                while (enumerator.MoveNext())
                 {
-                    childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact);
-                    childTuple.GroupId = enumerator.CurrentTuple.Id;
-                    toAssert.Add(childTuple);
+                    Tuple childTuple = memory.FindTuple(enumerator.CurrentTuple, enumerator.CurrentFact);
+                    if (childTuple == null)
+                    {
+                        childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact);
+                        childTuple.GroupId = enumerator.CurrentTuple.Id;
+                        toAssert.Add(childTuple);
+                    }
+                    else
+                    {
+                        toUpdate.Add(childTuple);
+                    }
                 }
-                else
-                {
-                    toUpdate.Add(childTuple);
-                }
+                
+                counter.AddItems(tupleFactList.Count);
             }
 
             PropagateAssertInternal(context, memory, toAssert);
@@ -61,16 +79,24 @@ namespace NRules.Rete
         public void PropagateRetract(IExecutionContext context, TupleFactList tupleFactList)
         {
             if (tupleFactList.Count == 0) return;
+
             IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
             var toRetract = new List<Tuple>();
-            var enumerator = tupleFactList.GetEnumerator();
-            while (enumerator.MoveNext())
+
+            using (var counter = PerfCounter.Retract(context, this))
             {
-                Tuple childTuple = memory.FindTuple(enumerator.CurrentTuple, enumerator.CurrentFact);
-                if (childTuple != null)
+                var enumerator = tupleFactList.GetEnumerator();
+                while (enumerator.MoveNext())
                 {
-                    toRetract.Add(childTuple);
+                    Tuple childTuple = memory.FindTuple(enumerator.CurrentTuple, enumerator.CurrentFact);
+                    if (childTuple != null)
+                    {
+                        toRetract.Add(childTuple);
+                    }
                 }
+                
+                counter.AddInputs(tupleFactList.Count);
+                counter.AddOutputs(toRetract.Count);
             }
 
             PropagateRetractInternal(context, memory, toRetract);
@@ -80,13 +106,15 @@ namespace NRules.Rete
         {
             if (tuples.Count > 0)
             {
-                foreach (var sink in _sinks)
+                for (int i = 0; i < _sinks.Count; i++)
                 {
-                    sink.PropagateAssert(context, tuples);
+                    _sinks[i].PropagateAssert(context, tuples);
                 }
-                foreach (var childTuple in tuples)
+
+                using (var counter = PerfCounter.Assert(context, this))
                 {
-                    memory.Add(childTuple);
+                    memory.Add(tuples);
+                    counter.SetCount(memory.TupleCount);
                 }
             }
         }
@@ -95,9 +123,9 @@ namespace NRules.Rete
         {
             if (tuples.Count > 0)
             {
-                foreach (var sink in _sinks)
+                for (int i = 0; i < _sinks.Count; i++)
                 {
-                    sink.PropagateUpdate(context, tuples);
+                    _sinks[i].PropagateUpdate(context, tuples);
                 }
             }
         }
@@ -106,13 +134,15 @@ namespace NRules.Rete
         {
             if (tuples.Count > 0)
             {
-                foreach (var sink in _sinks)
+                using (var counter = PerfCounter.Retract(context, this))
                 {
-                    sink.PropagateRetract(context, tuples);
+                    memory.Remove(tuples);
+                    counter.SetCount(memory.TupleCount);
                 }
-                foreach (var childTuple in tuples)
+
+                for (int i = _sinks.Count - 1; i >= 0; i--)
                 {
-                    memory.Remove(childTuple);
+                    _sinks[i].PropagateRetract(context, tuples);
                 }
             }
         }

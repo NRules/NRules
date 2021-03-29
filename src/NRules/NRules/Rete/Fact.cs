@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Reflection;
 using NRules.RuleModel;
 
 namespace NRules.Rete
@@ -17,18 +16,16 @@ namespace NRules.Rete
         public Fact(object @object)
         {
             _object = @object;
-            var factType = @object.GetType();
-            FactType = factType.GetTypeInfo();
+            FactType = @object.GetType();
         }
 
         public Fact(object @object, Type declaredType)
         {
             _object = @object;
-            var factType = @object?.GetType() ?? declaredType;
-            FactType = factType.GetTypeInfo();
+            FactType = @object?.GetType() ?? declaredType;
         }
 
-        public virtual TypeInfo FactType { get; }
+        public virtual Type FactType { get; }
 
         public object RawObject
         {
@@ -44,7 +41,7 @@ namespace NRules.Rete
 
         public virtual object Object => _object;
         public virtual bool IsWrapperFact => false;
-        Type IFact.Type => FactType.AsType();
+        Type IFact.Type => FactType;
         object IFact.Value => Object;
         IFactSource IFact.Source => Source;
     }
@@ -74,15 +71,15 @@ namespace NRules.Rete
         {
         }
 
-        public override TypeInfo FactType => WrappedTuple.RightFact.FactType;
-        public override object Object => WrappedTuple.RightFact.Object;
+        public override Type FactType => WrappedTuple.RightFact?.FactType;
+        public override object Object => WrappedTuple.RightFact?.Object;
         public Tuple WrappedTuple => (Tuple) RawObject;
         public override bool IsWrapperFact => true;
 
         public override IFactSource Source
         {
-            get => WrappedTuple.RightFact.Source;
-            set => WrappedTuple.RightFact.Source = value;
+            get => WrappedTuple.RightFact?.Source;
+            set {}
         }
     }
 }

@@ -20,16 +20,16 @@ namespace NRules.Utilities
 
         static ExpressionOptimizer()
         {
-            GetEnumeratorMethod = typeof(Tuple).GetTypeInfo()
-                .GetDeclaredMethod(nameof(Tuple.GetEnumerator));
-            MoveNextMethod = typeof(Tuple.Enumerator).GetTypeInfo()
-                .GetDeclaredMethod(nameof(Tuple.Enumerator.MoveNext));
-            CurrentProperty = typeof(Tuple.Enumerator).GetTypeInfo()
-                .GetDeclaredProperty(nameof(Tuple.Enumerator.Current));
-            FactValueProperty = typeof(Fact).GetTypeInfo()
-                .GetDeclaredProperty(nameof(Fact.Object));
-            ResolveMethod = typeof(IDependencyResolver).GetTypeInfo()
-                .GetDeclaredMethod(nameof(IDependencyResolver.Resolve));
+            GetEnumeratorMethod = typeof(Tuple)
+                .GetMethod(nameof(Tuple.GetEnumerator));
+            MoveNextMethod = typeof(Tuple.Enumerator)
+                .GetMethod(nameof(Tuple.Enumerator.MoveNext));
+            CurrentProperty = typeof(Tuple.Enumerator)
+                .GetProperty(nameof(Tuple.Enumerator.Current));
+            FactValueProperty = typeof(Fact)
+                .GetProperty(nameof(Fact.Object));
+            ResolveMethod = typeof(IDependencyResolver)
+                .GetMethod(nameof(IDependencyResolver.Resolve));
         }
 
         public static Expression<TDelegate> Optimize<TDelegate>(LambdaExpression expression,
@@ -155,9 +155,13 @@ namespace NRules.Utilities
 
         private static Expression EnsureReturnType(Expression expression, Type delegateType)
         {
-            var returnType = delegateType.GetTypeInfo().GetDeclaredMethod(nameof(Action.Invoke)).ReturnType;
+            var invokeMethod = delegateType.GetMethod(nameof(Action.Invoke));
+            if (invokeMethod == null) return expression;
+
+            var returnType = invokeMethod.ReturnType;
             if (returnType == typeof(void)) return expression;
             if (expression.Type == returnType) return expression;
+            
             var convertedExpression = Expression.Convert(expression, returnType);
             return convertedExpression;
         }

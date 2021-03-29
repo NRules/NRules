@@ -1,30 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="VSSDK.DebuggerVisualizers" Version="12.0.4" />
-    <PackageReference Include="VSSDK.DebuggerVisualizers.12" Version="12.0.4" />
-    <PackageReference Include="VSSDK.IDE.12" Version="12.0.4" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\NRules.Debugger.Visualizer.DebuggeeSide\NRules.Debugger.Visualizer.DebuggeeSide.csproj" />
     <ProjectReference Include="..\NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
+      <HintPath>$(MSBuildProgramFiles32)\Microsoft Visual Studio\2019\Community\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
+    </Reference>
     <Reference Include="NRules">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.dll</HintPath>
+      <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.dll</HintPath>
     </Reference>
     <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.Fluent.dll</HintPath>
+      <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.RuleModel.dll</HintPath>
+      <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.RuleModel.dll</HintPath>
     </Reference>
   </ItemGroup>
 

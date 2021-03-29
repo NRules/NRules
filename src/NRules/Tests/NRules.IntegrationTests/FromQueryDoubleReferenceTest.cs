@@ -45,7 +45,10 @@ namespace NRules.IntegrationTests
             Assert.Equal(factsOneTwoExpected, factsOneTwoActual);
         }
 
-        protected override void SetUpRules() { SetUpRule<FromQueryDoubleReferenceRule>(); }
+        protected override void SetUpRules()
+        {
+            SetUpRule<FromQueryDoubleReferenceRule>();
+        }
 
         public class Fact
         {

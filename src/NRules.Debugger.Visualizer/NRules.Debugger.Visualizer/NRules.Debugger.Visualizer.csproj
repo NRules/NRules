@@ -3,7 +3,11 @@
   <Import Project="..\..\..\Common.props" />
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,20 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="VSSDK.DebuggerVisualizers" Version="12.0.4" />
-    <PackageReference Include="VSSDK.DebuggerVisualizers.12" Version="12.0.4" />
-    <PackageReference Include="VSSDK.IDE.12" Version="12.0.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="NRules">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\binaries\NRules\net45\NRules.RuleModel.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
+      <HintPath>$(MSBuildProgramFiles32)\Microsoft Visual Studio\2019\Community\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
     </Reference>
   </ItemGroup>
   

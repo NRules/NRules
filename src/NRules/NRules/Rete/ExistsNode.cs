@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.Diagnostics;
 
 namespace NRules.Rete
 {
@@ -10,66 +11,88 @@ namespace NRules.Rete
 
         public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
         {
-            var joinedSets = JoinedSets(context, tuples);
             var toAssert = new TupleFactList();
-            foreach (var set in joinedSets)
+            using (var counter = PerfCounter.Assert(context, this))
             {
-                var quantifier = set.Tuple.CreateQuantifier(this);
-                foreach (var fact in set.Facts)
+                var joinedSets = JoinedSets(context, tuples);
+                foreach (var set in joinedSets)
                 {
-                    quantifier.Value++;
+                    var quantifier = context.CreateQuantifier(this, set.Tuple);
+                    quantifier.Value += set.Facts.Count;
+                    if (quantifier.Value > 0)
+                    {
+                        toAssert.Add(set.Tuple, null);
+                    }
                 }
-                if (quantifier.Value > 0)
-                {
-                    toAssert.Add(set.Tuple, null);
-                }
+
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(toAssert.Count);
             }
+
             MemoryNode.PropagateAssert(context, toAssert);
         }
 
         public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
         {
             var toUpdate = new TupleFactList();
-            foreach (var tuple in tuples)
+            using (var counter = PerfCounter.Update(context, this))
             {
-                if (tuple.GetQuantifier(this).Value > 0)
+                foreach (var tuple in tuples)
                 {
-                    toUpdate.Add(tuple, null);
+                    if (context.GetQuantifier(this, tuple).Value > 0)
+                    {
+                        toUpdate.Add(tuple, null);
+                    }
                 }
+
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(toUpdate.Count);
             }
+            
             MemoryNode.PropagateUpdate(context, toUpdate);
         }
 
         public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
         {
             var toRetract = new TupleFactList();
-            foreach (var tuple in tuples)
+            using (var counter = PerfCounter.Retract(context, this))
             {
-                if (tuple.RemoveQuantifier(this).Value > 0)
+                foreach (var tuple in tuples)
                 {
-                    toRetract.Add(tuple, null);
+                    if (context.RemoveQuantifier(this, tuple).Value > 0)
+                    {
+                        toRetract.Add(tuple, null);
+                    }
                 }
+
+                counter.AddInputs(tuples.Count);
+                counter.AddOutputs(toRetract.Count);
             }
+
             MemoryNode.PropagateRetract(context, toRetract);
         }
 
         public override void PropagateAssert(IExecutionContext context, List<Fact> facts)
         {
-            var joinedSets = JoinedSets(context, facts);
             var toAssert = new TupleFactList();
-            foreach (var set in joinedSets)
+            using (var counter = PerfCounter.Assert(context, this))
             {
-                var quantifier = set.Tuple.GetQuantifier(this);
-                int startingCount = quantifier.Value;
-                foreach (var fact in set.Facts)
+                var joinedSets = JoinedSets(context, facts);
+                foreach (var set in joinedSets)
                 {
-                    quantifier.Value++;
+                    var quantifier = context.GetQuantifier(this, set.Tuple);
+                    int startingCount = quantifier.Value;
+                    quantifier.Value += set.Facts.Count;
+                    if (startingCount == 0 && quantifier.Value > 0)
+                    {
+                        toAssert.Add(set.Tuple, null);
+                    }
                 }
-                if (startingCount == 0 && quantifier.Value > 0)
-                {
-                    toAssert.Add(set.Tuple, null);
-                }
+
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toAssert.Count);
             }
+
             MemoryNode.PropagateAssert(context, toAssert);
         }
 
@@ -80,21 +103,25 @@ namespace NRules.Rete
 
         public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
         {
-            var joinedSets = JoinedSets(context, facts);
             var toRetract = new TupleFactList();
-            foreach (var set in joinedSets)
+            using (var counter = PerfCounter.Retract(context, this))
             {
-                var quantifier = set.Tuple.GetQuantifier(this);
-                int startingCount = quantifier.Value;
-                foreach (var fact in set.Facts)
+                var joinedSets = JoinedSets(context, facts);
+                foreach (var set in joinedSets)
                 {
-                    quantifier.Value--;
+                    var quantifier = context.GetQuantifier(this, set.Tuple);
+                    int startingCount = quantifier.Value;
+                    quantifier.Value -= set.Facts.Count;
+                    if (startingCount > 0 && quantifier.Value == 0)
+                    {
+                        toRetract.Add(set.Tuple, null);
+                    }
                 }
-                if (startingCount > 0 && quantifier.Value == 0)
-                {
-                    toRetract.Add(set.Tuple, null);
-                }
+
+                counter.AddInputs(facts.Count);
+                counter.AddOutputs(toRetract.Count);
             }
+
             MemoryNode.PropagateRetract(context, toRetract);
         }
 

@@ -24,6 +24,11 @@
         Contains types that facilitate troubleshooting and monitoring of the rules engine execution.
       </summary>
     </member>
+    <member name="N:NRules.Diagnostics.Dgml">
+      <summary>
+        Contains types that enable exporting rete network diagnostics as a DGML document.
+      </summary>
+    </member>
     <member name="N:NRules.Extensibility">
       <summary>
         Contains types that enable extensibility of the rules engine.

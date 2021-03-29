@@ -15,22 +15,22 @@ namespace NRules.Rete
             return tuple.Facts.Reverse();
         }
 
-        public static Quantifier CreateQuantifier(this Tuple tuple, INode node)
+        public static Quantifier CreateQuantifier(this IExecutionContext context, INode node, Tuple tuple)
         {
             var quantifier = new Quantifier();
-            tuple.SetState(node, quantifier);
+            context.WorkingMemory.SetState(node, tuple, quantifier);
             return quantifier;
         }
 
-        public static Quantifier GetQuantifier(this Tuple tuple, INode node)
+        public static Quantifier GetQuantifier(this IExecutionContext context, INode node, Tuple tuple)
         {
-            var quantifier = tuple.GetStateOrThrow<Quantifier>(node);
+            var quantifier = context.WorkingMemory.GetStateOrThrow<Quantifier>(node, tuple);
             return quantifier;
         }
 
-        public static Quantifier RemoveQuantifier(this Tuple tuple, INode node)
+        public static Quantifier RemoveQuantifier(this IExecutionContext context, INode node, Tuple tuple)
         {
-            var quantifier = tuple.RemoveStateOrThrow<Quantifier>(node);
+            var quantifier = context.WorkingMemory.RemoveStateOrThrow<Quantifier>(node, tuple);
             return quantifier;
         }
     }

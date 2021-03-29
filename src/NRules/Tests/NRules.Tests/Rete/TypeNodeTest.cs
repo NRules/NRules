@@ -13,7 +13,7 @@ namespace NRules.Tests.Rete
             var target = new TypeNode(typeof (DateTime));
 
             //Act
-            var actual = target.FilterType.AsType();
+            var actual = target.FilterType;
             var expected = typeof (DateTime);
 
             //Assert

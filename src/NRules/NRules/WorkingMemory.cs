@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NRules.Rete;
+using Tuple = NRules.Rete.Tuple;
 
 namespace NRules
 {
@@ -21,12 +22,19 @@ namespace NRules
 
         IAlphaMemory GetNodeMemory(IAlphaMemoryNode node);
         IBetaMemory GetNodeMemory(IBetaMemoryNode node);
+
+        T GetState<T>(INode node, Tuple tuple);
+        T GetStateOrThrow<T>(INode node, Tuple tuple);
+        T RemoveState<T>(INode node, Tuple tuple);
+        T RemoveStateOrThrow<T>(INode node, Tuple tuple);
+        void SetState(INode node, Tuple tuple, object value);
     }
 
     internal class WorkingMemory : IWorkingMemory
     {
         private readonly Dictionary<object, Fact> _factMap = new Dictionary<object, Fact>();
         private readonly Dictionary<Activation, Dictionary<object, Fact>> _linkedFactMap = new Dictionary<Activation, Dictionary<object, Fact>>();
+        private readonly Dictionary<TupleStateKey, object> _tupleStateMap = new Dictionary<TupleStateKey, object>();
 
         private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap =
             new Dictionary<IAlphaMemoryNode, IAlphaMemory>();
@@ -135,6 +143,86 @@ namespace NRules
                 _betaMap[node] = memory;
             }
             return memory;
+        }
+
+        public T GetState<T>(INode node, Tuple tuple)
+        {
+            var key = new TupleStateKey(node, tuple);
+            if (_tupleStateMap.TryGetValue(key, out var value))
+            {
+                return (T) value;
+            }
+            return default;
+        }
+        
+        public T GetStateOrThrow<T>(INode node, Tuple tuple)
+        {
+            var key = new TupleStateKey(node, tuple);
+            if (_tupleStateMap.TryGetValue(key, out var value))
+            {
+                return (T) value;
+            }
+            throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
+        }
+
+        public T RemoveState<T>(INode node, Tuple tuple)
+        {
+            var key = new TupleStateKey(node, tuple);
+            if (_tupleStateMap.TryGetValue(key, out var value))
+            {
+                var state = (T)value;
+                _tupleStateMap.Remove(key);
+                return state;
+            }
+            return default;
+        }
+
+        public T RemoveStateOrThrow<T>(INode node, Tuple tuple)
+        {
+            var key = new TupleStateKey(node, tuple);
+            if (_tupleStateMap.TryGetValue(key, out var value))
+            {
+                var state = (T)value;
+                _tupleStateMap.Remove(key);
+                return state;
+            }
+            throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
+        }
+
+        public void SetState(INode node, Tuple tuple, object value)
+        {
+            var key = new TupleStateKey(node, tuple);
+            _tupleStateMap[key] = value;
+        }
+
+        private readonly struct TupleStateKey : IEquatable<TupleStateKey>
+        {
+            private readonly INode _node;
+            private readonly Tuple _tuple;
+
+            public TupleStateKey(INode node, Tuple tuple)
+            {
+                _node = node;
+                _tuple = tuple;
+            }
+
+            public bool Equals(TupleStateKey other)
+            {
+                return _node.Equals(other._node) && _tuple.Equals(other._tuple);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is TupleStateKey other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (_node.GetHashCode() * 397) ^ _tuple.GetHashCode();
+                }
+            }
         }
     }
 }

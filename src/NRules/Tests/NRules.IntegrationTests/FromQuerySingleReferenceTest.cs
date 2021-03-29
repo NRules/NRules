@@ -68,7 +68,10 @@ namespace NRules.IntegrationTests
             AssertFiredTwice();
         }
 
-        protected override void SetUpRules() { SetUpRule<FromQuerySingleReferenceRule>(); }
+        protected override void SetUpRules()
+        {
+            SetUpRule<FromQuerySingleReferenceRule>();
+        }
 
         public class Fact
         {

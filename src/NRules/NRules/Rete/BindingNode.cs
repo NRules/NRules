@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NRules.Diagnostics;
 using NRules.RuleModel;
 
 namespace NRules.Rete
@@ -25,9 +26,14 @@ namespace NRules.Rete
         public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
         {
             var toAssert = new TupleFactList();
-            foreach (var tuple in tuples)
+            using (var counter = PerfCounter.Assert(context, this))
             {
-                AssertBinding(context, tuple, toAssert);
+                foreach (var tuple in tuples)
+                {
+                    AssertBinding(context, tuple, toAssert);
+                }
+
+                counter.AddItems(tuples.Count);
             }
             MemoryNode.PropagateAssert(context, toAssert);
         }
@@ -37,17 +43,22 @@ namespace NRules.Rete
             var toAssert = new TupleFactList();
             var toUpdate = new TupleFactList();
             var toRetract = new TupleFactList();
-            foreach (var tuple in tuples)
+            using (var counter = PerfCounter.Update(context, this))
             {
-                var fact = tuple.GetState<Fact>(this);
-                if (fact != null)
+                foreach (var tuple in tuples)
                 {
-                    UpdateBinding(context, tuple, fact, toUpdate, toRetract);
+                    var fact = context.WorkingMemory.GetState<Fact>(this, tuple);
+                    if (fact != null)
+                    {
+                        UpdateBinding(context, tuple, fact, toUpdate, toRetract);
+                    }
+                    else
+                    {
+                        AssertBinding(context, tuple, toAssert);
+                    }
                 }
-                else
-                {
-                    AssertBinding(context, tuple, toAssert);
-                }
+
+                counter.AddItems(tuples.Count);
             }
             MemoryNode.PropagateRetract(context, toRetract);
             MemoryNode.PropagateUpdate(context, toUpdate);
@@ -57,9 +68,14 @@ namespace NRules.Rete
         public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
         {
             var toRetract = new TupleFactList();
-            foreach (var tuple in tuples)
+            using (var counter = PerfCounter.Retract(context, this))
             {
-                RetractBinding(tuple, toRetract);
+                foreach (var tuple in tuples)
+                {
+                    RetractBinding(context, tuple, toRetract);
+                }
+
+                counter.AddItems(tuples.Count);
             }
             MemoryNode.PropagateRetract(context, toRetract);
         }
@@ -70,7 +86,7 @@ namespace NRules.Rete
             {
                 var value = _compiledExpression.Invoke(context, NodeInfo, tuple);
                 var fact = new Fact(value, ResultType);
-                tuple.SetState(this, fact);
+                context.WorkingMemory.SetState(this, tuple, fact);
                 toAssert.Add(tuple, fact);
             }
             catch (ExpressionEvaluationException e)
@@ -98,13 +114,13 @@ namespace NRules.Rete
                     throw new RuleLhsExpressionEvaluationException("Failed to evaluate binding expression",
                         e.Expression.ToString(), e.InnerException);
                 }
-                RetractBinding(tuple, toRetract);
+                RetractBinding(context, tuple, toRetract);
             }
         }
 
-        private void RetractBinding(Tuple tuple, TupleFactList toRetract)
+        private void RetractBinding(IExecutionContext context, Tuple tuple, TupleFactList toRetract)
         {
-            var fact = tuple.RemoveState<Fact>(this);
+            var fact = context.WorkingMemory.RemoveState<Fact>(this, tuple);
             if (fact != null)
             {
                 toRetract.Add(tuple, fact);

@@ -48,7 +48,10 @@ namespace NRules.IntegrationTests
             AssertDidNotFire();
         }
 
-        protected override void SetUpRules() { SetUpRule<FromQueryComplexReferenceRule>(); }
+        protected override void SetUpRules()
+        {
+            SetUpRule<FromQueryComplexReferenceRule>();
+        }
 
         public class Fact
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,8 +11,6 @@ namespace NRules.Rete
     internal sealed class Tuple : ITuple
     {
         private const long NoGroup = 0;
-
-        private Dictionary<INode, object> _stateMap;
 
         public Tuple(long id)
         {
@@ -40,52 +37,6 @@ namespace NRules.Rete
 
         public long GroupId { get; set; }
         
-        public T GetState<T>(INode node)
-        {
-            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
-            {
-                return (T) value;
-            }
-            return default(T);
-        }
-        
-        public T GetStateOrThrow<T>(INode node)
-        {
-            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
-            {
-                return (T) value;
-            }
-            throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
-        }
-
-        public T RemoveState<T>(INode node)
-        {
-            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
-            {
-                var state = (T)value;
-                _stateMap.Remove(node);
-                return state;
-            }
-            return default(T);
-        }
-
-        public T RemoveStateOrThrow<T>(INode node)
-        {
-            if (_stateMap != null && _stateMap.TryGetValue(node, out var value))
-            {
-                var state = (T)value;
-                _stateMap.Remove(node);
-                return state;
-            }
-            throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
-        }
-
-        public void SetState(INode node, object value)
-        {
-            if (_stateMap == null) _stateMap = new Dictionary<INode, object>();
-            _stateMap[node] = value;
-        }
-
         public long GetGroupId(int level)
         {
             if (level == Level - 1) return GroupId;

@@ -7,7 +7,7 @@
     <authors>Sergiy Nikolayev</authors>
     <owners>Sergiy Nikolayev</owners>
     <license type="expression">MIT</license>
-    <projectUrl>http://nrules.net</projectUrl>
+    <projectUrl>https://nrules.net</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/NRules/NRules.media/master/Logo/Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Canonical rules model to define rules for the NRules rules engine.</summary>
@@ -15,27 +15,21 @@
 
 This package installs the canonical rules model to define rules that can be compiled into executable model used by the NRules rules engine.</description>
     <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
-    <copyright>Copyright 2012-2020 Sergiy Nikolayev. All rights reserved.</copyright>
+    <copyright>Copyright 2012-2021 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>rules engine inference rete business dsl</tags>
     <dependencies>
-      <group targetFramework="net45">
-      </group>
-      <group targetFramework="netstandard1.0">
-        <dependency id="NETStandard.Library" version="1.6.1" />
-      </group>
       <group targetFramework="netstandard2.0">
+      </group>
+      <group targetFramework="netstandard2.1">
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="..\binaries\NRules\net45\NRules.RuleModel.dll" target="lib\net45" />
-    <file src="..\binaries\NRules\net45\NRules.RuleModel.xml" target="lib\net45" />
-    <file src="..\binaries\NRules\net45\NRules.RuleModel.pdb" target="lib\net45" />
-    <file src="..\binaries\NRules\netstandard1.0\NRules.RuleModel.dll" target="lib\netstandard1.0" />
-    <file src="..\binaries\NRules\netstandard1.0\NRules.RuleModel.xml" target="lib\netstandard1.0" />
-    <file src="..\binaries\NRules\netstandard1.0\NRules.RuleModel.pdb" target="lib\netstandard1.0" />
     <file src="..\binaries\NRules\netstandard2.0\NRules.RuleModel.dll" target="lib\netstandard2.0" />
     <file src="..\binaries\NRules\netstandard2.0\NRules.RuleModel.xml" target="lib\netstandard2.0" />
     <file src="..\binaries\NRules\netstandard2.0\NRules.RuleModel.pdb" target="lib\netstandard2.0" />
+    <file src="..\binaries\NRules\netstandard2.1\NRules.RuleModel.dll" target="lib\netstandard2.1" />
+    <file src="..\binaries\NRules\netstandard2.1\NRules.RuleModel.xml" target="lib\netstandard2.1" />
+    <file src="..\binaries\NRules\netstandard2.1\NRules.RuleModel.pdb" target="lib\netstandard2.1" />
   </files>
 </package>

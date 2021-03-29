@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using BenchmarkDotNet.Attributes;
+using NRules.Diagnostics;
 using NRules.Rete;
 using NRules.RuleModel.Builders;
 using NRules.Utilities;
@@ -12,7 +13,7 @@ namespace NRules.Benchmark.Expressions
     [BenchmarkCategory("Micro", "Expressions")]
     public class BenchmarkLhsExpression : BenchmarkBase
     {
-        private readonly NodeDebugInfo _nodeInfo;
+        private readonly NodeInfo _nodeInfo;
         private readonly ILhsExpression<bool> _lhsExpression;
         private readonly ILhsTupleExpression<bool> _lhsTupleExpression;
         private readonly ILhsFactExpression<bool> _lhsFactExpression;
@@ -21,16 +22,17 @@ namespace NRules.Benchmark.Expressions
 
         public BenchmarkLhsExpression()
         {
-            _nodeInfo = new NodeDebugInfo();
+            _nodeInfo = new NodeInfo();
+            var ruleExpressionCompiler = new RuleExpressionCompiler();
             Expression<Func<string, int, decimal, bool>> betaExpression = (s, i, d) => s.Length == i;
             var betaElement = Element.Condition(betaExpression);
-            _lhsExpression = ExpressionCompiler.CompileLhsTupleFactExpression<bool>(betaElement, betaElement.Imports.ToList());
-            _lhsTupleExpression = ExpressionCompiler.CompileLhsTupleExpression<bool>(betaElement, betaElement.Imports.ToList());
+            _lhsExpression = ruleExpressionCompiler.CompileLhsTupleFactExpression<bool>(betaElement, betaElement.Imports.ToList());
+            _lhsTupleExpression = ruleExpressionCompiler.CompileLhsTupleExpression<bool>(betaElement, betaElement.Imports.ToList());
             _tuple = ToTuple("abcd", 4, 1.0m);
 
             Expression<Func<string, bool>> alphaExpression = s => s.Length == 1;
             var alphaElement = Element.Condition(alphaExpression);
-            _lhsFactExpression = ExpressionCompiler.CompileLhsFactExpression<bool>(alphaElement);
+            _lhsFactExpression = ruleExpressionCompiler.CompileLhsFactExpression<bool>(alphaElement);
             _fact = new Fact("abcd");
         }
 

@@ -24,6 +24,24 @@ namespace NRules.IntegrationTests
         }
         
         [Fact]
+        public void Fire_InsertedThenRetractedFactMatchingNotPatternFacts_DoesNotFire()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+
+            Session.Insert(fact1);
+            Session.Insert(fact2);
+            Session.Retract(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+        
+        [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenRetracted_FiresOnce()
         {
             //Arrange
@@ -61,6 +79,22 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
         }
 
+        [Fact]
+        public void Fire_MatchingFactInsertedThenRetractedAndNoFactsMatchingNotPattern_DoesNotFire()
+        {
+            //Arrange
+            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+
+            Session.Insert(fact1);
+            Session.Retract(fact1);
+
+            //Act
+            Session.Fire();
+
+            //Assert
+            AssertDidNotFire();
+        }
+        
         [Fact]
         public void Fire_MatchingFactAndNoFactsMatchingNotPattern_FiresOnce()
         {

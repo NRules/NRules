@@ -2,7 +2,8 @@
 -------------------------------------------------------------------
 Defaults
 -------------------------------------------------------------------
-$config.buildFileName="default.ps1"
+$config.buildFileName="psakefile.ps1"
+$config.legacyBuildFileName="default.ps1"
 $config.framework = "4.0"
 $config.taskNameFormat="Executing {0}"
 $config.verboseError=$false

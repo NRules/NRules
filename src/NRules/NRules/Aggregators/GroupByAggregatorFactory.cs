@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators
@@ -26,7 +25,7 @@ namespace NRules.Aggregators
 
             var compiledKeySelector = compiledExpressions.FindSingle(AggregateElement.KeySelectorName);
             var compiledElementSelector = compiledExpressions.FindSingle(AggregateElement.ElementSelectorName);
-            var ctor = aggregatorType.GetTypeInfo().DeclaredConstructors.Single();
+            var ctor = aggregatorType.GetConstructors().Single();
             var factoryExpression = Expression.Lambda<Func<IAggregator>>(
                 Expression.New(ctor, Expression.Constant(compiledKeySelector), Expression.Constant(compiledElementSelector)));
             _factory = factoryExpression.Compile();

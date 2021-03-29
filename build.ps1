@@ -3,7 +3,7 @@ param (
     [string]$component = 'Core'
 )
 
-$version = '0.9.1'
+$version = '0.9.2'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -23,26 +23,19 @@ $components = @{
             frameworks = @('net48', 'netcoreapp3.1')
         }
         bin = @{
-            frameworks = @('net45', 'netstandard1.0', 'netstandard2.0')
-            'net45' = @{
-                include = @(
-                    "NRules\bin\$configuration\net45",
-                    "NRules.Fluent\bin\$configuration\net45",
-                    "NRules.RuleModel\bin\$configuration\net45"
-                )
-            }
-            'netstandard1.0' = @{
-                include = @(
-                    "NRules\bin\$configuration\netstandard1.0",
-                    "NRules.Fluent\bin\$configuration\netstandard1.0",
-                    "NRules.RuleModel\bin\$configuration\netstandard1.0"
-                )
-            }
+            artifacts = @('netstandard2.0', 'netstandard2.1')
             'netstandard2.0' = @{
                 include = @(
                     "NRules\bin\$configuration\netstandard2.0",
                     "NRules.Fluent\bin\$configuration\netstandard2.0",
                     "NRules.RuleModel\bin\$configuration\netstandard2.0"
+                )
+            }
+            'netstandard2.1' = @{
+                include = @(
+                    "NRules\bin\$configuration\netstandard2.1",
+                    "NRules.Fluent\bin\$configuration\netstandard2.1",
+                    "NRules.RuleModel\bin\$configuration\netstandard2.1"
                 )
             }
         }
@@ -64,11 +57,18 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net45')
-            'net45' = @{
+            artifacts = @('debugger-side', 'debuggee-side-netstandard2.0')
+            'debugger-side' = @{
                 include = @(
-                    "NRules.Debugger.Visualizer\bin\$configuration\net45"
+                    "NRules.Debugger.Visualizer\bin\$configuration\net472\NRules.Debugger.Visualizer.dll"
                 )
+                output = "."
+            }
+            'debuggee-side-netstandard2.0' = @{
+                include = @(
+                    "NRules.Debugger.Visualizer.DebuggeeSide\bin\$configuration\netstandard2.0\NRules.Debugger.Visualizer.DebuggeeSide.dll"
+                )
+                output = "netstandard2.0"
             }
         }
     };
@@ -82,10 +82,15 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('netstandard2.0')
+            artifacts = @('netstandard2.0', 'netstandard2.1')
             'netstandard2.0' = @{
                 include = @(
                     "NRules.Integration.Autofac\bin\$configuration\netstandard2.0"
+                )
+            }
+            'netstandard2.1' = @{
+                include = @(
+                    "NRules.Integration.Autofac\bin\$configuration\netstandard2.1"
                 )
             }
         }
@@ -126,13 +131,13 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            frameworks = @('net48', 'netcoreapp3.1')
-            'net472' = @{
+            artifacts = @('net48', 'netcoreapp3.1')
+            'net48' = @{
                 include = @(
                     "NRules.Benchmark\bin\$configuration\net48"
                 )
             }
-            'netcoreapp2.0' = @{
+            'netcoreapp3.1' = @{
                 include = @(
                     "NRules.Benchmark\bin\$configuration\netcoreapp3.1"
                 )
@@ -154,19 +159,23 @@ $components = @{
     };
 }
 
-$core = @('NRules', 'NRules.Debugger.Visualizer')
+$core = @('NRules')
+$visualizer = @('NRules.Debugger.Visualizer')
 $integration = $components.keys | where { $_.StartsWith("NRules.Integration") }
 $samples = $components.keys | where { $_.StartsWith("Samples.") }
 
 $componentList = @()
 if ($component -eq "Core") {
     $componentList += $core
+} elseif ($component -eq "Visualizer") {
+    $componentList += $visualizer
 } elseif ($component -eq "Integration") {
     $componentList += $integration
 } elseif ($component -eq "Samples") {
     $componentList += $samples
 } elseif ($component -eq "All") {
     $componentList += $core
+    $componentList += $visualizer
     $componentList += $integration
     $componentList += $samples
 } else {
@@ -176,7 +185,7 @@ if ($component -eq "Core") {
 Import-Module .\tools\build\psake.psm1
 $baseDir = Resolve-Path .
 $componentList | % {
-    Invoke-psake .\tools\build\default.ps1 $target -properties @{version=$version;configuration=$configuration;baseDir=$baseDir} -parameters @{component=$components[$_]}
+    Invoke-psake .\tools\build\psakefile.ps1 $target -properties @{version=$version;configuration=$configuration;baseDir=$baseDir} -parameters @{component=$components[$_]}
     if (-not $psake.build_success) {
         break
     }
