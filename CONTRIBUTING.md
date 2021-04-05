@@ -15,7 +15,7 @@ Contributions to NRules, whether new features or bug fixes, are welcome and are 
 
 ### Questions
 
-If you just want to ask a question about how to use NRules, instead of creating an issue consider asking your question on [Stack Overflow](http://stackoverflow.com/questions/tagged/nrules), [Discussion Group](http://groups.google.com/group/nrules-users) or [Gitter Chat](https://gitter.im/NRules/NRules).
+If you just want to ask a question about how to use NRules, instead of creating an issue, consider asking your question on [Stack Overflow](https://stackoverflow.com/questions/tagged/nrules), starting a discussion on GitHub [Discussions](https://github.com/NRules/NRules/discussions) or kicking off a conversation on the [Gitter Chat](https://gitter.im/NRules/NRules).
 
 ## License
 
