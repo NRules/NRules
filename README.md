@@ -17,7 +17,7 @@ Use the following resources to get up and running with NRules.
 - [Getting Started Guide](https://github.com/NRules/NRules/wiki/Getting-Started)
 - [Wiki Documentation](https://github.com/NRules/NRules/wiki)
 - [API Documentation](http://nrules.net/api/index.html)
-- [Discussion Group](http://groups.google.com/group/nrules-users)
+- [Discussions](https://github.com/NRules/NRules/discussions)
 - [Stack Overflow](http://stackoverflow.com/questions/tagged/nrules)
 - [Gitter Chat](https://gitter.im/NRules/NRules)
 
