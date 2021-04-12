@@ -46,7 +46,7 @@ namespace NRules.RuleModel.Builders
         public PatternBuilder BasePattern(Type type)
         {
             AssertSingleSource();
-            var declaration = new Declaration(type, DeclarationName(null));
+            var declaration = Element.Declaration(type, DeclarationName(null));
             var builder = new PatternBuilder(declaration);
             _sourceBuilder = builder;
             return builder;
@@ -78,7 +78,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type)
         {
-            var declaration = new Declaration(type, DeclarationName(null));
+            var declaration = Element.Declaration(type, DeclarationName(null));
             var patternBuilder = new PatternBuilder(declaration);
             _patternBuilders.Add(patternBuilder);
             return patternBuilder;

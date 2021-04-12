@@ -125,12 +125,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static DependencyElement Dependency(Type type, string name)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type), "Dependency type not provided");
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException(nameof(name), "Dependency name not provided");
-
-            var declaration = new Declaration(type, name);
+            var declaration = Declaration(type, name);
             var element = Dependency(declaration, type);
             return element;
         }
@@ -319,12 +314,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static PatternElement Pattern(Type type, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, RuleElement source)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type), "Pattern type not provided");
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException(nameof(name), "Pattern name not provided");
-
-            var declaration = new Declaration(type, name);
+            var declaration = Declaration(type, name);
             var element = Pattern(declaration, expressions, source);
             return element;
         }
@@ -356,12 +346,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static PatternElement Pattern(Type type, string name, IEnumerable<NamedExpressionElement> expressions, RuleElement source)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type), "Pattern type not provided");
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException(nameof(name), "Pattern name not provided");
-
-            var declaration = new Declaration(type, name);
+            var declaration = Declaration(type, name);
             var element = Pattern(declaration, expressions, source);
             return element;
         }
@@ -401,6 +386,40 @@ namespace NRules.RuleModel.Builders
 
             var element = new NamedExpressionElement(PatternElement.ConditionName, expression);
             return element;
+        }
+
+        /// <summary>
+        /// Creates a named expression element that can be used by other rule elements.
+        /// </summary>
+        /// <param name="name">Name of the expression.</param>
+        /// <param name="expression">The actual expression that this element represents.</param>
+        /// <returns>Created element.</returns>
+        public static NamedExpressionElement Expression(string name, LambdaExpression expression)
+        {
+            if (name == null)
+                throw new ArgumentNullException(nameof(name), "Expression name not provided");
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression), "Expression not provided");
+
+            var element = new NamedExpressionElement(name, expression);
+            return element;
+        }
+
+        /// <summary>
+        /// Creates a declaration with a given name and type to be used in other rule elements.
+        /// </summary>
+        /// <param name="type">Declaration type.</param>
+        /// <param name="name">Declaration name.</param>
+        /// <returns>Created declaration.</returns>
+        public static Declaration Declaration(Type type, string name)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type), "Declaration type not provided");
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name), "Declaration name not provided");
+
+            var declaration = new Declaration(type, name);
+            return declaration;
         }
 
         /// <summary>
@@ -528,7 +547,7 @@ namespace NRules.RuleModel.Builders
                 resultType = enumerableType.MakeGenericType(source.ValueType);
             }
 
-            var expressions = new List<KeyValuePair<string, LambdaExpression>>();
+            var expressions = Array.Empty<KeyValuePair<string, LambdaExpression>>();
             var element = Aggregate(resultType, AggregateElement.CollectName, expressions, source);
             return element;
         }

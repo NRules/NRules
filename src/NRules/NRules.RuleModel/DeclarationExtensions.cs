@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using NRules.RuleModel.Builders;
 
 namespace NRules.RuleModel
 {
@@ -21,7 +22,7 @@ namespace NRules.RuleModel
         /// <returns>Rule element declaration.</returns>
         public static Declaration ToDeclaration(this ParameterExpression parameter)
         {
-            return new Declaration(parameter.Type, parameter.Name);
+            return Element.Declaration(parameter.Type, parameter.Name);
         }
     }
 }

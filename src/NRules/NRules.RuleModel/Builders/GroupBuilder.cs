@@ -70,7 +70,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
-            var declaration = new Declaration(type, DeclarationName(name));
+            var declaration = Element.Declaration(type, DeclarationName(name));
             return Pattern(declaration);
         }
 
