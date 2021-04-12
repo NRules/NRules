@@ -392,14 +392,14 @@ namespace NRules.RuleModel.Builders
         /// </summary>
         /// <param name="expression">Condition expression. It must have <c>Boolean</c> as its return type.</param>
         /// <returns>Created element.</returns>
-        public static ConditionElement Condition(LambdaExpression expression)
+        public static NamedExpressionElement Condition(LambdaExpression expression)
         {
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression), "Condition expression not provided");
             if (expression.ReturnType != typeof(bool))
                 throw new ArgumentException($"Pattern condition must return a Boolean result. Condition={expression}");
 
-            var element = new ConditionElement(expression);
+            var element = new NamedExpressionElement(PatternElement.ConditionName, expression);
             return element;
         }
 

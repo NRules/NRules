@@ -24,10 +24,6 @@
         {
         }
 
-        protected internal virtual void VisitCondition(TContext context, ConditionElement element)
-        {
-        }
-
         protected internal virtual void VisitAggregate(TContext context, AggregateElement element)
         {
             foreach (var expression in element.Expressions)

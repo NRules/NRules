@@ -95,10 +95,6 @@ namespace NRules.RuleModel.Builders
             }
         }
 
-        protected internal override void VisitCondition(Context context, ConditionElement element)
-        {
-        }
-
         protected internal override void VisitAction(Context context, ActionElement element)
         {
         }
