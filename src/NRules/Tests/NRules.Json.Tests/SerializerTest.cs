@@ -18,6 +18,7 @@ namespace NRules.Json.Tests
             //Arrange
             var rule = BuildTestRule();
             var options = JsonOptionsFactory.Create();
+            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
             //Act
             var jsonString = JsonSerializer.Serialize(rule, options);

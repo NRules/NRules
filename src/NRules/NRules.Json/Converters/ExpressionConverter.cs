@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+using static NRules.Json.JsonUtilities;
+
 namespace NRules.Json.Converters
 {
     internal class ExpressionConverter : JsonConverter<Expression>
@@ -19,7 +21,7 @@ namespace NRules.Json.Converters
 
             reader.Read();
             if (reader.TokenType != JsonTokenType.PropertyName && 
-                reader.GetString() != nameof(Expression.NodeType)) throw new JsonException();
+                !JsonNameConvertEquals(nameof(Expression.NodeType), reader.GetString(), options)) throw new JsonException();
             reader.Read();
             if (!Enum.TryParse(reader.GetString(), out ExpressionType nodeType)) throw new JsonException();
 
@@ -41,7 +43,7 @@ namespace NRules.Json.Converters
         public override void Write(Utf8JsonWriter writer, Expression value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            writer.WriteString(nameof(value.NodeType), value.NodeType.ToString());
+            writer.WriteString(JsonName(nameof(value.NodeType), options), value.NodeType.ToString());
 
             if (value is LambdaExpression le)
                 WriteLambda(writer, options, le);
@@ -66,18 +68,18 @@ namespace NRules.Json.Converters
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = reader.GetString();
+                var propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(LambdaExpression.Type))
+                if (JsonNameEquals(propertyName, nameof(LambdaExpression.Type), options))
                 {
                     type = JsonSerializer.Deserialize<Type>(ref reader, options);
                 }
-                else if (propertyName == nameof(LambdaExpression.Body))
+                else if (JsonNameEquals(propertyName, nameof(LambdaExpression.Body), options))
                 {
                     body = JsonSerializer.Deserialize<Expression>(ref reader, options);
                 }
-                else if (propertyName == nameof(LambdaExpression.Parameters))
+                else if (JsonNameEquals(propertyName, nameof(LambdaExpression.Parameters), options))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
 
@@ -99,13 +101,13 @@ namespace NRules.Json.Converters
 
         private void WriteLambda(Utf8JsonWriter writer, JsonSerializerOptions options, LambdaExpression value)
         {
-            writer.WritePropertyName(nameof(value.Type));
+            writer.WritePropertyName(JsonName(nameof(value.Type), options));
             JsonSerializer.Serialize(writer, value.Type, options);
 
-            writer.WritePropertyName(nameof(value.Body));
+            writer.WritePropertyName(JsonName(nameof(value.Body), options));
             JsonSerializer.Serialize(writer, value.Body, options);
 
-            writer.WriteStartArray(nameof(value.Parameters));
+            writer.WriteStartArray(JsonName(nameof(value.Parameters), options));
             foreach (var parameter in value.Parameters)
             {
                 JsonSerializer.Serialize(writer, parameter, options);
@@ -121,14 +123,14 @@ namespace NRules.Json.Converters
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = reader.GetString();
+                var propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(ParameterExpression.Name))
+                if (JsonNameEquals(propertyName, nameof(ParameterExpression.Name), options))
                 {
                     name = reader.GetString();
                 }
-                else if (propertyName == nameof(ParameterExpression.Type))
+                else if (JsonNameEquals(propertyName, nameof(ParameterExpression.Type), options))
                 {
                     type = JsonSerializer.Deserialize<Type>(ref reader, options);
                 }
@@ -139,9 +141,9 @@ namespace NRules.Json.Converters
 
         private void WriteParameter(Utf8JsonWriter writer, JsonSerializerOptions options, ParameterExpression value)
         {
-            writer.WriteString(nameof(value.Name), value.Name);
+            writer.WriteString(JsonName(nameof(value.Name), options), value.Name);
             
-            writer.WritePropertyName(nameof(value.Type));
+            writer.WritePropertyName(JsonName(nameof(value.Type), options));
             JsonSerializer.Serialize(writer, value.Type, options);
         }
 
@@ -155,22 +157,22 @@ namespace NRules.Json.Converters
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = reader.GetString();
+                var propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(MemberExpression.Expression))
+                if (JsonNameEquals(propertyName, nameof(MemberExpression.Expression), options))
                 {
                     expression = JsonSerializer.Deserialize<Expression>(ref reader, options);
                 }
-                else if (propertyName == nameof(MemberExpression.Member.MemberType))
+                else if (JsonNameEquals(propertyName, nameof(MemberExpression.Member.MemberType), options))
                 {
                     Enum.TryParse(reader.GetString(), out memberType);
                 }
-                else if (propertyName == nameof(MemberExpression.Member.Name))
+                else if (JsonNameEquals(propertyName, nameof(MemberExpression.Member.Name), options))
                 {
                     name = reader.GetString();
                 }
-                else if (propertyName == nameof(MemberExpression.Member.DeclaringType))
+                else if (JsonNameEquals(propertyName, nameof(MemberExpression.Member.DeclaringType), options))
                 {
                     declaringType = JsonSerializer.Deserialize<Type>(ref reader, options);
                 }
@@ -178,9 +180,9 @@ namespace NRules.Json.Converters
 
             MemberInfo member;
             if (memberType == MemberTypes.Field)
-                member = declaringType.GetField(name);
+                member = declaringType!.GetField(name!);
             else if (memberType == MemberTypes.Property)
-                member = declaringType.GetProperty(name);
+                member = declaringType!.GetProperty(name!);
             else
                 throw new NotSupportedException($"MemberType={memberType}");
 
@@ -189,12 +191,12 @@ namespace NRules.Json.Converters
 
         private void WriteMember(Utf8JsonWriter writer, JsonSerializerOptions options, MemberExpression value)
         {
-            writer.WriteString(nameof(value.Member.MemberType), value.Member.MemberType.ToString());
-            writer.WriteString(nameof(value.Member.Name), value.Member.Name);
-            writer.WritePropertyName(nameof(value.Member.DeclaringType));
+            writer.WriteString(JsonName(nameof(value.Member.MemberType), options), value.Member.MemberType.ToString());
+            writer.WriteString(JsonName(nameof(value.Member.Name), options), value.Member.Name);
+            writer.WritePropertyName(JsonName(nameof(value.Member.DeclaringType), options));
             JsonSerializer.Serialize(writer, value.Member.DeclaringType, options);
 
-            writer.WritePropertyName(nameof(value.Expression));
+            writer.WritePropertyName(JsonName(nameof(value.Expression), options));
             JsonSerializer.Serialize(writer, value.Expression, options);
         }
 
@@ -208,22 +210,22 @@ namespace NRules.Json.Converters
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = reader.GetString();
+                var propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(MethodCallExpression.Object))
+                if (JsonNameEquals(propertyName, nameof(MethodCallExpression.Object), options))
                 {
                     @object = JsonSerializer.Deserialize<Expression>(ref reader, options);
                 }
-                else if (propertyName == nameof(MethodCallExpression.Method.Name))
+                else if (JsonNameEquals(propertyName, nameof(MethodCallExpression.Method.Name), options))
                 {
                     name = reader.GetString();
                 }
-                else if (propertyName == nameof(MethodCallExpression.Method.DeclaringType))
+                else if (JsonNameEquals(propertyName, nameof(MethodCallExpression.Method.DeclaringType), options))
                 {
                     declaringType = JsonSerializer.Deserialize<Type>(ref reader, options);
                 }
-                else if (propertyName == nameof(MethodCallExpression.Arguments))
+                else if (JsonNameEquals(propertyName, nameof(MethodCallExpression.Arguments), options))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
 
@@ -242,21 +244,25 @@ namespace NRules.Json.Converters
 
         private void WriteMethodCall(Utf8JsonWriter writer, JsonSerializerOptions options, MethodCallExpression value)
         {
-            writer.WriteString(nameof(value.Method.Name), value.Method.Name);
-            writer.WritePropertyName(nameof(value.Method.DeclaringType));
+            writer.WriteString(JsonName(nameof(value.Method.Name), options), value.Method.Name);
+            writer.WritePropertyName(JsonName(nameof(value.Method.DeclaringType), options));
             JsonSerializer.Serialize(writer, value.Method.DeclaringType, options);
 
             if (value.Object != null)
             {
-                writer.WritePropertyName(nameof(value.Object));
+                writer.WritePropertyName(JsonName(nameof(value.Object), options));
                 JsonSerializer.Serialize(writer, value.Object, options);
             }
 
-            writer.WriteStartArray(nameof(value.Arguments));
-            foreach (var argument in value.Arguments)
+            if (value.Arguments.Any())
             {
-                JsonSerializer.Serialize(writer, argument, options);
+                writer.WriteStartArray(JsonName(nameof(value.Arguments), options));
+                foreach (var argument in value.Arguments)
+                {
+                    JsonSerializer.Serialize(writer, argument, options);
+                }
             }
+
             writer.WriteEndArray();
         }
     }

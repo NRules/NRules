@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
+using static NRules.Json.JsonUtilities;
+
 namespace NRules.Json.Converters
 {
     internal class NamedExpressionElementConverter : JsonConverter<NamedExpressionElement>
@@ -19,14 +21,14 @@ namespace NRules.Json.Converters
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = reader.GetString();
+                var propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(NamedExpressionElement.Name))
+                if (JsonNameEquals(propertyName, nameof(NamedExpressionElement.Name), options))
                 {
                     name = reader.GetString();
                 }
-                else if (propertyName == nameof(NamedExpressionElement.Expression))
+                else if (JsonNameEquals(propertyName, nameof(NamedExpressionElement.Expression), options))
                 {
                     expression = JsonSerializer.Deserialize<LambdaExpression>(ref reader, options);
                 }
@@ -38,8 +40,8 @@ namespace NRules.Json.Converters
         public override void Write(Utf8JsonWriter writer, NamedExpressionElement value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            writer.WriteString(nameof(NamedExpressionElement.Name), value.Name);
-            writer.WritePropertyName(nameof(NamedExpressionElement.Expression));
+            writer.WriteString(JsonName(nameof(NamedExpressionElement.Name), options), value.Name);
+            writer.WritePropertyName(JsonName(nameof(NamedExpressionElement.Expression), options));
             JsonSerializer.Serialize(writer, value.Expression, options);
             writer.WriteEndObject();
         }
@@ -57,14 +59,14 @@ namespace NRules.Json.Converters
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = reader.GetString();
+                var propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(ActionElement.ActionTrigger))
+                if (JsonNameEquals(propertyName, nameof(ActionElement.ActionTrigger), options))
                 {
                     Enum.TryParse(reader.GetString(), out trigger);
                 }
-                else if (propertyName == nameof(ActionElement.Expression))
+                else if (JsonNameEquals(propertyName, nameof(ActionElement.Expression), options))
                 {
                     expression = JsonSerializer.Deserialize<LambdaExpression>(ref reader, options);
                 }
@@ -77,8 +79,8 @@ namespace NRules.Json.Converters
         {
             writer.WriteStartObject();
             if (value.ActionTrigger != ActionElement.DefaultTrigger)
-                writer.WriteString(nameof(ActionElement.ActionTrigger), value.ActionTrigger.ToString()); 
-            writer.WritePropertyName(nameof(ActionElement.Expression));
+                writer.WriteString(JsonName(nameof(ActionElement.ActionTrigger), options), value.ActionTrigger.ToString()); 
+            writer.WritePropertyName(JsonName(nameof(ActionElement.Expression), options));
             JsonSerializer.Serialize(writer, value.Expression, options);
             writer.WriteEndObject();
         }

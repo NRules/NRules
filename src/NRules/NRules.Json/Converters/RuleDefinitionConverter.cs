@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
+using static NRules.Json.JsonUtilities;
+
 namespace NRules.Json.Converters
 {
     internal class RuleDefinitionConverter : JsonConverter<IRuleDefinition>
@@ -29,26 +31,26 @@ namespace NRules.Json.Converters
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
 
-                string propertyName = reader.GetString();
+                string propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(IRuleDefinition.Name))
+                if (JsonNameEquals(propertyName, nameof(IRuleDefinition.Name), options))
                 {
                     name = reader.GetString();
                 }
-                else if (propertyName == nameof(IRuleDefinition.Description))
+                else if (JsonNameEquals(propertyName, nameof(IRuleDefinition.Description), options))
                 {
                     description = reader.GetString();
                 }
-                else if (propertyName == nameof(IRuleDefinition.Priority))
+                else if (JsonNameEquals(propertyName, nameof(IRuleDefinition.Priority), options))
                 {
                     priority = reader.GetInt32();
                 }
-                else if (propertyName == nameof(IRuleDefinition.Repeatability))
+                else if (JsonNameEquals(propertyName, nameof(IRuleDefinition.Repeatability), options))
                 {
                     Enum.TryParse(reader.GetString(), out repeatability);
                 }
-                else if (propertyName == nameof(IRuleDefinition.Tags))
+                else if (JsonNameEquals(propertyName, nameof(IRuleDefinition.Tags), options))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
                     while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
@@ -56,7 +58,7 @@ namespace NRules.Json.Converters
                         tags.Add(reader.GetString());
                     }
                 }
-                else if (propertyName == nameof(IRuleDefinition.Properties))
+                else if (JsonNameEquals(propertyName, nameof(IRuleDefinition.Properties), options))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
                     while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
@@ -64,11 +66,11 @@ namespace NRules.Json.Converters
                         properties.Add(JsonSerializer.Deserialize<RuleProperty>(ref reader, options));
                     }
                 }
-                else if (propertyName == nameof(IRuleDefinition.LeftHandSide))
+                else if (JsonNameEquals(propertyName, nameof(IRuleDefinition.LeftHandSide), options))
                 {
                     lhs = JsonSerializer.Deserialize<GroupElement>(ref reader, options);
                 }
-                else if (propertyName == nameof(DependencyGroupElement.Dependencies))
+                else if (JsonNameEquals(propertyName, nameof(DependencyGroupElement.Dependencies), options))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
 
@@ -78,7 +80,7 @@ namespace NRules.Json.Converters
                         dependencies.Add(dependency);
                     }
                 }
-                else if (propertyName == nameof(FilterGroupElement.Filters))
+                else if (JsonNameEquals(propertyName, nameof(FilterGroupElement.Filters), options))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
                     
@@ -88,7 +90,7 @@ namespace NRules.Json.Converters
                         filters.Add(filter);
                     }
                 }
-                else if (propertyName == nameof(IRuleDefinition.RightHandSide))
+                else if (JsonNameEquals(propertyName, nameof(IRuleDefinition.RightHandSide), options))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
 
@@ -110,15 +112,15 @@ namespace NRules.Json.Converters
         {
             writer.WriteStartObject();
 
-            writer.WriteString(nameof(IRuleDefinition.Name), value.Name);
+            writer.WriteString(JsonName(nameof(IRuleDefinition.Name), options), value.Name);
             if (!string.IsNullOrEmpty(value.Description))
-                writer.WriteString(nameof(IRuleDefinition.Description), value.Description);
-            writer.WriteNumber(nameof(IRuleDefinition.Priority), value.Priority);
-            writer.WriteString(nameof(IRuleDefinition.Repeatability), value.Repeatability.ToString());
+                writer.WriteString(JsonName(nameof(IRuleDefinition.Description), options), value.Description);
+            writer.WriteNumber(JsonName(nameof(IRuleDefinition.Priority), options), value.Priority);
+            writer.WriteString(JsonName(nameof(IRuleDefinition.Repeatability), options), value.Repeatability.ToString());
 
             if (value.Tags.Any())
             {
-                writer.WriteStartArray(nameof(IRuleDefinition.Tags));
+                writer.WriteStartArray(JsonName(nameof(IRuleDefinition.Tags), options));
                 foreach (var tag in value.Tags)
                 {
                     writer.WriteStringValue(tag);
@@ -128,7 +130,7 @@ namespace NRules.Json.Converters
 
             if (value.Properties.Any())
             {
-                writer.WriteStartArray(nameof(IRuleDefinition.Properties));
+                writer.WriteStartArray(JsonName(nameof(IRuleDefinition.Properties), options));
                 foreach (var property in value.Properties)
                 {
                     JsonSerializer.Serialize(writer, property, options);
@@ -138,7 +140,7 @@ namespace NRules.Json.Converters
 
             if (value.DependencyGroup.Dependencies.Any())
             {
-                writer.WriteStartArray(nameof(DependencyGroupElement.Dependencies));
+                writer.WriteStartArray(JsonName(nameof(DependencyGroupElement.Dependencies), options));
                 foreach (var dependencyElement in value.DependencyGroup.Dependencies)
                 {
                     JsonSerializer.Serialize(writer, dependencyElement, options);
@@ -146,12 +148,12 @@ namespace NRules.Json.Converters
                 writer.WriteEndArray();
             }
 
-            writer.WritePropertyName(nameof(IRuleDefinition.LeftHandSide));
+            writer.WritePropertyName(JsonName(nameof(IRuleDefinition.LeftHandSide), options));
             JsonSerializer.Serialize(writer, value.LeftHandSide, options);
             
             if (value.FilterGroup.Filters.Any())
             {
-                writer.WriteStartArray(nameof(FilterGroupElement.Filters));
+                writer.WriteStartArray(JsonName(nameof(FilterGroupElement.Filters), options));
                 foreach (var filterElement in value.FilterGroup.Filters)
                 {
                     JsonSerializer.Serialize(writer, filterElement, options);
@@ -159,7 +161,7 @@ namespace NRules.Json.Converters
                 writer.WriteEndArray();
             }
             
-            writer.WriteStartArray(nameof(IRuleDefinition.RightHandSide));
+            writer.WriteStartArray(JsonName(nameof(IRuleDefinition.RightHandSide), options));
             foreach (var actionElement in value.RightHandSide.Actions)
             {
                 JsonSerializer.Serialize(writer, actionElement, options);

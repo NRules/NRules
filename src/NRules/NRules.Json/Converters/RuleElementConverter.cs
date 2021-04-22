@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
+using static NRules.Json.JsonUtilities;
+
 namespace NRules.Json.Converters
 {
     internal class RuleElementConverter : JsonConverter<RuleElement>
@@ -19,7 +21,7 @@ namespace NRules.Json.Converters
 
             reader.Read();
             if (reader.TokenType != JsonTokenType.PropertyName && 
-                reader.GetString() != nameof(RuleElement.ElementType)) throw new JsonException();
+                !JsonNameConvertEquals(nameof(RuleElement.ElementType), reader.GetString(), options)) throw new JsonException();
             reader.Read();
             if (!Enum.TryParse(reader.GetString(), out ElementType elementType)) throw new JsonException();
 
@@ -43,7 +45,7 @@ namespace NRules.Json.Converters
         public override void Write(Utf8JsonWriter writer, RuleElement value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            writer.WriteString(nameof(RuleElement.ElementType), value.ElementType.ToString());
+            writer.WriteString(JsonName(nameof(RuleElement.ElementType), options), value.ElementType.ToString());
 
             if (value is GroupElement ge)
                 WriteGroup(writer, options, ge);
@@ -66,10 +68,10 @@ namespace NRules.Json.Converters
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = reader.GetString();
+                var propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(GroupElement.ChildElements))
+                if (JsonNameEquals(propertyName, nameof(GroupElement.ChildElements), options))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
 
@@ -86,7 +88,7 @@ namespace NRules.Json.Converters
 
         private static void WriteGroup(Utf8JsonWriter writer, JsonSerializerOptions options, GroupElement value)
         {
-            writer.WriteStartArray(nameof(GroupElement.ChildElements));
+            writer.WriteStartArray(JsonName(nameof(GroupElement.ChildElements), options));
             foreach (var childElement in value.ChildElements)
             {
                 JsonSerializer.Serialize(writer, childElement, options);
@@ -104,18 +106,18 @@ namespace NRules.Json.Converters
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = reader.GetString();
+                var propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(Declaration.Name))
+                if (JsonNameEquals(propertyName, nameof(Declaration.Name), options))
                 {
                     name = reader.GetString();
                 }
-                else if (propertyName == nameof(Declaration.Type))
+                else if (JsonNameEquals(propertyName, nameof(Declaration.Type), options))
                 {
                     type = JsonSerializer.Deserialize<Type>(ref reader, options);
                 }
-                else if (propertyName == nameof(PatternElement.Expressions))
+                else if (JsonNameEquals(propertyName, nameof(PatternElement.Expressions), options))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
 
@@ -125,7 +127,7 @@ namespace NRules.Json.Converters
                         expressions.Add(expression);
                     }
                 }
-                else if (propertyName == nameof(PatternElement.Source))
+                else if (JsonNameEquals(propertyName, nameof(PatternElement.Source), options))
                 {
                     source = JsonSerializer.Deserialize<RuleElement>(ref reader, options);
                 }
@@ -136,12 +138,12 @@ namespace NRules.Json.Converters
 
         private static void WritePattern(Utf8JsonWriter writer, JsonSerializerOptions options, PatternElement value)
         {
-            writer.WriteString(nameof(Declaration.Name), value.Declaration.Name);
+            writer.WriteString(JsonName(nameof(Declaration.Name), options), value.Declaration.Name);
 
-            writer.WritePropertyName(nameof(Declaration.Type));
+            writer.WritePropertyName(JsonName(nameof(Declaration.Type), options));
             JsonSerializer.Serialize(writer, value.Declaration.Type, options);
 
-            writer.WritePropertyName(nameof(PatternElement.Expressions));
+            writer.WritePropertyName(JsonName(nameof(PatternElement.Expressions), options));
             writer.WriteStartArray();
             foreach (var expression in value.Expressions)
             {
@@ -151,7 +153,7 @@ namespace NRules.Json.Converters
 
             if (value.Source != null)
             {
-                writer.WritePropertyName(nameof(PatternElement.Source));
+                writer.WritePropertyName(JsonName(nameof(PatternElement.Source), options));
                 JsonSerializer.Serialize(writer, value.Source, options);
             }
         }
@@ -165,18 +167,18 @@ namespace NRules.Json.Converters
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = reader.GetString();
+                var propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(DependencyElement.Declaration.Name))
+                if (JsonNameEquals(propertyName, nameof(DependencyElement.Declaration.Name), options))
                 {
                     name = reader.GetString();
                 }
-                else if (propertyName == nameof(DependencyElement.Declaration.Type))
+                else if (JsonNameEquals(propertyName, nameof(DependencyElement.Declaration.Type), options))
                 {
                     type = JsonSerializer.Deserialize<Type>(ref reader, options);
                 }
-                else if (propertyName == nameof(DependencyElement.ServiceType))
+                else if (JsonNameEquals(propertyName, nameof(DependencyElement.ServiceType), options))
                 {
                     serviceType = JsonSerializer.Deserialize<Type>(ref reader, options);
                 }
@@ -188,12 +190,12 @@ namespace NRules.Json.Converters
         
         private void WriteDependency(Utf8JsonWriter writer, JsonSerializerOptions options, DependencyElement value)
         {
-            writer.WriteString(nameof(value.Declaration.Name), value.Declaration.Name);
-            writer.WritePropertyName(nameof(value.Declaration.Type));
+            writer.WriteString(JsonName(nameof(value.Declaration.Name), options), value.Declaration.Name);
+            writer.WritePropertyName(JsonName(nameof(value.Declaration.Type), options));
             JsonSerializer.Serialize(writer, value.Declaration.Type, options);
             if (value.ServiceType != value.Declaration.Type)
             {
-                writer.WritePropertyName(nameof(value.ServiceType));
+                writer.WritePropertyName(JsonName(nameof(value.ServiceType), options));
                 JsonSerializer.Serialize(writer, value.ServiceType, options);
             }
         }
@@ -206,14 +208,14 @@ namespace NRules.Json.Converters
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = reader.GetString();
+                var propertyName = JsonName(reader.GetString(), options);
                 reader.Read();
 
-                if (propertyName == nameof(FilterElement.FilterType))
+                if (JsonNameEquals(propertyName, nameof(FilterElement.FilterType), options))
                 {
                     Enum.TryParse(reader.GetString(), out filterType);
                 }
-                else if (propertyName == nameof(FilterElement.Expression))
+                else if (JsonNameEquals(propertyName, nameof(FilterElement.Expression), options))
                 {
                     expression = JsonSerializer.Deserialize<LambdaExpression>(ref reader, options);
                 }
@@ -224,8 +226,8 @@ namespace NRules.Json.Converters
         
         private void WriteFilter(Utf8JsonWriter writer, JsonSerializerOptions options, FilterElement value)
         {
-            writer.WriteString(nameof(value.FilterType), value.FilterType.ToString());
-            writer.WritePropertyName(nameof(value.Expression));
+            writer.WriteString(JsonName(nameof(value.FilterType), options), value.FilterType.ToString());
+            writer.WritePropertyName(JsonName(nameof(value.Expression), options));
             JsonSerializer.Serialize(writer, value.Expression, options);
         }
     }
