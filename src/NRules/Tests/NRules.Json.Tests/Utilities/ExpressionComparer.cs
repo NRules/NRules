@@ -50,7 +50,8 @@ namespace NRules.Json.Tests.Utilities
             {
                 var px = (ParameterExpression)x;
                 var py = (ParameterExpression)y;
-                return rootX.Parameters.IndexOf(px) == rootY.Parameters.IndexOf(py);
+                return rootX.Parameters.IndexOf(px) == rootY.Parameters.IndexOf(py) &&
+                       px.Name == py.Name;
             }
             if (x is MethodCallExpression)
             {
@@ -118,26 +119,26 @@ namespace NRules.Json.Tests.Utilities
             throw new NotImplementedException(x.ToString());
         }
 
-        private static bool MemberBindingCollectionsEqual(IEnumerable<MemberBinding> x, IEnumerable<MemberBinding> y,
+        private static bool MemberBindingCollectionsEqual(IReadOnlyCollection<MemberBinding> x, IReadOnlyCollection<MemberBinding> y,
             LambdaExpression rootX, LambdaExpression rootY)
         {
-            return x.Count() == y.Count()
+            return x.Count == y.Count
                    && x.Zip(y, (first, second) => new {X = first, Y = second})
                        .All(o => MemberBindingsEqual(o.X, o.Y, rootX, rootY));
         }
 
-        private static bool ElementInitCollectionsEqual(IEnumerable<ElementInit> x, IEnumerable<ElementInit> y,
+        private static bool ElementInitCollectionsEqual(IReadOnlyCollection<ElementInit> x, IReadOnlyCollection<ElementInit> y,
             LambdaExpression rootX, LambdaExpression rootY)
         {
-            return x.Count() == y.Count()
+            return x.Count == y.Count
                    && x.Zip(y, (first, second) => new {X = first, Y = second})
                        .All(o => ElementInitsEqual(o.X, o.Y, rootX, rootY));
         }
 
-        private static bool CollectionsEqual(IEnumerable<Expression> x, IEnumerable<Expression> y,
+        private static bool CollectionsEqual(IReadOnlyCollection<Expression> x, IReadOnlyCollection<Expression> y,
             LambdaExpression rootX, LambdaExpression rootY)
         {
-            return x.Count() == y.Count()
+            return x.Count == y.Count
                    && x.Zip(y, (first, second) => new {X = first, Y = second})
                        .All(o => ExpressionEqual(o.X, o.Y, rootX, rootY));
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NRules.RuleModel;
 
 namespace NRules.Json.Tests.Utilities
@@ -37,13 +38,13 @@ namespace NRules.Json.Tests.Utilities
                 return a.ActionTrigger == b.ActionTrigger &&
                        ExpressionComparer.AreEqual(a.Expression, b.Expression);
             }
-            else if (x.ElementType == ElementType.ActionGroup)
+            if (x.ElementType == ElementType.ActionGroup)
             {
                 var a = (ActionGroupElement) x;
                 var b = (ActionGroupElement) y;
                 return AreEqual(a.Actions, b.Actions);
             }
-            else if (x.ElementType == ElementType.Aggregate)
+            if (x.ElementType == ElementType.Aggregate)
             {
                 var a = (AggregateElement) x;
                 var b = (AggregateElement) y;
@@ -52,65 +53,65 @@ namespace NRules.Json.Tests.Utilities
                        a.CustomFactoryType == b.CustomFactoryType &&
                        AreEqual(a.Source, b.Source);
             }
-            else if (x.ElementType == ElementType.And ||
-                     x.ElementType == ElementType.Or)
+            if (x.ElementType == ElementType.And ||
+                x.ElementType == ElementType.Or)
             {
                 var a = (GroupElement) x;
                 var b = (GroupElement) y;
                 return AreEqual(a.ChildElements, b.ChildElements);
             }
-            else if (x.ElementType == ElementType.Binding)
+            if (x.ElementType == ElementType.Binding)
             {
                 var a = (BindingElement) x;
                 var b = (BindingElement) y;
                 return ExpressionComparer.AreEqual(a.Expression, b.Expression);
             }
-            else if (x.ElementType == ElementType.Dependency)
+            if (x.ElementType == ElementType.Dependency)
             {
                 var a = (DependencyElement) x;
                 var b = (DependencyElement) y;
                 return a.ServiceType == b.ServiceType &&
                        AreEqual(a.Declaration, b.Declaration);
             }
-            else if (x.ElementType == ElementType.DependencyGroup)
+            if (x.ElementType == ElementType.DependencyGroup)
             {
                 var a = (DependencyGroupElement) x;
                 var b = (DependencyGroupElement) y;
                 return AreEqual(a.Dependencies, b.Dependencies);
             }
-            else if (x.ElementType == ElementType.Exists)
+            if (x.ElementType == ElementType.Exists)
             {
                 var a = (ExistsElement) x;
                 var b = (ExistsElement) y;
                 return AreEqual(a.Source, b.Source);
             }
-            else if (x.ElementType == ElementType.Filter)
+            if (x.ElementType == ElementType.Filter)
             {
                 var a = (FilterElement) x;
                 var b = (FilterElement) y;
                 return a.FilterType == b.FilterType &&
                        ExpressionComparer.AreEqual(a.Expression, b.Expression);
             }
-            else if (x.ElementType == ElementType.FilterGroup)
+            if (x.ElementType == ElementType.FilterGroup)
             {
                 var a = (FilterGroupElement) x;
                 var b = (FilterGroupElement) y;
                 return AreEqual(a.Filters, b.Filters);
             }
-            else if (x.ElementType == ElementType.ForAll)
+            if (x.ElementType == ElementType.ForAll)
             {
                 var a = (ForAllElement) x;
                 var b = (ForAllElement) y;
                 return AreEqual(a.BasePattern, b.BasePattern) &&
                        AreEqual(a.Patterns, b.Patterns);
             }
-            else if (x.ElementType == ElementType.Not)
+            if (x.ElementType == ElementType.Not)
             {
                 var a = (NotElement) x;
                 var b = (NotElement) y;
                 return AreEqual(a.Source, b.Source);
             }
-            else if (x.ElementType == ElementType.Pattern)
+            if (x.ElementType == ElementType.Pattern)
             {
                 var a = (PatternElement) x;
                 var b = (PatternElement) y;
@@ -118,48 +119,22 @@ namespace NRules.Json.Tests.Utilities
                        AreEqual(a.Declaration, b.Declaration) &&
                        AreEqual(a.Source, b.Source);
             }
-            else if (x.ElementType == ElementType.NamedExpression)
+            if (x.ElementType == ElementType.NamedExpression)
             {
                 var a = (NamedExpressionElement) x;
                 var b = (NamedExpressionElement) y;
                 return a.Name == b.Name &&
                        ExpressionComparer.AreEqual(a.Expression, b.Expression);
             }
-            else
-            {
-                throw new ArgumentOutOfRangeException($"ElementType={x.ElementType}");
-            }
+         
+            throw new ArgumentOutOfRangeException($"ElementType={x.ElementType}");
         }
 
         private static bool AreEqual(IEnumerable<RuleElement> x, IEnumerable<RuleElement> y)
         {
-            if (ReferenceEquals(x, y)) return true;
-            if (x == null || y == null) return false;
-
-            using var enumerator1 = x.GetEnumerator();
-            using var enumerator2 = y.GetEnumerator();
-
-            while (true)
-            {
-                bool hasNext1 = enumerator1.MoveNext();
-                bool hasNext2 = enumerator2.MoveNext();
-
-                if (hasNext1 && hasNext2)
-                {
-                    if (!AreEqual(enumerator1.Current, enumerator2.Current))
-                        return false;
-                }
-                else if (hasNext1 || hasNext2)
-                {
-                    return false;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return true;
+            return x.Count() == y.Count()
+                   && x.Zip(y, (first, second) => new {X = first, Y = second})
+                       .All(o => AreEqual(o.X, o.Y));
         }
 
         private static bool AreEqual(Declaration x, Declaration y)
