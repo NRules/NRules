@@ -261,9 +261,8 @@ namespace NRules.Json.Converters
                 {
                     JsonSerializer.Serialize(writer, argument, options);
                 }
+                writer.WriteEndArray();
             }
-
-            writer.WriteEndArray();
         }
     }
 }
