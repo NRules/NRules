@@ -9,5 +9,15 @@
         public static void DoSomething(FactType1 fact1)
         {
         }
+
+        public static string Transform(this string value)
+        {
+            return value;
+        }
+
+        public static string Transform(this string value, int factor)
+        {
+            return value;
+        }
     }
 }

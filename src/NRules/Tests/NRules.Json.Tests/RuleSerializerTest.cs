@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq.Expressions;
 using System.Text.Json;
 using NRules.Json.Tests.TestAssets;
@@ -10,27 +9,24 @@ using Xunit;
 
 namespace NRules.Json.Tests
 {
-    public class SerializerTest
+    public class RuleSerializerTest
     {
-        [Fact]
-        public void RoundTrip()
+        private readonly JsonSerializerOptions _options;
+
+        public RuleSerializerTest()
         {
-            //Arrange
-            var rule = BuildTestRule();
-            var options = JsonOptionsFactory.Create();
-            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-
-            //Act
-            var jsonString = JsonSerializer.Serialize(rule, options);
-            //File.WriteAllText(@"C:\temp\rule.json", jsonString);
-            var ruleClone = JsonSerializer.Deserialize<IRuleDefinition>(jsonString, options);
-
-            //Assert
-            Assert.True(RuleDefinitionComparer.AreEqual(rule, ruleClone));
+            _options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+            RuleSerializer.Setup(_options);
         }
 
-        private IRuleDefinition BuildTestRule()
+        [Fact]
+        public void Roundtrip_SimpleMatchRule_Equals()
         {
+            //Arrange
             var builder = new RuleBuilder();
             builder.Name("Test Rule");
             builder.Description("My test rule");
@@ -40,7 +36,7 @@ namespace NRules.Json.Tests
             builder.Tag("Test");
             builder.Tag("Debug");
 
-            builder.Property("ClrType", typeof(SerializerTest));
+            builder.Property("ClrType", typeof(RuleSerializerTest));
 
             builder.Dependencies()
                 .Dependency(typeof(ITestService), "service");
@@ -58,8 +54,21 @@ namespace NRules.Json.Tests
 
             Expression<Action<IContext, FactType1, ITestService>> action = (ctx, fact1, service) => Calculations.DoSomething(fact1, service);
             builder.RightHandSide().Action(action);
+            var original = builder.Build();
 
-            return builder.Build();
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+        }
+
+        private IRuleDefinition Roundtrip(IRuleDefinition original)
+        {
+            var jsonString = JsonSerializer.Serialize(original, _options);
+            //System.IO.File.WriteAllText(@"C:\temp\rule.json", jsonString);
+            var deserialized = JsonSerializer.Deserialize<IRuleDefinition>(jsonString, _options);
+            return deserialized;
         }
     }
 }
