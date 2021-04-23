@@ -76,7 +76,7 @@ namespace NRules.Json.Tests
         private TExpression Roundtrip<TExpression>(TExpression original)
         {
             var jsonString = JsonSerializer.Serialize(original, _options);
-            System.IO.File.WriteAllText(@"C:\temp\expression.json", jsonString);
+            //System.IO.File.WriteAllText(@"C:\temp\expression.json", jsonString);
             var deserialized = JsonSerializer.Deserialize<TExpression>(jsonString, _options);
             return deserialized;
         }
