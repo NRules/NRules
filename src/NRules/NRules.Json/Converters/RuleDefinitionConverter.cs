@@ -17,7 +17,7 @@ namespace NRules.Json.Converters
             if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException();
 
             string name = default;
-            string description = default;
+            string description = string.Empty;
             int priority = default;
             var repeatability = RuleRepeatability.Repeatable;
             var tags = new List<string>();
