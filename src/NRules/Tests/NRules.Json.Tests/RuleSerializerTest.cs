@@ -24,7 +24,7 @@ namespace NRules.Json.Tests
         }
 
         [Fact]
-        public void Roundtrip_SimpleMatchRule_Equals()
+        public void Roundtrip_SimpleMatchRuleWithMetadata_Equals()
         {
             //Arrange
             var builder = new RuleBuilder();
@@ -38,12 +38,29 @@ namespace NRules.Json.Tests
 
             builder.Property("ClrType", typeof(RuleSerializerTest));
 
-            builder.Dependencies()
-                .Dependency(typeof(ITestService), "service");
-
             PatternBuilder fact1Pattern = builder.LeftHandSide().Pattern(typeof(FactType1), "fact1");
             Expression<Func<FactType1, bool>> fact1Condition = fact1 => fact1.BooleanProperty;
             fact1Pattern.Condition(fact1Condition);
+
+            Expression<Action<IContext, FactType1>> action = (ctx, fact1) => Calculations.DoSomething(fact1);
+            builder.RightHandSide().Action(action);
+            var original = builder.Build();
+
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+        }
+
+        [Fact]
+        public void Roundtrip_RuleWithFilter_Equals()
+        {
+            //Arrange
+            var builder = new RuleBuilder();
+            builder.Name("Test Rule");
+
+            builder.LeftHandSide().Pattern(typeof(FactType1), "fact1");
 
             Expression<Func<FactType1, bool>> filter1 = (fact1) => fact1.BooleanProperty;
             builder.Filters()
@@ -52,7 +69,55 @@ namespace NRules.Json.Tests
             builder.Filters()
                 .Filter(FilterType.KeyChange, filter2);
 
+            Expression<Action<IContext, FactType1>> action = (ctx, fact1) => Calculations.DoSomething(fact1);
+            builder.RightHandSide().Action(action);
+            var original = builder.Build();
+
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+        }
+
+        [Fact]
+        public void Roundtrip_RuleWithDependency_Equals()
+        {
+            //Arrange
+            var builder = new RuleBuilder();
+            builder.Name("Test Rule");
+
+            builder.Dependencies()
+                .Dependency(typeof(ITestService), "service");
+
+            builder.LeftHandSide().Pattern(typeof(FactType1), "fact1");
+
             Expression<Action<IContext, FactType1, ITestService>> action = (ctx, fact1, service) => Calculations.DoSomething(fact1, service);
+            builder.RightHandSide().Action(action);
+            var original = builder.Build();
+
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+        }
+        
+        [Fact]
+        public void Roundtrip_TwoFactJoinRule_Equals()
+        {
+            //Arrange
+            var builder = new RuleBuilder();
+            builder.Name("Test Rule");
+
+            builder.LeftHandSide().Pattern(typeof(FactType1), "fact1");
+            var pattern2 = builder.LeftHandSide().Pattern(typeof(FactType2), "fact2");
+            Expression<Func<FactType1, FactType2, bool>> condition21 = (fact1, fact2) 
+                => fact2.JoinProperty == fact1;
+            pattern2.Condition(condition21);
+
+            Expression<Action<IContext, FactType1, FactType2>> action = (ctx, fact1, fact2) 
+                => Calculations.DoSomething(fact1, fact2);
             builder.RightHandSide().Action(action);
             var original = builder.Build();
 
