@@ -34,12 +34,15 @@ namespace NRules.Json.Converters
                 value = ReadMember(ref reader, options);
             else if (nodeType == ExpressionType.Call)
                 value = ReadMethodCall(ref reader, options);
+            else if (nodeType == ExpressionType.Equal ||
+                     nodeType == ExpressionType.Add)
+                value = ReadBinaryExpression(ref reader, options, nodeType);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
 
             return value;
         }
-        
+
         public override void Write(Utf8JsonWriter writer, Expression value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
@@ -53,6 +56,8 @@ namespace NRules.Json.Converters
                 WriteMember(writer, options, me);
             else if (value is MethodCallExpression mce)
                 WriteMethodCall(writer, options, mce);
+            else if (value is BinaryExpression be)
+                WriteBinaryExpression(writer, options, be);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
 
@@ -263,6 +268,45 @@ namespace NRules.Json.Converters
                 }
                 writer.WriteEndArray();
             }
+        }
+
+        private Expression ReadBinaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options, ExpressionType expressionType)
+        {
+            Expression left = default;
+            Expression right = default;
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, nameof(BinaryExpression.Left), options))
+                {
+                    left = JsonSerializer.Deserialize<Expression>(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(BinaryExpression.Right), options))
+                {
+                    right = JsonSerializer.Deserialize<Expression>(ref reader, options);
+                }
+            }
+
+            switch (expressionType)
+            {
+                case ExpressionType.Equal:
+                    return Expression.Equal(left!, right!);
+                default:
+                    throw new NotSupportedException($"Unrecognized binary expression: {expressionType}");
+            }
+        }
+
+        private void WriteBinaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BinaryExpression value)
+        {
+            writer.WritePropertyName(JsonName(nameof(BinaryExpression.Left), options));
+            JsonSerializer.Serialize(writer, value.Left, options);
+            
+            writer.WritePropertyName(JsonName(nameof(BinaryExpression.Right), options));
+            JsonSerializer.Serialize(writer, value.Right, options);
         }
     }
 }

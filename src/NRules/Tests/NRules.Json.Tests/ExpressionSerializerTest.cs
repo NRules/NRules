@@ -73,6 +73,19 @@ namespace NRules.Json.Tests
             Assert.True(ExpressionComparer.AreEqual(original, deserialized));
         }
 
+        [Fact]
+        public void Roundtrip_BinaryExpressionEquals_Equals()
+        {
+            //Arrange
+            Expression<Func<string, string, bool>> original = (s1, s2) => s1 == s2;
+
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(ExpressionComparer.AreEqual(original, deserialized));
+        }
+
         private TExpression Roundtrip<TExpression>(TExpression original)
         {
             var jsonString = JsonSerializer.Serialize(original, _options);
