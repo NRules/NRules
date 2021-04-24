@@ -128,6 +128,48 @@ namespace NRules.Json.Tests
             Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
         }
 
+        [Fact]
+        public void Roundtrip_ExistsRule_Equals()
+        {
+            //Arrange
+            var builder = new RuleBuilder();
+            builder.Name("Test Rule");
+
+            builder.LeftHandSide().Exists().Pattern(typeof(FactType1), "fact1");
+
+            Expression<Action<IContext>> action = ctx 
+                => Calculations.DoSomething();
+            builder.RightHandSide().Action(action);
+            var original = builder.Build();
+
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+        }
+
+        [Fact]
+        public void Roundtrip_NotRule_Equals()
+        {
+            //Arrange
+            var builder = new RuleBuilder();
+            builder.Name("Test Rule");
+
+            builder.LeftHandSide().Not().Pattern(typeof(FactType1), "fact1");
+
+            Expression<Action<IContext>> action = ctx 
+                => Calculations.DoSomething();
+            builder.RightHandSide().Action(action);
+            var original = builder.Build();
+
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+        }
+
         private IRuleDefinition Roundtrip(IRuleDefinition original)
         {
             var jsonString = JsonSerializer.Serialize(original, _options);

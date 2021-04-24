@@ -30,6 +30,10 @@ namespace NRules.Json.Converters
                 value = ReadGroup(ref reader, options, GroupType.And);
             else if (elementType == ElementType.Or)
                 value = ReadGroup(ref reader, options, GroupType.Or);
+            else if (elementType == ElementType.Exists)
+                value = ReadExists(ref reader, options);
+            else if (elementType == ElementType.Not)
+                value = ReadNot(ref reader, options);
             else if (elementType == ElementType.Pattern)
                 value = ReadPattern(ref reader, options);
             else if (elementType == ElementType.Dependency)
@@ -49,6 +53,10 @@ namespace NRules.Json.Converters
 
             if (value is GroupElement ge)
                 WriteGroup(writer, options, ge);
+            else if (value is ExistsElement ee)
+                WriteExists(writer, options, ee);
+            else if (value is NotElement ne)
+                WriteNot(writer, options, ne);
             else if (value is PatternElement pe)
                 WritePattern(writer, options, pe);
             else if (value is DependencyElement de)
@@ -94,6 +102,56 @@ namespace NRules.Json.Converters
                 JsonSerializer.Serialize(writer, childElement, options);
             }
             writer.WriteEndArray();
+        }
+
+        private RuleElement ReadExists(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            RuleElement source = default;
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, nameof(ExistsElement.Source), options))
+                {
+                    source = JsonSerializer.Deserialize<RuleElement>(ref reader, options);
+                }
+            }
+
+            return Element.Exists(source);
+        }
+
+        private static void WriteExists(Utf8JsonWriter writer, JsonSerializerOptions options, ExistsElement value)
+        {
+            writer.WritePropertyName(JsonName(nameof(ExistsElement.Source), options));
+            JsonSerializer.Serialize(writer, value.Source, options);
+        }
+
+        private RuleElement ReadNot(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            RuleElement source = default;
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, nameof(NotElement.Source), options))
+                {
+                    source = JsonSerializer.Deserialize<RuleElement>(ref reader, options);
+                }
+            }
+
+            return Element.Not(source);
+        }
+
+        private static void WriteNot(Utf8JsonWriter writer, JsonSerializerOptions options, NotElement value)
+        {
+            writer.WritePropertyName(JsonName(nameof(NotElement.Source), options));
+            JsonSerializer.Serialize(writer, value.Source, options);
         }
 
         private RuleElement ReadPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)

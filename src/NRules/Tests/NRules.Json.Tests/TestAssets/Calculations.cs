@@ -2,7 +2,7 @@
 {
     public static class Calculations
     {
-        public static void DoSomething(FactType1 fact1, ITestService service)
+        public static void DoSomething()
         {
         }
         
@@ -11,6 +11,10 @@
         }
         
         public static void DoSomething(FactType1 fact1, FactType2 fact2)
+        {
+        }
+
+        public static void DoSomething(FactType1 fact1, ITestService service)
         {
         }
 
