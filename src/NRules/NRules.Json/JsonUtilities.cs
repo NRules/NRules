@@ -7,7 +7,7 @@ namespace NRules.Json
     {
         public static string JsonName(string name, JsonSerializerOptions options)
         {
-            return options.PropertyNamingPolicy?.ConvertName(name) ?? name;
+            return options?.PropertyNamingPolicy?.ConvertName(name) ?? name;
         }
 
         public static bool JsonNameConvertEquals(string expected, string actual, JsonSerializerOptions options)
@@ -17,7 +17,7 @@ namespace NRules.Json
 
         public static bool JsonNameEquals(string normalizedExpected, string actual, JsonSerializerOptions options)
         {
-            var comparisonType = options.PropertyNameCaseInsensitive
+            var comparisonType = options?.PropertyNameCaseInsensitive ?? false
                 ? StringComparison.CurrentCultureIgnoreCase
                 : StringComparison.CurrentCulture;
             return string.Equals(normalizedExpected, JsonName(actual, options), comparisonType);
