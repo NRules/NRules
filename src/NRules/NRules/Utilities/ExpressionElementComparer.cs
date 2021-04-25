@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NRules.Rete;
 using NRules.RuleModel;
 
@@ -49,37 +50,16 @@ namespace NRules.Utilities
             
             return true;
         }
-
+        
         public static bool AreEqual(
-            List<Declaration> firstDeclarations, IEnumerable<ExpressionElement> first,
-            List<Declaration> secondDeclarations, IEnumerable<ExpressionElement> second)
+            List<Declaration> firstDeclarations, IEnumerable<ExpressionElement> x,
+            List<Declaration> secondDeclarations, IEnumerable<ExpressionElement> y)
         {
-            using var enumerator1 = first.GetEnumerator();
-            using var enumerator2 = second.GetEnumerator();
-
-            while (true)
-            {
-                var hasNext1 = enumerator1.MoveNext();
-                var hasNext2 = enumerator2.MoveNext();
-
-                if (hasNext1 && hasNext2)
-                {
-                    if (!AreParameterPositionsEqual(firstDeclarations, enumerator1.Current, secondDeclarations, enumerator2.Current))
-                        return false;
-                    if (!AreEqual(enumerator1.Current, enumerator2.Current))
-                        return false;
-                }
-                else if (hasNext1 || hasNext2)
-                {
-                    return false;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            
-            return true;
+            return x.Count() == y.Count()
+                   && x.Zip(y, (first, second) => new {X = first, Y = second})
+                       .All(o => 
+                           AreParameterPositionsEqual(firstDeclarations, o.X, secondDeclarations, o.Y) && 
+                           AreEqual(o.X, o.Y));
         }
 
         private static bool AreParameterPositionsEqual(
