@@ -37,6 +37,8 @@ namespace NRules.Json.Converters
                 value = ReadNot(ref reader, options);
             else if (elementType == ElementType.Aggregate)
                 value = ReadAggregate(ref reader, options);
+            else if (elementType == ElementType.Binding)
+                value = ReadBinding(ref reader, options);
             else if (elementType == ElementType.Pattern)
                 value = ReadPattern(ref reader, options);
             else if (elementType == ElementType.Dependency)
@@ -62,6 +64,8 @@ namespace NRules.Json.Converters
                 WriteNot(writer, options, ne);
             else if (value is AggregateElement ae)
                 WriteAggregate(writer, options, ae);
+            else if (value is BindingElement be)
+                WriteBinding(writer, options, be);
             else if (value is PatternElement pe)
                 WritePattern(writer, options, pe);
             else if (value is DependencyElement de)
@@ -229,6 +233,39 @@ namespace NRules.Json.Converters
 
             writer.WritePropertyName(JsonName(nameof(AggregateElement.Source), options));
             JsonSerializer.Serialize(writer, value.Source, options);
+        }
+
+        private RuleElement ReadBinding(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            Type resultType = default;
+            LambdaExpression expression = default;
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, nameof(BindingElement.ResultType), options))
+                {
+                    resultType = JsonSerializer.Deserialize<Type>(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(BindingElement.Expression), options))
+                {
+                    expression = JsonSerializer.Deserialize<LambdaExpression>(ref reader, options);
+                }
+            }
+
+            return Element.Binding(resultType, expression);
+        }
+
+        private static void WriteBinding(Utf8JsonWriter writer, JsonSerializerOptions options, BindingElement value)
+        {
+            writer.WritePropertyName(JsonName(nameof(BindingElement.ResultType), options));
+            JsonSerializer.Serialize(writer, value.ResultType, options);
+
+            writer.WritePropertyName(JsonName(nameof(BindingElement.Expression), options));
+            JsonSerializer.Serialize(writer, value.Expression, options);
         }
 
         private RuleElement ReadPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)

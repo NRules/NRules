@@ -189,7 +189,35 @@ namespace NRules.Json.Tests
             Expression<Func<FactType1, bool>> fact1Condition = fact1 => fact1.BooleanProperty;
             fact1Pattern.Condition(fact1Condition);
 
-            Expression<Action<IContext>> action = ctx => Calculations.DoSomething();
+            Expression<Action<IContext, IEnumerable<FactType1>>> action = (ctx, factGroup)
+                => Calculations.DoSomething(factGroup);
+            builder.RightHandSide().Action(action);
+            var original = builder.Build();
+
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+        }
+
+        [Fact]
+        public void Roundtrip_BindingRule_Equals()
+        {
+            //Arrange
+            var builder = new RuleBuilder();
+            builder.Name("Test Rule");
+
+            builder.LeftHandSide().Pattern(typeof(FactType1), "fact1");
+            
+            var bindingPattern = builder.LeftHandSide().Pattern(typeof(int), "length");
+            
+            var binding = bindingPattern.Binding();
+            Expression<Func<FactType1, int>> expression = fact1 => fact1.StringProperty.Length;
+            binding.BindingExpression(expression);
+
+            Expression<Action<IContext, int>> action = (ctx, length)
+                => Calculations.DoSomething(length);
             builder.RightHandSide().Action(action);
             var original = builder.Build();
 
