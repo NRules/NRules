@@ -4,6 +4,7 @@
     {
         public bool BooleanProperty { get; set; }
         public string StringProperty { get; set; }
+        public string GroupKey { get; set; }
     }
     
     public class FactType2

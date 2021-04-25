@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text.Json;
 using NRules.Json.Tests.TestAssets;
@@ -38,7 +39,7 @@ namespace NRules.Json.Tests
 
             builder.Property("ClrType", typeof(RuleSerializerTest));
 
-            PatternBuilder fact1Pattern = builder.LeftHandSide().Pattern(typeof(FactType1), "fact1");
+            var fact1Pattern = builder.LeftHandSide().Pattern(typeof(FactType1), "fact1");
             Expression<Func<FactType1, bool>> fact1Condition = fact1 => fact1.BooleanProperty;
             fact1Pattern.Condition(fact1Condition);
 
@@ -160,6 +161,35 @@ namespace NRules.Json.Tests
 
             Expression<Action<IContext>> action = ctx 
                 => Calculations.DoSomething();
+            builder.RightHandSide().Action(action);
+            var original = builder.Build();
+
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+        }
+        
+        [Fact]
+        public void Roundtrip_AggregateRule_Equals()
+        {
+            //Arrange
+            var builder = new RuleBuilder();
+            builder.Name("Test Rule");
+
+            var factGroupPattern = builder.LeftHandSide().Pattern(typeof(IEnumerable<FactType1>), "factGroup");
+            
+            var aggregate = factGroupPattern.Aggregate();
+            Expression<Func<FactType1, string>> keySelector = fact1 => fact1.GroupKey;
+            Expression<Func<FactType1, FactType1>> elementSelector = fact1 => fact1;
+            aggregate.GroupBy(keySelector, elementSelector);
+
+            var fact1Pattern = aggregate.Pattern(typeof(FactType1), "fact1");
+            Expression<Func<FactType1, bool>> fact1Condition = fact1 => fact1.BooleanProperty;
+            fact1Pattern.Condition(fact1Condition);
+
+            Expression<Action<IContext>> action = ctx => Calculations.DoSomething();
             builder.RightHandSide().Action(action);
             var original = builder.Build();
 

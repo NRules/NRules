@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -34,6 +35,8 @@ namespace NRules.Json.Converters
                 value = ReadExists(ref reader, options);
             else if (elementType == ElementType.Not)
                 value = ReadNot(ref reader, options);
+            else if (elementType == ElementType.Aggregate)
+                value = ReadAggregate(ref reader, options);
             else if (elementType == ElementType.Pattern)
                 value = ReadPattern(ref reader, options);
             else if (elementType == ElementType.Dependency)
@@ -57,6 +60,8 @@ namespace NRules.Json.Converters
                 WriteExists(writer, options, ee);
             else if (value is NotElement ne)
                 WriteNot(writer, options, ne);
+            else if (value is AggregateElement ae)
+                WriteAggregate(writer, options, ae);
             else if (value is PatternElement pe)
                 WritePattern(writer, options, pe);
             else if (value is DependencyElement de)
@@ -153,6 +158,78 @@ namespace NRules.Json.Converters
             writer.WritePropertyName(JsonName(nameof(NotElement.Source), options));
             JsonSerializer.Serialize(writer, value.Source, options);
         }
+        
+        private RuleElement ReadAggregate(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            string name = default;
+            Type resultType = default;
+            var expressions = new List<NamedExpressionElement>();
+            PatternElement source = default;
+            Type customFactoryType = default;
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, nameof(AggregateElement.Name), options))
+                {
+                    name = reader.GetString();
+                }
+                else if (JsonNameEquals(propertyName, nameof(AggregateElement.ResultType), options))
+                {
+                    resultType = JsonSerializer.Deserialize<Type>(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(PatternElement.Expressions), options))
+                {
+                    if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
+
+                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                    {
+                        var expression = JsonSerializer.Deserialize<NamedExpressionElement>(ref reader, options);
+                        expressions.Add(expression);
+                    }
+                }
+                else if (JsonNameEquals(propertyName, nameof(AggregateElement.Source), options))
+                {
+                    source = JsonSerializer.Deserialize<PatternElement>(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(AggregateElement.CustomFactoryType), options))
+                {
+                    customFactoryType = JsonSerializer.Deserialize<Type>(ref reader, options);
+                }
+            }
+
+            return Element.Aggregate(resultType, name, expressions, source, customFactoryType);
+        }
+
+        private static void WriteAggregate(Utf8JsonWriter writer, JsonSerializerOptions options, AggregateElement value)
+        {
+            writer.WriteString(JsonName(nameof(AggregateElement.Name), options), value.Name);
+            writer.WritePropertyName(JsonName(nameof(AggregateElement.ResultType), options));
+            JsonSerializer.Serialize(writer, value.ResultType, options);
+
+            if (value.Expressions.Any())
+            {
+                writer.WritePropertyName(JsonName(nameof(AggregateElement.Expressions), options));
+                writer.WriteStartArray();
+                foreach (var expression in value.Expressions)
+                {
+                    JsonSerializer.Serialize(writer, expression, options);
+                }
+                writer.WriteEndArray();
+            }
+
+            if (value.CustomFactoryType != null)
+            {
+                writer.WritePropertyName(JsonName(nameof(AggregateElement.CustomFactoryType), options));
+                JsonSerializer.Serialize(writer, value.CustomFactoryType, options);
+            }
+
+            writer.WritePropertyName(JsonName(nameof(AggregateElement.Source), options));
+            JsonSerializer.Serialize(writer, value.Source, options);
+        }
 
         private RuleElement ReadPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
@@ -201,13 +278,17 @@ namespace NRules.Json.Converters
             writer.WritePropertyName(JsonName(nameof(Declaration.Type), options));
             JsonSerializer.Serialize(writer, value.Declaration.Type, options);
 
-            writer.WritePropertyName(JsonName(nameof(PatternElement.Expressions), options));
-            writer.WriteStartArray();
-            foreach (var expression in value.Expressions)
+            if (value.Expressions.Any())
             {
-                JsonSerializer.Serialize(writer, expression, options);
+                writer.WritePropertyName(JsonName(nameof(PatternElement.Expressions), options));
+                writer.WriteStartArray();
+                foreach (var expression in value.Expressions)
+                {
+                    JsonSerializer.Serialize(writer, expression, options);
+                }
+
+                writer.WriteEndArray();
             }
-            writer.WriteEndArray();
 
             if (value.Source != null)
             {
