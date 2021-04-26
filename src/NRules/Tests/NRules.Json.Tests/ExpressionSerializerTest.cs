@@ -65,9 +65,10 @@ namespace NRules.Json.Tests
         }
 
         [Fact]
-        public void Roundtrip_BinaryExpressionAdd_Equals()
+        public void Roundtrip_BinaryExpressionArithmeticOps_Equals()
         {
-            Expression<Func<int, int, int>> expression = (i1, i2) => i1 + i2;
+            Expression<Func<double, double, double, double, double>> expression = (d1, d2, d3, d4) 
+                => ((d1 + d2 - d3) * d4) / d2 % 3;
             TestRoundtrip(expression);
         }
 
