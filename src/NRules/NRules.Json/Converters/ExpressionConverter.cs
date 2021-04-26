@@ -30,6 +30,8 @@ namespace NRules.Json.Converters
                 value = ReadLambda(ref reader, options);
             else if (nodeType == ExpressionType.Parameter)
                 value = ReadParameter(ref reader, options);
+            else if (nodeType == ExpressionType.Constant)
+                value = ReadConstant(ref reader, options);
             else if (nodeType == ExpressionType.MemberAccess)
                 value = ReadMember(ref reader, options);
             else if (nodeType == ExpressionType.Call)
@@ -52,6 +54,8 @@ namespace NRules.Json.Converters
                 WriteLambda(writer, options, le);
             else if (value is ParameterExpression pe)
                 WriteParameter(writer, options, pe);
+            else if (value is ConstantExpression ce)
+                WriteConstant(writer, options, ce);
             else if (value is MemberExpression me)
                 WriteMember(writer, options, me);
             else if (value is MethodCallExpression mce)
@@ -118,6 +122,33 @@ namespace NRules.Json.Converters
                 JsonSerializer.Serialize(writer, parameter, options);
             }
             writer.WriteEndArray();
+        }
+
+        private Expression ReadConstant(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            reader.Read();
+            if (reader.TokenType != JsonTokenType.PropertyName &&
+                !JsonNameConvertEquals(nameof(ConstantExpression.Type), reader.GetString(), options)) throw new JsonException();
+            
+            reader.Read();
+            var type = JsonSerializer.Deserialize<Type>(ref reader, options);
+
+            reader.Read();
+            var value = JsonSerializer.Deserialize(ref reader, type!, options);
+
+            reader.Read();
+            if (reader.TokenType != JsonTokenType.EndObject) throw new JsonException();
+
+            return Expression.Constant(value, type!);
+        }
+
+        private void WriteConstant(Utf8JsonWriter writer, JsonSerializerOptions options, ConstantExpression value)
+        {
+            writer.WritePropertyName(JsonName(nameof(value.Type), options));
+            JsonSerializer.Serialize(writer, value.Type, options);
+
+            writer.WritePropertyName(JsonName(nameof(value.Value), options));
+            JsonSerializer.Serialize(writer, value.Value, value.Type, options);
         }
 
         private Expression ReadParameter(ref Utf8JsonReader reader, JsonSerializerOptions options)

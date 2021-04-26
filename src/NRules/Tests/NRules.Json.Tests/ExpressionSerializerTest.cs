@@ -22,6 +22,19 @@ namespace NRules.Json.Tests
         }
 
         [Fact]
+        public void Roundtrip_Constant_Equals()
+        {
+            //Arrange
+            Expression<Func<string>> original = () => "Value";
+
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(ExpressionComparer.AreEqual(original, deserialized));
+        }
+
+        [Fact]
         public void Roundtrip_PropertyAccess_Equals()
         {
             //Arrange
