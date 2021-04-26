@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text.Json;
 using NRules.Json.Tests.TestAssets;
@@ -24,87 +25,94 @@ namespace NRules.Json.Tests
         [Fact]
         public void Roundtrip_Constant_Equals()
         {
-            //Arrange
-            Expression<Func<string>> original = () => "Value";
-
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(ExpressionComparer.AreEqual(original, deserialized));
+            Expression<Func<string>> expression = () => "Value";
+            TestRoundtrip(expression);
         }
 
         [Fact]
         public void Roundtrip_PropertyAccess_Equals()
         {
-            //Arrange
-            Expression<Func<string, int>> original = s => s.Length;
-
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(ExpressionComparer.AreEqual(original, deserialized));
+            Expression<Func<string, int>> expression = s => s.Length;
+            TestRoundtrip(expression);
         }
 
         [Fact]
         public void Roundtrip_InstanceMethod_Equals()
         {
-            //Arrange
-            Expression<Func<string, string>> original = s => s.ToUpper();
-
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(ExpressionComparer.AreEqual(original, deserialized));
+            Expression<Func<string, string>> expression = s => s.ToUpper();
+            TestRoundtrip(expression);
         }
 
         [Fact]
         public void Roundtrip_StaticMethod_Equals()
         {
-            //Arrange
-            Expression<Func<string, string>> original = s => string.Concat(s, s);
-
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(ExpressionComparer.AreEqual(original, deserialized));
+            Expression<Func<string, string>> expression = s => string.Concat(s, s);
+            TestRoundtrip(expression);
         }
 
         [Fact]
         public void Roundtrip_ExtensionMethod_Equals()
         {
-            //Arrange
-            Expression<Func<string, string>> original = s => s.Transform();
-
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(ExpressionComparer.AreEqual(original, deserialized));
+            Expression<Func<string, string>> expression = s => s.Transform();
+            TestRoundtrip(expression);
         }
 
         [Fact]
         public void Roundtrip_BinaryExpressionEquals_Equals()
         {
-            //Arrange
-            Expression<Func<string, string, bool>> original = (s1, s2) => s1 == s2;
-
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(ExpressionComparer.AreEqual(original, deserialized));
+            Expression<Func<string, string, bool>> expression = (s1, s2) => s1 == s2;
+            TestRoundtrip(expression);
         }
 
-        private TExpression Roundtrip<TExpression>(TExpression original)
+        [Fact]
+        public void Roundtrip_BinaryExpressionAdd_Equals()
         {
-            var jsonString = JsonSerializer.Serialize(original, _options);
+            Expression<Func<int, int, int>> expression = (i1, i2) => i1 + i2;
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
+        public void Roundtrip_BinaryExpressionArrayIndex_Equals()
+        {
+            Expression<Func<int[], int>> expression = arr => arr[0];
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
+        public void Roundtrip_BinaryExpressionAndOr_Equals()
+        {
+            Expression<Func<bool, bool, bool, bool>> expression = (a, b, c) => (a || b) && c;
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
+        public void Roundtrip_UnaryExpressionNot_Equals()
+        {
+            Expression<Func<bool, bool>> expression = a => !a;
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
+        public void Roundtrip_UnaryExpressionConvert_Equals()
+        {
+            Expression<Func<string, IEnumerable<char>>> expression = s => (IEnumerable<char>)s;
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
+        public void Roundtrip_UnaryExpressionTypeAs_Equals()
+        {
+            Expression<Func<string, IEnumerable<char>>> expression = s => s as IEnumerable<char>;
+            TestRoundtrip(expression);
+        }
+
+        private void TestRoundtrip<TExpression>(TExpression expression) where TExpression: Expression
+        {
+            var jsonString = JsonSerializer.Serialize(expression, _options);
             //System.IO.File.WriteAllText(@"C:\temp\expression.json", jsonString);
             var deserialized = JsonSerializer.Deserialize<TExpression>(jsonString, _options);
-            return deserialized;
+
+            Assert.True(ExpressionComparer.AreEqual(expression, deserialized));
         }
     }
 }

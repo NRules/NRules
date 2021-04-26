@@ -37,8 +37,38 @@ namespace NRules.Json.Converters
             else if (nodeType == ExpressionType.Call)
                 value = ReadMethodCall(ref reader, options);
             else if (nodeType == ExpressionType.Equal ||
-                     nodeType == ExpressionType.Add)
+                     nodeType == ExpressionType.NotEqual ||
+                     nodeType == ExpressionType.GreaterThanOrEqual ||
+                     nodeType == ExpressionType.GreaterThan ||
+                     nodeType == ExpressionType.LessThanOrEqual ||
+                     nodeType == ExpressionType.LessThan ||
+                     nodeType == ExpressionType.AndAlso ||
+                     nodeType == ExpressionType.OrElse ||
+                     nodeType == ExpressionType.And ||
+                     nodeType == ExpressionType.Or ||
+                     nodeType == ExpressionType.ExclusiveOr ||
+                     nodeType == ExpressionType.Add ||
+                     nodeType == ExpressionType.AddChecked ||
+                     nodeType == ExpressionType.Divide ||
+                     nodeType == ExpressionType.Modulo ||
+                     nodeType == ExpressionType.Multiply ||
+                     nodeType == ExpressionType.MultiplyChecked ||
+                     nodeType == ExpressionType.Power ||
+                     nodeType == ExpressionType.Subtract ||
+                     nodeType == ExpressionType.SubtractChecked ||
+                     nodeType == ExpressionType.Coalesce ||
+                     nodeType == ExpressionType.ArrayIndex ||
+                     nodeType == ExpressionType.LeftShift ||
+                     nodeType == ExpressionType.RightShift)
                 value = ReadBinaryExpression(ref reader, options, nodeType);
+            else if (nodeType == ExpressionType.Not ||
+                     nodeType == ExpressionType.Negate ||
+                     nodeType == ExpressionType.NegateChecked ||
+                     nodeType == ExpressionType.UnaryPlus ||
+                     nodeType == ExpressionType.Convert ||
+                     nodeType == ExpressionType.ConvertChecked ||
+                     nodeType == ExpressionType.TypeAs)
+                value = ReadUnaryExpression(ref reader, options, nodeType);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
 
@@ -62,6 +92,8 @@ namespace NRules.Json.Converters
                 WriteMethodCall(writer, options, mce);
             else if (value is BinaryExpression be)
                 WriteBinaryExpression(writer, options, be);
+            else if (value is UnaryExpression ue)
+                WriteUnaryExpression(writer, options, ue);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
 
@@ -326,6 +358,52 @@ namespace NRules.Json.Converters
             {
                 case ExpressionType.Equal:
                     return Expression.Equal(left!, right!);
+                case ExpressionType.NotEqual:
+                    return Expression.NotEqual(left!, right!);
+                case ExpressionType.LessThanOrEqual:
+                    return Expression.LessThanOrEqual(left!, right!);
+                case ExpressionType.LessThan:
+                    return Expression.LessThan(left!, right!);
+                case ExpressionType.GreaterThanOrEqual:
+                    return Expression.GreaterThanOrEqual(left!, right!);
+                case ExpressionType.GreaterThan:
+                    return Expression.GreaterThan(left!, right!);
+                case ExpressionType.AndAlso:
+                    return Expression.AndAlso(left!, right!);
+                case ExpressionType.OrElse:
+                    return Expression.OrElse(left!, right!);
+                case ExpressionType.And:
+                    return Expression.And(left!, right!);
+                case ExpressionType.Or:
+                    return Expression.Or(left!, right!);
+                case ExpressionType.ExclusiveOr:
+                    return Expression.ExclusiveOr(left!, right!);
+                case ExpressionType.Add:
+                    return Expression.Add(left!, right!);
+                case ExpressionType.AddChecked:
+                    return Expression.AddChecked(left!, right!);
+                case ExpressionType.Divide:
+                    return Expression.Divide(left!, right!);
+                case ExpressionType.Modulo:
+                    return Expression.Modulo(left!, right!);
+                case ExpressionType.Multiply:
+                    return Expression.Multiply(left!, right!);
+                case ExpressionType.MultiplyChecked:
+                    return Expression.MultiplyChecked(left!, right!);
+                case ExpressionType.Power:
+                    return Expression.Power(left!, right!);
+                case ExpressionType.Subtract:
+                    return Expression.Subtract(left!, right!);
+                case ExpressionType.SubtractChecked:
+                    return Expression.SubtractChecked(left!, right!);
+                case ExpressionType.Coalesce:
+                    return Expression.Coalesce(left!, right!);
+                case ExpressionType.ArrayIndex:
+                    return Expression.ArrayIndex(left!, right!);
+                case ExpressionType.LeftShift:
+                    return Expression.LeftShift(left!, right!);
+                case ExpressionType.RightShift:
+                    return Expression.RightShift(left!, right!);
                 default:
                     throw new NotSupportedException($"Unrecognized binary expression: {expressionType}");
             }
@@ -338,6 +416,60 @@ namespace NRules.Json.Converters
             
             writer.WritePropertyName(JsonName(nameof(BinaryExpression.Right), options));
             JsonSerializer.Serialize(writer, value.Right, options);
+        }
+
+        private Expression ReadUnaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options, ExpressionType expressionType)
+        {
+            Expression operand = default;
+            Type type = default;
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, nameof(UnaryExpression.Operand), options))
+                {
+                    operand = JsonSerializer.Deserialize<Expression>(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(UnaryExpression.Type), options))
+                {
+                    type = JsonSerializer.Deserialize<Type>(ref reader, options);
+                }
+            }
+
+            switch (expressionType)
+            {
+                case ExpressionType.Not:
+                    return Expression.Not(operand!);
+                case ExpressionType.Negate:
+                    return Expression.Negate(operand!);
+                case ExpressionType.NegateChecked:
+                    return Expression.NegateChecked(operand!);
+                case ExpressionType.UnaryPlus:
+                    return Expression.UnaryPlus(operand!);
+                case ExpressionType.Convert:
+                    return Expression.Convert(operand!, type!);
+                case ExpressionType.ConvertChecked:
+                    return Expression.ConvertChecked(operand!, type!);
+                case ExpressionType.TypeAs:
+                    return Expression.TypeAs(operand!, type!);
+                default:
+                    throw new NotSupportedException($"Unrecognized unary expression: {expressionType}");
+            }
+        }
+
+        private void WriteUnaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, UnaryExpression value)
+        {
+            writer.WritePropertyName(JsonName(nameof(UnaryExpression.Operand), options));
+            JsonSerializer.Serialize(writer, value.Operand, options);
+
+            if (value.Type != value.Operand.Type)
+            {
+                writer.WritePropertyName(JsonName(nameof(UnaryExpression.Type), options));
+                JsonSerializer.Serialize(writer, value.Type, options);
+            }
         }
     }
 }
