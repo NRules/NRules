@@ -228,6 +228,43 @@ namespace NRules.Json.Tests
             Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
         }
 
+        [Fact]
+        public void Roundtrip_ForAllRule_Equals()
+        {
+            //Arrange
+            var builder = new RuleBuilder();
+            builder.Name("Test Rule");
+
+            var forAll = builder.LeftHandSide().ForAll();
+            var basePattern = forAll.BasePattern(typeof(FactType1));
+            var baseParameter = Expression.Parameter(basePattern.Declaration.Type, basePattern.Declaration.Name);
+            var baseCondition = Expression.Lambda<Func<FactType1, bool>>(
+                Expression.Property(baseParameter, nameof(FactType1.BooleanProperty)),
+                baseParameter);
+            basePattern.Condition(baseCondition);
+
+            var pattern1 = forAll.Pattern(typeof(FactType1));
+            var parameter1 = Expression.Parameter(pattern1.Declaration.Type, pattern1.Declaration.Name);
+            var condition1 = Expression.Lambda<Func<FactType1, bool>>(
+                Expression.Call(
+                    Expression.Property(parameter1, nameof(FactType1.StringProperty)),
+                    nameof(string.StartsWith),
+                    new Type[0],
+                    Expression.Constant("Valid")),
+                parameter1);
+            pattern1.Condition(condition1);
+
+            Expression<Action<IContext>> action = ctx => Calculations.DoSomething();
+            builder.RightHandSide().Action(action);
+            var original = builder.Build();
+
+            //Act
+            var deserialized = Roundtrip(original);
+
+            //Assert
+            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+        }
+
         private IRuleDefinition Roundtrip(IRuleDefinition original)
         {
             var jsonString = JsonSerializer.Serialize(original, _options);

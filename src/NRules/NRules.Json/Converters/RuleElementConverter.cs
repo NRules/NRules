@@ -45,6 +45,8 @@ namespace NRules.Json.Converters
                 value = ReadDependency(ref reader, options);
             else if (elementType == ElementType.Filter)
                 value = ReadFilter(ref reader, options);
+            else if (elementType == ElementType.ForAll)
+                value = ReadForAll(ref reader, options);
             else
                 throw new NotSupportedException($"Unsupported element type. ElementType={elementType}");
 
@@ -72,6 +74,8 @@ namespace NRules.Json.Converters
                 WriteDependency(writer, options, de);
             else if (value is FilterElement fe)
                 WriteFilter(writer, options, fe);
+            else if (value is ForAllElement fa)
+                WriteForAll(writer, options, fa);
             else
                 throw new NotSupportedException($"Unsupported element type. ElementType={value.ElementType}");
 
@@ -405,6 +409,51 @@ namespace NRules.Json.Converters
             writer.WriteString(JsonName(nameof(value.FilterType), options), value.FilterType.ToString());
             writer.WritePropertyName(JsonName(nameof(value.Expression), options));
             JsonSerializer.Serialize(writer, value.Expression, options);
+        }
+
+        private RuleElement ReadForAll(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            PatternElement basePattern = default;
+            var patterns = new List<PatternElement>();
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, nameof(ForAllElement.BasePattern), options))
+                {
+                    basePattern = JsonSerializer.Deserialize<PatternElement>(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(ForAllElement.Patterns), options))
+                {
+                    if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
+
+                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                    {
+                        var pattern = JsonSerializer.Deserialize<PatternElement>(ref reader, options);
+                        patterns.Add(pattern);
+                    }
+                }
+            }
+
+            return Element.ForAll(basePattern, patterns);
+        }
+
+        private static void WriteForAll(Utf8JsonWriter writer, JsonSerializerOptions options, ForAllElement value)
+        {
+            writer.WritePropertyName(JsonName(nameof(ForAllElement.BasePattern), options));
+            JsonSerializer.Serialize(writer, value.BasePattern, options);
+
+            writer.WritePropertyName(JsonName(nameof(ForAllElement.Patterns), options));
+            writer.WriteStartArray();
+            foreach (var pattern in value.Patterns)
+            {
+                JsonSerializer.Serialize(writer, pattern, options);
+            }
+
+            writer.WriteEndArray();
         }
     }
 }
