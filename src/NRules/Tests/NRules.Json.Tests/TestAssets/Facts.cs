@@ -1,6 +1,13 @@
 ﻿namespace NRules.Json.Tests.TestAssets
 {
-    public class FactType1
+    public interface IFactType1
+    {
+        public bool BooleanProperty { get; }
+        public string StringProperty { get; }
+        public string GroupKey { get; }
+    }
+
+    public class FactType1 : IFactType1
     {
         public bool BooleanProperty { get; set; }
         public string StringProperty { get; set; }

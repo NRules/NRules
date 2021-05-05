@@ -271,9 +271,9 @@ namespace NRules.Json.Converters
         private Expression ReadMethodCall(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Expression @object = default;
+            var arguments = new List<Expression>();
             string name = default;
             Type declaringType = default;
-            var arguments = new List<Expression>();
 
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
@@ -285,14 +285,6 @@ namespace NRules.Json.Converters
                 {
                     @object = JsonSerializer.Deserialize<Expression>(ref reader, options);
                 }
-                else if (JsonNameEquals(propertyName, nameof(MethodCallExpression.Method.Name), options))
-                {
-                    name = reader.GetString();
-                }
-                else if (JsonNameEquals(propertyName, nameof(MethodCallExpression.Method.DeclaringType), options))
-                {
-                    declaringType = JsonSerializer.Deserialize<Type>(ref reader, options);
-                }
                 else if (JsonNameEquals(propertyName, nameof(MethodCallExpression.Arguments), options))
                 {
                     if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
@@ -303,19 +295,23 @@ namespace NRules.Json.Converters
                         arguments.Add(argument);
                     }
                 }
+                else if (JsonNameEquals(propertyName, "MethodName", options))
+                {
+                    name = reader.GetString();
+                }
+                else if (JsonNameEquals(propertyName, nameof(MethodInfo.DeclaringType), options))
+                {
+                    declaringType = JsonSerializer.Deserialize<Type>(ref reader, options);
+                }
             }
 
-            var method = declaringType!.GetMethod(name!, arguments.Select(x => x.Type).ToArray());
-
+            var typeForMethod = declaringType ?? @object!.Type;
+            var method = typeForMethod.GetMethod(name!, arguments.Select(a => a.Type).ToArray());
             return Expression.Call(@object, method!, arguments);
         }
 
         private void WriteMethodCall(Utf8JsonWriter writer, JsonSerializerOptions options, MethodCallExpression value)
         {
-            writer.WriteString(JsonName(nameof(value.Method.Name), options), value.Method.Name);
-            writer.WritePropertyName(JsonName(nameof(value.Method.DeclaringType), options));
-            JsonSerializer.Serialize(writer, value.Method.DeclaringType, options);
-
             if (value.Object != null)
             {
                 writer.WritePropertyName(JsonName(nameof(value.Object), options));
@@ -331,12 +327,16 @@ namespace NRules.Json.Converters
                 }
                 writer.WriteEndArray();
             }
+
+            WriteMethodInfo(writer, options, value.Method, value.Object?.Type);
         }
 
         private Expression ReadBinaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options, ExpressionType expressionType)
         {
             Expression left = default;
             Expression right = default;
+            string name = default;
+            Type declaringType = default;
 
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
@@ -352,58 +352,73 @@ namespace NRules.Json.Converters
                 {
                     right = JsonSerializer.Deserialize<Expression>(ref reader, options);
                 }
+                else if (JsonNameEquals(propertyName, "MethodName", options))
+                {
+                    name = reader.GetString();
+                }
+                else if (JsonNameEquals(propertyName, nameof(MethodInfo.DeclaringType), options))
+                {
+                    declaringType = JsonSerializer.Deserialize<Type>(ref reader, options);
+                }
+            }
+
+            MethodInfo method = default;
+            if (name != null)
+            {
+                var typeForMethod = declaringType ?? left!.Type;
+                method = typeForMethod.GetMethod(name, new[] {left!.Type, right!.Type});
             }
 
             switch (expressionType)
             {
                 case ExpressionType.Equal:
-                    return Expression.Equal(left!, right!);
+                    return Expression.Equal(left!, right!, false, method);
                 case ExpressionType.NotEqual:
-                    return Expression.NotEqual(left!, right!);
+                    return Expression.NotEqual(left!, right!, false, method);
                 case ExpressionType.LessThanOrEqual:
-                    return Expression.LessThanOrEqual(left!, right!);
+                    return Expression.LessThanOrEqual(left!, right!, false, method);
                 case ExpressionType.LessThan:
-                    return Expression.LessThan(left!, right!);
+                    return Expression.LessThan(left!, right!, false, method);
                 case ExpressionType.GreaterThanOrEqual:
-                    return Expression.GreaterThanOrEqual(left!, right!);
+                    return Expression.GreaterThanOrEqual(left!, right!, false, method);
                 case ExpressionType.GreaterThan:
-                    return Expression.GreaterThan(left!, right!);
+                    return Expression.GreaterThan(left!, right!, false, method);
                 case ExpressionType.AndAlso:
-                    return Expression.AndAlso(left!, right!);
+                    return Expression.AndAlso(left!, right!, method);
                 case ExpressionType.OrElse:
-                    return Expression.OrElse(left!, right!);
+                    return Expression.OrElse(left!, right!, method);
                 case ExpressionType.And:
-                    return Expression.And(left!, right!);
+                    return Expression.And(left!, right!, method);
                 case ExpressionType.Or:
-                    return Expression.Or(left!, right!);
+                    return Expression.Or(left!, right!, method);
                 case ExpressionType.ExclusiveOr:
-                    return Expression.ExclusiveOr(left!, right!);
+                    return Expression.ExclusiveOr(left!, right!, method);
                 case ExpressionType.Add:
-                    return Expression.Add(left!, right!);
+                    return Expression.Add(left!, right!, method);
                 case ExpressionType.AddChecked:
-                    return Expression.AddChecked(left!, right!);
+                    return Expression.AddChecked(left!, right!, method);
                 case ExpressionType.Divide:
-                    return Expression.Divide(left!, right!);
+                    return Expression.Divide(left!, right!, method);
                 case ExpressionType.Modulo:
-                    return Expression.Modulo(left!, right!);
+                    return Expression.Modulo(left!, right!, method);
                 case ExpressionType.Multiply:
-                    return Expression.Multiply(left!, right!);
+                    return Expression.Multiply(left!, right!, method);
                 case ExpressionType.MultiplyChecked:
-                    return Expression.MultiplyChecked(left!, right!);
+                    return Expression.MultiplyChecked(left!, right!, method);
                 case ExpressionType.Power:
-                    return Expression.Power(left!, right!);
+                    return Expression.Power(left!, right!, method);
                 case ExpressionType.Subtract:
-                    return Expression.Subtract(left!, right!);
+                    return Expression.Subtract(left!, right!, method);
                 case ExpressionType.SubtractChecked:
-                    return Expression.SubtractChecked(left!, right!);
+                    return Expression.SubtractChecked(left!, right!, method);
                 case ExpressionType.Coalesce:
                     return Expression.Coalesce(left!, right!);
                 case ExpressionType.ArrayIndex:
                     return Expression.ArrayIndex(left!, right!);
                 case ExpressionType.LeftShift:
-                    return Expression.LeftShift(left!, right!);
+                    return Expression.LeftShift(left!, right!, method);
                 case ExpressionType.RightShift:
-                    return Expression.RightShift(left!, right!);
+                    return Expression.RightShift(left!, right!, method);
                 default:
                     throw new NotSupportedException($"Unrecognized binary expression: {expressionType}");
             }
@@ -416,12 +431,19 @@ namespace NRules.Json.Converters
             
             writer.WritePropertyName(JsonName(nameof(BinaryExpression.Right), options));
             JsonSerializer.Serialize(writer, value.Right, options);
+
+            if (value.Method != null && !value.Method.IsSpecialName)
+            {
+                WriteMethodInfo(writer, options, value.Method, value.Left.Type);
+            }
         }
 
         private Expression ReadUnaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options, ExpressionType expressionType)
         {
             Expression operand = default;
             Type type = default;
+            string name = default;
+            Type declaringType = default;
 
             while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
             {
@@ -437,22 +459,37 @@ namespace NRules.Json.Converters
                 {
                     type = JsonSerializer.Deserialize<Type>(ref reader, options);
                 }
+                else if (JsonNameEquals(propertyName, "MethodName", options))
+                {
+                    name = reader.GetString();
+                }
+                else if (JsonNameEquals(propertyName, nameof(MethodInfo.DeclaringType), options))
+                {
+                    declaringType = JsonSerializer.Deserialize<Type>(ref reader, options);
+                }
+            }
+
+            MethodInfo method = default;
+            if (name != null)
+            {
+                var typeForMethod = declaringType ?? operand!.Type;
+                method = typeForMethod.GetMethod(name, new[] {operand!.Type});
             }
 
             switch (expressionType)
             {
                 case ExpressionType.Not:
-                    return Expression.Not(operand!);
+                    return Expression.Not(operand!, method);
                 case ExpressionType.Negate:
-                    return Expression.Negate(operand!);
+                    return Expression.Negate(operand!, method);
                 case ExpressionType.NegateChecked:
-                    return Expression.NegateChecked(operand!);
+                    return Expression.NegateChecked(operand!, method);
                 case ExpressionType.UnaryPlus:
-                    return Expression.UnaryPlus(operand!);
+                    return Expression.UnaryPlus(operand!, method);
                 case ExpressionType.Convert:
-                    return Expression.Convert(operand!, type!);
+                    return Expression.Convert(operand!, type!, method);
                 case ExpressionType.ConvertChecked:
-                    return Expression.ConvertChecked(operand!, type!);
+                    return Expression.ConvertChecked(operand!, type!, method);
                 case ExpressionType.TypeAs:
                     return Expression.TypeAs(operand!, type!);
                 default:
@@ -469,6 +506,22 @@ namespace NRules.Json.Converters
             {
                 writer.WritePropertyName(JsonName(nameof(UnaryExpression.Type), options));
                 JsonSerializer.Serialize(writer, value.Type, options);
+            }
+
+            if (value.Method != null && !value.Method.IsSpecialName)
+            {
+                WriteMethodInfo(writer, options, value.Method, value.Operand.Type);
+            }
+        }
+
+        private static void WriteMethodInfo(Utf8JsonWriter writer, JsonSerializerOptions options, MethodInfo value, Type defaultType)
+        {
+            writer.WriteString(JsonName("MethodName", options), value.Name);
+
+            if (defaultType == null || defaultType != value.DeclaringType)
+            {
+                writer.WritePropertyName(JsonName(nameof(value.DeclaringType), options));
+                JsonSerializer.Serialize(writer, value.DeclaringType, options);
             }
         }
     }

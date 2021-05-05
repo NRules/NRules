@@ -51,6 +51,13 @@ namespace NRules.Json.Tests
         }
 
         [Fact]
+        public void Roundtrip_StaticMethodOnInterface_Equals()
+        {
+            Expression<Func<FactType1, bool>> expression = f => Calculations.CallOnInterface(f);
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
         public void Roundtrip_ExtensionMethod_Equals()
         {
             Expression<Func<string, string>> expression = s => s.Transform();
@@ -58,9 +65,16 @@ namespace NRules.Json.Tests
         }
 
         [Fact]
-        public void Roundtrip_BinaryExpressionEquals_Equals()
+        public void Roundtrip_BinaryExpressionEqualsOperator_Equals()
         {
             Expression<Func<string, string, bool>> expression = (s1, s2) => s1 == s2;
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
+        public void Roundtrip_BinaryExpressionEqualsBuiltIn_Equals()
+        {
+            Expression<Func<int, int, bool>> expression = (i1, i2) => i1 == i2;
             TestRoundtrip(expression);
         }
 
@@ -83,6 +97,13 @@ namespace NRules.Json.Tests
         public void Roundtrip_BinaryExpressionAndOr_Equals()
         {
             Expression<Func<bool, bool, bool, bool>> expression = (a, b, c) => (a || b) && c;
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
+        public void Roundtrip_BinaryExpressionStringConcatenation_Equals()
+        {
+            Expression<Func<string, string, string>> expression = (s1, s2) => s1 + s2;
             TestRoundtrip(expression);
         }
 

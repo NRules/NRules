@@ -37,5 +37,10 @@ namespace NRules.Json.Tests.TestAssets
         {
             return value;
         }
+
+        public static bool CallOnInterface(IFactType1 fact1)
+        {
+            return fact1.BooleanProperty;
+        }
     }
 }
