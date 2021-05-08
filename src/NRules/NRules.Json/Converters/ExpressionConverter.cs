@@ -132,7 +132,9 @@ namespace NRules.Json.Converters
                 }
             }
 
-            var expression = Expression.Lambda(type!, body!, parameters);
+            var expression = type != null
+                ? Expression.Lambda(type, body!, parameters)
+                : Expression.Lambda(body!, parameters);
 
             var parameterCompactor = new ExpressionParameterCompactor();
             var result = parameterCompactor.Compact(expression);
@@ -142,8 +144,12 @@ namespace NRules.Json.Converters
 
         private void WriteLambda(Utf8JsonWriter writer, JsonSerializerOptions options, LambdaExpression value)
         {
-            writer.WritePropertyName(JsonName(nameof(value.Type), options));
-            JsonSerializer.Serialize(writer, value.Type, options);
+            var impliedDelegateType = GetImpliedDelegateType(value);
+            if (value.Type != impliedDelegateType)
+            {
+                writer.WritePropertyName(JsonName(nameof(value.Type), options));
+                JsonSerializer.Serialize(writer, value.Type, options);
+            }
 
             writer.WritePropertyName(JsonName(nameof(value.Body), options));
             JsonSerializer.Serialize(writer, value.Body, options);
@@ -523,6 +529,21 @@ namespace NRules.Json.Converters
                 writer.WritePropertyName(JsonName(nameof(value.DeclaringType), options));
                 JsonSerializer.Serialize(writer, value.DeclaringType, options);
             }
+        }
+
+        private static Type GetImpliedDelegateType(LambdaExpression value)
+        {
+            var parameterTypes = new Type[value.Parameters.Count + 1];
+            for (int i = 0; i < value.Parameters.Count; i++)
+            {
+                var parameter = value.Parameters[i];
+                var parameterType = parameter.IsByRef ? parameter.Type.MakeByRefType() : parameter.Type;
+                parameterTypes[i] = parameterType;
+            }
+
+            parameterTypes[value.Parameters.Count] = value.Body.Type;
+            var impliedDelegateType = Expression.GetDelegateType(parameterTypes);
+            return impliedDelegateType;
         }
     }
 }
