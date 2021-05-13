@@ -117,14 +117,21 @@ namespace NRules.Json.Tests
         [Fact]
         public void Roundtrip_UnaryExpressionConvert_Equals()
         {
-            Expression<Func<string, IEnumerable<char>>> expression = s => (IEnumerable<char>)s;
+            Expression<Func<object, string>> expression = o => (string)o;
             TestRoundtrip(expression);
         }
 
         [Fact]
         public void Roundtrip_UnaryExpressionTypeAs_Equals()
         {
-            Expression<Func<string, IEnumerable<char>>> expression = s => s as IEnumerable<char>;
+            Expression<Func<object, string>> expression = o => o as string;
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
+        public void Roundtrip_TypeBinaryExpressionTypeIs_Equals()
+        {
+            Expression<Func<object, bool>> expression = o => o is string;
             TestRoundtrip(expression);
         }
 
