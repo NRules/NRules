@@ -75,6 +75,8 @@ namespace NRules.Json.Converters
                 value = ReadTypeBinaryExpressions(ref reader, options);
             else if (nodeType == ExpressionType.New)
                 value = ReadNewExpressions(ref reader, options);
+            else if (nodeType == ExpressionType.NewArrayInit)
+                value = ReadNewArrayInitExpressions(ref reader, options);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
 
@@ -106,6 +108,8 @@ namespace NRules.Json.Converters
                 WriteTypeBinaryExpressions(writer, options, tbe);
             else if (value is NewExpression ne)
                 WriteNewExpressions(writer, options, ne);
+            else if (value is NewArrayExpression nae)
+                WriteNewArrayInitExpressions(writer, options, nae);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
 
@@ -659,6 +663,52 @@ namespace NRules.Json.Converters
                 foreach (var argument in value.Arguments)
                 {
                     JsonSerializer.Serialize(writer, argument, options);
+                }
+                writer.WriteEndArray();
+            }
+        }
+
+        private Expression ReadNewArrayInitExpressions(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            Type elementType = default;
+            var expressions = new List<Expression>();
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, "ElementType", options))
+                {
+                    elementType = JsonSerializer.Deserialize<Type>(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(NewArrayExpression.Expressions), options))
+                {
+                    if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
+
+                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                    {
+                        var expression = JsonSerializer.Deserialize<Expression>(ref reader, options);
+                        expressions.Add(expression);
+                    }
+                }
+            }
+
+            return Expression.NewArrayInit(elementType!, expressions);
+        }
+
+        private void WriteNewArrayInitExpressions(Utf8JsonWriter writer, JsonSerializerOptions options, NewArrayExpression value)
+        {
+            writer.WritePropertyName(JsonName("ElementType", options));
+            JsonSerializer.Serialize(writer, value.Type.GetElementType(), options);
+
+            if (value.Expressions.Any())
+            {
+                writer.WriteStartArray(JsonName(nameof(value.Expressions), options));
+                foreach (var expression in value.Expressions)
+                {
+                    JsonSerializer.Serialize(writer, expression, options);
                 }
                 writer.WriteEndArray();
             }
