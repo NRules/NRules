@@ -69,6 +69,8 @@ namespace NRules.Json.Converters
                      nodeType == ExpressionType.ConvertChecked ||
                      nodeType == ExpressionType.TypeAs)
                 value = ReadUnaryExpression(ref reader, options, nodeType);
+            else if (nodeType == ExpressionType.Invoke)
+                value = ReadInvocationExpression(ref reader, options);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
 
@@ -94,6 +96,8 @@ namespace NRules.Json.Converters
                 WriteBinaryExpression(writer, options, be);
             else if (value is UnaryExpression ue)
                 WriteUnaryExpression(writer, options, ue);
+            else if (value is InvocationExpression ie)
+                WriteInvocationExpression(writer, options, ie);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
 
@@ -154,12 +158,15 @@ namespace NRules.Json.Converters
             writer.WritePropertyName(JsonName(nameof(value.Body), options));
             JsonSerializer.Serialize(writer, value.Body, options);
 
-            writer.WriteStartArray(JsonName(nameof(value.Parameters), options));
-            foreach (var parameter in value.Parameters)
+            if (value.Parameters.Any())
             {
-                JsonSerializer.Serialize(writer, parameter, options);
+                writer.WriteStartArray(JsonName(nameof(value.Parameters), options));
+                foreach (var parameter in value.Parameters)
+                {
+                    JsonSerializer.Serialize(writer, parameter, options);
+                }
+                writer.WriteEndArray();
             }
-            writer.WriteEndArray();
         }
 
         private Expression ReadConstant(ref Utf8JsonReader reader, JsonSerializerOptions options)
@@ -270,8 +277,11 @@ namespace NRules.Json.Converters
             writer.WritePropertyName(JsonName(nameof(value.Member.DeclaringType), options));
             JsonSerializer.Serialize(writer, value.Member.DeclaringType, options);
 
-            writer.WritePropertyName(JsonName(nameof(value.Expression), options));
-            JsonSerializer.Serialize(writer, value.Expression, options);
+            if (value.Expression != null)
+            {
+                writer.WritePropertyName(JsonName(nameof(value.Expression), options));
+                JsonSerializer.Serialize(writer, value.Expression, options);
+            }
         }
 
         private Expression ReadMethodCall(ref Utf8JsonReader reader, JsonSerializerOptions options)
@@ -517,6 +527,52 @@ namespace NRules.Json.Converters
             if (value.Method != null && !value.Method.IsSpecialName)
             {
                 WriteMethodInfo(writer, options, value.Method, value.Operand.Type);
+            }
+        }
+
+        private Expression ReadInvocationExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            Expression expression = default;
+            var arguments = new List<Expression>();
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, nameof(InvocationExpression.Expression), options))
+                {
+                    expression = JsonSerializer.Deserialize<Expression>(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(InvocationExpression.Arguments), options))
+                {
+                    if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
+
+                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                    {
+                        var argument = JsonSerializer.Deserialize<Expression>(ref reader, options);
+                        arguments.Add(argument);
+                    }
+                }
+            }
+
+            return Expression.Invoke(expression!, arguments);
+        }
+
+        private void WriteInvocationExpression(Utf8JsonWriter writer, JsonSerializerOptions options, InvocationExpression value)
+        {
+            writer.WritePropertyName(nameof(value.Expression));
+            JsonSerializer.Serialize(writer, value.Expression, options);
+
+            if (value.Arguments.Any())
+            {
+                writer.WriteStartArray(JsonName(nameof(value.Arguments), options));
+                foreach (var argument in value.Arguments)
+                {
+                    JsonSerializer.Serialize(writer, argument, options);
+                }
+                writer.WriteEndArray();
             }
         }
 

@@ -2,6 +2,8 @@
 
 namespace NRules.Json.Tests.TestAssets
 {
+    public delegate string TransformDelegate(string value1, string value2);
+
     public static class Calculations
     {
         public static void DoSomething()
