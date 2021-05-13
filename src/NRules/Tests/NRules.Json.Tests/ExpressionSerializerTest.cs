@@ -136,6 +136,13 @@ namespace NRules.Json.Tests
         }
 
         [Fact]
+        public void Roundtrip_NewExpression_Equals()
+        {
+            Expression<Func<string, FactType3>> expression = s => new FactType3(s);
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
         public void Roundtrip_InvocationExpression_Equals()
         {
             Expression<Func<string, string>> expression = s => Concat(s, "Value");

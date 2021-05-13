@@ -73,6 +73,8 @@ namespace NRules.Json.Converters
                 value = ReadInvocationExpression(ref reader, options);
             else if (nodeType == ExpressionType.TypeIs)
                 value = ReadTypeBinaryExpressions(ref reader, options);
+            else if (nodeType == ExpressionType.New)
+                value = ReadNewExpressions(ref reader, options);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
 
@@ -102,6 +104,8 @@ namespace NRules.Json.Converters
                 WriteInvocationExpression(writer, options, ie);
             else if (value is TypeBinaryExpression tbe)
                 WriteTypeBinaryExpressions(writer, options, tbe);
+            else if (value is NewExpression ne)
+                WriteNewExpressions(writer, options, ne);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
 
@@ -611,6 +615,53 @@ namespace NRules.Json.Converters
 
             writer.WritePropertyName(JsonName(nameof(value.TypeOperand), options));
             JsonSerializer.Serialize(writer, value.TypeOperand, options);
+        }
+        
+        private Expression ReadNewExpressions(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            Type declaringType = default;
+            var arguments = new List<Expression>();
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, nameof(NewExpression.Constructor.DeclaringType), options))
+                {
+                    declaringType = JsonSerializer.Deserialize<Type>(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(NewExpression.Arguments), options))
+                {
+                    if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
+
+                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                    {
+                        var argument = JsonSerializer.Deserialize<Expression>(ref reader, options);
+                        arguments.Add(argument);
+                    }
+                }
+            }
+
+            var ctor = declaringType!.GetConstructor(arguments.Select(x => x.Type).ToArray());
+            return Expression.New(ctor!, arguments);
+        }
+
+        private void WriteNewExpressions(Utf8JsonWriter writer, JsonSerializerOptions options, NewExpression value)
+        {
+            writer.WritePropertyName(JsonName(nameof(value.Constructor.DeclaringType), options));
+            JsonSerializer.Serialize(writer, value.Constructor.DeclaringType, options);
+
+            if (value.Arguments.Any())
+            {
+                writer.WriteStartArray(JsonName(nameof(value.Arguments), options));
+                foreach (var argument in value.Arguments)
+                {
+                    JsonSerializer.Serialize(writer, argument, options);
+                }
+                writer.WriteEndArray();
+            }
         }
 
         private static void WriteMethodInfo(Utf8JsonWriter writer, JsonSerializerOptions options, MethodInfo value, Type defaultType)

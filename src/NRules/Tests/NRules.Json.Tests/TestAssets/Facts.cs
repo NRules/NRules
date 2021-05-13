@@ -18,4 +18,11 @@
     {
         public FactType1 JoinProperty { get; set; }
     }
+
+    public class FactType3
+    {
+        public FactType3(string value) => StringProperty = value;
+     
+        public string StringProperty { get; }
+    }
 }
