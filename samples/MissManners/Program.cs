@@ -28,7 +28,7 @@ namespace NRules.Samples.MissManners
             session.Insert(new Guest("N2", Gender.Female, new Hobby("H1")));
             session.Insert(new Guest("N2", Gender.Female, new Hobby("H3")));
             session.Insert(new Guest("N3", Gender.Male, new Hobby("H3")));
-            session.Insert(new Guest("N4", Gender.Male, new Hobby("H1")));
+            session.Insert(new Guest("N3", Gender.Male, new Hobby("H1")));
             session.Insert(new Guest("N4", Gender.Female, new Hobby("H2")));
             session.Insert(new Guest("N4", Gender.Female, new Hobby("H3")));
             session.Insert(new Guest("N5", Gender.Female, new Hobby("H2")));
