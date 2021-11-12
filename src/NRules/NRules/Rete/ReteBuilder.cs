@@ -122,14 +122,24 @@ namespace NRules.Rete
                 context.RegisterDeclaration(element.Declaration);
 
                 BuildTypeNode(context, element, element.ValueType);
-                var alphaConditions = conditions.Where(x => x.Imports.Count() == 1).ToList();
+
+                var alphaConditions = new List<ExpressionElement>();
+                var betaConditions = new List<ExpressionElement>();
+                foreach (var condition in conditions)
+                {
+                    if (condition.Imports.Count() == 1 &&
+                        Equals(condition.Imports.Single(), element.Declaration))
+                        alphaConditions.Add(condition);
+                    else
+                        betaConditions.Add(condition);
+                }
+                
                 foreach (var alphaCondition in alphaConditions)
                 {
                     BuildSelectionNode(context, alphaCondition);
                 }
                 BuildAlphaMemoryNode(context);
 
-                var betaConditions = conditions.Where(x => x.Imports.Count() > 1).ToList();
                 if (betaConditions.Count > 0)
                 {
                     BuildJoinNode(context, betaConditions);
