@@ -623,6 +623,28 @@ namespace NRules.Tests.Utilities
             AssertNotEqual(first, second);
         }
 
+        [Fact]
+        public void AreEqual_EquivalentTernaryMemberBinding_True()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value > 0 ? (x.Value1 - x.Value2) : x.Value1).Year;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value > 0 ? (x.Value1 - x.Value2) : x.Value1).Year;
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentTernaryMemberBinding_False()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value > 0 ? (x.Value1 - x.Value2) : x.Value1).Year;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value > 0 ? (x.Value1 - x.Value2) : x.Value1).Day;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
         private static void AssertEqual(Expression first, Expression second)
         {
             //Act

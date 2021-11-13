@@ -200,6 +200,7 @@ namespace NRules.Utilities
                 case ExpressionType.Divide:
                 case ExpressionType.Modulo:
                 case ExpressionType.Power:
+                case ExpressionType.Conditional:
                     return Equals(x.Member, y.Member) && ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
                 case ExpressionType.New:
                 case ExpressionType.Call:
