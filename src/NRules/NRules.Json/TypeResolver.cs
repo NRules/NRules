@@ -5,7 +5,7 @@ namespace NRules.Json
 {
     /// <summary>
     /// Defines the methods that enable conversion of CLR types to type names
-    /// and types names to CLR types for the purpose of JSON serialization.
+    /// and type names to CLR types for the purpose of JSON serialization.
     /// </summary>
     public interface ITypeResolver
     {
@@ -17,7 +17,7 @@ namespace NRules.Json
         string GetTypeName(Type type);
 
         /// <summary>
-        /// Gets the CLR types that corresponds to the type name, retrieved from the JSON document.
+        /// Gets the CLR type that corresponds to the type name, retrieved from the JSON document.
         /// </summary>
         /// <param name="typeName">String representation of the CLR type.</param>
         /// <returns>CLR type that corresponds to the string representation.</returns>
@@ -55,7 +55,7 @@ namespace NRules.Json
         /// <summary>
         /// Registers an alias for a CLR type for the purpose of JSON serialization.
         /// </summary>
-        /// <param name="alias">String representation of a CLR type.</param>
+        /// <param name="alias">String representation of the CLR type.</param>
         /// <param name="type">CLR type.</param>
         public void RegisterAlias(string alias, Type type)
         {
