@@ -72,11 +72,11 @@ namespace NRules.Json.Converters
             else if (nodeType == ExpressionType.Invoke)
                 value = ReadInvocationExpression(ref reader, options);
             else if (nodeType == ExpressionType.TypeIs)
-                value = ReadTypeBinaryExpressions(ref reader, options);
+                value = ReadTypeBinaryExpression(ref reader, options);
             else if (nodeType == ExpressionType.New)
-                value = ReadNewExpressions(ref reader, options);
+                value = ReadNewExpression(ref reader, options);
             else if (nodeType == ExpressionType.NewArrayInit)
-                value = ReadNewArrayInitExpressions(ref reader, options);
+                value = ReadNewArrayInitExpression(ref reader, options);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
 
@@ -105,11 +105,11 @@ namespace NRules.Json.Converters
             else if (value is InvocationExpression ie)
                 WriteInvocationExpression(writer, options, ie);
             else if (value is TypeBinaryExpression tbe)
-                WriteTypeBinaryExpressions(writer, options, tbe);
+                WriteTypeBinaryExpression(writer, options, tbe);
             else if (value is NewExpression ne)
-                WriteNewExpressions(writer, options, ne);
+                WriteNewExpression(writer, options, ne);
             else if (value is NewArrayExpression nae)
-                WriteNewArrayInitExpressions(writer, options, nae);
+                WriteNewArrayInitExpression(writer, options, nae);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
 
@@ -588,7 +588,7 @@ namespace NRules.Json.Converters
             }
         }
 
-        private Expression ReadTypeBinaryExpressions(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private Expression ReadTypeBinaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Expression expression = default;
             Type typeOperand = default;
@@ -612,7 +612,7 @@ namespace NRules.Json.Converters
             return Expression.TypeIs(expression!, typeOperand!);
         }
 
-        private void WriteTypeBinaryExpressions(Utf8JsonWriter writer, JsonSerializerOptions options, TypeBinaryExpression value)
+        private void WriteTypeBinaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, TypeBinaryExpression value)
         {
             writer.WritePropertyName(JsonName(nameof(value.Expression), options));
             JsonSerializer.Serialize(writer, value.Expression, options);
@@ -621,7 +621,7 @@ namespace NRules.Json.Converters
             JsonSerializer.Serialize(writer, value.TypeOperand, options);
         }
         
-        private Expression ReadNewExpressions(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private Expression ReadNewExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Type declaringType = default;
             var arguments = new List<Expression>();
@@ -652,7 +652,7 @@ namespace NRules.Json.Converters
             return Expression.New(ctor!, arguments);
         }
 
-        private void WriteNewExpressions(Utf8JsonWriter writer, JsonSerializerOptions options, NewExpression value)
+        private void WriteNewExpression(Utf8JsonWriter writer, JsonSerializerOptions options, NewExpression value)
         {
             writer.WritePropertyName(JsonName(nameof(value.Constructor.DeclaringType), options));
             JsonSerializer.Serialize(writer, value.Constructor.DeclaringType, options);
@@ -668,7 +668,7 @@ namespace NRules.Json.Converters
             }
         }
 
-        private Expression ReadNewArrayInitExpressions(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private Expression ReadNewArrayInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Type elementType = default;
             var expressions = new List<Expression>();
@@ -698,7 +698,7 @@ namespace NRules.Json.Converters
             return Expression.NewArrayInit(elementType!, expressions);
         }
 
-        private void WriteNewArrayInitExpressions(Utf8JsonWriter writer, JsonSerializerOptions options, NewArrayExpression value)
+        private void WriteNewArrayInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, NewArrayExpression value)
         {
             writer.WritePropertyName(JsonName("ElementType", options));
             JsonSerializer.Serialize(writer, value.Type.GetElementType(), options);
