@@ -82,7 +82,7 @@ namespace NRules.Json.Converters
             writer.WriteEndObject();
         }
         
-        private RuleElement ReadGroup(ref Utf8JsonReader reader, JsonSerializerOptions options, GroupType groupType)
+        private GroupElement ReadGroup(ref Utf8JsonReader reader, JsonSerializerOptions options, GroupType groupType)
         {
             var children = new List<RuleElement>();
 
@@ -117,7 +117,7 @@ namespace NRules.Json.Converters
             writer.WriteEndArray();
         }
 
-        private RuleElement ReadExists(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private ExistsElement ReadExists(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             RuleElement source = default;
 
@@ -142,7 +142,7 @@ namespace NRules.Json.Converters
             JsonSerializer.Serialize(writer, value.Source, options);
         }
 
-        private RuleElement ReadNot(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private NotElement ReadNot(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             RuleElement source = default;
 
@@ -167,7 +167,7 @@ namespace NRules.Json.Converters
             JsonSerializer.Serialize(writer, value.Source, options);
         }
         
-        private RuleElement ReadAggregate(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private AggregateElement ReadAggregate(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             string name = default;
             Type resultType = default;
@@ -239,7 +239,7 @@ namespace NRules.Json.Converters
             JsonSerializer.Serialize(writer, value.Source, options);
         }
 
-        private RuleElement ReadBinding(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private BindingElement ReadBinding(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Type resultType = default;
             LambdaExpression expression = default;
@@ -272,7 +272,7 @@ namespace NRules.Json.Converters
             JsonSerializer.Serialize(writer, value.Expression, options);
         }
 
-        private RuleElement ReadPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private PatternElement ReadPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             string name = default;
             Type type = default;
@@ -338,7 +338,7 @@ namespace NRules.Json.Converters
             }
         }
 
-        private static RuleElement ReadDependency(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private static DependencyElement ReadDependency(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             string name = default;
             Type type = default;
@@ -380,7 +380,7 @@ namespace NRules.Json.Converters
             }
         }
         
-        private static RuleElement ReadFilter(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private static FilterElement ReadFilter(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             FilterType filterType = default;
             LambdaExpression expression = default;
@@ -411,7 +411,7 @@ namespace NRules.Json.Converters
             JsonSerializer.Serialize(writer, value.Expression, options);
         }
 
-        private RuleElement ReadForAll(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private ForAllElement ReadForAll(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             PatternElement basePattern = default;
             var patterns = new List<PatternElement>();

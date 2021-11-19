@@ -116,7 +116,7 @@ namespace NRules.Json.Converters
             writer.WriteEndObject();
         }
 
-        private Expression ReadLambda(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private LambdaExpression ReadLambda(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Type type = default;
             Expression body = default;
@@ -181,7 +181,7 @@ namespace NRules.Json.Converters
             }
         }
 
-        private Expression ReadConstant(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private ConstantExpression ReadConstant(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             reader.Read();
             if (reader.TokenType != JsonTokenType.PropertyName &&
@@ -208,7 +208,7 @@ namespace NRules.Json.Converters
             JsonSerializer.Serialize(writer, value.Value, value.Type, options);
         }
 
-        private Expression ReadParameter(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private ParameterExpression ReadParameter(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Type type = default;
             string name = default;
@@ -240,7 +240,7 @@ namespace NRules.Json.Converters
             JsonSerializer.Serialize(writer, value.Type, options);
         }
 
-        private Expression ReadMember(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private MemberExpression ReadMember(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Expression expression = default;
             MemberTypes memberType = default;
@@ -296,7 +296,7 @@ namespace NRules.Json.Converters
             }
         }
 
-        private Expression ReadMethodCall(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private MethodCallExpression ReadMethodCall(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Expression @object = default;
             var arguments = new List<Expression>();
@@ -359,7 +359,7 @@ namespace NRules.Json.Converters
             WriteMethodInfo(writer, options, value.Method, value.Object?.Type);
         }
 
-        private Expression ReadBinaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options, ExpressionType expressionType)
+        private BinaryExpression ReadBinaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options, ExpressionType expressionType)
         {
             Expression left = default;
             Expression right = default;
@@ -466,7 +466,7 @@ namespace NRules.Json.Converters
             }
         }
 
-        private Expression ReadUnaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options, ExpressionType expressionType)
+        private UnaryExpression ReadUnaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options, ExpressionType expressionType)
         {
             Expression operand = default;
             Type type = default;
@@ -542,7 +542,7 @@ namespace NRules.Json.Converters
             }
         }
 
-        private Expression ReadInvocationExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private InvocationExpression ReadInvocationExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Expression expression = default;
             var arguments = new List<Expression>();
@@ -588,7 +588,7 @@ namespace NRules.Json.Converters
             }
         }
 
-        private Expression ReadTypeBinaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private TypeBinaryExpression ReadTypeBinaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Expression expression = default;
             Type typeOperand = default;
@@ -621,7 +621,7 @@ namespace NRules.Json.Converters
             JsonSerializer.Serialize(writer, value.TypeOperand, options);
         }
         
-        private Expression ReadNewExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private NewExpression ReadNewExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Type declaringType = default;
             var arguments = new List<Expression>();
@@ -668,7 +668,7 @@ namespace NRules.Json.Converters
             }
         }
 
-        private Expression ReadNewArrayInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private NewArrayExpression ReadNewArrayInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             Type elementType = default;
             var expressions = new List<Expression>();
