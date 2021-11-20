@@ -77,6 +77,10 @@ namespace NRules.Json.Converters
                 value = ReadNewExpression(ref reader, options);
             else if (nodeType == ExpressionType.NewArrayInit)
                 value = ReadNewArrayInitExpression(ref reader, options);
+            else if (nodeType == ExpressionType.MemberInit)
+                value = ReadMemberInitExpression(ref reader, options);
+            else if (nodeType == ExpressionType.ListInit)
+                value = ReadListInitExpression(ref reader, options);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
 
@@ -110,6 +114,10 @@ namespace NRules.Json.Converters
                 WriteNewExpression(writer, options, ne);
             else if (value is NewArrayExpression nae)
                 WriteNewArrayInitExpression(writer, options, nae);
+            else if (value is MemberInitExpression mie)
+                WriteMemberInitExpression(writer, options, mie);
+            else if (value is ListInitExpression lie)
+                WriteListInitExpression(writer, options, lie);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
 
@@ -712,6 +720,136 @@ namespace NRules.Json.Converters
                 }
                 writer.WriteEndArray();
             }
+        }
+
+        private MemberInitExpression ReadMemberInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            NewExpression newExpression = default;
+            var bindings = new List<MemberBinding>();
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, "New", options))
+                {
+                    if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException();
+                    newExpression = ReadNewExpression(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(MemberInitExpression.Bindings), options))
+                {
+                    if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
+
+                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                    {
+                        var binding = JsonSerializer.Deserialize<MemberBinding>(ref reader, options);
+                        bindings.Add(binding);
+                    }
+                }
+            }
+
+            return Expression.MemberInit(newExpression!, bindings);
+        }
+
+        private void WriteMemberInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, MemberInitExpression value)
+        {
+            writer.WriteStartObject(JsonName("New", options));
+            WriteNewExpression(writer, options, value.NewExpression);
+            writer.WriteEndObject();
+
+            writer.WriteStartArray(JsonName(nameof(value.Bindings), options));
+            foreach (var binding in value.Bindings)
+            {
+                JsonSerializer.Serialize(writer, binding, options);
+            }
+            writer.WriteEndArray();
+        }
+
+        private ListInitExpression ReadListInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            NewExpression newExpression = default;
+            var initializers = new List<ElementInit>();
+
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+            {
+                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                var propertyName = JsonName(reader.GetString(), options);
+                reader.Read();
+
+                if (JsonNameEquals(propertyName, "New", options))
+                {
+                    if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException();
+                    newExpression = ReadNewExpression(ref reader, options);
+                }
+                else if (JsonNameEquals(propertyName, nameof(ListInitExpression.Initializers), options))
+                {
+                    if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
+
+                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                    {
+                        if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException();
+
+                        string name = default;
+                        Type declaringType = newExpression!.Type;
+                        var arguments = new List<Expression>();
+                        while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
+                        {
+                            if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+                            var propertyNameInner = JsonName(reader.GetString(), options);
+                            reader.Read();
+                            
+                            if (JsonNameEquals(propertyNameInner, "MethodName", options))
+                            {
+                                name = reader.GetString();
+                            }
+                            else if (JsonNameEquals(propertyNameInner, nameof(MethodInfo.DeclaringType), options))
+                            {
+                                declaringType = JsonSerializer.Deserialize<Type>(ref reader, options);
+                            }
+                            else if (JsonNameEquals(propertyNameInner, nameof(ElementInit.Arguments), options))
+                            {
+                                if (reader.TokenType != JsonTokenType.StartArray) throw new JsonException();
+
+                                while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                                {
+                                    var argument = JsonSerializer.Deserialize<Expression>(ref reader, options);
+                                    arguments.Add(argument);
+                                }
+                            }
+                        }
+                        var method = declaringType!.GetMethod(name!, arguments.Select(a => a.Type).ToArray());
+                        initializers.Add(Expression.ElementInit(method!, arguments));
+                    }
+                }
+            }
+
+            return Expression.ListInit(newExpression!, initializers);
+        }
+
+        private void WriteListInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ListInitExpression value)
+        {
+            writer.WriteStartObject(JsonName("New", options));
+            WriteNewExpression(writer, options, value.NewExpression);
+            writer.WriteEndObject();
+
+            writer.WriteStartArray(JsonName(nameof(value.Initializers), options));
+            foreach (var initializer in value.Initializers)
+            {
+                writer.WriteStartObject();
+                WriteMethodInfo(writer, options, initializer.AddMethod, value.Type);
+                
+                writer.WriteStartArray(JsonName(nameof(initializer.Arguments), options));
+                foreach (var argument in initializer.Arguments)
+                {
+                    JsonSerializer.Serialize(writer, argument, options);
+                }
+                writer.WriteEndArray();
+
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
         }
 
         private static void WriteMethodInfo(Utf8JsonWriter writer, JsonSerializerOptions options, MethodInfo value, Type defaultType)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text.Json;
 using NRules.Json.Tests.TestAssets;
@@ -142,6 +143,21 @@ namespace NRules.Json.Tests
         }
 
         [Fact]
+        public void Roundtrip_MemberInit_Equals()
+        {
+            Expression<Func<bool, string, FactType1>> expression = (b, s) => new FactType1
+                { BooleanProperty = b, StringProperty = s };
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
+        public void Roundtrip_ListInit_Equals()
+        {
+            Expression<Func<string, string, List<string>>> expression = (s1, s2) => new List<string> { s1, s2 };
+            TestRoundtrip(expression);
+        }
+        
+        [Fact]
         public void Roundtrip_NewArrayExpression_Equals()
         {
             Expression<Func<string, string[]>> expression = s => new[] {s};
@@ -160,7 +176,7 @@ namespace NRules.Json.Tests
         private void TestRoundtrip<TExpression>(TExpression expression) where TExpression: Expression
         {
             var jsonString = JsonSerializer.Serialize(expression, _options);
-            //System.IO.File.WriteAllText(@"C:\temp\expression.json", jsonString);
+            System.IO.File.WriteAllText(@"C:\temp\expression.json", jsonString);
             var deserialized = JsonSerializer.Deserialize<TExpression>(jsonString, _options);
 
             Assert.True(ExpressionComparer.AreEqual(expression, deserialized));
