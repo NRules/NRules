@@ -176,7 +176,7 @@ namespace NRules.Json.Tests
         private void TestRoundtrip<TExpression>(TExpression expression) where TExpression: Expression
         {
             var jsonString = JsonSerializer.Serialize(expression, _options);
-            System.IO.File.WriteAllText(@"C:\temp\expression.json", jsonString);
+            //System.IO.File.WriteAllText(@"C:\temp\expression.json", jsonString);
             var deserialized = JsonSerializer.Deserialize<TExpression>(jsonString, _options);
 
             Assert.True(ExpressionComparer.AreEqual(expression, deserialized));
