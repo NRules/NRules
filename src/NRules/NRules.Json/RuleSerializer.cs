@@ -7,8 +7,7 @@ using NRules.RuleModel;
 namespace NRules.Json
 {
     /// <summary>
-    /// Provides functionality to serialize rules to JSON and deserialize JSON
-    /// into rules.
+    /// Provides functionality to serialize rules to JSON and deserialize JSON into rules.
     /// </summary>
     public static class RuleSerializer
     {

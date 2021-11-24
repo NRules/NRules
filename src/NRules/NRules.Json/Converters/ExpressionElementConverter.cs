@@ -2,10 +2,9 @@
 using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NRules.Json.Utilities;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
-
-using static NRules.Json.JsonUtilities;
 
 namespace NRules.Json.Converters
 {
@@ -13,36 +12,17 @@ namespace NRules.Json.Converters
     {
         public override NamedExpressionElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException();
-
-            string name = default;
-            LambdaExpression expression = default;
-
-            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
-            {
-                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = JsonName(reader.GetString(), options);
-                reader.Read();
-
-                if (JsonNameEquals(propertyName, nameof(NamedExpressionElement.Name), options))
-                {
-                    name = reader.GetString();
-                }
-                else if (JsonNameEquals(propertyName, nameof(NamedExpressionElement.Expression), options))
-                {
-                    expression = JsonSerializer.Deserialize<LambdaExpression>(ref reader, options);
-                }
-            }
-
+            reader.ReadStartObject();
+            var name = reader.ReadStringProperty(nameof(NamedExpressionElement.Name), options);
+            var expression = reader.ReadProperty<LambdaExpression>(nameof(NamedExpressionElement.Expression), options);
             return Element.Expression(name, expression);
         }
 
         public override void Write(Utf8JsonWriter writer, NamedExpressionElement value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            writer.WriteString(JsonName(nameof(NamedExpressionElement.Name), options), value.Name);
-            writer.WritePropertyName(JsonName(nameof(NamedExpressionElement.Expression), options));
-            JsonSerializer.Serialize(writer, value.Expression, options);
+            writer.WriteStringProperty(nameof(NamedExpressionElement.Name), value.Name, options);
+            writer.WriteProperty(nameof(NamedExpressionElement.Expression), value.Expression, options);
             writer.WriteEndObject();
         }
     }
@@ -51,27 +31,10 @@ namespace NRules.Json.Converters
     {
         public override ActionElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException();
-
-            ActionTrigger trigger = ActionElement.DefaultTrigger;
-            LambdaExpression expression = default;
-
-            while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
-            {
-                if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-                var propertyName = JsonName(reader.GetString(), options);
-                reader.Read();
-
-                if (JsonNameEquals(propertyName, nameof(ActionElement.ActionTrigger), options))
-                {
-                    Enum.TryParse(reader.GetString(), out trigger);
-                }
-                else if (JsonNameEquals(propertyName, nameof(ActionElement.Expression), options))
-                {
-                    expression = JsonSerializer.Deserialize<LambdaExpression>(ref reader, options);
-                }
-            }
-
+            reader.ReadStartObject();
+            if (!reader.TryReadEnumProperty<ActionTrigger>(nameof(ActionElement.ActionTrigger), options, out var trigger))
+                trigger = ActionElement.DefaultTrigger;
+            var expression = reader.ReadProperty<LambdaExpression>(nameof(ActionElement.Expression), options);
             return Element.Action(expression, trigger);
         }
 
@@ -79,9 +42,8 @@ namespace NRules.Json.Converters
         {
             writer.WriteStartObject();
             if (value.ActionTrigger != ActionElement.DefaultTrigger)
-                writer.WriteString(JsonName(nameof(ActionElement.ActionTrigger), options), value.ActionTrigger.ToString()); 
-            writer.WritePropertyName(JsonName(nameof(ActionElement.Expression), options));
-            JsonSerializer.Serialize(writer, value.Expression, options);
+                writer.WriteEnumProperty(nameof(ActionElement.ActionTrigger), value.ActionTrigger, options); 
+            writer.WriteProperty(nameof(ActionElement.Expression), value.Expression, options);
             writer.WriteEndObject();
         }
     }
