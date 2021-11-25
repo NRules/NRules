@@ -74,6 +74,8 @@ namespace NRules.Json.Converters
                 value = ReadMemberInitExpression(ref reader, options);
             else if (nodeType == ExpressionType.ListInit)
                 value = ReadListInitExpression(ref reader, options);
+            else if (nodeType == ExpressionType.Conditional)
+                value = ReadConditionalExpression(ref reader, options);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
 
@@ -111,12 +113,14 @@ namespace NRules.Json.Converters
                 WriteMemberInitExpression(writer, options, mie);
             else if (value is ListInitExpression lie)
                 WriteListInitExpression(writer, options, lie);
+            else if (value is ConditionalExpression cne)
+                WriteConditionalExpression(writer, options, cne);
             else
                 throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
 
             writer.WriteEndObject();
         }
-
+        
         private LambdaExpression ReadLambda(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             reader.TryReadProperty<Type>(nameof(LambdaExpression.Type), options, out var type);
@@ -410,6 +414,21 @@ namespace NRules.Json.Converters
                 writer.WriteMethodInfo(options, initializer.AddMethod, value.Type);
                 writer.WriteArrayProperty(nameof(initializer.Arguments), initializer.Arguments, options);
             });
+        }
+        
+        private ConditionalExpression ReadConditionalExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            var test = reader.ReadProperty<Expression>(nameof(ConditionalExpression.Test), options);
+            var ifTrue = reader.ReadProperty<Expression>(nameof(ConditionalExpression.IfTrue), options);
+            var ifFalse = reader.ReadProperty<Expression>(nameof(ConditionalExpression.IfFalse), options);
+            return Expression.Condition(test, ifTrue, ifFalse);
+        }
+
+        private void WriteConditionalExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ConditionalExpression value)
+        {
+            writer.WriteProperty(nameof(value.Test), value.Test, options);
+            writer.WriteProperty(nameof(value.IfTrue), value.IfTrue, options);
+            writer.WriteProperty(nameof(value.IfFalse), value.IfFalse, options);
         }
 
         private static Type GetImpliedDelegateType(LambdaExpression value)

@@ -171,6 +171,13 @@ namespace NRules.Json.Tests
             TestRoundtrip(expression);
         }
 
+        [Fact]
+        public void Roundtrip_ConditionalExpression_Equals()
+        {
+            Expression<Func<int, int>> expression = i => i > 0 ? 1 : 0;
+            TestRoundtrip(expression);
+        }
+
         public static TransformDelegate Concat = string.Concat;
 
         private void TestRoundtrip<TExpression>(TExpression expression) where TExpression: Expression
