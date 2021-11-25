@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NRules.Json.Tests.TestAssets
 {
@@ -35,9 +36,9 @@ namespace NRules.Json.Tests.TestAssets
             return value;
         }
 
-        public static string Transform(this string value, int factor)
+        public static string Transform(string s, Func<string, string> map)
         {
-            return value;
+            return map(s);
         }
 
         public static bool CallOnInterface(IFactType1 fact1)

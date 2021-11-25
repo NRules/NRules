@@ -172,6 +172,13 @@ namespace NRules.Json.Tests
         }
 
         [Fact]
+        public void Roundtrip_NestedLambda_Equals()
+        {
+            Expression<Func<string, string>> expression = s => Calculations.Transform(s, x => x);
+            TestRoundtrip(expression);
+        }
+
+        [Fact]
         public void Roundtrip_ConditionalExpression_Equals()
         {
             Expression<Func<int, int>> expression = i => i > 0 ? 1 : 0;
