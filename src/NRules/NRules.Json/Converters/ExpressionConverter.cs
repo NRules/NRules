@@ -150,8 +150,8 @@ namespace NRules.Json.Converters
             reader.TryReadArrayProperty<ParameterExpression>(nameof(LambdaExpression.Parameters), options, out var parameters);
 
             var expression = type != null
-                ? Expression.Lambda(type, body!, parameters)
-                : Expression.Lambda(body!, parameters);
+                ? Expression.Lambda(type, body, parameters)
+                : Expression.Lambda(body, parameters);
 
             var parameterCompactor = new ExpressionParameterCompactor();
             var result = parameterCompactor.Compact(expression);
@@ -161,7 +161,7 @@ namespace NRules.Json.Converters
 
         private void WriteLambda(Utf8JsonWriter writer, JsonSerializerOptions options, LambdaExpression value)
         {
-            var impliedDelegateType = GetImpliedDelegateType(value);
+            var impliedDelegateType = value.GetImpliedDelegateType();
             if (value.Type != impliedDelegateType)
                 writer.WriteProperty(nameof(value.Type), value.Type, options);
 
@@ -359,7 +359,7 @@ namespace NRules.Json.Converters
         {
             var expression = reader.ReadProperty<Expression>(nameof(TypeBinaryExpression.Expression), options);
             var typeOperand = reader.ReadProperty<Type>(nameof(TypeBinaryExpression.TypeOperand), options); 
-            return Expression.TypeIs(expression!, typeOperand!);
+            return Expression.TypeIs(expression, typeOperand!);
         }
 
         private void WriteTypeBinaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, TypeBinaryExpression value)
@@ -462,21 +462,6 @@ namespace NRules.Json.Converters
         private void WriteDefaultExpression(Utf8JsonWriter writer, JsonSerializerOptions options, DefaultExpression value)
         {
             writer.WriteProperty(nameof(value.Type), value.Type, options);
-        }
-
-        private static Type GetImpliedDelegateType(LambdaExpression value)
-        {
-            var parameterTypes = new Type[value.Parameters.Count + 1];
-            for (int i = 0; i < value.Parameters.Count; i++)
-            {
-                var parameter = value.Parameters[i];
-                var parameterType = parameter.IsByRef ? parameter.Type.MakeByRefType() : parameter.Type;
-                parameterTypes[i] = parameterType;
-            }
-
-            parameterTypes[value.Parameters.Count] = value.Body.Type;
-            var impliedDelegateType = Expression.GetDelegateType(parameterTypes);
-            return impliedDelegateType;
         }
     }
 }
