@@ -19,31 +19,31 @@ namespace NRules.Json.Converters
             reader.ReadStartObject();
             var elementType = reader.ReadEnumProperty<ElementType>(nameof(RuleElement.ElementType), options);
 
-            RuleElement value;
-            if (elementType == ElementType.And)
-                value = ReadGroup(ref reader, options, GroupType.And);
-            else if (elementType == ElementType.Or)
-                value = ReadGroup(ref reader, options, GroupType.Or);
-            else if (elementType == ElementType.Exists)
-                value = ReadExists(ref reader, options);
-            else if (elementType == ElementType.Not)
-                value = ReadNot(ref reader, options);
-            else if (elementType == ElementType.Aggregate)
-                value = ReadAggregate(ref reader, options);
-            else if (elementType == ElementType.Binding)
-                value = ReadBinding(ref reader, options);
-            else if (elementType == ElementType.Pattern)
-                value = ReadPattern(ref reader, options);
-            else if (elementType == ElementType.Dependency)
-                value = ReadDependency(ref reader, options);
-            else if (elementType == ElementType.Filter)
-                value = ReadFilter(ref reader, options);
-            else if (elementType == ElementType.ForAll)
-                value = ReadForAll(ref reader, options);
-            else
-                throw new NotSupportedException($"Unsupported element type. ElementType={elementType}");
-
-            return value;
+            switch (elementType)
+            {
+                case ElementType.And:
+                    return ReadGroup(ref reader, options, GroupType.And);
+                case ElementType.Or:
+                    return ReadGroup(ref reader, options, GroupType.Or);
+                case ElementType.Exists:
+                    return ReadExists(ref reader, options);
+                case ElementType.Not:
+                    return ReadNot(ref reader, options);
+                case ElementType.Aggregate:
+                    return ReadAggregate(ref reader, options);
+                case ElementType.Binding:
+                    return ReadBinding(ref reader, options);
+                case ElementType.Pattern:
+                    return ReadPattern(ref reader, options);
+                case ElementType.Dependency:
+                    return ReadDependency(ref reader, options);
+                case ElementType.Filter:
+                    return ReadFilter(ref reader, options);
+                case ElementType.ForAll:
+                    return ReadForAll(ref reader, options);
+                default:
+                    throw new NotSupportedException($"Unsupported element type. ElementType={elementType}");
+            }
         }
         
         public override void Write(Utf8JsonWriter writer, RuleElement value, JsonSerializerOptions options)
@@ -51,26 +51,38 @@ namespace NRules.Json.Converters
             writer.WriteStartObject();
             writer.WriteEnumProperty(nameof(RuleElement.ElementType), value.ElementType, options);
 
-            if (value is GroupElement ge)
-                WriteGroup(writer, options, ge);
-            else if (value is ExistsElement ee)
-                WriteExists(writer, options, ee);
-            else if (value is NotElement ne)
-                WriteNot(writer, options, ne);
-            else if (value is AggregateElement ae)
-                WriteAggregate(writer, options, ae);
-            else if (value is BindingElement be)
-                WriteBinding(writer, options, be);
-            else if (value is PatternElement pe)
-                WritePattern(writer, options, pe);
-            else if (value is DependencyElement de)
-                WriteDependency(writer, options, de);
-            else if (value is FilterElement fe)
-                WriteFilter(writer, options, fe);
-            else if (value is ForAllElement fa)
-                WriteForAll(writer, options, fa);
-            else
-                throw new NotSupportedException($"Unsupported element type. ElementType={value.ElementType}");
+            switch (value)
+            {
+                case GroupElement ge:
+                    WriteGroup(writer, options, ge);
+                    break;
+                case ExistsElement ee:
+                    WriteExists(writer, options, ee);
+                    break;
+                case NotElement ne:
+                    WriteNot(writer, options, ne);
+                    break;
+                case AggregateElement ae:
+                    WriteAggregate(writer, options, ae);
+                    break;
+                case BindingElement be:
+                    WriteBinding(writer, options, be);
+                    break;
+                case PatternElement pe:
+                    WritePattern(writer, options, pe);
+                    break;
+                case DependencyElement de:
+                    WriteDependency(writer, options, de);
+                    break;
+                case FilterElement fe:
+                    WriteFilter(writer, options, fe);
+                    break;
+                case ForAllElement fa:
+                    WriteForAll(writer, options, fa);
+                    break;
+                default:
+                    throw new NotSupportedException($"Unsupported element type. ElementType={value.ElementType}");
+            }
 
             writer.WriteEndObject();
         }

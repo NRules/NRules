@@ -18,68 +18,68 @@ namespace NRules.Json.Converters
             reader.ReadStartObject();
             var nodeType = reader.ReadEnumProperty<ExpressionType>(nameof(Expression.NodeType), options);
 
-            Expression value;
-            if (nodeType == ExpressionType.Lambda)
-                value = ReadLambda(ref reader, options);
-            else if (nodeType == ExpressionType.Parameter)
-                value = ReadParameter(ref reader, options);
-            else if (nodeType == ExpressionType.Constant)
-                value = ReadConstant(ref reader, options);
-            else if (nodeType == ExpressionType.MemberAccess)
-                value = ReadMember(ref reader, options);
-            else if (nodeType == ExpressionType.Call)
-                value = ReadMethodCall(ref reader, options);
-            else if (nodeType == ExpressionType.Equal ||
-                     nodeType == ExpressionType.NotEqual ||
-                     nodeType == ExpressionType.GreaterThanOrEqual ||
-                     nodeType == ExpressionType.GreaterThan ||
-                     nodeType == ExpressionType.LessThanOrEqual ||
-                     nodeType == ExpressionType.LessThan ||
-                     nodeType == ExpressionType.AndAlso ||
-                     nodeType == ExpressionType.OrElse ||
-                     nodeType == ExpressionType.And ||
-                     nodeType == ExpressionType.Or ||
-                     nodeType == ExpressionType.ExclusiveOr ||
-                     nodeType == ExpressionType.Add ||
-                     nodeType == ExpressionType.AddChecked ||
-                     nodeType == ExpressionType.Divide ||
-                     nodeType == ExpressionType.Modulo ||
-                     nodeType == ExpressionType.Multiply ||
-                     nodeType == ExpressionType.MultiplyChecked ||
-                     nodeType == ExpressionType.Power ||
-                     nodeType == ExpressionType.Subtract ||
-                     nodeType == ExpressionType.SubtractChecked ||
-                     nodeType == ExpressionType.Coalesce ||
-                     nodeType == ExpressionType.ArrayIndex ||
-                     nodeType == ExpressionType.LeftShift ||
-                     nodeType == ExpressionType.RightShift)
-                value = ReadBinaryExpression(ref reader, options, nodeType);
-            else if (nodeType == ExpressionType.Not ||
-                     nodeType == ExpressionType.Negate ||
-                     nodeType == ExpressionType.NegateChecked ||
-                     nodeType == ExpressionType.UnaryPlus ||
-                     nodeType == ExpressionType.Convert ||
-                     nodeType == ExpressionType.ConvertChecked ||
-                     nodeType == ExpressionType.TypeAs)
-                value = ReadUnaryExpression(ref reader, options, nodeType);
-            else if (nodeType == ExpressionType.Invoke)
-                value = ReadInvocationExpression(ref reader, options);
-            else if (nodeType == ExpressionType.TypeIs)
-                value = ReadTypeBinaryExpression(ref reader, options);
-            else if (nodeType == ExpressionType.New)
-                value = ReadNewExpression(ref reader, options);
-            else if (nodeType == ExpressionType.NewArrayInit)
-                value = ReadNewArrayInitExpression(ref reader, options);
-            else if (nodeType == ExpressionType.MemberInit)
-                value = ReadMemberInitExpression(ref reader, options);
-            else if (nodeType == ExpressionType.ListInit)
-                value = ReadListInitExpression(ref reader, options);
-            else if (nodeType == ExpressionType.Conditional)
-                value = ReadConditionalExpression(ref reader, options);
-            else
-                throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
-
-            return value;
+            switch (nodeType)
+            {
+                case ExpressionType.Lambda:
+                    return ReadLambda(ref reader, options);
+                case ExpressionType.Parameter:
+                    return ReadParameter(ref reader, options);
+                case ExpressionType.Constant:
+                    return ReadConstant(ref reader, options);
+                case ExpressionType.MemberAccess:
+                    return ReadMember(ref reader, options);
+                case ExpressionType.Call:
+                    return ReadMethodCall(ref reader, options);
+                case ExpressionType.Equal:
+                case ExpressionType.NotEqual:
+                case ExpressionType.GreaterThanOrEqual:
+                case ExpressionType.GreaterThan:
+                case ExpressionType.LessThanOrEqual:
+                case ExpressionType.LessThan:
+                case ExpressionType.AndAlso:
+                case ExpressionType.OrElse:
+                case ExpressionType.And:
+                case ExpressionType.Or:
+                case ExpressionType.ExclusiveOr:
+                case ExpressionType.Add:
+                case ExpressionType.AddChecked:
+                case ExpressionType.Divide:
+                case ExpressionType.Modulo:
+                case ExpressionType.Multiply:
+                case ExpressionType.MultiplyChecked:
+                case ExpressionType.Power:
+                case ExpressionType.Subtract:
+                case ExpressionType.SubtractChecked:
+                case ExpressionType.Coalesce:
+                case ExpressionType.ArrayIndex:
+                case ExpressionType.LeftShift:
+                case ExpressionType.RightShift:
+                    return ReadBinaryExpression(ref reader, options, nodeType);
+                case ExpressionType.Not:
+                case ExpressionType.Negate:
+                case ExpressionType.NegateChecked:
+                case ExpressionType.UnaryPlus:
+                case ExpressionType.Convert:
+                case ExpressionType.ConvertChecked:
+                case ExpressionType.TypeAs:
+                    return ReadUnaryExpression(ref reader, options, nodeType);
+                case ExpressionType.Invoke:
+                    return ReadInvocationExpression(ref reader, options);
+                case ExpressionType.TypeIs:
+                    return ReadTypeBinaryExpression(ref reader, options);
+                case ExpressionType.New:
+                    return ReadNewExpression(ref reader, options);
+                case ExpressionType.NewArrayInit:
+                    return ReadNewArrayInitExpression(ref reader, options);
+                case ExpressionType.MemberInit:
+                    return ReadMemberInitExpression(ref reader, options);
+                case ExpressionType.ListInit:
+                    return ReadListInitExpression(ref reader, options);
+                case ExpressionType.Conditional:
+                    return ReadConditionalExpression(ref reader, options);
+                default:
+                    throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
+            }
         }
 
         public override void Write(Utf8JsonWriter writer, Expression value, JsonSerializerOptions options)
@@ -87,36 +87,53 @@ namespace NRules.Json.Converters
             writer.WriteStartObject();
             writer.WriteEnumProperty(nameof(value.NodeType), value.NodeType, options);
 
-            if (value is LambdaExpression le)
-                WriteLambda(writer, options, le);
-            else if (value is ParameterExpression pe)
-                WriteParameter(writer, options, pe);
-            else if (value is ConstantExpression ce)
-                WriteConstant(writer, options, ce);
-            else if (value is MemberExpression me)
-                WriteMember(writer, options, me);
-            else if (value is MethodCallExpression mce)
-                WriteMethodCall(writer, options, mce);
-            else if (value is BinaryExpression be)
-                WriteBinaryExpression(writer, options, be);
-            else if (value is UnaryExpression ue)
-                WriteUnaryExpression(writer, options, ue);
-            else if (value is InvocationExpression ie)
-                WriteInvocationExpression(writer, options, ie);
-            else if (value is TypeBinaryExpression tbe)
-                WriteTypeBinaryExpression(writer, options, tbe);
-            else if (value is NewExpression ne)
-                WriteNewExpression(writer, options, ne);
-            else if (value is NewArrayExpression nae)
-                WriteNewArrayInitExpression(writer, options, nae);
-            else if (value is MemberInitExpression mie)
-                WriteMemberInitExpression(writer, options, mie);
-            else if (value is ListInitExpression lie)
-                WriteListInitExpression(writer, options, lie);
-            else if (value is ConditionalExpression cne)
-                WriteConditionalExpression(writer, options, cne);
-            else
-                throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
+            switch (value)
+            {
+                case LambdaExpression le:
+                    WriteLambda(writer, options, le);
+                    break;
+                case ParameterExpression pe:
+                    WriteParameter(writer, options, pe);
+                    break;
+                case ConstantExpression ce:
+                    WriteConstant(writer, options, ce);
+                    break;
+                case MemberExpression me:
+                    WriteMember(writer, options, me);
+                    break;
+                case MethodCallExpression mce:
+                    WriteMethodCall(writer, options, mce);
+                    break;
+                case BinaryExpression be:
+                    WriteBinaryExpression(writer, options, be);
+                    break;
+                case UnaryExpression ue:
+                    WriteUnaryExpression(writer, options, ue);
+                    break;
+                case InvocationExpression ie:
+                    WriteInvocationExpression(writer, options, ie);
+                    break;
+                case TypeBinaryExpression tbe:
+                    WriteTypeBinaryExpression(writer, options, tbe);
+                    break;
+                case NewExpression ne:
+                    WriteNewExpression(writer, options, ne);
+                    break;
+                case NewArrayExpression nae:
+                    WriteNewArrayInitExpression(writer, options, nae);
+                    break;
+                case MemberInitExpression mie:
+                    WriteMemberInitExpression(writer, options, mie);
+                    break;
+                case ListInitExpression lie:
+                    WriteListInitExpression(writer, options, lie);
+                    break;
+                case ConditionalExpression cne:
+                    WriteConditionalExpression(writer, options, cne);
+                    break;
+                default:
+                    throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
+            }
 
             writer.WriteEndObject();
         }

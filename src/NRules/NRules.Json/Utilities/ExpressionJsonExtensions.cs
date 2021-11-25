@@ -16,16 +16,17 @@ namespace NRules.Json.Utilities
             if (type == null)
                 throw new ArgumentException($"Unable to determine declaring type for member. Name={name}");
 
-            MemberInfo member;
-            if (memberType == MemberTypes.Field)
-                member = type.GetField(name)
-                    ?? throw new ArgumentException($"Unknown field. DeclaringType={type}, Name={name}", nameof(name));
-            else if (memberType == MemberTypes.Property)
-                member = type.GetProperty(name)
-                    ?? throw new ArgumentException($"Unknown property. DeclaringType={type}, Name={name}", nameof(name));
-            else
-                throw new NotSupportedException($"MemberType={memberType}");
-            return member;
+            switch (memberType)
+            {
+                case MemberTypes.Field:
+                    return type.GetField(name) ??
+                        throw new ArgumentException($"Unknown field. DeclaringType={type}, Name={name}", nameof(name));
+                case MemberTypes.Property:
+                    return type.GetProperty(name) ??
+                        throw new ArgumentException($"Unknown property. DeclaringType={type}, Name={name}", nameof(name));
+                default:
+                    throw new NotSupportedException($"MemberType={memberType}");
+            }
         }
 
         public static void WriteMemberInfo(this Utf8JsonWriter writer, JsonSerializerOptions options, MemberInfo value, Type impliedType = null)

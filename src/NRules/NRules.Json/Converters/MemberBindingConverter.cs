@@ -16,13 +16,13 @@ namespace NRules.Json.Converters
             reader.ReadStartObject();
             var bindingType = reader.ReadEnumProperty<MemberBindingType>(nameof(MemberBinding.BindingType), options);
 
-            MemberBinding value;
-            if (bindingType == MemberBindingType.Assignment)
-                value = ReadMemberAssignment(ref reader, options);
-            else
-                throw new NotSupportedException($"Unsupported member binding type. BindingType={bindingType}");
-
-            return value;
+            switch (bindingType)
+            {
+                case MemberBindingType.Assignment:
+                    return ReadMemberAssignment(ref reader, options);
+                default:
+                    throw new NotSupportedException($"Unsupported member binding type. BindingType={bindingType}");
+            }
         }
 
         public override void Write(Utf8JsonWriter writer, MemberBinding value, JsonSerializerOptions options)
@@ -30,10 +30,14 @@ namespace NRules.Json.Converters
             writer.WriteStartObject();
             writer.WriteEnumProperty(nameof(value.BindingType), value.BindingType, options);
 
-            if (value is MemberAssignment ma)
-                WriteMemberAssignment(writer, options, ma);
-            else
-                throw new NotSupportedException($"Unsupported member binding type. BindingType={value.BindingType}");
+            switch (value)
+            {
+                case MemberAssignment ma:
+                    WriteMemberAssignment(writer, options, ma);
+                    break;
+                default:
+                    throw new NotSupportedException($"Unsupported member binding type. BindingType={value.BindingType}");
+            }
 
             writer.WriteEndObject();
         }
