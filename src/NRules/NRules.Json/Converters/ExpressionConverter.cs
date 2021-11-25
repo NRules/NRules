@@ -77,6 +77,8 @@ namespace NRules.Json.Converters
                     return ReadListInitExpression(ref reader, options);
                 case ExpressionType.Conditional:
                     return ReadConditionalExpression(ref reader, options);
+                case ExpressionType.Default:
+                    return ReadDefaultExpression(ref reader, options);
                 default:
                     throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
             }
@@ -128,8 +130,11 @@ namespace NRules.Json.Converters
                 case ListInitExpression lie:
                     WriteListInitExpression(writer, options, lie);
                     break;
-                case ConditionalExpression cne:
-                    WriteConditionalExpression(writer, options, cne);
+                case ConditionalExpression ce:
+                    WriteConditionalExpression(writer, options, ce);
+                    break;
+                case DefaultExpression de:
+                    WriteDefaultExpression(writer, options, de);
                     break;
                 default:
                     throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
@@ -137,7 +142,7 @@ namespace NRules.Json.Converters
 
             writer.WriteEndObject();
         }
-        
+
         private LambdaExpression ReadLambda(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             reader.TryReadProperty<Type>(nameof(LambdaExpression.Type), options, out var type);
@@ -446,6 +451,17 @@ namespace NRules.Json.Converters
             writer.WriteProperty(nameof(value.Test), value.Test, options);
             writer.WriteProperty(nameof(value.IfTrue), value.IfTrue, options);
             writer.WriteProperty(nameof(value.IfFalse), value.IfFalse, options);
+        }
+
+        private DefaultExpression ReadDefaultExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            var type = reader.ReadProperty<Type>(nameof(DefaultExpression.Type), options);
+            return Expression.Default(type);
+        }
+
+        private void WriteDefaultExpression(Utf8JsonWriter writer, JsonSerializerOptions options, DefaultExpression value)
+        {
+            writer.WriteProperty(nameof(value.Type), value.Type, options);
         }
 
         private static Type GetImpliedDelegateType(LambdaExpression value)

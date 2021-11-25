@@ -178,6 +178,13 @@ namespace NRules.Json.Tests
             TestRoundtrip(expression);
         }
 
+        [Fact]
+        public void Roundtrip_DefaultExpression_Equals()
+        {
+            var expression = Expression.Default(typeof(string));
+            TestRoundtrip(expression);
+        }
+
         public static TransformDelegate Concat = string.Concat;
 
         private void TestRoundtrip<TExpression>(TExpression expression) where TExpression: Expression

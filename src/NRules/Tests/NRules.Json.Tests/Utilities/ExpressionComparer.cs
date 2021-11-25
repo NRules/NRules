@@ -115,6 +115,12 @@ namespace NRules.Json.Tests.Utilities
                 var ay = (NewArrayExpression) y;
                 return Equals(ax.Type, ay.Type) && CollectionsEqual(ax.Expressions, ay.Expressions, rootX, rootY);
             }
+            if (x is DefaultExpression)
+            {
+                var dx = (DefaultExpression) x;
+                var dy = (DefaultExpression) y;
+                return dx.Type == dy.Type;
+            }
 
             throw new NotImplementedException(x.ToString());
         }
