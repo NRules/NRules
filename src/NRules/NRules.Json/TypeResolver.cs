@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Reflection;
+using NRules.Json.Utilities;
 
 namespace NRules.Json
 {
@@ -30,26 +31,66 @@ namespace NRules.Json
     /// </summary>
     public class TypeResolver : ITypeResolver
     {
-        private readonly Dictionary<string, Type> _aliasToTypeMap = new Dictionary<string, Type>();
-        private readonly Dictionary<Type, string> _typeToAliasMap = new Dictionary<Type, string>();
+        private readonly TypeAliasResolver _aliasResolver = new();
+        private readonly TypeCache _cache = new();
 
         /// <summary><inheritdoc/></summary>
         public string GetTypeName(Type type)
         {
-            if (_typeToAliasMap.TryGetValue(type, out var alias))
-                return alias;
-            return type.AssemblyQualifiedName;
+            return _cache.GetTypeName(type, GetAssemblyQualifiedTypeName);
         }
-        
+
+        private string GetAssemblyQualifiedTypeName(Type type)
+        {
+            var typeName = InternalGetTypeName(type);
+            return TypeNameFormatter.ConstructAssemblyQualifiedTypeName(typeName);
+        }
+
+        private TypeName InternalGetTypeName(Type type)
+        {
+            if (_aliasResolver.TryGetAliasForType(type, out var alias))
+                return new TypeName(alias);
+            
+            if (type.IsConstructedGenericType)
+            {
+                var definition = type.GetGenericTypeDefinition();
+                var definitionName = InternalGetTypeName(definition);
+
+                var typeArguments = type.GenericTypeArguments;
+                var typeArgumentNames = new TypeName[typeArguments.Length];
+                for (int i = 0; i < typeArguments.Length; i++)
+                {
+                    typeArgumentNames[i] = InternalGetTypeName(typeArguments[i]);
+                }
+
+                return TypeNameFormatter.ConstructGenericTypeName(definitionName, typeArgumentNames);
+            }
+
+            return new TypeName(type);
+        }
+
         /// <summary><inheritdoc/></summary>
         public Type GetTypeFromName(string typeName)
         {
-            if (_aliasToTypeMap.TryGetValue(typeName, out var type))
-                return type;
-            type = Type.GetType(typeName!);
+            return _cache.GetTypeFromName(typeName, GetType);
+        }
+
+        private Type GetType(string typeName)
+        {
+            var type = Type.GetType(typeName, null, ResolveType, throwOnError: false, ignoreCase: false);
             if (type == null)
                 throw new ArgumentException($"Unrecognized type name. Type={typeName}");
             return type;
+        }
+
+        private Type ResolveType(Assembly assembly, string typeName, bool ignoreCase)
+        {
+            if (_aliasResolver.TryGetTypeByAlias(typeName, out var type))
+                return type;
+
+            if (assembly != null)
+                return assembly.GetType(typeName, throwOnError: false, ignoreCase);
+            return Type.GetType(typeName, throwOnError: false, ignoreCase);
         }
 
         /// <summary>
@@ -59,8 +100,7 @@ namespace NRules.Json
         /// <param name="type">CLR type.</param>
         public void RegisterAlias(string alias, Type type)
         {
-            _aliasToTypeMap[alias] = type;
-            _typeToAliasMap[type] = alias;
+            _aliasResolver.RegisterAlias(alias, type);
         }
 
         /// <summary>
@@ -68,21 +108,7 @@ namespace NRules.Json
         /// </summary>
         public void RegisterDefaultAliases()
         {
-            RegisterAlias("bool", typeof(Boolean));
-            RegisterAlias("byte", typeof(Byte));
-            RegisterAlias("sbyte", typeof(SByte));
-            RegisterAlias("char", typeof(Char));
-            RegisterAlias("decimal", typeof(Decimal));
-            RegisterAlias("double", typeof(Double));
-            RegisterAlias("float", typeof(Single));
-            RegisterAlias("int", typeof(Int32));
-            RegisterAlias("uint", typeof(UInt32));
-            RegisterAlias("long", typeof(Int64));
-            RegisterAlias("ulong", typeof(UInt64));
-            RegisterAlias("short", typeof(Int16));
-            RegisterAlias("ushort", typeof(UInt16));
-            RegisterAlias("object", typeof(Object));
-            RegisterAlias("string", typeof(String));
+            _aliasResolver.RegisterDefaultAliases();
         }
     }
 }

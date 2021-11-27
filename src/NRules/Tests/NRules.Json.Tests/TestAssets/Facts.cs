@@ -25,4 +25,13 @@
      
         public string StringProperty { get; }
     }
+
+    public class Container<T>
+    {
+    }
+
+    public class Outer
+    {
+        public class Inner{}
+    }
 }
