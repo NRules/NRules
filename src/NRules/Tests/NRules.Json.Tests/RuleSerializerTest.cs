@@ -27,7 +27,6 @@ namespace NRules.Json.Tests
         [Fact]
         public void Roundtrip_SimpleMatchRuleWithMetadata_Equals()
         {
-            //Arrange
             var builder = new RuleBuilder();
             builder.Name("Test Rule");
             builder.Description("My test rule");
@@ -45,19 +44,14 @@ namespace NRules.Json.Tests
 
             Expression<Action<IContext, FactType1>> action = (ctx, fact1) => Calculations.DoSomething(fact1);
             builder.RightHandSide().Action(action);
-            var original = builder.Build();
+            var ruleDefinition = builder.Build();
 
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+            TestRoundtrip(ruleDefinition);
         }
 
         [Fact]
         public void Roundtrip_RuleWithFilter_Equals()
         {
-            //Arrange
             var builder = new RuleBuilder();
             builder.Name("Test Rule");
 
@@ -72,19 +66,14 @@ namespace NRules.Json.Tests
 
             Expression<Action<IContext, FactType1>> action = (ctx, fact1) => Calculations.DoSomething(fact1);
             builder.RightHandSide().Action(action);
-            var original = builder.Build();
+            var ruleDefinition = builder.Build();
 
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+            TestRoundtrip(ruleDefinition);
         }
 
         [Fact]
         public void Roundtrip_RuleWithDependency_Equals()
         {
-            //Arrange
             var builder = new RuleBuilder();
             builder.Name("Test Rule");
 
@@ -95,19 +84,14 @@ namespace NRules.Json.Tests
 
             Expression<Action<IContext, FactType1, ITestService>> action = (ctx, fact1, service) => Calculations.DoSomething(fact1, service);
             builder.RightHandSide().Action(action);
-            var original = builder.Build();
+            var ruleDefinition = builder.Build();
 
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+            TestRoundtrip(ruleDefinition);
         }
         
         [Fact]
         public void Roundtrip_TwoFactJoinRule_Equals()
         {
-            //Arrange
             var builder = new RuleBuilder();
             builder.Name("Test Rule");
 
@@ -120,19 +104,14 @@ namespace NRules.Json.Tests
             Expression<Action<IContext, FactType1, FactType2>> action = (ctx, fact1, fact2) 
                 => Calculations.DoSomething(fact1, fact2);
             builder.RightHandSide().Action(action);
-            var original = builder.Build();
+            var ruleDefinition = builder.Build();
 
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+            TestRoundtrip(ruleDefinition);
         }
 
         [Fact]
         public void Roundtrip_ExistsRule_Equals()
         {
-            //Arrange
             var builder = new RuleBuilder();
             builder.Name("Test Rule");
 
@@ -141,19 +120,14 @@ namespace NRules.Json.Tests
             Expression<Action<IContext>> action = ctx 
                 => Calculations.DoSomething();
             builder.RightHandSide().Action(action);
-            var original = builder.Build();
+            var ruleDefinition = builder.Build();
 
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+            TestRoundtrip(ruleDefinition);
         }
 
         [Fact]
         public void Roundtrip_NotRule_Equals()
         {
-            //Arrange
             var builder = new RuleBuilder();
             builder.Name("Test Rule");
 
@@ -162,19 +136,14 @@ namespace NRules.Json.Tests
             Expression<Action<IContext>> action = ctx 
                 => Calculations.DoSomething();
             builder.RightHandSide().Action(action);
-            var original = builder.Build();
+            var ruleDefinition = builder.Build();
 
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+            TestRoundtrip(ruleDefinition);
         }
         
         [Fact]
         public void Roundtrip_AggregateRule_Equals()
         {
-            //Arrange
             var builder = new RuleBuilder();
             builder.Name("Test Rule");
 
@@ -192,19 +161,14 @@ namespace NRules.Json.Tests
             Expression<Action<IContext, IEnumerable<FactType1>>> action = (ctx, factGroup)
                 => Calculations.DoSomething(factGroup);
             builder.RightHandSide().Action(action);
-            var original = builder.Build();
+            var ruleDefinition = builder.Build();
 
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+            TestRoundtrip(ruleDefinition);
         }
 
         [Fact]
         public void Roundtrip_BindingRule_Equals()
         {
-            //Arrange
             var builder = new RuleBuilder();
             builder.Name("Test Rule");
 
@@ -219,19 +183,14 @@ namespace NRules.Json.Tests
             Expression<Action<IContext, int>> action = (ctx, length)
                 => Calculations.DoSomething(length);
             builder.RightHandSide().Action(action);
-            var original = builder.Build();
+            var ruleDefinition = builder.Build();
 
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+            TestRoundtrip(ruleDefinition);
         }
 
         [Fact]
         public void Roundtrip_ForAllRule_Equals()
         {
-            //Arrange
             var builder = new RuleBuilder();
             builder.Name("Test Rule");
 
@@ -249,28 +208,24 @@ namespace NRules.Json.Tests
                 Expression.Call(
                     Expression.Property(parameter1, nameof(FactType1.StringProperty)),
                     nameof(string.StartsWith),
-                    new Type[0],
+                    Type.EmptyTypes,
                     Expression.Constant("Valid")),
                 parameter1);
             pattern1.Condition(condition1);
 
             Expression<Action<IContext>> action = ctx => Calculations.DoSomething();
             builder.RightHandSide().Action(action);
-            var original = builder.Build();
+            var ruleDefinition = builder.Build();
 
-            //Act
-            var deserialized = Roundtrip(original);
-
-            //Assert
-            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
+            TestRoundtrip(ruleDefinition);
         }
 
-        private IRuleDefinition Roundtrip(IRuleDefinition original)
+        private void TestRoundtrip(IRuleDefinition original)
         {
             var jsonString = JsonSerializer.Serialize(original, _options);
             //System.IO.File.WriteAllText(@"C:\temp\rule.json", jsonString);
             var deserialized = JsonSerializer.Deserialize<IRuleDefinition>(jsonString, _options);
-            return deserialized;
+            Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
         }
     }
 }
