@@ -118,7 +118,7 @@ namespace NRules.Json.Utilities
             return true;
         }
 
-        public delegate TElement YieldElement<out TElement>(ref Utf8JsonReader reader);
+        public delegate TElement YieldElement<out TElement>(ref Utf8JsonReader reader, JsonSerializerOptions options);
 
         public static IReadOnlyCollection<TElement> ReadObjectArrayProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, YieldElement<TElement> elementReader)
         {
@@ -133,7 +133,7 @@ namespace NRules.Json.Utilities
                     throw new JsonException();
                 reader.Read();
 
-                var element = elementReader(ref reader);
+                var element = elementReader(ref reader, options);
                 elements.Add(element);
 
                 if (reader.TokenType != JsonTokenType.EndObject)
@@ -144,6 +144,35 @@ namespace NRules.Json.Utilities
             reader.Read();
 
             return elements;
+        }
+
+        public static bool TryReadObjectArrayProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, YieldElement<TElement> elementReader, out IReadOnlyCollection<TElement> value)
+        {
+            value = Array.Empty<TElement>();
+
+            if (!reader.TryReadPropertyName(name, options))
+                return false;
+
+            reader.ReadStartArray();
+
+            var elements = new List<TElement>();
+            while (reader.TokenType != JsonTokenType.EndArray)
+            {
+                if (reader.TokenType != JsonTokenType.StartObject)
+                    throw new JsonException();
+                reader.Read();
+
+                var element = elementReader(ref reader, options);
+                elements.Add(element);
+
+                if (reader.TokenType != JsonTokenType.EndObject)
+                    throw new JsonException();
+                reader.Read();
+            }
+
+            reader.Read();
+            value = elements;
+            return true;
         }
 
         public static IReadOnlyCollection<TElement> ReadArrayProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)

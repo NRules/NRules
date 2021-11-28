@@ -146,8 +146,8 @@ namespace NRules.Json.Converters
         private LambdaExpression ReadLambda(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             reader.TryReadProperty<Type>(nameof(LambdaExpression.Type), options, out var type);
+            reader.TryReadObjectArrayProperty(nameof(LambdaExpression.Parameters), options, ReadParameter, out var parameters);
             var body = reader.ReadProperty<Expression>(nameof(LambdaExpression.Body), options);
-            reader.TryReadArrayProperty<ParameterExpression>(nameof(LambdaExpression.Parameters), options, out var parameters);
 
             var expression = type != null
                 ? Expression.Lambda(type, body, parameters)
@@ -164,18 +164,19 @@ namespace NRules.Json.Converters
             var impliedDelegateType = value.GetImpliedDelegateType();
             if (value.Type != impliedDelegateType)
                 writer.WriteProperty(nameof(value.Type), value.Type, options);
-
-            writer.WriteProperty(nameof(value.Body), value.Body, options);
-
             if (value.Parameters.Any())
-                writer.WriteArrayProperty(nameof(value.Parameters), value.Parameters, options);
+                writer.WriteObjectArrayProperty(nameof(value.Parameters), value.Parameters, options, pe =>
+                {
+                    WriteParameter(writer, options, pe);
+                });
+            writer.WriteProperty(nameof(value.Body), value.Body, options);
         }
 
         private ConstantExpression ReadConstant(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             var type = reader.ReadProperty<Type>(nameof(ConstantExpression.Type), options);
             var value = reader.ReadProperty(nameof(ConstantExpression.Value), type, options);
-            return Expression.Constant(value, type!);
+            return Expression.Constant(value, type);
         }
 
         private void WriteConstant(Utf8JsonWriter writer, JsonSerializerOptions options, ConstantExpression value)
@@ -188,7 +189,7 @@ namespace NRules.Json.Converters
         {
             var name = reader.ReadStringProperty(nameof(ParameterExpression.Name), options);
             var type = reader.ReadProperty<Type>(nameof(ParameterExpression.Type), options);
-            return Expression.Parameter(type!, name);
+            return Expression.Parameter(type, name);
         }
 
         private void WriteParameter(Utf8JsonWriter writer, JsonSerializerOptions options, ParameterExpression value)
@@ -418,10 +419,10 @@ namespace NRules.Json.Converters
             var initializers = reader.ReadObjectArrayProperty(nameof(ListInitExpression.Initializers), options, ReadElementInit);
             return Expression.ListInit(newExpression!, initializers);
 
-            ElementInit ReadElementInit(ref Utf8JsonReader r)
+            ElementInit ReadElementInit(ref Utf8JsonReader r, JsonSerializerOptions o)
             {
-                var methodRecord = r.ReadMethodInfo(options);
-                var arguments = r.ReadArrayProperty<Expression>(nameof(ElementInit.Arguments), options);
+                var methodRecord = r.ReadMethodInfo(o);
+                var arguments = r.ReadArrayProperty<Expression>(nameof(ElementInit.Arguments), o);
                 var method = methodRecord.GetMethod(arguments.Select(x => x.Type).ToArray(), newExpression.Type);
                 return Expression.ElementInit(method, arguments);
             }
