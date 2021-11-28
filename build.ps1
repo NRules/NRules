@@ -28,19 +28,22 @@ $components = @{
                 include = @(
                     "NRules\bin\$configuration\netstandard2.0",
                     "NRules.Fluent\bin\$configuration\netstandard2.0",
-                    "NRules.RuleModel\bin\$configuration\netstandard2.0"
+                    "NRules.RuleModel\bin\$configuration\netstandard2.0",
+                    "NRules.Json\bin\$configuration\netstandard2.0"
                 )
             }
             'netstandard2.1' = @{
                 include = @(
                     "NRules\bin\$configuration\netstandard2.1",
                     "NRules.Fluent\bin\$configuration\netstandard2.1",
-                    "NRules.RuleModel\bin\$configuration\netstandard2.1"
+                    "NRules.RuleModel\bin\$configuration\netstandard2.1",
+                    "NRules.Json\bin\$configuration\netstandard2.1"
                 )
             }
         }
         package = @{
             nuget = @(
+                'NRules.Json',
                 'NRules.RuleModel',
                 'NRules.Fluent',
                 'NRules.Runtime',
