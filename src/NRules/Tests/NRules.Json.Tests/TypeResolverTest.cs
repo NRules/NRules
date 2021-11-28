@@ -33,6 +33,39 @@ namespace NRules.Json.Tests
                 typeof(string),
                 "string");
         }
+        
+        [Fact]
+        public void Roundtrip_ArrayTypeWithAlias_Alias()
+        {
+            TestRoundtrip(new()
+                {
+                    { "string", typeof(string) }
+                },
+                typeof(string[]),
+                "string[]");
+        }
+        
+        [Fact]
+        public void Roundtrip_2DArrayTypeWithAlias_Alias()
+        {
+            TestRoundtrip(new()
+                {
+                    { "string", typeof(string) }
+                },
+                typeof(string[,]),
+                "string[,]");
+        }
+        
+        [Fact]
+        public void Roundtrip_JaggedArrayTypeWithAlias_Alias()
+        {
+            TestRoundtrip(new()
+                {
+                    { "string", typeof(string) }
+                },
+                typeof(string[][]),
+                "string[][]");
+        }
 
         [Fact]
         public void Roundtrip_GenericSystemTypeWithSystemTypeArgument_TypeNamesWithoutAssemblyNames()

@@ -51,10 +51,17 @@ namespace NRules.Json
             if (_aliasResolver.TryGetAliasForType(type, out var alias))
                 return new TypeName(alias);
             
+            if (type.IsArray)
+            {
+                var elementType = type.GetElementType();
+                var elementTypeName = InternalGetTypeName(elementType);
+                return TypeNameFormatter.ConstructArrayTypeName(elementTypeName, type.GetArrayRank());
+            }
+
             if (type.IsConstructedGenericType)
             {
-                var definition = type.GetGenericTypeDefinition();
-                var definitionName = InternalGetTypeName(definition);
+                var definitionType = type.GetGenericTypeDefinition();
+                var definitionTypeName = InternalGetTypeName(definitionType);
 
                 var typeArguments = type.GenericTypeArguments;
                 var typeArgumentNames = new TypeName[typeArguments.Length];
@@ -63,7 +70,7 @@ namespace NRules.Json
                     typeArgumentNames[i] = InternalGetTypeName(typeArguments[i]);
                 }
 
-                return TypeNameFormatter.ConstructGenericTypeName(definitionName, typeArgumentNames);
+                return TypeNameFormatter.ConstructGenericTypeName(definitionTypeName, typeArgumentNames);
             }
 
             return new TypeName(type);

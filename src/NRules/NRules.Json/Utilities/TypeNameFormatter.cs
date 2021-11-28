@@ -16,10 +16,9 @@ namespace NRules.Json.Utilities
             return Assembly.CreateQualifiedName(typeName.AssemblyName.FullName, typeName.FullName);
         }
         
-        public static TypeName ConstructGenericTypeName(TypeName definitionName, TypeName[] typeArgumentNames)
+        public static TypeName ConstructGenericTypeName(TypeName definitionTypeName, TypeName[] typeArgumentNames)
         {
-            var sb = new StringBuilder();
-            sb.Append(definitionName.FullName);
+            var sb = new StringBuilder(definitionTypeName.FullName);
             sb.Append('[');
             for (var i = 0; i < typeArgumentNames.Length; i++)
             {
@@ -29,7 +28,19 @@ namespace NRules.Json.Utilities
                 sb.Append(']');
             }
             sb.Append(']');
-            return new TypeName(sb.ToString(), definitionName.AssemblyName);
+            return new TypeName(sb.ToString(), definitionTypeName.AssemblyName);
+        }
+
+        public static TypeName ConstructArrayTypeName(TypeName elementTypeName, int arrayRank)
+        {
+            var sb = new StringBuilder(elementTypeName.FullName);
+            sb.Append('[');
+            for (int i = 1; i < arrayRank; i++)
+            {
+                sb.Append(',');
+            }
+            sb.Append(']');
+            return new TypeName(sb.ToString(), elementTypeName.AssemblyName);
         }
     }
 }
