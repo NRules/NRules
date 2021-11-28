@@ -192,6 +192,27 @@ namespace NRules.Json.Tests
             TestRoundtrip(expression);
         }
 
+        [Fact]
+        public void Deserialize_WrongPropertyPosition_Throws()
+        {
+            var jsonString = @"{
+  'nodeType': 'Constant',
+  'value': 'My Value'
+}".Replace('\'', '\"');
+            var ex = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<Expression>(jsonString, _options));
+            Assert.Contains("Expected property. Name=Type", ex.Message);
+        }
+
+        [Fact]
+        public void Deserialize_WrongEnumValue_Throws()
+        {
+            var jsonString = @"{
+  'nodeType': 'InvalidValue'
+}".Replace('\'', '\"');
+            var ex = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<Expression>(jsonString, _options));
+            Assert.Contains("Unable to convert Enum value. Value=InvalidValue, EnumType=System.Linq.Expressions.ExpressionType", ex.Message);
+        }
+
         private void TestRoundtrip<TExpression>(TExpression expression) where TExpression: Expression
         {
             var jsonString = JsonSerializer.Serialize(expression, _options);

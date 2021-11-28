@@ -9,21 +9,28 @@ namespace NRules.Json.Utilities
         public static void ReadStartObject(this ref Utf8JsonReader reader)
         {
             if (reader.TokenType != JsonTokenType.StartObject)
-                throw new JsonException();
+                throw new JsonException($"Expected start of object. Actual={reader.TokenType}");
+            reader.Read();
+        }
+
+        public static void ReadEndObject(this ref Utf8JsonReader reader)
+        {
+            if (reader.TokenType != JsonTokenType.EndObject)
+                throw new JsonException($"Expected end of object. Actual={reader.TokenType}");
             reader.Read();
         }
 
         public static void ReadStartArray(this ref Utf8JsonReader reader)
         {
             if (reader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
+                throw new JsonException($"Expected start of array. Actual={reader.TokenType}");
             reader.Read();
         }
 
         public static void ReadPropertyName(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
         {
             if (!reader.TryReadPropertyName(name, options))
-                throw new JsonException();
+                throw new JsonException($"Expected property. Name={name}");
         }
 
         public static bool TryReadPropertyName(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
@@ -33,7 +40,7 @@ namespace NRules.Json.Utilities
                 return false;
 
             if (reader.TokenType != JsonTokenType.PropertyName)
-                throw new JsonException();
+                throw new JsonException($"Expected property. Name={name}, Actual={reader.TokenType}");
 
             var propertyName = reader.GetString();
             if (!name.NameEquals(propertyName, options))
@@ -92,11 +99,7 @@ namespace NRules.Json.Utilities
         {
             reader.ReadPropertyName(name, options);
             
-            if (!Enum.TryParse(reader.GetString(), out TEnum value))
-                throw new JsonException();
-            reader.Read();
-            
-            return value;
+            return reader.ReadEnum<TEnum>(options);
         }
 
         public static bool TryReadEnumProperty<TEnum>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out TEnum value) where TEnum : struct
@@ -105,11 +108,20 @@ namespace NRules.Json.Utilities
             if (!reader.TryReadPropertyName(name, options))
                 return false;
             
-            if (!Enum.TryParse(reader.GetString(), out value))
-                throw new JsonException();
-            reader.Read();
+            value = reader.ReadEnum<TEnum>(options);
             
             return true;
+        }
+
+        public static TEnum ReadEnum<TEnum>(this ref Utf8JsonReader reader, JsonSerializerOptions options) where TEnum : struct
+        {
+            var rawValue = reader.GetString();
+            if (!Enum.TryParse(rawValue, ignoreCase: false, out TEnum value) &&
+                !Enum.TryParse(rawValue, ignoreCase: true, out value))
+                throw new JsonException($"Unable to convert Enum value. Value={rawValue}, EnumType={typeof(TEnum)}");
+            reader.Read();
+            
+            return value;
         }
 
         public delegate TElement YieldElement<out TElement>(ref Utf8JsonReader reader, JsonSerializerOptions options);
@@ -139,16 +151,12 @@ namespace NRules.Json.Utilities
             var elements = new List<TElement>();
             while (reader.TokenType != JsonTokenType.EndArray)
             {
-                if (reader.TokenType != JsonTokenType.StartObject)
-                    throw new JsonException();
-                reader.Read();
+                reader.ReadStartObject();
 
                 var element = elementReader(ref reader, options);
                 elements.Add(element);
 
-                if (reader.TokenType != JsonTokenType.EndObject)
-                    throw new JsonException();
-                reader.Read();
+                reader.ReadEndObject();
             }
             reader.Read();
             
