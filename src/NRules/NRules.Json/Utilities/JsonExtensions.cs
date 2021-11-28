@@ -22,14 +22,8 @@ namespace NRules.Json.Utilities
 
         public static void ReadPropertyName(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
         {
-            if (reader.TokenType != JsonTokenType.PropertyName)
+            if (!reader.TryReadPropertyName(name, options))
                 throw new JsonException();
-
-            var propertyName = reader.GetString();
-            if (!name.NameEquals(propertyName, options))
-                throw new JsonException();
-
-            reader.Read();
         }
 
         public static bool TryReadPropertyName(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
@@ -46,6 +40,7 @@ namespace NRules.Json.Utilities
                 return false;
 
             reader.Read();
+            
             return true;
         }
 
@@ -62,10 +57,9 @@ namespace NRules.Json.Utilities
         public static bool TryReadStringProperty(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out string value)
         {
             value = default;
-
             if (!reader.TryReadPropertyName(name, options))
                 return false;
-
+            
             value = reader.GetString();
             reader.Read();
             
@@ -97,7 +91,7 @@ namespace NRules.Json.Utilities
         public static TEnum ReadEnumProperty<TEnum>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options) where TEnum : struct
         {
             reader.ReadPropertyName(name, options);
-
+            
             if (!Enum.TryParse(reader.GetString(), out TEnum value))
                 throw new JsonException();
             reader.Read();
@@ -110,7 +104,7 @@ namespace NRules.Json.Utilities
             value = default;
             if (!reader.TryReadPropertyName(name, options))
                 return false;
-
+            
             if (!Enum.TryParse(reader.GetString(), out value))
                 throw new JsonException();
             reader.Read();
@@ -123,38 +117,25 @@ namespace NRules.Json.Utilities
         public static IReadOnlyCollection<TElement> ReadObjectArrayProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, YieldElement<TElement> elementReader)
         {
             reader.ReadPropertyName(name, options);
-
-            reader.ReadStartArray();
-
-            var elements = new List<TElement>();
-            while (reader.TokenType != JsonTokenType.EndArray)
-            {
-                if (reader.TokenType != JsonTokenType.StartObject)
-                    throw new JsonException();
-                reader.Read();
-
-                var element = elementReader(ref reader, options);
-                elements.Add(element);
-
-                if (reader.TokenType != JsonTokenType.EndObject)
-                    throw new JsonException();
-                reader.Read();
-            }
-
-            reader.Read();
-
-            return elements;
+            
+            return reader.ReadObjectArray(options, elementReader);
         }
 
         public static bool TryReadObjectArrayProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, YieldElement<TElement> elementReader, out IReadOnlyCollection<TElement> value)
         {
             value = Array.Empty<TElement>();
-
             if (!reader.TryReadPropertyName(name, options))
                 return false;
+            
+            value = reader.ReadObjectArray(options, elementReader);
+            
+            return true;
+        }
 
+        private static IReadOnlyCollection<TElement> ReadObjectArray<TElement>(this ref Utf8JsonReader reader, JsonSerializerOptions options, YieldElement<TElement> elementReader)
+        {
             reader.ReadStartArray();
-
+            
             var elements = new List<TElement>();
             while (reader.TokenType != JsonTokenType.EndArray)
             {
@@ -169,63 +150,37 @@ namespace NRules.Json.Utilities
                     throw new JsonException();
                 reader.Read();
             }
-
             reader.Read();
-            value = elements;
-            return true;
+            
+            return elements;
         }
 
         public static IReadOnlyCollection<TElement> ReadArrayProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
         {
             reader.ReadPropertyName(name, options);
-
-            reader.ReadStartArray();
-
-            var elements = new List<TElement>();
-            while (reader.TokenType != JsonTokenType.EndArray)
-            {
-                var element = JsonSerializer.Deserialize<TElement>(ref reader, options);
-                elements.Add(element);
-                reader.Read();
-            }
-
-            reader.Read();
-
-            return elements;
+            
+            return reader.ReadArray<TElement>(options);
         }
 
         public static bool TryReadArrayProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out IReadOnlyCollection<TElement> value)
         {
             value = Array.Empty<TElement>();
-
             if (!reader.TryReadPropertyName(name, options))
                 return false;
-
-            reader.ReadStartArray();
-
-            var elements = new List<TElement>();
-            while (reader.TokenType != JsonTokenType.EndArray)
-            {
-                var element = JsonSerializer.Deserialize<TElement>(ref reader, options);
-                elements.Add(element);
-                reader.Read();
-            }
-
-            reader.Read();
-
-            value = elements;
+            
+            value = reader.ReadArray<TElement>(options);
+            
             return true;
         }
 
         public static bool TryReadArrayProperty(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out string[] value)
         {
             value = Array.Empty<string>();
-
             if (!reader.TryReadPropertyName(name, options))
                 return false;
 
             reader.ReadStartArray();
-
+            
             var elements = new List<string>();
             while (reader.TokenType != JsonTokenType.EndArray)
             {
@@ -233,11 +188,26 @@ namespace NRules.Json.Utilities
                 elements.Add(element);
                 reader.Read();
             }
-
             reader.Read();
-
+            
             value = elements.ToArray();
             return true;
+        }
+
+        public static IReadOnlyCollection<TElement> ReadArray<TElement>(this ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            reader.ReadStartArray();
+            
+            var elements = new List<TElement>();
+            while (reader.TokenType != JsonTokenType.EndArray)
+            {
+                var element = JsonSerializer.Deserialize<TElement>(ref reader, options);
+                elements.Add(element);
+                reader.Read();
+            }
+            reader.Read();
+            
+            return elements;
         }
 
         public static TElement ReadProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
@@ -246,6 +216,7 @@ namespace NRules.Json.Utilities
 
             var value = JsonSerializer.Deserialize<TElement>(ref reader, options);
             reader.Read();
+
             return value;
         }
 
@@ -255,18 +226,19 @@ namespace NRules.Json.Utilities
 
             var value = JsonSerializer.Deserialize(ref reader, type, options);
             reader.Read();
+
             return value;
         }
 
         public static bool TryReadProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out TElement value)
         {
             value = default;
-
             if (!reader.TryReadPropertyName(name, options))
                 return false;
 
             value = JsonSerializer.Deserialize<TElement>(ref reader, options);
             reader.Read();
+
             return true;
         }
 
