@@ -15,9 +15,12 @@ namespace NRules.Json.Converters
             reader.ReadStartObject();
 
             var name = reader.ReadStringProperty(nameof(IRuleDefinition.Name), options);
-            reader.TryReadStringProperty(nameof(IRuleDefinition.Description), options, out var description);
-            var priority = reader.ReadInt32Property(nameof(IRuleDefinition.Priority), options);
-            var repeatability = reader.ReadEnumProperty<RuleRepeatability>(nameof(IRuleDefinition.Repeatability), options);
+            if (!reader.TryReadStringProperty(nameof(IRuleDefinition.Description), options, out var description))
+                description = string.Empty;
+            if (!reader.TryReadInt32Property(nameof(IRuleDefinition.Priority), options, out var priority))
+                priority = 0;
+            if (!reader.TryReadEnumProperty<RuleRepeatability>(nameof(IRuleDefinition.Repeatability), options, out var repeatability))
+                repeatability = RuleRepeatability.Repeatable;
             reader.TryReadArrayProperty(nameof(IRuleDefinition.Tags), options, out string[] tags);
             reader.TryReadArrayProperty<RuleProperty>(nameof(IRuleDefinition.Properties), options, out var properties);
             reader.TryReadArrayProperty<DependencyElement>(nameof(DependencyGroupElement.Dependencies), options, out var dependencies);
@@ -25,7 +28,7 @@ namespace NRules.Json.Converters
             reader.TryReadArrayProperty<FilterElement>(nameof(FilterGroupElement.Filters), options, out var filters);
             var actions = reader.ReadArrayProperty<ActionElement>(nameof(IRuleDefinition.RightHandSide), options);
             
-            var ruleDefinition = Element.RuleDefinition(name, description ?? string.Empty, priority, 
+            var ruleDefinition = Element.RuleDefinition(name, description, priority, 
                 repeatability, tags, properties, Element.DependencyGroup(dependencies),
                 lhs, Element.FilterGroup(filters), Element.ActionGroup(actions));
             return ruleDefinition;
@@ -37,8 +40,10 @@ namespace NRules.Json.Converters
             writer.WriteStringProperty(nameof(IRuleDefinition.Name), value.Name, options);
             if (!string.IsNullOrEmpty(value.Description))
                 writer.WriteStringProperty(nameof(IRuleDefinition.Description), value.Description, options);
-            writer.WriteNumberProperty(nameof(IRuleDefinition.Priority), value.Priority, options);
-            writer.WriteEnumProperty(nameof(IRuleDefinition.Repeatability), value.Repeatability, options);
+            if (value.Priority != 0)
+                writer.WriteNumberProperty(nameof(IRuleDefinition.Priority), value.Priority, options);
+            if (value.Repeatability != RuleRepeatability.Repeatable)
+                writer.WriteEnumProperty(nameof(IRuleDefinition.Repeatability), value.Repeatability, options);
 
             if (value.Tags.Any())
                 writer.WriteArrayProperty(nameof(IRuleDefinition.Tags), value.Tags, options);

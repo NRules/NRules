@@ -82,6 +82,18 @@ namespace NRules.Json.Utilities
             return value;
         }
 
+        public static bool TryReadInt32Property(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out int value)
+        {
+            value = default;
+            if (!reader.TryReadPropertyName(name, options))
+                return false;
+            
+            value = reader.GetInt32();
+            reader.Read();
+            
+            return true;
+        }
+
         public static TEnum ReadEnumProperty<TEnum>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options) where TEnum : struct
         {
             reader.ReadPropertyName(name, options);
