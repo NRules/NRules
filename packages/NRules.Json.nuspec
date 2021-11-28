@@ -10,7 +10,10 @@
     <projectUrl>https://nrules.net</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/NRules/NRules.media/master/Logo/Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>JSON serialization for NRules.</description>
+    <summary>JSON serialization for the NRules rules engine.</summary>
+    <description>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm. NRules is an inference engine that, among other features, supports forward chaining, negative, existential and universal quantifiers. Rules are authored in C# using internal DSL.
+
+This package adds support for serialization of rule definitions to JSON and deserialization of JSON into rule definitions.</description>
     <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
     <copyright>Copyright 2012-2021 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>nrules json</tags>
