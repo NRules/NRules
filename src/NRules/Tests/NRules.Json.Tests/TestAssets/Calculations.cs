@@ -45,5 +45,7 @@ namespace NRules.Json.Tests.TestAssets
         {
             return fact1.BooleanProperty;
         }
+
+        public static TransformDelegate Concat = string.Concat;
     }
 }

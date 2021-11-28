@@ -167,7 +167,7 @@ namespace NRules.Json.Tests
         [Fact]
         public void Roundtrip_InvocationExpression_Equals()
         {
-            Expression<Func<string, string>> expression = s => Concat(s, "Value");
+            Expression<Func<string, string>> expression = s => Calculations.Concat(s, "Value");
             TestRoundtrip(expression);
         }
 
@@ -191,8 +191,6 @@ namespace NRules.Json.Tests
             var expression = Expression.Default(typeof(string));
             TestRoundtrip(expression);
         }
-
-        public static TransformDelegate Concat = string.Concat;
 
         private void TestRoundtrip<TExpression>(TExpression expression) where TExpression: Expression
         {
