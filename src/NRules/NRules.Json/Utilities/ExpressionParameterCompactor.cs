@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace NRules.Json.Converters
+namespace NRules.Json.Utilities
 {
     internal class ExpressionParameterCompactor : ExpressionVisitor
     {

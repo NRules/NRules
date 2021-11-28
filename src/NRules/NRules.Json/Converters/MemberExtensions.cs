@@ -1,10 +1,23 @@
 ﻿using System;
 using System.Reflection;
 using System.Text.Json;
+using NRules.Json.Utilities;
 
-namespace NRules.Json.Utilities
+namespace NRules.Json.Converters
 {
-    internal static class ExpressionJsonExtensions
+    internal readonly struct MethodRecord
+    {
+        public readonly string Name;
+        public readonly Type DeclaringType;
+
+        public MethodRecord(string name, Type declaringType)
+        {
+            Name = name;
+            DeclaringType = declaringType;
+        }
+    }
+
+    internal static class MemberExtensions
     {
         public static MemberInfo ReadMemberInfo(this ref Utf8JsonReader reader, JsonSerializerOptions options, Type impliedType = null)
         {
