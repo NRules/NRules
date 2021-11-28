@@ -61,7 +61,6 @@ namespace NRules.Json
             {
                 new TypeConverter(typeResolver),
                 new ExpressionConverter(),
-                new MemberBindingConverter(),
                 new RuleDefinitionConverter(),
                 new RulePropertyConverter(),
                 new NamedExpressionElementConverter(),

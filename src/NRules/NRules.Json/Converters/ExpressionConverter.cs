@@ -403,14 +403,22 @@ namespace NRules.Json.Converters
         private MemberInitExpression ReadMemberInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             var newExpression = ReadNewExpression(ref reader, options);
-            var bindings = reader.ReadArrayProperty<MemberBinding>(nameof(MemberInitExpression.Bindings), options);
+            var bindings = reader.ReadObjectArrayProperty(nameof(MemberInitExpression.Bindings), options, ReadMemberBinding);
             return Expression.MemberInit(newExpression, bindings);
+
+            MemberBinding ReadMemberBinding(ref Utf8JsonReader r, JsonSerializerOptions o)
+            {
+                return r.ReadMemberBinding(o, newExpression.Type);
+            }
         }
 
         private void WriteMemberInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, MemberInitExpression value)
         {
             WriteNewExpression(writer, options, value.NewExpression);
-            writer.WriteArrayProperty(nameof(value.Bindings), value.Bindings, options);
+            writer.WriteObjectArrayProperty(nameof(value.Bindings), value.Bindings, options, mb =>
+            {
+                writer.WriteMemberBinding(mb, options, value.NewExpression.Type);
+            });
         }
 
         private ListInitExpression ReadListInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
