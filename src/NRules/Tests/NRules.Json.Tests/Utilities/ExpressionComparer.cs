@@ -1,12 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace NRules.Utilities
+namespace NRules.Json.Tests.Utilities
 {
-    internal static class ExpressionComparer
+    public static class ExpressionComparer
     {
         public static bool AreEqual(Expression x, Expression y)
         {
@@ -50,7 +50,8 @@ namespace NRules.Utilities
             {
                 var px = (ParameterExpression)x;
                 var py = (ParameterExpression)y;
-                return rootX.Parameters.IndexOf(px) == rootY.Parameters.IndexOf(py);
+                return rootX.Parameters.IndexOf(px) == rootY.Parameters.IndexOf(py) &&
+                       px.Name == py.Name;
             }
             if (x is MethodCallExpression)
             {
@@ -105,14 +106,20 @@ namespace NRules.Utilities
                 var cx = (ConditionalExpression)x;
                 var cy = (ConditionalExpression)y;
                 return ExpressionEqual(cx.Test, cy.Test, rootX, rootY)
-                    && ExpressionEqual(cx.IfTrue, cy.IfTrue, rootX, rootY)
-                    && ExpressionEqual(cx.IfFalse, cy.IfFalse, rootX, rootY);
+                       && ExpressionEqual(cx.IfTrue, cy.IfTrue, rootX, rootY)
+                       && ExpressionEqual(cx.IfFalse, cy.IfFalse, rootX, rootY);
             }
             if (x is NewArrayExpression)
             {
                 var ax = (NewArrayExpression) x;
                 var ay = (NewArrayExpression) y;
                 return Equals(ax.Type, ay.Type) && CollectionsEqual(ax.Expressions, ay.Expressions, rootX, rootY);
+            }
+            if (x is DefaultExpression)
+            {
+                var dx = (DefaultExpression) x;
+                var dy = (DefaultExpression) y;
+                return dx.Type == dy.Type;
             }
 
             throw new NotImplementedException(x.ToString());
@@ -214,8 +221,8 @@ namespace NRules.Utilities
         {
             var o = ((ConstantExpression)mex.Expression).Value;
             return mex.Member is FieldInfo
-                              ? ((FieldInfo)mex.Member).GetValue(o)
-                              : ((PropertyInfo)mex.Member).GetValue(o, null);
+                ? ((FieldInfo)mex.Member).GetValue(o)
+                : ((PropertyInfo)mex.Member).GetValue(o, null);
         }
     }
 }
