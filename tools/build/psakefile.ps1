@@ -107,15 +107,19 @@ task Test -depends Compile -precondition { return $component.ContainsKey('test')
     $testsDir = "$srcDir\$($component.test.location)"
     Get-ChildItem $testsDir -recurse -filter "*.trx" | % { Delete-File $_.fullname }
     
-    $hasError = 0
+    $hasError = $false
     $projects = Get-DotNetProjects $testsDir
     foreach ($project in $projects) {
         Push-Location $project
         $projectName = Split-Path $project -Leaf
         foreach ($framework in $component.test.frameworks) {
             $result = "$($projectName)_$framework.trx"
-            dotnet test --no-build --configuration $configuration --framework $framework --verbosity minimal --logger "trx;LogFileName=$result"
-            $hasError += $lastExitCode
+            try {
+                exec { dotnet test --no-build --configuration $configuration --framework $framework --verbosity minimal --logger "trx;LogFileName=$result" }
+            }
+            catch {
+                $hasError = $true
+            }
         }
         Pop-Location
     }
@@ -129,7 +133,7 @@ task Test -depends Compile -precondition { return $component.ContainsKey('test')
         }
     }
     
-    if ($hasError -ne 0) {
+    if ($hasError) {
         throw "Test task failed"
     }
 }
