@@ -115,7 +115,7 @@ task Test -depends Compile -precondition { return $component.ContainsKey('test')
         foreach ($framework in $component.test.frameworks) {
             $result = "$($projectName)_$framework.trx"
             try {
-                exec { dotnet test --no-build --configuration $configuration --framework $framework --verbosity minimal --logger "trx;LogFileName=$result 2>&1" }
+                exec { dotnet test --no-build --configuration $configuration --framework $framework --verbosity minimal --logger "trx;LogFileName=$result" }
             }
             catch {
                 $hasError = $true
