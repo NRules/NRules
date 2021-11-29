@@ -35,12 +35,6 @@ namespace NRules.Tests
         }
 
         [Fact]
-        public void FailingTest()
-        {
-            Assert.Equal(1, 2);
-        }
-
-        [Fact]
         public void Insert_FactDoesNotExist_PropagatesAssert()
         {
             // Arrange
