@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NRules.Aggregators.Collections;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators
@@ -57,8 +58,7 @@ namespace NRules.Aggregators
         {
             foreach (var fact in facts)
             {
-                var item = (TElement) fact.Value;
-                _items.Remove(fact, item);
+                _items.Remove(fact);
             }
         }
     }

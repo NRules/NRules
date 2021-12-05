@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NRules.Aggregators.Collections;
 using NRules.RuleModel;
 using NRules.Utilities;
 

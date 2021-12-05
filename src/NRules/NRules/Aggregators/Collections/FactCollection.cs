@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NRules.RuleModel;
 
-namespace NRules.Aggregators
+namespace NRules.Aggregators.Collections
 {
     internal class FactCollection<TElement> : IEnumerable<TElement>
     {
@@ -27,7 +27,7 @@ namespace NRules.Aggregators
             }
         }
 
-        public void Remove(IFact fact, TElement element)
+        public void Remove(IFact fact)
         {
             var nodePair = _nodeLookup[fact];
             _facts.Remove(nodePair.FactNode);
