@@ -82,7 +82,7 @@ namespace NRules.Fluent.Dsl
         /// <typeparam name="TSource">Type of source facts.</typeparam>
         /// <typeparam name="TKey">Type of grouping key.</typeparam>
         /// <param name="source">Query expression builder.</param>
-        /// <param name="keySelector">Key selection expression.</param>
+        /// <param name="keySelector">Grouping key selection expression.</param>
         /// <returns>Query expression builder.</returns>
         public static IQuery<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector)
         {
@@ -98,7 +98,7 @@ namespace NRules.Fluent.Dsl
         /// <typeparam name="TKey">Type of grouping key.</typeparam>
         /// <typeparam name="TElement">Type of projected facts.</typeparam>
         /// <param name="source">Query expression builder.</param>
-        /// <param name="keySelector">Key selection expression.</param>
+        /// <param name="keySelector">Grouping key selection expression.</param>
         /// <param name="elementSelector">Projected fact selection expression.</param>
         /// <returns>Query expression builder.</returns>
         public static IQuery<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IQuery<TSource> source,
