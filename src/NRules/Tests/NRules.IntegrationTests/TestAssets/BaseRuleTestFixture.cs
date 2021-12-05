@@ -4,6 +4,7 @@ using System.Linq;
 using NRules.Diagnostics;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
+using NRules.RuleModel;
 
 namespace NRules.IntegrationTests.TestAssets
 {
@@ -55,26 +56,20 @@ namespace NRules.IntegrationTests.TestAssets
 
         protected IEnumerable<T> GetFiredFacts<T>()
         {
-            var rule = _ruleMap.Single().Value;
-            var firedRule = _firedRulesMap[rule.Name];
-            var x = firedRule.Last();
-            return x.Facts.Where(f => typeof(T).IsAssignableFrom(f.Declaration.Type)).Select(f => (T) f.Value);
+            var ruleFiring = GetLastRuleFiring();
+            return GetFacts<T>(ruleFiring, allowEmpty: true).Select(f => (T) f.Value);
         }
 
         protected T GetFiredFact<T>()
         {
-            var rule = _ruleMap.Single().Value;
-            var firedRule = _firedRulesMap[rule.Name];
-            var x = firedRule.Last();
-            return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Declaration.Type)).Value;
+            var ruleFiring = GetLastRuleFiring();
+            return (T)GetFacts<T>(ruleFiring).First().Value;
         }
 
         protected T GetFiredFact<T>(int instanceNumber)
         {
-            var rule = _ruleMap.Single().Value;
-            var firedRule = _firedRulesMap[rule.Name];
-            var x = firedRule.ElementAt(instanceNumber);
-            return (T)x.Facts.First(f => typeof(T).IsAssignableFrom(f.Declaration.Type)).Value;
+            var ruleFiring = GetRuleFiring(instanceNumber);
+            return (T)GetFacts<T>(ruleFiring).First().Value;
         }
 
         protected void AssertFiredOnce()
@@ -89,10 +84,9 @@ namespace NRules.IntegrationTests.TestAssets
 
         protected void AssertFiredTimes(int expected)
         {
-            var ruleEntry = _firedRulesMap.First();
-            string ruleName = ruleEntry.Key;
-            var actual = ruleEntry.Value.Count;
-            AssertRuleFiredTimes(ruleName, expected, actual);
+            var ruleMetadata = GetRule();
+            var actual = GetRuleFirings(ruleMetadata).Count;
+            AssertRuleFiredTimes(ruleMetadata.Name, expected, actual);
         }
 
         protected void AssertDidNotFire()
@@ -112,12 +106,11 @@ namespace NRules.IntegrationTests.TestAssets
 
         protected void AssertFiredTimes<T>(int expected)
         {
-            var ruleMetadata = _ruleMap[typeof(T)];
-            string ruleName = ruleMetadata.Name;
-            var actual = _firedRulesMap[ruleName].Count;
-            AssertRuleFiredTimes(ruleName, expected, actual);
+            var ruleMetadata = GetRule<T>();
+            var actual = GetRuleFirings(ruleMetadata).Count;
+            AssertRuleFiredTimes(ruleMetadata.Name, expected, actual);
         }
-
+        
         protected void AssertDidNotFire<T>()
         {
             AssertFiredTimes<T>(0);
@@ -129,9 +122,60 @@ namespace NRules.IntegrationTests.TestAssets
                 throw new RuleFiredAssertionException(expected, actual, ruleName);
         }
 
+        private IRuleMetadata GetRule<T>()
+        {
+            if (!_ruleMap.TryGetValue(typeof(T), out var ruleMetadata))
+                throw new ArgumentException($"Rule {typeof(T).FullName} not found");
+            return ruleMetadata;
+        }
+        
+        private IRuleMetadata GetRule()
+        {
+            if (_ruleMap.Count == 0)
+                throw new ArgumentException("Expected single rule test, but found no rules registered");
+            if (_ruleMap.Count > 1)
+                throw new ArgumentException("Expected single rule test, but found multiple rules registered");
+
+            return _ruleMap.Single().Value;
+        }
+
+        private IReadOnlyCollection<AgendaEventArgs> GetRuleFirings(IRuleMetadata ruleMetadata)
+        {
+            if (!_firedRulesMap.TryGetValue(ruleMetadata.Name, out var firings))
+                throw new ArgumentException($"Expected rule {ruleMetadata.Name} to fire");
+            return firings;
+        }
+
+        private AgendaEventArgs GetLastRuleFiring()
+        {
+            var ruleMetadata = GetRule();
+            var ruleFirings = GetRuleFirings(ruleMetadata);
+            var lastFiring = ruleFirings.LastOrDefault();
+            if (lastFiring == null)
+                throw new InvalidOperationException($"Unable to retrieve last firing of the rule {ruleMetadata.Name}");
+            return lastFiring;
+        }
+
+        private AgendaEventArgs GetRuleFiring(int firingIndex)
+        {
+            var ruleMetadata = GetRule();
+            var ruleFirings = GetRuleFirings(ruleMetadata);
+            if (ruleFirings.Count < firingIndex + 1)
+                throw new InvalidOperationException($"Unable to retrieve firing of the rule {ruleMetadata.Name} at index {firingIndex}");
+            return ruleFirings.ElementAt(firingIndex);
+        }
+
+        private static IFactMatch[] GetFacts<T>(AgendaEventArgs ruleFiring, bool allowEmpty = false)
+        {
+            var factMatches = ruleFiring.Facts.Where(f => typeof(T).IsAssignableFrom(f.Declaration.Type)).ToArray();
+            if (factMatches.Length == 0 && !allowEmpty)
+                throw new InvalidOperationException($"Did not find any facts of type {typeof(T)} in the rule match");
+            return factMatches;
+        }
+
         private class InstanceActivator : IRuleActivator
         {
-            private readonly Dictionary<Type, Rule> _rules = new Dictionary<Type, Rule>();
+            private readonly Dictionary<Type, Rule> _rules = new();
 
             public IEnumerable<Rule> Activate(Type type)
             {
