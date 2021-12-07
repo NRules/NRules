@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Generic;
 
-namespace NRules.Aggregators
+namespace NRules.Aggregators.Collections
 {
     /// <summary>
     /// Map (dictionary) that supports mapping using a default value for the key type 
@@ -14,6 +15,7 @@ namespace NRules.Aggregators
         private bool _hasDefault = false;
 
         public int Count => _map.Count + (_hasDefault ? 1 : 0);
+        public int KeyCount => _map.Keys.Count + (_hasDefault ? 1 : 0);
 
         public bool ContainsKey(TKey key)
         {
@@ -22,6 +24,22 @@ namespace NRules.Aggregators
                 return _hasDefault;
             }
             return _map.ContainsKey(key);
+        }
+
+        public void Add(TKey key, TValue value)
+        {
+            if (Equals(key, _defaultKey))
+            {
+                if (_hasDefault)
+                    throw new ArgumentException("An item with the default key has already been added");
+                
+                _hasDefault = true;
+                _defaultValue = value;
+            }
+            else
+            {
+               _map.Add(key, value);
+            }
         }
 
         public bool Remove(TKey key)
@@ -75,6 +93,18 @@ namespace NRules.Aggregators
             }
         }
 
+        public IEnumerable<TKey> Keys
+        {
+            get
+            {
+                if (_hasDefault) yield return _defaultKey;
+                foreach (var item in _map)
+                {
+                    yield return item.Key;
+                }
+            }
+        }
+
         public IEnumerable<TValue> Values
         {
             get
@@ -85,6 +115,6 @@ namespace NRules.Aggregators
                     yield return item.Value;
                 }
             }
-        } 
+        }
     }
 }
