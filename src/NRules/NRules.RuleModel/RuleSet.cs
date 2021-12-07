@@ -29,7 +29,7 @@ namespace NRules.RuleModel
     /// </summary>
     public class RuleSet : IRuleSet
     {
-        private readonly List<IRuleDefinition> _rules = new List<IRuleDefinition>();
+        private readonly List<IRuleDefinition> _rules = new();
 
         public RuleSet(string name)
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using NRules.RuleModel;
@@ -36,7 +37,7 @@ namespace NRules.Aggregators
     [DebuggerDisplay("{Action}")]
     public class AggregationResult
     {
-        public static readonly AggregationResult[] Empty = new AggregationResult[0];
+        public static readonly AggregationResult[] Empty = Array.Empty<AggregationResult>();
 
         private AggregationResult(AggregationAction action, object aggregate, object previous, IEnumerable<IFact> source)
         {

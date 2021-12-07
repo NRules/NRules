@@ -31,103 +31,106 @@ namespace NRules.Json.Tests.Utilities
             if (x == null || y == null) return false;
             if (x.ElementType != y.ElementType) return false;
 
-            if (x.ElementType == ElementType.Action)
+            switch (x.ElementType)
             {
-                var a = (ActionElement) x;
-                var b = (ActionElement) y;
-                return a.ActionTrigger == b.ActionTrigger &&
-                       ExpressionComparer.AreEqual(a.Expression, b.Expression);
+                case ElementType.Action:
+                {
+                    var a = (ActionElement) x;
+                    var b = (ActionElement) y;
+                    return a.ActionTrigger == b.ActionTrigger &&
+                           ExpressionComparer.AreEqual(a.Expression, b.Expression);
+                }
+                case ElementType.ActionGroup:
+                {
+                    var a = (ActionGroupElement) x;
+                    var b = (ActionGroupElement) y;
+                    return AreEqual(a.Actions, b.Actions);
+                }
+                case ElementType.Aggregate:
+                {
+                    var a = (AggregateElement) x;
+                    var b = (AggregateElement) y;
+                    return a.Name == b.Name &&
+                           AreEqual(a.Expressions, b.Expressions) &&
+                           a.CustomFactoryType == b.CustomFactoryType &&
+                           AreEqual(a.Source, b.Source);
+                }
+                case ElementType.And:
+                case ElementType.Or:
+                {
+                    var a = (GroupElement) x;
+                    var b = (GroupElement) y;
+                    return AreEqual(a.ChildElements, b.ChildElements);
+                }
+                case ElementType.Binding:
+                {
+                    var a = (BindingElement) x;
+                    var b = (BindingElement) y;
+                    return ExpressionComparer.AreEqual(a.Expression, b.Expression);
+                }
+                case ElementType.Dependency:
+                {
+                    var a = (DependencyElement) x;
+                    var b = (DependencyElement) y;
+                    return a.ServiceType == b.ServiceType &&
+                           AreEqual(a.Declaration, b.Declaration);
+                }
+                case ElementType.DependencyGroup:
+                {
+                    var a = (DependencyGroupElement) x;
+                    var b = (DependencyGroupElement) y;
+                    return AreEqual(a.Dependencies, b.Dependencies);
+                }
+                case ElementType.Exists:
+                {
+                    var a = (ExistsElement) x;
+                    var b = (ExistsElement) y;
+                    return AreEqual(a.Source, b.Source);
+                }
+                case ElementType.Filter:
+                {
+                    var a = (FilterElement) x;
+                    var b = (FilterElement) y;
+                    return a.FilterType == b.FilterType &&
+                           ExpressionComparer.AreEqual(a.Expression, b.Expression);
+                }
+                case ElementType.FilterGroup:
+                {
+                    var a = (FilterGroupElement) x;
+                    var b = (FilterGroupElement) y;
+                    return AreEqual(a.Filters, b.Filters);
+                }
+                case ElementType.ForAll:
+                {
+                    var a = (ForAllElement) x;
+                    var b = (ForAllElement) y;
+                    return AreEqual(a.BasePattern, b.BasePattern) &&
+                           AreEqual(a.Patterns, b.Patterns);
+                }
+                case ElementType.Not:
+                {
+                    var a = (NotElement) x;
+                    var b = (NotElement) y;
+                    return AreEqual(a.Source, b.Source);
+                }
+                case ElementType.Pattern:
+                {
+                    var a = (PatternElement) x;
+                    var b = (PatternElement) y;
+                    return AreEqual(a.Expressions, b.Expressions) &&
+                           AreEqual(a.Declaration, b.Declaration) &&
+                           AreEqual(a.Source, b.Source);
+                }
+                case ElementType.NamedExpression:
+                {
+                    var a = (NamedExpressionElement) x;
+                    var b = (NamedExpressionElement) y;
+                    return a.Name == b.Name &&
+                           ExpressionComparer.AreEqual(a.Expression, b.Expression);
+                }
+                default:
+                    throw new ArgumentOutOfRangeException($"ElementType={x.ElementType}");
             }
-            if (x.ElementType == ElementType.ActionGroup)
-            {
-                var a = (ActionGroupElement) x;
-                var b = (ActionGroupElement) y;
-                return AreEqual(a.Actions, b.Actions);
-            }
-            if (x.ElementType == ElementType.Aggregate)
-            {
-                var a = (AggregateElement) x;
-                var b = (AggregateElement) y;
-                return a.Name == b.Name &&
-                       AreEqual(a.Expressions, b.Expressions) &&
-                       a.CustomFactoryType == b.CustomFactoryType &&
-                       AreEqual(a.Source, b.Source);
-            }
-            if (x.ElementType == ElementType.And ||
-                x.ElementType == ElementType.Or)
-            {
-                var a = (GroupElement) x;
-                var b = (GroupElement) y;
-                return AreEqual(a.ChildElements, b.ChildElements);
-            }
-            if (x.ElementType == ElementType.Binding)
-            {
-                var a = (BindingElement) x;
-                var b = (BindingElement) y;
-                return ExpressionComparer.AreEqual(a.Expression, b.Expression);
-            }
-            if (x.ElementType == ElementType.Dependency)
-            {
-                var a = (DependencyElement) x;
-                var b = (DependencyElement) y;
-                return a.ServiceType == b.ServiceType &&
-                       AreEqual(a.Declaration, b.Declaration);
-            }
-            if (x.ElementType == ElementType.DependencyGroup)
-            {
-                var a = (DependencyGroupElement) x;
-                var b = (DependencyGroupElement) y;
-                return AreEqual(a.Dependencies, b.Dependencies);
-            }
-            if (x.ElementType == ElementType.Exists)
-            {
-                var a = (ExistsElement) x;
-                var b = (ExistsElement) y;
-                return AreEqual(a.Source, b.Source);
-            }
-            if (x.ElementType == ElementType.Filter)
-            {
-                var a = (FilterElement) x;
-                var b = (FilterElement) y;
-                return a.FilterType == b.FilterType &&
-                       ExpressionComparer.AreEqual(a.Expression, b.Expression);
-            }
-            if (x.ElementType == ElementType.FilterGroup)
-            {
-                var a = (FilterGroupElement) x;
-                var b = (FilterGroupElement) y;
-                return AreEqual(a.Filters, b.Filters);
-            }
-            if (x.ElementType == ElementType.ForAll)
-            {
-                var a = (ForAllElement) x;
-                var b = (ForAllElement) y;
-                return AreEqual(a.BasePattern, b.BasePattern) &&
-                       AreEqual(a.Patterns, b.Patterns);
-            }
-            if (x.ElementType == ElementType.Not)
-            {
-                var a = (NotElement) x;
-                var b = (NotElement) y;
-                return AreEqual(a.Source, b.Source);
-            }
-            if (x.ElementType == ElementType.Pattern)
-            {
-                var a = (PatternElement) x;
-                var b = (PatternElement) y;
-                return AreEqual(a.Expressions, b.Expressions) &&
-                       AreEqual(a.Declaration, b.Declaration) &&
-                       AreEqual(a.Source, b.Source);
-            }
-            if (x.ElementType == ElementType.NamedExpression)
-            {
-                var a = (NamedExpressionElement) x;
-                var b = (NamedExpressionElement) y;
-                return a.Name == b.Name &&
-                       ExpressionComparer.AreEqual(a.Expression, b.Expression);
-            }
-         
-            throw new ArgumentOutOfRangeException($"ElementType={x.ElementType}");
         }
 
         private static bool AreEqual(IEnumerable<RuleElement> x, IEnumerable<RuleElement> y)

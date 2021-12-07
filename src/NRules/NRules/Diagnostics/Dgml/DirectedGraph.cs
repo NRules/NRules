@@ -11,11 +11,11 @@ namespace NRules.Diagnostics.Dgml
         public string Title { get; set; }
         public string Background { get; set; }
 
-        public List<Node> Nodes { get; set; } = new List<Node>();
-        public List<Link> Links { get; set; } = new List<Link>();
-        public List<Category> Categories { get; set; } = new List<Category>();
-        public List<Style> Styles { get; set; } = new List<Style>();
-        public List<Property> Properties { get; set; } = new List<Property>();
+        public List<Node> Nodes { get; set; } = new();
+        public List<Link> Links { get; set; } = new();
+        public List<Category> Categories { get; set; } = new();
+        public List<Style> Styles { get; set; } = new();
+        public List<Property> Properties { get; set; } = new();
 
         public void WriteXml(XmlWriter writer)
         {

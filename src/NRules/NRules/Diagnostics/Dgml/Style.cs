@@ -13,8 +13,8 @@ namespace NRules.Diagnostics.Dgml
         public string TargetType { get; }
         public string GroupLabel { get; set; }
         public string ValueLabel { get; set; }
-        public List<Condition> Conditions { get; set; } = new List<Condition>();
-        public List<Setter> Setters { get; set; } = new List<Setter>();
+        public List<Condition> Conditions { get; set; } = new();
+        public List<Setter> Setters { get; set; } = new();
 
         public Style HasCategory(string category)
         {

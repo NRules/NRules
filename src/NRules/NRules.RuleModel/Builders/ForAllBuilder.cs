@@ -9,7 +9,7 @@ namespace NRules.RuleModel.Builders
     public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
     {
         private IBuilder<PatternElement> _sourceBuilder;
-        private readonly List<IBuilder<PatternElement>> _patternBuilders = new List<IBuilder<PatternElement>>();
+        private readonly List<IBuilder<PatternElement>> _patternBuilders = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ForAllBuilder"/>.

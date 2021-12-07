@@ -22,7 +22,7 @@ namespace NRules.RuleModel.Builders
         public static IRuleDefinition RuleDefinition(string name, string description, int priority,
             GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
-            var tags = new string[0];
+            var tags = Array.Empty<string>();
             var ruleDefinition = RuleDefinition(name, description, priority, tags, leftHandSide, rightHandSide);
             return ruleDefinition;
         }
@@ -40,7 +40,7 @@ namespace NRules.RuleModel.Builders
         public static IRuleDefinition RuleDefinition(string name, string description, int priority,
             IEnumerable<string> tags, GroupElement leftHandSide, ActionGroupElement rightHandSide)
         {
-            var ruleProperties = new RuleProperty[0];
+            var ruleProperties = Array.Empty<RuleProperty>();
             var dependencyGroupElement = DependencyGroup();
             var filterGroupElement = FilterGroup();
             var ruleDefinition = RuleDefinition(name, description, priority, RuleRepeatability.Repeatable,
@@ -156,18 +156,12 @@ namespace NRules.RuleModel.Builders
         /// <returns>Created element.</returns>
         public static GroupElement Group(GroupType groupType, IEnumerable<RuleElement> childElements)
         {
-            GroupElement element;
-            switch (groupType)
+            GroupElement element = groupType switch
             {
-                case GroupType.And:
-                    element = AndGroup(childElements);
-                    break;
-                case GroupType.Or:
-                    element = OrGroup(childElements);
-                    break;
-                default:
-                    throw new ArgumentException($"Unrecognized group type. GroupType={groupType}", nameof(groupType));
-            }
+                GroupType.And => AndGroup(childElements),
+                GroupType.Or => OrGroup(childElements),
+                _ => throw new ArgumentException($"Unrecognized group type. GroupType={groupType}", nameof(groupType))
+            };
 
             return element;
         }
@@ -588,8 +582,8 @@ namespace NRules.RuleModel.Builders
 
             var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                new KeyValuePair<string, LambdaExpression>(AggregateElement.KeySelectorName, keySelector),
-                new KeyValuePair<string, LambdaExpression>(AggregateElement.ElementSelectorName, elementSelector)
+                new(AggregateElement.KeySelectorName, keySelector),
+                new(AggregateElement.ElementSelectorName, elementSelector)
             };
             var element = Aggregate(resultType, AggregateElement.GroupByName, expressions, source);
             return element;
@@ -626,7 +620,7 @@ namespace NRules.RuleModel.Builders
 
             var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                new KeyValuePair<string, LambdaExpression>(AggregateElement.SelectorName, selector)
+                new(AggregateElement.SelectorName, selector)
             };
             var element = Aggregate(resultType, AggregateElement.ProjectName, expressions, source);
             return element;
@@ -646,7 +640,7 @@ namespace NRules.RuleModel.Builders
 
             var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                new KeyValuePair<string, LambdaExpression>(AggregateElement.SelectorName, selector)
+                new(AggregateElement.SelectorName, selector)
             };
             var element = Aggregate(resultType, AggregateElement.FlattenName, expressions, source);
             return element;

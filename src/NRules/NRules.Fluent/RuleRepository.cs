@@ -12,7 +12,7 @@ namespace NRules.Fluent
     public class RuleRepository : IRuleRepository
     {
         private const string DefaultRuleSetName = "default";
-        private readonly List<IRuleSet> _ruleSets = new List<IRuleSet>();
+        private readonly List<IRuleSet> _ruleSets = new();
 
         /// <summary>
         /// Creates an empty rule repository.

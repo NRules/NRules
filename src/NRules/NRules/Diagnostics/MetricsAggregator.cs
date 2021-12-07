@@ -35,7 +35,7 @@ namespace NRules.Diagnostics
 
     internal class MetricsAggregator : IMetricsAggregator
     {
-        private readonly Dictionary<int, NodeMetrics> _metrics = new Dictionary<int, NodeMetrics>();
+        private readonly Dictionary<int, NodeMetrics> _metrics = new();
 
         public INodeMetrics FindByNodeId(int nodeId)
         {

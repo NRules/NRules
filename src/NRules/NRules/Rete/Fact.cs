@@ -49,18 +49,12 @@ namespace NRules.Rete
     [DebuggerDisplay("Fact {Source.SourceType} {Object}")]
     internal class SyntheticFact : Fact
     {
-        private IFactSource _source;
-
         public SyntheticFact(object @object)
             : base(@object)
         {
         }
 
-        public override IFactSource Source
-        {
-            get => _source;
-            set => _source = value;
-        }
+        public override IFactSource Source { get; set; }
     }
 
     [DebuggerDisplay("Fact Tuple({WrappedTuple.Count}) -> {Object}")]

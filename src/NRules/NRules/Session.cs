@@ -298,7 +298,7 @@ namespace NRules
 
     internal sealed class Session : ISessionInternal
     {
-        private static readonly ILinkedFactSet[] EmptyLinkedFactResult = new ILinkedFactSet[0];
+        private static readonly ILinkedFactSet[] EmptyLinkedFactResult = Array.Empty<ILinkedFactSet>();
 
         private readonly IAgendaInternal _agenda;
         private readonly INetwork _network;
@@ -307,7 +307,7 @@ namespace NRules
         private readonly IMetricsAggregator _metricsAggregator;
         private readonly IActionExecutor _actionExecutor;
         private readonly IExecutionContext _executionContext;
-        private readonly Queue<LinkedFactSet> _linkedFacts = new Queue<LinkedFactSet>();
+        private readonly Queue<LinkedFactSet> _linkedFacts = new();
 
         internal Session(
             INetwork network,
@@ -351,9 +351,7 @@ namespace NRules
         {
             var result = TryInsertAll(facts);
             if (result.FailedCount > 0)
-            {
                 throw new ArgumentException("Facts for insert already exist", nameof(facts));
-            }
         }
 
         public IFactResult TryInsertAll(IEnumerable<object> facts)
@@ -364,9 +362,7 @@ namespace NRules
         public IFactResult TryInsertAll(IEnumerable<object> facts, BatchOptions options)
         {
             if (facts == null)
-            {
                 throw new ArgumentNullException(nameof(facts));
-            }
 
             var failed = new List<object>();
             var toPropagate = new List<Fact>();
@@ -414,9 +410,7 @@ namespace NRules
         {
             var result = TryUpdateAll(facts);
             if (result.FailedCount > 0)
-            {
                 throw new ArgumentException("Facts for update do not exist", nameof(facts));
-            }
         }
 
         public IFactResult TryUpdateAll(IEnumerable<object> facts)
@@ -427,9 +421,7 @@ namespace NRules
         public IFactResult TryUpdateAll(IEnumerable<object> facts, BatchOptions options)
         {
             if (facts == null)
-            {
                 throw new ArgumentNullException(nameof(facts));
-            }
 
             var failed = new List<object>();
             var toPropagate = new List<Fact>();
@@ -477,9 +469,7 @@ namespace NRules
         {
             var result = TryRetractAll(facts);
             if (result.FailedCount > 0)
-            {
                 throw new ArgumentException("Facts for retract do not exist", nameof(facts));
-            }
         }
 
         public IFactResult TryRetractAll(IEnumerable<object> facts)
@@ -490,9 +480,7 @@ namespace NRules
         public IFactResult TryRetractAll(IEnumerable<object> facts, BatchOptions options)
         {
             if (facts == null)
-            {
                 throw new ArgumentNullException(nameof(facts));
-            }
 
             var failed = new List<object>();
             var toPropagate = new List<Fact>();

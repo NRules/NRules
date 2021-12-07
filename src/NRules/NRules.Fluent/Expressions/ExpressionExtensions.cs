@@ -8,9 +8,7 @@ namespace NRules.Fluent.Expressions
         public static ParameterExpression ToParameterExpression<T>(this Expression<Func<T>> alias)
         {
             if (alias == null)
-            {
                 throw new ArgumentNullException(nameof(alias), "Pattern alias is null");
-            }
 
             if (!(alias.Body is MemberExpression fieldMember))
             {

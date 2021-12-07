@@ -5,7 +5,7 @@ namespace NRules.Rete
 {
     internal class DummyNode : IBetaMemoryNode
     {
-        private readonly List<ITupleSink> _sinks = new List<ITupleSink>();
+        private readonly List<ITupleSink> _sinks = new();
 
         public int Id { get; set; }
         public NodeInfo NodeInfo { get; } = new NodeInfo();

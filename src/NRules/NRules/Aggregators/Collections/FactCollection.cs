@@ -6,9 +6,9 @@ namespace NRules.Aggregators.Collections
 {
     internal class FactCollection<TElement> : IEnumerable<TElement>
     {
-        private readonly Dictionary<IFact, NodePair> _nodeLookup = new Dictionary<IFact, NodePair>();
-        private readonly LinkedList<TElement> _elements = new LinkedList<TElement>();
-        private readonly LinkedList<IFact> _facts = new LinkedList<IFact>();
+        private readonly Dictionary<IFact, NodePair> _nodeLookup = new();
+        private readonly LinkedList<TElement> _elements = new();
+        private readonly LinkedList<IFact> _facts = new();
 
         public void Add(IFact fact, TElement element)
         {

@@ -24,7 +24,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
     {
-        private readonly List<IBuilder<RuleElement>> _nestedBuilders = new List<IBuilder<RuleElement>>();
+        private readonly List<IBuilder<RuleElement>> _nestedBuilders = new();
         private GroupType _groupType;
 
         /// <summary>

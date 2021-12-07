@@ -11,7 +11,7 @@ namespace NRules.RuleModel.Builders
     {
         private string _name;
         private Type _resultType;
-        private readonly List<KeyValuePair<string, LambdaExpression>> _expressions = new List<KeyValuePair<string, LambdaExpression>>();
+        private readonly List<KeyValuePair<string, LambdaExpression>> _expressions = new();
         private Type _customFactoryType;
         private IBuilder<PatternElement> _sourceBuilder;
 

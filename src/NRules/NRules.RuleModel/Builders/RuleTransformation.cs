@@ -8,7 +8,7 @@ namespace NRules.RuleModel.Builders
     {
         public class Context
         {
-            private readonly Stack<RuleElement> _elements = new Stack<RuleElement>();
+            private readonly Stack<RuleElement> _elements = new();
 
             internal bool IsModified { get; set; }
 

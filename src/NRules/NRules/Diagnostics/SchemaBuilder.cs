@@ -7,8 +7,8 @@ namespace NRules.Diagnostics
 {
     internal class SchemaBuilder
     {
-        private readonly List<(INode source, INode target)> _links = new List<(INode, INode)>();
-        private readonly Dictionary<INode, ReteNode> _nodeMap = new Dictionary<INode, ReteNode>(); 
+        private readonly List<(INode source, INode target)> _links = new();
+        private readonly Dictionary<INode, ReteNode> _nodeMap = new(); 
 
         public bool IsVisited(INode node)
         {

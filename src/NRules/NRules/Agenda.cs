@@ -57,11 +57,11 @@ namespace NRules
 
     internal class Agenda : IAgendaInternal
     {
-        private readonly ActivationQueue _activationQueue = new ActivationQueue();
-        private readonly List<IAgendaFilter> _globalFilters = new List<IAgendaFilter>();
-        private readonly List<IStatefulAgendaFilter> _globalStatefulFilters = new List<IStatefulAgendaFilter>();
-        private readonly Dictionary<IRuleDefinition, List<IAgendaFilter>> _ruleFilters = new Dictionary<IRuleDefinition, List<IAgendaFilter>>();
-        private readonly Dictionary<IRuleDefinition, List<IStatefulAgendaFilter>> _ruleStatefulFilters = new Dictionary<IRuleDefinition, List<IStatefulAgendaFilter>>();
+        private readonly ActivationQueue _activationQueue = new();
+        private readonly List<IAgendaFilter> _globalFilters = new();
+        private readonly List<IStatefulAgendaFilter> _globalStatefulFilters = new();
+        private readonly Dictionary<IRuleDefinition, List<IAgendaFilter>> _ruleFilters = new();
+        private readonly Dictionary<IRuleDefinition, List<IStatefulAgendaFilter>> _ruleStatefulFilters = new();
         private AgendaContext _context;
 
         public bool IsEmpty => !_activationQueue.HasActive();

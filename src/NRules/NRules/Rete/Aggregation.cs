@@ -5,7 +5,7 @@ namespace NRules.Rete
 {
     internal class Aggregation
     {
-        private readonly List<AggregateList> _aggregateLists = new List<AggregateList>();
+        private readonly List<AggregateList> _aggregateLists = new();
         private AggregateList _currentList;
 
         public List<AggregateList> AggregateLists => _aggregateLists;

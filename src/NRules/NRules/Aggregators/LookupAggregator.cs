@@ -15,9 +15,9 @@ namespace NRules.Aggregators
         private readonly IAggregateExpression _keySelector;
         private readonly IAggregateExpression _elementSelector;
 
-        private readonly Dictionary<IFact, TKey> _sourceToKey = new Dictionary<IFact, TKey>();
+        private readonly Dictionary<IFact, TKey> _sourceToKey = new();
 
-        private readonly FactLookup<TKey, TElement> _lookup = new FactLookup<TKey, TElement>();
+        private readonly FactLookup<TKey, TElement> _lookup = new();
         private bool _created = false;
 
         public LookupAggregator(IAggregateExpression keySelector, IAggregateExpression elementSelector)

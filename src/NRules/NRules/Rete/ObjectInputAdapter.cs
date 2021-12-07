@@ -6,10 +6,10 @@ namespace NRules.Rete
     internal class ObjectInputAdapter : ITupleSink, IAlphaMemoryNode
     {
         private readonly ITupleSource _source;
-        private readonly List<IObjectSink> _sinks = new List<IObjectSink>();
+        private readonly List<IObjectSink> _sinks = new();
 
         public int Id { get; set; }
-        public NodeInfo NodeInfo { get; } = new NodeInfo();
+        public NodeInfo NodeInfo { get; } = new();
         public IEnumerable<IObjectSink> Sinks => _sinks;
 
         public ObjectInputAdapter(IBetaMemoryNode source)

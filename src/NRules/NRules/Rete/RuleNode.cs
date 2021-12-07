@@ -6,7 +6,7 @@ namespace NRules.Rete
     internal class RuleNode : ITupleSink
     {
         public int Id { get; set; }
-        public NodeInfo NodeInfo { get; } = new NodeInfo();
+        public NodeInfo NodeInfo { get; } = new();
         public ICompiledRule CompiledRule { get; }
 
         public RuleNode(ICompiledRule compiledRule)

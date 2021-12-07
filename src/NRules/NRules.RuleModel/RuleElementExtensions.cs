@@ -26,37 +26,31 @@ namespace NRules.RuleModel
             Action<ForAllElement> forall)
         {
             if (element == null)
-            {
                 throw new ArgumentNullException(nameof(element), "Rule element cannot be null");
-            }
-            else if (element is PatternElement)
+
+            switch (element)
             {
-                pattern.Invoke((PatternElement) element);
-            }
-            else if (element is GroupElement)
-            {
-                group.Invoke((GroupElement) element);
-            }
-            else if (element is AggregateElement)
-            {
-                aggregate.Invoke((AggregateElement) element);
-            }
-            else if (element is ExistsElement)
-            {
-                exists.Invoke((ExistsElement)element);
-            }
-            else if (element is NotElement)
-            {
-                not.Invoke((NotElement)element);
-            }
-            else if (element is ForAllElement)
-            {
-                forall.Invoke((ForAllElement)element);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(nameof(element),
-                    $"Unsupported rule element. ElementType={element.GetType()}");
+                case PatternElement pe:
+                    pattern.Invoke(pe);
+                    break;
+                case GroupElement ge:
+                    @group.Invoke(ge);
+                    break;
+                case AggregateElement ae:
+                    aggregate.Invoke(ae);
+                    break;
+                case ExistsElement ee:
+                    exists.Invoke(ee);
+                    break;
+                case NotElement ne:
+                    not.Invoke(ne);
+                    break;
+                case ForAllElement fe:
+                    forall.Invoke(fe);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(element),
+                        $"Unsupported rule element. ElementType={element.GetType()}");
             }
         }
 
@@ -71,22 +65,19 @@ namespace NRules.RuleModel
         public static void Match(this GroupElement element, Action<AndElement> and, Action<OrElement> or)
         {
             if (element == null)
-            {
                 throw new ArgumentNullException(nameof(element), "Group element cannot be null");
-            }
 
-            if (element is AndElement)
+            switch (element)
             {
-                and.Invoke((AndElement)element);
-            }
-            else if (element is OrElement)
-            {
-                or.Invoke((OrElement)element);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(nameof(element),
-                    $"Unsupported group element. ElementType={element.GetType()}");
+                case AndElement ae:
+                    and.Invoke(ae);
+                    break;
+                case OrElement oe:
+                    or.Invoke(oe);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(element),
+                        $"Unsupported group element. ElementType={element.GetType()}");
             }
         }
     }

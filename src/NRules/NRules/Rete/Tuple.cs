@@ -50,7 +50,7 @@ namespace NRules.Rete
         /// </summary>
         public IEnumerable<IFact> Facts => new Enumerable(this);
 
-        public Enumerator GetEnumerator() => new Enumerator(this);
+        public Enumerator GetEnumerator() => new(this);
 
         internal class TupleDebugView
         {

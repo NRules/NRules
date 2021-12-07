@@ -15,9 +15,9 @@ namespace NRules.Aggregators
         private readonly IAggregateExpression _keySelector;
         private readonly IAggregateExpression _elementSelector;
         
-        private readonly Dictionary<IFact, TKey> _sourceToKey = new Dictionary<IFact, TKey>();
+        private readonly Dictionary<IFact, TKey> _sourceToKey = new();
 
-        private readonly DefaultKeyMap<TKey, FactGrouping<TKey, TElement>> _groups = new DefaultKeyMap<TKey, FactGrouping<TKey, TElement>>();
+        private readonly DefaultKeyMap<TKey, FactGrouping<TKey, TElement>> _groups = new();
 
         public GroupByAggregator(IAggregateExpression keySelector, IAggregateExpression elementSelector)
         {

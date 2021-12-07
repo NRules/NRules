@@ -8,7 +8,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class DependencyGroupBuilder : RuleElementBuilder, IBuilder<DependencyGroupElement>
     {
-        private readonly List<DependencyElement> _dependencies = new List<DependencyElement>();
+        private readonly List<DependencyElement> _dependencies = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependencyGroupBuilder"/>.

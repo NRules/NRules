@@ -10,7 +10,7 @@ namespace NRules.Aggregators
     /// <typeparam name="TElement">Type of elements to collect.</typeparam>
     internal class CollectionAggregator<TElement> : IAggregator
     {
-        private readonly FactCollection<TElement> _items = new FactCollection<TElement>();
+        private readonly FactCollection<TElement> _items = new();
         private bool _created = false;
 
         public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)

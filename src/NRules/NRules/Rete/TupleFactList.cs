@@ -6,8 +6,8 @@ namespace NRules.Rete
     [DebuggerDisplay("TupleFactList ({Count})")]
     internal class TupleFactList
     {
-        private readonly List<Tuple> _tuples = new List<Tuple>(); 
-        private readonly List<Fact> _facts = new List<Fact>();
+        private readonly List<Tuple> _tuples = new(); 
+        private readonly List<Fact> _facts = new();
 
         public int Count => _tuples.Count;
 

@@ -17,7 +17,7 @@ namespace NRules
     /// </summary>
     public class RuleCompiler
     {
-        private readonly AggregatorRegistry _aggregatorRegistry = new AggregatorRegistry();
+        private readonly AggregatorRegistry _aggregatorRegistry = new();
         private readonly IRuleExpressionCompiler _ruleExpressionCompiler = new RuleExpressionCompiler();
 
         /// <summary>

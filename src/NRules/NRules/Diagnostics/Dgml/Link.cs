@@ -17,7 +17,7 @@ namespace NRules.Diagnostics.Dgml
         public string Label { get; set; }
         public string Description { get; set; }
         public string StrokeThickness { get; set; }
-        public Dictionary<string, object> Properties { get; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Properties { get; } = new();
 
         public void WriteXml(XmlWriter writer)
         {

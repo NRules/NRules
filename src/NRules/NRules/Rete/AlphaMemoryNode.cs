@@ -10,10 +10,10 @@ namespace NRules.Rete
 
     internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
     {
-        private readonly List<IObjectSink> _sinks = new List<IObjectSink>();
+        private readonly List<IObjectSink> _sinks = new();
 
         public int Id { get; set; }
-        public NodeInfo NodeInfo { get; } = new NodeInfo();
+        public NodeInfo NodeInfo { get; } = new();
         public IEnumerable<IObjectSink> Sinks => _sinks;
 
         public void PropagateAssert(IExecutionContext context, List<Fact> facts)

@@ -9,7 +9,7 @@ namespace NRules.Aggregators.Collections
     /// </summary>
     internal class DefaultKeyMap<TKey, TValue>
     {
-        private readonly Dictionary<TKey, TValue> _map = new Dictionary<TKey, TValue>();
+        private readonly Dictionary<TKey, TValue> _map = new();
         private readonly TKey _defaultKey = default;
         private TValue _defaultValue;
         private bool _hasDefault = false;

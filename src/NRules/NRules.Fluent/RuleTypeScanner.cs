@@ -61,7 +61,7 @@ namespace NRules.Fluent
     /// </summary>
     public class RuleTypeScanner : IRuleTypeScanner
     {
-        private readonly List<Type> _ruleTypes = new List<Type>();
+        private readonly List<Type> _ruleTypes = new();
         private bool _nestedTypes = false;
         private bool _privateTypes = false;
 
