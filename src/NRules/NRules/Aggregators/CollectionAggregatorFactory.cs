@@ -21,21 +21,26 @@ namespace NRules.Aggregators
             var expressions = compiledExpressions.ToList();
             var sortConditions = expressions.Where(x => Equals(x.Name, AggregateElement.KeySelectorAscendingName) || Equals(x.Name, AggregateElement.KeySelectorDescendingName))
                 .Select(x => new SortCondition(x.Name, GetSortDirection(x.Name), x)).ToArray();
+            var groupConditions = expressions.Where(x => Equals(x.Name, AggregateElement.KeySelectorName)).ToArray();
 
             switch (element.Name)
             {
-                case AggregateElement.CollectName when sortConditions.Length == 0:
+                case AggregateElement.CollectName when sortConditions.Length == 0 && groupConditions.Length == 0:
                     _factory = CreateCollectAggregator(sourceType);
                     break;
-                case AggregateElement.CollectName when sortConditions.Length == 1:
+                case AggregateElement.CollectName when sortConditions.Length == 1 && groupConditions.Length == 0:
                     var expression = element.Expressions[sortConditions[0].Name].Expression;
                     _factory = CreateSingleKeySortedAggregatorFactory(sourceType, sortConditions[0], expression);
                     break;
-                case AggregateElement.CollectName when sortConditions.Length > 1:
+                case AggregateElement.CollectName when sortConditions.Length > 1 && groupConditions.Length == 0:
                     _factory = CreateMultiKeySortedAggregatorFactory(sourceType, sortConditions);
                     break;
+                case AggregateElement.CollectName when sortConditions.Length == 0 && groupConditions.Length == 1:
+                    _factory = CreateLookupAggregator(sourceType, expressions, element.Expressions);
+                    break;
                 default:
-                    throw new ArgumentException($"Unsupported collection aggregator. Name={element.Name}");
+                    throw new ArgumentException("Unsupported collection aggregator. " +
+                        $"Name={element.Name}, KeySelectorCount={groupConditions.Length}, SortSelectorCount={sortConditions.Length}");
             }
         }
 
@@ -83,6 +88,30 @@ namespace NRules.Aggregators
         {
             return keySelectorName == AggregateElement.KeySelectorAscendingName 
                 ? SortDirection.Ascending : SortDirection.Descending;
+        }
+
+        private Func<IAggregator> CreateLookupAggregator(Type sourceType, IReadOnlyCollection<IAggregateExpression> compiledExpressions, ExpressionCollection elementExpressions)
+        {
+            var keySelector = compiledExpressions.SingleOrDefault(x => x.Name == AggregateElement.KeySelectorName);
+            var elementSelector = compiledExpressions.SingleOrDefault(x => x.Name == AggregateElement.ElementSelectorName);
+
+            if (keySelector == null)
+                throw new ArgumentNullException($"Lookup key selector not provided");
+            if (elementSelector == null)
+                throw new ArgumentNullException($"Lookup element selector not provided");
+
+            var keySelectorExpression = elementExpressions[keySelector.Name];
+            var elementSelectorExpression = elementExpressions[elementSelector.Name];
+
+            var aggregatorType = typeof(LookupAggregator<,,>).MakeGenericType(sourceType,
+                keySelectorExpression.Expression.ReturnType, 
+                elementSelectorExpression.Expression.ReturnType);
+
+            var ctor = aggregatorType.GetConstructors().Single();
+            var factoryExpression = Expression.Lambda<Func<IAggregator>>(
+                Expression.New(ctor, Expression.Constant(keySelector), Expression.Constant(elementSelector)));
+
+            return factoryExpression.Compile();
         }
     }
 }

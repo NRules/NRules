@@ -122,6 +122,37 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
+        /// Configures collected matching facts to be arranged into a lookup based on a grouping key.
+        /// </summary>
+        /// <typeparam name="TSource">Type of source facts.</typeparam>
+        /// <typeparam name="TKey">Type of grouping key.</typeparam>
+        /// <param name="source">Query expression builder.</param>
+        /// <param name="keySelector">Grouping key selection expression.</param>
+        /// <returns>Query expression builder.</returns>
+        public static IQuery<ILookup<TKey, TSource>> ToLookup<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        {
+            source.Builder.ToLookup(keySelector, x => x);
+            return new QueryExpression<ILookup<TKey, TSource>>(source.Builder);
+        }
+
+        /// <summary>
+        /// Configures collected matching facts to be arranged into a lookup based on a grouping key.
+        /// Projects facts collected into a lookup based on a value selection expression.
+        /// </summary>
+        /// <typeparam name="TSource">Type of source facts.</typeparam>
+        /// <typeparam name="TKey">Type of grouping key.</typeparam>
+        /// <typeparam name="TElement">Type of projected facts.</typeparam>
+        /// <param name="source">Query expression builder.</param>
+        /// <param name="keySelector">Grouping key selection expression.</param>
+        /// <param name="elementSelector">Projected fact selection expression.</param>
+        /// <returns>Query expression builder.</returns>
+        public static IQuery<ILookup<TKey, TElement>> ToLookup<TSource, TKey, TElement>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        {
+            source.Builder.ToLookup(keySelector, elementSelector);
+            return new QueryExpression<ILookup<TKey, TElement>>(source.Builder);
+        }
+
+        /// <summary>
         /// Configures collected matching facts to be sorted ascending by key.
         /// </summary>
         /// <typeparam name="TSource">Type of source facts.</typeparam>
