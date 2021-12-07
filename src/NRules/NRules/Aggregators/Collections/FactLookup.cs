@@ -6,7 +6,7 @@ using NRules.RuleModel;
 
 namespace NRules.Aggregators.Collections
 {
-    internal class FactLookup<TKey, TElement> : ILookup<TKey, TElement>
+    internal class FactLookup<TKey, TElement> : IKeyedLookup<TKey, TElement>
     {
         private readonly DefaultKeyMap<TKey, FactGrouping<TKey, TElement>> _groups = new();
 
@@ -35,5 +35,7 @@ namespace NRules.Aggregators.Collections
 
         public IEnumerable<IFact> Facts =>
             _groups.Values.SelectMany(x => x.Facts);
+
+        public IEnumerable<TKey> Keys => _groups.Keys;
     }
 }

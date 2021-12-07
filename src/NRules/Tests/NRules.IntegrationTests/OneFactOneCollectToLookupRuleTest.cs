@@ -34,8 +34,8 @@ namespace NRules.IntegrationTests
 
             //Assert
             AssertFiredOnce();
-            Assert.Single(GetFiredFact<ILookup<long, string>>());
-            Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
+            Assert.Single(GetFiredFact<IKeyedLookup<long, string>>());
+            Assert.Equal(2, GetFiredFact<IKeyedLookup<long, string>>()[1].Count());
         }
 
         [Fact]
@@ -232,10 +232,10 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                ILookup<long, string> group = null;
+                IKeyedLookup<long, string> lookup = null;
 
                 When()
-                    .Query(() => group, x => x
+                    .Query(() => lookup, x => x
                         .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
                         .Collect()
                         .ToLookup(f => f.GroupProperty, f => f.TestProperty));

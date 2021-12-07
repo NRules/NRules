@@ -163,7 +163,7 @@ namespace NRules.Fluent.Expressions
             var previousBuildAction = _buildAction;
             _buildAction = (name, _) =>
             {
-                var result = previousBuildAction(name, typeof(ILookup<TKey, TElement>));
+                var result = previousBuildAction(name, typeof(IKeyedLookup<TKey, TElement>));
                 var keySelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
                 var elementSelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, elementSelector);
                 result.Aggregate.ToLookup(keySelectorExpression, elementSelectorExpression);

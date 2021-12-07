@@ -129,10 +129,10 @@ namespace NRules.Fluent.Dsl
         /// <param name="source">Query expression builder.</param>
         /// <param name="keySelector">Grouping key selection expression.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<ILookup<TKey, TSource>> ToLookup<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        public static IQuery<IKeyedLookup<TKey, TSource>> ToLookup<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
         {
             source.Builder.ToLookup(keySelector, x => x);
-            return new QueryExpression<ILookup<TKey, TSource>>(source.Builder);
+            return new QueryExpression<IKeyedLookup<TKey, TSource>>(source.Builder);
         }
 
         /// <summary>
@@ -146,10 +146,10 @@ namespace NRules.Fluent.Dsl
         /// <param name="keySelector">Grouping key selection expression.</param>
         /// <param name="elementSelector">Projected fact selection expression.</param>
         /// <returns>Query expression builder.</returns>
-        public static IQuery<ILookup<TKey, TElement>> ToLookup<TSource, TKey, TElement>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        public static IQuery<IKeyedLookup<TKey, TElement>> ToLookup<TSource, TKey, TElement>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
         {
             source.Builder.ToLookup(keySelector, elementSelector);
-            return new QueryExpression<ILookup<TKey, TElement>>(source.Builder);
+            return new QueryExpression<IKeyedLookup<TKey, TElement>>(source.Builder);
         }
 
         /// <summary>

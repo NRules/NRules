@@ -93,6 +93,18 @@ namespace NRules.Aggregators.Collections
             }
         }
 
+        public IEnumerable<TKey> Keys
+        {
+            get
+            {
+                if (_hasDefault) yield return _defaultKey;
+                foreach (var item in _map)
+                {
+                    yield return item.Key;
+                }
+            }
+        }
+
         public IEnumerable<TValue> Values
         {
             get
@@ -103,6 +115,6 @@ namespace NRules.Aggregators.Collections
                     yield return item.Value;
                 }
             }
-        } 
+        }
     }
 }
