@@ -48,7 +48,7 @@ namespace NRules.Tests.Aggregators
             Assert.Single(aggregate1);
             Assert.Equal(AggregationAction.Added, result[1].Action);
             var aggregate2 = (IGrouping<GroupKey, GroupElement>) result[1].Aggregate;
-            Assert.Null(aggregate2.Key.Value);
+            Assert.Null(aggregate2.Key);
             Assert.Single(aggregate2);
         }
 
@@ -136,7 +136,7 @@ namespace NRules.Tests.Aggregators
             Assert.Equal(2, aggregate1.Count());
             Assert.Equal(AggregationAction.Modified, result[1].Action);
             var aggregate2 = (IGrouping<GroupKey, GroupElement>) result[1].Aggregate;
-            Assert.Null(aggregate2.Key.Value);
+            Assert.Null(aggregate2.Key);
             Assert.Equal(2, aggregate2.Count());
         }
 
@@ -321,7 +321,7 @@ namespace NRules.Tests.Aggregators
             Assert.Single(aggregate1);
             Assert.Equal(AggregationAction.Added, result[1].Action);
             var aggregate2 = (IGrouping<GroupKey, GroupElement>) result[1].Aggregate;
-            Assert.Null(aggregate2.Key.Value);
+            Assert.Null(aggregate2.Key);
             Assert.Single(aggregate2);
         }
 
@@ -411,7 +411,7 @@ namespace NRules.Tests.Aggregators
             Assert.Single(result);
             Assert.Equal(AggregationAction.Modified, result[0].Action);
             var aggregate1 = (IGrouping<GroupKey, GroupElement>) result[0].Aggregate;
-            Assert.Null(aggregate1.Key.Value);
+            Assert.Null(aggregate1.Key);
             Assert.Single(aggregate1);
         }
 
@@ -449,7 +449,7 @@ namespace NRules.Tests.Aggregators
             Assert.Single(result);
             Assert.Equal(AggregationAction.Removed, result[0].Action);
             var aggregate1 = (IGrouping<GroupKey, GroupElement>) result[0].Aggregate;
-            Assert.Null(aggregate1.Key.Value);
+            Assert.Null(aggregate1.Key);
             Assert.Empty(aggregate1);
         }
 
@@ -477,9 +477,14 @@ namespace NRules.Tests.Aggregators
 
         private GroupByAggregator<TestFact, GroupKey, GroupElement> CreateTarget()
         {
-            var keyExpression = new FactExpression<TestFact, GroupKey>(x => new GroupKey(x));
+            var keyExpression = new FactExpression<TestFact, GroupKey>(GetGroupKey);
             var elementExpression = new FactExpression<TestFact, GroupElement>(x => new GroupElement(x));
             return new GroupByAggregator<TestFact, GroupKey, GroupElement>(keyExpression, elementExpression);
+        }
+
+        private static GroupKey GetGroupKey(TestFact fact)
+        {
+            return fact.Key == null ? null : new GroupKey(fact.Key, fact.Payload);
         }
 
         private class TestFact : IEquatable<TestFact>
@@ -517,10 +522,10 @@ namespace NRules.Tests.Aggregators
 
         private class GroupKey : IEquatable<GroupKey>
         {
-            public GroupKey(TestFact fact)
+            public GroupKey(string value, int payload)
             {
-                Value = fact.Key;
-                CachedPayload = fact.Payload;
+                Value = value;
+                CachedPayload = payload;
             }
 
             public string Value { get; }
