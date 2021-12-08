@@ -122,6 +122,18 @@ namespace NRules.Fluent.Dsl
         }
 
         /// <summary>
+        /// Configures collected matching facts to be arranged into a lookup keyed on the fact itself.
+        /// </summary>
+        /// <typeparam name="TSource">Type of source facts.</typeparam>
+        /// <param name="source">Query expression builder.</param>
+        /// <returns>Query expression builder.</returns>
+        public static IQuery<IKeyedLookup<TSource, TSource>> ToLookup<TSource>(this ICollectQuery<IEnumerable<TSource>> source)
+        {
+            source.Builder.ToLookup<TSource, TSource, TSource>(x => x, x => x);
+            return new QueryExpression<IKeyedLookup<TSource, TSource>>(source.Builder);
+        }
+
+        /// <summary>
         /// Configures collected matching facts to be arranged into a lookup based on a grouping key.
         /// </summary>
         /// <typeparam name="TSource">Type of source facts.</typeparam>
