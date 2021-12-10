@@ -112,6 +112,10 @@ namespace NRules.Aggregators
         {
             var counter = _referenceCounter[item];
             counter.Value--;
+            if (counter.Value == 0)
+            {
+                _referenceCounter.Remove(item);
+            }
             return counter.Value;
         }
 
