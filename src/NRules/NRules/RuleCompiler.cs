@@ -17,8 +17,28 @@ namespace NRules
     /// </summary>
     public class RuleCompiler
     {
+        private readonly RuleCompilerOptions _options;
         private readonly AggregatorRegistry _aggregatorRegistry = new();
         private readonly IRuleExpressionCompiler _ruleExpressionCompiler = new RuleExpressionCompiler();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RuleCompiler"/> class
+        /// using the default <see cref="RuleCompilerOptions"/>.
+        /// </summary>
+        public RuleCompiler()
+            : this(new RuleCompilerOptions())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RuleCompiler"/> class
+        /// using the specified <see cref="RuleCompilerOptions"/>.
+        /// </summary>
+        /// <param name="options"></param>
+        public RuleCompiler(RuleCompilerOptions options)
+        {
+            _options = options;
+        }
 
         /// <summary>
         /// Registry of custom aggregator factories.
@@ -34,7 +54,7 @@ namespace NRules
             get => _ruleExpressionCompiler.ExpressionCompiler;
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(ExpressionCompiler));
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 _ruleExpressionCompiler.ExpressionCompiler = value;
             }
         }
@@ -61,7 +81,7 @@ namespace NRules
         /// <seealso cref="IRuleRepository"/>
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions, CancellationToken cancellationToken)
         {
-            IReteBuilder reteBuilder = new ReteBuilder(_aggregatorRegistry, _ruleExpressionCompiler);
+            IReteBuilder reteBuilder = new ReteBuilder(_options, _aggregatorRegistry, _ruleExpressionCompiler);
             var compiledRules = new List<ICompiledRule>();
             foreach (var ruleDefinition in ruleDefinitions)
             {

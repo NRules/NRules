@@ -19,15 +19,17 @@ namespace NRules.Rete
         private readonly RootNode _root;
         private readonly DummyNode _dummyNode;
         private readonly AggregatorRegistry _aggregatorRegistry;
+        private readonly ExpressionElementComparer _expressionComparer;
         private readonly IRuleExpressionCompiler _ruleExpressionCompiler;
 
         private int _nextNodeId = 1;
 
-        public ReteBuilder(AggregatorRegistry aggregatorRegistry, IRuleExpressionCompiler ruleExpressionCompiler)
+        public ReteBuilder(RuleCompilerOptions options, AggregatorRegistry aggregatorRegistry, IRuleExpressionCompiler ruleExpressionCompiler)
         {
             _root = new RootNode {Id = GetNodeId()};
             _dummyNode = new DummyNode {Id = GetNodeId()};
             _aggregatorRegistry = aggregatorRegistry;
+            _expressionComparer = new ExpressionElementComparer(options);
             _ruleExpressionCompiler = ruleExpressionCompiler;
         }
 
@@ -238,7 +240,7 @@ namespace NRules.Rete
                 .FirstOrDefault(x =>
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
-                    ExpressionElementComparer.AreEqual(
+                    _expressionComparer.AreEqual(
                         x.Declarations, x.ExpressionElements, 
                         context.Declarations, expressionElements));
             if (node == null)
@@ -299,7 +301,7 @@ namespace NRules.Rete
                     x.RightSource == context.AlphaSource &&
                     x.LeftSource == context.BetaSource &&
                     x.Name == element.Name &&
-                    ExpressionElementComparer.AreEqual(
+                    _expressionComparer.AreEqual(
                         x.Declarations, x.Expressions,
                         context.Declarations, element.Expressions));
             if (node == null)
@@ -320,7 +322,7 @@ namespace NRules.Rete
             var node = context.BetaSource
                 .Sinks.OfType<BindingNode>()
                 .FirstOrDefault(x =>
-                    ExpressionElementComparer.AreEqual(x.ExpressionElement, element));
+                    _expressionComparer.AreEqual(x.ExpressionElement, element));
             if (node == null)
             {
                 var compiledExpression = _ruleExpressionCompiler.CompileLhsTupleExpression<object>(element, context.Declarations);
@@ -367,7 +369,7 @@ namespace NRules.Rete
         {
             SelectionNode node = context.CurrentAlphaNode
                 .ChildNodes.OfType<SelectionNode>()
-                .FirstOrDefault(sn => ExpressionElementComparer.AreEqual(sn.ExpressionElement, element));
+                .FirstOrDefault(sn => _expressionComparer.AreEqual(sn.ExpressionElement, element));
 
             if (node == null)
             {

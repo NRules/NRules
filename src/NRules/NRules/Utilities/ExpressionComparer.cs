@@ -6,14 +6,21 @@ using System.Reflection;
 
 namespace NRules.Utilities
 {
-    internal static class ExpressionComparer
+    internal class ExpressionComparer
     {
-        public static bool AreEqual(Expression x, Expression y)
+        private readonly RuleCompilerOptions _compilerOptions;
+
+        public ExpressionComparer(RuleCompilerOptions compilerOptions)
+        {
+            _compilerOptions = compilerOptions;
+        }
+
+        public bool AreEqual(Expression x, Expression y)
         {
             return ExpressionEqual(x, y, null, null);
         }
 
-        private static bool ExpressionEqual(Expression x, Expression y, LambdaExpression rootX, LambdaExpression rootY)
+        private bool ExpressionEqual(Expression x, Expression y, LambdaExpression rootX, LambdaExpression rootY)
         {
             if (ReferenceEquals(x, y)) return true;
             if (x == null || y == null) return false;
@@ -108,11 +115,11 @@ namespace NRules.Utilities
                     return dx.Type == dy.Type;
                 }
                 default:
-                    throw new NotImplementedException(x.ToString());
+                    return HandleUnsupportedExpression(x.ToString());
             }
         }
 
-        private static bool MemberBindingCollectionsEqual(IReadOnlyCollection<MemberBinding> x, IReadOnlyCollection<MemberBinding> y,
+        private bool MemberBindingCollectionsEqual(IReadOnlyCollection<MemberBinding> x, IReadOnlyCollection<MemberBinding> y,
             LambdaExpression rootX, LambdaExpression rootY)
         {
             return x.Count == y.Count
@@ -120,7 +127,7 @@ namespace NRules.Utilities
                        .All(o => MemberBindingsEqual(o.X, o.Y, rootX, rootY));
         }
 
-        private static bool ElementInitCollectionsEqual(IReadOnlyCollection<ElementInit> x, IReadOnlyCollection<ElementInit> y,
+        private bool ElementInitCollectionsEqual(IReadOnlyCollection<ElementInit> x, IReadOnlyCollection<ElementInit> y,
             LambdaExpression rootX, LambdaExpression rootY)
         {
             return x.Count == y.Count
@@ -128,7 +135,7 @@ namespace NRules.Utilities
                        .All(o => ElementInitsEqual(o.X, o.Y, rootX, rootY));
         }
 
-        private static bool CollectionsEqual(IReadOnlyCollection<Expression> x, IReadOnlyCollection<Expression> y,
+        private bool CollectionsEqual(IReadOnlyCollection<Expression> x, IReadOnlyCollection<Expression> y,
             LambdaExpression rootX, LambdaExpression rootY)
         {
             return x.Count == y.Count
@@ -136,14 +143,14 @@ namespace NRules.Utilities
                        .All(o => ExpressionEqual(o.X, o.Y, rootX, rootY));
         }
 
-        private static bool ElementInitsEqual(ElementInit x, ElementInit y, LambdaExpression rootX,
+        private bool ElementInitsEqual(ElementInit x, ElementInit y, LambdaExpression rootX,
             LambdaExpression rootY)
         {
             return Equals(x.AddMethod, y.AddMethod)
                    && CollectionsEqual(x.Arguments, y.Arguments, rootX, rootY);
         }
 
-        private static bool MemberBindingsEqual(MemberBinding x, MemberBinding y, LambdaExpression rootX,
+        private bool MemberBindingsEqual(MemberBinding x, MemberBinding y, LambdaExpression rootX,
             LambdaExpression rootY)
         {
             if (x.BindingType != y.BindingType)
@@ -164,11 +171,11 @@ namespace NRules.Utilities
                     var mlby = (MemberListBinding)y;
                     return ElementInitCollectionsEqual(mlbx.Initializers, mlby.Initializers, rootX, rootY);
                 default:
-                    throw new ArgumentOutOfRangeException($"Unsupported binding type. BindingType={x.BindingType}");
+                    return HandleUnsupportedExpression($"Unsupported binding type. BindingType={x.BindingType}");
             }
         }
 
-        private static bool MemberExpressionsEqual(MemberExpression x, MemberExpression y, LambdaExpression rootX, LambdaExpression rootY)
+        private bool MemberExpressionsEqual(MemberExpression x, MemberExpression y, LambdaExpression rootX, LambdaExpression rootY)
         {
             if (x.Expression == null || y.Expression == null)
                 return Equals(x.Member, y.Member);
@@ -200,7 +207,7 @@ namespace NRules.Utilities
                 case ExpressionType.Call:
                     return ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
                 default:
-                    throw new NotImplementedException(x.ToString());
+                    return HandleUnsupportedExpression(x.ToString());
             }
         }
 
@@ -213,6 +220,17 @@ namespace NRules.Utilities
                 PropertyInfo pi => pi.GetValue(o, null),
                 _ => throw new ArgumentException($"Unsupported member type. MemberType={mex.Member.GetType()}")
             };
+        }
+
+        private bool HandleUnsupportedExpression(string message)
+        {
+            switch (_compilerOptions.UnsupportedExpressionHandling)
+            {
+                case RuleCompilerUnsupportedExpressionsHandling.FailFast:
+                    throw new NotImplementedException(message);
+                default:
+                    return false;
+            }
         }
     }
 }

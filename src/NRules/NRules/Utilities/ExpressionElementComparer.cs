@@ -5,21 +5,28 @@ using NRules.RuleModel;
 
 namespace NRules.Utilities
 {
-    internal static class ExpressionElementComparer
+    internal class ExpressionElementComparer
     {
-        public static bool AreEqual(NamedExpressionElement first, NamedExpressionElement second)
+        private readonly ExpressionComparer _expressionComparer;
+
+        public ExpressionElementComparer(RuleCompilerOptions compilerOptions)
+        {
+            _expressionComparer = new ExpressionComparer(compilerOptions);
+        }
+
+        public bool AreEqual(NamedExpressionElement first, NamedExpressionElement second)
         {
             if (!Equals(first.Name, second.Name))
                 return false;
-            return ExpressionComparer.AreEqual(first.Expression, second.Expression);
+            return _expressionComparer.AreEqual(first.Expression, second.Expression);
         }
         
-        public static bool AreEqual(ExpressionElement first, ExpressionElement second)
+        public bool AreEqual(ExpressionElement first, ExpressionElement second)
         {
-            return ExpressionComparer.AreEqual(first.Expression, second.Expression);
+            return _expressionComparer.AreEqual(first.Expression, second.Expression);
         }
 
-        public static bool AreEqual(
+        public bool AreEqual(
             List<Declaration> firstDeclarations, IEnumerable<NamedExpressionElement> first, 
             List<Declaration> secondDeclarations, IEnumerable<NamedExpressionElement> second)
         {
@@ -51,7 +58,7 @@ namespace NRules.Utilities
             return true;
         }
         
-        public static bool AreEqual(
+        public bool AreEqual(
             List<Declaration> firstDeclarations, IEnumerable<ExpressionElement> x,
             List<Declaration> secondDeclarations, IEnumerable<ExpressionElement> y)
         {
@@ -62,7 +69,7 @@ namespace NRules.Utilities
                            AreEqual(o.X, o.Y));
         }
 
-        private static bool AreParameterPositionsEqual(
+        private bool AreParameterPositionsEqual(
             List<Declaration> firstDeclarations, ExpressionElement firstElement, 
             List<Declaration> secondDeclarations, ExpressionElement secondElement)
         {

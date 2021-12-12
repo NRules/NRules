@@ -64,7 +64,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<string, string>> lambda2 = s => s;
             AssertNotEqual(
                 new List<Declaration>(),
-                new NamedExpressionElement[0],
+                Array.Empty<NamedExpressionElement>(),
                 new List<Declaration>{Element.Declaration(typeof(string), "s")},
                 new []{Element.Expression("Name", lambda2)});
         }
@@ -77,43 +77,53 @@ namespace NRules.Tests.Utilities
                 new List<Declaration>{Element.Declaration(typeof(string), "s")},
                 new []{Element.Expression("Name", lambda1)},
                 new List<Declaration>(),
-                new NamedExpressionElement[0]);
+                Array.Empty<NamedExpressionElement>());
         }
 
-        private static void AssertEqual(NamedExpressionElement first, NamedExpressionElement second)
+        private void AssertEqual(NamedExpressionElement first, NamedExpressionElement second)
         {
             //Act
-            bool result = ExpressionElementComparer.AreEqual(first, second);
+            var target = CreateTarget();
+            bool result = target.AreEqual(first, second);
 
             //Assert
             Assert.True(result);
         }
 
-        private static void AssertNotEqual(NamedExpressionElement first, NamedExpressionElement second)
+        private void AssertNotEqual(NamedExpressionElement first, NamedExpressionElement second)
         {
             //Act
-            bool result = ExpressionElementComparer.AreEqual(first, second);
+            var target = CreateTarget();
+            bool result = target.AreEqual(first, second);
 
             //Assert
             Assert.False(result);
         }
 
-        private static void AssertEqual(List<Declaration> declarationsFirst, IEnumerable<NamedExpressionElement> first, List<Declaration> declarationsSecond, IEnumerable<NamedExpressionElement> second)
+        private void AssertEqual(List<Declaration> declarationsFirst, IEnumerable<NamedExpressionElement> first, List<Declaration> declarationsSecond, IEnumerable<NamedExpressionElement> second)
         {
             //Act
-            bool result = ExpressionElementComparer.AreEqual(declarationsFirst, first, declarationsSecond, second);
+            var target = CreateTarget();
+            bool result = target.AreEqual(declarationsFirst, first, declarationsSecond, second);
 
             //Assert
             Assert.True(result);
         }
 
-        private static void AssertNotEqual(List<Declaration> declarationsFirst, IEnumerable<NamedExpressionElement> first, List<Declaration> declarationsSecond, IEnumerable<NamedExpressionElement> second)
+        private void AssertNotEqual(List<Declaration> declarationsFirst, IEnumerable<NamedExpressionElement> first, List<Declaration> declarationsSecond, IEnumerable<NamedExpressionElement> second)
         {
             //Act
-            bool result = ExpressionElementComparer.AreEqual(declarationsFirst, first, declarationsSecond, second);
+            var target = CreateTarget();
+            bool result = target.AreEqual(declarationsFirst, first, declarationsSecond, second);
 
             //Assert
             Assert.False(result);
+        }
+
+        private ExpressionElementComparer CreateTarget()
+        {
+            var options = new RuleCompilerOptions();
+            return new ExpressionElementComparer(options);
         }
     }
 }
