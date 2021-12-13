@@ -4,7 +4,7 @@ using NRules.Samples.SimpleRules.Domain;
 
 namespace NRules.Samples.SimpleRules.Rules
 {
-    public class DicsountNotificationRule : Rule
+    public class DiscountNotificationRule : Rule
     {
         public override void Define()
         {
