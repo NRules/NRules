@@ -104,7 +104,10 @@ task Compile -depends Init, Clean, PatchFiles, RestoreDependencies -precondition
 }
 
 task Test -depends Compile -precondition { return $component.ContainsKey('test') } {
-    $testsDir = "$srcDir\$($component.test.location)"
+    $testsDir = $srcDir
+    if ($component.test.ContainsKey('location')) {
+        $testsDir = "$srcDir\$($component.test.location)"
+    }
     Get-ChildItem $testsDir -recurse -filter "*.trx" | % { Delete-File $_.fullname }
     
     $hasError = $false
