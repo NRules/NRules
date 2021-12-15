@@ -84,6 +84,9 @@ $components = @{
         build = @{
             tool = 'dotnet'
         }
+        test = @{
+            frameworks = @('netcoreapp3.1')
+        }
         bin = @{
             artifacts = @('netstandard2.0', 'netstandard2.1')
             'netstandard2.0' = @{
