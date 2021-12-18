@@ -54,5 +54,10 @@
         Contains types that allow specifying rules using internal DSL in C#.
       </summary>
     </member>
+    <member name="N:NRules.Json">
+      <summary>
+        Contains types that implement serialization of rule definitions to/from JSON.
+      </summary>
+    </member>
   </members>
 </doc>
