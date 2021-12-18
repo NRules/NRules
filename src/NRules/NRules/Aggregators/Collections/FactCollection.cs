@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using NRules.RuleModel;
 
-namespace NRules.Aggregators
+namespace NRules.Aggregators.Collections
 {
     internal class FactCollection<TElement> : IEnumerable<TElement>
     {
-        private readonly Dictionary<IFact, NodePair> _nodeLookup = new Dictionary<IFact, NodePair>();
-        private readonly LinkedList<TElement> _elements = new LinkedList<TElement>();
-        private readonly LinkedList<IFact> _facts = new LinkedList<IFact>();
+        private readonly Dictionary<IFact, NodePair> _nodeLookup = new();
+        private readonly LinkedList<TElement> _elements = new();
+        private readonly LinkedList<IFact> _facts = new();
 
         public void Add(IFact fact, TElement element)
         {
@@ -27,7 +27,7 @@ namespace NRules.Aggregators
             }
         }
 
-        public void Remove(IFact fact, TElement element)
+        public void Remove(IFact fact)
         {
             var nodePair = _nodeLookup[fact];
             _facts.Remove(nodePair.FactNode);

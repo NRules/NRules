@@ -8,7 +8,7 @@ namespace NRules.RuleModel.Builders
     {
         public class Context
         {
-            private readonly Stack<RuleElement> _elements = new Stack<RuleElement>();
+            private readonly Stack<RuleElement> _elements = new();
 
             internal bool IsModified { get; set; }
 
@@ -93,10 +93,6 @@ namespace NRules.RuleModel.Builders
                 var newElement = Element.ActionGroup(actions);
                 Result(context, newElement);
             }
-        }
-
-        protected internal override void VisitCondition(Context context, ConditionElement element)
-        {
         }
 
         protected internal override void VisitAction(Context context, ActionElement element)

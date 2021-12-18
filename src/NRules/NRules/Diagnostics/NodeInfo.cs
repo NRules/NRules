@@ -6,7 +6,7 @@ namespace NRules.Diagnostics
 {
     internal class NodeInfo
     {
-        private readonly List<IRuleDefinition> _rules = new List<IRuleDefinition>();
+        private readonly List<IRuleDefinition> _rules = new();
 
         public Type OutputType { get; set; }
         public IEnumerable<IRuleDefinition> Rules => _rules;

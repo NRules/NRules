@@ -85,17 +85,77 @@ namespace NRules.RuleModel.Builders
         {
             var sourceType = element.Source.ValueType;
             var resultType = element.ResultType;
-            var expectedResultType = typeof(IEnumerable<>).MakeGenericType(sourceType);
-            if (!expectedResultType.IsAssignableFrom(resultType))
+
+            var keySelectors = element.Expressions.Find(AggregateElement.KeySelectorName).ToArray();
+            if (keySelectors.Length > 1)
             {
                 throw new ArgumentException(
-                    $"Collect result must be a collection of source elements. ElementType={sourceType}, ResultType={resultType}");
+                    $"Collect aggregator can have no more than one key selector. Count={keySelectors.Length}");
             }
 
-            var keySelectorsAscending = element.Expressions.Find(AggregateElement.KeySelectorAscendingName);
-            var keySelectorsDescending = element.Expressions.Find(AggregateElement.KeySelectorDescendingName);
+            foreach (var keySelector in keySelectors.Select(x => x.Expression))
+            {
+                if (keySelector.Parameters.Count == 0)
+                {
+                    throw new ArgumentException(
+                        $"Collect key selector must have at least one parameter. KeySelector={keySelector}");
+                }
+                if (keySelector.Parameters[0].Type != sourceType)
+                {
+                    throw new ArgumentException(
+                        "Collect key selector must have a parameter type that matches the aggregate source. " +
+                        $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}");
+                }
 
-            foreach (var sortKeySelector in keySelectorsAscending.Concat(keySelectorsDescending).Select(x => x.Expression))
+            }
+
+            var elementSelectors = element.Expressions.Find(AggregateElement.ElementSelectorName).ToArray();
+            if (elementSelectors.Length > 1)
+            {
+                throw new ArgumentException(
+                    $"Collect aggregator can have no more than one element selector. Count={elementSelectors.Length}");
+            }
+
+            foreach (var elementSelector in elementSelectors.Select(x => x.Expression))
+            {
+                if (elementSelector.Parameters.Count == 0)
+                {
+                    throw new ArgumentException(
+                        $"Collect element selector must have at least one parameter. KeySelector={elementSelector}");
+                }
+                if (elementSelector.Parameters[0].Type != sourceType)
+                {
+                    throw new ArgumentException(
+                        "Collect element selector must have a parameter type that matches the aggregate source. " +
+                        $"ElementSelector={elementSelector}, ExpectedType={sourceType}, ActualType={elementSelector.Parameters[0].Type}");
+                }
+
+            }
+
+            if (keySelectors.Length > 0)
+            {
+                var expectedResultType = typeof(ILookup<,>).MakeGenericType(
+                    keySelectors[0].Expression.ReturnType, elementSelectors[0].Expression.ReturnType);
+                if (!expectedResultType.IsAssignableFrom(resultType))
+                {
+                    throw new ArgumentException(
+                        $"Collect result with grouping key must be a lookup collection. ExpectedType={expectedResultType}, ActualType={resultType}");
+                }
+            }
+            else
+            {
+                var expectedResultType = typeof(IEnumerable<>).MakeGenericType(sourceType);
+                if (!expectedResultType.IsAssignableFrom(resultType))
+                {
+                    throw new ArgumentException(
+                        $"Collect result must be a collection of source elements. ExpectedType={expectedResultType}, ActualType={resultType}");
+                }
+            }
+
+            var sortKeySelectorsAscending = element.Expressions.Find(AggregateElement.KeySelectorAscendingName);
+            var sortKeySelectorsDescending = element.Expressions.Find(AggregateElement.KeySelectorDescendingName);
+
+            foreach (var sortKeySelector in sortKeySelectorsAscending.Concat(sortKeySelectorsDescending).Select(x => x.Expression))
             {
                 if (sortKeySelector.Parameters.Count == 0)
                 {

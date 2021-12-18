@@ -1,24 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NRules.Aggregators.Collections;
 using NRules.RuleModel;
 using NRules.Utilities;
 
 namespace NRules.Aggregators
 {
-    internal class SortCondition
-    {
-        public SortCondition(string name, SortDirection direction, IAggregateExpression expression)
-        {
-            Name = name;
-            KeySelector = expression;
-            Direction = direction;
-        }
-
-        public string Name { get; }
-        public IAggregateExpression KeySelector { get; }
-        public SortDirection Direction { get; }
-    }
-
     /// <summary>
     /// Aggregate that adds matching facts into a collection sorted by a given key selector and sort direction.
     /// </summary>
@@ -54,7 +41,7 @@ namespace NRules.Aggregators
             var key = new object[_sortConditions.Length];
             for (int i = 0; i < _sortConditions.Length; i++)
             {
-                key[i] = _sortConditions[i].KeySelector.Invoke(context, tuple, fact);
+                key[i] = _sortConditions[i].Expression.Invoke(context, tuple, fact);
             }
             return key;
         }

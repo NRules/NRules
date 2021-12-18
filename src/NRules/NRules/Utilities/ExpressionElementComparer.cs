@@ -1,68 +1,75 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NRules.Rete;
 using NRules.RuleModel;
 
 namespace NRules.Utilities
 {
-    internal static class ExpressionElementComparer
+    internal class ExpressionElementComparer
     {
-        public static bool AreEqual(NamedExpressionElement first, NamedExpressionElement second)
+        private readonly ExpressionComparer _expressionComparer;
+
+        public ExpressionElementComparer(RuleCompilerOptions compilerOptions)
+        {
+            _expressionComparer = new ExpressionComparer(compilerOptions);
+        }
+
+        public bool AreEqual(NamedExpressionElement first, NamedExpressionElement second)
         {
             if (!Equals(first.Name, second.Name))
                 return false;
-            return ExpressionComparer.AreEqual(first.Expression, second.Expression);
+            return _expressionComparer.AreEqual(first.Expression, second.Expression);
         }
         
-        public static bool AreEqual(ExpressionElement first, ExpressionElement second)
+        public bool AreEqual(ExpressionElement first, ExpressionElement second)
         {
-            return ExpressionComparer.AreEqual(first.Expression, second.Expression);
+            return _expressionComparer.AreEqual(first.Expression, second.Expression);
         }
 
-        public static bool AreEqual(
+        public bool AreEqual(
             List<Declaration> firstDeclarations, IEnumerable<NamedExpressionElement> first, 
             List<Declaration> secondDeclarations, IEnumerable<NamedExpressionElement> second)
         {
-            using (var enumerator1 = first.GetEnumerator())
-            using (var enumerator2 = second.GetEnumerator())
+            using var enumerator1 = first.GetEnumerator();
+            using var enumerator2 = second.GetEnumerator();
+
+            while (true)
             {
-                while (enumerator1.MoveNext() && enumerator2.MoveNext())
+                var hasNext1 = enumerator1.MoveNext();
+                var hasNext2 = enumerator2.MoveNext();
+
+                if (hasNext1 && hasNext2)
                 {
-                    if (!AreParameterPositionsEqual(firstDeclarations, enumerator1.Current, secondDeclarations, enumerator2.Current)) 
+                    if (!AreParameterPositionsEqual(firstDeclarations, enumerator1.Current, secondDeclarations, enumerator2.Current))
                         return false;
                     if (!AreEqual(enumerator1.Current, enumerator2.Current))
                         return false;
                 }
-
-                if (enumerator1.MoveNext() || enumerator2.MoveNext())
+                else if (hasNext1 || hasNext2)
+                {
                     return false;
+                }
+                else
+                {
+                    break;
+                }
             }
-
+            
             return true;
         }
-
-        public static bool AreEqual(
-            List<Declaration> firstDeclarations, IEnumerable<ExpressionElement> first,
-            List<Declaration> secondDeclarations, IEnumerable<ExpressionElement> second)
+        
+        public bool AreEqual(
+            List<Declaration> firstDeclarations, IEnumerable<ExpressionElement> x,
+            List<Declaration> secondDeclarations, IEnumerable<ExpressionElement> y)
         {
-            using (var enumerator1 = first.GetEnumerator())
-            using (var enumerator2 = second.GetEnumerator())
-            {
-                while (enumerator1.MoveNext() && enumerator2.MoveNext())
-                {
-                    if (!AreParameterPositionsEqual(firstDeclarations, enumerator1.Current, secondDeclarations, enumerator2.Current)) 
-                        return false;
-                    if (!AreEqual(enumerator1.Current, enumerator2.Current))
-                        return false;
-                }
-
-                if (enumerator1.MoveNext() || enumerator2.MoveNext())
-                    return false;
-            }
-
-            return true;
+            return x.Count() == y.Count()
+                   && x.Zip(y, (first, second) => new {X = first, Y = second})
+                       .All(o => 
+                           AreParameterPositionsEqual(firstDeclarations, o.X, secondDeclarations, o.Y) && 
+                           AreEqual(o.X, o.Y));
         }
 
-        private static bool AreParameterPositionsEqual(
+        private bool AreParameterPositionsEqual(
             List<Declaration> firstDeclarations, ExpressionElement firstElement, 
             List<Declaration> secondDeclarations, ExpressionElement secondElement)
         {

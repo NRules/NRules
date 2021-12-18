@@ -63,8 +63,8 @@ namespace NRules.Integration.Autofac
         public static IRegistrationBuilder<ISessionFactory, SimpleActivatorData, SingleRegistrationStyle> 
             RegisterSessionFactory(this ContainerBuilder builder, Func<IComponentContext, ISessionFactory> compileFunc)
         {
-            builder.RegisterType<AutofacDependencyResolver>()
-                .As<IDependencyResolver>();
+            builder.RegisterDependencyResolver()
+                .SingleInstance();
 
             return builder.Register(compileFunc)
                 .As<ISessionFactory>()
@@ -94,9 +94,20 @@ namespace NRules.Integration.Autofac
         public static IRegistrationBuilder<ISession, SimpleActivatorData, SingleRegistrationStyle> 
             RegisterSession(this ContainerBuilder builder, Func<IComponentContext, ISession> factoryFunc)
         {
+            builder.RegisterDependencyResolver()
+                .InstancePerDependency();
+
             return builder.Register(factoryFunc)
                 .As<ISession>()
-                .InstancePerLifetimeScope();
+                .InstancePerLifetimeScope()
+                .OnActivating(e => e.Instance.DependencyResolver = e.Context.Resolve<IDependencyResolver>());
+        }
+
+        private static IRegistrationBuilder<AutofacDependencyResolver, ConcreteReflectionActivatorData, SingleRegistrationStyle>
+            RegisterDependencyResolver(this ContainerBuilder builder)
+        {
+            return builder.RegisterType<AutofacDependencyResolver>()
+                .As<IDependencyResolver>();
         }
     }
 }

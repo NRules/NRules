@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NRules.RuleModel;
 
-namespace NRules.Aggregators
+namespace NRules.Aggregators.Collections
 {
     internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement>
     {

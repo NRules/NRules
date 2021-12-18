@@ -8,7 +8,7 @@ namespace NRules.Aggregators
     /// </summary>
     public class AggregatorRegistry
     {
-        private readonly Dictionary<string, Type> _factoryMap = new Dictionary<string, Type>();
+        private readonly Dictionary<string, Type> _factoryMap = new();
 
         internal AggregatorRegistry()
         {

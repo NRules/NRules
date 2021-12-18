@@ -82,7 +82,7 @@ namespace NRules.Fluent
     internal class RuleLoadSpec : IRuleLoadSpec
     {
         private readonly IRuleActivator _activator;
-        private readonly RuleTypeScanner _typeScanner = new RuleTypeScanner();
+        private readonly RuleTypeScanner _typeScanner = new();
         private Func<IRuleMetadata, bool> _filter;
 
         public RuleLoadSpec(IRuleActivator activator)
@@ -137,9 +137,8 @@ namespace NRules.Fluent
         public IRuleLoadSpec Where(Func<IRuleMetadata, bool> filter)
         {
             if (IsFilterSet())
-            {
                 throw new InvalidOperationException("Rule load specification can only have a single 'Where' clause");
-            }
+            
             _filter = filter;
             return this;
         }
@@ -147,9 +146,8 @@ namespace NRules.Fluent
         public IRuleLoadSpec To(string ruleSetName)
         {
             if (RuleSetName != null)
-            {
                 throw new InvalidOperationException("Rule load specification can only have a single 'To' clause");
-            }
+            
             RuleSetName = ruleSetName;
             return this;
         }

@@ -24,7 +24,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
     {
-        private readonly List<IBuilder<RuleElement>> _nestedBuilders = new List<IBuilder<RuleElement>>();
+        private readonly List<IBuilder<RuleElement>> _nestedBuilders = new();
         private GroupType _groupType;
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
-            var declaration = new Declaration(type, DeclarationName(name));
+            var declaration = Element.Declaration(type, DeclarationName(name));
             return Pattern(declaration);
         }
 

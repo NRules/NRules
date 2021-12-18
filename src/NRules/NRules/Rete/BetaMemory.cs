@@ -14,8 +14,8 @@ namespace NRules.Rete
 
     internal class BetaMemory : IBetaMemory
     {
-        private readonly HashSet<Tuple> _tuples = new HashSet<Tuple>();
-        private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new Dictionary<TupleFactKey, Tuple>(); 
+        private readonly HashSet<Tuple> _tuples = new();
+        private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new(); 
 
         public IEnumerable<Tuple> Tuples => _tuples;
         public int TupleCount => _tuples.Count;

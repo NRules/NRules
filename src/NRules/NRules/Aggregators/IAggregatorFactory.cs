@@ -23,7 +23,7 @@ namespace NRules.Aggregators
         /// <summary>
         /// Creates a new aggregator instance.
         /// This method is called by the engine for each new combination of preceding partial matches, 
-        /// so that a new instance of the aggregator is created to accummulate the results.
+        /// so that a new instance of the aggregator is created to accumulate the results.
         /// </summary>
         /// <returns>Aggregator instance.</returns>
         IAggregator Create();

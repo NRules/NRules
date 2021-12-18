@@ -32,17 +32,15 @@ namespace NRules
 
     internal class WorkingMemory : IWorkingMemory
     {
-        private readonly Dictionary<object, Fact> _factMap = new Dictionary<object, Fact>();
-        private readonly Dictionary<Activation, Dictionary<object, Fact>> _linkedFactMap = new Dictionary<Activation, Dictionary<object, Fact>>();
-        private readonly Dictionary<TupleStateKey, object> _tupleStateMap = new Dictionary<TupleStateKey, object>();
+        private readonly Dictionary<object, Fact> _factMap = new();
+        private readonly Dictionary<Activation, Dictionary<object, Fact>> _linkedFactMap = new();
+        private readonly Dictionary<TupleStateKey, object> _tupleStateMap = new();
 
-        private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap =
-            new Dictionary<IAlphaMemoryNode, IAlphaMemory>();
+        private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap = new();
 
-        private readonly Dictionary<IBetaMemoryNode, IBetaMemory> _betaMap =
-            new Dictionary<IBetaMemoryNode, IBetaMemory>();
+        private readonly Dictionary<IBetaMemoryNode, IBetaMemory> _betaMap = new();
 
-        private static readonly object[] EmptyObjectList = new object[0];
+        private static readonly object[] EmptyObjectList = Array.Empty<object>();
 
         public IEnumerable<Fact> Facts => _factMap.Values;
 
@@ -66,9 +64,7 @@ namespace NRules
         public void RemoveFact(Fact fact)
         {
             if (!_factMap.Remove(fact.RawObject))
-            {
                 throw new ArgumentException("Element does not exist", nameof(fact));
-            }
         }
 
         public IEnumerable<object> GetLinkedKeys(Activation activation)

@@ -13,10 +13,10 @@ namespace NRules.Rete
 
     internal class BetaMemoryNode : IBetaMemoryNode
     {
-        private readonly List<ITupleSink> _sinks = new List<ITupleSink>();
+        private readonly List<ITupleSink> _sinks = new();
 
         public int Id { get; set; }
-        public NodeInfo NodeInfo { get; } = new NodeInfo();
+        public NodeInfo NodeInfo { get; } = new();
         public IEnumerable<ITupleSink> Sinks => _sinks;
 
         public void PropagateAssert(IExecutionContext context, TupleFactList tupleFactList)

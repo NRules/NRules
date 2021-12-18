@@ -16,7 +16,7 @@ namespace NRules.Rete
     internal class FactAggregator : IFactAggregator
     {
         private readonly IAggregator _aggregator;
-        private readonly OrderedDictionary<object, Fact> _aggregateFactMap = new OrderedDictionary<object, Fact>();
+        private readonly OrderedDictionary<object, Fact> _aggregateFactMap = new();
 
         public FactAggregator(IAggregator aggregator)
         {

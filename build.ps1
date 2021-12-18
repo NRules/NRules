@@ -3,7 +3,7 @@ param (
     [string]$component = 'Core'
 )
 
-$version = '0.9.2'
+$version = '0.9.3'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -28,19 +28,22 @@ $components = @{
                 include = @(
                     "NRules\bin\$configuration\netstandard2.0",
                     "NRules.Fluent\bin\$configuration\netstandard2.0",
-                    "NRules.RuleModel\bin\$configuration\netstandard2.0"
+                    "NRules.RuleModel\bin\$configuration\netstandard2.0",
+                    "NRules.Json\bin\$configuration\netstandard2.0"
                 )
             }
             'netstandard2.1' = @{
                 include = @(
                     "NRules\bin\$configuration\netstandard2.1",
                     "NRules.Fluent\bin\$configuration\netstandard2.1",
-                    "NRules.RuleModel\bin\$configuration\netstandard2.1"
+                    "NRules.RuleModel\bin\$configuration\netstandard2.1",
+                    "NRules.Json\bin\$configuration\netstandard2.1"
                 )
             }
         }
         package = @{
             nuget = @(
+                'NRules.Json',
                 'NRules.RuleModel',
                 'NRules.Fluent',
                 'NRules.Runtime',
@@ -80,6 +83,9 @@ $components = @{
         }
         build = @{
             tool = 'dotnet'
+        }
+        test = @{
+            frameworks = @('netcoreapp3.1')
         }
         bin = @{
             artifacts = @('netstandard2.0', 'netstandard2.1')

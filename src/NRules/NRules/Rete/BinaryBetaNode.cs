@@ -6,8 +6,8 @@ namespace NRules.Rete
     internal abstract class BinaryBetaNode : BetaNode, IObjectSink
     {
         private readonly bool _isSubnetJoin;
-        private static readonly List<TupleFactSet> EmptySetList = new List<TupleFactSet>();
-        private static readonly Dictionary<long, List<Fact>> EmptyGroups = new Dictionary<long, List<Fact>>();
+        private static readonly List<TupleFactSet> EmptySetList = new();
+        private static readonly Dictionary<long, List<Fact>> EmptyGroups = new();
 
         public ITupleSource LeftSource { get; }
         public IObjectSource RightSource { get; }

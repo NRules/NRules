@@ -19,7 +19,7 @@ namespace NRules.Diagnostics.Dgml
         public string Background { get; set; }
         public string Foreground { get; set; }
         public string FontSize { get; set; }
-        public Dictionary<string, object> Properties { get; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Properties { get; } = new();
 
         public void WriteXml(XmlWriter writer)
         {

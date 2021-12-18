@@ -8,7 +8,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class FilterGroupBuilder : RuleElementBuilder, IBuilder<FilterGroupElement>
     {
-        private readonly List<FilterElement> _filters = new List<FilterElement>();
+        private readonly List<FilterElement> _filters = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FilterGroupBuilder"/>.

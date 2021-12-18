@@ -12,7 +12,7 @@ namespace NRules.Aggregators
     internal class ProjectionAggregator<TSource, TResult> : IAggregator
     {
         private readonly IAggregateExpression _selector;
-        private readonly Dictionary<IFact, object> _sourceToValue = new Dictionary<IFact, object>();
+        private readonly Dictionary<IFact, object> _sourceToValue = new();
 
         public ProjectionAggregator(IAggregateExpression selector)
         {

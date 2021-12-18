@@ -52,7 +52,7 @@ namespace NRules.Collections
             bool found = _dictionary.TryGetValue(key, out var node);
             if (!found)
             {
-                value = default(TValue);
+                value = default;
                 return false;
             }
             value = node.Value;

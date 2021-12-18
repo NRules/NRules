@@ -13,7 +13,7 @@ namespace NRules.Rete
 
     internal class AlphaMemory : IAlphaMemory
     {
-        private readonly HashSet<Fact> _facts = new HashSet<Fact>();
+        private readonly HashSet<Fact> _facts = new();
 
         public IEnumerable<Fact> Facts => _facts;
         public int FactCount => _facts.Count;

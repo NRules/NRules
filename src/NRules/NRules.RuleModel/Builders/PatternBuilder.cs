@@ -9,7 +9,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class PatternBuilder : RuleElementBuilder, IBuilder<PatternElement>
     {
-        private readonly List<KeyValuePair<string, LambdaExpression>> _expressions = new List<KeyValuePair<string, LambdaExpression>>();
+        private readonly List<KeyValuePair<string, LambdaExpression>> _expressions = new();
         private IBuilder<RuleElement> _sourceBuilder;
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace NRules.RuleModel.Builders
         /// <param name="name">Pattern name.</param>
         public PatternBuilder(Type type, string name)
         {
-            Declaration = new Declaration(type, name ?? "$this$");
+            Declaration = Element.Declaration(type, name ?? "$this$");
         }
 
         /// <summary>

@@ -8,7 +8,7 @@ namespace NRules.RuleModel.Builders
     /// </summary>
     public class ActionGroupBuilder : RuleElementBuilder, IBuilder<ActionGroupElement>
     {
-        private readonly List<ActionElement> _actions = new List<ActionElement>();
+        private readonly List<ActionElement> _actions = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionGroupBuilder"/>.

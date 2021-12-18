@@ -11,7 +11,7 @@ namespace NRules.RuleModel.Builders
     {
         private string _name;
         private Type _resultType;
-        private readonly List<KeyValuePair<string, LambdaExpression>> _expressions = new List<KeyValuePair<string, LambdaExpression>>();
+        private readonly List<KeyValuePair<string, LambdaExpression>> _expressions = new();
         private Type _customFactoryType;
         private IBuilder<PatternElement> _sourceBuilder;
 
@@ -53,20 +53,39 @@ namespace NRules.RuleModel.Builders
         }
 
         /// <summary>
-        /// Configure aggregator to order facts by key.
+        /// Configure <see cref="Collect"/> aggregator to order facts by key.
         /// </summary>
         /// <param name="keySelector">Key selection expression.</param>
         /// <param name="sortDirection">Order to sort the aggregation in.</param>
         public void OrderBy(LambdaExpression keySelector, SortDirection sortDirection)
         {
+            if (_name != AggregateElement.CollectName)
+                throw new InvalidOperationException(
+                    $"{nameof(OrderBy)} can only be applied to {AggregateElement.CollectName} aggregate");
+
             var expressionName = sortDirection == SortDirection.Ascending ? AggregateElement.KeySelectorAscendingName : AggregateElement.KeySelectorDescendingName;
             AddExpression(expressionName, keySelector);
         }
 
         /// <summary>
+        /// Configure <see cref="Collect"/> aggregator to arrange facts into a lookup, grouped by key.
+        /// </summary>
+        /// <param name="keySelector">Grouping key selection expressions.</param>
+        /// <param name="elementSelector">Element selection expression.</param>
+        public void ToLookup(LambdaExpression keySelector, LambdaExpression elementSelector)
+        {
+            if (_name != AggregateElement.CollectName)
+                throw new InvalidOperationException(
+                    $"{nameof(ToLookup)} can only be applied to {AggregateElement.CollectName} aggregate");
+
+            AddExpression(AggregateElement.KeySelectorName, keySelector);
+            AddExpression(AggregateElement.ElementSelectorName, elementSelector);
+        }
+
+        /// <summary>
         /// Configure group by aggregator.
         /// </summary>
-        /// <param name="keySelector">Key selection expressions.</param>
+        /// <param name="keySelector">Grouping key selection expressions.</param>
         /// <param name="elementSelector">Element selection expression.</param>
         public void GroupBy(LambdaExpression keySelector, LambdaExpression elementSelector)
         {
@@ -124,7 +143,7 @@ namespace NRules.RuleModel.Builders
         /// <returns>Pattern builder.</returns>
         public PatternBuilder Pattern(Type type, string name = null)
         {
-            var declaration = new Declaration(type, DeclarationName(name));
+            var declaration = Element.Declaration(type, DeclarationName(name));
             return Pattern(declaration);
         }
 

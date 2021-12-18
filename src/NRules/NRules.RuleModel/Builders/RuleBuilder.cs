@@ -15,8 +15,8 @@ namespace NRules.RuleModel.Builders
         private string _description = string.Empty;
         private int _priority = RuleDefinition.DefaultPriority;
         private RuleRepeatability _repeatability = RuleDefinition.DefaultRepeatability;
-        private readonly List<string> _tags = new List<string>();
-        private readonly List<RuleProperty> _properties = new List<RuleProperty>();
+        private readonly List<string> _tags = new();
+        private readonly List<RuleProperty> _properties = new();
 
         private DependencyGroupBuilder _dependencyGroupBuilder;
         private GroupBuilder _lhsBuilder;

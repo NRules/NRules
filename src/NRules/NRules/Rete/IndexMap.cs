@@ -17,8 +17,8 @@ namespace NRules.Rete
             _map = map;
         }
 
-        public static IndexMap Empty = new IndexMap(new int[0]);
-        public static IndexMap Unit = new IndexMap(new[] {0});
+        public static IndexMap Empty = new(Array.Empty<int>());
+        public static IndexMap Unit = new(new[] {0});
 
         public bool HasData => _map.Any(x => x >= 0);
         public int Length => _map.Length;
@@ -56,7 +56,7 @@ namespace NRules.Rete
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((IndexMap) obj);
         }
 

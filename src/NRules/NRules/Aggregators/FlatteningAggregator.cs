@@ -13,8 +13,8 @@ namespace NRules.Aggregators
     internal class FlatteningAggregator<TSource, TResult> : IAggregator
     {
         private readonly IAggregateExpression _selector;
-        private readonly Dictionary<TResult, Counter> _referenceCounter = new Dictionary<TResult, Counter>();
-        private readonly Dictionary<IFact, OrderedHashSet<TResult>> _sourceToList = new Dictionary<IFact, OrderedHashSet<TResult>>();
+        private readonly Dictionary<TResult, Counter> _referenceCounter = new();
+        private readonly Dictionary<IFact, OrderedHashSet<TResult>> _sourceToList = new();
 
         public FlatteningAggregator(IAggregateExpression selector)
         {
@@ -112,6 +112,10 @@ namespace NRules.Aggregators
         {
             var counter = _referenceCounter[item];
             counter.Value--;
+            if (counter.Value == 0)
+            {
+                _referenceCounter.Remove(item);
+            }
             return counter.Value;
         }
 

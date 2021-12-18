@@ -623,19 +623,65 @@ namespace NRules.Tests.Utilities
             AssertNotEqual(first, second);
         }
 
-        private static void AssertEqual(Expression first, Expression second)
+        [Fact]
+        public void AreEqual_EquivalentTernaryMemberBinding_True()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value > 0 ? (x.Value1 - x.Value2) : x.Value1).Year;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value > 0 ? (x.Value1 - x.Value2) : x.Value1).Year;
+
+            //Act - Assert
+            AssertEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_NonEquivalentTernaryMemberBinding_False()
+        {
+            //Arrange
+            Expression<Func<ISomeFact, int>> first = x => (x.Value > 0 ? (x.Value1 - x.Value2) : x.Value1).Year;
+            Expression<Func<ISomeFact, int>> second = x => (x.Value > 0 ? (x.Value1 - x.Value2) : x.Value1).Day;
+
+            //Act - Assert
+            AssertNotEqual(first, second);
+        }
+
+        [Fact]
+        public void AreEqual_UnsupportedExpressionOptionIsFailFast_Throws()
+        {
+            //Arrange
+            Expression<Action> first = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
+            Expression<Action> second = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
+
+            //Act - Assert
+            Assert.Throws<NotImplementedException>(() => AssertNotEqual(first, second, throwOnUnsupported: true));
+        }
+        
+        [Fact]
+        public void AreEqual_UnsupportedExpressionOptionIsTreatAsNotEqual_False()
+        {
+            //Arrange
+            Expression<Action> first = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
+            Expression<Action> second = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
+
+            //Act - Assert
+            AssertNotEqual(first, second, throwOnUnsupported: false);
+        }
+
+        private void AssertEqual(Expression first, Expression second)
         {
             //Act
-            bool result = ExpressionComparer.AreEqual(first, second);
+            var target = CreateTarget();
+            bool result = target.AreEqual(first, second);
 
             //Assert
             Assert.True(result);
         }
 
-        private static void AssertNotEqual(Expression first, Expression second)
+        private void AssertNotEqual(Expression first, Expression second, bool throwOnUnsupported = true)
         {
             //Act
-            bool result = ExpressionComparer.AreEqual(first, second);
+            var target = CreateTarget(throwOnUnsupported);
+            bool result = target.AreEqual(first, second);
 
             //Assert
             Assert.False(result);
@@ -664,7 +710,7 @@ namespace NRules.Tests.Utilities
         {
             public int Value = 1;
 
-            public readonly SomeClass Child = new SomeClass();
+            public readonly SomeClass Child = new();
         }
 
         public interface ISomeFact
@@ -703,12 +749,23 @@ namespace NRules.Tests.Utilities
 
         public class SomeClassWithListProperty
         {
-            public List<string> List { get; set; } = new List<string>();
+            public List<string> List { get; set; } = new();
         }
 
         public class SomeClassWithComplexProperty
         {
-            public SomeClassWithProperty Value { get; set; } = new SomeClassWithProperty();
+            public SomeClassWithProperty Value { get; set; } = new();
+        }
+
+        private ExpressionComparer CreateTarget(bool throwOnUnsupported = true)
+        {
+            var options = new RuleCompilerOptions
+            {
+                UnsupportedExpressionHandling = throwOnUnsupported
+                    ? RuleCompilerUnsupportedExpressionsHandling.FailFast
+                    : RuleCompilerUnsupportedExpressionsHandling.TreatAsNotEqual
+            };
+            return new ExpressionComparer(options);
         }
     }
 }

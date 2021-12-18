@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using NRules.Aggregators.Collections;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators
@@ -15,10 +15,9 @@ namespace NRules.Aggregators
         private readonly IAggregateExpression _keySelector;
         private readonly IAggregateExpression _elementSelector;
         
-        private readonly Dictionary<IFact, TKey> _sourceToKey = new Dictionary<IFact, TKey>();
-        private readonly Dictionary<IFact, TElement> _sourceToElement = new Dictionary<IFact, TElement>();
+        private readonly Dictionary<IFact, TKey> _sourceToKey = new();
 
-        private readonly DefaultKeyMap<TKey, Grouping> _groups = new DefaultKeyMap<TKey, Grouping>();
+        private readonly DefaultKeyMap<TKey, FactGrouping<TKey, TElement>> _groups = new();
 
         public GroupByAggregator(IAggregateExpression keySelector, IAggregateExpression elementSelector)
         {
@@ -35,7 +34,6 @@ namespace NRules.Aggregators
                 var key = (TKey)_keySelector.Invoke(context, tuple, fact);
                 var element = (TElement)_elementSelector.Invoke(context, tuple, fact);
                 _sourceToKey[fact] = key;
-                _sourceToElement[fact] = element;
                 var result = Add(fact, key, element);
                 if (!resultLookup.ContainsKey(key))
                 {
@@ -57,9 +55,7 @@ namespace NRules.Aggregators
                 var key = (TKey)_keySelector.Invoke(context, tuple, fact);
                 var element = (TElement)_elementSelector.Invoke(context, tuple, fact);
                 var oldKey = _sourceToKey[fact];
-                var oldElement = _sourceToElement[fact];
                 _sourceToKey[fact] = key;
-                _sourceToElement[fact] = element;
         
                 if (Equals(key, oldKey))
                 {
@@ -72,7 +68,7 @@ namespace NRules.Aggregators
                 }
                 else
                 {
-                    var result1 = RemoveElementOnly(fact, oldKey, oldElement);
+                    var result1 = RemoveElementOnly(fact, oldKey);
                     if (!resultLookup.ContainsKey(oldKey))
                     {
                         keys.Add(oldKey);
@@ -113,10 +109,8 @@ namespace NRules.Aggregators
             foreach (var fact in facts)
             {
                 var oldKey = _sourceToKey[fact];
-                var oldElement = _sourceToElement[fact];
                 _sourceToKey.Remove(fact);
-                _sourceToElement.Remove(fact);
-                var result = Remove(fact, oldKey, oldElement);
+                var result = Remove(fact, oldKey);
                 if (!resultLookup.ContainsKey(oldKey))
                 {
                     keys.Add(oldKey);
@@ -131,7 +125,7 @@ namespace NRules.Aggregators
         {
             if (!_groups.TryGetValue(key, out var group))
             {
-                group = new Grouping(key);
+                group = new FactGrouping<TKey, TElement>(key);
                 _groups[key] = group;
 
                 group.Add(fact, element);
@@ -151,10 +145,10 @@ namespace NRules.Aggregators
             return AggregationResult.Modified(group, group, group.Facts);
         }
 
-        private AggregationResult Remove(IFact fact, TKey key, TElement element)
+        private AggregationResult Remove(IFact fact, TKey key)
         {
             var group = _groups[key];
-            group.Remove(fact, element);
+            group.Remove(fact);
             if (group.Count == 0)
             {
                 _groups.Remove(key);
@@ -163,10 +157,10 @@ namespace NRules.Aggregators
             return AggregationResult.Modified(group, group, group.Facts);
         }
 
-        private AggregationResult RemoveElementOnly(IFact fact, TKey key, TElement element)
+        private AggregationResult RemoveElementOnly(IFact fact, TKey key)
         {
             var group = _groups[key];
-            group.Remove(fact, element);
+            group.Remove(fact);
             if (group.Count == 0)
             {
                 return AggregationResult.Removed(group);
@@ -183,16 +177,6 @@ namespace NRules.Aggregators
                 results.Add(result);
             }
             return results;
-        }
-
-        private class Grouping : FactCollection<TElement>, IGrouping<TKey, TElement>
-        {
-            public Grouping(TKey key)
-            {
-                Key = key;
-            }
-
-            public TKey Key { get; set; }
         }
     }
 }

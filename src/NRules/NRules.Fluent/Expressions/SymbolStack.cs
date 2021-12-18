@@ -5,7 +5,7 @@ namespace NRules.Fluent.Expressions
 {
     internal class SymbolStack
     {
-        private readonly Stack<SymbolTable> _frames = new Stack<SymbolTable>();
+        private readonly Stack<SymbolTable> _frames = new();
 
         public SymbolStack()
         {

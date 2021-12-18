@@ -62,9 +62,7 @@ namespace NRules.Collections
 
         private void ExchangeElements(int pos1, int pos2)
         {
-            var val = _baseHeap[pos1];
-            _baseHeap[pos1] = _baseHeap[pos2];
-            _baseHeap[pos2] = val;
+            (_baseHeap[pos1], _baseHeap[pos2]) = (_baseHeap[pos2], _baseHeap[pos1]);
         }
 
         private void Insert(TPriority priority, TValue value)

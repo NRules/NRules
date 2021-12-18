@@ -6,7 +6,7 @@ namespace NRules.AgendaFilters
     internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
     {
         private readonly List<IActivationExpression<object>> _keySelectors;
-        private readonly Dictionary<Activation, ChangeKeys> _changeKeys = new Dictionary<Activation, ChangeKeys>();
+        private readonly Dictionary<Activation, ChangeKeys> _changeKeys = new();
 
         public KeyChangeAgendaFilter(IEnumerable<IActivationExpression<object>> keySelectors)
         {

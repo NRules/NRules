@@ -3,7 +3,7 @@ using System;
 namespace NRules
 {
     /// <summary>
-    /// Represents errors that occur while evaluating rule right-hand side expresson.
+    /// Represents errors that occur while evaluating rule right-hand side expression.
     /// </summary>
     [Serializable]
     public class RuleRhsExpressionEvaluationException : RuleExpressionEvaluationException
