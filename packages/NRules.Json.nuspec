@@ -15,7 +15,7 @@
 
 This package adds support for serialization of rule definitions to JSON and deserialization of JSON into rule definitions.</description>
     <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
-    <copyright>Copyright 2012-2021 Sergiy Nikolayev. All rights reserved.</copyright>
+    <copyright>Copyright 2012-2022 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>nrules json</tags>
     <dependencies>
       <group targetFramework="netstandard2.0">
