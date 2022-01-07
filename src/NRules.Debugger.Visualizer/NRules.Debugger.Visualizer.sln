@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Debugger.Visualizer.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Debugger.Visualizer", "NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.csproj", "{057D1CD8-5E7F-4DB6-AE1A-78F51573173E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{ED00E6ED-28F8-4B4E-92ED-ADEFAFF64A0B}"
+	ProjectSection(SolutionItems) = preProject
+		VisualStudio.props = VisualStudio.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

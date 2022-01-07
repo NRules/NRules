@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\..\Common.props" />
+  <Import Project="..\VisualStudio.props" />
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
@@ -17,8 +18,8 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
-      <HintPath>$(MSBuildProgramFiles32)\Microsoft Visual Studio\2019\Community\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
+      <HintPath>$(VisualStudioLocation)\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
+
 </Project>
