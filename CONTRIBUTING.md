@@ -29,7 +29,7 @@ By contributing to NRules, you assert that:
 
 ### Development Environment
 
-- Visual Studio 2019 (with latest patches/updates).
+- Visual Studio 2022 (with latest patches/updates).
 - [Sandcastle Help File Builder](https://github.com/EWSoftware/SHFB)
 
 ### Dependencies
