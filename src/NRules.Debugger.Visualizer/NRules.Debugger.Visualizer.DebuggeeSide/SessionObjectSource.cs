@@ -13,7 +13,8 @@ namespace NRules.Debugger.Visualizer
             var schema = session.GetSchema();
             var dgmlWriter = new DgmlWriter(schema);
             var contents = dgmlWriter.GetContents();
-            base.GetData(contents, outgoingData);
+            using var writer = new StreamWriter(outgoingData);
+            writer.Write(contents);
         }
     }
 }

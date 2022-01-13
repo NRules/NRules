@@ -25,7 +25,9 @@ namespace NRules.Debugger.Visualizer
     {
         protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
         {
-            var snapshot = (string) objectProvider.GetObject();
+            var stream = objectProvider.GetData();
+            using var streamReader = new StreamReader(stream);
+            var snapshot = streamReader.ReadToEnd();
             string fileName = Path.Combine(Path.GetTempPath(), "session.dgml");
             File.WriteAllText(fileName, snapshot);
             Process.Start(fileName);
