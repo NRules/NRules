@@ -6,45 +6,56 @@ using NRules.Json.Utilities;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
-namespace NRules.Json.Converters
+namespace NRules.Json.Converters;
+
+internal class NamedExpressionElementConverter : JsonConverter<NamedExpressionElement>
 {
-    internal class NamedExpressionElementConverter : JsonConverter<NamedExpressionElement>
+    public override NamedExpressionElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override NamedExpressionElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        reader.ReadStartObject();
+        var name = reader.ReadStringProperty(nameof(NamedExpressionElement.Name), options);
+        if (name is null)
         {
-            reader.ReadStartObject();
-            var name = reader.ReadStringProperty(nameof(NamedExpressionElement.Name), options);
-            var expression = reader.ReadProperty<LambdaExpression>(nameof(NamedExpressionElement.Expression), options);
-            return Element.Expression(name, expression);
+            throw new JsonException($"Failed to read {nameof(NamedExpressionElement.Name)} property value");
         }
-
-        public override void Write(Utf8JsonWriter writer, NamedExpressionElement value, JsonSerializerOptions options)
+        var expression = reader.ReadProperty<LambdaExpression>(nameof(NamedExpressionElement.Expression), options);
+        if (expression is null)
         {
-            writer.WriteStartObject();
-            writer.WriteStringProperty(nameof(NamedExpressionElement.Name), value.Name, options);
-            writer.WriteProperty(nameof(NamedExpressionElement.Expression), value.Expression, options);
-            writer.WriteEndObject();
+            throw new JsonException($"Failed to read {nameof(NamedExpressionElement.Expression)} property value");
         }
+        return Element.Expression(name, expression);
     }
-    
-    internal class ActionElementConverter : JsonConverter<ActionElement>
-    {
-        public override ActionElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            reader.ReadStartObject();
-            if (!reader.TryReadEnumProperty<ActionTrigger>(nameof(ActionElement.ActionTrigger), options, out var trigger))
-                trigger = ActionElement.DefaultTrigger;
-            var expression = reader.ReadProperty<LambdaExpression>(nameof(ActionElement.Expression), options);
-            return Element.Action(expression, trigger);
-        }
 
-        public override void Write(Utf8JsonWriter writer, ActionElement value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, NamedExpressionElement value, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        writer.WriteStringProperty(nameof(NamedExpressionElement.Name), value.Name, options);
+        writer.WriteProperty(nameof(NamedExpressionElement.Expression), value.Expression, options);
+        writer.WriteEndObject();
+    }
+}
+
+internal class ActionElementConverter : JsonConverter<ActionElement>
+{
+    public override ActionElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        reader.ReadStartObject();
+        if (!reader.TryReadEnumProperty<ActionTrigger>(nameof(ActionElement.ActionTrigger), options, out var trigger))
+            trigger = ActionElement.DefaultTrigger;
+        var expression = reader.ReadProperty<LambdaExpression>(nameof(ActionElement.Expression), options);
+        if (expression is null)
         {
-            writer.WriteStartObject();
-            if (value.ActionTrigger != ActionElement.DefaultTrigger)
-                writer.WriteEnumProperty(nameof(ActionElement.ActionTrigger), value.ActionTrigger, options); 
-            writer.WriteProperty(nameof(ActionElement.Expression), value.Expression, options);
-            writer.WriteEndObject();
+            throw new JsonException($"Failed to read {nameof(ActionElement.Expression)} property value");
         }
+        return Element.Action(expression, trigger);
+    }
+
+    public override void Write(Utf8JsonWriter writer, ActionElement value, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        if (value.ActionTrigger != ActionElement.DefaultTrigger)
+            writer.WriteEnumProperty(nameof(ActionElement.ActionTrigger), value.ActionTrigger, options);
+        writer.WriteProperty(nameof(ActionElement.Expression), value.Expression, options);
+        writer.WriteEndObject();
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using Xunit;
@@ -33,7 +32,7 @@ namespace NRules.IntegrationTests
         [Fact]
         public void Fire_NoMatchingFacts_DoesNotFire()
         {
-            // Arrange 
+            // Arrange
             var fact = new FactType { TestProperty = 0 };
             Session.Insert(fact);
 
@@ -98,7 +97,7 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
                     .Query(() => fact, x => x

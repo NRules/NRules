@@ -1,109 +1,109 @@
 ﻿using System.Collections.Generic;
 using NRules.Diagnostics;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+internal class ObjectInputAdapter : ITupleSink, IAlphaMemoryNode
 {
-    internal class ObjectInputAdapter : ITupleSink, IAlphaMemoryNode
+    private readonly IBetaMemoryNode _source;
+    private readonly List<IObjectSink> _sinks = new();
+
+    public int Id { get; }
+    public NodeInfo NodeInfo { get; } = new();
+    public IEnumerable<IObjectSink> Sinks => _sinks;
+
+    public ObjectInputAdapter(int id, IBetaMemoryNode source)
     {
-        private readonly ITupleSource _source;
-        private readonly List<IObjectSink> _sinks = new();
+        Id = id;
+        _source = source;
+        source.Attach(this);
+    }
 
-        public int Id { get; set; }
-        public NodeInfo NodeInfo { get; } = new();
-        public IEnumerable<IObjectSink> Sinks => _sinks;
-
-        public ObjectInputAdapter(IBetaMemoryNode source)
+    public void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    {
+        var toAssert = new List<Fact>(tuples.Count);
+        using (var counter = PerfCounter.Assert(context, this))
         {
-            _source = source;
-            source.Attach(this);
+            foreach (var tuple in tuples)
+            {
+                var wrapperFact = new WrapperFact(tuple);
+                context.WorkingMemory.SetState(this, tuple, wrapperFact);
+                toAssert.Add(wrapperFact);
+            }
+            counter.AddItems(tuples.Count);
         }
 
-        public void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
+        foreach (var sink in _sinks)
         {
-            var toAssert = new List<Fact>(tuples.Count);
-            using (var counter = PerfCounter.Assert(context, this))
-            {
-                foreach (var tuple in tuples)
-                {
-                    var wrapperFact = new WrapperFact(tuple);
-                    context.WorkingMemory.SetState(this, tuple, wrapperFact);
-                    toAssert.Add(wrapperFact);
-                }
-                counter.AddItems(tuples.Count);
-            }
+            sink.PropagateAssert(context, toAssert);
+        }
+    }
 
-            foreach (var sink in _sinks)
+    public void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    {
+        var toUpdate = new List<Fact>(tuples.Count);
+        using (var counter = PerfCounter.Update(context, this))
+        {
+            foreach (var tuple in tuples)
             {
-                sink.PropagateAssert(context, toAssert);
+                var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, tuple);
+                toUpdate.Add(wrapperFact);
             }
+            counter.AddItems(tuples.Count);
         }
 
-        public void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
+        foreach (var sink in _sinks)
         {
-            var toUpdate = new List<Fact>(tuples.Count);
-            using (var counter = PerfCounter.Update(context, this))
-            {
-                foreach (var tuple in tuples)
-                {
-                    var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, tuple);
-                    toUpdate.Add(wrapperFact);
-                }
-                counter.AddItems(tuples.Count);
-            }
+            sink.PropagateUpdate(context, toUpdate);
+        }
+    }
 
-            foreach (var sink in _sinks)
+    public void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    {
+        var toRetract = new List<Fact>(tuples.Count);
+        using (var counter = PerfCounter.Retract(context, this))
+        {
+            foreach (var tuple in tuples)
             {
-                sink.PropagateUpdate(context, toUpdate);
+                var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, tuple);
+                toRetract.Add(wrapperFact);
             }
+            counter.AddItems(tuples.Count);
         }
 
-        public void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
+        foreach (var sink in _sinks)
         {
-            var toRetract = new List<Fact>(tuples.Count);
-            using (var counter = PerfCounter.Retract(context, this))
-            {
-                foreach (var tuple in tuples)
-                {
-                    var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, tuple);
-                    toRetract.Add(wrapperFact);
-                }
-                counter.AddItems(tuples.Count);
-            }
-
-            foreach (var sink in _sinks)
-            {
-                sink.PropagateRetract(context, toRetract);
-            }
-
-            using (PerfCounter.Retract(context, this))
-            {
-                foreach (var tuple in tuples)
-                {
-                    context.WorkingMemory.RemoveStateOrThrow<WrapperFact>(this, tuple);
-                }
-            }
+            sink.PropagateRetract(context, toRetract);
         }
 
-        public IEnumerable<Fact> GetFacts(IExecutionContext context)
+        using (PerfCounter.Retract(context, this))
         {
-            var sourceTuples = _source.GetTuples(context);
-            var sourceFacts = new List<Fact>();
-            foreach (var sourceTuple in sourceTuples)
+            foreach (var tuple in tuples)
             {
-                var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, sourceTuple);
-                sourceFacts.Add(wrapperFact);
+                context.WorkingMemory.RemoveStateOrThrow<WrapperFact>(this, tuple);
             }
-            return sourceFacts;
         }
+    }
 
-        public void Attach(IObjectSink sink)
+    public IEnumerable<Fact> GetFacts(IExecutionContext context)
+    {
+        var sourceTuples = _source.GetTuples(context);
+        var sourceFacts = new List<Fact>();
+        foreach (var sourceTuple in sourceTuples)
         {
-            _sinks.Add(sink);
+            var wrapperFact = context.WorkingMemory.GetStateOrThrow<WrapperFact>(this, sourceTuple);
+            sourceFacts.Add(wrapperFact);
         }
+        return sourceFacts;
+    }
 
-        public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
-        {
-            visitor.VisitObjectInputAdapter(context, this);
-        }
+    public void Attach(IObjectSink sink)
+    {
+        _sinks.Add(sink);
+    }
+
+    public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+    {
+        visitor.VisitObjectInputAdapter(context, this);
     }
 }

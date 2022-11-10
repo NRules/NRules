@@ -15,11 +15,11 @@ namespace NRules.IntegrationTests
         public void Load_AssemblyWithoutRules_Empty()
         {
             //Arrange
-            RuleRepository target = CreateTarget();
+            var target = CreateTarget();
 
             //Act
             target.Load(x => x.From(typeof(string).Assembly));
-            IRuleSet ruleSet = target.GetRuleSets().First();
+            var ruleSet = target.GetRuleSets().First();
 
             //Assert
             Assert.Empty(ruleSet.Rules);
@@ -29,11 +29,11 @@ namespace NRules.IntegrationTests
         public void Load_InvalidTypes_Empty()
         {
             //Arrange
-            RuleRepository target = CreateTarget();
+            var target = CreateTarget();
 
             //Act
             target.Load(x => x.From(typeof(string)));
-            IRuleSet ruleSet = target.GetRuleSets().First();
+            var ruleSet = target.GetRuleSets().First();
 
             //Assert
             Assert.Empty(ruleSet.Rules);
@@ -43,7 +43,7 @@ namespace NRules.IntegrationTests
         public void Load_EmptyRule_Throws()
         {
             //Arrange
-            RuleRepository target = CreateTarget();
+            var target = CreateTarget();
 
             //Act - Assert
             var ex = Assert.Throws<RuleDefinitionException>(() => target.Load(x => x.NestedTypes().From(typeof(EmptyRule))));
@@ -54,7 +54,7 @@ namespace NRules.IntegrationTests
         public void Load_NoActionRule_Throws()
         {
             //Arrange
-            RuleRepository target = CreateTarget();
+            var target = CreateTarget();
 
             //Act - Assert
             var ex = Assert.Throws<RuleDefinitionException>(() => target.Load(x => x.NestedTypes().From(typeof(NoActionRule))));
@@ -65,7 +65,7 @@ namespace NRules.IntegrationTests
         public void Load_CannotActivateRule_Throws()
         {
             //Arrange
-            RuleRepository target = CreateTarget();
+            var target = CreateTarget();
 
             //Act - Assert
             var ex = Assert.Throws<RuleActivationException>(() => target.Load(x => x.NestedTypes().From(typeof(CannotActivateRule))));
@@ -76,7 +76,7 @@ namespace NRules.IntegrationTests
         public void Load_AssemblyWithRulesToNamedRuleSet_RuleSetNameMatches()
         {
             //Arrange
-            RuleRepository target = CreateTarget();
+            var target = CreateTarget();
 
             //Act
             target.Load(x => x
@@ -84,7 +84,7 @@ namespace NRules.IntegrationTests
                 .From(ThisAssembly)
                 .Where(r => r.RuleType == typeof(ValidRule))
                 .To("Test"));
-            IRuleSet ruleSet = target.GetRuleSets().First();
+            var ruleSet = target.GetRuleSets().First();
 
             //Assert
             Assert.Equal("Test", ruleSet.Name);
@@ -94,14 +94,14 @@ namespace NRules.IntegrationTests
         public void Load_AssemblyWithRulesToDefaultRuleSet_DefaultRuleSetName()
         {
             //Arrange
-            RuleRepository target = CreateTarget();
+            var target = CreateTarget();
 
             //Act
             target.Load(x => x
                 .NestedTypes()
                 .From(ThisAssembly)
                 .Where(r => r.RuleType == typeof(ValidRule)));
-            IRuleSet ruleSet = target.GetRuleSets().First();
+            var ruleSet = target.GetRuleSets().First();
 
             //Assert
             Assert.Equal("default", ruleSet.Name);
@@ -111,14 +111,14 @@ namespace NRules.IntegrationTests
         public void Load_FilterRuleByName_MatchingRule()
         {
             //Arrange
-            RuleRepository target = CreateTarget();
+            var target = CreateTarget();
 
             //Act
             target.Load(x => x
                 .NestedTypes()
                 .From(ThisAssembly)
                 .Where(r => r.Name.Contains("Valid")));
-            IRuleSet ruleSet = target.GetRuleSets().First();
+            var ruleSet = target.GetRuleSets().First();
 
             //Assert
             Assert.Single(ruleSet.Rules);
@@ -129,14 +129,14 @@ namespace NRules.IntegrationTests
         public void Load_FilterRuleByTag_MatchingRule()
         {
             //Arrange
-            RuleRepository target = CreateTarget();
+            var target = CreateTarget();
 
             //Act
             target.Load(x => x
                 .NestedTypes()
                 .From(ThisAssembly)
                 .Where(r => r.IsTagged("LoadTest")));
-            IRuleSet ruleSet = target.GetRuleSets().First();
+            var ruleSet = target.GetRuleSets().First();
 
             //Assert
             Assert.Single(ruleSet.Rules);
@@ -155,7 +155,7 @@ namespace NRules.IntegrationTests
             var ruleSet = new RuleSet("MyRuleSet");
             ruleSet.Add(ruleDefinition);
 
-            RuleRepository target = CreateTarget();
+            var target = CreateTarget();
 
             //Act
             target.Add(ruleSet);

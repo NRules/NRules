@@ -1,49 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+[DebuggerDisplay("TupleFactList ({Count})")]
+internal class TupleFactList : IReadOnlyCollection<(Tuple Tuple, Fact? Fact)>
 {
-    [DebuggerDisplay("TupleFactList ({Count})")]
-    internal class TupleFactList
+    private readonly List<(Tuple Tuple, Fact? Fact)> _list = new();
+
+    public int Count => _list.Count;
+
+    public void Add(Tuple tuple, Fact? fact = null)
     {
-        private readonly List<Tuple> _tuples = new(); 
-        private readonly List<Fact> _facts = new();
+        _list.Add((tuple, fact));
+    }
 
-        public int Count => _tuples.Count;
+    public IEnumerator<(Tuple Tuple, Fact? Fact)> GetEnumerator()
+    {
+        return _list.GetEnumerator();
+    }
 
-        public void Add(Tuple tuple, Fact fact)
-        {
-            _tuples.Add(tuple);
-            _facts.Add(fact);
-        }
-
-        public struct Enumerator
-        {
-            private List<Tuple>.Enumerator _tupleEnumerator;
-            private List<Fact>.Enumerator _factEnumerator;
-
-            public Enumerator(List<Tuple>.Enumerator tupleEnumerator, List<Fact>.Enumerator factEnumerator)
-            {
-                _tupleEnumerator = tupleEnumerator;
-                _factEnumerator = factEnumerator;
-            }
-
-            public Tuple CurrentTuple => _tupleEnumerator.Current;
-            public Fact CurrentFact => _factEnumerator.Current;
-
-            public bool MoveNext()
-            {
-                bool hasNextTuple = _tupleEnumerator.MoveNext();
-                bool hasNextFact = _factEnumerator.MoveNext();
-                return hasNextTuple && hasNextFact;
-            }
-        }
-
-        public Enumerator GetEnumerator()
-        {
-            var tupleEnumerator = _tuples.GetEnumerator();
-            var factEnumerator = _facts.GetEnumerator();
-            return new Enumerator(tupleEnumerator, factEnumerator);
-        }
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return _list.GetEnumerator();
     }
 }

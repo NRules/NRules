@@ -19,8 +19,8 @@ namespace NRules.Tests.Utilities
         public void AreEqual_EquivalentNewArray_True()
         {
             // Arrange
-            Expression<Func<IEnumerable<string>>> first = () => new[] {"string1", "string2"};
-            Expression<Func<IEnumerable<string>>> second = () => new[] {"string1", "string2"};
+            Expression<Func<IEnumerable<string>>> first = () => new[] { "string1", "string2" };
+            Expression<Func<IEnumerable<string>>> second = () => new[] { "string1", "string2" };
 
             // Act - Assert
             AssertEqual(first, second);
@@ -30,8 +30,8 @@ namespace NRules.Tests.Utilities
         public void AreEqual_NonEquivalentNewArray_False()
         {
             // Arrange
-            Expression<Func<IEnumerable<string>>> first = () => new[] {"string1", "string2", "string3"};
-            Expression<Func<IEnumerable<string>>> second = () => new[] {"string1", "string2"};
+            Expression<Func<IEnumerable<string>>> first = () => new[] { "string1", "string2", "string3" };
+            Expression<Func<IEnumerable<string>>> second = () => new[] { "string1", "string2" };
 
             // Act - Assert
             AssertNotEqual(first, second);
@@ -41,9 +41,9 @@ namespace NRules.Tests.Utilities
         public void AreEqual_EquivalentConditionalArray_True()
         {
             // Arrange
-            var strings = new[] {"string1", "string2"};
-            Expression<Func<IEnumerable<string>>> first = () => strings.Length > 1 ? new string[0] : strings;
-            Expression<Func<IEnumerable<string>>> second = () => strings.Length > 1 ? new string[0] : strings;
+            var strings = new[] { "string1", "string2" };
+            Expression<Func<IEnumerable<string>>> first = () => strings.Length > 1 ? Array.Empty<string>() : strings;
+            Expression<Func<IEnumerable<string>>> second = () => strings.Length > 1 ? Array.Empty<string>() : strings;
 
             // Act - Assert
             AssertEqual(first, second);
@@ -53,9 +53,9 @@ namespace NRules.Tests.Utilities
         public void AreEqual_NonEquivalentConditionalArray_False()
         {
             // Arrange
-            var strings = new[] {"string1", "string2"};
-            Expression<Func<IEnumerable<string>>> first = () => strings.Length > 1 ? new string[0] : strings;
-            Expression<Func<IEnumerable<string>>> second = () => strings.Length > 1 ? strings : new string[0];
+            var strings = new[] { "string1", "string2" };
+            Expression<Func<IEnumerable<string>>> first = () => strings.Length > 1 ? Array.Empty<string>() : strings;
+            Expression<Func<IEnumerable<string>>> second = () => strings.Length > 1 ? strings : Array.Empty<string>();
 
             // Act - Assert
             AssertNotEqual(first, second);
@@ -312,7 +312,7 @@ namespace NRules.Tests.Utilities
         public void AreEqual_EquivalentMemberAccessConvert_True()
         {
             //Arrange
-            int value = 1;
+            var value = 1;
 
             Expression<Func<SomeOtherFact, bool>> first = f => ((ISomeFact)f).Value.Equals(value);
             Expression<Func<SomeOtherFact, bool>> second = f => ((ISomeFact)f).Value.Equals(value);
@@ -325,8 +325,8 @@ namespace NRules.Tests.Utilities
         public void AreEqual_NonEquivalentMemberAccessConvert_False()
         {
             //Arrange
-            int value1 = 1;
-            int value2 = 2;
+            var value1 = 1;
+            var value2 = 2;
 
             Expression<Func<SomeOtherFact, bool>> first = f => ((ISomeFact)f).Value.Equals(value1);
             Expression<Func<SomeOtherFact, bool>> second = f => ((ISomeFact)f).Value.Equals(value2);
@@ -431,7 +431,7 @@ namespace NRules.Tests.Utilities
                 .First(info => info.IsStatic && info.Name == "StaticMethod"
                                && info.GetParameters().Length == 1);
 
-            var staticMethodDelegate = (Func<string, int>) methodInfo.CreateDelegate(typeof(Func<string, int>));
+            var staticMethodDelegate = (Func<string, int>)methodInfo.CreateDelegate(typeof(Func<string, int>));
 
             Expression<Func<string, int>> first = data => staticMethodDelegate(data);
             Expression<Func<string, int>> second = data => staticMethodDelegate(data);
@@ -455,8 +455,8 @@ namespace NRules.Tests.Utilities
                                && !info.GetParameters().Any());
 
             var staticMethodWithArgDelegate =
-                (Func<string, int>) methodInfoWithArg.CreateDelegate(typeof(Func<string, int>));
-            var staticMethodWithoutArgDelegate = (Func<int>) methodInfoWithoutArg.CreateDelegate(typeof(Func<int>));
+                (Func<string, int>)methodInfoWithArg.CreateDelegate(typeof(Func<string, int>));
+            var staticMethodWithoutArgDelegate = (Func<int>)methodInfoWithoutArg.CreateDelegate(typeof(Func<int>));
 
             Expression<Func<string, int>> first = data => staticMethodWithArgDelegate(data);
             Expression<Func<int>> second = () => staticMethodWithoutArgDelegate();
@@ -480,9 +480,9 @@ namespace NRules.Tests.Utilities
                                && info.GetParameters().Length == 1);
 
             var staticMethodWithArgDelegate =
-                (Func<string, int>) methodInfoWithArg.CreateDelegate(typeof(Func<string, int>));
+                (Func<string, int>)methodInfoWithArg.CreateDelegate(typeof(Func<string, int>));
             var otherStaticMethodWithArgDelegate =
-                (Func<string, int>) otherMethodInfoWithArg.CreateDelegate(typeof(Func<string, int>));
+                (Func<string, int>)otherMethodInfoWithArg.CreateDelegate(typeof(Func<string, int>));
 
             Expression<Func<string, int>> first = data => staticMethodWithArgDelegate(data);
             Expression<Func<string, int>> second = data => otherStaticMethodWithArgDelegate(data);
@@ -649,29 +649,29 @@ namespace NRules.Tests.Utilities
         public void AreEqual_UnsupportedExpressionOptionIsFailFast_Throws()
         {
             //Arrange
-            Expression<Action> first = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
-            Expression<Action> second = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
+            var first = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
+            var second = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
 
             //Act - Assert
             Assert.Throws<NotImplementedException>(() => AssertNotEqual(first, second, throwOnUnsupported: true));
         }
-        
+
         [Fact]
         public void AreEqual_UnsupportedExpressionOptionIsTreatAsNotEqual_False()
         {
             //Arrange
-            Expression<Action> first = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
-            Expression<Action> second = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
+            var first = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
+            var second = Expression.Lambda<Action>(Expression.Block(Expression.Empty()));
 
             //Act - Assert
             AssertNotEqual(first, second, throwOnUnsupported: false);
         }
 
-        private void AssertEqual(Expression first, Expression second)
+        private void AssertEqual(Expression? first, Expression? second)
         {
             //Act
             var target = CreateTarget();
-            bool result = target.AreEqual(first, second);
+            var result = target.AreEqual(first, second);
 
             //Assert
             Assert.True(result);
@@ -681,7 +681,7 @@ namespace NRules.Tests.Utilities
         {
             //Act
             var target = CreateTarget(throwOnUnsupported);
-            bool result = target.AreEqual(first, second);
+            var result = target.AreEqual(first, second);
 
             //Assert
             Assert.False(result);
@@ -729,7 +729,7 @@ namespace NRules.Tests.Utilities
 
         public class SomeClass
         {
-            public readonly string[] Values = {"blop"};
+            public readonly string[] Values = { "blop" };
 
             public SomeClass NestedValue1()
             {
@@ -744,7 +744,7 @@ namespace NRules.Tests.Utilities
 
         public class SomeClassWithProperty
         {
-            public string Value { get; set; }
+            public string? Value { get; set; }
         }
 
         public class SomeClassWithListProperty

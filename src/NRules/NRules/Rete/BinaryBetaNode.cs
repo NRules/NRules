@@ -1,124 +1,107 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+internal abstract class BinaryBetaNode : BetaNode, IObjectSink
 {
-    internal abstract class BinaryBetaNode : BetaNode, IObjectSink
+    private static readonly IEnumerable<TupleFactSet> EmptySetList = Array.Empty<TupleFactSet>();
+    private static readonly IReadOnlyDictionary<long, IEnumerable<Fact>> EmptyGroups = new Dictionary<long, IEnumerable<Fact>>();
+    private readonly bool _isSubnetJoin;
+
+    public ITupleSource LeftSource { get; }
+    public IObjectSource RightSource { get; }
+
+    protected BinaryBetaNode(int id, Type? outputType, ITupleSource leftSource, IObjectSource rightSource, bool isSubnetJoin)
+        : base(id, outputType)
     {
-        private readonly bool _isSubnetJoin;
-        private static readonly List<TupleFactSet> EmptySetList = new();
-        private static readonly Dictionary<long, List<Fact>> EmptyGroups = new();
+        _isSubnetJoin = isSubnetJoin;
+        LeftSource = leftSource;
+        RightSource = rightSource;
 
-        public ITupleSource LeftSource { get; }
-        public IObjectSource RightSource { get; }
+        LeftSource.Attach(this);
+        RightSource.Attach(this);
+    }
 
-        protected BinaryBetaNode(ITupleSource leftSource, IObjectSource rightSource, bool isSubnetJoin)
-        {
-            _isSubnetJoin = isSubnetJoin;
-            LeftSource = leftSource;
-            RightSource = rightSource;
+    public abstract void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts);
+    public abstract void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts);
+    public abstract void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts);
 
-            LeftSource.Attach(this);
-            RightSource.Attach(this);
-        }
-
-        public abstract void PropagateAssert(IExecutionContext context, List<Fact> facts);
-        public abstract void PropagateUpdate(IExecutionContext context, List<Fact> facts);
-        public abstract void PropagateRetract(IExecutionContext context, List<Fact> facts);
-
-        protected TupleFactSet JoinedSet(IExecutionContext context, Tuple tuple)
-        {
-            int level = tuple.Level;
-            var facts = RightSource.GetFacts(context).ToList();
-            if (facts.Count > 0 && _isSubnetJoin)
-            {
-                var factGroups = GroupFacts(facts, level);
-                if (factGroups.Count > 0)
-                    return JoinByGroupId(tuple, factGroups);
-            }
+    protected TupleFactSet JoinedSet(IExecutionContext context, Tuple tuple)
+    {
+        var level = tuple.Level;
+        var facts = RightSource.GetFacts(context).ToList();
+        if (facts.Count == 0 || !_isSubnetJoin)
             return new TupleFactSet(tuple, facts);
-        }
 
-        protected List<TupleFactSet> JoinedSets(IExecutionContext context, List<Tuple> tuples)
-        {
-            if (tuples.Count == 0) return EmptySetList;
+        var factGroups = GroupFacts(facts, level);
+        if (factGroups.Count == 0)
+            return new TupleFactSet(tuple, facts);
 
-            var facts = RightSource.GetFacts(context).ToList();
-            if (facts.Count > 0 && _isSubnetJoin)
-            {
-                int level = tuples[0].Level;
-                var factGroups = GroupFacts(facts, level);
-                if (factGroups.Count > 0)
-                    return JoinByGroupId(tuples, factGroups);
-            }
+        return JoinByGroupId(tuple, factGroups);
+    }
 
+    protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    {
+        if (tuples.Count == 0)
+            return EmptySetList;
+
+        var facts = RightSource.GetFacts(context).ToList();
+        if (facts.Count == 0 || !_isSubnetJoin)
             return CrossJoin(tuples, facts);
-        }
 
-        protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, List<Fact> facts)
-        {
-            var tuples = LeftSource.GetTuples(context).ToList();
-            if (tuples.Count == 0) return EmptySetList;
-
-            if (_isSubnetJoin)
-            {
-                int level = tuples[0].Level;
-                var factGroups = GroupFacts(facts, level);
-                if (factGroups.Count > 0)
-                    return JoinByGroupId(tuples, factGroups);
-            }
-
+        var level = tuples.First().Level;
+        var factGroups = GroupFacts(facts, level);
+        if (factGroups.Count == 0)
             return CrossJoin(tuples, facts);
-        }
 
-        private List<TupleFactSet> JoinByGroupId(IEnumerable<Tuple> tuples, Dictionary<long, List<Fact>> factGroups)
-        {
-            var sets = new List<TupleFactSet>();
-            foreach (var tuple in tuples)
-            {
-                var tupleFactSet = JoinByGroupId(tuple, factGroups);
-                sets.Add(tupleFactSet);
-            }
-            return sets;
-        }
+        return JoinByGroupId(tuples, factGroups);
 
-        private static TupleFactSet JoinByGroupId(Tuple tuple, IDictionary<long, List<Fact>> factGroups)
-        {
-            var tupleFactSet = factGroups.TryGetValue(tuple.Id, out var tupleFacts)
-                ? new TupleFactSet(tuple, tupleFacts)
-                : new TupleFactSet(tuple, new List<Fact>());
-            return tupleFactSet;
-        }
+    }
 
-        private List<TupleFactSet> CrossJoin(List<Tuple> tuples, List<Fact> facts)
-        {
-            var sets = new List<TupleFactSet>(tuples.Count);
-            foreach (var tuple in tuples)
-            {
-                sets.Add(new TupleFactSet(tuple, facts));
-            }
-            return sets;
-        }
+    protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    {
+        var tuples = LeftSource.GetTuples(context).ToList();
+        if (tuples.Count == 0)
+            return EmptySetList;
 
-        private Dictionary<long, List<Fact>> GroupFacts(List<Fact> facts, int level)
-        {
-            if (facts.Count == 0 || !facts[0].IsWrapperFact) return EmptyGroups;
+        if (!_isSubnetJoin)
+            return CrossJoin(tuples, facts);
 
-            //This can be further optimized by grouping tuples by GroupId
-            //and only descending to parent tuples once per group
-            var factGroups = new Dictionary<long, List<Fact>>();
-            foreach (var fact in facts)
-            {
-                var wrapperFact = (WrapperFact) fact;
-                long groupId = wrapperFact.WrappedTuple.GetGroupId(level);
-                if (!factGroups.TryGetValue(groupId, out var factGroup))
-                {
-                    factGroup = new List<Fact>();
-                    factGroups[groupId] = factGroup;
-                }
-                factGroup.Add(wrapperFact);
-            }
-            return factGroups;
-        }
+        var level = tuples[0].Level;
+        var factGroups = GroupFacts(facts, level);
+        if (factGroups.Count == 0)
+            return CrossJoin(tuples, facts);
+
+        return JoinByGroupId(tuples, factGroups);
+
+    }
+
+    private static IEnumerable<TupleFactSet> JoinByGroupId(IEnumerable<Tuple> tuples, IReadOnlyDictionary<long, IEnumerable<Fact>> factGroups)
+    {
+        return tuples.Select(tuple => JoinByGroupId(tuple, factGroups));
+    }
+
+    private static TupleFactSet JoinByGroupId(Tuple tuple, IReadOnlyDictionary<long, IEnumerable<Fact>> factGroups)
+    {
+        return factGroups.TryGetValue(tuple.Id, out var tupleFacts)
+            ? new TupleFactSet(tuple, tupleFacts)
+            : new TupleFactSet(tuple);
+    }
+
+    private static IEnumerable<TupleFactSet> CrossJoin(IEnumerable<Tuple> tuples, IReadOnlyCollection<Fact> facts)
+    {
+        return tuples.Select(tuple => new TupleFactSet(tuple, facts));
+    }
+
+    private static IReadOnlyDictionary<long, IEnumerable<Fact>> GroupFacts(IReadOnlyCollection<Fact> facts, int level)
+    {
+        if (facts.FirstOrDefault() is not WrapperFact)
+            return EmptyGroups;
+
+        return facts.OfType<WrapperFact>()
+            .GroupBy(f => f.WrappedTuple.GetGroupId(level))
+            .ToDictionary(g => g.Key, g => g.Cast<Fact>());
     }
 }

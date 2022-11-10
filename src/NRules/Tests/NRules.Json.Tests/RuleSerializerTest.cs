@@ -60,7 +60,7 @@ namespace NRules.Json.Tests
             Expression<Func<FactType1, bool>> filter1 = (fact1) => fact1.BooleanProperty;
             builder.Filters()
                 .Filter(FilterType.Predicate, filter1);
-            Expression<Func<FactType1, object>> filter2 = (fact1) => fact1.StringProperty;
+            Expression<Func<FactType1, object?>> filter2 = (fact1) => fact1.StringProperty;
             builder.Filters()
                 .Filter(FilterType.KeyChange, filter2);
 
@@ -88,7 +88,7 @@ namespace NRules.Json.Tests
 
             TestRoundtrip(ruleDefinition);
         }
-        
+
         [Fact]
         public void Roundtrip_TwoFactJoinRule_Equals()
         {
@@ -97,11 +97,11 @@ namespace NRules.Json.Tests
 
             builder.LeftHandSide().Pattern(typeof(FactType1), "fact1");
             var pattern2 = builder.LeftHandSide().Pattern(typeof(FactType2), "fact2");
-            Expression<Func<FactType1, FactType2, bool>> condition21 = (fact1, fact2) 
+            Expression<Func<FactType1, FactType2, bool>> condition21 = (fact1, fact2)
                 => fact2.JoinProperty == fact1;
             pattern2.Condition(condition21);
 
-            Expression<Action<IContext, FactType1, FactType2>> action = (ctx, fact1, fact2) 
+            Expression<Action<IContext, FactType1, FactType2>> action = (ctx, fact1, fact2)
                 => Calculations.DoSomething(fact1, fact2);
             builder.RightHandSide().Action(action);
             var ruleDefinition = builder.Build();
@@ -117,7 +117,7 @@ namespace NRules.Json.Tests
 
             builder.LeftHandSide().Exists().Pattern(typeof(FactType1), "fact1");
 
-            Expression<Action<IContext>> action = ctx 
+            Expression<Action<IContext>> action = ctx
                 => Calculations.DoSomething();
             builder.RightHandSide().Action(action);
             var ruleDefinition = builder.Build();
@@ -133,14 +133,14 @@ namespace NRules.Json.Tests
 
             builder.LeftHandSide().Not().Pattern(typeof(FactType1), "fact1");
 
-            Expression<Action<IContext>> action = ctx 
+            Expression<Action<IContext>> action = ctx
                 => Calculations.DoSomething();
             builder.RightHandSide().Action(action);
             var ruleDefinition = builder.Build();
 
             TestRoundtrip(ruleDefinition);
         }
-        
+
         [Fact]
         public void Roundtrip_AggregateRule_Equals()
         {
@@ -148,9 +148,9 @@ namespace NRules.Json.Tests
             builder.Name("Test Rule");
 
             var factGroupPattern = builder.LeftHandSide().Pattern(typeof(IEnumerable<FactType1>), "factGroup");
-            
+
             var aggregate = factGroupPattern.Aggregate();
-            Expression<Func<FactType1, string>> keySelector = fact1 => fact1.GroupKey;
+            Expression<Func<FactType1, string?>> keySelector = fact1 => fact1.GroupKey;
             Expression<Func<FactType1, FactType1>> elementSelector = fact1 => fact1;
             aggregate.GroupBy(keySelector, elementSelector);
 
@@ -173,11 +173,11 @@ namespace NRules.Json.Tests
             builder.Name("Test Rule");
 
             builder.LeftHandSide().Pattern(typeof(FactType1), "fact1");
-            
+
             var bindingPattern = builder.LeftHandSide().Pattern(typeof(int), "length");
-            
+
             var binding = bindingPattern.Binding();
-            Expression<Func<FactType1, int>> expression = fact1 => fact1.StringProperty.Length;
+            Expression<Func<FactType1, int>> expression = fact1 => fact1.StringProperty!.Length;
             binding.BindingExpression(expression);
 
             Expression<Action<IContext, int>> action = (ctx, length)

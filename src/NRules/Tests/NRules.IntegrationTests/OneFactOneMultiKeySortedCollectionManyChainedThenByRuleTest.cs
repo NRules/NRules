@@ -12,39 +12,41 @@ namespace NRules.IntegrationTests
         public void Fire_FourMatchingFactsAndOneInvalid_FiresOnceWithFourSortedFactsInCollection()
         {
             // Arrange
-            var facts = new List<FactType>();
-            facts.Add(new FactType(0, 0, 0, 0, 0));
-            facts.Add(new FactType(0, 0, 0, 0, 1));
-            facts.Add(new FactType(0, 0, 0, 1, 0));
-            facts.Add(new FactType(0, 0, 0, 1, 1));
-            facts.Add(new FactType(0, 0, 1, 0, 0));
-            facts.Add(new FactType(0, 0, 1, 0, 1));
-            facts.Add(new FactType(0, 0, 1, 1, 0));
-            facts.Add(new FactType(0, 0, 1, 1, 1));
-            facts.Add(new FactType(0, 1, 0, 0, 0));
-            facts.Add(new FactType(0, 1, 0, 0, 1));
-            facts.Add(new FactType(0, 1, 0, 1, 0));
-            facts.Add(new FactType(0, 1, 0, 1, 1));
-            facts.Add(new FactType(0, 1, 1, 0, 0));
-            facts.Add(new FactType(0, 1, 1, 0, 1));
-            facts.Add(new FactType(0, 1, 1, 1, 0));
-            facts.Add(new FactType(0, 1, 1, 1, 1));
-            facts.Add(new FactType(1, 0, 0, 0, 0));
-            facts.Add(new FactType(1, 0, 0, 0, 1));
-            facts.Add(new FactType(1, 0, 0, 1, 0));
-            facts.Add(new FactType(1, 0, 0, 1, 1));
-            facts.Add(new FactType(1, 0, 1, 0, 0));
-            facts.Add(new FactType(1, 0, 1, 0, 1));
-            facts.Add(new FactType(1, 0, 1, 1, 0));
-            facts.Add(new FactType(1, 0, 1, 1, 1));
-            facts.Add(new FactType(1, 1, 0, 0, 0));
-            facts.Add(new FactType(1, 1, 0, 0, 1));
-            facts.Add(new FactType(1, 1, 0, 1, 0));
-            facts.Add(new FactType(1, 1, 0, 1, 1));
-            facts.Add(new FactType(1, 1, 1, 0, 0));
-            facts.Add(new FactType(1, 1, 1, 0, 1));
-            facts.Add(new FactType(1, 1, 1, 1, 0));
-            facts.Add(new FactType(1, 1, 1, 1, 1));
+            var facts = new List<FactType>
+            {
+                new FactType(0, 0, 0, 0, 0),
+                new FactType(0, 0, 0, 0, 1),
+                new FactType(0, 0, 0, 1, 0),
+                new FactType(0, 0, 0, 1, 1),
+                new FactType(0, 0, 1, 0, 0),
+                new FactType(0, 0, 1, 0, 1),
+                new FactType(0, 0, 1, 1, 0),
+                new FactType(0, 0, 1, 1, 1),
+                new FactType(0, 1, 0, 0, 0),
+                new FactType(0, 1, 0, 0, 1),
+                new FactType(0, 1, 0, 1, 0),
+                new FactType(0, 1, 0, 1, 1),
+                new FactType(0, 1, 1, 0, 0),
+                new FactType(0, 1, 1, 0, 1),
+                new FactType(0, 1, 1, 1, 0),
+                new FactType(0, 1, 1, 1, 1),
+                new FactType(1, 0, 0, 0, 0),
+                new FactType(1, 0, 0, 0, 1),
+                new FactType(1, 0, 0, 1, 0),
+                new FactType(1, 0, 0, 1, 1),
+                new FactType(1, 0, 1, 0, 0),
+                new FactType(1, 0, 1, 0, 1),
+                new FactType(1, 0, 1, 1, 0),
+                new FactType(1, 0, 1, 1, 1),
+                new FactType(1, 1, 0, 0, 0),
+                new FactType(1, 1, 0, 0, 1),
+                new FactType(1, 1, 0, 1, 0),
+                new FactType(1, 1, 0, 1, 1),
+                new FactType(1, 1, 1, 0, 0),
+                new FactType(1, 1, 1, 0, 1),
+                new FactType(1, 1, 1, 1, 0),
+                new FactType(1, 1, 1, 1, 1)
+            };
 
             Session.InsertAll(facts);
 
@@ -64,7 +66,7 @@ namespace NRules.IntegrationTests
                 .ThenBy(f => f.TestPropertyInt5)
                 .ToArray();
 
-            for (int i = 0; i < expectedOrder.Length; i++)
+            for (var i = 0; i < expectedOrder.Length; i++)
             {
                 Assert.Equal(expectedOrder[i], firedFacts.ElementAt(i));
             }
@@ -97,7 +99,7 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                IEnumerable<FactType> collection = null;
+                IEnumerable<FactType>? collection = null;
 
                 When()
                     .Query(() => collection, x => x

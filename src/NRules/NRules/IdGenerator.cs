@@ -1,17 +1,16 @@
-﻿namespace NRules
+﻿namespace NRules;
+
+internal interface IIdGenerator
 {
-    internal interface IIdGenerator
-    {
-        long NextTupleId();
-    }
+    long NextTupleId();
+}
 
-    internal class IdGenerator : IIdGenerator
-    {
-        private long _nextId = 1;
+internal class IdGenerator : IIdGenerator
+{
+    private long _nextId = 1;
 
-        public long NextTupleId()
-        {
-            return _nextId++;
-        }
+    public long NextTupleId()
+    {
+        return _nextId++;
     }
 }

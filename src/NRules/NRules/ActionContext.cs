@@ -4,148 +4,147 @@ using System.Threading;
 using NRules.Extensibility;
 using NRules.RuleModel;
 
-namespace NRules
+namespace NRules;
+
+internal interface IActionContext : IContext
 {
-    internal interface IActionContext : IContext
+    ICompiledRule CompiledRule { get; }
+    Activation Activation { get; }
+    bool IsHalted { get; }
+}
+
+internal class ActionContext : IActionContext
+{
+    private readonly ISessionInternal _session;
+
+    public ActionContext(ISessionInternal session, Activation activation, CancellationToken cancellationToken)
     {
-        ICompiledRule CompiledRule { get; }
-        Activation Activation { get; }
-        bool IsHalted { get; }
+        _session = session;
+        Activation = activation;
+        CancellationToken = cancellationToken;
+        IsHalted = false;
     }
 
-    internal class ActionContext : IActionContext
+    public IRuleDefinition Rule => CompiledRule.Definition;
+    public IMatch Match => Activation;
+    public ICompiledRule CompiledRule => Activation.CompiledRule;
+
+    public Activation Activation { get; }
+    public CancellationToken CancellationToken { get; }
+    public bool IsHalted { get; private set; }
+
+    public void Halt()
     {
-        private readonly ISessionInternal _session;
+        IsHalted = true;
+    }
 
-        public ActionContext(ISessionInternal session, Activation activation, CancellationToken cancellationToken)
-        {
-            _session = session;
-            Activation = activation;
-            CancellationToken = cancellationToken;
-            IsHalted = false;
-        }
+    public void Insert(object fact)
+    {
+        _session.Insert(fact);
+    }
 
-        public IRuleDefinition Rule => CompiledRule.Definition;
-        public IMatch Match => Activation;
-        public ICompiledRule CompiledRule => Activation.CompiledRule;
+    public void InsertAll(IEnumerable<object> facts)
+    {
+        _session.InsertAll(facts);
+    }
 
-        public Activation Activation { get; }
-        public CancellationToken CancellationToken { get; }
-        public bool IsHalted { get; private set; }
+    public bool TryInsert(object fact)
+    {
+        return _session.TryInsert(fact);
+    }
 
-        public void Halt()
-        {
-            IsHalted = true;
-        }
+    public void Update(object fact)
+    {
+        _session.Update(fact);
+    }
 
-        public void Insert(object fact)
-        {
-            _session.Insert(fact);
-        }
+    public void UpdateAll(IEnumerable<object> facts)
+    {
+        _session.UpdateAll(facts);
+    }
 
-        public void InsertAll(IEnumerable<object> facts)
-        {
-            _session.InsertAll(facts);
-        }
+    public bool TryUpdate(object fact)
+    {
+        return _session.TryUpdate(fact);
+    }
 
-        public bool TryInsert(object fact)
-        {
-            return _session.TryInsert(fact);
-        }
+    public void Retract(object fact)
+    {
+        _session.Retract(fact);
+    }
 
-        public void Update(object fact)
-        {
-            _session.Update(fact);
-        }
+    public void RetractAll(IEnumerable<object> facts)
+    {
+        _session.RetractAll(facts);
+    }
 
-        public void UpdateAll(IEnumerable<object> facts)
-        {
-            _session.UpdateAll(facts);
-        }
+    public bool TryRetract(object fact)
+    {
+        return _session.TryRetract(fact);
+    }
 
-        public bool TryUpdate(object fact)
-        {
-            return _session.TryUpdate(fact);
-        }
+    public IEnumerable<object> GetLinkedKeys()
+    {
+        return _session.GetLinkedKeys(Activation);
+    }
 
-        public void Retract(object fact)
-        {
-            _session.Retract(fact);
-        }
+    public object? GetLinked(object key)
+    {
+        return _session.GetLinked(Activation, key);
+    }
 
-        public void RetractAll(IEnumerable<object> facts)
-        {
-            _session.RetractAll(facts);
-        }
+    public void InsertLinked(object key, object fact)
+    {
+        if (key == null)
+            throw new ArgumentNullException(nameof(key));
+        if (fact == null)
+            throw new ArgumentNullException(nameof(fact));
 
-        public bool TryRetract(object fact)
-        {
-            return _session.TryRetract(fact);
-        }
+        var keyedFact = new KeyValuePair<object, object>(key, fact);
+        InsertAllLinked(new[] { keyedFact });
+    }
 
-        public IEnumerable<object> GetLinkedKeys()
-        {
-            return _session.GetLinkedKeys(Activation);
-        }
+    public void InsertAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
+    {
+        _session.QueueInsertLinked(Activation, keyedFacts);
+    }
 
-        public object GetLinked(object key)
-        {
-            return _session.GetLinked(Activation, key);
-        }
+    public void UpdateLinked(object key, object fact)
+    {
+        if (key == null)
+            throw new ArgumentNullException(nameof(key));
+        if (fact == null)
+            throw new ArgumentNullException(nameof(fact));
 
-        public void InsertLinked(object key, object fact)
-        {
-            if (key == null)
-                throw new ArgumentNullException(nameof(key));
-            if (fact == null)
-                throw new ArgumentNullException(nameof(fact));
-            
-            var keyedFact = new KeyValuePair<object, object>(key, fact);
-            InsertAllLinked(new[] {keyedFact});
-        }
+        var keyedFact = new KeyValuePair<object, object>(key, fact);
+        UpdateAllLinked(new[] { keyedFact });
+    }
 
-        public void InsertAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
-        {
-            _session.QueueInsertLinked(Activation, keyedFacts);
-        }
+    public void UpdateAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
+    {
+        _session.QueueUpdateLinked(Activation, keyedFacts);
+    }
 
-        public void UpdateLinked(object key, object fact)
-        {
-            if (key == null)
-                throw new ArgumentNullException(nameof(key));
-            if (fact == null)
-                throw new ArgumentNullException(nameof(fact));
+    public void RetractLinked(object key, object fact)
+    {
+        if (key == null)
+            throw new ArgumentNullException(nameof(key));
+        if (fact == null)
+            throw new ArgumentNullException(nameof(fact));
 
-            var keyedFact = new KeyValuePair<object, object>(key, fact);
-            UpdateAllLinked(new[] {keyedFact});
-        }
+        var keyedFact = new KeyValuePair<object, object>(key, fact);
+        RetractAllLinked(new[] { keyedFact });
+    }
 
-        public void UpdateAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
-        {
-            _session.QueueUpdateLinked(Activation, keyedFacts);
-        }
+    public void RetractAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
+    {
+        _session.QueueRetractLinked(Activation, keyedFacts);
+    }
 
-        public void RetractLinked(object key, object fact)
-        {
-            if (key == null)
-                throw new ArgumentNullException(nameof(key));
-            if (fact == null)
-                throw new ArgumentNullException(nameof(fact));
-
-            var keyedFact = new KeyValuePair<object, object>(key, fact);
-            RetractAllLinked(new[] {keyedFact});
-        }
-
-        public void RetractAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
-        {
-            _session.QueueRetractLinked(Activation, keyedFacts);
-        }
-
-        public object Resolve(Type serviceType)
-        {
-            var resolutionContext = new ResolutionContext(_session, Rule);
-            var service = _session.DependencyResolver.Resolve(resolutionContext, serviceType);
-            return service;
-        }
+    public object Resolve(Type serviceType)
+    {
+        var resolutionContext = new ResolutionContext(_session, Rule);
+        var service = _session.DependencyResolver.Resolve(resolutionContext, serviceType);
+        return service;
     }
 }

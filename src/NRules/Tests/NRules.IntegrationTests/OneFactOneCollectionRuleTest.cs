@@ -23,11 +23,11 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsAndOneInvalid_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Valid Value 2"};
-            var fact3 = new FactType {TestProperty = "Invalid Value 3"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Valid Value 2" };
+            var fact3 = new FactType { TestProperty = "Invalid Value 3" };
 
-            var facts = new[] {fact1, fact2, fact3};
+            var facts = new[] { fact1, fact2, fact3 };
             Session.InsertAll(facts);
 
             //Act
@@ -42,10 +42,10 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsInsertedOneUpdated_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Valid Value 2" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
             Session.Update(fact2);
 
@@ -61,10 +61,10 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsInsertedOneRetracted_FiresOnceWithOneFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Valid Value 2" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
             Session.Retract(fact2);
 
@@ -80,10 +80,10 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsInsertedTwoRetracted_FiresOnceWithEmptyCollection()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Valid Value 2" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
             Session.Retract(fact1);
             Session.Retract(fact2);
@@ -100,10 +100,10 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsInsertedOneUpdatedToInvalid_FiresOnceWithOneFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Valid Value 2" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             fact2.TestProperty = "Invalid Value";
@@ -121,10 +121,10 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactsAndOneInvalidInsertedTheInvalidUpdatedToValid_FiresOnceWithTwoFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Invalid Value"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Invalid Value" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             fact2.TestProperty = "Valid Value 2";
@@ -145,18 +145,18 @@ namespace NRules.IntegrationTests
 
         public class FactType
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
             public override void Define()
             {
-                IEnumerable<FactType> collection = null;
+                IEnumerable<FactType>? collection = null;
 
                 When()
                     .Query(() => collection, x => x
-                        .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                        .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                         .Collect());
                 Then()
                     .Do(ctx => ctx.NoOp());

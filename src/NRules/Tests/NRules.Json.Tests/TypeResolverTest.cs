@@ -22,7 +22,7 @@ namespace NRules.Json.Tests
                 typeof(FactType1),
                 typeof(FactType1).AssemblyQualifiedName);
         }
-        
+
         [Fact]
         public void Roundtrip_SimpleTypeWithAlias_Alias()
         {
@@ -33,7 +33,7 @@ namespace NRules.Json.Tests
                 typeof(string),
                 "string");
         }
-        
+
         [Fact]
         public void Roundtrip_ArrayTypeWithAlias_Alias()
         {
@@ -44,7 +44,7 @@ namespace NRules.Json.Tests
                 typeof(string[]),
                 "string[]");
         }
-        
+
         [Fact]
         public void Roundtrip_2DArrayTypeWithAlias_Alias()
         {
@@ -55,7 +55,7 @@ namespace NRules.Json.Tests
                 typeof(string[,]),
                 "string[,]");
         }
-        
+
         [Fact]
         public void Roundtrip_JaggedArrayTypeWithAlias_Alias()
         {
@@ -159,16 +159,16 @@ namespace NRules.Json.Tests
             var target = CreateTarget();
 
             //Act - Assert
-            var ex = Assert.Throws<ArgumentException>(() => target.GetTypeFromName("BadTypeName")); 
+            var ex = Assert.Throws<ArgumentException>(() => target.GetTypeFromName("BadTypeName"));
             Assert.Contains("BadTypeName", ex.Message);
         }
 
-        private void TestRoundtrip(Type originalType, string expectedTypeName)
+        private void TestRoundtrip(Type originalType, string? expectedTypeName)
         {
-            TestRoundtrip(new (), originalType, expectedTypeName);
+            TestRoundtrip(new(), originalType, expectedTypeName);
         }
 
-        private void TestRoundtrip(Dictionary<string, Type> aliases, Type originalType, string expectedTypeName)
+        private void TestRoundtrip(Dictionary<string, Type> aliases, Type originalType, string? expectedTypeName)
         {
             var typeResolver = CreateTarget();
             foreach (var alias in aliases)
@@ -176,7 +176,7 @@ namespace NRules.Json.Tests
                 typeResolver.RegisterAlias(alias.Key, alias.Value);
             }
 
-            var serializedTypeName = typeResolver.GetTypeName(originalType);
+            var serializedTypeName = typeResolver.GetTypeName(originalType)!;
             var deserializedType = typeResolver.GetTypeFromName(serializedTypeName);
 
             Assert.Equal(expectedTypeName, serializedTypeName);

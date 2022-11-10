@@ -12,9 +12,9 @@ namespace NRules.IntegrationTests
         public void FromDoubleReference_SplitByKey_FiresCorrectNumberOfTimesWithCorrectFactCounts()
         {
             // Arrange
-            var values = new[] {"a", "a", "b", "b", "c", "c"};
-            var keys = new[] {1, 2, 2, 1, 2, 3};
-            var facts = values.Zip(keys, (v, k) => new Fact {Key = k, Value = v})
+            var values = new[] { "a", "a", "b", "b", "c", "c" };
+            var keys = new[] { 1, 2, 2, 1, 2, 3 };
+            var facts = values.Zip(keys, (v, k) => new Fact { Key = k, Value = v })
                 .ToArray();
 
             Session.InsertAll(facts);
@@ -53,17 +53,17 @@ namespace NRules.IntegrationTests
         public class Fact
         {
             public int Key { get; set; }
-            public string Value { get; set; }
+            public string? Value { get; set; }
         }
 
         public class FromQueryDoubleReferenceRule : Rule
         {
             public override void Define()
             {
-                IEnumerable<Fact> factsAll = null;
-                IEnumerable<Fact> factsOne = null;
-                IEnumerable<Fact> factsTwo = null;
-                IEnumerable<Fact> factsOneTwo = null;
+                IEnumerable<Fact>? factsAll = null;
+                IEnumerable<Fact>? factsOne = null;
+                IEnumerable<Fact>? factsTwo = null;
+                IEnumerable<Fact>? factsOneTwo = null;
 
                 When()
                     .Query(() => factsAll, q => q
@@ -72,18 +72,18 @@ namespace NRules.IntegrationTests
                         .Where(c => c.Any()))
                     .Query(() => factsOne, q => q
                         .From(() => factsAll)
-                        .SelectMany(f => f)
+                        .SelectMany(f => f!)
                         .Where(f => f.Key == 1)
                         .Collect()
                         .Where(c => c.Any()))
                     .Query(() => factsTwo, q => q
                         .From(() => factsAll)
-                        .SelectMany(c => c)
+                        .SelectMany(c => c!)
                         .Where(f => f.Key == 2)
                         .Collect()
                         .Where(c => c.Any()))
                     .Query(() => factsOneTwo, q => q
-                        .From(() => factsOne.Concat(factsTwo)));
+                        .From(() => factsOne!.Concat(factsTwo!)));
 
                 Then()
                     .Do(ctx => ctx.NoOp());

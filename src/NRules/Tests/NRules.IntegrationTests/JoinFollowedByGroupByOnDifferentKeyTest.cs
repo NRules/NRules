@@ -99,7 +99,7 @@ namespace NRules.IntegrationTests
 
             var facts = new object[] { fact11, fact12, fact21, fact22, fact23, fact24, fact25, fact26 };
             Session.InsertAll(facts);
-            
+
             var factsForRetract = new[] { fact21, fact22, fact23 };
             Session.RetractAll(factsForRetract);
 
@@ -132,7 +132,7 @@ namespace NRules.IntegrationTests
 
             var facts = new object[] { fact11, fact12, fact61, fact62, fact63, fact64 };
             Session.InsertAll(facts);
-            
+
             //Act - 1
             Session.Fire();
 
@@ -162,7 +162,7 @@ namespace NRules.IntegrationTests
 
             var facts = new object[] { fact11, fact12, fact61, fact62, fact63, fact64 };
             Session.InsertAll(facts);
-            
+
             //Act - 1
             Session.Fire();
 
@@ -184,30 +184,30 @@ namespace NRules.IntegrationTests
 
         public class FactType1
         {
-            public string TestProperty { get; set; }
-            public string JoinProperty { get; set; }
+            public string? TestProperty { get; set; }
+            public string? JoinProperty { get; set; }
         }
 
         public class FactType2
         {
-            public string TestProperty { get; set; }
-            public string JoinProperty { get; set; }
-            public string GroupProperty { get; set; }
+            public string? TestProperty { get; set; }
+            public string? JoinProperty { get; set; }
+            public string? GroupProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
             public override void Define()
             {
-                FactType1 fact = null;
-                IGrouping<string, FactType2> group = null;
+                FactType1? fact = null;
+                IGrouping<string, FactType2>? group = null;
 
                 When()
-                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"))
                     .Query(() => group, x => x
                         .Match<FactType2>(
-                            f => f.TestProperty.StartsWith("Valid"),
-                            f => f.JoinProperty == fact.JoinProperty)
+                            f => f.TestProperty!.StartsWith("Valid"),
+                            f => f.JoinProperty == fact!.JoinProperty)
                         .GroupBy(f => f.GroupProperty));
                 Then()
                     .Do(ctx => ctx.NoOp());

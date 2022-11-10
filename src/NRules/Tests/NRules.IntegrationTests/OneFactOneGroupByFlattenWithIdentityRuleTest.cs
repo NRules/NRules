@@ -51,22 +51,27 @@ namespace NRules.IntegrationTests
         {
             public long Id { get; set; }
             public int TestCount { get; set; }
-            public string GroupingProperty { get; set; }
-            public string GroupingProperty2 { get; set; }
+            public string? GroupingProperty { get; set; }
+            public string? GroupingProperty2 { get; set; }
 
-            public bool Equals(FactType other)
+            public bool Equals(FactType? other)
             {
-                if (ReferenceEquals(null, other)) return false;
-                if (ReferenceEquals(this, other)) return true;
+                if (ReferenceEquals(null, other))
+                    return false;
+                if (ReferenceEquals(this, other))
+                    return true;
                 return Id == other.Id;
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
-                return Equals((FactType) obj);
+                if (ReferenceEquals(null, obj))
+                    return false;
+                if (ReferenceEquals(this, obj))
+                    return true;
+                if (obj.GetType() != this.GetType())
+                    return false;
+                return Equals((FactType)obj);
             }
 
             public override int GetHashCode()
@@ -79,7 +84,7 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                IEnumerable<FactType> facts = null;
+                IEnumerable<FactType>? facts = null;
 
                 When()
                     .Query(() => facts, q => q

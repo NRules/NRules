@@ -21,10 +21,10 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsWithNullKey_FiresOnceWithBothFactsInOneGroup()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = null};
-            var fact2 = new FactType {TestProperty = null};
+            var fact1 = new FactType { TestProperty = null };
+            var fact2 = new FactType { TestProperty = null };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             //Act
@@ -39,10 +39,10 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsWithNullKeyOneKeyUpdatedToValue_FiresTwiceWithOneFactInEachGroup()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = null};
-            var fact2 = new FactType {TestProperty = null};
+            var fact1 = new FactType { TestProperty = null };
+            var fact2 = new FactType { TestProperty = null };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             fact2.TestProperty = "Value";
@@ -61,10 +61,10 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsWithValueKeyOneKeyUpdatedToNull_FiresTwiceWithOneFactInEachGroup()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Value"};
-            var fact2 = new FactType {TestProperty = "Value"};
+            var fact1 = new FactType { TestProperty = "Value" };
+            var fact2 = new FactType { TestProperty = "Value" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             fact2.TestProperty = null;
@@ -83,10 +83,10 @@ namespace NRules.IntegrationTests
         public void Fire_OneFactWithValueAnotherWithNullThenNullUpdated_FiresTwiceWithOneFactInEachGroup()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Value"};
-            var fact2 = new FactType {TestProperty = null};
+            var fact1 = new FactType { TestProperty = "Value" };
+            var fact2 = new FactType { TestProperty = null };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
             Session.Update(fact2);
 
@@ -103,10 +103,10 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsWithNullBothRetracted_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = null};
-            var fact2 = new FactType {TestProperty = null};
+            var fact1 = new FactType { TestProperty = null };
+            var fact2 = new FactType { TestProperty = null };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             Session.Retract(fact1);
@@ -123,9 +123,9 @@ namespace NRules.IntegrationTests
         public void Fire_OneFactInsertedThenUpdatedToAnotherGroup_FiresOnceWithOneFactInSecondGroup()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value Group1"};
+            var fact1 = new FactType { TestProperty = "Valid Value Group1" };
             Session.Insert(fact1);
-            
+
             fact1.TestProperty = "Valid Value Group2";
             Session.Update(fact1);
 
@@ -146,14 +146,14 @@ namespace NRules.IntegrationTests
 
         public class FactType
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
             public override void Define()
             {
-                IGrouping<string, FactType> group = null;
+                IGrouping<string?, FactType>? group = null;
 
                 When()
                     .Query(() => group, x => x

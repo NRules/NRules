@@ -1,25 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
-namespace NRules.RuleModel
+namespace NRules.RuleModel;
+
+/// <summary>
+/// Grouping element that logically combines the patterns or other grouping elements.
+/// </summary>
+public abstract class GroupElement : RuleElement
 {
-    /// <summary>
-    /// Grouping element that logically combines the patterns or other grouping elements.
-    /// </summary>
-    public abstract class GroupElement : RuleElement
+    internal GroupElement(IEnumerable<RuleElement?> childElements)
     {
-        private readonly List<RuleElement> _childElements;
+        ChildElements = childElements.ToArray();
 
-        internal GroupElement(IEnumerable<RuleElement> childElements)
-        {
-            _childElements = new List<RuleElement>(childElements);
-
-            AddExports(_childElements);
-            AddImports(_childElements);
-        }
-
-        /// <summary>
-        /// List of child elements in the grouping.
-        /// </summary>
-        public IEnumerable<RuleElement> ChildElements => _childElements;
+        AddExports(ChildElements);
+        AddImports(ChildElements);
     }
+
+    /// <summary>
+    /// List of child elements in the grouping.
+    /// </summary>
+    public IReadOnlyCollection<RuleElement?> ChildElements { get; }
 }

@@ -74,7 +74,7 @@ namespace NRules.IntegrationTests
 
         public class FactType
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class FactProjection : IEquatable<FactProjection>
@@ -84,20 +84,25 @@ namespace NRules.IntegrationTests
                 Value = fact.TestProperty;
             }
 
-            public string Value { get; }
+            public string? Value { get; }
 
-            public bool Equals(FactProjection other)
+            public bool Equals(FactProjection? other)
             {
-                if (ReferenceEquals(null, other)) return false;
-                if (ReferenceEquals(this, other)) return true;
+                if (ReferenceEquals(null, other))
+                    return false;
+                if (ReferenceEquals(this, other))
+                    return true;
                 return string.Equals(Value, other.Value);
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
+                if (ReferenceEquals(null, obj))
+                    return false;
+                if (ReferenceEquals(this, obj))
+                    return true;
+                if (obj.GetType() != this.GetType())
+                    return false;
                 return Equals((FactProjection)obj);
             }
 
@@ -111,13 +116,13 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactProjection projection = null;
+                FactProjection? projection = null;
 
                 When()
                     .Query(() => projection, q => q
                         .Match<FactType>()
                         .CustomSelect(f => new FactProjection(f))
-                        .Where(p => p.Value.StartsWith("Valid")));
+                        .Where(p => p.Value!.StartsWith("Valid")));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }
@@ -130,7 +135,7 @@ namespace NRules.IntegrationTests
         {
             var expressions = new List<KeyValuePair<string, LambdaExpression>>
             {
-                new KeyValuePair<string, LambdaExpression>("Selector", selector)
+                new("Selector", selector)
             };
             source.Builder.Aggregate<TSource, TResult>("CustomSelect", expressions);
             return new QueryExpression<TResult>(source.Builder);
@@ -139,7 +144,7 @@ namespace NRules.IntegrationTests
 
     internal class CustomSelectAggregateFactory : IAggregatorFactory
     {
-        private Func<IAggregator> _factory;
+        private Func<IAggregator>? _factory;
 
         public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
         {
@@ -157,14 +162,14 @@ namespace NRules.IntegrationTests
 
         public IAggregator Create()
         {
-            return _factory();
+            return _factory!();
         }
     }
 
     public class CustomSelectAggregator<TSource, TResult> : IAggregator
     {
         private readonly IAggregateExpression _selector;
-        private readonly Dictionary<IFact, object> _sourceToValue = new Dictionary<IFact, object>();
+        private readonly Dictionary<IFact, object> _sourceToValue = new();
 
         public CustomSelectAggregator(IAggregateExpression selector)
         {
@@ -191,7 +196,7 @@ namespace NRules.IntegrationTests
                 var value = _selector.Invoke(context, tuple, fact);
                 var oldValue = (TResult)_sourceToValue[fact];
                 _sourceToValue[fact] = value;
-                results.Add(AggregationResult.Modified(value, oldValue, Enumerable.Repeat(fact, 1)));
+                results.Add(AggregationResult.Modified(value, oldValue!, Enumerable.Repeat(fact, 1)));
             }
             return results;
         }

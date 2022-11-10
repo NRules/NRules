@@ -56,10 +56,10 @@ namespace NRules.Tests.Utilities
             var reversedComparer = new ReverseComparer<string>(comparer);
 
             // Act-Assert (Precondition)
-            Assert.Equal(-1, comparer.Compare(null, "A"));
+            Assert.Equal(-1, comparer.Compare(null!, "A"));
 
             // Act-Assert
-            Assert.Equal(1, reversedComparer.Compare(null, "A"));
+            Assert.Equal(1, reversedComparer.Compare(null!, "A"));
         }
 
         [Fact]
@@ -70,10 +70,10 @@ namespace NRules.Tests.Utilities
             var reversedComparer = new ReverseComparer<string>(comparer);
 
             // Act-Assert (Precondition)
-            Assert.Equal(0, comparer.Compare(null, null));
+            Assert.Equal(0, comparer.Compare(null!, null!));
 
             // Act-Assert
-            Assert.Equal(0, reversedComparer.Compare(null, null));
+            Assert.Equal(0, reversedComparer.Compare(null!, null!));
         }
 
         [Fact]
@@ -84,10 +84,10 @@ namespace NRules.Tests.Utilities
             var reversedComparer = new ReverseComparer<string>(comparer);
 
             // Act-Assert (Precondition)
-            Assert.Equal(1, comparer.Compare("A", null));
+            Assert.Equal(1, comparer.Compare("A", null!));
 
             // Act-Assert
-            Assert.Equal(-1, reversedComparer.Compare("A", null));
+            Assert.Equal(-1, reversedComparer.Compare("A", null!));
         }
 
         [Fact]

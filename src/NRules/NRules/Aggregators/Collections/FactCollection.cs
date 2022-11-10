@@ -2,63 +2,62 @@
 using System.Collections.Generic;
 using NRules.RuleModel;
 
-namespace NRules.Aggregators.Collections
+namespace NRules.Aggregators.Collections;
+
+internal class FactCollection<TElement> : IEnumerable<TElement>
 {
-    internal class FactCollection<TElement> : IEnumerable<TElement>
+    private readonly Dictionary<IFact, NodePair> _nodeLookup = new();
+    private readonly LinkedList<TElement> _elements = new();
+    private readonly LinkedList<IFact> _facts = new();
+
+    public void Add(IFact fact, TElement element)
     {
-        private readonly Dictionary<IFact, NodePair> _nodeLookup = new();
-        private readonly LinkedList<TElement> _elements = new();
-        private readonly LinkedList<IFact> _facts = new();
+        var nodePair = new NodePair(fact, element);
+        _facts.AddLast(nodePair.FactNode);
+        _elements.AddLast(nodePair.ElementNode);
+        _nodeLookup[fact] = nodePair;
+    }
 
-        public void Add(IFact fact, TElement element)
+    public void Modify(IFact fact, TElement element)
+    {
+        var nodePair = _nodeLookup[fact];
+        if (!ReferenceEquals(nodePair.ElementNode.Value, element))
         {
-            var nodePair = new NodePair(fact, element);
-            _facts.AddLast(nodePair.FactNode);
-            _elements.AddLast(nodePair.ElementNode);
-            _nodeLookup[fact] = nodePair;
+            nodePair.ElementNode.Value = element;
+        }
+    }
+
+    public void Remove(IFact fact)
+    {
+        var nodePair = _nodeLookup[fact];
+        _facts.Remove(nodePair.FactNode);
+        _elements.Remove(nodePair.ElementNode);
+        _nodeLookup.Remove(fact);
+    }
+
+    public int Count => _elements.Count;
+
+    public IEnumerator<TElement> GetEnumerator()
+    {
+        return _elements.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public IEnumerable<IFact> Facts => _facts;
+
+    private readonly struct NodePair
+    {
+        public NodePair(IFact fact, TElement element)
+        {
+            FactNode = new LinkedListNode<IFact>(fact);
+            ElementNode = new LinkedListNode<TElement>(element);
         }
 
-        public void Modify(IFact fact, TElement element)
-        {
-            var nodePair = _nodeLookup[fact];
-            if (!ReferenceEquals(nodePair.ElementNode.Value, element))
-            {
-                nodePair.ElementNode.Value = element;
-            }
-        }
-
-        public void Remove(IFact fact)
-        {
-            var nodePair = _nodeLookup[fact];
-            _facts.Remove(nodePair.FactNode);
-            _elements.Remove(nodePair.ElementNode);
-            _nodeLookup.Remove(fact);
-        }
-
-        public int Count => _elements.Count;
-
-        public IEnumerator<TElement> GetEnumerator()
-        {
-            return _elements.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public IEnumerable<IFact> Facts => _facts;
-
-        private readonly struct NodePair
-        {
-            public NodePair(IFact fact, TElement element)
-            {
-                FactNode = new LinkedListNode<IFact>(fact);
-                ElementNode = new LinkedListNode<TElement>(element);
-            }
-
-            public LinkedListNode<IFact> FactNode { get; }
-            public LinkedListNode<TElement> ElementNode { get; }
-        }
+        public LinkedListNode<IFact> FactNode { get; }
+        public LinkedListNode<TElement> ElementNode { get; }
     }
 }

@@ -1,7 +1,7 @@
-﻿using NRules.Fluent.Dsl;
+﻿using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using Xunit;
-using System.Linq;
 
 namespace NRules.IntegrationTests
 {
@@ -62,19 +62,19 @@ namespace NRules.IntegrationTests
 
         public class FactType
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => ctx.TryRetract(fact));
+                    .Do(ctx => ctx.TryRetract(fact!));
             }
         }
     }

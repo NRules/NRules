@@ -1,42 +1,42 @@
 ﻿using System.Collections.Generic;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+internal interface IAlphaMemory
 {
-    internal interface IAlphaMemory
+    IEnumerable<Fact> Facts { get; }
+    int FactCount { get; }
+    bool Contains(Fact fact);
+    void Add(IEnumerable<Fact> facts);
+    void Remove(IEnumerable<Fact> facts);
+}
+
+internal class AlphaMemory : IAlphaMemory
+{
+    private readonly HashSet<Fact> _facts = new();
+
+    public IEnumerable<Fact> Facts => _facts;
+
+    public int FactCount => _facts.Count;
+
+    public bool Contains(Fact fact)
     {
-        IEnumerable<Fact> Facts { get; }
-        int FactCount { get; }
-        bool Contains(Fact fact);
-        void Add(List<Fact> facts);
-        void Remove(List<Fact> facts);
+        return _facts.Contains(fact);
     }
 
-    internal class AlphaMemory : IAlphaMemory
+    public void Add(IEnumerable<Fact> facts)
     {
-        private readonly HashSet<Fact> _facts = new();
-
-        public IEnumerable<Fact> Facts => _facts;
-        public int FactCount => _facts.Count;
-
-        public bool Contains(Fact fact)
+        foreach (var fact in facts)
         {
-            return _facts.Contains(fact);
+            _facts.Add(fact);
         }
+    }
 
-        public void Add(List<Fact> facts)
+    public void Remove(IEnumerable<Fact> facts)
+    {
+        foreach (var fact in facts)
         {
-            foreach (var fact in facts)
-            {
-                _facts.Add(fact);
-            }
-        }
-
-        public void Remove(List<Fact> facts)
-        {
-            foreach (var fact in facts)
-            {
-                _facts.Remove(fact);
-            }
+            _facts.Remove(fact);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresOnceWithOneFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact1);
 
             //Act
@@ -37,9 +37,9 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactTwoFactsToAggregate_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Invalid Value 2"};
-            var facts = new[] {fact1, fact2};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Invalid Value 2" };
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             //Act
@@ -54,9 +54,9 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsTwoFactsToAggregate_FiresTwiceWithTwoFactsInEachCollection()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Valid Value 2"};
-            var facts = new[] {fact1, fact2};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Valid Value 2" };
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             //Act
@@ -75,18 +75,18 @@ namespace NRules.IntegrationTests
 
         public class FactType
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
             public override void Define()
             {
-                FactType fact = null;
-                IEnumerable<FactType> collection = null;
+                FactType? fact = null;
+                IEnumerable<FactType>? collection = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"))
                     .Query(() => collection, x => x
                         .Match<FactType>()
                         .Collect()

@@ -53,7 +53,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var schema = Session.GetSchema();
- 
+
             //Act
             var count = schema.Nodes.Count(x => x.NodeType == NodeType.Not);
 
@@ -95,43 +95,43 @@ namespace NRules.IntegrationTests
 
         public class FactType1
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class FactType2
         {
-            public string TestProperty { get; set; }
-            public string JoinProperty { get; set; }
+            public string? TestProperty { get; set; }
+            public string? JoinProperty { get; set; }
         }
 
         public class FactType3
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class FactType4
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class TwinRuleOne : Rule
         {
             public override void Define()
             {
-                FactType1 fact1 = null;
-                string joinValue = null;
-                FactType2 fact2 = null;
-                IEnumerable<FactType4> group = null;
+                FactType1? fact1 = null;
+                string? joinValue = null;
+                FactType2? fact2 = null;
+                IEnumerable<FactType4>? group = null;
 
                 When()
-                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Let(() => joinValue, () => fact1.TestProperty)
-                    .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
-                    .Not<FactType3>(f => f.TestProperty.StartsWith("Invalid"))
-                    .Exists<FactType3>(f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                    .Let(() => joinValue, () => fact1!.TestProperty)
+                    .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"), f => f!.JoinProperty == joinValue)
+                    .Not<FactType3>(f => f.TestProperty!.StartsWith("Invalid"))
+                    .Exists<FactType3>(f => f.TestProperty!.StartsWith("Valid"))
                     .Query(() => group, q => q
                         .Match<FactType4>()
-                        .Where(f => f.TestProperty.StartsWith("Valid"))
+                        .Where(f => f.TestProperty!.StartsWith("Valid"))
                         .GroupBy(f => f.TestProperty)
                         .SelectMany(x => x)
                         .Collect()
@@ -146,20 +146,20 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType1 fact1 = null;
-                string joinValue = null;
-                FactType2 fact2 = null;
-                IEnumerable<FactType4> group = null;
+                FactType1? fact1 = null;
+                string? joinValue = null;
+                FactType2? fact2 = null;
+                IEnumerable<FactType4>? group = null;
 
                 When()
-                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Let(() => joinValue, () => fact1.TestProperty)
-                    .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
-                    .Not<FactType3>(f => f.TestProperty.StartsWith("Invalid"))
-                    .Exists<FactType3>(f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                    .Let(() => joinValue, () => fact1!.TestProperty)
+                    .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"), f => f!.JoinProperty == joinValue)
+                    .Not<FactType3>(f => f.TestProperty!.StartsWith("Invalid"))
+                    .Exists<FactType3>(f => f.TestProperty!.StartsWith("Valid"))
                     .Query(() => group, q => q
                         .Match<FactType4>()
-                        .Where(f => f.TestProperty.StartsWith("Valid"))
+                        .Where(f => f.TestProperty!.StartsWith("Valid"))
                         .GroupBy(f => f.TestProperty)
                         .SelectMany(x => x)
                         .Collect()

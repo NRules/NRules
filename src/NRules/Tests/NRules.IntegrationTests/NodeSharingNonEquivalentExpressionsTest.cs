@@ -27,7 +27,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce<TestRule1>();
             AssertDidNotFire<TestRule2>();
         }
-        
+
         [Fact]
         public void Fire_SecondRuleMatchesFacts_OnlyMatchingRuleFires()
         {
@@ -47,7 +47,7 @@ namespace NRules.IntegrationTests
             AssertDidNotFire<TestRule1>();
             AssertFiredOnce<TestRule2>();
         }
-        
+
         [Fact]
         public void Fire_ThirdRuleMatchesFacts_OnlyMatchingRuleFires()
         {
@@ -67,7 +67,7 @@ namespace NRules.IntegrationTests
             AssertFiredOnce<TestRule3>();
             AssertDidNotFire<TestRule4>();
         }
-        
+
         [Fact]
         public void Fire_FourthRuleMatchesFacts_OnlyMatchingRuleFires()
         {
@@ -95,69 +95,69 @@ namespace NRules.IntegrationTests
             SetUpRule<TestRule3>();
             SetUpRule<TestRule4>();
         }
-        
+
         public class NameFact
         {
-            public string Name { get; set; }
+            public string? Name { get; set; }
         }
 
         public class ReferenceFact
         {
-            public NameFact Reference { get; set; }
+            public NameFact? Reference { get; set; }
 
-            public NameFact GetKey(NameFact nameFact)
+            public NameFact? GetKey(NameFact? nameFact)
             {
                 return nameFact;
             }
-        }   
-        
+        }
+
         public class TestRule1 : Rule
         {
             public override void Define()
             {
-                NameFact thisNameFact = null;
-                NameFact otherNameFact = null;
-                ReferenceFact referenceFact = null;
+                NameFact? thisNameFact = null;
+                NameFact? otherNameFact = null;
+                ReferenceFact? referenceFact = null;
 
                 When()
-                    .Match(() => thisNameFact, f => f.Name == "ThisName")
-                    .Match(() => otherNameFact, f => f.Name == "OtherName")
-                    .Match(() => referenceFact, rf => rf.Reference == thisNameFact);
+                    .Match(() => thisNameFact, f => f!.Name == "ThisName")
+                    .Match(() => otherNameFact, f => f!.Name == "OtherName")
+                    .Match(() => referenceFact, rf => rf!.Reference == thisNameFact);
 
                 Then()
                     .Do(ctx => ctx.NoOp());
             }
         }
-        
+
         public class TestRule2 : Rule
         {
             public override void Define()
             {
-                NameFact thisNameFact = null;
-                NameFact otherNameFact = null;
-                ReferenceFact referenceFact = null;
+                NameFact? thisNameFact = null;
+                NameFact? otherNameFact = null;
+                ReferenceFact? referenceFact = null;
 
                 When()
-                    .Match(() => thisNameFact, f => f.Name == "ThisName")
-                    .Match(() => otherNameFact, f => f.Name == "OtherName")
-                    .Match(() => referenceFact, rf => rf.Reference == otherNameFact);
+                    .Match(() => thisNameFact, f => f!.Name == "ThisName")
+                    .Match(() => otherNameFact, f => f!.Name == "OtherName")
+                    .Match(() => referenceFact, rf => rf!.Reference == otherNameFact);
 
                 Then()
                     .Do(ctx => ctx.NoOp());
             }
         }
-        
+
         public class TestRule3 : Rule
         {
             public override void Define()
             {
-                NameFact thisNameFact = null;
-                NameFact otherNameFact = null;
-                IEnumerable<ReferenceFact> referenceFacts = null;
+                NameFact? thisNameFact = null;
+                NameFact? otherNameFact = null;
+                IEnumerable<ReferenceFact>? referenceFacts = null;
 
                 When()
-                    .Match(() => thisNameFact, f => f.Name == "ThisName")
-                    .Match(() => otherNameFact, f => f.Name == "OtherName")
+                    .Match(() => thisNameFact, f => f!.Name == "ThisName")
+                    .Match(() => otherNameFact, f => f!.Name == "OtherName")
                     .Query(() => referenceFacts, q => q
                         .Match<ReferenceFact>()
                         .GroupBy(x => x.GetKey(thisNameFact))
@@ -167,18 +167,18 @@ namespace NRules.IntegrationTests
                     .Do(ctx => ctx.NoOp());
             }
         }
-        
+
         public class TestRule4 : Rule
         {
             public override void Define()
             {
-                NameFact thisNameFact = null;
-                NameFact otherNameFact = null;
-                IEnumerable<ReferenceFact> referenceFacts = null;
+                NameFact? thisNameFact = null;
+                NameFact? otherNameFact = null;
+                IEnumerable<ReferenceFact>? referenceFacts = null;
 
                 When()
-                    .Match(() => thisNameFact, f => f.Name == "ThisName")
-                    .Match(() => otherNameFact, f => f.Name == "OtherName")
+                    .Match(() => thisNameFact, f => f!.Name == "ThisName")
+                    .Match(() => otherNameFact, f => f!.Name == "OtherName")
                     .Query(() => referenceFacts, q => q
                         .Match<ReferenceFact>()
                         .GroupBy(x => x.GetKey(otherNameFact))

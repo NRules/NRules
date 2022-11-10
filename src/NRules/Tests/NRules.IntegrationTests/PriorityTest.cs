@@ -13,20 +13,20 @@ namespace NRules.IntegrationTests
             //Arrange
             var invokedRules = new List<string>();
 
-            Session.Events.RuleFiredEvent += (sender, args) => invokedRules.Add(args.Rule.Name);
+            Session.Events.RuleFiredEvent += (_, args) => invokedRules.Add(args.Rule.Name);
 
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
-            var facts = new[] {fact1, fact2};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType1 { TestProperty = "Valid Value 2" };
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             //Act
             Session.Fire();
 
             //Assert
-                //low priority activates twice
-                //it runs once, activates high priority rule, which preempts low priority and fires once
-                //low priority fires second time, which activates high priority which also fires second time
+            //low priority activates twice
+            //it runs once, activates high priority rule, which preempts low priority and fires once
+            //low priority fires second time, which activates high priority which also fires second time
             Assert.Equal(4, invokedRules.Count);
             Assert.Equal("PriorityLowRule", invokedRules[0]);
             Assert.Equal("PriorityHighRule", invokedRules[1]);
@@ -42,13 +42,13 @@ namespace NRules.IntegrationTests
 
         public class FactType1
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class FactType2
         {
-            public string TestProperty { get; set; }
-            public string JoinProperty { get; set; }
+            public string? TestProperty { get; set; }
+            public string? JoinProperty { get; set; }
         }
 
         [Name("PriorityLowRule")]
@@ -57,15 +57,15 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType1 fact1 = null;
+                FactType1? fact1 = null;
 
                 When()
-                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.Insert(new FactType2()
                     {
                         TestProperty = "Valid Value",
-                        JoinProperty = fact1.TestProperty
+                        JoinProperty = fact1!.TestProperty
                     }));
             }
         }
@@ -76,10 +76,10 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType2 fact2 = null;
+                FactType2? fact2 = null;
 
                 When()
-                    .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }

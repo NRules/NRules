@@ -13,7 +13,7 @@ namespace NRules.IntegrationTests
             var f0 = new FactType0();
             var f1 = new FactType1();
             var f2 = new FactType2();
-            Session.InsertAll(new object[]{f0, f1, f2});
+            Session.InsertAll(new object[] { f0, f1, f2 });
 
             //Act
             Session.Fire();
@@ -28,7 +28,7 @@ namespace NRules.IntegrationTests
             //Arrange
             var f0 = new FactType0();
             var f3 = new FactType3();
-            Session.InsertAll(new object[]{f0, f3});
+            Session.InsertAll(new object[] { f0, f3 });
 
             //Act
             Session.Fire();
@@ -62,10 +62,10 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType0 f0 = null;
-                FactType1 f1 = null;
-                FactType2 f2 = null;
-                FactType3 f3 = null;
+                FactType0? f0 = null;
+                FactType1? f1 = null;
+                FactType2? f2 = null;
+                FactType3? f3 = null;
 
                 When()
                     .Or(x => x
@@ -86,27 +86,27 @@ namespace NRules.IntegrationTests
                     .Do(ctx => Action(f2, f0, f3));
             }
 
-            private bool Condition(FactType0 f0, FactType1 f1, FactType2 f2)
+            private bool Condition(FactType0? f0, FactType1? f1, FactType2? f2)
             {
                 return true;
             }
 
-            private bool Condition(FactType2 f2, FactType3 f3, FactType0 f0)
+            private bool Condition(FactType2? f2, FactType3? f3, FactType0? f0)
             {
                 return true;
             }
 
-            private bool Condition(FactType0 f0, FactType3 f3)
+            private bool Condition(FactType0? f0, FactType3? f3)
             {
                 return true;
             }
 
-            private bool Condition(FactType3 f3, FactType0 f0)
+            private bool Condition(FactType3? f3, FactType0? f0)
             {
                 return true;
             }
 
-            private void Action(FactType2 f2, FactType0 f0, FactType3 f3)
+            private void Action(FactType2? f2, FactType0? f0, FactType3? f3)
             {
             }
         }

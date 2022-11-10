@@ -9,6 +9,7 @@ namespace NRules.Tests.Aggregators
     public abstract class AggregatorTest
     {
         protected Fact[] AsFact<T>(params T[] value)
+            where T : notnull
         {
             return value.Select(x => new Fact(x)).ToArray();
         }
@@ -20,7 +21,7 @@ namespace NRules.Tests.Aggregators
 
         private class NullTuple : ITuple
         {
-            public IEnumerable<IFact> Facts => new IFact[0];
+            public IEnumerable<IFact> Facts => Array.Empty<IFact>();
             public int Count => 0;
         }
 
@@ -34,7 +35,7 @@ namespace NRules.Tests.Aggregators
 
             public Type Type { get; }
             public object Value { get; set; }
-            public IFactSource Source { get; set; }
+            public IFactSource? Source { get; set; }
         }
     }
 
@@ -47,11 +48,11 @@ namespace NRules.Tests.Aggregators
             _func = func;
         }
 
-        public string Name { get; }
+        public string Name { get; } = null!;
 
         public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
         {
-            return _func((TFact)fact.Value);
+            return _func((TFact)fact.Value!)!;
         }
     }
 }

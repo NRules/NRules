@@ -2,28 +2,32 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace NRules.Json.Converters
+namespace NRules.Json.Converters;
+
+internal class TypeConverter : JsonConverter<Type>
 {
-    internal class TypeConverter : JsonConverter<Type>
+    private readonly ITypeResolver _typeResolver;
+
+    public TypeConverter(ITypeResolver typeResolver)
     {
-        private readonly ITypeResolver _typeResolver;
+        _typeResolver = typeResolver;
+    }
 
-        public TypeConverter(ITypeResolver typeResolver)
+    public override Type Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var typeName = reader.GetString();
+        if (typeName is null)
         {
-            _typeResolver = typeResolver;
+            throw new JsonException($"Failed to read type name for {typeToConvert}");
         }
 
-        public override Type Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            var typeName = reader.GetString();
-            var type = _typeResolver.GetTypeFromName(typeName);
-            return type;
-        }
+        var type = _typeResolver.GetTypeFromName(typeName);
+        return type;
+    }
 
-        public override void Write(Utf8JsonWriter writer, Type value, JsonSerializerOptions options)
-        {
-            var typeName = _typeResolver.GetTypeName(value);
-            writer.WriteStringValue(typeName);
-        }
+    public override void Write(Utf8JsonWriter writer, Type value, JsonSerializerOptions options)
+    {
+        var typeName = _typeResolver.GetTypeName(value);
+        writer.WriteStringValue(typeName);
     }
 }

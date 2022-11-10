@@ -1,117 +1,131 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using NRules.RuleModel;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+[DebuggerDisplay("Tuple ({Count})")]
+[DebuggerTypeProxy(typeof(TupleDebugView))]
+internal sealed class Tuple : ITuple
 {
-    [DebuggerDisplay("Tuple ({Count})")]
-    [DebuggerTypeProxy(typeof(TupleDebugView))]
-    internal sealed class Tuple : ITuple
+    public Tuple(long id)
     {
-        private const long NoGroup = 0;
+        Id = id;
+    }
 
-        public Tuple(long id)
+    public Tuple(long id, Tuple left, Fact? right)
+        : this(id)
+    {
+        RightFact = right;
+        LeftTuple = left;
+        Count = LeftTuple.Count + (RightFact is null ? 0 : 1);
+        Level = LeftTuple.Level + 1;
+    }
+
+    public long Id { get; }
+    public Fact? RightFact { get; }
+    public Tuple? LeftTuple { get; }
+    public int Count { get; }
+    public int Level { get; }
+
+    public long GetGroupId(int level)
+    {
+        if (LeftTuple is null)
         {
-            Id = id;
-            GroupId = NoGroup;
-            Count = 0;
-            Level = 0;
+            return 0;
         }
 
-        public Tuple(long id, Tuple left, Fact right) : this(id)
+        if (level == Level - 1)
         {
-            RightFact = right;
-            LeftTuple = left;
-            Count = left.Count;
-            if (right != null) Count++;
-            Level = left.Level + 1;
+            return LeftTuple.Id;
         }
 
-        public Fact RightFact { get; }
-        public Tuple LeftTuple { get; }
-        public int Count { get; }
-        public long Id { get; }
-        public int Level { get; }
+        return LeftTuple.GetGroupId(level);
+    }
 
-        public long GroupId { get; set; }
-        
-        public long GetGroupId(int level)
+    /// <summary>
+    /// Facts contained in the tuple in reverse order (fast iteration over linked list).
+    /// Reverse collection to get facts in their actual order.
+    /// </summary>
+    IEnumerable<IFact> ITuple.Facts => new Enumerable(this);
+
+    public IEnumerable<Fact> Facts
+    {
+        get
         {
-            if (level == Level - 1) return GroupId;
-            long groupId = LeftTuple?.GetGroupId(level) ?? NoGroup;
-            return groupId;
-        }
-
-        /// <summary>
-        /// Facts contained in the tuple in reverse order (fast iteration over linked list).
-        /// Reverse collection to get facts in their actual order.
-        /// </summary>
-        public IEnumerable<IFact> Facts => new Enumerable(this);
-
-        public Enumerator GetEnumerator() => new(this);
-
-        internal class TupleDebugView
-        {
-            public readonly string Facts;
-
-            public TupleDebugView(Tuple tuple)
+            var tuple = this;
+            while (tuple is not null && tuple.RightFact is Fact current)
             {
-                var facts = string.Join(" || ", tuple.Facts.Reverse().Select(f => f.Value).ToArray());
-                Facts = $"[{facts}]";
+                yield return current;
+                tuple = tuple.LeftTuple;
             }
         }
+    }
 
-        internal class Enumerable : IEnumerable<Fact>, IEnumerator<Fact>
+    public Enumerator GetEnumerator() => new(this);
+
+    internal class TupleDebugView
+    {
+        public readonly string Facts;
+
+        public TupleDebugView(Tuple tuple)
         {
-            private readonly Tuple _tuple;
-            private Enumerator _enumerator;
+            var facts = string.Join(" || ", tuple.OrderedFacts().Select(f => f.Value));
+            Facts = $"[{facts}]";
+        }
+    }
 
-            public Enumerable(Tuple tuple)
-            {
-                _tuple = tuple;
-                _enumerator = new Enumerator(tuple);
-            }
+    internal class Enumerable : IEnumerable<Fact>, IEnumerator<Fact>
+    {
+        private readonly Tuple _tuple;
+        private Enumerator _enumerator;
 
-            public IEnumerator<Fact> GetEnumerator()
-            {
-                return this;
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            public void Dispose() {}
-            public bool MoveNext() => _enumerator.MoveNext();
-            public void Reset() => _enumerator = new Enumerator(_tuple);
-            public Fact Current => _enumerator.Current;
-            object IEnumerator.Current => Current;
+        public Enumerable(Tuple tuple)
+        {
+            _tuple = tuple;
+            _enumerator = new Enumerator(tuple);
         }
 
-        internal struct Enumerator
+        public IEnumerator<Fact> GetEnumerator()
         {
-            private Tuple _tuple;
-
-            public Enumerator(Tuple tuple)
-            {
-                _tuple = tuple;
-                Current = null;
-            }
-
-            public bool MoveNext()
-            {
-                do
-                {
-                    Current = _tuple.RightFact;
-                    _tuple = _tuple.LeftTuple;
-                } while (Current == null && _tuple != null);
-                return Current != null;
-            }
-
-            public Fact Current { get; private set; }
+            return this;
         }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void Dispose() { }
+        public bool MoveNext() => _enumerator.MoveNext();
+        public void Reset() => _enumerator = new Enumerator(_tuple);
+        public Fact Current => _enumerator.Current ?? throw new InvalidOperationException($"{nameof(MoveNext)} was not called or enumeration ended");
+        object IEnumerator.Current => Current;
+    }
+
+    internal struct Enumerator
+    {
+        private Tuple? _tuple;
+
+        public Enumerator(Tuple tuple)
+        {
+            _tuple = tuple;
+            Current = null;
+        }
+
+        public bool MoveNext()
+        {
+            do
+            {
+                Current = _tuple?.RightFact;
+                _tuple = _tuple?.LeftTuple;
+            } while (Current == null && _tuple != null);
+            return Current != null;
+        }
+
+        public Fact? Current { get; private set; }
     }
 }

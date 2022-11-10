@@ -12,11 +12,11 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsOfOneKindAndJoinedGroups_FiresTwice()
         {
             //Arrange
-            var fact11 = new FactType1 { TestProperty = "Valid Value 11", JoinProperty = "Group 1"};
-            var fact12 = new FactType1 { TestProperty = "Valid Value 12", JoinProperty = "Group 2"};
+            var fact11 = new FactType1 { TestProperty = "Valid Value 11", JoinProperty = "Group 1" };
+            var fact12 = new FactType1 { TestProperty = "Valid Value 12", JoinProperty = "Group 2" };
             var fact21 = new FactType2(1) { TestProperty = "Value 1" };
-            var fact31 = new FactType3() { TestProperty = "Valid Value 31", GroupProperty = "Group 1"};
-            var fact32 = new FactType3() { TestProperty = "Valid Value 32", GroupProperty = "Group 2"};
+            var fact31 = new FactType3() { TestProperty = "Valid Value 31", GroupProperty = "Group 1" };
+            var fact32 = new FactType3() { TestProperty = "Valid Value 32", GroupProperty = "Group 2" };
 
             Session.Insert(fact11);
             Session.Insert(fact12);
@@ -36,9 +36,9 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingSetFactOfFirstKindUpdated_FiresOnceThenFiresOnceAgain()
         {
             //Arrange
-            var fact11 = new FactType1 { TestProperty = "Valid Value 11", JoinProperty = "Group 1"};
+            var fact11 = new FactType1 { TestProperty = "Valid Value 11", JoinProperty = "Group 1" };
             var fact21 = new FactType2(1) { TestProperty = "Value 1" };
-            var fact31 = new FactType3() { TestProperty = "Valid Value 31", GroupProperty = "Group 1"};
+            var fact31 = new FactType3() { TestProperty = "Valid Value 31", GroupProperty = "Group 1" };
 
             Session.Insert(fact11);
             Session.Insert(fact21);
@@ -64,9 +64,9 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingSetFactOfSecondKindUpdated_FiresOnceThenFiresOnceAgain()
         {
             //Arrange
-            var fact11 = new FactType1 { TestProperty = "Valid Value 11", JoinProperty = "Group 1"};
+            var fact11 = new FactType1 { TestProperty = "Valid Value 11", JoinProperty = "Group 1" };
             var fact21 = new FactType2(1) { TestProperty = "Value 1" };
-            var fact31 = new FactType3() { TestProperty = "Valid Value 31", GroupProperty = "Group 1"};
+            var fact31 = new FactType3() { TestProperty = "Valid Value 31", GroupProperty = "Group 1" };
 
             Session.Insert(fact11);
             Session.Insert(fact21);
@@ -92,9 +92,9 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingSetFactOfThirdKindUpdated_FiresOnceThenFiresOnceAgain()
         {
             //Arrange
-            var fact11 = new FactType1 { TestProperty = "Valid Value 11", JoinProperty = "Group 1"};
+            var fact11 = new FactType1 { TestProperty = "Valid Value 11", JoinProperty = "Group 1" };
             var fact21 = new FactType2(1) { TestProperty = "Value 1" };
-            var fact31 = new FactType3() { TestProperty = "Valid Value 31", GroupProperty = "Group 1"};
+            var fact31 = new FactType3() { TestProperty = "Valid Value 31", GroupProperty = "Group 1" };
 
             Session.Insert(fact11);
             Session.Insert(fact21);
@@ -123,8 +123,8 @@ namespace NRules.IntegrationTests
 
         public class FactType1
         {
-            public string TestProperty { get; set; }
-            public string JoinProperty { get; set; }
+            public string? TestProperty { get; set; }
+            public string? JoinProperty { get; set; }
             public int EvalCount { get; set; }
         }
 
@@ -136,45 +136,45 @@ namespace NRules.IntegrationTests
             }
 
             public int Id { get; }
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class FactType3
         {
-            public string TestProperty { get; set; }
-            public string GroupProperty { get; set; }
+            public string? TestProperty { get; set; }
+            public string? GroupProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
             public override void Define()
             {
-                FactType1 fact1 = null;
-                FactType2 fact21 = null;
-                FactType2 fact22 = null;
-                IEnumerable<FactType3> group = null;
+                FactType1? fact1 = null;
+                FactType2? fact21 = null;
+                FactType2? fact22 = null;
+                IEnumerable<FactType3>? group = null;
 
                 When()
-                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
                     .Query(() => fact21, q => q
                         .Match<FactType2>(f => f.TestProperty == "Value 1")
                         .Collect()
-                        .Select(x => x.FirstOrDefault() ?? new FactType2(0) {TestProperty = "Value 1"}))
+                        .Select(x => x.FirstOrDefault() ?? new FactType2(0) { TestProperty = "Value 1" }))
                     .Query(() => fact22, q => q
                         .Match<FactType2>(f => f.TestProperty == "Value 2")
                         .Collect()
-                        .Select(x => x.FirstOrDefault() ?? new FactType2(0) {TestProperty = "Value 2"}))
+                        .Select(x => x.FirstOrDefault() ?? new FactType2(0) { TestProperty = "Value 2" }))
                     .Query(() => group, q => q
-                        .Match<FactType3>(f => f.TestProperty.StartsWith("Valid"))
+                        .Match<FactType3>(f => f.TestProperty!.StartsWith("Valid"))
                         .GroupBy(x => x.GroupProperty)
                         .Where(g => ValidGroup(fact1, fact21, fact22, g)));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }
 
-            private bool ValidGroup(FactType1 fact1, FactType2 fact21, FactType2 fact22, IGrouping<string, FactType3> group)
+            private bool ValidGroup(FactType1? fact1, FactType2? fact21, FactType2? fact22, IGrouping<string?, FactType3> group)
             {
-                fact1.EvalCount++;
+                fact1!.EvalCount++;
                 return group.Key == fact1.JoinProperty;
             }
         }

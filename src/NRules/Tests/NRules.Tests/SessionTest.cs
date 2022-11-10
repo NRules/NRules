@@ -20,7 +20,7 @@ namespace NRules.Tests
         private readonly Mock<IIdGenerator> _idGenerator;
         private readonly Mock<IDependencyResolver> _dependencyResolver;
         private readonly Mock<IActionInterceptor> _actionInterceptor;
-            
+
         public SessionTest()
         {
             _agenda = new Mock<IAgendaInternal>();
@@ -75,7 +75,7 @@ namespace NRules.Tests
         {
             // Arrange
             var facts = new[] { new object(), new object() };
-            var factWrappers = new Dictionary<object, Fact>
+            var factWrappers = new Dictionary<object, Fact?>
             {
                 {facts[0], new Fact(facts[0])},
                 {facts[1], null}
@@ -92,7 +92,7 @@ namespace NRules.Tests
         {
             // Arrange
             var facts = new[] { new object(), new object() };
-            var factWrappers = new Dictionary<object, Fact>
+            var factWrappers = new Dictionary<object, Fact?>
             {
                 {facts[0], new Fact(facts[0])},
                 {facts[1], null}
@@ -116,7 +116,7 @@ namespace NRules.Tests
         {
             // Arrange
             var facts = new[] { new object(), new object() };
-            var factWrappers = new Dictionary<object, Fact>
+            var factWrappers = new Dictionary<object, Fact?>
             {
                 {facts[0], new Fact(facts[0])},
                 {facts[1], null}
@@ -181,8 +181,8 @@ namespace NRules.Tests
         public void UpdateAll_SomeFactsDoNotExist_Throws()
         {
             // Arrange
-            var facts = new[] {new object(), new object()};
-            var factWrappers = new Dictionary<object, Fact>
+            var facts = new[] { new object(), new object() };
+            var factWrappers = new Dictionary<object, Fact?>
             {
                 {facts[0], new Fact(facts[0])},
                 {facts[1], null}
@@ -199,7 +199,7 @@ namespace NRules.Tests
         {
             // Arrange
             var facts = new[] { new object(), new object() };
-            var factWrappers = new Dictionary<object, Fact>
+            var factWrappers = new Dictionary<object, Fact?>
             {
                 {facts[0], new Fact(facts[0])},
                 {facts[1], null}
@@ -223,7 +223,7 @@ namespace NRules.Tests
         {
             // Arrange
             var facts = new[] { new object(), new object() };
-            var factWrappers = new Dictionary<object, Fact>
+            var factWrappers = new Dictionary<object, Fact?>
             {
                 {facts[0], new Fact(facts[0])},
                 {facts[1], null}
@@ -289,7 +289,7 @@ namespace NRules.Tests
         {
             // Arrange
             var facts = new[] { new object(), new object() };
-            var factWrappers = new Dictionary<object, Fact>
+            var factWrappers = new Dictionary<object, Fact?>
             {
                 {facts[0], new Fact(facts[0])},
                 {facts[1], null}
@@ -307,7 +307,7 @@ namespace NRules.Tests
         {
             // Arrange
             var facts = new[] { new object(), new object() };
-            var factWrappers = new Dictionary<object, Fact>
+            var factWrappers = new Dictionary<object, Fact?>
             {
                 {facts[0], new Fact(facts[0])},
                 {facts[1], null}
@@ -331,7 +331,7 @@ namespace NRules.Tests
         {
             // Arrange
             var facts = new[] { new object(), new object() };
-            var factWrappers = new Dictionary<object, Fact>
+            var factWrappers = new Dictionary<object, Fact?>
             {
                 {facts[0], new Fact(facts[0])},
                 {facts[1], null}
@@ -507,8 +507,8 @@ namespace NRules.Tests
         private static Activation StubActivation()
         {
             var rule = new Mock<ICompiledRule>();
-            rule.Setup(x => x.Actions).Returns(new IRuleAction[0]);
-            var activation = new Activation(rule.Object, null);
+            rule.Setup(x => x.Actions).Returns(Array.Empty<IRuleAction>());
+            var activation = new Activation(rule.Object, null!);
             return activation;
         }
     }

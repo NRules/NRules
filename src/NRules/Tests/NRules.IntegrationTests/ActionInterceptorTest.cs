@@ -19,7 +19,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact1);
             Session.Insert(fact2);
 
-            bool actionExecuted = false;
+            var actionExecuted = false;
             GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
             //Act
@@ -41,7 +41,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact1);
             Session.Insert(fact2);
 
-            bool actionExecuted = false;
+            var actionExecuted = false;
             GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
             //Act
@@ -81,7 +81,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact1);
             Session.Insert(fact2);
 
-            bool actionExecuted = false;
+            var actionExecuted = false;
             GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
             //Act
@@ -132,11 +132,11 @@ namespace NRules.IntegrationTests
 
             public override void Define()
             {
-                FactType1 fact = null;
-                IEnumerable<FactType2> collection = null;
+                FactType1? fact = null;
+                IEnumerable<FactType2>? collection = null;
 
                 When()
-                    .Match<FactType1>(() => fact)
+                    .Match(() => fact)
                     .Query(() => collection, x => x
                         .Match<FactType2>()
                         .Collect());
@@ -144,7 +144,7 @@ namespace NRules.IntegrationTests
                     .Do(ctx => CallAction(ctx, fact, collection));
             }
 
-            private void CallAction(IContext context, FactType1 fact1, IEnumerable<FactType2> collection2)
+            private void CallAction(IContext context, FactType1? fact1, IEnumerable<FactType2>? collection2)
             {
                 Action();
             }

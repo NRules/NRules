@@ -17,17 +17,17 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Expression expression = null;
-            IList<IFact> facts = null;
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
+            Expression? expression = null;
+            IList<IFact>? facts = null;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => expression = args.Expression;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => facts = args.Facts.ToList();
 
             var fact = new FactType { TestProperty = "Valid value" };
 
             //Act - Assert
             var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact));
             Assert.NotNull(expression);
-            Assert.Equal(1, facts.Count);
+            Assert.Equal(1, facts!.Count);
             Assert.Same(fact, facts.First().Value);
             Assert.IsType<InvalidOperationException>(ex.InnerException);
         }
@@ -38,7 +38,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
             var fact = new FactType { TestProperty = "Valid value" };
 
@@ -57,13 +57,13 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
             var fact1 = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact1);
 
             GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
-            
+
             var fact2 = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact2);
 
@@ -80,9 +80,9 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact = new FactType {TestProperty = "Valid value"};
+            var fact = new FactType { TestProperty = "Valid value" };
 
             Session.Insert(fact);
             GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
@@ -102,9 +102,9 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact = new FactType {TestProperty = "Valid value"};
+            var fact = new FactType { TestProperty = "Valid value" };
 
             Session.Insert(fact);
             GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
@@ -125,9 +125,9 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact = new FactType {TestProperty = "Valid value"};
+            var fact = new FactType { TestProperty = "Valid value" };
 
             Session.Insert(fact);
             GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
@@ -146,12 +146,12 @@ namespace NRules.IntegrationTests
             SetUpRule<TestRule>();
         }
 
-        private static readonly Func<FactType, string> SuccessfulBinding = f => "value";
-        private static readonly Func<FactType, string> ThrowBinding = f => throw new InvalidOperationException("Binding failed");
+        private static readonly Func<FactType, string> SuccessfulBinding = _ => "value";
+        private static readonly Func<FactType, string> ThrowBinding = _ => throw new InvalidOperationException("Binding failed");
 
         public class FactType
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class TestRule : Rule
@@ -160,12 +160,12 @@ namespace NRules.IntegrationTests
 
             public override void Define()
             {
-                FactType fact = null;
-                string binding = null;
+                FactType? fact = null;
+                string? binding = null;
 
                 When()
-                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
-                    .Let(() => binding, () => Binding(fact));
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"))
+                    .Let(() => binding, () => Binding(fact!));
                 Then()
                     .Do(ctx => NoOp());
             }

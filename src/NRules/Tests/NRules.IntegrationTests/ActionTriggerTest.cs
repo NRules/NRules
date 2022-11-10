@@ -28,7 +28,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Fire();
@@ -43,10 +43,12 @@ namespace NRules.IntegrationTests
         public void Fire_FilterOffInsertThenFire_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType();
-            
-            //Act
-            fact.AcceptFilter = false;
+            var fact = new FactType
+            {
+                //Act
+                AcceptFilter = false
+            };
+
             Session.Insert(fact);
             Session.Fire();
 
@@ -61,7 +63,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Update(fact);
@@ -78,7 +80,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             fact.AcceptFilter = false;
@@ -95,10 +97,12 @@ namespace NRules.IntegrationTests
         public void Fire_FilterOffInsertThenFilterOnThenUpdateThenFire_FiresOnMatch()
         {
             //Arrange
-            var fact = new FactType();
-            
-            //Act
-            fact.AcceptFilter = false;
+            var fact = new FactType
+            {
+                //Act
+                AcceptFilter = false
+            };
+
             Session.Insert(fact);
             fact.AcceptFilter = true;
             Session.Update(fact);
@@ -261,7 +265,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(0, _rematchActionCount);
             Assert.Equal(1, _unmatchActionCount);
         }
-        
+
         [Fact]
         public void Fire_InsertThenFireThenUpdateThenFireThenRetractThenFire_FiresOnMatchAndOnRematchAndOnUnmatch()
         {
@@ -395,13 +399,13 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
                     .Match(() => fact);
 
                 Filter()
-                    .Where(() => fact.AcceptFilter);
+                    .Where(() => fact!.AcceptFilter);
 
                 Then()
                     .Action(ctx => OnMatchAction(), ActionTrigger.Activated)
@@ -433,7 +437,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Fire();
@@ -448,10 +452,12 @@ namespace NRules.IntegrationTests
         public void Fire_FilterOffInsertThenFire_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType();
-            
-            //Act
-            fact.AcceptFilter = false;
+            var fact = new FactType
+            {
+                //Act
+                AcceptFilter = false
+            };
+
             Session.Insert(fact);
             Session.Fire();
 
@@ -466,7 +472,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Update(fact);
@@ -483,7 +489,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             fact.AcceptFilter = false;
@@ -500,10 +506,12 @@ namespace NRules.IntegrationTests
         public void Fire_FilterOffInsertThenFilterOnThenUpdateThenFire_FiresOnMatch()
         {
             //Arrange
-            var fact = new FactType();
-            
-            //Act
-            fact.AcceptFilter = false;
+            var fact = new FactType
+            {
+                //Act
+                AcceptFilter = false
+            };
+
             Session.Insert(fact);
             fact.AcceptFilter = true;
             Session.Update(fact);
@@ -666,7 +674,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(0, _rematchActionCount);
             Assert.Equal(1, _unmatchActionCount);
         }
-        
+
         [Fact]
         public void Fire_InsertThenFireThenUpdateThenFireThenRetractThenFire_FiresOnMatchAndOnUnmatch()
         {
@@ -801,13 +809,13 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
                     .Match(() => fact);
 
                 Filter()
-                    .Where(() => fact.AcceptFilter);
+                    .Where(() => fact!.AcceptFilter);
 
                 Then()
                     .Action(ctx => OnMatchAction(), ActionTrigger.Activated)
@@ -836,7 +844,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Fire();
@@ -850,10 +858,12 @@ namespace NRules.IntegrationTests
         public void Fire_FilterOffInsertThenFire_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType();
-            
-            //Act
-            fact.AcceptFilter = false;
+            var fact = new FactType
+            {
+                //Act
+                AcceptFilter = false
+            };
+
             Session.Insert(fact);
             Session.Fire();
 
@@ -867,7 +877,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Update(fact);
@@ -883,7 +893,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             fact.AcceptFilter = false;
@@ -899,10 +909,12 @@ namespace NRules.IntegrationTests
         public void Fire_FilterOffInsertThenFilterOnThenUpdateThenFire_FiresOnMatch()
         {
             //Arrange
-            var fact = new FactType();
-            
-            //Act
-            fact.AcceptFilter = false;
+            var fact = new FactType
+            {
+                //Act
+                AcceptFilter = false
+            };
+
             Session.Insert(fact);
             fact.AcceptFilter = true;
             Session.Update(fact);
@@ -1056,7 +1068,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, _matchActionCount);
             Assert.Equal(1, _unmatchActionCount);
         }
-        
+
         [Fact]
         public void Fire_InsertThenFireThenUpdateThenFireThenRetractThenFire_FiresOnMatchAndOnRematchAndOnUnmatch()
         {
@@ -1184,13 +1196,13 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
                     .Match(() => fact);
 
                 Filter()
-                    .Where(() => fact.AcceptFilter);
+                    .Where(() => fact!.AcceptFilter);
 
                 Then()
                     .Action(ctx => OnMatchAction(), ActionTrigger.Activated)
@@ -1218,7 +1230,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Fire();
@@ -1232,10 +1244,12 @@ namespace NRules.IntegrationTests
         public void Fire_FilterOffInsertThenFire_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType();
-            
-            //Act
-            fact.AcceptFilter = false;
+            var fact = new FactType
+            {
+                //Act
+                AcceptFilter = false
+            };
+
             Session.Insert(fact);
             Session.Fire();
 
@@ -1249,7 +1263,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Update(fact);
@@ -1265,7 +1279,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             fact.AcceptFilter = false;
@@ -1281,10 +1295,12 @@ namespace NRules.IntegrationTests
         public void Fire_FilterOffInsertThenFilterOnThenUpdateThenFire_FiresOnMatch()
         {
             //Arrange
-            var fact = new FactType();
-            
-            //Act
-            fact.AcceptFilter = false;
+            var fact = new FactType
+            {
+                //Act
+                AcceptFilter = false
+            };
+
             Session.Insert(fact);
             fact.AcceptFilter = true;
             Session.Update(fact);
@@ -1438,7 +1454,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, _matchActionCount);
             Assert.Equal(1, _unmatchActionCount);
         }
-        
+
         [Fact]
         public void Fire_InsertThenFireThenUpdateThenFireThenRetractThenFire_FiresOnMatchAndOnUnmatch()
         {
@@ -1567,13 +1583,13 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
                     .Match(() => fact);
 
                 Filter()
-                    .Where(() => fact.AcceptFilter);
+                    .Where(() => fact!.AcceptFilter);
 
                 Then()
                     .Action(ctx => OnMatchAction(), ActionTrigger.Activated)

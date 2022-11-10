@@ -1,18 +1,19 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+[DebuggerDisplay("TupleFactSet Tuple({Tuple.Count}) Facts({Facts.Count})")]
+internal class TupleFactSet
 {
-    [DebuggerDisplay("TupleFactSet Tuple({Tuple.Count}) Facts({Facts.Count})")]
-    internal class TupleFactSet
-    {
-        public Tuple Tuple { get; }
-        public List<Fact> Facts { get; }
+    public Tuple Tuple { get; }
+    public IReadOnlyCollection<Fact> Facts { get; }
 
-        public TupleFactSet(Tuple tuple, List<Fact> facts)
-        {
-            Tuple = tuple;
-            Facts = facts;
-        }
+    public TupleFactSet(Tuple tuple, IEnumerable<Fact>? facts = null)
+    {
+        Tuple = tuple;
+        Facts = facts?.ToArray() ?? Array.Empty<Fact>();
     }
 }

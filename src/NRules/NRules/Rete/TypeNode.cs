@@ -3,61 +3,61 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using NRules.Diagnostics;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+[DebuggerDisplay("Type {FilterType.FullName,nq}")]
+internal class TypeNode : AlphaNode
 {
-    [DebuggerDisplay("Type {FilterType.FullName,nq}")]
-    internal class TypeNode : AlphaNode
+    public TypeNode(int id, Type filterType)
+        : base(id, filterType)
     {
-        public TypeNode(Type filterType)
-        {
-            FilterType = filterType;
-        }
+        FilterType = filterType;
+    }
 
-        public Type FilterType { get; }
+    public Type FilterType { get; }
 
-        public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
-        {
-            bool isMatchingType = FilterType.IsAssignableFrom(fact.FactType);
-            return isMatchingType;
-        }
+    protected override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
+    {
+        var isMatchingType = FilterType.IsAssignableFrom(fact.FactType);
+        return isMatchingType;
+    }
 
-        public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    {
+        var toUpdate = new List<Fact>();
+        using (var counter = PerfCounter.Update(context, this))
         {
-            var toUpdate = new List<Fact>();
-            using (var counter = PerfCounter.Update(context, this))
+            foreach (var fact in facts)
             {
-                foreach (var fact in facts)
-                {
-                    if (IsSatisfiedBy(context, fact))
-                        toUpdate.Add(fact);
-                }
-                counter.AddInputs(facts.Count);
-                counter.AddOutputs(toUpdate.Count);
+                if (IsSatisfiedBy(context, fact))
+                    toUpdate.Add(fact);
             }
-
-            PropagateUpdateInternal(context, toUpdate);
+            counter.AddInputs(facts.Count);
+            counter.AddOutputs(toUpdate.Count);
         }
 
-        public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
+        PropagateUpdateInternal(context, toUpdate);
+    }
+
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    {
+        var toRetract = new List<Fact>();
+        using (var counter = PerfCounter.Retract(context, this))
         {
-            var toRetract = new List<Fact>();
-            using (var counter = PerfCounter.Retract(context, this))
+            foreach (var fact in facts)
             {
-                foreach (var fact in facts)
-                {
-                    if (IsSatisfiedBy(context, fact))
-                        toRetract.Add(fact);
-                }
-                counter.AddInputs(facts.Count);
-                counter.AddOutputs(toRetract.Count);
+                if (IsSatisfiedBy(context, fact))
+                    toRetract.Add(fact);
             }
-
-            PropagateRetractInternal(context, toRetract);
+            counter.AddInputs(facts.Count);
+            counter.AddOutputs(toRetract.Count);
         }
 
-        public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
-        {
-            visitor.VisitTypeNode(context, this);
-        }
+        PropagateRetractInternal(context, toRetract);
+    }
+
+    public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+    {
+        visitor.VisitTypeNode(context, this);
     }
 }

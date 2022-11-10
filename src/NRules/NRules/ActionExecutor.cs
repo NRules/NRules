@@ -3,59 +3,58 @@ using System.Collections.Generic;
 using NRules.RuleModel;
 using NRules.Utilities;
 
-namespace NRules
+namespace NRules;
+
+internal interface IActionExecutor
 {
-    internal interface IActionExecutor
-    {
-        void Execute(IExecutionContext executionContext, IActionContext actionContext);
-    }
+    void Execute(IExecutionContext executionContext, IActionContext actionContext);
+}
 
-    internal class ActionExecutor : IActionExecutor
+internal class ActionExecutor : IActionExecutor
+{
+    public void Execute(IExecutionContext executionContext, IActionContext actionContext)
     {
-        public void Execute(IExecutionContext executionContext, IActionContext actionContext)
+        ISession session = executionContext.Session;
+        var activation = actionContext.Activation;
+
+        var invocations = CreateInvocations(executionContext, actionContext);
+
+        executionContext.EventAggregator.RaiseRuleFiring(session, activation);
+        var interceptor = session.ActionInterceptor;
+        if (interceptor != null)
         {
-            ISession session = executionContext.Session;
-            Activation activation = actionContext.Activation;
-
-            var invocations = CreateInvocations(executionContext, actionContext);
-
-            executionContext.EventAggregator.RaiseRuleFiring(session, activation);
-            var interceptor = session.ActionInterceptor;
-            if (interceptor != null)
+            interceptor.Intercept(actionContext, invocations);
+        }
+        else
+        {
+            foreach (var invocation in invocations)
             {
-                interceptor.Intercept(actionContext, invocations);
-            }
-            else
-            {
-                foreach (var invocation in invocations)
+                try
                 {
-                    try
-                    {
-                        invocation.Invoke();
-                    }
-                    catch (Exception e)
-                    {
-                        throw new RuleRhsExpressionEvaluationException("Failed to evaluate rule action",
-                            actionContext.Rule.Name, invocation.Expression.ToString(), e);
-                    }
+                    invocation.Invoke();
+                }
+                catch (Exception e)
+                {
+                    throw new RuleRhsExpressionEvaluationException("Failed to evaluate rule action",
+                        actionContext.Rule.Name, invocation.Expression.ToString(), e);
                 }
             }
-            executionContext.EventAggregator.RaiseRuleFired(session, activation);
         }
+        executionContext.EventAggregator.RaiseRuleFired(session, activation);
+    }
 
-        private IEnumerable<ActionInvocation> CreateInvocations(IExecutionContext executionContext, IActionContext actionContext)
+    private IEnumerable<ActionInvocation> CreateInvocations(IExecutionContext executionContext, IActionContext actionContext)
+    {
+        var compiledRule = actionContext.CompiledRule;
+        var trigger = actionContext.Activation.Trigger;
+        var invocations = new List<ActionInvocation>();
+        foreach (var action in compiledRule.Actions)
         {
-            ICompiledRule compiledRule = actionContext.CompiledRule;
-            MatchTrigger trigger = actionContext.Activation.Trigger;
-            var invocations = new List<ActionInvocation>();
-            foreach (IRuleAction action in compiledRule.Actions)
-            {
-                if (!trigger.Matches(action.Trigger)) continue;
+            if (!trigger.Matches(action.Trigger)) continue;
 
-                var invocation = new ActionInvocation(executionContext, actionContext, action);
-                invocations.Add(invocation);
-            }
-            return invocations;
+            var invocation = new ActionInvocation(executionContext, actionContext, action);
+            invocations.Add(invocation);
         }
+        return invocations;
     }
 }

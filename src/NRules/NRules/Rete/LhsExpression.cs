@@ -3,141 +3,140 @@ using System.Linq.Expressions;
 using NRules.Diagnostics;
 using NRules.Utilities;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+internal interface ILhsExpression<out TResult>
 {
-    internal interface ILhsExpression<out TResult>
+    TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple, Fact? fact);
+}
+
+internal interface ILhsFactExpression<out TResult> : ILhsExpression<TResult>
+{
+    TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Fact? fact);
+}
+
+internal interface ILhsTupleExpression<out TResult> : ILhsExpression<TResult>
+{
+    TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple);
+}
+
+internal sealed class LhsExpression<TResult> : ILhsExpression<TResult>
+{
+    private readonly LambdaExpression _expression;
+    private readonly Func<Tuple?, Fact?, TResult> _compiledExpression;
+    private readonly IArgumentMap _argumentMap;
+
+    public LhsExpression(LambdaExpression expression, Func<Tuple?, Fact?, TResult> compiledExpression, IArgumentMap argumentMap)
     {
-        TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact);
+        _expression = expression;
+        _compiledExpression = compiledExpression;
+        _argumentMap = argumentMap;
     }
 
-    internal interface ILhsFactExpression<out TResult> : ILhsExpression<TResult>
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple, Fact? fact)
     {
-        TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Fact fact);
-    }
-
-    internal interface ILhsTupleExpression<out TResult> : ILhsExpression<TResult>
-    {
-        TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple);
-    }
-
-    internal sealed class LhsExpression<TResult> : ILhsExpression<TResult>
-    {
-        private readonly LambdaExpression _expression;
-        private readonly Func<Tuple, Fact, TResult> _compiledExpression;
-        private readonly IArgumentMap _argumentMap;
-
-        public LhsExpression(LambdaExpression expression, Func<Tuple, Fact, TResult> compiledExpression, IArgumentMap argumentMap)
+        Exception? exception = null;
+        TResult? result = default;
+        try
         {
-            _expression = expression;
-            _compiledExpression = compiledExpression;
-            _argumentMap = argumentMap;
+            result = _compiledExpression(tuple, fact);
+            return result;
         }
-
-        public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
+        catch (Exception e)
         {
-            Exception exception = null;
-            TResult result = default;
-            try
-            {
-                result = _compiledExpression(tuple, fact);
-                return result;
-            }
-            catch (Exception e)
-            {
-                exception = e;
-                bool isHandled = false;
-                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, _argumentMap, tuple, fact, nodeInfo, ref isHandled);
-                throw new ExpressionEvaluationException(e, _expression, isHandled);
-            }
-            finally
-            {
-                if (context.EventAggregator.TraceEnabled)
-                    context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, _argumentMap, result, tuple, fact, nodeInfo);
-            }
+            exception = e;
+            var isHandled = false;
+            context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, _argumentMap, tuple, fact, nodeInfo, ref isHandled);
+            throw new ExpressionEvaluationException(e, _expression, isHandled);
+        }
+        finally
+        {
+            if (context.EventAggregator.TraceEnabled)
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, _argumentMap, result, tuple, fact, nodeInfo);
         }
     }
+}
 
-    internal sealed class LhsFactExpression<TResult> : ILhsFactExpression<TResult>
+internal sealed class LhsFactExpression<TResult> : ILhsFactExpression<TResult>
+{
+    private readonly LambdaExpression _expression;
+    private readonly Func<Fact?, TResult> _compiledExpression;
+    private readonly IArgumentMap _argumentMap;
+
+    public LhsFactExpression(LambdaExpression expression, Func<Fact?, TResult> compiledExpression, IArgumentMap argumentMap)
     {
-        private readonly LambdaExpression _expression;
-        private readonly Func<Fact, TResult> _compiledExpression;
-        private readonly IArgumentMap _argumentMap;
-
-        public LhsFactExpression(LambdaExpression expression, Func<Fact, TResult> compiledExpression, IArgumentMap argumentMap)
-        {
-            _expression = expression;
-            _compiledExpression = compiledExpression;
-            _argumentMap = argumentMap;
-        }
-
-        public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Fact fact)
-        {
-            return Invoke(context, nodeInfo, null, fact);
-        }
-
-        public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
-        {
-            Exception exception = null;
-            TResult result = default;
-            try
-            {
-                result = _compiledExpression(fact);
-                return result;
-            }
-            catch (Exception e)
-            {
-                exception = e;
-                bool isHandled = false;
-                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, _argumentMap, tuple, fact, nodeInfo, ref isHandled);
-                throw new ExpressionEvaluationException(e, _expression, isHandled);
-            }
-            finally
-            {
-                if (context.EventAggregator.TraceEnabled)
-                    context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, _argumentMap, result, tuple, fact, nodeInfo);
-            }
-        }
+        _expression = expression;
+        _compiledExpression = compiledExpression;
+        _argumentMap = argumentMap;
     }
 
-    internal sealed class LhsTupleExpression<TResult> : ILhsTupleExpression<TResult>
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Fact? fact)
     {
-        private readonly LambdaExpression _expression;
-        private readonly Func<Tuple, TResult> _compiledExpression;
-        private readonly IArgumentMap _argumentMap;
+        return Invoke(context, nodeInfo, null, fact);
+    }
 
-        public LhsTupleExpression(LambdaExpression expression, Func<Tuple, TResult> compiledExpression, IArgumentMap argumentMap)
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple, Fact? fact)
+    {
+        Exception? exception = null;
+        TResult? result = default;
+        try
         {
-            _expression = expression;
-            _compiledExpression = compiledExpression;
-            _argumentMap = argumentMap;
+            result = _compiledExpression(fact);
+            return result;
         }
-
-        public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple)
+        catch (Exception e)
         {
-            return Invoke(context, nodeInfo, tuple, null);
+            exception = e;
+            var isHandled = false;
+            context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, _argumentMap, tuple, fact, nodeInfo, ref isHandled);
+            throw new ExpressionEvaluationException(e, _expression, isHandled);
         }
-
-        public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
+        finally
         {
-            Exception exception = null;
-            TResult result = default;
-            try
-            {
-                result = _compiledExpression(tuple);
-                return result;
-            }
-            catch (Exception e)
-            {
-                exception = e;
-                bool isHandled = false;
-                context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, _argumentMap, tuple, fact, nodeInfo, ref isHandled);
-                throw new ExpressionEvaluationException(e, _expression, isHandled);
-            }
-            finally
-            {
-                if (context.EventAggregator.TraceEnabled)
-                    context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, _argumentMap, result, tuple, fact, nodeInfo);
-            }
+            if (context.EventAggregator.TraceEnabled)
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, _argumentMap, result, tuple, fact, nodeInfo);
+        }
+    }
+}
+
+internal sealed class LhsTupleExpression<TResult> : ILhsTupleExpression<TResult>
+{
+    private readonly LambdaExpression _expression;
+    private readonly Func<Tuple?, TResult> _compiledExpression;
+    private readonly IArgumentMap _argumentMap;
+
+    public LhsTupleExpression(LambdaExpression expression, Func<Tuple?, TResult> compiledExpression, IArgumentMap argumentMap)
+    {
+        _expression = expression;
+        _compiledExpression = compiledExpression;
+        _argumentMap = argumentMap;
+    }
+
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple)
+    {
+        return Invoke(context, nodeInfo, tuple, null);
+    }
+
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple, Fact? fact)
+    {
+        Exception? exception = null;
+        TResult? result = default;
+        try
+        {
+            result = _compiledExpression(tuple);
+            return result;
+        }
+        catch (Exception e)
+        {
+            exception = e;
+            var isHandled = false;
+            context.EventAggregator.RaiseLhsExpressionFailed(context.Session, e, _expression, _argumentMap, tuple, fact, nodeInfo, ref isHandled);
+            throw new ExpressionEvaluationException(e, _expression, isHandled);
+        }
+        finally
+        {
+            if (context.EventAggregator.TraceEnabled)
+                context.EventAggregator.RaiseLhsExpressionEvaluated(context.Session, exception, _expression, _argumentMap, result, tuple, fact, nodeInfo);
         }
     }
 }

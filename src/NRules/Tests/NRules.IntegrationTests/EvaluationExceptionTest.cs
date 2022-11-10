@@ -18,18 +18,18 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
-            Expression expression = null;
-            IList<IFact> facts = null; 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
+            Expression? expression = null;
+            IList<IFact>? facts = null;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => expression = args.Expression;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => facts = args.Facts.ToList();
 
-            var fact = new FactType {TestProperty = "Valid Value" };
+            var fact = new FactType { TestProperty = "Valid Value" };
 
             //Act - Assert
             var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact));
             Assert.NotNull(expression);
-            Assert.Single(facts);
-            Assert.Same(fact, facts.First().Value);
+            Assert.Single(facts!);
+            Assert.Same(fact, facts!.First().Value);
             Assert.IsType<InvalidOperationException>(ex.InnerException);
         }
 
@@ -39,7 +39,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
             var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
@@ -57,7 +57,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
             var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
@@ -77,7 +77,7 @@ namespace NRules.IntegrationTests
         public void Fire_ConditionInsertThenFailedUpdate_DoesNotFire()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
             var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
@@ -99,7 +99,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
             var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
@@ -121,7 +121,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
             var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
@@ -144,18 +144,18 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
 
-            Expression expression = null;
-            IList<IFactMatch> facts = null;
-            Session.Events.AgendaExpressionFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.AgendaExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
+            Expression? expression = null;
+            IList<IFactMatch>? facts = null;
+            Session.Events.AgendaExpressionFailedEvent += (_, args) => expression = args.Expression;
+            Session.Events.AgendaExpressionFailedEvent += (_, args) => facts = args.Facts.ToList();
 
             var fact = new FactType { TestProperty = "Valid Value" };
 
             //Act - Assert
             var ex = Assert.Throws<AgendaExpressionEvaluationException>(() => Session.Insert(fact));
             Assert.NotNull(expression);
-            Assert.Single(facts);
-            Assert.Same(fact, facts.First().Value);
+            Assert.Single(facts!);
+            Assert.Same(fact, facts!.First().Value);
             Assert.IsType<InvalidOperationException>(ex.InnerException);
         }
 
@@ -165,7 +165,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
 
-            Session.Events.AgendaExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.AgendaExpressionFailedEvent += (_, args) => args.IsHandled = true;
             var fact = new FactType { TestProperty = "Valid Value" };
 
             //Act
@@ -182,10 +182,10 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Action = ThrowAction;
 
-            Expression expression = null;
-            IList<IFactMatch> facts = null;
-            Session.Events.RhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.RhsExpressionFailedEvent += (sender, args) => facts = args.Match.Facts.ToList();
+            Expression? expression = null;
+            IList<IFactMatch>? facts = null;
+            Session.Events.RhsExpressionFailedEvent += (_, args) => expression = args.Expression;
+            Session.Events.RhsExpressionFailedEvent += (_, args) => facts = args.Match.Facts.ToList();
 
             var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
@@ -193,8 +193,8 @@ namespace NRules.IntegrationTests
             //Act - Assert
             var ex = Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
             Assert.NotNull(expression);
-            Assert.Single(facts);
-            Assert.Same(fact, facts.First().Value);
+            Assert.Single(facts!);
+            Assert.Same(fact, facts!.First().Value);
             Assert.IsType<InvalidOperationException>(ex.InnerException);
         }
 
@@ -204,7 +204,7 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Action = ThrowAction;
 
-            Session.Events.RhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.RhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
             var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
@@ -220,10 +220,10 @@ namespace NRules.IntegrationTests
             Session.ActionInterceptor = new PassThroughActionInterceptor();
             GetRuleInstance<TestRule>().Action = ThrowAction;
 
-            Expression expression = null;
-            IList<IFactMatch> facts = null;
-            Session.Events.RhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.RhsExpressionFailedEvent += (sender, args) => facts = args.Match.Facts.ToList();
+            Expression? expression = null;
+            IList<IFactMatch>? facts = null;
+            Session.Events.RhsExpressionFailedEvent += (_, args) => expression = args.Expression;
+            Session.Events.RhsExpressionFailedEvent += (_, args) => facts = args.Match.Facts.ToList();
 
             var fact = new FactType { TestProperty = "Valid Value" };
             Session.Insert(fact);
@@ -239,28 +239,28 @@ namespace NRules.IntegrationTests
 
         private static readonly Action SuccessfulAction = () => { };
         private static readonly Action ThrowAction = () => throw new InvalidOperationException("Action failed");
-        private static readonly Func<FactType, bool> SuccessfulCondition = f => true;
-        private static readonly Func<FactType, bool> ThrowCondition = f => throw new InvalidOperationException("Condition failed");
-        private static readonly Func<FactType, bool> SuccessfulFilter = f => true;
-        private static readonly Func<FactType, bool> ThrowFilter = f => throw new InvalidOperationException("Filter failed");
+        private static readonly Func<FactType?, bool> SuccessfulCondition = _ => true;
+        private static readonly Func<FactType?, bool> ThrowCondition = _ => throw new InvalidOperationException("Condition failed");
+        private static readonly Func<FactType?, bool> SuccessfulFilter = _ => true;
+        private static readonly Func<FactType?, bool> ThrowFilter = _ => throw new InvalidOperationException("Filter failed");
 
         public class FactType
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
             public Action Action = SuccessfulAction;
-            public Func<FactType, bool> Condition = SuccessfulCondition;
-            public Func<FactType, bool> FilterCondition = SuccessfulFilter;
+            public Func<FactType?, bool> Condition = SuccessfulCondition;
+            public Func<FactType?, bool> FilterCondition = SuccessfulFilter;
 
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid") && Condition(f));
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid") && Condition(f));
 
                 Filter()
                     .Where(() => FilterCondition(fact));

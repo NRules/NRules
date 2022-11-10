@@ -70,19 +70,19 @@ namespace NRules.IntegrationTests
 
         public class FactType
         {
-            public string GroupProperty { get; set; }
-            public string TestProperty { get; set; }
+            public string? GroupProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
             public override void Define()
             {
-                FactType first = null;
+                FactType? first = null;
 
                 When()
                     .Query(() => first, q => q
-                        .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                        .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                         .GroupBy(x => x.GroupProperty)
                         .First());
                 Then()
@@ -103,7 +103,7 @@ namespace NRules.IntegrationTests
 
     internal class CustomFirstAggregatorFactory : IAggregatorFactory
     {
-        private Func<IAggregator> _factory;
+        private Func<IAggregator>? _factory;
 
         public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
         {
@@ -115,7 +115,7 @@ namespace NRules.IntegrationTests
 
         public IAggregator Create()
         {
-            return _factory();
+            return _factory!();
         }
     }
 
@@ -128,11 +128,11 @@ namespace NRules.IntegrationTests
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var collection = (IEnumerable<TElement>)fact.Value;
+                var collection = (IEnumerable<TElement>)fact.Value!;
                 foreach (var value in collection)
                 {
                     _firstElements[fact] = value;
-                    results.Add(AggregationResult.Added(value, Enumerable.Repeat(fact, 1)));
+                    results.Add(AggregationResult.Added(value!, Enumerable.Repeat(fact, 1)));
                     break;
                 }
             }
@@ -144,24 +144,24 @@ namespace NRules.IntegrationTests
             var results = new List<AggregationResult>();
             foreach (var fact in facts)
             {
-                var collection = (IEnumerable<TElement>)fact.Value;
+                var collection = (IEnumerable<TElement>)fact.Value!;
                 foreach (var value in collection)
                 {
                     if (_firstElements.TryGetValue(fact, out var oldFirst))
                     {
                         if (Equals(oldFirst, value))
                         {
-                            results.Add(AggregationResult.Modified(value, value, Enumerable.Repeat(fact, 1)));
+                            results.Add(AggregationResult.Modified(value!, value!, Enumerable.Repeat(fact, 1)));
                         }
                         else
                         {
-                            results.Add(AggregationResult.Removed(oldFirst));
-                            results.Add(AggregationResult.Added(value, Enumerable.Repeat(fact, 1)));
+                            results.Add(AggregationResult.Removed(oldFirst!));
+                            results.Add(AggregationResult.Added(value!, Enumerable.Repeat(fact, 1)));
                         }
                     }
                     else
                     {
-                        results.Add(AggregationResult.Added(value, Enumerable.Repeat(fact, 1)));
+                        results.Add(AggregationResult.Added(value!, Enumerable.Repeat(fact, 1)));
                     }
                     _firstElements[fact] = value;
                     break;
@@ -177,7 +177,7 @@ namespace NRules.IntegrationTests
             {
                 if (_firstElements.TryGetValue(fact, out var oldFirst))
                 {
-                    results.Add(AggregationResult.Removed(oldFirst));
+                    results.Add(AggregationResult.Removed(oldFirst!));
                     _firstElements.Remove(fact);
                 }
             }

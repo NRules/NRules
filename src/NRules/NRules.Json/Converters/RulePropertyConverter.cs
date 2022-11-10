@@ -4,29 +4,41 @@ using System.Text.Json.Serialization;
 using NRules.Json.Utilities;
 using NRules.RuleModel;
 
-namespace NRules.Json.Converters
+namespace NRules.Json.Converters;
+
+internal class RulePropertyConverter : JsonConverter<RuleProperty>
 {
-    internal class RulePropertyConverter : JsonConverter<RuleProperty>
+    public override RuleProperty Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override RuleProperty Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        reader.ReadStartObject();
+        var name = reader.ReadStringProperty(nameof(RuleProperty.Name), options);
+        if (name is null)
         {
-            reader.ReadStartObject();
-            var name = reader.ReadStringProperty(nameof(RuleProperty.Name), options);
-            var type = reader.ReadProperty<Type>("Type", options);
-            var value = reader.ReadProperty(nameof(RuleProperty.Value), type, options);
-            return new RuleProperty(name, value);
+            throw new JsonException($"Failed to read {nameof(RuleProperty.Name)} property value");
+        }
+        var type = reader.ReadProperty<Type>("Type", options);
+        if (type is null)
+        {
+            throw new JsonException("Failed to read Type property value");
         }
 
-        public override void Write(Utf8JsonWriter writer, RuleProperty value, JsonSerializerOptions options)
+        var value = reader.ReadProperty(nameof(RuleProperty.Value), type, options);
+        if (value is null)
         {
-            writer.WriteStartObject();
-            writer.WriteStringProperty(nameof(RuleProperty.Name), value.Name, options);
-
-            var type = value.Value is Type ? typeof(Type) : value.Value.GetType();
-            writer.WriteProperty("Type", type, options);
-
-            writer.WriteProperty(nameof(RuleProperty.Value), value.Value, type, options);
-            writer.WriteEndObject();
+            throw new JsonException($"Failed to read {nameof(RuleProperty.Value)} property value");
         }
+        return new RuleProperty(name, value);
+    }
+
+    public override void Write(Utf8JsonWriter writer, RuleProperty value, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        writer.WriteStringProperty(nameof(RuleProperty.Name), value.Name, options);
+
+        var type = value.Value is Type ? typeof(Type) : value.Value.GetType();
+        writer.WriteProperty("Type", type, options);
+
+        writer.WriteProperty(nameof(RuleProperty.Value), value.Value, type, options);
+        writer.WriteEndObject();
     }
 }

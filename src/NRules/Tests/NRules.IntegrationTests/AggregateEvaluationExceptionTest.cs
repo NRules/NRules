@@ -17,20 +17,19 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
-            Expression expression = null;
-            IList<IFact> facts = null;
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
+            Expression? expression = null;
+            IList<IFact>? facts = null;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => (expression, facts) = (args.Expression, args.Facts.ToList());
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact21 = new FactType2("Group1", "Valid Value 1");
 
             //Act - Assert
             var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact21));
             Assert.NotNull(expression);
-            Assert.Equal(2, facts.Count);
+            Assert.Equal(2, facts!.Count);
             Assert.Same(fact11, facts.First().Value);
             Assert.Same(fact21, facts.Skip(1).First().Value);
             Assert.IsType<InvalidOperationException>(ex.InnerException);
@@ -42,12 +41,12 @@ namespace NRules.IntegrationTests
             //Arrange
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             //Act
@@ -61,17 +60,17 @@ namespace NRules.IntegrationTests
         public void Fire_AssertThenFailedAssertForSameJoin_DoesNotFire()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
-            var fact22 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact22 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact22);
 
             //Act
@@ -85,19 +84,19 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenAssertForSameJoin_Fires()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
 
-            var fact22 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact22 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact22);
 
             //Act
@@ -113,19 +112,19 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenAssertForSameJoinThenUpdate_Fires()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
 
-            var fact22 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact22 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact22);
 
             Session.Update(fact21);
@@ -143,20 +142,20 @@ namespace NRules.IntegrationTests
         public void Fire_AssertThenFailedAssertForDifferentJoin_FiresForSuccessfulJoin()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
-            var fact12 = new FactType1 { TestProperty = "Valid Value 2" };
+            var fact12 = new FactType1("Valid Value 2");
             Session.Insert(fact12);
 
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
-            var fact22 = new FactType2 { GroupProperty = "Group2", JoinProperty = "Valid Value 2" };
+            var fact22 = new FactType2("Group2", "Valid Value 2");
             Session.Insert(fact22);
 
             //Act
@@ -171,22 +170,22 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenAssertForDifferentJoin_FiresForSuccessfulJoin()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
-            var fact12 = new FactType1 { TestProperty = "Valid Value 2" };
+            var fact12 = new FactType1("Valid Value 2");
             Session.Insert(fact12);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
 
-            var fact22 = new FactType2 { GroupProperty = "Group2", JoinProperty = "Valid Value 2" };
+            var fact22 = new FactType2("Group2", "Valid Value 2");
             Session.Insert(fact22);
 
             //Act
@@ -201,12 +200,12 @@ namespace NRules.IntegrationTests
         public void Fire_AssertThenFailedUpdate_DoesNotFire()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
@@ -223,12 +222,12 @@ namespace NRules.IntegrationTests
         public void Fire_AssertThenFailedUpdateThenUpdate_Fires()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
@@ -248,18 +247,18 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenUpdate_Fires()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-            
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-            
+
             Session.Update(fact21);
 
             //Act
@@ -273,21 +272,21 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenUpdateJoin_Fires()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
-            var fact22 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+            var fact22 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact22);
 
             GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-            
+
             Session.Update(fact11);
 
             //Act
@@ -303,18 +302,18 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenUpdateThenRetract_DoesNotFire()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-            
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-            
+
             Session.Update(fact21);
             Session.Retract(fact21);
 
@@ -329,18 +328,18 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenRetract_DoesNotFire()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-            
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-            
+
             Session.Retract(fact21);
 
             //Act
@@ -354,18 +353,18 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssertThenRetractJoined_DoesNotFire()
         {
             //Arrange
-            Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
+            Session.Events.LhsExpressionFailedEvent += (_, args) => args.IsHandled = true;
 
-            var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType1("Valid Value 1");
             Session.Insert(fact11);
 
             GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-            
-            var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
+
+            var fact21 = new FactType2("Group1", "Valid Value 1");
             Session.Insert(fact21);
 
             GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-            
+
             Session.Retract(fact11);
 
             //Act
@@ -381,17 +380,27 @@ namespace NRules.IntegrationTests
         }
 
         private static readonly Func<FactType2, object> SuccessfulGrouping = x => x.GroupProperty;
-        private static readonly Func<FactType2, object> ThrowGrouping = x => throw new InvalidOperationException("Grouping failed");
+        private static readonly Func<FactType2, object> ThrowGrouping = _ => throw new InvalidOperationException("Grouping failed");
 
         public class FactType1
         {
-            public string TestProperty { get; set; }
-        }
+            public FactType1(string testProperty)
+            {
+                TestProperty = testProperty;
+            }
 
+            public string TestProperty { get; }
+        }
         public class FactType2
         {
-            public string JoinProperty { get; set; }
-            public string GroupProperty { get; set; }
+            public FactType2(string groupProperty, string joinProperty)
+            {
+                GroupProperty = groupProperty;
+                JoinProperty = joinProperty;
+            }
+
+            public string GroupProperty { get; }
+            public string JoinProperty { get; }
         }
 
         public class TestRule : Rule
@@ -400,8 +409,8 @@ namespace NRules.IntegrationTests
 
             public override void Define()
             {
-                FactType1 fact1 = null;
-                IEnumerable<FactType2> fact2Group = null;
+                FactType1 fact1 = null!;
+                IEnumerable<FactType2> fact2Group = null!;
 
                 When()
                     .Match(() => fact1)

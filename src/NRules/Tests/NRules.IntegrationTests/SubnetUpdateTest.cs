@@ -18,14 +18,14 @@ namespace NRules.IntegrationTests
             var fact21 = new FactType2();
             var fact22 = new FactType2();
 
-            Session.InsertAll(new[] {fact11, fact12});
-            Session.InsertAll(new[] {fact21, fact22});
+            Session.InsertAll(new[] { fact11, fact12 });
+            Session.InsertAll(new[] { fact21, fact22 });
 
-            int evaluations = 0;
-            Session.Events.LhsExpressionEvaluatedEvent += (sender, args) => evaluations++;
+            var evaluations = 0;
+            Session.Events.LhsExpressionEvaluatedEvent += (_, _) => evaluations++;
 
             //Act
-            Session.UpdateAll(new []{fact11, fact12});
+            Session.UpdateAll(new[] { fact11, fact12 });
             Session.Fire();
 
             //Assert
@@ -48,12 +48,12 @@ namespace NRules.IntegrationTests
 
         public class TestRule : Rule
         {
-            public Action<IContext> Action = ctx => { };
+            public Action<IContext> Action = _ => { };
 
             public override void Define()
             {
-                FactType1 fact = null;
-                IEnumerable<FactType2> collection = null;
+                FactType1? fact = null;
+                IEnumerable<FactType2>? collection = null;
 
                 When()
                     .Match(() => fact)
@@ -78,7 +78,7 @@ namespace NRules.IntegrationTests
                 return facts;
             }
 
-            private IEnumerable<FactType2> TransformWithJoin(IEnumerable<FactType2> facts, FactType1 fact)
+            private IEnumerable<FactType2> TransformWithJoin(IEnumerable<FactType2> facts, FactType1? fact)
             {
                 return facts;
             }

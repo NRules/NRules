@@ -12,11 +12,11 @@ namespace NRules.IntegrationTests
         public void FromComplex_JoinedWithKeyAndFactsFiltered_FiresForEachGroup()
         {
             // Arrange
-            var values = new[] {"a", "b", "b", "a"};
-            var keys = new[] {1, 1, 2, 2};
-            var facts = values.Zip(keys, (v, k) => new Fact {Key = k, Value = v});
+            var values = new[] { "a", "b", "b", "a" };
+            var keys = new[] { 1, 1, 2, 2 };
+            var facts = values.Zip(keys, (v, k) => new Fact { Key = k, Value = v });
 
-            var key = new Key {Value = 1};
+            var key = new Key { Value = 1 };
 
             Session.Insert(key);
             Session.InsertAll(facts);
@@ -32,11 +32,11 @@ namespace NRules.IntegrationTests
         public void FromComplex_JoinedWithKeyAndFactsFiltered_NoMatches_DoesNotFire()
         {
             // Arrange
-            var values = new[] {"a", "b", "b", "a"};
-            var keys = new[] {1, 1, 2, 2};
-            var facts = values.Zip(keys, (v, k) => new Fact {Key = k, Value = v});
+            var values = new[] { "a", "b", "b", "a" };
+            var keys = new[] { 1, 1, 2, 2 };
+            var facts = values.Zip(keys, (v, k) => new Fact { Key = k, Value = v });
 
-            var key = new Key {Value = 3};
+            var key = new Key { Value = 3 };
 
             Session.Insert(key);
             Session.InsertAll(facts);
@@ -56,7 +56,7 @@ namespace NRules.IntegrationTests
         public class Fact
         {
             public int Key { get; set; }
-            public string Value { get; set; }
+            public string? Value { get; set; }
         }
 
         public class Key
@@ -68,9 +68,9 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                IEnumerable<Fact> factsAll = null;
-                Key key = null;
-                IGrouping<string, Fact> factsFilteredGrouped = null;
+                IEnumerable<Fact>? factsAll = null;
+                Key? key = null;
+                IGrouping<string, Fact>? factsFilteredGrouped = null;
 
                 When()
                     .Query(() => factsAll, q => q
@@ -79,7 +79,7 @@ namespace NRules.IntegrationTests
                         .Where(c => c.Any()))
                     .Match(() => key)
                     .Query(() => factsFilteredGrouped, q => q
-                        .From(() => factsAll.Where(f => f.Key == key.Value))
+                        .From(() => factsAll!.Where(f => f.Key == key!.Value))
                         .SelectMany(c => c)
                         .GroupBy(f => f.Value));
 

@@ -12,8 +12,8 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactsAndOneInvalid_FiresOnceWithValidFact()
         {
             //Arrange
-            var fact1 = new FactType(1) { TestProperty = "Invalid Value 1", ValueProperty = "Original 1"};
-            var fact2 = new FactType(2) { TestProperty = "Valid Value 2", ValueProperty = "Original 2"};
+            var fact1 = new FactType(1) { TestProperty = "Invalid Value 1", ValueProperty = "Original 1" };
+            var fact2 = new FactType(2) { TestProperty = "Valid Value 2", ValueProperty = "Original 2" };
 
             var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
@@ -27,12 +27,12 @@ namespace NRules.IntegrationTests
             Assert.Equal(2, firedFact.Id);
             Assert.Equal("Original 2", firedFact.ValueProperty);
         }
-        
+
         [Fact]
         public void Fire_NoValidFacts_FiresOnceWithDefault()
         {
             //Arrange
-            var fact1 = new FactType(1) { TestProperty = "Invalid Value 1", ValueProperty = "Original 1"};
+            var fact1 = new FactType(1) { TestProperty = "Invalid Value 1", ValueProperty = "Original 1" };
 
             var facts = new[] { fact1 };
             Session.InsertAll(facts);
@@ -46,12 +46,12 @@ namespace NRules.IntegrationTests
             Assert.Equal(0, firedFact.Id);
             Assert.Null(firedFact.ValueProperty);
         }
-        
+
         [Fact]
         public void Fire_NoValidFactsUpdatedToValid_FiresOnceWithValidFact()
         {
             //Arrange
-            var fact1 = new FactType(1) { TestProperty = "Invalid Value 1", ValueProperty = "Original 1"};
+            var fact1 = new FactType(1) { TestProperty = "Invalid Value 1", ValueProperty = "Original 1" };
 
             var facts = new[] { fact1 };
             Session.InsertAll(facts);
@@ -68,14 +68,14 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, firedFact.Id);
             Assert.Equal("Original 1", firedFact.ValueProperty);
         }
-        
+
         [Fact]
         public void Fire_ValidFactInsertedThenUpdated_FiresOnceWithUpdatedValue()
         {
             //Arrange
-            var fact1 = new FactType(1) { TestProperty = "Valid Value 1", ValueProperty = "Original 1"};
+            var fact1 = new FactType(1) { TestProperty = "Valid Value 1", ValueProperty = "Original 1" };
 
-            var facts = new[] {fact1};
+            var facts = new[] { fact1 };
             Session.InsertAll(facts);
 
             var fact11 = new FactType(1) { TestProperty = "Valid Value 1", ValueProperty = "Updated 1" };
@@ -90,15 +90,15 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, firedFact.Id);
             Assert.Equal("Updated 1", firedFact.ValueProperty);
         }
-                
+
         [Fact]
         public void Fire_TwoValidFactsInsertedThenUpdated_FiresOnceThenFiresOnceAgain()
         {
             //Arrange
-            var fact1 = new FactType(1) { TestProperty = "Valid Value 1"};
-            var fact2 = new FactType(2) { TestProperty = "Valid Value 2"};
+            var fact1 = new FactType(1) { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType(2) { TestProperty = "Valid Value 2" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             //Act - 1
@@ -128,21 +128,26 @@ namespace NRules.IntegrationTests
             }
 
             public int Id { get; }
-            public string TestProperty { get; set; }
-            public string ValueProperty { get; set; }
+            public string? TestProperty { get; set; }
+            public string? ValueProperty { get; set; }
 
-            public bool Equals(FactType other)
+            public bool Equals(FactType? other)
             {
-                if (ReferenceEquals(null, other)) return false;
-                if (ReferenceEquals(this, other)) return true;
+                if (ReferenceEquals(null, other))
+                    return false;
+                if (ReferenceEquals(this, other))
+                    return true;
                 return Id == other.Id;
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
+                if (ReferenceEquals(null, obj))
+                    return false;
+                if (ReferenceEquals(this, obj))
+                    return true;
+                if (obj.GetType() != this.GetType())
+                    return false;
                 return Equals((FactType)obj);
             }
 
@@ -156,11 +161,11 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
                     .Query(() => fact, q => q
-                        .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                        .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                         .Collect()
                         .Select(x => x.OrderBy(f => f.Id).FirstOrDefault() ?? new FactType(0)));
                 Then()

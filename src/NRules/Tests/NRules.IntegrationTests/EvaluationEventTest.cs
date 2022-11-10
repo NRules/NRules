@@ -18,7 +18,7 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<LhsExpressionEventArgs>();
-            factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
+            factory.Events.LhsExpressionEvaluatedEvent += (_, args) =>
             {
                 handledEvents.Add(args);
             };
@@ -36,7 +36,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(true, eventArgs.Result);
             Assert.Null(eventArgs.Exception);
         }
-        
+
         [Fact]
         public void Insert_Fact_RaisesAlphaConditionExpressionEvalEventWithException()
         {
@@ -45,7 +45,7 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<LhsExpressionEventArgs>();
-            factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
+            factory.Events.LhsExpressionEvaluatedEvent += (_, args) =>
             {
                 handledEvents.Add(args);
             };
@@ -61,7 +61,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(false, eventArgs.Result);
             Assert.Same(ex.InnerException, eventArgs.Exception);
         }
-        
+
         [Fact]
         public void Insert_Fact_RaisesBetaConditionExpressionEvalEvent()
         {
@@ -70,13 +70,13 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<LhsExpressionEventArgs>();
-            factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
+            factory.Events.LhsExpressionEvaluatedEvent += (_, args) =>
             {
                 handledEvents.Add(args);
             };
 
             var fact1 = new FactType1 { TestProperty = "Valid Value" };
-            var fact2 = new FactType2 { JoinProperty = "Invalid Value", SelectProperty = "12345"};
+            var fact2 = new FactType2 { JoinProperty = "Invalid Value", SelectProperty = "12345" };
 
             //Act
             session.Insert(fact1);
@@ -90,7 +90,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(false, eventArgs.Result);
             Assert.Null(eventArgs.Exception);
         }
-        
+
         [Fact]
         public void Insert_Fact_RaisesAggregateExpressionEvalEvent()
         {
@@ -99,13 +99,13 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<LhsExpressionEventArgs>();
-            factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
+            factory.Events.LhsExpressionEvaluatedEvent += (_, args) =>
             {
                 handledEvents.Add(args);
             };
 
             var fact1 = new FactType1 { TestProperty = "Valid Value" };
-            var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "12345"};
+            var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "12345" };
 
             //Act
             session.Insert(fact1);
@@ -119,7 +119,7 @@ namespace NRules.IntegrationTests
             Assert.Equal("12345", eventArgs.Result);
             Assert.Null(eventArgs.Exception);
         }
-        
+
         [Fact]
         public void Insert_Fact_RaisesBindingExpressionEvalEvent()
         {
@@ -128,13 +128,13 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<LhsExpressionEventArgs>();
-            factory.Events.LhsExpressionEvaluatedEvent += (sender, args) =>
+            factory.Events.LhsExpressionEvaluatedEvent += (_, args) =>
             {
                 handledEvents.Add(args);
             };
 
             var fact1 = new FactType1 { TestProperty = "Valid Value" };
-            var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "12345"};
+            var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "12345" };
 
             //Act
             session.Insert(fact1);
@@ -148,7 +148,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(5, eventArgs.Result);
             Assert.Null(eventArgs.Exception);
         }
-        
+
         [Fact]
         public void Insert_Fact_RaisesFilterExpressionEvalEvent()
         {
@@ -157,13 +157,13 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<AgendaExpressionEventArgs>();
-            factory.Events.AgendaExpressionEvaluatedEvent += (sender, args) =>
+            factory.Events.AgendaExpressionEvaluatedEvent += (_, args) =>
             {
                 handledEvents.Add(args);
             };
 
             var fact1 = new FactType1 { TestProperty = "Valid Value" };
-            var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "123456"};
+            var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "123456" };
 
             //Act
             session.Insert(fact1);
@@ -188,13 +188,13 @@ namespace NRules.IntegrationTests
             var session = factory.CreateSession();
 
             var handledEvents = new List<RhsExpressionEventArgs>();
-            factory.Events.RhsExpressionEvaluatedEvent += (sender, args) =>
+            factory.Events.RhsExpressionEvaluatedEvent += (_, args) =>
             {
                 handledEvents.Add(args);
             };
 
             var fact1 = new FactType1 { TestProperty = "Valid Value" };
-            var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "1234567890A"};
+            var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "1234567890A" };
 
             //Act
             session.Insert(fact1);
@@ -221,13 +221,13 @@ namespace NRules.IntegrationTests
 
         public class FactType1
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class FactType2
         {
-            public string JoinProperty { get; set; }
-            public string SelectProperty { get; set; }
+            public string? JoinProperty { get; set; }
+            public string? SelectProperty { get; set; }
         }
 
         [Name("Test Rule")]
@@ -235,18 +235,18 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType1 fact = null;
-                string value = null;
-                int length = 0;
+                FactType1? fact = null;
+                string? value = null;
+                var length = 0;
 
                 When()
-                    .Match<FactType1>(() => fact,
-                        f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact,
+                        f => f!.TestProperty!.StartsWith("Valid"))
                     .Query(() => value, q => q
                         .Match<FactType2>(
-                            f => f.JoinProperty == fact.TestProperty)
+                            f => f.JoinProperty == fact!.TestProperty)
                         .Select(x => x.SelectProperty))
-                    .Let(() => length, () => value.Length)
+                    .Let(() => length, () => value!.Length)
                     .Having(() => length > 5);
 
                 Filter()
@@ -256,7 +256,7 @@ namespace NRules.IntegrationTests
                     .Do(ctx => NoOp(fact, value));
             }
 
-            private void NoOp(FactType1 fact, string value)
+            private void NoOp(FactType1? fact, string? value)
             {
             }
         }

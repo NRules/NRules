@@ -21,13 +21,13 @@ namespace NRules.IntegrationTests.TestAssets
             _firedRulesMap = new Dictionary<string, List<AgendaEventArgs>>();
             _ruleMap = new Dictionary<Type, IRuleMetadata>();
 
-            Repository = new RuleRepository {Activator = new InstanceActivator()};
+            Repository = new RuleRepository { Activator = new InstanceActivator() };
 
             SetUpRules();
 
-            ISessionFactory factory = Compile();
+            var factory = Compile();
             Session = factory.CreateSession();
-            Session.Events.RuleFiredEvent += (sender, args) => _firedRulesMap[args.Rule.Name].Add(args);
+            Session.Events.RuleFiredEvent += (_, args) => _firedRulesMap[args.Rule.Name].Add(args);
         }
 
         protected virtual ISessionFactory Compile()
@@ -38,15 +38,15 @@ namespace NRules.IntegrationTests.TestAssets
 
         protected abstract void SetUpRules();
 
-        protected void SetUpRule<T>() where T : Rule, new()
+        protected void SetUpRule<T>() where T : Rule
         {
-            var metadata = new RuleMetadata(typeof (T));
-            _ruleMap[typeof (T)] = metadata;
+            var metadata = new RuleMetadata(typeof(T));
+            _ruleMap[typeof(T)] = metadata;
             _firedRulesMap[metadata.Name] = new List<AgendaEventArgs>();
             Repository.Load(x => x
                 .PrivateTypes()
                 .NestedTypes()
-                .From(typeof (T)));
+                .From(typeof(T)));
         }
 
         protected T GetRuleInstance<T>() where T : Rule
@@ -57,19 +57,19 @@ namespace NRules.IntegrationTests.TestAssets
         protected IEnumerable<T> GetFiredFacts<T>()
         {
             var ruleFiring = GetLastRuleFiring();
-            return GetFacts<T>(ruleFiring, allowEmpty: true).Select(f => (T) f.Value);
+            return GetFacts<T>(ruleFiring, allowEmpty: true).Select(f => (T)f.Value!);
         }
 
         protected T GetFiredFact<T>()
         {
             var ruleFiring = GetLastRuleFiring();
-            return (T)GetFacts<T>(ruleFiring).First().Value;
+            return (T)GetFacts<T>(ruleFiring).First().Value!;
         }
 
         protected T GetFiredFact<T>(int instanceNumber)
         {
             var ruleFiring = GetRuleFiring(instanceNumber);
-            return (T)GetFacts<T>(ruleFiring).First().Value;
+            return (T)GetFacts<T>(ruleFiring).First().Value!;
         }
 
         protected void AssertFiredOnce()
@@ -110,12 +110,12 @@ namespace NRules.IntegrationTests.TestAssets
             var actual = GetRuleFirings(ruleMetadata).Count;
             AssertRuleFiredTimes(ruleMetadata.Name, expected, actual);
         }
-        
+
         protected void AssertDidNotFire<T>()
         {
             AssertFiredTimes<T>(0);
         }
-        
+
         private static void AssertRuleFiredTimes(string ruleName, int expected, int actual)
         {
             if (expected != actual)
@@ -128,7 +128,7 @@ namespace NRules.IntegrationTests.TestAssets
                 throw new ArgumentException($"Rule {typeof(T).FullName} not found");
             return ruleMetadata;
         }
-        
+
         private IRuleMetadata GetRule()
         {
             if (_ruleMap.Count == 0)
@@ -181,7 +181,7 @@ namespace NRules.IntegrationTests.TestAssets
             {
                 if (!_rules.TryGetValue(type, out var rule))
                 {
-                    rule = (Rule) Activator.CreateInstance(type);
+                    rule = (Rule)Activator.CreateInstance(type)!;
                     _rules[type] = rule;
                 }
                 yield return rule;

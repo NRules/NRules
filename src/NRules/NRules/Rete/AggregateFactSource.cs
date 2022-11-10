@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using NRules.RuleModel;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+internal class AggregateFactSource : IFactSource
 {
-    internal class AggregateFactSource : IFactSource
+    public AggregateFactSource(IEnumerable<IFact>? facts)
     {
-        private static readonly IEnumerable<IFact> Empty = Array.Empty<IFact>();
-
-        public AggregateFactSource(IEnumerable<IFact> facts)
-        {
-            Facts = facts ?? Empty;
-        }
-
-        public FactSourceType SourceType => FactSourceType.Aggregate;
-        public IEnumerable<IFact> Facts { get; }
+        Facts = facts ?? Array.Empty<IFact>();
     }
+
+    public FactSourceType SourceType => FactSourceType.Aggregate;
+    public IEnumerable<IFact> Facts { get; }
 }

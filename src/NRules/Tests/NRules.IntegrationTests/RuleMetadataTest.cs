@@ -2,7 +2,6 @@
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.RuleModel;
 using Xunit;
 
 namespace NRules.IntegrationTests
@@ -21,7 +20,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
             var actual = rule.Properties[RuleProperties.ClrType];
@@ -35,10 +34,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            string actual = rule.Name;
+            var actual = rule.Name;
 
             //Assert
             Assert.Equal("Rule with metadata", actual);
@@ -49,10 +48,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadataAndOverride)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            string actual = rule.Name;
+            var actual = rule.Name;
 
             //Assert
             Assert.Equal("Programmatic name", actual);
@@ -63,10 +62,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            string actual = rule.Description;
+            var actual = rule.Description;
 
             //Assert
             Assert.Equal("Rule description", actual);
@@ -77,10 +76,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            string[] actual = rule.Tags.ToArray();
+            var actual = rule.Tags.ToArray();
 
             //Assert
             Assert.Equal(2, actual.Length);
@@ -93,10 +92,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            int actual = rule.Priority;
+            var actual = rule.Priority;
 
             //Assert
             Assert.Equal(100, actual);
@@ -107,10 +106,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadataAndParentMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            string[] actual = rule.Tags.ToArray();
+            var actual = rule.Tags.ToArray();
 
             //Assert
             Assert.Equal(4, actual.Length);
@@ -125,10 +124,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadataAndParentMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            int actual = rule.Priority;
+            var actual = rule.Priority;
 
             //Assert
             Assert.Equal(200, actual);
@@ -139,10 +138,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadataAndParentMetadataAndOverrides)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            int actual = rule.Priority;
+            var actual = rule.Priority;
 
             //Assert
             Assert.Equal(500, actual);
@@ -153,10 +152,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithMetadataAndOverride)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            int actual = rule.Priority;
+            var actual = rule.Priority;
 
             //Assert
             Assert.Equal(1000, actual);
@@ -167,10 +166,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithoutMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            string actual = rule.Name;
+            var actual = rule.Name;
 
             //Assert
             Assert.Equal(typeof(RuleWithoutMetadata).FullName, actual);
@@ -181,10 +180,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithoutMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            string actual = rule.Description;
+            var actual = rule.Description;
 
             //Assert
             Assert.Equal(string.Empty, actual);
@@ -195,10 +194,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithoutMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            string[] actual = rule.Tags.ToArray();
+            var actual = rule.Tags.ToArray();
 
             //Assert
             Assert.Empty(actual);
@@ -209,10 +208,10 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             _repository.Load(x => x.NestedTypes().From(typeof(RuleWithoutMetadata)));
-            IRuleDefinition rule = _repository.GetRules().Single();
+            var rule = _repository.GetRules().Single();
 
             //Act
-            int actual = rule.Priority;
+            var actual = rule.Priority;
 
             //Assert
             Assert.Equal(0, actual);
@@ -220,17 +219,17 @@ namespace NRules.IntegrationTests
 
         public class FactType
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class RuleWithoutMetadata : Rule
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }
@@ -249,10 +248,10 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }
@@ -264,13 +263,13 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 Name("Programmatic name");
                 Priority(1000);
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }
@@ -282,10 +281,10 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }
@@ -298,10 +297,10 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType fact = null;
+                FactType? fact = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }

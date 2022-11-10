@@ -2,29 +2,22 @@
 using System.Linq;
 using NRules.RuleModel;
 
-namespace NRules.Fluent.Expressions
+namespace NRules.Fluent.Expressions;
+
+internal class SymbolTable
 {
-    internal class SymbolTable
+    private readonly HashSet<Declaration> _declarations = new();
+    private readonly SymbolTable? _parentScope;
+
+    internal SymbolTable(SymbolTable? parentScope = null)
     {
-        private readonly HashSet<Declaration> _declarations;
-        private readonly SymbolTable _parentScope;
+        _parentScope = parentScope;
+    }
 
-        internal SymbolTable()
-        {
-            _declarations = new HashSet<Declaration>();
-        }
+    public IEnumerable<Declaration> Declarations => _parentScope?.Declarations.Union(_declarations) ?? _declarations;
 
-        internal SymbolTable(SymbolTable parentScope)
-            : this()
-        {
-            _parentScope = parentScope;
-        }
-
-        public IEnumerable<Declaration> Declarations => _parentScope?.Declarations.Union(_declarations) ?? _declarations;
-
-        public void Add(Declaration declaration)
-        {
-            _declarations.Add(declaration);
-        }
+    public void Add(Declaration declaration)
+    {
+        _declarations.Add(declaration);
     }
 }

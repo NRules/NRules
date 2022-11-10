@@ -18,15 +18,15 @@ namespace NRules.IntegrationTests
             AssertFiredOnce();
             Assert.Empty(GetFiredFact<ILookup<long, string>>());
         }
-        
+
         [Fact]
         public void Fire_TwoFactsForOneGroup_FiresOnceWithFactsInOneGroup()
         {
             //Arrange
-            var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
+            var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             //Act
@@ -42,13 +42,13 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsForOneGroupAndThreeForAnother_FiresOnceWithFactsInCorrectGroups()
         {
             //Arrange
-            var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-            var fact4 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-            var fact5 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+            var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+            var fact4 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+            var fact5 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-            var facts = new[] {fact1, fact2, fact3, fact4, fact5};
+            var facts = new[] { fact1, fact2, fact3, fact4, fact5 };
             Session.InsertAll(facts);
 
             //Act
@@ -65,13 +65,13 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsForOneGroupAndThreeForAnotherOneRetracted_FiresOnceWithTwoFactsInEachGroup()
         {
             //Arrange
-            var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-            var fact4 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-            var fact5 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+            var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+            var fact4 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+            var fact5 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-            var facts = new[] {fact1, fact2, fact3, fact4, fact5};
+            var facts = new[] { fact1, fact2, fact3, fact4, fact5 };
             Session.InsertAll(facts);
 
             Session.Retract(fact4);
@@ -90,11 +90,11 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsForOneGroupAndOneForAnotherOneUpdatedToInvalid_FiresOnceWithTwoFactsInOneGroup()
         {
             //Arrange
-            var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+            var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-            var facts = new[] {fact1, fact2, fact3};
+            var facts = new[] { fact1, fact2, fact3 };
             Session.InsertAll(facts);
 
             fact3.TestProperty = "Invalid Value";
@@ -113,12 +113,12 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneUpdatedToFirstGroup_FiresOnceWithThreeFactsInOneGroupAndOneInAnother()
         {
             //Arrange
-            var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-            var fact4 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+            var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+            var fact4 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-            var facts = new[] {fact1, fact2, fact3, fact4};
+            var facts = new[] { fact1, fact2, fact3, fact4 };
             Session.InsertAll(facts);
 
             fact4.GroupProperty = 1;
@@ -138,12 +138,12 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsForOneGroupAndOneForAnotherAndOneInvalidTheInvalidUpdatedToValid_FiresOnceWithTwoFactsInEachGroup()
         {
             //Arrange
-            var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-            var fact4 = new FactType {GroupProperty = 2, TestProperty = "Invalid Value"};
+            var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+            var fact4 = new FactType { GroupProperty = 2, TestProperty = "Invalid Value" };
 
-            var facts = new[] {fact1, fact2, fact3, fact4};
+            var facts = new[] { fact1, fact2, fact3, fact4 };
             Session.InsertAll(facts);
 
             fact4.TestProperty = "Valid Value";
@@ -158,23 +158,23 @@ namespace NRules.IntegrationTests
             Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
             Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[2].Count());
         }
-        
+
         [Fact]
         public void Fire_TwoFactGroupsKeyChangedGroupRemovedAndReAddedThenNewFactInserted_FiresOnceWithFactsInEachGroup()
         {
             //Arrange
-            var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact2 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-            var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+            var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact2 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+            var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-            var facts = new[] {fact1, fact2, fact3};
+            var facts = new[] { fact1, fact2, fact3 };
             Session.InsertAll(facts);
 
             fact1.GroupProperty = 2;
             fact3.GroupProperty = 1;
-            Session.UpdateAll(new object[] {fact1, fact3});
+            Session.UpdateAll(new object[] { fact1, fact3 });
 
-            var fact4 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
+            var fact4 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
             Session.Insert(fact4);
 
             //Act
@@ -191,17 +191,17 @@ namespace NRules.IntegrationTests
         public void Fire_TwoFactsOneGroupAnotherFactFilteredOut_FiresOnceAggregateHasSource()
         {
             //Arrange
-            IFact matchedGroup = null;
+            IFact? matchedGroup = null;
             Session.Events.RuleFiredEvent += (_, args) =>
             {
                 matchedGroup = args.Facts.Single();
             };
 
-            var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-            var fact3 = new FactType {GroupProperty = 2, TestProperty = "Invalid Value"};
+            var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+            var fact3 = new FactType { GroupProperty = 2, TestProperty = "Invalid Value" };
 
-            var facts = new[] {fact1, fact2, fact3};
+            var facts = new[] { fact1, fact2, fact3 };
             Session.InsertAll(facts);
 
             //Act
@@ -225,18 +225,18 @@ namespace NRules.IntegrationTests
         public class FactType
         {
             public long GroupProperty { get; set; }
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
             public override void Define()
             {
-                IKeyedLookup<long, string> lookup = null;
+                IKeyedLookup<long, string?>? lookup = null;
 
                 When()
                     .Query(() => lookup, x => x
-                        .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                        .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                         .Collect()
                         .ToLookup(f => f.GroupProperty, f => f.TestProperty));
                 Then()

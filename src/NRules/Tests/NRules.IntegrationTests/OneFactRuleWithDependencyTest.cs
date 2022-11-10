@@ -13,7 +13,7 @@ namespace NRules.IntegrationTests
         public void Fire_DefaultResolver_Throws()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
 
             //Act - Assert
@@ -26,16 +26,16 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var service1 = new TestService1();
-            bool service1Called = false;
-            service1.ServiceCalled += (sender, args) => service1Called = true;
+            var service1Called = false;
+            service1.ServiceCalled += (_, _) => service1Called = true;
 
             var service2 = new TestService2();
-            bool service2Called = false;
-            service2.ServiceCalled += (sender, args) => service2Called = true;
+            var service2Called = false;
+            service2.ServiceCalled += (_, _) => service2Called = true;
 
             Session.DependencyResolver = new TestDependencyResolver(service1, service2);
 
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
 
             //Act
@@ -55,10 +55,10 @@ namespace NRules.IntegrationTests
             var service2 = new TestService2();
             Session.DependencyResolver = new TestDependencyResolver(service1, service2);
 
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
 
-            ITestService1 resolvedService1 = null;
+            ITestService1? resolvedService1 = null;
             GetRuleInstance<TestRule>().Action = ctx =>
             {
                 resolvedService1 = ctx.Resolve<ITestService1>();
@@ -79,14 +79,14 @@ namespace NRules.IntegrationTests
 
         public interface ITestService1
         {
-            void Action(string value);
+            void Action(string? value);
         }
 
         private class TestService1 : ITestService1
         {
-            public event EventHandler ServiceCalled;
+            public event EventHandler? ServiceCalled;
 
-            public void Action(string value)
+            public void Action(string? value)
             {
                 ServiceCalled?.Invoke(this, EventArgs.Empty);
             }
@@ -94,14 +94,14 @@ namespace NRules.IntegrationTests
 
         public interface ITestService2
         {
-            void Action(string value);
+            void Action(string? value);
         }
 
         private class TestService2 : ITestService2
         {
-            public event EventHandler ServiceCalled;
+            public event EventHandler? ServiceCalled;
 
-            public void Action(string value)
+            public void Action(string? value)
             {
                 ServiceCalled?.Invoke(this, EventArgs.Empty);
             }
@@ -130,36 +130,36 @@ namespace NRules.IntegrationTests
 
         public class FactType
         {
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
-            public Action<IContext> Action = ctx => { };
+            public Action<IContext> Action = _ => { };
 
             public override void Define()
             {
-                FactType fact = null;
-                ITestService1 service1 = null;
-                ITestService2 service2 = null;
+                FactType? fact = null;
+                ITestService1? service1 = null;
+                ITestService2? service2 = null;
 
                 Dependency()
                     .Resolve(() => service1)
                     .Resolve(() => service2);
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
                     .Do(ctx => Action(ctx))
-                    .Do(ctx => service1.Action(fact.TestProperty))
-                    .Do(ctx => service2.Action(fact.TestProperty))
+                    .Do(ctx => service1!.Action(fact!.TestProperty))
+                    .Do(ctx => service2!.Action(fact!.TestProperty))
                     .Do(ctx => SomeAction(fact, service1, service2));
             }
 
-            private void SomeAction(FactType fact, ITestService1 service1, ITestService2 service2)
+            private void SomeAction(FactType? fact, ITestService1? service1, ITestService2? service2)
             {
-                service1.Action(fact.TestProperty);
-                service2.Action(fact.TestProperty);
+                service1!.Action(fact!.TestProperty);
+                service2!.Action(fact!.TestProperty);
             }
         }
     }

@@ -23,7 +23,7 @@ namespace NRules.IntegrationTests
         public void Query_OneFact_RetrievesFactFromQuery()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact1);
 
             //Act
@@ -39,7 +39,7 @@ namespace NRules.IntegrationTests
         public void Query_RuleInsertsSecondFact_TwoFactsInMemory()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact1);
             Session.Fire();
 
@@ -55,7 +55,7 @@ namespace NRules.IntegrationTests
         public void Query_QueryFactsByType_OnlyReturnsFactsOfThatType()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact1);
             Session.Fire();
 
@@ -75,29 +75,29 @@ namespace NRules.IntegrationTests
 
         public class FactType1
         {
-            public string TestProperty { get; set; }
-            public string JoinProperty { get; set; }
+            public string? TestProperty { get; set; }
+            public string? JoinProperty { get; set; }
         }
 
         public class FactType2
         {
-            public string TestProperty { get; set; }
-            public string JoinProperty { get; set; }
+            public string? TestProperty { get; set; }
+            public string? JoinProperty { get; set; }
         }
 
         public class TestRule : Rule
         {
             public override void Define()
             {
-                FactType1 fact1 = null;
+                FactType1? fact1 = null;
 
                 When()
-                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
-                    .Do(ctx => ctx.Insert(new FactType2()
+                    .Do(ctx => ctx.Insert(new FactType2
                     {
-                        TestProperty = fact1.JoinProperty,
-                        JoinProperty = fact1.TestProperty
+                        TestProperty = fact1!.JoinProperty,
+                        JoinProperty = fact1!.TestProperty
                     }));
             }
         }

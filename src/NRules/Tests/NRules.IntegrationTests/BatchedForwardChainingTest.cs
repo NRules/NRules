@@ -38,7 +38,7 @@ namespace NRules.IntegrationTests
             //Arrange
             var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
             var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-            Session.InsertAll(new []{fact11, fact12});
+            Session.InsertAll(new[] { fact11, fact12 });
 
             //Act
             Session.Fire();
@@ -60,8 +60,8 @@ namespace NRules.IntegrationTests
             //Arrange
             var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
             var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-            Session.InsertAll(new []{fact11, fact12});
-            Session.UpdateAll(new []{fact11, fact12});
+            Session.InsertAll(new[] { fact11, fact12 });
+            Session.UpdateAll(new[] { fact11, fact12 });
 
             //Act
             Session.Fire();
@@ -89,7 +89,7 @@ namespace NRules.IntegrationTests
             var fact17 = new FactType1 { TestProperty = "Valid Value 7", ChainProperty = "Valid Value 7" };
             var fact18 = new FactType1 { TestProperty = "Valid Value 8", ChainProperty = "Valid Value 8" };
             var fact19 = new FactType1 { TestProperty = "Valid Value 9", ChainProperty = "Valid Value 9" };
-            Session.InsertAll(new []{fact11, fact12, fact13, fact14, fact15, fact16, fact17, fact18, fact19});
+            Session.InsertAll(new[] { fact11, fact12, fact13, fact14, fact15, fact16, fact17, fact18, fact19 });
 
             Session.Fire();
             Session.PropagateLinked();
@@ -134,9 +134,9 @@ namespace NRules.IntegrationTests
             //Arrange
             var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
             var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-            Session.InsertAll(new []{fact11, fact12});
-            Session.UpdateAll(new []{fact11, fact12});
-            Session.RetractAll(new []{fact11, fact12});
+            Session.InsertAll(new[] { fact11, fact12 });
+            Session.UpdateAll(new[] { fact11, fact12 });
+            Session.RetractAll(new[] { fact11, fact12 });
 
             //Act
             Session.Fire();
@@ -156,7 +156,7 @@ namespace NRules.IntegrationTests
             //Arrange
             var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
             var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-            Session.InsertAll(new []{fact11, fact12});
+            Session.InsertAll(new[] { fact11, fact12 });
 
             Session.Fire();
             Session.PropagateLinked();
@@ -165,7 +165,7 @@ namespace NRules.IntegrationTests
 
             fact11.ChainProperty = "Invalid Value 1";
             fact12.ChainProperty = "Invalid Value 1";
-            Session.UpdateAll(new []{fact11, fact12});
+            Session.UpdateAll(new[] { fact11, fact12 });
 
             //Act
             Session.Fire();
@@ -186,7 +186,7 @@ namespace NRules.IntegrationTests
             //Arrange
             var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
             var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-            Session.InsertAll(new []{fact11, fact12});
+            Session.InsertAll(new[] { fact11, fact12 });
 
             Session.Fire();
             Session.PropagateLinked();
@@ -195,7 +195,7 @@ namespace NRules.IntegrationTests
 
             fact11.TestProperty = "Invalid Value 1";
             fact12.TestProperty = "Invalid Value 1";
-            Session.UpdateAll(new []{fact11, fact12});
+            Session.UpdateAll(new[] { fact11, fact12 });
 
             //Act
             Session.Fire();
@@ -213,7 +213,7 @@ namespace NRules.IntegrationTests
             //Arrange
             var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
             var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-            Session.InsertAll(new []{fact11, fact12});
+            Session.InsertAll(new[] { fact11, fact12 });
 
             Session.Fire();
             Session.PropagateLinked();
@@ -222,7 +222,7 @@ namespace NRules.IntegrationTests
 
             fact11.ChainProperty = "Throw";
             fact12.ChainProperty = "Throw";
-            Session.UpdateAll(new []{fact11, fact12});
+            Session.UpdateAll(new[] { fact11, fact12 });
 
             //Act
             Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
@@ -245,16 +245,16 @@ namespace NRules.IntegrationTests
 
             var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
             var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-            Session.InsertAll(new []{fact11, fact12});
+            Session.InsertAll(new[] { fact11, fact12 });
 
             Session.Fire();
 
             fact11.ChainProperty = "Throw";
             fact12.ChainProperty = "Throw";
-            Session.UpdateAll(new []{fact11, fact12});
+            Session.UpdateAll(new[] { fact11, fact12 });
 
-            int retracted = 0;
-            Session.Events.FactRetractedEvent += (sender, args) => retracted++;
+            var retracted = 0;
+            Session.Events.FactRetractedEvent += (_, _) => retracted++;
 
             //Act
             Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
@@ -274,33 +274,33 @@ namespace NRules.IntegrationTests
 
         public class FactType1
         {
-            public string TestProperty { get; set; }
-            public string ChainProperty { get; set; }
+            public string? TestProperty { get; set; }
+            public string? ChainProperty { get; set; }
         }
 
         public class FactType2
         {
             public int UpdateCount { get; set; } = 1;
-            public string TestProperty { get; set; }
+            public string? TestProperty { get; set; }
         }
 
         public class ForwardChainingFirstRule : Rule
         {
             public override void Define()
             {
-                FactType1 fact1 = null;
+                FactType1? fact1 = null;
 
                 When()
-                    .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
                     //.Yield(ctx => Create(fact1), (ctx, fact2) => Update(fact1, fact2))
                     .Do(ctx => YieldIfValid(ctx, fact1));
             }
 
-            private void YieldIfValid(IContext ctx, FactType1 fact1)
+            private void YieldIfValid(IContext ctx, FactType1? fact1)
             {
-                var fact2 = (FactType2)ctx.GetLinked("key");
-                if (fact1.ChainProperty.StartsWith("Valid"))
+                var fact2 = (FactType2?)ctx.GetLinked("key");
+                if (fact1!.ChainProperty!.StartsWith("Valid"))
                 {
                     if (fact2 == null)
                         ctx.InsertLinked("key", Create(fact1));
@@ -318,7 +318,7 @@ namespace NRules.IntegrationTests
 
             private static FactType2 Create(FactType1 fact1)
             {
-                var fact2 = new FactType2 {TestProperty = fact1.ChainProperty};
+                var fact2 = new FactType2 { TestProperty = fact1.ChainProperty };
                 return fact2;
             }
 
@@ -334,10 +334,10 @@ namespace NRules.IntegrationTests
         {
             public override void Define()
             {
-                FactType2 fact2 = null;
+                FactType2? fact2 = null;
 
                 When()
-                    .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }

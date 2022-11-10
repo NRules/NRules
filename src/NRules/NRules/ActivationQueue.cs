@@ -1,62 +1,61 @@
 ﻿using NRules.Collections;
 using NRules.Utilities;
 
-namespace NRules
+namespace NRules;
+
+internal class ActivationQueue
 {
-    internal class ActivationQueue
+    private readonly IPriorityQueue<int, Activation> _queue = new OrderedPriorityQueue<int, Activation>();
+
+    public void Enqueue(int priority, Activation activation)
     {
-        private readonly IPriorityQueue<int, Activation> _queue = new OrderedPriorityQueue<int, Activation>();
-
-        public void Enqueue(int priority, Activation activation)
+        if (!activation.IsEnqueued)
         {
-            if (!activation.IsEnqueued)
-            {
-                activation.IsEnqueued = true;
-                _queue.Enqueue(priority, activation);
-            }
+            activation.IsEnqueued = true;
+            _queue.Enqueue(priority, activation);
         }
+    }
 
-        public Activation Peek()
+    public Activation Peek()
+    {
+        var activation = _queue.Peek();
+        return activation;
+    }
+
+    public Activation Dequeue()
+    {
+        var activation = _queue.Dequeue();
+        activation.IsEnqueued = false;
+        return activation;
+    }
+
+    public void Remove(Activation activation)
+    {
+        activation.IsEnqueued = false;
+    }
+
+    public bool HasActive()
+    {
+        PurgeQueue();
+        return !_queue.IsEmpty;
+    }
+
+    private void PurgeQueue()
+    {
+        while (!_queue.IsEmpty)
         {
-            Activation activation = _queue.Peek();
-            return activation;
+            var current = _queue.Peek();
+            if (current.IsEnqueued && current.Trigger.Matches(current.CompiledRule.ActionTriggers)) return;
+            Dequeue();
         }
+    }
 
-        public Activation Dequeue()
+    public void Clear()
+    {
+        while (!_queue.IsEmpty)
         {
-            Activation activation = _queue.Dequeue();
-            activation.IsEnqueued = false;
-            return activation;
-        }
-
-        public void Remove(Activation activation)
-        {
-            activation.IsEnqueued = false;
-        }
-
-        public bool HasActive()
-        {
-            PurgeQueue();
-            return !_queue.IsEmpty;
-        }
-
-        private void PurgeQueue()
-        {
-            while (!_queue.IsEmpty)
-            {
-                Activation current = _queue.Peek();
-                if (current.IsEnqueued && current.Trigger.Matches(current.CompiledRule.ActionTriggers)) return;
-                Dequeue();
-            }
-        }
-
-        public void Clear()
-        {
-            while (!_queue.IsEmpty)
-            {
-                Activation activation = Dequeue();
-                activation.Clear();
-            }
+            var activation = Dequeue();
+            activation.Clear();
         }
     }
 }

@@ -2,126 +2,122 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.Collections;
 using NRules.RuleModel;
+using NRules.Utilities;
 
-namespace NRules.Aggregators
+namespace NRules.Aggregators;
+
+/// <summary>
+/// Aggregator that projects each matching fact into a collection and creates a new fact for each element in that collection.
+/// </summary>
+/// <typeparam name="TSource">Type of source element.</typeparam>
+/// <typeparam name="TResult">Type of result element.</typeparam>
+internal class FlatteningAggregator<TSource, TResult> : IAggregator
+    where TResult : notnull
 {
-    /// <summary>
-    /// Aggregator that projects each matching fact into a collection and creates a new fact for each element in that collection.
-    /// </summary>
-    /// <typeparam name="TSource">Type of source element.</typeparam>
-    /// <typeparam name="TResult">Type of result element.</typeparam>
-    internal class FlatteningAggregator<TSource, TResult> : IAggregator
+    private readonly IAggregateExpression _selector;
+    private readonly Dictionary<TResult, Counter> _referenceCounter = new();
+    private readonly Dictionary<IFact, OrderedHashSet<TResult>> _sourceToList = new();
+
+    public FlatteningAggregator(IAggregateExpression selector)
     {
-        private readonly IAggregateExpression _selector;
-        private readonly Dictionary<TResult, Counter> _referenceCounter = new();
-        private readonly Dictionary<IFact, OrderedHashSet<TResult>> _sourceToList = new();
+        _selector = selector;
+    }
 
-        public FlatteningAggregator(IAggregateExpression selector)
+    public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    {
+        var results = new List<AggregationResult>();
+        foreach (var fact in facts)
         {
-            _selector = selector;
-        }
-
-        public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
-        {
-            var results = new List<AggregationResult>();
-            foreach (var fact in facts)
+            var list = new OrderedHashSet<TResult>();
+            _sourceToList[fact] = list;
+            var value = (IEnumerable<TResult>)_selector.Invoke(context, tuple, fact);
+            foreach (var item in value)
             {
-                var list = new OrderedHashSet<TResult>();
-                _sourceToList[fact] = list;
-                var value = (IEnumerable<TResult>)_selector.Invoke(context, tuple, fact);
-                foreach (var item in value)
+                if (list.Add(item) &&
+                    AddRef(item) == 1)
                 {
-                    if (list.Add(item) &&
-                        AddRef(item) == 1)
-                    {
-                        results.Add(AggregationResult.Added(item, Enumerable.Repeat(fact, 1)));
-                    }
+                    results.Add(AggregationResult.Added(item, Enumerable.Repeat(fact, 1)));
                 }
             }
-            return results;
         }
+        return results;
+    }
 
-        public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    {
+        var results = new List<AggregationResult>();
+        foreach (var fact in facts)
         {
-            var results = new List<AggregationResult>();
-            foreach (var fact in facts)
-            {
-                var list = new OrderedHashSet<TResult>();
-                var oldList = _sourceToList[fact];
-                _sourceToList[fact] = list;
-                
-                var value = (IEnumerable<TResult>)_selector.Invoke(context, tuple, fact);
-                foreach (var item in value)
-                {
-                    list.Add(item);
-                }
+            var list = new OrderedHashSet<TResult>();
+            var oldList = _sourceToList[fact];
+            _sourceToList[fact] = list;
 
-                foreach (var item in oldList)
+            var value = (IEnumerable<TResult>)_selector.Invoke(context, tuple, fact);
+            foreach (var item in value)
+            {
+                list.Add(item);
+            }
+
+            foreach (var item in oldList)
+            {
+                if (!list.Contains(item) && RemoveRef(item) == 0)
                 {
-                    if (!list.Contains(item) &&
-                        RemoveRef(item) == 0)
-                    {
-                        results.Add(AggregationResult.Removed(item));
-                    }
-                }
-                foreach (var item in list)
-                {
-                    if (oldList.Contains(item))
-                    {
-                        results.Add(AggregationResult.Modified(item, item, Enumerable.Repeat(fact, 1)));
-                    }
-                    else if (AddRef(item) == 1)
-                    {
-                        results.Add(AggregationResult.Added(item, Enumerable.Repeat(fact, 1)));
-                    }
+                    results.Add(AggregationResult.Removed(item));
                 }
             }
-            return results;
-        }
-
-        public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
-        {
-            var results = new List<AggregationResult>();
-            foreach (var fact in facts)
+            foreach (var item in list)
             {
-                var oldList = _sourceToList[fact];
-                _sourceToList.Remove(fact);
-                foreach (var item in oldList)
+                if (oldList.Contains(item))
                 {
-                    if (RemoveRef(item) == 0)
-                    {
-                        results.Add(AggregationResult.Removed(item));
-                    }
+                    results.Add(AggregationResult.Modified(item, item, Enumerable.Repeat(fact, 1)));
+                }
+                else if (AddRef(item) == 1)
+                {
+                    results.Add(AggregationResult.Added(item, Enumerable.Repeat(fact, 1)));
                 }
             }
-            return results;
         }
+        return results;
+    }
 
-        private int AddRef(TResult item)
+    public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    {
+        var results = new List<AggregationResult>();
+        foreach (var fact in facts)
         {
-            if (!_referenceCounter.TryGetValue(item, out var counter))
+            var oldList = _sourceToList[fact];
+            _sourceToList.Remove(fact);
+            foreach (var item in oldList)
             {
-                counter = new Counter();
-                _referenceCounter[item] = counter;
+                if (RemoveRef(item) == 0)
+                {
+                    results.Add(AggregationResult.Removed(item));
+                }
             }
-            counter.Value++;
-            return counter.Value;
         }
+        return results;
+    }
 
-        private int RemoveRef(TResult item)
-        {
-            var counter = _referenceCounter[item];
-            counter.Value--;
-            if (counter.Value == 0)
-            {
-                _referenceCounter.Remove(item);
-            }
-            return counter.Value;
-        }
+    private int AddRef(TResult item)
+    {
+        var counter = _referenceCounter.GetOrAdd(item, _ => new());
+        counter.Value++;
+        return counter.Value;
+    }
 
-        private class Counter
+    private int RemoveRef(TResult item)
+    {
+        var counter = _referenceCounter[item];
+        counter.Value--;
+        if (counter.Value == 0)
         {
-            public int Value { get; set; }
+            _referenceCounter.Remove(item);
         }
+        return counter.Value;
+    }
+
+    private class Counter
+    {
+        public int Value { get; set; }
     }
 }

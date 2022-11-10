@@ -17,7 +17,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<string, string>> lambda2 = s => s;
             AssertEqual(Element.Expression("Name", lambda1), Element.Expression("Name", lambda2));
         }
-        
+
         [Fact]
         public void AreEqual_DifferentNamesSameExpression_False()
         {
@@ -25,7 +25,7 @@ namespace NRules.Tests.Utilities
             Expression<Func<string, string>> lambda2 = s => s;
             AssertNotEqual(Element.Expression("Name1", lambda1), Element.Expression("Name2", lambda2));
         }
-        
+
         [Fact]
         public void AreEqual_SameNameDifferentExpressions_False()
         {
@@ -40,10 +40,10 @@ namespace NRules.Tests.Utilities
             Expression<Func<string, string>> lambda1 = s => s;
             Expression<Func<string, string>> lambda2 = s => s;
             AssertEqual(
-                new List<Declaration>{Element.Declaration(typeof(string), "s")},
-                new []{Element.Expression("Name", lambda1)},
-                new List<Declaration>{Element.Declaration(typeof(string), "s")},
-                new []{Element.Expression("Name", lambda2)});
+                new List<Declaration> { Element.Declaration(typeof(string), "s") },
+                new[] { Element.Expression("Name", lambda1) },
+                new List<Declaration> { Element.Declaration(typeof(string), "s") },
+                new[] { Element.Expression("Name", lambda2) });
         }
 
         [Fact]
@@ -52,10 +52,10 @@ namespace NRules.Tests.Utilities
             Expression<Func<string, string>> lambda1 = s => s.ToUpper();
             Expression<Func<string, string>> lambda2 = s => s.ToLower();
             AssertNotEqual(
-                new List<Declaration>{Element.Declaration(typeof(string), "s")},
-                new []{Element.Expression("Name", lambda1)},
-                new List<Declaration>{Element.Declaration(typeof(string), "s")},
-                new []{Element.Expression("Name", lambda2)});
+                new List<Declaration> { Element.Declaration(typeof(string), "s") },
+                new[] { Element.Expression("Name", lambda1) },
+                new List<Declaration> { Element.Declaration(typeof(string), "s") },
+                new[] { Element.Expression("Name", lambda2) });
         }
 
         [Fact]
@@ -65,8 +65,8 @@ namespace NRules.Tests.Utilities
             AssertNotEqual(
                 new List<Declaration>(),
                 Array.Empty<NamedExpressionElement>(),
-                new List<Declaration>{Element.Declaration(typeof(string), "s")},
-                new []{Element.Expression("Name", lambda2)});
+                new List<Declaration> { Element.Declaration(typeof(string), "s") },
+                new[] { Element.Expression("Name", lambda2) });
         }
 
         [Fact]
@@ -74,8 +74,8 @@ namespace NRules.Tests.Utilities
         {
             Expression<Func<string, string>> lambda1 = s => s;
             AssertNotEqual(
-                new List<Declaration>{Element.Declaration(typeof(string), "s")},
-                new []{Element.Expression("Name", lambda1)},
+                new List<Declaration> { Element.Declaration(typeof(string), "s") },
+                new[] { Element.Expression("Name", lambda1) },
                 new List<Declaration>(),
                 Array.Empty<NamedExpressionElement>());
         }
@@ -84,7 +84,7 @@ namespace NRules.Tests.Utilities
         {
             //Act
             var target = CreateTarget();
-            bool result = target.AreEqual(first, second);
+            var result = target.AreEqual(first, second);
 
             //Assert
             Assert.True(result);
@@ -94,7 +94,7 @@ namespace NRules.Tests.Utilities
         {
             //Act
             var target = CreateTarget();
-            bool result = target.AreEqual(first, second);
+            var result = target.AreEqual(first, second);
 
             //Assert
             Assert.False(result);
@@ -104,7 +104,7 @@ namespace NRules.Tests.Utilities
         {
             //Act
             var target = CreateTarget();
-            bool result = target.AreEqual(declarationsFirst, first, declarationsSecond, second);
+            var result = target.AreEqual(declarationsFirst, first, declarationsSecond, second);
 
             //Assert
             Assert.True(result);
@@ -114,7 +114,7 @@ namespace NRules.Tests.Utilities
         {
             //Act
             var target = CreateTarget();
-            bool result = target.AreEqual(declarationsFirst, first, declarationsSecond, second);
+            var result = target.AreEqual(declarationsFirst, first, declarationsSecond, second);
 
             //Assert
             Assert.False(result);
