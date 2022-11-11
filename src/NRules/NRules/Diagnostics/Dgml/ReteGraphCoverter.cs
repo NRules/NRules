@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace NRules.Diagnostics.Dgml;
+﻿namespace NRules.Diagnostics.Dgml;
 
 internal static class ReteGraphCoverter
 {

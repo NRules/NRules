@@ -19,7 +19,6 @@ $components = @{
             tool = 'dotnet'
         }
         test = @{
-            location = 'Tests'
             frameworks = @('net6', 'net48', 'netcoreapp3.1')
         }
         bin = @{
