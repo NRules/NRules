@@ -66,5 +66,5 @@ internal sealed class WrapperFact : Fact
         set { }
     }
 
-    private Fact? RightFact => WrappedTuple.RightFact;
+    private Fact? RightFact => WrappedTuple.Fact;
 }

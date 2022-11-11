@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Setter
+internal class Setter : ICanWriteXml
 {
     public Setter(string property, string? value, string? expression)
     {
@@ -12,16 +12,16 @@ internal class Setter
         Expression = expression;
     }
 
-    public string Property { get; init; }
-    public string? Value { get; init; }
-    public string? Expression { get; init; }
+    public string Property { get; }
+    public string? Value { get; }
+    public string? Expression { get; }
 
     public void WriteXml(XmlWriter writer)
     {
         writer.WriteStartElement(nameof(Setter));
         writer.WriteAttributeString(nameof(Property), Property);
-        writer.WriteAttributeIfNotNull(nameof(Value), Value);
-        writer.WriteAttributeIfNotNull(nameof(Expression), Expression);
+        writer.WriteAttributeIfNotNull(Value);
+        writer.WriteAttributeIfNotNull(Expression);
         writer.WriteEndElement();
     }
 }

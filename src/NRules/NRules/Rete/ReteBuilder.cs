@@ -54,11 +54,6 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             {
                 foreach (var childElement in or.ChildElements)
                 {
-                    if (childElement is null)
-                    {
-                        throw new InvalidOperationException();
-                    }
-
                     var context = new ReteBuilderContext(rule, _dummyNode);
                     Visit(context, childElement);
                     var terminal = BuildTerminal(context, ruleDeclarations);
@@ -83,10 +78,6 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
     {
         foreach (var childElement in element.ChildElements)
         {
-            if (childElement is null)
-            {
-                throw new InvalidOperationException();
-            }
             if (context.AlphaSource != null)
             {
                 BuildJoinNode(context);

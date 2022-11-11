@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Condition
+internal class Condition : ICanWriteXml
 {
     public Condition(string expression)
     {

@@ -3,11 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>net6;net48;netcoreapp3.1</TargetFrameworks>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\..\..\SigningKey.snk</AssemblyOriginatorKeyFile>
-    <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\NRules.Json\NRules.Json.csproj" />
+    <ProjectReference Include="..\NRules.Fluent\NRules.Fluent.csproj" />
+    <ProjectReference Include="..\NRules.RuleModel\NRules.RuleModel.csproj" />
+    <ProjectReference Include="..\NRules\NRules.csproj" />
   </ItemGroup>
 
   <ItemGroup>

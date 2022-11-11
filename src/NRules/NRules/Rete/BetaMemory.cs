@@ -45,13 +45,13 @@ internal class BetaMemory : IBetaMemory
 
     private void AddMapping(Tuple tuple)
     {
-        if (tuple.LeftTuple is not null)
-            _parentToChildMap[(tuple.LeftTuple, tuple.RightFact)] = tuple;
+        if (tuple.Parent is not null)
+            _parentToChildMap[(tuple.Parent, tuple.Fact)] = tuple;
     }
 
     private void RemoveMapping(Tuple tuple)
     {
-        if (tuple.LeftTuple is not null)
-            _parentToChildMap.Remove((tuple.LeftTuple, tuple.RightFact));
+        if (tuple.Parent is not null)
+            _parentToChildMap.Remove((tuple.Parent, tuple.Fact));
     }
 }

@@ -79,10 +79,6 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
     private static GroupElement ReadGroup(ref Utf8JsonReader reader, JsonSerializerOptions options, GroupType groupType)
     {
         var children = reader.ReadArrayProperty<RuleElement>(nameof(GroupElement.ChildElements), options);
-        if (children is null)
-        {
-            throw new JsonException($"Failed to read {nameof(GroupElement.ChildElements)} property value");
-        }
         return Element.Group(groupType, children);
     }
 
@@ -153,7 +149,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         if (value.Expressions.Any())
             writer.WriteArrayProperty(nameof(AggregateElement.Expressions), value.Expressions, options);
 
-        if (value.CustomFactoryType != null)
+        if (value.CustomFactoryType is not null)
             writer.WriteProperty(nameof(AggregateElement.CustomFactoryType), value.CustomFactoryType, options);
 
         writer.WriteProperty(nameof(AggregateElement.Source), value.Source, options);
@@ -206,7 +202,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         if (value.Expressions.Any())
             writer.WriteArrayProperty(nameof(PatternElement.Expressions), value.Expressions, options);
 
-        if (value.Source != null)
+        if (value.Source is not null)
             writer.WriteProperty(nameof(PatternElement.Source), value.Source, options);
     }
 
@@ -262,11 +258,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
             throw new JsonException($"Failed to read {nameof(ForAllElement.BasePattern)} property value");
         }
         var patterns = reader.ReadArrayProperty<PatternElement>(nameof(ForAllElement.Patterns), options);
-        if (patterns is null)
-        {
-            throw new JsonException($"Failed to read {nameof(ForAllElement.Patterns)} property value");
-        }
-        return Element.ForAll(basePattern, patterns!);
+        return Element.ForAll(basePattern, patterns);
     }
 
     private static void WriteForAll(Utf8JsonWriter writer, JsonSerializerOptions options, ForAllElement value)

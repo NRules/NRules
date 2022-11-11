@@ -2,7 +2,7 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Property
+internal class Property : ICanWriteXml
 {
     public Property(string id, string dataType)
     {
@@ -20,8 +20,8 @@ internal class Property
         writer.WriteStartElement(nameof(Property));
         writer.WriteAttributeString(nameof(Id), Id);
         writer.WriteAttributeString(nameof(DataType), DataType);
-        writer.WriteAttributeIfNotNull(nameof(Label), Label);
-        writer.WriteAttributeIfNotNull(nameof(Description), Description);
+        writer.WriteAttributeIfNotNull(Label);
+        writer.WriteAttributeIfNotNull(Description);
         writer.WriteEndElement();
     }
 }

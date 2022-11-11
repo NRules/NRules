@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using NRules.Rete;
+﻿using NRules.Rete;
 using Xunit;
+using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Tests.Rete
 {
@@ -13,23 +13,49 @@ namespace NRules.Tests.Rete
             var fact = new Fact(1);
 
             //Act
-            var target = new Tuple(0, new Tuple(0), fact);
+            var target = new Tuple(0, new(0), fact);
 
             //Assert
-            Assert.Equal(fact, target.RightFact);
+            Assert.Equal(fact, target.Fact);
         }
 
         [Fact]
         public void Ctor_WhenTuplePassed_ExposedAsLeftTuple()
         {
             //Arrange
-            var tuple1 = new Tuple(0, new Tuple(0), new Fact(1));
+            var tuple1 = new Tuple(0, new(0), new(1));
 
             //Act
-            var tuple2 = new Tuple(0, tuple1, new Fact(2));
+            var tuple2 = new Tuple(0, tuple1, new(2));
 
             //Assert
-            Assert.Equal(tuple1, tuple2.LeftTuple);
+            Assert.Equal(tuple1, tuple2.Parent);
+        }
+
+        [Fact]
+        public void Count_ShouldBeZero_WhenRootTuple()
+        {
+            //Arrange
+            var tuple = new Tuple(0);
+
+            //Act
+            var actual = tuple.Count;
+
+            //Assert
+            Assert.Equal(0, actual);
+        }
+
+        [Fact]
+        public void Level_ShouldBeZero_WhenRootTuple()
+        {
+            //Arrange
+            var tuple = new Tuple(0);
+
+            //Act
+            var actual = tuple.Level;
+
+            //Assert
+            Assert.Equal(0, actual);
         }
 
         [Fact]
@@ -37,18 +63,18 @@ namespace NRules.Tests.Rete
         {
             //Arrange
             var tuple0 = new Tuple(0);
-            var tuple1 = new Tuple(0, tuple0, new Fact(1));
-            var tuple2 = new Tuple(0, tuple1, new Fact(2));
-            var tuple3 = new Tuple(0, tuple2, new Fact(3));
+            var tuple1 = new Tuple(0, tuple0, new(1));
+            var tuple2 = new Tuple(0, tuple1, new(2));
+            var tuple3 = new Tuple(0, tuple2, new(3));
 
             //Act
             var target = tuple3.Facts.ToArray();
 
             //Assert
             Assert.Equal(3, target.Length);
-            Assert.Equal(tuple1.RightFact, target[2]);
-            Assert.Equal(tuple2.RightFact, target[1]);
-            Assert.Equal(tuple3.RightFact, target[0]);
+            Assert.Equal(tuple1.Fact, target[2]);
+            Assert.Equal(tuple2.Fact, target[1]);
+            Assert.Equal(tuple3.Fact, target[0]);
         }
 
         [Fact]
@@ -56,9 +82,9 @@ namespace NRules.Tests.Rete
         {
             //Arrange
             var tuple0 = new Tuple(0);
-            var tuple1 = new Tuple(0, tuple0, new Fact(1));
-            var tuple2 = new Tuple(0, tuple1, new Fact(2));
-            var tuple3 = new Tuple(0, tuple2, new Fact(3));
+            var tuple1 = new Tuple(0, tuple0, new(1));
+            var tuple2 = new Tuple(0, tuple1, new(2));
+            var tuple3 = new Tuple(0, tuple2, new(3));
 
             //Act
             var target = tuple3.Facts.Select(f => f.Object).ToArray();
@@ -74,14 +100,14 @@ namespace NRules.Tests.Rete
         public void Enumerator_WhenEnumerates1Tuple_ReturnsSelf()
         {
             //Arrange
-            var tuple = new Tuple(0, new Tuple(0), new Fact(1));
+            var tuple = new Tuple(0, new(0), new(1));
 
             //Act
             var target = tuple.Facts.ToArray();
 
             //Assert
             Assert.Single(target);
-            Assert.Equal(tuple.RightFact, target[0]);
+            Assert.Equal(tuple.Fact, target[0]);
         }
 
         [Fact]

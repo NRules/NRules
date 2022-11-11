@@ -10,10 +10,10 @@ internal interface IArguments
 internal class LhsExpressionArguments : IArguments
 {
     private readonly IArgumentMap _argumentMap;
-    private readonly Tuple? _tuple;
+    private readonly Rete.Tuple? _tuple;
     private readonly Fact? _fact;
 
-    public LhsExpressionArguments(IArgumentMap argumentMap, Tuple? tuple, Fact? fact)
+    public LhsExpressionArguments(IArgumentMap argumentMap, Rete.Tuple? tuple, Fact? fact)
     {
         _argumentMap = argumentMap;
         _tuple = tuple;

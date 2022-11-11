@@ -8,7 +8,7 @@ namespace NRules.RuleModel;
 /// </summary>
 public abstract class GroupElement : RuleElement
 {
-    internal GroupElement(IEnumerable<RuleElement?> childElements)
+    internal GroupElement(IEnumerable<RuleElement> childElements)
     {
         ChildElements = childElements.ToArray();
 
@@ -19,5 +19,5 @@ public abstract class GroupElement : RuleElement
     /// <summary>
     /// List of child elements in the grouping.
     /// </summary>
-    public IReadOnlyCollection<RuleElement?> ChildElements { get; }
+    public IReadOnlyCollection<RuleElement> ChildElements { get; }
 }

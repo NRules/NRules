@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Diagnostics;
-using System.Linq;
 using NRules.RuleModel;
 
 namespace NRules.Rete;
@@ -16,34 +13,34 @@ internal sealed class Tuple : ITuple
         Id = id;
     }
 
-    public Tuple(long id, Tuple left, Fact? right)
+    public Tuple(long id, Tuple parent, Fact? fact)
         : this(id)
     {
-        RightFact = right;
-        LeftTuple = left;
-        Count = LeftTuple.Count + (RightFact is null ? 0 : 1);
-        Level = LeftTuple.Level + 1;
+        Fact = fact;
+        Parent = parent;
+        Count = Parent.Count + (Fact is null ? 0 : 1);
+        Level = Parent.Level + 1;
     }
 
     public long Id { get; }
-    public Fact? RightFact { get; }
-    public Tuple? LeftTuple { get; }
+    public Fact? Fact { get; }
+    public Tuple? Parent { get; }
     public int Count { get; }
     public int Level { get; }
 
     public long GetGroupId(int level)
     {
-        if (LeftTuple is null)
+        if (Parent is null)
         {
             return 0;
         }
 
         if (level == Level - 1)
         {
-            return LeftTuple.Id;
+            return Parent.Id;
         }
 
-        return LeftTuple.GetGroupId(level);
+        return Parent.GetGroupId(level);
     }
 
     /// <summary>
@@ -57,10 +54,10 @@ internal sealed class Tuple : ITuple
         get
         {
             var tuple = this;
-            while (tuple is not null && tuple.RightFact is Fact current)
+            while (tuple is not null && tuple.Fact is Fact current)
             {
                 yield return current;
-                tuple = tuple.LeftTuple;
+                tuple = tuple.Parent;
             }
         }
     }
@@ -120,8 +117,8 @@ internal sealed class Tuple : ITuple
         {
             do
             {
-                Current = _tuple?.RightFact;
-                _tuple = _tuple?.LeftTuple;
+                Current = _tuple?.Fact;
+                _tuple = _tuple?.Parent;
             } while (Current == null && _tuple != null);
             return Current != null;
         }

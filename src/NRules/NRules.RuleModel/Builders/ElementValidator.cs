@@ -11,9 +11,9 @@ internal static class ElementValidator
         ValidateUniqueDeclarations(elements.AsEnumerable());
     }
 
-    public static void ValidateUniqueDeclarations(IEnumerable<RuleElement?> elements)
+    public static void ValidateUniqueDeclarations(IEnumerable<RuleElement> elements)
     {
-        var duplicates = elements.SelectMany(x => x?.Exports)
+        var duplicates = elements.SelectMany(x => x.Exports)
             .GroupBy(x => x.Name)
             .Where(x => x.Count() > 1)
             .ToArray();

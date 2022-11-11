@@ -30,20 +30,15 @@ internal static class MemberExtensions
         reader.TryReadProperty<Type>(nameof(MemberInfo.DeclaringType), options, out var declaringType);
 
         var type = declaringType ?? impliedType;
-        if (type == null)
+        if (type is null)
             throw new ArgumentException($"Unable to determine declaring type for member. Name={name}");
 
-        switch (memberType)
+        return memberType switch
         {
-            case MemberTypes.Field:
-                return type.GetField(name) ??
-                    throw new ArgumentException($"Unknown field. DeclaringType={type}, Name={name}", nameof(name));
-            case MemberTypes.Property:
-                return type.GetProperty(name) ??
-                    throw new ArgumentException($"Unknown property. DeclaringType={type}, Name={name}", nameof(name));
-            default:
-                throw new NotSupportedException($"MemberType={memberType}");
-        }
+            MemberTypes.Field => type.GetField(name) ?? throw new ArgumentException($"Unknown field. DeclaringType={type}, Name={name}", nameof(name)),
+            MemberTypes.Property => type.GetProperty(name) ?? throw new ArgumentException($"Unknown property. DeclaringType={type}, Name={name}", nameof(name)),
+            _ => throw new NotSupportedException($"MemberType={memberType}"),
+        };
     }
 
     public static void WriteMemberInfo(this Utf8JsonWriter writer, JsonSerializerOptions options, MemberInfo value, Type? impliedType = null)
@@ -87,11 +82,9 @@ internal static class MemberExtensions
     public static MethodInfo GetMethod(this MethodRecord methodRecord, Type[] argumentTypes, Type? impliedType = null)
     {
         var type = methodRecord.DeclaringType ?? impliedType;
-        if (type == null)
+        if (type is null)
             throw new ArgumentException($"Unable to determine declaring type for method. Name={methodRecord.Name}");
 
-        var method = type.GetMethod(methodRecord.Name, argumentTypes)
-            ?? throw new ArgumentException($"Unknown method. DeclaringType={type}, Name={methodRecord.Name}");
-        return method;
+        return type.GetMethod(methodRecord.Name, argumentTypes) ?? throw new ArgumentException($"Unknown method. DeclaringType={type}, Name={methodRecord.Name}");
     }
 }

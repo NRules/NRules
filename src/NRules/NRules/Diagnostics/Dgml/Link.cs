@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Link
+internal class Link : ICanWriteXml
 {
     public Link(string source, string target)
     {
@@ -24,10 +24,10 @@ internal class Link
         writer.WriteStartElement(nameof(Link));
         writer.WriteAttributeString(nameof(Source), Source);
         writer.WriteAttributeString(nameof(Target), Target);
-        writer.WriteAttributeIfNotNull(nameof(Category), Category);
-        writer.WriteAttributeIfNotNull(nameof(Label), Label);
-        writer.WriteAttributeIfNotNull(nameof(Description), Description);
-        writer.WriteAttributeIfNotNull(nameof(StrokeThickness), StrokeThickness);
+        writer.WriteAttributeIfNotNull(Category);
+        writer.WriteAttributeIfNotNull(Label);
+        writer.WriteAttributeIfNotNull(Description);
+        writer.WriteAttributeIfNotNull(StrokeThickness);
         writer.WriteProperties(Properties);
         writer.WriteEndElement();
     }

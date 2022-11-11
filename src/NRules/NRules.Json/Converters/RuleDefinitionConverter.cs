@@ -19,8 +19,7 @@ internal class RuleDefinitionConverter : JsonConverter<IRuleDefinition>
         {
             throw new JsonException($"Failed to read {nameof(IRuleDefinition.Name)} property value");
         }
-        if (!reader.TryReadStringProperty(nameof(IRuleDefinition.Description), options, out var description))
-            description = string.Empty;
+        reader.TryReadStringProperty(nameof(IRuleDefinition.Description), options, out var description);
         if (!reader.TryReadInt32Property(nameof(IRuleDefinition.Priority), options, out var priority))
             priority = 0;
         if (!reader.TryReadEnumProperty<RuleRepeatability>(nameof(IRuleDefinition.Repeatability), options, out var repeatability))
@@ -36,14 +35,10 @@ internal class RuleDefinitionConverter : JsonConverter<IRuleDefinition>
 
         reader.TryReadArrayProperty<FilterElement>(nameof(FilterGroupElement.Filters), options, out var filters);
         var actions = reader.ReadArrayProperty<ActionElement>(nameof(IRuleDefinition.RightHandSide), options);
-        if (actions is null)
-        {
-            throw new JsonException($"Failed to read {nameof(IRuleDefinition.RightHandSide)} property value");
-        }
 
-        var ruleDefinition = Element.RuleDefinition(name, description!, priority,
-            repeatability, tags!, properties!, Element.DependencyGroup(dependencies!),
-            lhs, Element.FilterGroup(filters!), Element.ActionGroup(actions!));
+        var ruleDefinition = Element.RuleDefinition(name, description ?? string.Empty, priority,
+            repeatability, tags, properties, Element.DependencyGroup(dependencies),
+            lhs, Element.FilterGroup(filters), Element.ActionGroup(actions!));
         return ruleDefinition;
     }
 

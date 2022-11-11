@@ -10,14 +10,11 @@ internal static class MemberBindingExtensions
     public static MemberBinding ReadMemberBinding(this ref Utf8JsonReader reader, JsonSerializerOptions options, Type? impliedType = null)
     {
         var bindingType = reader.ReadEnumProperty<MemberBindingType>(nameof(MemberBinding.BindingType), options);
-
-        switch (bindingType)
+        return bindingType switch
         {
-            case MemberBindingType.Assignment:
-                return ReadMemberAssignment(ref reader, options, impliedType);
-            default:
-                throw new NotSupportedException($"Unsupported member binding type. BindingType={bindingType}");
-        }
+            MemberBindingType.Assignment => ReadMemberAssignment(ref reader, options, impliedType),
+            _ => throw new NotSupportedException($"Unsupported member binding type. BindingType={bindingType}"),
+        };
     }
 
     public static void WriteMemberBinding(this Utf8JsonWriter writer, MemberBinding value, JsonSerializerOptions options, Type? impliedType = null)

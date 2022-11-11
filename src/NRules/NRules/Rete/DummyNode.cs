@@ -3,7 +3,7 @@ using NRules.Diagnostics;
 
 namespace NRules.Rete;
 
-internal class DummyNode : IBetaMemoryNode
+internal sealed class DummyNode : IBetaMemoryNode
 {
     private readonly List<ITupleSink> _sinks = new();
 

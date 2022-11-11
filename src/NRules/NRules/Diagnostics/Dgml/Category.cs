@@ -2,7 +2,7 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Category
+internal class Category : ICanWriteXml
 {
     public Category(string id)
     {
@@ -17,8 +17,8 @@ internal class Category
     {
         writer.WriteStartElement(nameof(Category));
         writer.WriteAttributeString(nameof(Id), Id);
-        writer.WriteAttributeIfNotNull(nameof(Label), Label);
-        writer.WriteAttributeIfNotNull(nameof(Background), Background);
+        writer.WriteAttributeIfNotNull(Label);
+        writer.WriteAttributeIfNotNull(Background);
         writer.WriteEndElement();
     }
 }

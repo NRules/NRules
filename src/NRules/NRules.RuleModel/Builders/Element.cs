@@ -154,7 +154,7 @@ public static class Element
     /// <param name="groupType">Type of the group element.</param>
     /// <param name="childElements">Child elements contained in the group.</param>
     /// <returns>Created element.</returns>
-    public static GroupElement Group(GroupType groupType, IEnumerable<RuleElement?> childElements)
+    public static GroupElement Group(GroupType groupType, IEnumerable<RuleElement> childElements)
     {
         GroupElement element = groupType switch
         {
@@ -172,7 +172,7 @@ public static class Element
     /// <param name="childElements">Child elements contained in the group.</param>
     /// <returns>Created element.</returns>
     /// <see cref="RuleElement"/>
-    public static AndElement AndGroup(params RuleElement?[] childElements)
+    public static AndElement AndGroup(params RuleElement[] childElements)
     {
         var element = AndGroup(childElements.AsEnumerable());
         return element;
@@ -184,7 +184,7 @@ public static class Element
     /// <param name="childElements">Child elements contained in the group.</param>
     /// <returns>Created element.</returns>
     /// <see cref="RuleElement"/>
-    public static AndElement AndGroup(IEnumerable<RuleElement?> childElements)
+    public static AndElement AndGroup(IEnumerable<RuleElement> childElements)
     {
         if (childElements == null)
             throw new ArgumentNullException(nameof(childElements), "Child elements not provided");
@@ -201,7 +201,7 @@ public static class Element
     /// <param name="childElements">Child elements contained in the group.</param>
     /// <returns>Created element.</returns>
     /// <see cref="RuleElement"/>
-    public static OrElement OrGroup(params RuleElement?[] childElements)
+    public static OrElement OrGroup(params RuleElement[] childElements)
     {
         var element = OrGroup(childElements.AsEnumerable());
         return element;
@@ -213,7 +213,7 @@ public static class Element
     /// <param name="childElements">Child elements contained in the group.</param>
     /// <returns>Created element.</returns>
     /// <see cref="RuleElement"/>
-    public static OrElement OrGroup(IEnumerable<RuleElement?> childElements)
+    public static OrElement OrGroup(IEnumerable<RuleElement> childElements)
     {
         if (childElements == null)
             throw new ArgumentNullException(nameof(childElements), "Child elements not provided");

@@ -4,57 +4,63 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class DirectedGraph
+internal class DirectedGraph : ICanWriteXml
 {
     private const string Namespace = "http://schemas.microsoft.com/vs/2009/dgml";
+    private readonly List<Node> _nodes = new();
+    private readonly List<Link> _links = new();
+    private readonly List<Category> _categories = new();
+    private readonly List<Style> _styles = new();
+    private readonly List<Property> _properties = new();
 
-    public string? Title { get; set; }
-    public string? Background { get; set; }
+    public DirectedGraph(string title, string? background = null)
+    {
+        Title = title;
+        Background = background;
+    }
 
-    public List<Node> Nodes { get; set; } = new();
-    public List<Link> Links { get; set; } = new();
-    public List<Category> Categories { get; set; } = new();
-    public List<Style> Styles { get; set; } = new();
-    public List<Property> Properties { get; set; } = new();
+    public string Title { get; }
+    public string? Background { get; }
+
+    public IReadOnlyCollection<Node> Nodes => _nodes;
+    public IReadOnlyCollection<Link> Links => _links;
+    public IReadOnlyCollection<Category> Categories => _categories;
+    public IReadOnlyCollection<Style> Styles => _styles;
+    public IReadOnlyCollection<Property> Properties => _properties;
+
+    public void AddRange(IEnumerable<Node> items) => _nodes.AddRange(items);
+
+    public void AddRange(IEnumerable<Link> items) => _links.AddRange(items);
+
+    public void AddRange(IEnumerable<Category> items) => _categories.AddRange(items);
+
+    public void AddRange(IEnumerable<Style> items) => _styles.AddRange(items);
+
+    public void AddRange(IEnumerable<Property> items) => _properties.AddRange(items);
 
     public void WriteXml(XmlWriter writer)
     {
         writer.WriteStartElement(nameof(DirectedGraph), Namespace);
-        writer.WriteAttributeIfNotNull(nameof(Title), Title);
-        writer.WriteAttributeIfNotNull(nameof(Background), Background);
 
-        writer.WriteStartElement(nameof(Nodes));
-        foreach (var node in Nodes)
-            node.WriteXml(writer);
-        writer.WriteEndElement();
+        writer.WriteAttributeIfNotNull(Title);
+        writer.WriteAttributeIfNotNull(Background);
 
-        writer.WriteStartElement(nameof(Links));
-        foreach (var link in Links)
-            link.WriteXml(writer);
-        writer.WriteEndElement();
+        writer.WriteXml(Nodes);
+        writer.WriteXml(Links);
 
         if (Categories.Any())
         {
-            writer.WriteStartElement(nameof(Categories));
-            foreach (var category in Categories)
-                category.WriteXml(writer);
-            writer.WriteEndElement();
+            writer.WriteXml(Categories);
         }
 
         if (Styles.Any())
         {
-            writer.WriteStartElement(nameof(Styles));
-            foreach (var style in Styles)
-                style.WriteXml(writer);
-            writer.WriteEndElement();
+            writer.WriteXml(Styles);
         }
 
-        if (Properties.Any())
+        if (_properties.Any())
         {
-            writer.WriteStartElement(nameof(Properties));
-            foreach (var property in Properties)
-                property.WriteXml(writer);
-            writer.WriteEndElement();
+            writer.WriteXml(Properties);
         }
 
         writer.WriteEndElement();
