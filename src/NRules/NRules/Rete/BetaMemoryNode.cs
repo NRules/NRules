@@ -37,7 +37,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
         {
             foreach (var (tuple, fact) in tupleFactList)
             {
-                var childTuple = new Tuple(context.IdGenerator.NextTupleId(), tuple, fact);
+                var childTuple = tuple.CreateChild(context.IdGenerator.NextTupleId(), fact);
                 toAssert.Add(childTuple);
             }
 
@@ -65,7 +65,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
                 var childTuple = memory.FindTuple(tuple, fact);
                 if (childTuple == null)
                 {
-                    childTuple = new Tuple(context.IdGenerator.NextTupleId(), tuple, fact);
+                    childTuple = tuple.CreateChild(context.IdGenerator.NextTupleId(), fact);
                     toAssert.Add(childTuple);
                 }
                 else

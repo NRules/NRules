@@ -13,7 +13,7 @@ internal sealed class Tuple : ITuple
         Id = id;
     }
 
-    public Tuple(long id, Tuple parent, Fact? fact)
+    public Tuple(long id, Tuple parent, Fact? fact = null)
         : this(id)
     {
         Fact = fact;
@@ -27,6 +27,8 @@ internal sealed class Tuple : ITuple
     public Tuple? Parent { get; }
     public int Count { get; }
     public int Level { get; }
+
+    public Tuple CreateChild(long id, Fact? fact = null) => new(id, this, fact);
 
     public long GetGroupId(int level)
     {

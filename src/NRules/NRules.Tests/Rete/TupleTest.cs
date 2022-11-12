@@ -26,7 +26,7 @@ namespace NRules.Tests.Rete
             var tuple1 = new Tuple(0, new(0), new(1));
 
             //Act
-            var tuple2 = new Tuple(0, tuple1, new(2));
+            var tuple2 = tuple1.CreateChild(0, new(2));
 
             //Assert
             Assert.Equal(tuple1, tuple2.Parent);
@@ -83,10 +83,10 @@ namespace NRules.Tests.Rete
             //Arrange
             var tuple0 = new Tuple(0);
             var tuple1 = new Tuple(0, tuple0, new(1));
-            var tuple2 = new Tuple(0, tuple1, null);
-            var tuple3 = new Tuple(0, tuple2, null);
+            var tuple2 = new Tuple(0, tuple1);
+            var tuple3 = new Tuple(0, tuple2);
             var tuple4 = new Tuple(0, tuple3, new(3));
-            var tuple5 = new Tuple(0, tuple4, null);
+            var tuple5 = new Tuple(0, tuple4);
             var expected = tuple5.Facts.ToArray();
 
             //Act
