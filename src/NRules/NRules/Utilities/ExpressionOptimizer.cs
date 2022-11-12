@@ -18,15 +18,15 @@ internal static class ExpressionOptimizer
     static ExpressionOptimizer()
     {
         GetEnumeratorMethod = typeof(Tuple)
-            .GetMethod(nameof(Tuple.GetEnumerator))!;
+            .GetMethod(nameof(Tuple.GetEnumerator));
         MoveNextMethod = typeof(Tuple.Enumerator)
-            .GetMethod(nameof(Tuple.Enumerator.MoveNext))!;
+            .GetMethod(nameof(Tuple.Enumerator.MoveNext));
         CurrentProperty = typeof(Tuple.Enumerator)
-            .GetProperty(nameof(Tuple.Enumerator.Current))!;
+            .GetProperty(nameof(Tuple.Enumerator.Current));
         FactValueProperty = typeof(Fact)
-            .GetProperty(nameof(Fact.Object))!;
+            .GetProperty(nameof(Fact.Object));
         ResolveMethod = typeof(IDependencyResolver)
-            .GetMethod(nameof(IDependencyResolver.Resolve))!;
+            .GetMethod(nameof(IDependencyResolver.Resolve));
     }
 
     public static Expression<TDelegate> Optimize<TDelegate>(LambdaExpression expression,

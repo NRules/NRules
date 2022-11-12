@@ -12,7 +12,7 @@ internal class Fact : IFact
         FactType = @object.GetType();
     }
 
-    public Fact(object? @object, Type declaredType)
+    public Fact(object @object, Type declaredType)
     {
         RawObject = @object;
         FactType = @object?.GetType() ?? declaredType;
@@ -20,15 +20,14 @@ internal class Fact : IFact
 
     public virtual Type? FactType { get; }
 
-    public object? RawObject { get; set; }
+    public object RawObject { get; set; }
 
     public virtual IFactSource? Source
     {
         get => null;
-        set => throw new InvalidOperationException("Source is only supported on synthetic facts");
     }
 
-    public virtual object? Object => RawObject;
+    public virtual object Object => RawObject;
     public virtual bool IsWrapperFact => false;
     Type? IFact.Type => FactType;
     object? IFact.Value => Object;
@@ -38,12 +37,25 @@ internal class Fact : IFact
 [DebuggerDisplay("Fact {Source.SourceType} {Object}")]
 internal sealed class SyntheticFact : Fact
 {
-    public SyntheticFact(object @object)
-        : base(@object)
+    private IFactSource? _source;
+
+    public SyntheticFact(object @object, IFactSource source)
+            : base(@object)
     {
+        _source = source;
     }
 
-    public override IFactSource? Source { get; set; }
+    public override IFactSource? Source => _source;
+
+    public void UpdateSource(IFactSource source)
+    {
+        _source = source;
+    }
+
+    public void RemoveSource()
+    {
+        _source = null;
+    }
 }
 
 [DebuggerDisplay("Fact Tuple({WrappedTuple.Count}) -> {Object}")]
@@ -56,14 +68,10 @@ internal sealed class WrapperFact : Fact
 
     public override Type? FactType => RightFact?.FactType;
     public override object? Object => RightFact?.Object;
-    public Tuple WrappedTuple => (Tuple)RawObject!;
+    public Tuple WrappedTuple => (Tuple)RawObject;
     public override bool IsWrapperFact => true;
 
-    public override IFactSource? Source
-    {
-        get => RightFact?.Source;
-        set { }
-    }
+    public override IFactSource? Source => RightFact?.Source;
 
     private Fact? RightFact => WrappedTuple.Fact;
 }

@@ -5,13 +5,13 @@ namespace NRules.Rete;
 
 internal class BindingNode : BetaNode
 {
-    private readonly ILhsTupleExpression<object?> _compiledExpression;
+    private readonly ILhsTupleExpression<object> _compiledExpression;
 
     public ExpressionElement ExpressionElement { get; }
     public Type ResultType { get; }
     public ITupleSource Source { get; }
 
-    public BindingNode(int id, BindingElement expressionElement, ILhsTupleExpression<object?> compiledExpression, Type resultType, ITupleSource source)
+    public BindingNode(int id, BindingElement expressionElement, ILhsTupleExpression<object> compiledExpression, Type resultType, ITupleSource source)
         : base(id, expressionElement.ResultType)
     {
         ExpressionElement = expressionElement;

@@ -66,16 +66,15 @@ public class Activation : IMatch
         Trigger = MatchTrigger.None;
     }
 
-    private FactMatch[] GetMatchedFacts()
+    private IEnumerable<FactMatch> GetMatchedFacts()
     {
         var matches = CompiledRule.Declarations.Select(x => new FactMatch(x)).ToArray();
         int index = Tuple.Count - 1;
-        var enumerator = Tuple.GetEnumerator();
-        while (enumerator.MoveNext())
+        foreach (var fact in Tuple.Facts)
         {
             int factIndex = CompiledRule.FactMap[index];
             var factMatch = matches[factIndex];
-            factMatch.SetFact(enumerator.Current!);
+            factMatch.SetFact(fact);
             index--;
         }
         return matches;

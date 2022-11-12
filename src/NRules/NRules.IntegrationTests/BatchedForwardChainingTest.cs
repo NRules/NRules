@@ -21,7 +21,7 @@ namespace NRules.IntegrationTests
 
             //Act
             Session.Fire();
-            Session.PropagateLinked();
+            _ = Session.PropagateLinked().ToArray();
 
             Session.Fire();
 
@@ -40,7 +40,7 @@ namespace NRules.IntegrationTests
 
             //Act
             Session.Fire();
-            var result = Session.PropagateLinked();
+            var result = Session.PropagateLinked().ToArray();
 
             Session.Fire();
 
@@ -63,7 +63,7 @@ namespace NRules.IntegrationTests
 
             //Act
             Session.Fire();
-            var result = Session.PropagateLinked();
+            var result = Session.PropagateLinked().ToArray();
             Session.Fire();
 
             //Assert
@@ -90,7 +90,7 @@ namespace NRules.IntegrationTests
             Session.InsertAll(new[] { fact11, fact12, fact13, fact14, fact15, fact16, fact17, fact18, fact19 });
 
             Session.Fire();
-            Session.PropagateLinked();
+            _ = Session.PropagateLinked().ToArray();
 
             //Act
             Session.Update(fact11);
@@ -114,7 +114,7 @@ namespace NRules.IntegrationTests
             Session.Update(fact19);
 
             Session.Fire();
-            var result = Session.PropagateLinked();
+            var result = Session.PropagateLinked().ToArray();
 
             Session.Fire();
 
@@ -138,7 +138,7 @@ namespace NRules.IntegrationTests
 
             //Act
             Session.Fire();
-            var result = Session.PropagateLinked();
+            var result = Session.PropagateLinked().ToArray();
 
             Session.Fire();
 
@@ -157,7 +157,7 @@ namespace NRules.IntegrationTests
             Session.InsertAll(new[] { fact11, fact12 });
 
             Session.Fire();
-            Session.PropagateLinked();
+            _ = Session.PropagateLinked().ToArray();
 
             Session.Fire();
 
@@ -167,7 +167,7 @@ namespace NRules.IntegrationTests
 
             //Act
             Session.Fire();
-            var result = Session.PropagateLinked();
+            var result = Session.PropagateLinked().ToArray();
             Session.Fire();
 
             //Assert
@@ -187,7 +187,7 @@ namespace NRules.IntegrationTests
             Session.InsertAll(new[] { fact11, fact12 });
 
             Session.Fire();
-            Session.PropagateLinked();
+            _ = Session.PropagateLinked().ToArray();
 
             Session.Fire();
 
@@ -197,7 +197,7 @@ namespace NRules.IntegrationTests
 
             //Act
             Session.Fire();
-            var result = Session.PropagateLinked();
+            var result = Session.PropagateLinked().ToArray();
 
             //Assert
             AssertFiredTimes<ForwardChainingFirstRule>(2);
@@ -214,7 +214,7 @@ namespace NRules.IntegrationTests
             Session.InsertAll(new[] { fact11, fact12 });
 
             Session.Fire();
-            Session.PropagateLinked();
+            _ = Session.PropagateLinked().ToArray();
 
             Session.Fire();
 
@@ -225,7 +225,7 @@ namespace NRules.IntegrationTests
             //Act
             Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
             Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
-            var result = Session.PropagateLinked();
+            var result = Session.PropagateLinked().ToArray();
 
             //Assert
             AssertFiredTimes<ForwardChainingFirstRule>(2);

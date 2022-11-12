@@ -101,7 +101,7 @@ namespace NRules.Tests
             var result = target.TryInsertAll(facts, BatchOptions.AllOrNothing);
 
             // Assert
-            Assert.Equal(1, result.FailedCount);
+            Assert.Equal(1, result.Failed.Count);
             _network.Verify(x => x.PropagateAssert(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
                     It.IsAny<List<Fact>>()),
@@ -125,7 +125,7 @@ namespace NRules.Tests
             var result = target.TryInsertAll(facts, BatchOptions.SkipFailed);
 
             // Assert
-            Assert.Equal(1, result.FailedCount);
+            Assert.Equal(1, result.Failed.Count);
             _network.Verify(x => x.PropagateAssert(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
                     It.Is<List<Fact>>(p => p.Count == 1 && p[0].Object == facts[1])),
@@ -208,7 +208,7 @@ namespace NRules.Tests
             var result = target.TryUpdateAll(facts, BatchOptions.AllOrNothing);
 
             // Assert
-            Assert.Equal(1, result.FailedCount);
+            Assert.Equal(1, result.Failed.Count);
             _network.Verify(x => x.PropagateUpdate(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
                     It.IsAny<List<Fact>>()),
@@ -232,7 +232,7 @@ namespace NRules.Tests
             var result = target.TryUpdateAll(facts, BatchOptions.SkipFailed);
 
             // Assert
-            Assert.Equal(1, result.FailedCount);
+            Assert.Equal(1, result.Failed.Count);
             _network.Verify(x => x.PropagateUpdate(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
                     It.Is<List<Fact>>(p => p.Count == 1 && p[0].Object == facts[0])),
@@ -316,7 +316,7 @@ namespace NRules.Tests
             var result = target.TryRetractAll(facts, BatchOptions.AllOrNothing);
 
             // Assert
-            Assert.Equal(1, result.FailedCount);
+            Assert.Equal(1, result.Failed.Count);
             _network.Verify(x => x.PropagateRetract(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
                     It.IsAny<List<Fact>>()),
@@ -340,7 +340,7 @@ namespace NRules.Tests
             var result = target.TryRetractAll(facts, BatchOptions.SkipFailed);
 
             // Assert
-            Assert.Equal(1, result.FailedCount);
+            Assert.Equal(1, result.Failed.Count);
             _network.Verify(x => x.PropagateRetract(
                     It.Is<IExecutionContext>(p => p.WorkingMemory == _workingMemory.Object),
                     It.Is<List<Fact>>(p => p.Count == 1 && p[0].Object == facts[0])),
@@ -396,101 +396,93 @@ namespace NRules.Tests
         [Fact]
         public void Fire_CancellationRequested()
         {
-            using (var cancellationSource = new CancellationTokenSource())
-            {
-                // Arrange
-                var hitCount = 0;
-                var target = CreateTarget();
-                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
-                _agenda
-                    .Setup(x => x.IsEmpty)
-                    .Returns(() =>
+            using var cancellationSource = new CancellationTokenSource();
+            // Arrange
+            var hitCount = 0;
+            var target = CreateTarget();
+            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+            _agenda
+                .Setup(x => x.IsEmpty)
+                .Returns(() =>
+                {
+                    if (++hitCount == 2)
                     {
-                        if (++hitCount == 2)
-                        {
-                            cancellationSource.Cancel();
-                        }
+                        cancellationSource.Cancel();
+                    }
 
-                        return hitCount >= 5;
-                    });
+                    return hitCount >= 5;
+                });
 
-                // Act
-                var actual = target.Fire(cancellationSource.Token);
+            // Act
+            var actual = target.Fire(cancellationSource.Token);
 
-                // Assert
-                Assert.Equal(2, actual);
-                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
-            }
+            // Assert
+            Assert.Equal(2, actual);
+            _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
         }
 
         [Fact]
         public void Fire_CancellationRequested_WithMaxRules()
         {
-            using (var cancellationSource = new CancellationTokenSource())
-            {
-                // Arrange
-                var hitCount = 0;
-                var target = CreateTarget();
-                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
-                _agenda
-                    .Setup(x => x.IsEmpty)
-                    .Returns(() =>
+            using var cancellationSource = new CancellationTokenSource();
+            // Arrange
+            var hitCount = 0;
+            var target = CreateTarget();
+            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+            _agenda
+                .Setup(x => x.IsEmpty)
+                .Returns(() =>
+                {
+                    if (++hitCount == 2)
                     {
-                        if (++hitCount == 2)
-                        {
-                            cancellationSource.Cancel();
-                        }
+                        cancellationSource.Cancel();
+                    }
 
-                        return hitCount >= 5;
-                    });
+                    return hitCount >= 5;
+                });
 
-                // Act
-                var actual = target.Fire(5, cancellationSource.Token);
+            // Act
+            var actual = target.Fire(5, cancellationSource.Token);
 
-                // Assert
-                Assert.Equal(2, actual);
-                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
-            }
+            // Assert
+            Assert.Equal(2, actual);
+            _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
         }
 
         [Fact]
         public void Fire_PassesCancellationTokenToActionContext()
         {
-            using (var cancellationSource = new CancellationTokenSource())
-            {
-                // Arrange
-                var target = CreateTarget();
-                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
-                _agenda.SetupSequence(x => x.IsEmpty)
-                    .Returns(false).Returns(true);
+            using var cancellationSource = new CancellationTokenSource();
+            // Arrange
+            var target = CreateTarget();
+            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+            _agenda.SetupSequence(x => x.IsEmpty)
+                .Returns(false).Returns(true);
 
-                // Act
-                var actual = target.Fire(cancellationSource.Token);
+            // Act
+            var actual = target.Fire(cancellationSource.Token);
 
-                // Assert
-                Assert.Equal(1, actual);
-                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
-            }
+            // Assert
+            Assert.Equal(1, actual);
+            _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
         }
 
         [Fact]
         public void Fire_PassesCancellationTokenToActionContext_WithMaxRules()
         {
-            using (var cancellationSource = new CancellationTokenSource())
-            {
-                // Arrange
-                var target = CreateTarget();
-                _agenda.Setup(x => x.Pop()).Returns(StubActivation());
-                _agenda.SetupSequence(x => x.IsEmpty)
-                    .Returns(false).Returns(true);
+            using var cancellationSource = new CancellationTokenSource();
+            // Arrange
+            var target = CreateTarget();
+            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+            _agenda.SetupSequence(x => x.IsEmpty)
+                .Returns(false).Returns(true);
 
-                // Act
-                var actual = target.Fire(2, cancellationSource.Token);
+            // Act
+            var actual = target.Fire(2, cancellationSource.Token);
 
-                // Assert
-                Assert.Equal(1, actual);
-                _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
-            }
+            // Assert
+            Assert.Equal(1, actual);
+            _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
         }
 
         private Session CreateTarget()

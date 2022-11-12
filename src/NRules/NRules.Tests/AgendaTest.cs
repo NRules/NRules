@@ -210,7 +210,7 @@ namespace NRules.Tests
             Assert.False(target.IsEmpty);
             var actualActivation = target.Pop();
             Assert.Equal(rule, actualActivation.CompiledRule);
-            Assert.Equal(factObject.Value, ((FactObject)actualActivation.Tuple.Fact!.Object!).Value);
+            Assert.Equal(factObject.Value, (actualActivation.Tuple.Fact?.Object as FactObject)?.Value);
             Assert.True(target.IsEmpty);
         }
 

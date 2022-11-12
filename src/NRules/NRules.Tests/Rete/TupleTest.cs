@@ -78,6 +78,29 @@ namespace NRules.Tests.Rete
         }
 
         [Fact]
+        public void Enumerator_WhenEnumeratesNTuple_WalksTuplesInSameOrderAsFacts()
+        {
+            //Arrange
+            var tuple0 = new Tuple(0);
+            var tuple1 = new Tuple(0, tuple0, new(1));
+            var tuple2 = new Tuple(0, tuple1, null);
+            var tuple3 = new Tuple(0, tuple2, null);
+            var tuple4 = new Tuple(0, tuple3, new(3));
+            var tuple5 = new Tuple(0, tuple4, null);
+            var expected = tuple5.Facts.ToArray();
+
+            //Act
+            var actual = new List<Fact>();
+            foreach (var fact in tuple5)
+            {
+                actual.Add(fact);
+            }
+
+            //Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void Enumerator_WhenEnumerated_ReturnsUnderlyingFactObjectsInReverseOrder()
         {
             //Arrange

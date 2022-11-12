@@ -49,7 +49,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact1);
             Session.Insert(fact2);
 
-            IFactMatch[]? matches = null;
+            var matches = Array.Empty<IFactMatch>();
             GetRuleInstance<TestRule>().Action = ctx =>
             {
                 matches = ctx.Match.Facts.ToArray();

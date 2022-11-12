@@ -38,8 +38,6 @@ internal class WorkingMemory : IWorkingMemory
     private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap = new();
     private readonly Dictionary<IBetaMemoryNode, IBetaMemory> _betaMap = new();
 
-    private static readonly IEnumerable<object> EmptyObjectList = Array.Empty<object>();
-
     public IEnumerable<Fact> Facts => _factMap.Values;
 
     public Fact? GetFact(object factObject)
@@ -49,11 +47,6 @@ internal class WorkingMemory : IWorkingMemory
 
     public void AddFact(Fact fact)
     {
-        if (fact.RawObject is null)
-        {
-            throw new ArgumentException($"{nameof(fact.RawObject)} is null", nameof(fact));
-        }
-
         _factMap.Add(fact.RawObject, fact);
     }
 
@@ -65,19 +58,12 @@ internal class WorkingMemory : IWorkingMemory
 
     public void RemoveFact(Fact fact)
     {
-        if (fact.RawObject is null)
-        {
-            throw new ArgumentException($"{nameof(fact.RawObject)} is null", nameof(fact));
-        }
-
         if (!_factMap.Remove(fact.RawObject))
             throw new ArgumentException("Element does not exist", nameof(fact));
     }
 
-    public IEnumerable<object> GetLinkedKeys(IMatch activation)
-    {
-        return _linkedFactMap.GetValueOrDefault(activation)?.Keys ?? EmptyObjectList;
-    }
+    public IEnumerable<object> GetLinkedKeys(IMatch activation) =>
+        (_linkedFactMap.GetValueOrDefault(activation)?.Keys).EmptyIfNull();
 
     public Fact? GetLinkedFact(IMatch activation, object key)
     {

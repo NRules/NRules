@@ -6,25 +6,16 @@
 public interface IFactResult
 {
     /// <summary>
-    /// Number of facts on which the operation failed.
-    /// </summary>
-    int FailedCount { get; }
-
-    /// <summary>
     /// Facts on which the operation failed.
     /// </summary>
-    IEnumerable<object> Failed { get; }
+    IReadOnlyCollection<object> Failed { get; }
 }
 
 internal class FactResult : IFactResult
 {
-    private readonly List<object> _failed;
+    private readonly IReadOnlyCollection<object> _failed;
 
-    internal FactResult(List<object> failed)
-    {
-        _failed = failed;
-    }
+    internal FactResult(IReadOnlyCollection<object> failed) => _failed = failed;
 
-    public int FailedCount => _failed.Count;
-    public IEnumerable<object> Failed => _failed;
+    public IReadOnlyCollection<object> Failed => _failed;
 }

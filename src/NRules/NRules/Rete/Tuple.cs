@@ -54,13 +54,34 @@ internal sealed class Tuple : ITuple
         get
         {
             var tuple = this;
-            while (tuple is not null && tuple.Fact is Fact current)
+            while (tuple is not null)
             {
+                var next = NextTupleWithFact(tuple);
+                if (next is null)
+                {
+                    yield break;
+                }
+
+                var current = next.Fact;
+                if (current == null)
+                {
+                    yield break;
+                }
+
+                tuple = next.Parent;
                 yield return current;
-                tuple = tuple.Parent;
+            }
+            static Tuple? NextTupleWithFact(Tuple? tuple)
+            {
+                while (tuple is not null && tuple.Fact is null)
+                {
+                    tuple = tuple.Parent;
+                }
+                return tuple;
             }
         }
     }
+
 
     public Enumerator GetEnumerator() => new(this);
 
@@ -110,19 +131,19 @@ internal sealed class Tuple : ITuple
         public Enumerator(Tuple tuple)
         {
             _tuple = tuple;
-            Current = null;
+            Current = null!;
         }
 
         public bool MoveNext()
         {
             do
             {
-                Current = _tuple?.Fact;
+                Current = _tuple?.Fact!;
                 _tuple = _tuple?.Parent;
             } while (Current == null && _tuple != null);
             return Current != null;
         }
 
-        public Fact? Current { get; private set; }
+        public Fact Current { get; private set; }
     }
 }

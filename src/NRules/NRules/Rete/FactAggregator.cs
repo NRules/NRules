@@ -65,43 +65,40 @@ internal class FactAggregator : IFactAggregator
 
     private Fact CreateAggregateFact(AggregationResult result)
     {
-        var fact = new SyntheticFact(result.Aggregate)
-        {
-            Source = new AggregateFactSource(result.Source)
-        };
+        var fact = new SyntheticFact(result.Aggregate, new AggregateFactSource(result.Source));
         _aggregateFactMap.Add(result.Aggregate, fact);
         return fact;
     }
 
     private Fact GetAggregateFact(AggregationResult result)
     {
-        if (!_aggregateFactMap.TryGetValue(result.Previous ?? result.Aggregate, out var fact))
+        if (!_aggregateFactMap.TryGetValue(result.Previous ?? result.Aggregate, out var fact) || fact is not SyntheticFact syntheticFact)
         {
             throw new InvalidOperationException(
                 $"Fact for aggregate object does not exist. AggregatorType={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
         }
 
-        fact!.Source = new AggregateFactSource(result.Source);
-        if (!ReferenceEquals(fact.RawObject, result.Aggregate))
+        syntheticFact.UpdateSource(new AggregateFactSource(result.Source));
+        if (!ReferenceEquals(syntheticFact.RawObject, result.Aggregate))
         {
-            _aggregateFactMap.Remove(fact.RawObject ?? throw new InvalidOperationException($"Fact's {nameof(fact.RawObject)} is null"));
-            fact.RawObject = result.Aggregate;
-            _aggregateFactMap.Add(fact.RawObject, fact);
+            _aggregateFactMap.Remove(syntheticFact.RawObject);
+            syntheticFact.RawObject = result.Aggregate;
+            _aggregateFactMap.Add(syntheticFact.RawObject, syntheticFact);
         }
-        return fact;
+        return syntheticFact;
     }
 
     private Fact RemoveAggregateFact(AggregationResult result)
     {
-        if (!_aggregateFactMap.TryGetValue(result.Aggregate, out var fact) || fact is null)
+        if (!_aggregateFactMap.TryGetValue(result.Aggregate, out var fact) || fact is not SyntheticFact syntheticFact)
         {
             throw new InvalidOperationException(
                 $"Fact for aggregate object does not exist. AggregatorType={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
         }
 
-        _aggregateFactMap.Remove(fact.RawObject ?? throw new InvalidOperationException($"Fact's {nameof(fact.RawObject)} is null"));
-        fact.RawObject = result.Aggregate;
-        fact.Source = null;
-        return fact;
+        _aggregateFactMap.Remove(syntheticFact.RawObject);
+        syntheticFact.RawObject = result.Aggregate;
+        syntheticFact.RemoveSource();
+        return syntheticFact;
     }
 }

@@ -47,15 +47,16 @@ public interface ILinkedFactSet
 
 internal struct LinkedFactSet : ILinkedFactSet
 {
-    public LinkedFactAction Action { get; }
-    IEnumerable<IFact> ILinkedFactSet.Facts => Facts;
-    int ILinkedFactSet.FactCount => Facts.Count;
-
-    public List<Fact> Facts { get; }
-
     public LinkedFactSet(LinkedFactAction action)
     {
         Action = action;
-        Facts = new List<Fact>();
     }
+
+    public LinkedFactAction Action { get; }
+
+    IEnumerable<IFact> ILinkedFactSet.Facts => Facts;
+
+    int ILinkedFactSet.FactCount => Facts.Count;
+
+    public List<Fact> Facts { get; } = new();
 }

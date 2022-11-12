@@ -4,7 +4,7 @@ namespace NRules.Utilities;
 
 internal interface IArguments
 {
-    object?[] GetValues();
+    object[] GetValues();
 }
 
 internal class LhsExpressionArguments : IArguments
@@ -20,19 +20,18 @@ internal class LhsExpressionArguments : IArguments
         _fact = fact;
     }
 
-    public object?[] GetValues()
+    public object[] GetValues()
     {
-        var args = new object?[_argumentMap.Count];
+        var args = new object[_argumentMap.Count];
 
         if (_tuple != null)
         {
             var index = _tuple.Count - 1;
-            var enumerable = _tuple.GetEnumerator();
-            while (enumerable.MoveNext())
+            foreach (var fact in _tuple.Facts)
             {
                 var mappedIndex = _argumentMap.FactMap[index];
                 if (mappedIndex >= 0)
-                    args[mappedIndex] = enumerable.Current!.Object;
+                    args[mappedIndex] = fact.Object;
 
                 index--;
             }
@@ -60,17 +59,16 @@ internal class ActivationExpressionArguments : IArguments
         _activation = activation;
     }
 
-    public object?[] GetValues()
+    public object[] GetValues()
     {
-        var args = new object?[_argumentMap.Count];
+        var args = new object[_argumentMap.Count];
 
         var index = _activation.Tuple.Count - 1;
-        var enumerable = _activation.Tuple.GetEnumerator();
-        while (enumerable.MoveNext())
+        foreach (var fact in _activation.Tuple.Facts)
         {
             var mappedIndex = _argumentMap.FactMap[index];
             if (mappedIndex >= 0)
-                args[mappedIndex] = enumerable.Current!.Object;
+                args[mappedIndex] = fact.Object;
 
             index--;
         }

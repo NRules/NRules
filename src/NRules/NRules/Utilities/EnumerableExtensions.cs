@@ -11,4 +11,11 @@ internal static class EnumerableExtensions
     {
         return source ?? Enumerable.Empty<T>();
     }
+
+    public static void Enumerate<T>(this IEnumerable<T> source)
+    {
+        foreach (var _ in source)
+        {
+        }
+    }
 }
