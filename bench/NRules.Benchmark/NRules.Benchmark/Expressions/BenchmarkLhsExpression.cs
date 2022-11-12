@@ -37,11 +37,11 @@ namespace NRules.Benchmark.Expressions
         }
 
         [Benchmark]
-        public bool EvaluateTupleFactExpression() => _lhsExpression.Invoke(Context, _nodeInfo, _tuple.LeftTuple, _tuple.RightFact);
-  
+        public bool EvaluateTupleFactExpression() => _lhsExpression.Invoke(Context, _nodeInfo, _tuple.Parent, _tuple.Fact);
+
         [Benchmark]
-        public bool EvaluateTupleExpression() => _lhsTupleExpression.Invoke(Context, _nodeInfo, _tuple); 
-        
+        public bool EvaluateTupleExpression() => _lhsTupleExpression.Invoke(Context, _nodeInfo, _tuple);
+
         [Benchmark]
         public bool EvaluateFactExpression() => _lhsFactExpression.Invoke(Context, _nodeInfo, _fact);
     }
