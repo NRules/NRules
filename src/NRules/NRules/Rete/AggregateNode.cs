@@ -257,9 +257,6 @@ internal class AggregateNode : BinaryBetaNode
 
         foreach (var aggregateList in aggregation.AggregateLists)
         {
-            if (aggregateList.Count == 0)
-                continue;
-
             switch (aggregateList.Action)
             {
                 case AggregationAction.Added:

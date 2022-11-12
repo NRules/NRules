@@ -8,7 +8,7 @@ internal interface IFactAggregator
     void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
     void Modify(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
     void Remove(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
-    IEnumerable<Fact> AggregateFacts { get; }
+    IReadOnlyCollection<Fact> AggregateFacts { get; }
 }
 
 internal class FactAggregator : IFactAggregator
@@ -21,7 +21,7 @@ internal class FactAggregator : IFactAggregator
         _aggregator = aggregator;
     }
 
-    public IEnumerable<Fact> AggregateFacts => _aggregateFactMap.Values;
+    public IReadOnlyCollection<Fact> AggregateFacts => _aggregateFactMap.Values;
 
     public void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
     {

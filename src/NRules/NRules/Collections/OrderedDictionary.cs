@@ -12,7 +12,7 @@ internal class OrderedDictionary<TKey, TValue>
         _dictionary = new Dictionary<TKey, LinkedListNode<TValue>>(EqualityComparer<TKey>.Default);
     }
 
-    public IEnumerable<TValue> Values => _linkedList;
+    public IReadOnlyCollection<TValue> Values => _linkedList;
 
     public void Add(TKey key, TValue value)
     {
