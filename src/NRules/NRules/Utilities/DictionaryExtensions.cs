@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace NRules.Utilities;
+﻿namespace NRules.Utilities;
 
 internal static class DictionaryExtensions
 {

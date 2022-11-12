@@ -1,4 +1,3 @@
-using System;
 using NRules.Rete;
 
 namespace NRules.Diagnostics;

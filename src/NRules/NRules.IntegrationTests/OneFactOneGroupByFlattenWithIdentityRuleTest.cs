@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NRules.Fluent.Dsl;
+﻿using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using Xunit;
 

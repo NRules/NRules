@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace NRules;
+﻿namespace NRules;
 
 /// <summary>
 /// Result of an operation on a set of facts.

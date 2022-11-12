@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using NRules.Diagnostics;
 using NRules.Extensibility;
 using NRules.Rete;

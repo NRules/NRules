@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace NRules.RuleModel;
+﻿namespace NRules.RuleModel;
 
 /// <summary>
 /// Collection of facts grouped by a key.

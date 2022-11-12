@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using NRules.Rete;
+﻿using NRules.Rete;
 using NRules.RuleModel;
 
 namespace NRules.Utilities;

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NRules.RuleModel;
+﻿namespace NRules.RuleModel;
 
 /// <summary>
 /// Fact in the engine's working memory.

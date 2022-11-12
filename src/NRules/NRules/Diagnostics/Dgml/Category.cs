@@ -17,8 +17,17 @@ internal class Category : ICanWriteXml
     {
         writer.WriteStartElement(nameof(Category));
         writer.WriteAttributeString(nameof(Id), Id);
-        writer.WriteAttributeIfNotNull(Label);
-        writer.WriteAttributeIfNotNull(Background);
+        writer.WriteAttributeIfNotNull(nameof(Label), Label);
+        writer.WriteAttributeIfNotNull(nameof(Background), Background);
         writer.WriteEndElement();
+    }
+
+    public async Task WriteXmlAsync(XmlWriter writer, CancellationToken cancellationToken)
+    {
+        await writer.WriteStartElementAsync(nameof(Category));
+        await writer.WriteAttributeStringAsync(nameof(Id), Id);
+        await writer.WriteAttributeIfNotNullAsync(nameof(Label), Label);
+        await writer.WriteAttributeIfNotNullAsync(nameof(Background), Background);
+        await writer.WriteEndElementAsync();
     }
 }

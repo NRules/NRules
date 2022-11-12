@@ -1,4 +1,3 @@
-using System;
 using System.Linq.Expressions;
 using NRules.Extensibility;
 using NRules.RuleModel;

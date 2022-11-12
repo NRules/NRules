@@ -1,4 +1,3 @@
-using System;
 using Moq;
 using NRules.AgendaFilters;
 using NRules.Rete;

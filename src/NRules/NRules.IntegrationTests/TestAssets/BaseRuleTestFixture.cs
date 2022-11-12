@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NRules.Diagnostics;
+﻿using NRules.Diagnostics;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
 using NRules.RuleModel;

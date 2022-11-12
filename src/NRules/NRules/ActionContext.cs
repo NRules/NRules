@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using NRules.Extensibility;
+﻿using NRules.Extensibility;
 using NRules.RuleModel;
 
 namespace NRules;

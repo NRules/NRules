@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators;

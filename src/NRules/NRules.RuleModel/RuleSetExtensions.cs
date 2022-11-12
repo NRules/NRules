@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace NRules.RuleModel;
 
 public static class RuleSetExtensions

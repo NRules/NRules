@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 using Xunit;

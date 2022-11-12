@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using NRules.Rete;
+﻿using NRules.Rete;
 using NRules.Utilities;
 
 namespace NRules.Diagnostics;

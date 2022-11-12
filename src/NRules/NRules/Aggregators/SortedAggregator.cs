@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using NRules.Aggregators.Collections;
+﻿using NRules.Aggregators.Collections;
 using NRules.RuleModel;
 using NRules.Utilities;
 

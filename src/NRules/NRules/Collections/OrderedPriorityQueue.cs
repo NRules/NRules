@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace NRules.Collections;
+﻿namespace NRules.Collections;
 
 internal class OrderedPriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TValue>
 {

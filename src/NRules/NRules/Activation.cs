@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using NRules.Rete;
 using NRules.RuleModel;
 using Tuple = NRules.Rete.Tuple;

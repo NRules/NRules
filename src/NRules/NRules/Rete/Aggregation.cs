@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NRules.Aggregators;
 
 namespace NRules.Rete;

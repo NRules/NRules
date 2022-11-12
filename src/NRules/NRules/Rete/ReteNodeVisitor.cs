@@ -1,5 +1,3 @@
-using System;
-
 namespace NRules.Rete;
 
 internal class ReteNodeVisitor<TContext>

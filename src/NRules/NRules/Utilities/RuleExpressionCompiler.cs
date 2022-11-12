@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using NRules.AgendaFilters;
 using NRules.Aggregators;
 using NRules.Extensibility;

@@ -1,4 +1,3 @@
-using System;
 using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
@@ -20,8 +19,17 @@ internal class Setter : ICanWriteXml
     {
         writer.WriteStartElement(nameof(Setter));
         writer.WriteAttributeString(nameof(Property), Property);
-        writer.WriteAttributeIfNotNull(Value);
-        writer.WriteAttributeIfNotNull(Expression);
+        writer.WriteAttributeIfNotNull(nameof(Value), Value);
+        writer.WriteAttributeIfNotNull(nameof(Expression), Expression);
         writer.WriteEndElement();
+    }
+
+    public async Task WriteXmlAsync(XmlWriter writer, CancellationToken cancellationToken)
+    {
+        await writer.WriteStartElementAsync(nameof(Setter));
+        await writer.WriteAttributeStringAsync(nameof(Property), Property);
+        await writer.WriteAttributeIfNotNullAsync(nameof(Value), Value);
+        await writer.WriteAttributeIfNotNullAsync(nameof(Expression), Expression);
+        await writer.WriteEndElementAsync();
     }
 }

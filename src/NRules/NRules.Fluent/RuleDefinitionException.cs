@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NRules.Fluent;
+﻿namespace NRules.Fluent;
 
 /// <summary>
 /// Represents errors that occur while building rule definition using fluent DSL.

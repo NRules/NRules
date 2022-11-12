@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using NRules.Json.Tests.TestAssets;
+﻿using NRules.Json.Tests.TestAssets;
 using Xunit;
 
 namespace NRules.Json.Tests

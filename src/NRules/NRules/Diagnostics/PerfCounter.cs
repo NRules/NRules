@@ -1,5 +1,4 @@
-﻿using System;
-using NRules.Rete;
+﻿using NRules.Rete;
 
 namespace NRules.Diagnostics;
 
@@ -22,6 +21,8 @@ internal static class PerfCounter
         var nodeMetrics = context.MetricsAggregator.GetMetrics(node);
         return new RetractPerfCounter(nodeMetrics);
     }
+
+    public static long GetDuration(long start) => unchecked(Environment.TickCount - start) / TimeSpan.TicksPerMillisecond;
 }
 
 internal interface IPerfCounter : IDisposable
@@ -45,7 +46,7 @@ internal readonly struct AssertPerfCounter : IPerfCounter
 
     public void Dispose()
     {
-        _nodeMetrics.InsertDurationMilliseconds += unchecked(Environment.TickCount - _startTicks) / TimeSpan.TicksPerMillisecond;
+        _nodeMetrics.InsertDurationMilliseconds += PerfCounter.GetDuration(_startTicks);
     }
 
     public void AddItems(int count)
@@ -72,7 +73,7 @@ internal readonly struct UpdatePerfCounter : IPerfCounter
 
     public void Dispose()
     {
-        _nodeMetrics.UpdateDurationMilliseconds += unchecked(Environment.TickCount - _startTicks) / TimeSpan.TicksPerMillisecond;
+        _nodeMetrics.UpdateDurationMilliseconds += PerfCounter.GetDuration(_startTicks);
     }
 
     public void AddItems(int count)
@@ -99,7 +100,7 @@ internal readonly struct RetractPerfCounter : IPerfCounter
 
     public void Dispose()
     {
-        _nodeMetrics.RetractDurationMilliseconds += unchecked(Environment.TickCount - _startTicks) / TimeSpan.TicksPerMillisecond;
+        _nodeMetrics.RetractDurationMilliseconds += PerfCounter.GetDuration(_startTicks);
     }
 
     public void AddItems(int count)

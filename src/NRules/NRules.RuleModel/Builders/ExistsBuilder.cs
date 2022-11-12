@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NRules.RuleModel.Builders;
+﻿namespace NRules.RuleModel.Builders;
 
 /// <summary>
 /// Builder to compose an existential element.

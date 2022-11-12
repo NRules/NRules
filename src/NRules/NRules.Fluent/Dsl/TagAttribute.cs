@@ -1,5 +1,3 @@
-using System;
-
 namespace NRules.Fluent.Dsl;
 
 /// <summary>

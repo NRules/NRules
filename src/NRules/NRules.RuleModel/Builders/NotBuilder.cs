@@ -1,5 +1,3 @@
-using System;
-
 namespace NRules.RuleModel.Builders;
 
 /// <summary>

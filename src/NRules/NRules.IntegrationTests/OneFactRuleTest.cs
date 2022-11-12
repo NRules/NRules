@@ -1,5 +1,4 @@
-﻿using System;
-using NRules.Fluent.Dsl;
+﻿using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using Xunit;
 

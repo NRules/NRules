@@ -1,4 +1,3 @@
-using System;
 using NRules.Fluent.Expressions;
 using NRules.RuleModel;
 using NRules.RuleModel.Builders;

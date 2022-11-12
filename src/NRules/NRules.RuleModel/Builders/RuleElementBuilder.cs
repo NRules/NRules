@@ -1,5 +1,3 @@
-using System.Threading;
-
 namespace NRules.RuleModel.Builders;
 
 /// <summary>

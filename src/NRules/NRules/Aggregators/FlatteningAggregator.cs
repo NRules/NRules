@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using NRules.Collections;
 using NRules.RuleModel;
 using NRules.Utilities;

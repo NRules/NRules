@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace NRules.Utilities;
+﻿namespace NRules.Utilities;
 
 internal static class IndexMapExtensions
 {

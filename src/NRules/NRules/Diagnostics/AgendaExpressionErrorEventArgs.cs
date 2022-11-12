@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using NRules.RuleModel;
 using NRules.Utilities;
 

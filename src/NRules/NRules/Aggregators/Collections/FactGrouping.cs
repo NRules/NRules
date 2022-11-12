@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace NRules.Aggregators.Collections;
 
 internal class FactGrouping<TKey, TElement> : FactCollection<TElement>, IGrouping<TKey, TElement>

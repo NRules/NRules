@@ -20,8 +20,18 @@ internal class Property : ICanWriteXml
         writer.WriteStartElement(nameof(Property));
         writer.WriteAttributeString(nameof(Id), Id);
         writer.WriteAttributeString(nameof(DataType), DataType);
-        writer.WriteAttributeIfNotNull(Label);
-        writer.WriteAttributeIfNotNull(Description);
+        writer.WriteAttributeIfNotNull(nameof(Label), Label);
+        writer.WriteAttributeIfNotNull(nameof(Description), Description);
         writer.WriteEndElement();
+    }
+
+    public async Task WriteXmlAsync(XmlWriter writer, CancellationToken cancellationToken)
+    {
+        await writer.WriteStartElementAsync(nameof(Property));
+        await writer.WriteAttributeStringAsync(nameof(Id), Id);
+        await writer.WriteAttributeStringAsync(nameof(DataType), DataType);
+        await writer.WriteAttributeIfNotNullAsync(nameof(Label), Label);
+        await writer.WriteAttributeIfNotNullAsync(nameof(Description), Description);
+        await writer.WriteEndElementAsync();
     }
 }

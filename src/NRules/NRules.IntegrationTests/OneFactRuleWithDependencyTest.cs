@@ -1,5 +1,4 @@
-﻿using System;
-using NRules.Extensibility;
+﻿using NRules.Extensibility;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;

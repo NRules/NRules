@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
@@ -84,6 +82,34 @@ public class DgmlWriter
         var contents = stringWriter.ToString();
         return contents;
     }
+
+    /// <summary>
+    /// Writes DGML graph representing a given rules session to the provided
+    /// <see cref="XmlWriter"/>.
+    /// </summary>
+    /// <param name="writer"><see cref="XmlWriter"/> to write the session to.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+    public async Task WriteXmlAsync(XmlWriter writer, CancellationToken cancellationToken = default)
+    {
+        var graph = _schema.ConvertToDirectedGraph(_ruleNameFilter, _metricsProvider);
+
+        await writer.WriteStartDocumentAsync();
+        await graph.WriteXmlAsync(writer, cancellationToken);
+        await writer.WriteEndDocumentAsync();
+    }
+
+#if NETSTANDARD2_1_OR_GREATER
+    /// <summary>
+    /// Writes DGML graph representing a given rules session to a file.
+    /// </summary>
+    /// <param name="fileName">File to write the session to.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+    public async Task WriteAllTextAsync(string fileName, CancellationToken cancellationToken = default)
+    {
+        var contents = GetContents();
+        await File.WriteAllTextAsync(fileName, contents, cancellationToken);
+    }
+#endif
 
     private class Utf8StringWriter : StringWriter
     {

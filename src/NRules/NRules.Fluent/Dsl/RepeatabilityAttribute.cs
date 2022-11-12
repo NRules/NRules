@@ -1,5 +1,4 @@
-﻿using System;
-using NRules.RuleModel;
+﻿using NRules.RuleModel;
 
 namespace NRules.Fluent.Dsl;
 

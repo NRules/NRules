@@ -1,40 +1,42 @@
-﻿namespace NRules.Diagnostics.Dgml;
+﻿using NRules.Rete;
+
+namespace NRules.Diagnostics.Dgml;
 
 internal static class ReteGraphCoverter
 {
     private static readonly IReadOnlyCollection<Category> _categories = Enum.GetNames(typeof(NodeType)).Select(name => new Category(name)).ToArray();
     private static readonly IReadOnlyCollection<Style> _defaultStyles = new[]
     {
-        new Style(nameof(Node)).HasCategory($"{NodeType.Root}").SetBackground("Black"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.Dummy}").SetBackground("Silver"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.Type}").SetBackground("Orange"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.Selection}").SetBackground("Blue"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.AlphaMemory}").SetBackground("Red"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.Join}").SetBackground("Blue"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.Not}").SetBackground("Brown"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.Exists}").SetBackground("Brown"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.Aggregate}").SetBackground("Brown"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.Adapter}").SetBackground("Silver"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.BetaMemory}").SetBackground("Green"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.Binding}").SetBackground("LightBlue"),
-        new Style(nameof(Node)).HasCategory($"{NodeType.Rule}").SetBackground("Purple"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Root)).SetBackground("Black"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Dummy)).SetBackground("Silver"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Type)).SetBackground("Orange"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Selection)).SetBackground("Blue"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.AlphaMemory)).SetBackground("Red"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Join)).SetBackground("Blue"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Not)).SetBackground("Brown"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Exists)).SetBackground("Brown"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Aggregate)).SetBackground("Brown"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Adapter)).SetBackground("Silver"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.BetaMemory)).SetBackground("Green"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Binding)).SetBackground("LightBlue"),
+        new Style(nameof(Node)).HasCategory(nameof(NodeType.Rule)).SetBackground("Purple"),
     };
 
     private static readonly IReadOnlyCollection<Property> _performanceProperties = new Property[]
     {
-        new("PerfElementCount", "System.Int32"),
-        new("PerfInsertInputCount", "System.Int32"),
-        new("PerfInsertOutputCount", "System.Int32"),
-        new("PerfUpdateInputCount", "System.Int32"),
-        new("PerfUpdateOutputCount", "System.Int32"),
-        new("PerfRetractInputCount", "System.Int32"),
-        new("PerfRetractOutputCount", "System.Int32"),
-        new("PerfInsertDurationMilliseconds", "System.Int64"),
-        new("PerfUpdateDurationMilliseconds", "System.Int64"),
-        new("PerfRetractDurationMilliseconds", "System.Int64"),
-        new("PerfTotalInputCount", "System.Int32"),
-        new("PerfTotalOutputCount", "System.Int32"),
-        new("PerfTotalDurationMilliseconds", "System.Int64"),
+        new("PerfElementCount", typeof(int).FullName),
+        new("PerfInsertInputCount", typeof(int).FullName),
+        new("PerfInsertOutputCount", typeof(int).FullName),
+        new("PerfUpdateInputCount", typeof(int).FullName),
+        new("PerfUpdateOutputCount", typeof(int).FullName),
+        new("PerfRetractInputCount", typeof(int).FullName),
+        new("PerfRetractOutputCount", typeof(int).FullName),
+        new("PerfInsertDurationMilliseconds", typeof(long).FullName),
+        new("PerfUpdateDurationMilliseconds", typeof(long).FullName),
+        new("PerfRetractDurationMilliseconds", typeof(long).FullName),
+        new("PerfTotalInputCount", typeof(int).FullName),
+        new("PerfTotalOutputCount", typeof(int).FullName),
+        new("PerfTotalDurationMilliseconds", typeof(long).FullName),
     };
 
     public static DirectedGraph ConvertToDirectedGraph(this ReteGraph schema, ICollection<string>? ruleNameFilter = null, IMetricsProvider? metricsProvider = null)
@@ -91,7 +93,7 @@ internal static class ReteGraphCoverter
 
     private static Node CreateNode(ReteNode reteNode)
     {
-        var node = new Node(reteNode.Id(), reteNode.GetNodeLabel(), reteNode.NodeType.ToString());
+        var node = new Node(reteNode.Id, reteNode.GetNodeLabel(), reteNode.NodeType.ToString());
 
         node.AddProperty("OutputType", reteNode.OutputType);
 
@@ -123,8 +125,6 @@ internal static class ReteGraphCoverter
         return node;
     }
 
-    private static string Id(this ReteNode reteNode) => reteNode.Id.ToString();
-
     private static string GetNodeLabel(this ReteNode reteNode)
     {
         var labelParts = new List<object> { reteNode.NodeType.ToString() };
@@ -140,14 +140,14 @@ internal static class ReteGraphCoverter
                 labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
                 break;
             case NodeType.Aggregate:
-                labelParts.Add(reteNode.Properties.Single(x => x.Key == "Name").Value);
+                labelParts.Add(reteNode.Properties.First(x => x.Key == nameof(AggregateNode.Name)).Value);
                 labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Key}={x.Value.Body}"));
                 break;
             case NodeType.Binding:
                 labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
                 break;
             case NodeType.Rule:
-                labelParts.Add(reteNode.Rules.Single().Name);
+                labelParts.Add(reteNode.Rules.First().Name);
                 labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Key}={x.Value.Body}"));
                 break;
         }
@@ -155,17 +155,16 @@ internal static class ReteGraphCoverter
         return string.Join("\n", labelParts);
     }
 
-    private static IEnumerable<Link> CreateLinks(IEnumerable<ReteLink> reteLinks) => reteLinks.Select(linkInfo => new Link(Id(linkInfo.Source), Id(linkInfo.Target)));
+    private static IEnumerable<Link> CreateLinks(IEnumerable<ReteLink> reteLinks) => reteLinks.Select(linkInfo => new Link(linkInfo.Source.Id, linkInfo.Target.Id));
 
     private static IEnumerable<Style> GetPerformanceMetricsStyles(IEnumerable<ReteNode> reteNodes, IEnumerable<Node> nodes, IMetricsProvider provider)
     {
         var maxDuration = 0L;
         var minDuration = long.MaxValue;
-        var reteNodeLookup = reteNodes.ToDictionary(Id);
+        var metricsLookup = reteNodes.ToDictionary(node => node.Id, node => provider.FindByNodeId(node.Id));
         foreach (var node in nodes)
         {
-            var reteNode = reteNodeLookup[node.Id];
-            var nodeMetrics = provider.FindByNodeId(reteNode.Id);
+            var nodeMetrics = metricsLookup[node.Id];
             if (nodeMetrics == null)
                 continue;
 
@@ -203,12 +202,12 @@ internal static class ReteGraphCoverter
         nodeMetrics.UpdateDurationMilliseconds +
         nodeMetrics.RetractDurationMilliseconds;
 
-    private static long TotalInputCount(this INodeMetrics nodeMetrics) =>
+    private static int TotalInputCount(this INodeMetrics nodeMetrics) =>
         nodeMetrics.InsertInputCount +
         nodeMetrics.UpdateInputCount +
         nodeMetrics.RetractInputCount;
 
-    private static long TotalOutputCount(this INodeMetrics nodeMetrics) =>
+    private static int TotalOutputCount(this INodeMetrics nodeMetrics) =>
         nodeMetrics.InsertOutputCount +
         nodeMetrics.UpdateOutputCount +
         nodeMetrics.RetractOutputCount;

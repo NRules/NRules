@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace NRules.RuleModel;
+﻿namespace NRules.RuleModel;
 
 /// <summary>
 /// Grouping element that logically combines the patterns or other grouping elements.

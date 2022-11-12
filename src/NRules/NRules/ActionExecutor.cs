@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using NRules.RuleModel;
-using NRules.Utilities;
+﻿using NRules.Utilities;
 
 namespace NRules;
 

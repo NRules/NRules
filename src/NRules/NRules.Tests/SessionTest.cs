@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using Moq;
 using NRules.Diagnostics;
 using NRules.Extensibility;

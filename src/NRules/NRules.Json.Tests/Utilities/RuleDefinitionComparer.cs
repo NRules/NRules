@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NRules.RuleModel;
+﻿using NRules.RuleModel;
 
 namespace NRules.Json.Tests.Utilities
 {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
+﻿using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
@@ -42,27 +40,57 @@ internal class DirectedGraph : ICanWriteXml
     {
         writer.WriteStartElement(nameof(DirectedGraph), Namespace);
 
-        writer.WriteAttributeIfNotNull(Title);
-        writer.WriteAttributeIfNotNull(Background);
+        writer.WriteAttributeIfNotNull(nameof(Title), Title);
+        writer.WriteAttributeIfNotNull(nameof(Background), Background);
 
-        writer.WriteXml(Nodes);
-        writer.WriteXml(Links);
+        writer.WriteXml(nameof(Nodes), Nodes);
+        writer.WriteXml(nameof(Links), Links);
 
         if (Categories.Any())
         {
-            writer.WriteXml(Categories);
+            writer.WriteXml(nameof(Categories), Categories);
         }
 
         if (Styles.Any())
         {
-            writer.WriteXml(Styles);
+            writer.WriteXml(nameof(Styles), Styles);
         }
 
         if (_properties.Any())
         {
-            writer.WriteXml(Properties);
+            writer.WriteXml(nameof(Properties), Properties);
         }
 
         writer.WriteEndElement();
+    }
+
+    public async Task WriteXmlAsync(XmlWriter writer, CancellationToken cancellationToken)
+    {
+        await writer.WriteStartElementAsync(nameof(DirectedGraph), Namespace);
+
+        await writer.WriteAttributeIfNotNullAsync(nameof(Title), Title);
+        await writer.WriteAttributeIfNotNullAsync(nameof(Background), Background);
+
+        await writer.WriteXmlAsync(nameof(Nodes), Nodes, cancellationToken);
+        await writer.WriteXmlAsync(nameof(Links), Links, cancellationToken);
+
+        if (Categories.Any())
+        {
+            await writer.WriteXmlAsync(nameof(Categories), Categories, cancellationToken);
+        }
+
+        if (Styles.Any())
+        {
+            await writer.WriteXmlAsync(nameof(Styles), Styles, cancellationToken);
+        }
+
+        if (_properties.Any())
+        {
+            await writer.WriteXmlAsync(nameof(Properties), Properties, cancellationToken);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        await writer.WriteEndElementAsync();
     }
 }

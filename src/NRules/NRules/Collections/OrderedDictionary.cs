@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using NRules.Utilities;
+﻿using NRules.Utilities;
 
 namespace NRules.Collections;
 

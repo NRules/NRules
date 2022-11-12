@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NRules.AgendaFilters;
+﻿using NRules.AgendaFilters;
 using NRules.Diagnostics;
 using NRules.Extensibility;
 using NRules.Rete;

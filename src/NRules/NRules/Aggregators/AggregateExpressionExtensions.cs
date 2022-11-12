@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace NRules.Aggregators;
+﻿namespace NRules.Aggregators;
 
 /// <summary>
 /// Extension methods used for working with collections of aggregate expressions.

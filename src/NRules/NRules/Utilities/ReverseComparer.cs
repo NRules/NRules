@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace NRules.Utilities;
+﻿namespace NRules.Utilities;
 
 internal class ReverseComparer<T> : IComparer<T>
 {

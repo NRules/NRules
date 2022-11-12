@@ -1,5 +1,4 @@
-﻿using System;
-using NRules.Rete;
+﻿using NRules.Rete;
 using Xunit;
 
 namespace NRules.Tests.Rete

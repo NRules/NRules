@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace NRules.Collections;
+﻿namespace NRules.Collections;
 
 internal interface IPriorityQueue<in TPriority, TValue>
 {

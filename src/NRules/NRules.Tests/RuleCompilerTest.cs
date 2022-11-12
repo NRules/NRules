@@ -1,8 +1,6 @@
 ﻿using Moq;
 using NRules.Fluent;
 using NRules.RuleModel;
-using System.Linq;
-using System.Threading;
 using Xunit;
 
 namespace NRules.Tests

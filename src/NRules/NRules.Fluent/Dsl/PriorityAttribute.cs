@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NRules.Fluent.Dsl;
+﻿namespace NRules.Fluent.Dsl;
 
 /// <summary>
 /// Sets rule's priority.

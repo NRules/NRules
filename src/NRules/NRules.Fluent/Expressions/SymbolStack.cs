@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace NRules.Fluent.Expressions;
+﻿namespace NRules.Fluent.Expressions;
 
 internal class SymbolStack
 {

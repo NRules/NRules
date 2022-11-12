@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;

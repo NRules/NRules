@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NRules.RuleModel;
+﻿namespace NRules.RuleModel;
 
 /// <summary>
 /// Dependency that the rule uses when its actions run.

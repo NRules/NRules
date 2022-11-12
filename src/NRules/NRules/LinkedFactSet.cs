@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NRules.Rete;
 using NRules.RuleModel;
 

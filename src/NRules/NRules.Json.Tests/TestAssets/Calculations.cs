@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace NRules.Json.Tests.TestAssets
+﻿namespace NRules.Json.Tests.TestAssets
 {
     public delegate string TransformDelegate(string value1, string value2);
 

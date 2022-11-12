@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NRules.Rete;
 using NRules.RuleModel;
@@ -110,7 +107,7 @@ public class ReteNode
 
     internal static ReteNode Create(AggregateNode node)
     {
-        var values = new[] { new KeyValuePair<string, object>("Name", node.Name) };
+        var values = new[] { new KeyValuePair<string, object>(nameof(node.Name), node.Name) };
         var expressions = node.Expressions.Select(e =>
             new KeyValuePair<string, LambdaExpression>(e.Name, e.Expression));
         return new ReteNode(node.Id, NodeType.Aggregate, outputType: node.NodeInfo.OutputType,

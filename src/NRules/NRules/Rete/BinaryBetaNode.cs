@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace NRules.Rete;
 
 internal abstract class BinaryBetaNode : BetaNode, IObjectSink

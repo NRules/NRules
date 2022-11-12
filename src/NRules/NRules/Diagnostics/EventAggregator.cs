@@ -1,6 +1,4 @@
-using System;
 using System.Linq.Expressions;
-using System.Threading;
 using NRules.AgendaFilters;
 using NRules.Extensibility;
 using NRules.Rete;

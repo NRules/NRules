@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace NRules.RuleModel.Builders;
+﻿namespace NRules.RuleModel.Builders;
 
 /// <summary>
 /// Builder to compose a group of rule dependencies.

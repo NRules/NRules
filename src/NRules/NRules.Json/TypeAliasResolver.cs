@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace NRules.Json;
+﻿namespace NRules.Json;
 
 internal class TypeAliasResolver
 {

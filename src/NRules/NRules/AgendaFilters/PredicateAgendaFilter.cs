@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace NRules.AgendaFilters;
 
 internal class PredicateAgendaFilter : IAgendaFilter

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace NRules.Rete;
+﻿namespace NRules.Rete;
 
 internal interface ITupleSink : INode
 {

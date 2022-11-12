@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace NRules.Fluent;
 
 public static class RuleMetadataExtensions

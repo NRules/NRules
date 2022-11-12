@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace NRules.RuleModel;
+﻿namespace NRules.RuleModel;
 public interface IPropertyMap : IReadOnlyCollection<RuleProperty>
 {
     object this[string name] { get; }

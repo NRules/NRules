@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
@@ -16,6 +15,10 @@ internal class Style : ICanWriteXml
     public string TargetType { get; }
     public string? GroupLabel { get; set; }
     public string? ValueLabel { get; set; }
+
+    public IReadOnlyCollection<Condition> Conditions => _conditions;
+
+    public IReadOnlyCollection<Setter> Setters => _setters;
 
     public Style HasCategory(string category) => Condition($"HasCategory('{category}')");
 
@@ -47,12 +50,26 @@ internal class Style : ICanWriteXml
         writer.WriteStartElement(nameof(Style));
 
         writer.WriteAttributeString(nameof(TargetType), TargetType);
-        writer.WriteAttributeIfNotNull(GroupLabel);
-        writer.WriteAttributeIfNotNull(ValueLabel);
+        writer.WriteAttributeIfNotNull(nameof(GroupLabel), GroupLabel);
+        writer.WriteAttributeIfNotNull(nameof(ValueLabel), ValueLabel);
 
         writer.WriteMany(_conditions);
         writer.WriteMany(_setters);
 
         writer.WriteEndElement();
+    }
+
+    public async Task WriteXmlAsync(XmlWriter writer, CancellationToken cancellationToken)
+    {
+        await writer.WriteStartElementAsync(nameof(Style));
+
+        await writer.WriteAttributeStringAsync(nameof(TargetType), TargetType);
+        await writer.WriteAttributeIfNotNullAsync(nameof(GroupLabel), GroupLabel);
+        await writer.WriteAttributeIfNotNullAsync(nameof(ValueLabel), ValueLabel);
+
+        await writer.WriteManyAsync(_conditions, cancellationToken);
+        await writer.WriteManyAsync(_setters, cancellationToken);
+
+        await writer.WriteEndElementAsync();
     }
 }
