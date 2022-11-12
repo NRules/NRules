@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using FastExpressionCompiler;
 
 namespace NRules.Extensibility;
 
@@ -18,10 +19,10 @@ public interface IExpressionCompiler
     TDelegate Compile<TDelegate>(Expression<TDelegate> expression) where TDelegate : Delegate;
 }
 
-internal class ExpressionCompiler : IExpressionCompiler
+internal class InternalExpressionCompiler : IExpressionCompiler
 {
     public TDelegate Compile<TDelegate>(Expression<TDelegate> expression) where TDelegate : Delegate
     {
-        return expression.Compile();
+        return expression.CompileFast();
     }
 }

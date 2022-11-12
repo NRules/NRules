@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using FastExpressionCompiler;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators;
@@ -21,7 +22,7 @@ internal class ProjectionAggregatorFactory : IAggregatorFactory
         var ctor = aggregatorType.GetConstructors().Single();
         var factoryExpression = Expression.Lambda<Func<IAggregator>>(
             Expression.New(ctor, Expression.Constant(compiledSelector)));
-        _factory = factoryExpression.Compile();
+        _factory = factoryExpression.CompileFast();
     }
 
     public IAggregator Create()

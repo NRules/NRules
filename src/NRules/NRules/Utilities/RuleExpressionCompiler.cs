@@ -1,3 +1,4 @@
+using FastExpressionCompiler;
 using NRules.AgendaFilters;
 using NRules.Aggregators;
 using NRules.Extensibility;
@@ -22,7 +23,7 @@ internal interface IRuleExpressionCompiler
 
 internal class RuleExpressionCompiler : IRuleExpressionCompiler
 {
-    public IExpressionCompiler ExpressionCompiler { get; set; } = new ExpressionCompiler();
+    public IExpressionCompiler ExpressionCompiler { get; set; } = new InternalExpressionCompiler();
 
     public ILhsExpression<TResult> CompileLhsExpression<TResult>(ExpressionElement element, IEnumerable<Declaration> declarations)
     {
@@ -38,7 +39,7 @@ internal class RuleExpressionCompiler : IRuleExpressionCompiler
     {
         var optimizedExpression = ExpressionOptimizer.Optimize<Func<Fact?, TResult>>(
             element.Expression, IndexMap.Unit, tupleInput: false, factInput: true);
-        var @delegate = optimizedExpression.Compile();
+        var @delegate = optimizedExpression.CompileFast();
         var argumentMap = new ArgumentMap(IndexMap.Unit, 1);
         var expression = new LhsFactExpression<TResult>(element.Expression, @delegate, argumentMap);
         return expression;

@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using FastExpressionCompiler;
 using NRules.RuleModel;
 
 namespace NRules.Aggregators;
@@ -53,7 +54,7 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
         var factoryExpression = Expression.Lambda<Func<IAggregator>>(
             Expression.New(aggregatorType));
 
-        return factoryExpression.Compile();
+        return factoryExpression.CompileFast();
     }
 
     private static Func<IAggregator> CreateSingleKeySortedAggregatorFactory(Type sourceType, SortCondition sortCondition, LambdaExpression expression)
@@ -67,7 +68,7 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
                 Expression.Constant(sortCondition.Expression),
                 Expression.Constant(sortCondition.Direction)));
 
-        return factoryExpression.Compile();
+        return factoryExpression.CompileFast();
     }
 
     private static Func<IAggregator> CreateMultiKeySortedAggregatorFactory(Type sourceType, IEnumerable<SortCondition> sortConditions)
@@ -78,7 +79,7 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
         var factoryExpression = Expression.Lambda<Func<IAggregator>>(
             Expression.New(ctor, Expression.Constant(sortConditions)));
 
-        return factoryExpression.Compile();
+        return factoryExpression.CompileFast();
     }
 
     private static SortDirection GetSortDirection(string keySelectorName)
@@ -108,6 +109,6 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
         var factoryExpression = Expression.Lambda<Func<IAggregator>>(
             Expression.New(ctor, Expression.Constant(keySelector), Expression.Constant(elementSelector)));
 
-        return factoryExpression.Compile();
+        return factoryExpression.CompileFast();
     }
 }
