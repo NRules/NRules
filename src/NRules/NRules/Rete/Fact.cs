@@ -27,7 +27,7 @@ internal class Fact : IFact
         get => null;
     }
 
-    public virtual object Object => RawObject;
+    public virtual object? Object => RawObject;
     public virtual bool IsWrapperFact => false;
     Type? IFact.Type => FactType;
     object? IFact.Value => Object;
