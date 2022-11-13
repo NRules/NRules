@@ -2,18 +2,19 @@ namespace NRules.AgendaFilters;
 
 internal class PredicateAgendaFilter : IAgendaFilter
 {
-    private readonly List<IActivationExpression<bool>> _conditions;
+    private readonly IReadOnlyCollection<IActivationExpression<bool>> _conditions;
 
-    public PredicateAgendaFilter(IEnumerable<IActivationExpression<bool>> conditions)
+    public PredicateAgendaFilter(IReadOnlyCollection<IActivationExpression<bool>> conditions)
     {
-        _conditions = new List<IActivationExpression<bool>>(conditions);
+        _conditions = conditions;
     }
 
     public bool Accept(AgendaContext context, Activation activation)
     {
         foreach (var condition in _conditions)
         {
-            if (!condition.Invoke(context, activation)) return false;
+            if (!condition.Invoke(context, activation))
+                return false;
         }
         return true;
     }

@@ -112,8 +112,7 @@ internal sealed class SessionFactory : ISessionFactory
         var agenda = new Agenda();
         foreach (var compiledRule in _compiledRules)
         {
-            var ruleFilters = CreateRuleFilters(compiledRule).ToArray();
-            foreach (var filter in ruleFilters)
+            foreach (var filter in CreateRuleFilters(compiledRule))
             {
                 agenda.AddFilter(compiledRule.Definition, filter);
             }
@@ -123,17 +122,15 @@ internal sealed class SessionFactory : ISessionFactory
 
     private static IEnumerable<IAgendaFilter> CreateRuleFilters(ICompiledRule compiledRule)
     {
-        var filterConditions = compiledRule.Filter.Conditions.ToList();
-        if (filterConditions.Any())
+        var filterConditions = compiledRule.Filter.Conditions;
+        if (filterConditions.Count > 0)
         {
-            var filter = new PredicateAgendaFilter(filterConditions);
-            yield return filter;
+            yield return new PredicateAgendaFilter(filterConditions);
         }
-        var filterKeySelectors = compiledRule.Filter.KeySelectors.ToList();
-        if (filterKeySelectors.Any())
+        var filterKeySelectors = compiledRule.Filter.KeySelectors;
+        if (filterKeySelectors.Count > 0)
         {
-            var filter = new KeyChangeAgendaFilter(filterKeySelectors);
-            yield return filter;
+            yield return new KeyChangeAgendaFilter(filterKeySelectors);
         }
     }
 

@@ -62,7 +62,8 @@ namespace NRules.Tests
                 var rules2 = new RuleSet("R1");
                 rules2.Add(new[] { rule2_1.Object, rule2_2.Object, rule2_3.Object });
 
-                var rules3 = new RuleSet("R1"); ;
+                var rules3 = new RuleSet("R1");
+                ;
                 rules3.Add(new[] { rule3_1.Object });
 
                 var ruleSets = new[] { rules1, rules2, rules3 };
@@ -116,10 +117,10 @@ namespace NRules.Tests
         {
             var rule = new Mock<IRuleDefinition>();
             rule.Setup(r => r.Name).Returns("Rule");
-            rule.Setup(r => r.LeftHandSide).Returns(new AndElement(Enumerable.Empty<RuleElement>()));
-            rule.Setup(r => r.DependencyGroup).Returns(new DependencyGroupElement(Enumerable.Empty<DependencyElement>()));
-            rule.Setup(r => r.RightHandSide).Returns(new ActionGroupElement(Enumerable.Empty<ActionElement>()));
-            rule.Setup(r => r.FilterGroup).Returns(new FilterGroupElement(Enumerable.Empty<FilterElement>()));
+            rule.Setup(r => r.LeftHandSide).Returns(new AndElement(Array.Empty<RuleElement>()));
+            rule.Setup(r => r.DependencyGroup).Returns(new DependencyGroupElement(Array.Empty<DependencyElement>()));
+            rule.Setup(r => r.RightHandSide).Returns(new ActionGroupElement(Array.Empty<ActionElement>()));
+            rule.Setup(r => r.FilterGroup).Returns(new FilterGroupElement(Array.Empty<FilterElement>()));
             return rule;
         }
     }

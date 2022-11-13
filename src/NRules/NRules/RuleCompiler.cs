@@ -131,9 +131,9 @@ public class RuleCompiler
 
         var transformation = new RuleTransformation();
         var transformedRule = transformation.Transform(ruleDefinition);
-        var ruleDeclarations = transformedRule.LeftHandSide.Exports.ToList();
+        var ruleDeclarations = transformedRule.LeftHandSide.Exports;
 
-        var dependencies = transformedRule.DependencyGroup.Dependencies.ToList();
+        var dependencies = transformedRule.DependencyGroup.Dependencies;
         var terminals = reteBuilder.AddRule(transformedRule);
 
         foreach (var terminal in terminals)
@@ -157,7 +157,7 @@ public class RuleCompiler
         return rules;
     }
 
-    private IRuleFilter CompileFilters(IRuleDefinition ruleDefinition, List<Declaration> ruleDeclarations, IndexMap tupleFactMap)
+    private IRuleFilter CompileFilters(IRuleDefinition ruleDefinition, IReadOnlyCollection<Declaration> ruleDeclarations, IndexMap tupleFactMap)
     {
         var conditions = new List<IActivationExpression<bool>>();
         var keySelectors = new List<IActivationExpression<object>>();
@@ -177,7 +177,6 @@ public class RuleCompiler
                     throw new ArgumentOutOfRangeException($"Unrecognized filter type. FilterType={filter.FilterType}");
             }
         }
-        var compiledFilter = new RuleFilter(conditions, keySelectors);
-        return compiledFilter;
+        return new RuleFilter(conditions, keySelectors);
     }
 }

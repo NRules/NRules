@@ -4,12 +4,12 @@ namespace NRules.AgendaFilters;
 
 internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
 {
-    private readonly List<IActivationExpression<object>> _keySelectors;
+    private readonly IReadOnlyCollection<IActivationExpression<object>> _keySelectors;
     private readonly Dictionary<Activation, ChangeKeys> _changeKeys = new();
 
-    public KeyChangeAgendaFilter(IEnumerable<IActivationExpression<object>> keySelectors)
+    public KeyChangeAgendaFilter(IReadOnlyCollection<IActivationExpression<object>> keySelectors)
     {
-        _keySelectors = new List<IActivationExpression<object>>(keySelectors);
+        _keySelectors = keySelectors;
     }
 
     public bool Accept(AgendaContext context, Activation activation)
@@ -21,26 +21,31 @@ internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
             return new ChangeKeys(_keySelectors.Count);
         });
 
-        for (var i = 0; i < _keySelectors.Count; i++)
+        SelectNewKeys(keys, context, activation);
+
+        if (initial)
         {
-            keys.New[i] = _keySelectors[i].Invoke(context, activation);
+            return true;
         }
 
-        var accept = true;
-        if (!initial)
+        for (var i = 0; i < keys.Current.Length; i++)
         {
-            accept = false;
-            for (var i = 0; i < keys.Current.Length; i++)
+            if (!Equals(keys.Current[i], keys.New[i]))
             {
-                if (!Equals(keys.Current[i], keys.New[i]))
-                {
-                    accept = true;
-                    break;
-                }
+                return true;
             }
         }
 
-        return accept;
+        return false;
+
+        void SelectNewKeys(ChangeKeys keys, AgendaContext context, Activation activation)
+        {
+            var i = 0;
+            foreach (var selector in _keySelectors)
+            {
+                keys.New[i++] = selector.Invoke(context, activation);
+            }
+        }
     }
 
     public void Select(AgendaContext context, Activation activation)

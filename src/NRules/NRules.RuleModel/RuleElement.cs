@@ -16,12 +16,12 @@ public abstract class RuleElement
     /// <summary>
     /// Rule element declarations exported to the outer scope.
     /// </summary>
-    public IEnumerable<Declaration> Exports => _exports;
+    public IReadOnlyCollection<Declaration> Exports => _exports;
 
     /// <summary>
     /// Rule element declarations imported from the outer scope.
     /// </summary>
-    public IEnumerable<Declaration> Imports => _imports;
+    public IReadOnlyCollection<Declaration> Imports => _imports;
 
     internal RuleElement()
     {
