@@ -5,11 +5,11 @@ namespace NRules.RuleModel;
 /// </summary>
 public class DependencyGroupElement : RuleElement
 {
-    private readonly List<DependencyElement> _dependencies;
+    private readonly IReadOnlyCollection<DependencyElement> _dependencies;
 
-    internal DependencyGroupElement(IEnumerable<DependencyElement> dependencies)
+    internal DependencyGroupElement(IReadOnlyCollection<DependencyElement> dependencies)
     {
-        _dependencies = new List<DependencyElement>(dependencies);
+        _dependencies = dependencies;
 
         AddExports(_dependencies);
     }

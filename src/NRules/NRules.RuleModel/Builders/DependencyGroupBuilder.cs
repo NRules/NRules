@@ -38,7 +38,6 @@ public class DependencyGroupBuilder : RuleElementBuilder, IBuilder<DependencyGro
 
     DependencyGroupElement IBuilder<DependencyGroupElement>.Build()
     {
-        var dependencyGroup = Element.DependencyGroup(_dependencies);
-        return dependencyGroup;
+        return Element.DependencyGroup(_dependencies);
     }
 }

@@ -94,7 +94,11 @@ public static class Element
     /// <seealso cref="DependencyElement"/>
     public static DependencyGroupElement DependencyGroup(params DependencyElement[] dependencies)
     {
-        var element = DependencyGroup(dependencies.AsEnumerable());
+        if (dependencies == null)
+            throw new ArgumentNullException(nameof(dependencies), "Dependencies not provided");
+
+        var element = new DependencyGroupElement(dependencies);
+        ElementValidator.ValidateUniqueDeclarations(element.Dependencies);
         return element;
     }
 
@@ -109,9 +113,21 @@ public static class Element
         if (dependencies == null)
             throw new ArgumentNullException(nameof(dependencies), "Dependencies not provided");
 
-        var element = new DependencyGroupElement(dependencies);
-        ElementValidator.ValidateUniqueDeclarations(element.Dependencies);
-        return element;
+        return DependencyGroup(dependencies.ToArray());
+    }
+
+    /// <summary>
+    /// Creates a dependency group element.
+    /// </summary>
+    /// <param name="dependencies">Dependency elements in the group.</param>
+    /// <returns>Created element.</returns>
+    /// <seealso cref="DependencyElement"/>
+    public static DependencyGroupElement DependencyGroup(IReadOnlyCollection<DependencyElement> dependencies)
+    {
+        if (dependencies == null)
+            throw new ArgumentNullException(nameof(dependencies), "Dependencies not provided");
+
+        return DependencyGroup(dependencies);
     }
 
     /// <summary>
