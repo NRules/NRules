@@ -74,7 +74,7 @@ public interface ISession : ISessionSchemaProvider
     /// Action interceptor for the current rules session.
     /// If provided, invocation of rule actions is delegated to the interceptor.
     /// </summary>
-    IActionInterceptor? ActionInterceptor { get; set; }
+    IActionInterceptor ActionInterceptor { get; set; }
 
     /// <summary>
     /// Inserts new facts to the rules engine memory.
@@ -323,7 +323,7 @@ internal sealed class Session : ISessionInternal
         _actionExecutor = actionExecutor;
         _executionContext = new ExecutionContext(this, _workingMemory, _agenda, _eventAggregator, _metricsAggregator, idGenerator);
         DependencyResolver = dependencyResolver;
-        ActionInterceptor = actionInterceptor;
+        ActionInterceptor = actionInterceptor ?? NRules.ActionInterceptor.Default;
         AutoPropagateLinkedFacts = true;
     }
 
@@ -332,7 +332,7 @@ internal sealed class Session : ISessionInternal
     public IEventProvider Events => _eventAggregator;
     public IMetricsProvider Metrics => _metricsAggregator;
     public IDependencyResolver DependencyResolver { get; set; }
-    public IActionInterceptor? ActionInterceptor { get; set; }
+    public IActionInterceptor ActionInterceptor { get; set; }
 
     IAgendaInternal ISessionInternal.Agenda => _agenda;
 
@@ -349,10 +349,7 @@ internal sealed class Session : ISessionInternal
             throw new ArgumentException("Facts for insert already exist", nameof(facts));
     }
 
-    public IFactResult TryInsertAll(IEnumerable<object> facts)
-    {
-        return TryInsertAll(facts, BatchOptions.AllOrNothing);
-    }
+    public IFactResult TryInsertAll(IEnumerable<object> facts) => TryInsertAll(facts, BatchOptions.AllOrNothing);
 
     public IFactResult TryInsertAll(IEnumerable<object> facts, BatchOptions options)
     {
@@ -376,30 +373,25 @@ internal sealed class Session : ISessionInternal
         }
 
         var result = new FactResult(failed);
-        if (result.Failed.Count == 0 || options == BatchOptions.SkipFailed)
+        if (result.Failed.Count != 0 && options != BatchOptions.SkipFailed)
         {
-            foreach (var fact in toPropagate)
-            {
-                _workingMemory.AddFact(fact);
-            }
-
-            _network.PropagateAssert(_executionContext, toPropagate);
-
-            PropagateLinked().Enumerate();
+            return result;
         }
+
+        foreach (var fact in toPropagate)
+        {
+            _workingMemory.AddFact(fact);
+        }
+
+        _network.PropagateAssert(_executionContext, toPropagate);
+
+        PropagateLinked().Enumerate();
         return result;
     }
 
-    public void Insert(object fact)
-    {
-        InsertAll(new[] { fact });
-    }
+    public void Insert(object fact) => InsertAll(new[] { fact });
 
-    public bool TryInsert(object fact)
-    {
-        var result = TryInsertAll(new[] { fact });
-        return result.Failed.Count == 0;
-    }
+    public bool TryInsert(object fact) => TryInsertAll(new[] { fact }).Failed.Count == 0;
 
     public void UpdateAll(IEnumerable<object> facts)
     {
@@ -425,7 +417,7 @@ internal sealed class Session : ISessionInternal
             var factWrapper = _workingMemory.GetFact(fact);
             if (factWrapper is { Source: null })
             {
-                UpdateFact(factWrapper, fact);
+                factWrapper.RawObject = fact;
                 toPropagate.Add(factWrapper);
             }
             else
@@ -435,30 +427,25 @@ internal sealed class Session : ISessionInternal
         }
 
         var result = new FactResult(failed);
-        if (result.Failed.Count == 0 || options == BatchOptions.SkipFailed)
+        if (result.Failed.Count != 0 && options != BatchOptions.SkipFailed)
         {
-            foreach (var fact in toPropagate)
-            {
-                _workingMemory.UpdateFact(fact);
-            }
-
-            _network.PropagateUpdate(_executionContext, toPropagate);
-
-            PropagateLinked().Enumerate();
+            return result;
         }
+
+        foreach (var fact in toPropagate)
+        {
+            _workingMemory.UpdateFact(fact);
+        }
+
+        _network.PropagateUpdate(_executionContext, toPropagate);
+
+        PropagateLinked().Enumerate();
         return result;
     }
 
-    public void Update(object fact)
-    {
-        UpdateAll(new[] { fact });
-    }
+    public void Update(object fact) => UpdateAll(new[] { fact });
 
-    public bool TryUpdate(object fact)
-    {
-        var result = TryUpdateAll(new[] { fact });
-        return result.Failed.Count == 0;
-    }
+    public bool TryUpdate(object fact) => TryUpdateAll(new[] { fact }).Failed.Count == 0;
 
     public void RetractAll(IEnumerable<object> facts)
     {
@@ -509,183 +496,153 @@ internal sealed class Session : ISessionInternal
         return result;
     }
 
-    public void Retract(object fact)
-    {
-        RetractAll(new[] { fact });
-    }
+    public void Retract(object fact) => RetractAll(new[] { fact });
 
-    public bool TryRetract(object fact)
-    {
-        var result = TryRetractAll(new[] { fact });
-        return result.Failed.Count == 0;
-    }
+    public bool TryRetract(object fact) => TryRetractAll(new[] { fact }).Failed.Count == 0;
 
     public IEnumerable<ILinkedFactSet> PropagateLinked()
     {
-        while (_linkedFacts.Count > 0)
+        while (_linkedFacts.TryDequeue(out var item))
         {
-            var item = _linkedFacts.Dequeue();
-            switch (item.Action)
-            {
-                case LinkedFactAction.Insert:
-                    _network.PropagateAssert(_executionContext, item.Facts);
-                    break;
-                case LinkedFactAction.Update:
-                    _network.PropagateUpdate(_executionContext, item.Facts);
-                    break;
-                case LinkedFactAction.Retract:
-                    _network.PropagateRetract(_executionContext, item.Facts);
-                    foreach (var fact in item.Facts)
-                    {
-                        _workingMemory.RemoveFact(fact);
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException($"Unrecognized linked fact action. Action={item.Action}");
-            }
+            PropagateLinked(item);
             yield return item;
         }
     }
 
-    public IEnumerable<object> GetLinkedKeys(Activation activation)
+    private void PropagateLinked(LinkedFactSet item)
     {
-        var keys = _workingMemory.GetLinkedKeys(activation);
-        return keys;
+        switch (item.Action)
+        {
+            case LinkedFactAction.Insert:
+                _network.PropagateAssert(_executionContext, item.Facts);
+                break;
+            case LinkedFactAction.Update:
+                _network.PropagateUpdate(_executionContext, item.Facts);
+                break;
+            case LinkedFactAction.Retract:
+                _network.PropagateRetract(_executionContext, item.Facts);
+                foreach (var fact in item.Facts)
+                {
+                    _workingMemory.RemoveFact(fact);
+                }
+                break;
+            default:
+                throw new ArgumentOutOfRangeException($"Unrecognized linked fact action. Action={item.Action}");
+        }
     }
 
-    public object? GetLinked(Activation activation, object key)
-    {
-        var factWrapper = _workingMemory.GetLinkedFact(activation, key);
-        return factWrapper?.Object;
-    }
+    public IEnumerable<object> GetLinkedKeys(Activation activation) => _workingMemory.GetLinkedKeys(activation);
+
+    public object? GetLinked(Activation activation, object key) => _workingMemory.GetLinkedFact(activation, key)?.Object;
 
     public void QueueInsertLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts)
     {
-        var toAdd = new List<Tuple<object, Fact>>();
+        var toAdd = new List<(object Key, Fact Fact)>();
         var toPropagate = new List<Fact>();
-        foreach (var keyedFact in keyedFacts)
+        foreach (var (key, value) in keyedFacts)
         {
-            var key = keyedFact.Key;
-            var factWrapper = _workingMemory.GetLinkedFact(activation, key);
-            if (factWrapper != null)
+            if (_workingMemory.GetLinkedFact(activation, key) is not null)
             {
                 throw new ArgumentException($"Linked fact already exists. Key={key}");
             }
-            factWrapper = new SyntheticFact(keyedFact.Value, new LinkedFactSource(activation));
-            toAdd.Add(System.Tuple.Create(key, factWrapper));
+            var factWrapper = new SyntheticFact(value, new LinkedFactSource(activation));
+            toAdd.Add((key, factWrapper));
             toPropagate.Add(factWrapper);
         }
-        foreach (var item in toAdd)
+
+        foreach (var (key, fact) in toAdd)
         {
-            _workingMemory.AddLinkedFact(activation, item.Item1, item.Item2);
+            _workingMemory.AddLinkedFact(activation, key, fact);
         }
 
-        LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Insert)
-        {
-            current = new LinkedFactSet(LinkedFactAction.Insert);
-            _linkedFacts.Enqueue(current);
-        }
-        current.Facts.AddRange(toPropagate);
+        AddFacts(LinkedFactAction.Insert, toPropagate);
     }
 
     public void QueueUpdateLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts)
     {
-        var toUpdate = new List<Tuple<object, SyntheticFact, object>>();
+        var toUpdate = new List<(object Key, Fact Fact, object FactObject)>();
         var toPropagate = new List<Fact>();
-        foreach (var keyedFact in keyedFacts)
+        foreach (var (key, value) in keyedFacts)
         {
-            var key = keyedFact.Key;
             if (_workingMemory.GetLinkedFact(activation, key) is not SyntheticFact factWrapper)
             {
                 throw new ArgumentException($"Linked fact does not exist. Key={key}");
             }
             factWrapper.UpdateSource(new LinkedFactSource(activation));
-            toUpdate.Add(System.Tuple.Create(key, factWrapper, keyedFact.Value));
+            toUpdate.Add((key, factWrapper, value));
             toPropagate.Add(factWrapper);
         }
+
         foreach (var (key, fact, factObject) in toUpdate)
         {
             _workingMemory.UpdateLinkedFact(activation, key, fact, factObject);
         }
 
-        LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Update)
-        {
-            current = new LinkedFactSet(LinkedFactAction.Update);
-            _linkedFacts.Enqueue(current);
-        }
-        current.Facts.AddRange(toPropagate);
+        AddFacts(LinkedFactAction.Update, toPropagate);
     }
 
     public void QueueRetractLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts)
     {
-        var toRemove = new List<Tuple<object, SyntheticFact>>();
+        var toRemove = new List<(object Key, SyntheticFact Fact)>();
         var toPropagate = new List<Fact>();
-        foreach (var keyedFact in keyedFacts)
+        foreach (var (key, value) in keyedFacts)
         {
-            var key = keyedFact.Key;
-            if (_workingMemory.GetFact(keyedFact.Value) is not SyntheticFact factWrapper)
+            if (_workingMemory.GetFact(value) is not SyntheticFact factWrapper)
             {
                 throw new ArgumentException($"Linked fact does not exist. Key={key}");
             }
             factWrapper.UpdateSource(new LinkedFactSource(activation));
-            toRemove.Add(System.Tuple.Create(key, factWrapper));
+            toRemove.Add((key, factWrapper));
             toPropagate.Add(factWrapper);
         }
+
         foreach (var (key, fact) in toRemove)
         {
             _workingMemory.RemoveLinkedFact(activation, key, fact);
             fact.RemoveSource();
         }
 
-        LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Retract)
+        AddFacts(LinkedFactAction.Retract, toPropagate);
+    }
+
+    private void AddFacts(LinkedFactAction action, IEnumerable<Fact> toPropagate)
+    {
+        if (!_linkedFacts.TryPeek(out var current) || current.Action != action)
         {
-            current = new LinkedFactSet(LinkedFactAction.Retract);
+            current = new LinkedFactSet(action);
             _linkedFacts.Enqueue(current);
         }
         current.Facts.AddRange(toPropagate);
     }
 
-    public void QueueRetractLinked(Activation activation)
-    {
-        var linkedKeys = GetLinkedKeys(activation);
-        var keyedFacts = new List<KeyValuePair<object, object>>();
-        foreach (var key in linkedKeys)
-        {
-            var linkedFact = GetLinked(activation, key);
-            if (linkedFact is null)
-            {
-                throw new ArgumentException($"Linked fact was not found. Key={key}");
-            }
-            keyedFacts.Add(new KeyValuePair<object, object>(key, linkedFact));
-        }
-        QueueRetractLinked(activation, keyedFacts);
-    }
+    public void QueueRetractLinked(Activation activation) =>
+        QueueRetractLinked(
+            activation,
+            GetLinkedKeys(activation)
+                .Select(key =>
+                    KeyValuePair.Create(
+                        key,
+                        GetLinked(activation, key) ?? throw new ArgumentException($"Linked fact was not found. Key={key}"))));
 
-    public int Fire()
-    {
-        return Fire(default(CancellationToken));
-    }
+    public int Fire() => InternalFire();
 
-    public int Fire(CancellationToken cancellationToken)
-    {
-        return Fire(int.MaxValue, cancellationToken);
-    }
+    public int Fire(CancellationToken cancellationToken) => InternalFire(cancellationToken: cancellationToken);
 
-    public int Fire(int maxRulesNumber)
-    {
-        return Fire(maxRulesNumber, default);
-    }
+    public int Fire(int maxRulesNumber) => InternalFire(maxRulesNumber);
 
-    public int Fire(int maxRulesNumber, CancellationToken cancellationToken)
+    public int Fire(int maxRulesNumber, CancellationToken cancellationToken) => InternalFire(maxRulesNumber, cancellationToken);
+
+    public IQueryable<TFact> Query<TFact>() => _workingMemory.Facts.Select(x => x.Object).OfType<TFact>().AsQueryable();
+
+    ReteGraph ISessionSchemaProvider.GetSchema() => _network.GetSchema();
+
+    private int InternalFire(int? maxRulesCount = null, CancellationToken cancellationToken = default)
     {
         var ruleFiredCount = 0;
-        while (!_agenda.IsEmpty && ruleFiredCount < maxRulesNumber)
+        while (!cancellationToken.IsCancellationRequested && !_agenda.IsEmpty && (maxRulesCount is null || ruleFiredCount < maxRulesCount))
         {
             var activation = _agenda.Pop();
-            IActionContext actionContext = new ActionContext(this, activation, cancellationToken);
+            var actionContext = new ActionContext(this, activation, cancellationToken);
 
             try
             {
@@ -698,23 +655,9 @@ internal sealed class Session : ISessionInternal
                     PropagateLinked().Enumerate();
             }
 
-            if (actionContext.IsHalted || cancellationToken.IsCancellationRequested)
+            if (actionContext.IsHalted)
                 break;
         }
         return ruleFiredCount;
     }
-
-    public IQueryable<TFact> Query<TFact>()
-    {
-        return _workingMemory.Facts.Select(x => x.Object).OfType<TFact>().AsQueryable();
-    }
-
-    private static void UpdateFact(Fact fact, object factObject)
-    {
-        if (ReferenceEquals(fact.RawObject, factObject))
-            return;
-        fact.RawObject = factObject;
-    }
-
-    ReteGraph ISessionSchemaProvider.GetSchema() => _network.GetSchema();
 }

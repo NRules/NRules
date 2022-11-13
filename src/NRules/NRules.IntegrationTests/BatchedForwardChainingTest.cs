@@ -49,7 +49,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice<ForwardChainingSecondRule>();
             Assert.Single(result);
             Assert.Equal(LinkedFactAction.Insert, result.ElementAt(0).Action);
-            Assert.Equal(2, result.ElementAt(0).FactCount);
+            Assert.Equal(2, result.ElementAt(0).Facts.Count);
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace NRules.IntegrationTests
             AssertFiredTwice<ForwardChainingSecondRule>();
             Assert.Single(result);
             Assert.Equal(LinkedFactAction.Insert, result.ElementAt(0).Action);
-            Assert.Equal(2, result.ElementAt(0).FactCount);
+            Assert.Equal(2, result.ElementAt(0).Facts.Count);
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace NRules.IntegrationTests
             AssertFiredTimes<ForwardChainingSecondRule>(18);
             Assert.Single(result);
             Assert.Equal(LinkedFactAction.Update, result.ElementAt(0).Action);
-            Assert.Equal(9, result.ElementAt(0).FactCount);
+            Assert.Equal(9, result.ElementAt(0).Facts.Count);
         }
 
         [Fact]
@@ -175,7 +175,7 @@ namespace NRules.IntegrationTests
             AssertFiredTimes<ForwardChainingSecondRule>(2);
             Assert.Single(result);
             Assert.Equal(LinkedFactAction.Retract, result.ElementAt(0).Action);
-            Assert.Equal(2, result.ElementAt(0).FactCount);
+            Assert.Equal(2, result.ElementAt(0).Facts.Count);
         }
 
         [Fact]
@@ -232,7 +232,7 @@ namespace NRules.IntegrationTests
             AssertFiredTimes<ForwardChainingSecondRule>(2);
             Assert.Single(result);
             Assert.Equal(LinkedFactAction.Retract, result.ElementAt(0).Action);
-            Assert.Equal(2, result.ElementAt(0).FactCount);
+            Assert.Equal(2, result.ElementAt(0).Facts.Count);
         }
 
         [Fact]

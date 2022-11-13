@@ -11,47 +11,23 @@ internal class ActionExecutor : IActionExecutor
 {
     public void Execute(IExecutionContext executionContext, IActionContext actionContext)
     {
-        ISession session = executionContext.Session;
-        var activation = actionContext.Activation;
-
         var invocations = CreateInvocations(executionContext, actionContext);
 
+        var session = executionContext.Session;
+        var activation = actionContext.Activation;
+
         executionContext.EventAggregator.RaiseRuleFiring(session, activation);
-        var interceptor = session.ActionInterceptor;
-        if (interceptor != null)
-        {
-            interceptor.Intercept(actionContext, invocations);
-        }
-        else
-        {
-            foreach (var invocation in invocations)
-            {
-                try
-                {
-                    invocation.Invoke();
-                }
-                catch (Exception e)
-                {
-                    throw new RuleRhsExpressionEvaluationException("Failed to evaluate rule action",
-                        actionContext.Rule.Name, invocation.Expression.ToString(), e);
-                }
-            }
-        }
+
+        session.ActionInterceptor.Intercept(actionContext, invocations);
+
         executionContext.EventAggregator.RaiseRuleFired(session, activation);
     }
 
-    private IEnumerable<ActionInvocation> CreateInvocations(IExecutionContext executionContext, IActionContext actionContext)
+    private static IEnumerable<ActionInvocation> CreateInvocations(IExecutionContext executionContext, IActionContext actionContext)
     {
-        var compiledRule = actionContext.CompiledRule;
         var trigger = actionContext.Activation.Trigger;
-        var invocations = new List<ActionInvocation>();
-        foreach (var action in compiledRule.Actions)
-        {
-            if (!trigger.Matches(action.Trigger)) continue;
-
-            var invocation = new ActionInvocation(executionContext, actionContext, action);
-            invocations.Add(invocation);
-        }
-        return invocations;
+        return actionContext.CompiledRule.Actions
+            .Where(a => trigger.Matches(a.Trigger))
+            .Select(a => new ActionInvocation(executionContext, actionContext, a));
     }
 }

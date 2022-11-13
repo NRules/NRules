@@ -21,8 +21,7 @@ internal class ActionInvocation : IActionInvocation
     public Expression Expression => _action.Expression;
     public ActionTrigger Trigger => _action.Trigger;
 
-    public void Invoke()
-    {
-        _action.Invoke(_executionContext, _actionContext);
-    }
+    public void Invoke() => _action.Invoke(_executionContext, _actionContext);
+
+    public override string ToString() => Expression.ToString();
 }

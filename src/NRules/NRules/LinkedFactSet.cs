@@ -37,7 +37,7 @@ public interface ILinkedFactSet
     /// <summary>
     /// Linked facts in the set.
     /// </summary>
-    IEnumerable<IFact> Facts { get; }
+    IReadOnlyCollection<IFact> Facts { get; }
 
     /// <summary>
     /// Number of linked facts in the set.
@@ -54,7 +54,7 @@ internal struct LinkedFactSet : ILinkedFactSet
 
     public LinkedFactAction Action { get; }
 
-    IEnumerable<IFact> ILinkedFactSet.Facts => Facts;
+    IReadOnlyCollection<IFact> ILinkedFactSet.Facts => Facts;
 
     int ILinkedFactSet.FactCount => Facts.Count;
 

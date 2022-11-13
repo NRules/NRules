@@ -69,7 +69,7 @@ public interface ISessionFactory : ISessionSchemaProvider
     /// </summary>
     /// <param name="initializationAction">Action invoked on the newly created session, before the session is activated (which could result in rule matches placed on the agenda).</param>
     /// <returns>New rules session.</returns>
-    ISession CreateSession(Action<ISession> initializationAction);
+    ISession CreateSession(Action<ISession>? initializationAction = null);
 }
 
 internal sealed class SessionFactory : ISessionFactory
@@ -82,11 +82,10 @@ internal sealed class SessionFactory : ISessionFactory
     {
         _network = network;
         _compiledRules = new List<ICompiledRule>(compiledRules);
-        DependencyResolver = new DependencyResolver();
     }
 
     public IEventProvider Events => _eventAggregator;
-    public IDependencyResolver DependencyResolver { get; set; }
+    public IDependencyResolver DependencyResolver { get; set; } = new DependencyResolver();
     public IActionInterceptor? ActionInterceptor { get; set; }
 
     public ISession CreateSession()
