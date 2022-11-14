@@ -97,9 +97,7 @@ public static class Element
         if (dependencies == null)
             throw new ArgumentNullException(nameof(dependencies), "Dependencies not provided");
 
-        var element = new DependencyGroupElement(dependencies);
-        ElementValidator.ValidateUniqueDeclarations(element.Dependencies);
-        return element;
+        return DependencyGroup((IReadOnlyCollection<DependencyElement>)dependencies);
     }
 
     /// <summary>
@@ -127,7 +125,9 @@ public static class Element
         if (dependencies == null)
             throw new ArgumentNullException(nameof(dependencies), "Dependencies not provided");
 
-        return DependencyGroup(dependencies);
+        var element = new DependencyGroupElement(dependencies);
+        ElementValidator.ValidateUniqueDeclarations(element.Dependencies);
+        return element;
     }
 
     /// <summary>
