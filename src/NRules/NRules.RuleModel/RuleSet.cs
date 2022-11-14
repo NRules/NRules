@@ -1,47 +1,46 @@
 using System.Collections.Generic;
 
-namespace NRules.RuleModel
+namespace NRules.RuleModel;
+
+/// <summary>
+/// Represents a named set of rules.
+/// </summary>
+public interface IRuleSet
 {
     /// <summary>
-    /// Represents a named set of rules.
+    /// Rule set name.
     /// </summary>
-    public interface IRuleSet
-    {
-        /// <summary>
-        /// Rule set name.
-        /// </summary>
-        string Name { get; }
-
-        /// <summary>
-        /// Adds rules to the rule set.
-        /// </summary>
-        /// <param name="ruleDefinitions">Rule definitions to add.</param>
-        void Add(IEnumerable<IRuleDefinition> ruleDefinitions);
-
-        /// <summary>
-        /// Rules in the rule set.
-        /// </summary>
-        IEnumerable<IRuleDefinition> Rules { get; }
-    }
+    string Name { get; }
 
     /// <summary>
-    /// Default implementation of a rule set.
+    /// Adds rules to the rule set.
     /// </summary>
-    public class RuleSet : IRuleSet
+    /// <param name="ruleDefinitions">Rule definitions to add.</param>
+    void Add(IEnumerable<IRuleDefinition> ruleDefinitions);
+
+    /// <summary>
+    /// Rules in the rule set.
+    /// </summary>
+    IEnumerable<IRuleDefinition> Rules { get; }
+}
+
+/// <summary>
+/// Default implementation of a rule set.
+/// </summary>
+public class RuleSet : IRuleSet
+{
+    private readonly List<IRuleDefinition> _rules = new();
+
+    public RuleSet(string name)
     {
-        private readonly List<IRuleDefinition> _rules = new();
+        Name = name;
+    }
 
-        public RuleSet(string name)
-        {
-            Name = name;
-        }
+    public string Name { get; }
+    public IEnumerable<IRuleDefinition> Rules => _rules;
 
-        public string Name { get; }
-        public IEnumerable<IRuleDefinition> Rules => _rules;
-
-        public void Add(IEnumerable<IRuleDefinition> ruleDefinitions)
-        {
-            _rules.AddRange(ruleDefinitions);
-        }
+    public void Add(IEnumerable<IRuleDefinition> ruleDefinitions)
+    {
+        _rules.AddRange(ruleDefinitions);
     }
 }

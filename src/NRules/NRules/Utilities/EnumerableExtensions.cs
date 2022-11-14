@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace NRules.Utilities
+namespace NRules.Utilities;
+
+internal static class EnumerableExtensions
 {
-    internal static class EnumerableExtensions
+    public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T element)
     {
-        public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T element)
-        {
-            return source.Concat(Enumerable.Repeat(element, 1));
-        }
+        return source.Concat(Enumerable.Repeat(element, 1));
     }
 }

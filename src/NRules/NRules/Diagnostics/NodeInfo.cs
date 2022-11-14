@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using NRules.RuleModel;
 
-namespace NRules.Diagnostics
+namespace NRules.Diagnostics;
+
+internal class NodeInfo
 {
-    internal class NodeInfo
+    private readonly List<IRuleDefinition> _rules = new();
+
+    public Type OutputType { get; set; }
+    public IEnumerable<IRuleDefinition> Rules => _rules;
+
+    public void Add(IRuleDefinition rule)
     {
-        private readonly List<IRuleDefinition> _rules = new();
-
-        public Type OutputType { get; set; }
-        public IEnumerable<IRuleDefinition> Rules => _rules;
-
-        public void Add(IRuleDefinition rule)
-        {
-            _rules.Add(rule);
-        }
+        _rules.Add(rule);
     }
 }

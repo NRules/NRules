@@ -2,23 +2,22 @@
 using NRules.Rete;
 using Xunit;
 
-namespace NRules.Tests.Rete
+namespace NRules.Tests.Rete;
+
+public class FactTest
 {
-    public class FactTest
+    [Fact]
+    public void FactType_WhenObjectPassed_ReturnsItsType()
     {
-        [Fact]
-        public void FactType_WhenObjectPassed_ReturnsItsType()
-        {
-            //Arrange
-            var obj = new DateTime();
-            var target = new Fact(obj);
+        //Arrange
+        var obj = new DateTime();
+        var target = new Fact(obj);
 
-            //Act
-            var actual = target.FactType;
-            var expected = typeof (DateTime);
+        //Act
+        var actual = target.FactType;
+        var expected = typeof (DateTime);
 
-            //Assert
-            Assert.Equal(expected, actual);
-        }
+        //Assert
+        Assert.Equal(expected, actual);
     }
 }

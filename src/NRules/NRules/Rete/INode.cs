@@ -1,11 +1,10 @@
 ﻿using NRules.Diagnostics;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+internal interface INode
 {
-    internal interface INode
-    {
-        int Id { get; }
-        NodeInfo NodeInfo { get; }
-        void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);
-    }
+    int Id { get; }
+    NodeInfo NodeInfo { get; }
+    void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);
 }
