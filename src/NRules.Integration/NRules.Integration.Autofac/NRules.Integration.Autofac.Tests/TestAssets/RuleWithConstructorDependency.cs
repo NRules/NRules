@@ -1,25 +1,24 @@
 ﻿using NRules.Fluent.Dsl;
 
-namespace NRules.Integration.Autofac.Tests.TestAssets
+namespace NRules.Integration.Autofac.Tests.TestAssets;
+
+public class RuleWithConstructorDependency : Rule
 {
-    public class RuleWithConstructorDependency : Rule
+    public ITestService Service { get; }
+
+    public RuleWithConstructorDependency(ITestService service)
     {
-        public ITestService Service { get; }
+        Service = service;
+    }
 
-        public RuleWithConstructorDependency(ITestService service)
-        {
-            Service = service;
-        }
+    public override void Define()
+    {
+        TestFact1 fact1 = default;
 
-        public override void Define()
-        {
-            TestFact1 fact1 = default;
+        When()
+            .Match(() => fact1);
 
-            When()
-                .Match(() => fact1);
-
-            Then()
-                .Do(_ => Service.DoIt());
-        }
+        Then()
+            .Do(_ => Service.DoIt());
     }
 }
