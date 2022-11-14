@@ -4,26 +4,25 @@ using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.Samples.SimpleRules.Domain;
 
-namespace NRules.Samples.SimpleRules.Rules
+namespace NRules.Samples.SimpleRules.Rules;
+
+public class MultipleOrdersRule : Rule
 {
-    public class MultipleOrdersRule : Rule
+    public override void Define()
     {
-        public override void Define()
-        {
-            Customer customer = default;
-            IEnumerable<Order> orders = default;
+        Customer customer = default;
+        IEnumerable<Order> orders = default;
 
-            When()
-                .Match(() => customer, c => c.IsPreferred)
-                .Query(() => orders, x => x
-                    .Match<Order>(
-                        o => o.Customer == customer,
-                        o => o.IsOpen)
-                    .Collect()
-                    .Where(c => c.Count() >= 3));
+        When()
+            .Match(() => customer, c => c.IsPreferred)
+            .Query(() => orders, x => x
+                .Match<Order>(
+                    o => o.Customer == customer,
+                    o => o.IsOpen)
+                .Collect()
+                .Where(c => c.Count() >= 3));
 
-            Then()
-                .Do(ctx => Console.WriteLine("Customer {0} has over 3 open orders", customer.Name));
-        }
+        Then()
+            .Do(ctx => Console.WriteLine("Customer {0} has over 3 open orders", customer.Name));
     }
 }

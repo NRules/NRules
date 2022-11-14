@@ -1,17 +1,16 @@
-﻿namespace NRules.Samples.MissManners.Domain
+﻿namespace NRules.Samples.MissManners.Domain;
+
+public class LastSeat
 {
-    public class LastSeat
+    public int SeatId { get; }
+
+    public LastSeat(int seatId)
     {
-        public int SeatId { get; }
+        SeatId = seatId;
+    }
 
-        public LastSeat(int seatId)
-        {
-            SeatId = seatId;
-        }
-
-        public override string ToString()
-        {
-            return $"LastSeat={SeatId}";
-        }
+    public override string ToString()
+    {
+        return $"LastSeat={SeatId}";
     }
 }
