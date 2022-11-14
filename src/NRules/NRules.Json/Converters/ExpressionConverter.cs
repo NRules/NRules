@@ -79,6 +79,8 @@ namespace NRules.Json.Converters
                     return ReadConditionalExpression(ref reader, options);
                 case ExpressionType.Default:
                     return ReadDefaultExpression(ref reader, options);
+                case ExpressionType.Block:
+                    return ReadBlockExpression(ref reader, options);
                 default:
                     throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
             }
@@ -135,6 +137,9 @@ namespace NRules.Json.Converters
                     break;
                 case DefaultExpression de:
                     WriteDefaultExpression(writer, options, de);
+                    break;
+                case BlockExpression be:
+                    WriteBlockExpression(writer, options, be);
                     break;
                 default:
                     throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
@@ -238,7 +243,7 @@ namespace NRules.Json.Converters
             MethodInfo method = default;
             if (reader.TryReadMethodInfo(options, out var methodRecord))
                 method = methodRecord.GetMethod(new[] { left.Type, right.Type }, left.Type);
-            
+
             switch (expressionType)
             {
                 case ExpressionType.Equal:
@@ -359,7 +364,7 @@ namespace NRules.Json.Converters
         private TypeBinaryExpression ReadTypeBinaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             var expression = reader.ReadProperty<Expression>(nameof(TypeBinaryExpression.Expression), options);
-            var typeOperand = reader.ReadProperty<Type>(nameof(TypeBinaryExpression.TypeOperand), options); 
+            var typeOperand = reader.ReadProperty<Type>(nameof(TypeBinaryExpression.TypeOperand), options);
             return Expression.TypeIs(expression, typeOperand!);
         }
 
@@ -368,12 +373,12 @@ namespace NRules.Json.Converters
             writer.WriteProperty(nameof(value.Expression), value.Expression, options);
             writer.WriteProperty(nameof(value.TypeOperand), value.TypeOperand, options);
         }
-        
+
         private NewExpression ReadNewExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             var declaringType = reader.ReadProperty<Type>(nameof(NewExpression.Constructor.DeclaringType), options);
             reader.TryReadArrayProperty<Expression>(nameof(NewExpression.Arguments), options, out var arguments);
-            
+
             var ctor = declaringType.GetConstructor(arguments.Select(x => x.Type).ToArray())
                 ?? throw new ArgumentException($"Unable to find constructor. Type={declaringType}", nameof(declaringType));
             return Expression.New(ctor, arguments);
@@ -435,7 +440,7 @@ namespace NRules.Json.Converters
                 return Expression.ElementInit(method, arguments);
             }
         }
-        
+
         private void WriteListInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ListInitExpression value)
         {
             WriteNewExpression(writer, options, value.NewExpression);
@@ -446,7 +451,7 @@ namespace NRules.Json.Converters
                 writer.WriteArrayProperty(nameof(initializer.Arguments), initializer.Arguments, options);
             });
         }
-        
+
         private ConditionalExpression ReadConditionalExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             var test = reader.ReadProperty<Expression>(nameof(ConditionalExpression.Test), options);
@@ -471,6 +476,25 @@ namespace NRules.Json.Converters
         private void WriteDefaultExpression(Utf8JsonWriter writer, JsonSerializerOptions options, DefaultExpression value)
         {
             writer.WriteProperty(nameof(value.Type), value.Type, options);
+        }
+
+        private BlockExpression ReadBlockExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            var type = reader.ReadProperty<Type>(nameof(BlockExpression.Type), options);
+            if (type is null)
+            {
+                throw new JsonException($"Failed to read {nameof(BlockExpression.Type)} property value");
+            }
+            reader.TryReadObjectArrayProperty(nameof(BlockExpression.Variables), options, ReadParameter, out var variables);
+            var expressions = reader.ReadArrayProperty<Expression>(nameof(BlockExpression.Expressions), options);
+            return Expression.Block(type, variables, expressions);
+        }
+
+        private void WriteBlockExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BlockExpression value)
+        {
+            writer.WriteProperty(nameof(value.Type), value.Type, options);
+            writer.WriteObjectArrayProperty(nameof(value.Variables), value.Variables, options, variable => WriteParameter(writer, options, variable));
+            writer.WriteArrayProperty(nameof(value.Expressions), value.Expressions, options);
         }
     }
 }
