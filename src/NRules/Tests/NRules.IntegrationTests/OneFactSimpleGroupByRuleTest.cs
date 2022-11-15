@@ -14,35 +14,35 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
         public void Fire_TwoFactsWithNullKey_FiresOnceWithBothFactsInOneGroup()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = null};
-            var fact2 = new FactType {TestProperty = null};
+            var fact1 = new FactType { TestProperty = null };
+            var fact2 = new FactType { TestProperty = null };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal(2, GetFiredFact<IGrouping<string, FactType>>().Count());
+            Fixture.AssertFiredOnce();
+            Assert.Equal(2, Fixture.GetFiredFact<IGrouping<string, FactType>>().Count());
         }
 
         [Fact]
         public void Fire_TwoFactsWithNullKeyOneKeyUpdatedToValue_FiresTwiceWithOneFactInEachGroup()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = null};
-            var fact2 = new FactType {TestProperty = null};
+            var fact1 = new FactType { TestProperty = null };
+            var fact2 = new FactType { TestProperty = null };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             fact2.TestProperty = "Value";
@@ -52,19 +52,19 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTwice();
-            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
-            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
+            Fixture.AssertFiredTwice();
+            Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(0));
+            Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(1));
         }
 
         [Fact]
         public void Fire_TwoFactsWithValueKeyOneKeyUpdatedToNull_FiresTwiceWithOneFactInEachGroup()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Value"};
-            var fact2 = new FactType {TestProperty = "Value"};
+            var fact1 = new FactType { TestProperty = "Value" };
+            var fact2 = new FactType { TestProperty = "Value" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             fact2.TestProperty = null;
@@ -74,19 +74,19 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTwice();
-            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
-            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
+            Fixture.AssertFiredTwice();
+            Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(0));
+            Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(1));
         }
 
         [Fact]
         public void Fire_OneFactWithValueAnotherWithNullThenNullUpdated_FiresTwiceWithOneFactInEachGroup()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Value"};
-            var fact2 = new FactType {TestProperty = null};
+            var fact1 = new FactType { TestProperty = "Value" };
+            var fact2 = new FactType { TestProperty = null };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
             Session.Update(fact2);
 
@@ -94,19 +94,19 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTwice();
-            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
-            Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
+            Fixture.AssertFiredTwice();
+            Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(0));
+            Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(1));
         }
 
         [Fact]
         public void Fire_TwoFactsWithNullBothRetracted_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = null};
-            var fact2 = new FactType {TestProperty = null};
+            var fact1 = new FactType { TestProperty = null };
+            var fact2 = new FactType { TestProperty = null };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             Session.Retract(fact1);
@@ -116,16 +116,16 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
         public void Fire_OneFactInsertedThenUpdatedToAnotherGroup_FiresOnceWithOneFactInSecondGroup()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value Group1"};
+            var fact1 = new FactType { TestProperty = "Valid Value Group1" };
             Session.Insert(fact1);
-            
+
             fact1.TestProperty = "Valid Value Group2";
             Session.Update(fact1);
 
@@ -133,15 +133,15 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            var firedGroup = GetFiredFact<IGrouping<string, FactType>>();
+            Fixture.AssertFiredOnce();
+            var firedGroup = Fixture.GetFiredFact<IGrouping<string, FactType>>();
             Assert.Single(firedGroup);
             Assert.Equal("Valid Value Group2", firedGroup.Key);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType

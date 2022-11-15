@@ -19,7 +19,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -38,9 +38,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTwice();
-            Assert.Equal("Valid Value 1", GetFiredFact<FactType>(0).TestProperty);
-            Assert.Equal("Valid Value 4", GetFiredFact<FactType>(1).TestProperty);
+            Fixture.AssertFiredTwice();
+            Assert.Equal("Valid Value 1", Fixture.GetFiredFact<FactType>(0).TestProperty);
+            Assert.Equal("Valid Value 4", Fixture.GetFiredFact<FactType>(1).TestProperty);
         }
 
         [Fact]
@@ -59,13 +59,13 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal("Valid Value 2", GetFiredFact<FactType>().TestProperty);
+            Fixture.AssertFiredOnce();
+            Assert.Equal("Valid Value 2", Fixture.GetFiredFact<FactType>().TestProperty);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType

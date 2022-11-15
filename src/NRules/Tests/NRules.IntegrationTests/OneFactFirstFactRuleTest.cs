@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using Xunit;
@@ -25,8 +24,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
-            Assert.Equal(fact3, GetFiredFact<FactType>());
+            Fixture.AssertFiredOnce();
+            Assert.Equal(fact3, Fixture.GetFiredFact<FactType>());
         }
 
 
@@ -41,7 +40,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -61,8 +60,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
-            Assert.Equal(fact1, GetFiredFact<FactType>());
+            Fixture.AssertFiredOnce();
+            Assert.Equal(fact1, Fixture.GetFiredFact<FactType>());
         }
 
         [Fact]
@@ -80,13 +79,13 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
-            Assert.Equal(fact1, GetFiredFact<FactType>());
+            Fixture.AssertFiredOnce();
+            Assert.Equal(fact1, Fixture.GetFiredFact<FactType>());
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType

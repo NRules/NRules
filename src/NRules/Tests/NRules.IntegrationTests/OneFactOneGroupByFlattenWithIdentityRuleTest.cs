@@ -34,17 +34,17 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            var firedFacts = GetFiredFact<IGrouping<string, FactType>>();
+            Fixture.AssertFiredOnce();
+            var firedFacts = Fixture.GetFiredFact<IGrouping<string, FactType>>();
             Assert.Equal(4, firedFacts.Count());
             Assert.Equal(1, firedFacts.Count(x => x.TestCount == 3));
             Assert.Equal(1, firedFacts.Count(x => x.TestCount == 2));
             Assert.Equal(2, firedFacts.Count(x => x.TestCount == 1));
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType : IEquatable<FactType>
@@ -56,17 +56,22 @@ namespace NRules.IntegrationTests
 
             public bool Equals(FactType other)
             {
-                if (ReferenceEquals(null, other)) return false;
-                if (ReferenceEquals(this, other)) return true;
+                if (other is null)
+                    return false;
+                if (ReferenceEquals(this, other))
+                    return true;
                 return Id == other.Id;
             }
 
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
-                return Equals((FactType) obj);
+                if (obj is null)
+                    return false;
+                if (ReferenceEquals(this, obj))
+                    return true;
+                if (obj.GetType() != GetType())
+                    return false;
+                return Equals((FactType)obj);
             }
 
             public override int GetHashCode()

@@ -10,7 +10,7 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingNotPatternFact_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
 
             Session.Insert(fact1);
 
@@ -18,14 +18,14 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
-        
+
         [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenRetracted_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
 
             Session.Insert(fact1);
             Session.Retract(fact1);
@@ -34,14 +34,14 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
-        
+
         [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenUpdatedToInvalid_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
 
             Session.Insert(fact1);
 
@@ -52,7 +52,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
@@ -63,12 +63,12 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType

@@ -13,18 +13,18 @@ namespace NRules.IntegrationTests
             var fact1 = new FactType1 { Discriminator = "Type1", TestProperty = "Valid" };
             var fact2 = new FactType1 { Discriminator = "Type2", TestProperty = "Invalid" };
 
-            Session.InsertAll(new []{fact1, fact2});
+            Session.InsertAll(new[] { fact1, fact2 });
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
-        
-        protected override void SetUpRules()
+
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType1
@@ -41,7 +41,7 @@ namespace NRules.IntegrationTests
                 FactType1 fact2 = default;
 
                 When()
-                    .Match(() => fact1,  i => i.Discriminator == "Type1")
+                    .Match(() => fact1, i => i.Discriminator == "Type1")
                     .Match(() => fact2, o => o.Discriminator == "Type2")
                     .Having(() => fact1.TestProperty == "Valid");
 

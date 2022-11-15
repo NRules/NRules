@@ -37,6 +37,7 @@ namespace NRules.RuleModel
         }
 
         public string Name { get; }
+
         public IEnumerable<IRuleDefinition> Rules => _rules;
 
         public void Add(IEnumerable<IRuleDefinition> ruleDefinitions)

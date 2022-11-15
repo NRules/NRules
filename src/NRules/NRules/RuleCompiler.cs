@@ -17,9 +17,9 @@ namespace NRules
     /// </summary>
     public class RuleCompiler
     {
-        private readonly RuleCompilerOptions _options;
-        private readonly AggregatorRegistry _aggregatorRegistry = new();
-        private readonly IRuleExpressionCompiler _ruleExpressionCompiler = new RuleExpressionCompiler();
+        private readonly RuleCompilerUnsupportedExpressionsHandling _unsupportedExpressionsHandling;
+        private readonly IAggregatorRegistry _aggregatorRegistry;
+        private readonly IRuleExpressionCompiler _ruleExpressionCompiler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RuleCompiler"/> class
@@ -37,13 +37,15 @@ namespace NRules
         /// <param name="options"></param>
         public RuleCompiler(RuleCompilerOptions options)
         {
-            _options = options;
+            _unsupportedExpressionsHandling = options.UnsupportedExpressionHandling;
+            _ruleExpressionCompiler = options.RuleExpressionCompiler;
+            _aggregatorRegistry = options.AggregatorRegistry;
         }
 
         /// <summary>
         /// Registry of custom aggregator factories.
         /// </summary>
-        public AggregatorRegistry AggregatorRegistry => _aggregatorRegistry;
+        public IAggregatorRegistry AggregatorRegistry => _aggregatorRegistry;
 
         /// <summary>
         /// Compiles expressions used in rules conditions and actions into executable delegates.
@@ -54,8 +56,7 @@ namespace NRules
             get => _ruleExpressionCompiler.ExpressionCompiler;
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                _ruleExpressionCompiler.ExpressionCompiler = value;
+                _ruleExpressionCompiler.ExpressionCompiler = value ?? throw new ArgumentNullException(nameof(value));
             }
         }
 
@@ -81,7 +82,7 @@ namespace NRules
         /// <seealso cref="IRuleRepository"/>
         public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions, CancellationToken cancellationToken)
         {
-            IReteBuilder reteBuilder = new ReteBuilder(_options, _aggregatorRegistry, _ruleExpressionCompiler);
+            IReteBuilder reteBuilder = new ReteBuilder(_unsupportedExpressionsHandling, _aggregatorRegistry, _ruleExpressionCompiler);
             var compiledRules = new List<ICompiledRule>();
             foreach (var ruleDefinition in ruleDefinitions)
             {
@@ -95,7 +96,8 @@ namespace NRules
                     throw new RuleCompilationException("Failed to compile rule", ruleDefinition.Name, e);
                 }
 
-                if (cancellationToken.IsCancellationRequested) break;
+                if (cancellationToken.IsCancellationRequested)
+                    break;
             }
 
             INetwork network = reteBuilder.Build();

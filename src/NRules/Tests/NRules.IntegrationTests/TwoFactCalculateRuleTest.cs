@@ -19,8 +19,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>().Value);
+            Fixture.AssertFiredOnce();
+            Assert.Equal("Valid Value 1|Valid Value 2", Fixture.GetFiredFact<CalculatedFact3>().Value);
         }
 
         [Fact]
@@ -36,9 +36,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Null(GetFiredFact<CalculatedFact3>());
-            Assert.NotNull(GetFiredFact<CalculatedFact4>());
+            Fixture.AssertFiredOnce();
+            Assert.Null(Fixture.GetFiredFact<CalculatedFact3>());
+            Assert.NotNull(Fixture.GetFiredFact<CalculatedFact4>());
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -73,8 +73,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>().Value);
+            Fixture.AssertFiredOnce();
+            Assert.Equal("Valid Value 1|Valid Value 22", Fixture.GetFiredFact<CalculatedFact3>().Value);
         }
 
         [Fact]
@@ -90,8 +90,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert - 1
-            AssertFiredOnce();
-            Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>(0).Value);
+            Fixture.AssertFiredOnce();
+            Assert.Equal("Valid Value 1|Valid Value 2", Fixture.GetFiredFact<CalculatedFact3>(0).Value);
 
             //Arrange - 2
             fact2.TestProperty = "Valid Value 22";
@@ -101,8 +101,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert - 2
-            AssertFiredTwice();
-            Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>(1).Value);
+            Fixture.AssertFiredTwice();
+            Assert.Equal("Valid Value 1|Valid Value 22", Fixture.GetFiredFact<CalculatedFact3>(1).Value);
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -139,7 +139,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -150,21 +150,21 @@ namespace NRules.IntegrationTests
             var fact21 = new FactType2 { TestProperty = "Valid Value 21", JoinProperty = "Valid Value 11" };
             var fact12 = new FactType1 { TestProperty = "Valid Value 12" };
             var fact22 = new FactType2 { TestProperty = "Valid Value 22", JoinProperty = "Valid Value 12" };
-            Session.InsertAll(new []{fact11, fact12});
-            Session.InsertAll(new []{fact21, fact22});
+            Session.InsertAll(new[] { fact11, fact12 });
+            Session.InsertAll(new[] { fact21, fact22 });
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredTwice();
-            Assert.Equal("Valid Value 11|Valid Value 21", GetFiredFact<CalculatedFact3>(0).Value);
-            Assert.Equal("Valid Value 12|Valid Value 22", GetFiredFact<CalculatedFact3>(1).Value);
+            Fixture.AssertFiredTwice();
+            Assert.Equal("Valid Value 11|Valid Value 21", Fixture.GetFiredFact<CalculatedFact3>(0).Value);
+            Assert.Equal("Valid Value 12|Valid Value 22", Fixture.GetFiredFact<CalculatedFact3>(1).Value);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType1
@@ -212,8 +212,8 @@ namespace NRules.IntegrationTests
                 CalculatedFact4 fact4 = null;
 
                 When()
-                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
+                    .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
                     .Let(() => fact3, () => CreateFact3(fact1, fact2))
                     .Let(() => fact4, () => CreateFact4(fact1, fact2))
                     .Having(() => fact4 != null && fact4.Value == 0);
@@ -224,13 +224,15 @@ namespace NRules.IntegrationTests
 
             private static CalculatedFact3 CreateFact3(FactType1 fact1, FactType2 fact2)
             {
-                if (fact1.ShouldProduceNull3) return null;
+                if (fact1.ShouldProduceNull3)
+                    return null;
                 return new CalculatedFact3(fact1, fact2);
             }
 
             private static CalculatedFact4 CreateFact4(FactType1 fact1, FactType2 fact2)
             {
-                if (fact1.ShouldProduceNull4) return null;
+                if (fact1.ShouldProduceNull4)
+                    return null;
                 return new CalculatedFact4(fact1, fact2);
             }
         }

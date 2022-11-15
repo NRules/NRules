@@ -13,7 +13,7 @@ namespace NRules.IntegrationTests
         public void Fire_DefaultResolver_Throws()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
 
             //Act - Assert
@@ -35,14 +35,14 @@ namespace NRules.IntegrationTests
 
             Session.DependencyResolver = new TestDependencyResolver(service1, service2);
 
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
             Assert.True(service1Called);
             Assert.True(service2Called);
         }
@@ -55,11 +55,11 @@ namespace NRules.IntegrationTests
             var service2 = new TestService2();
             Session.DependencyResolver = new TestDependencyResolver(service1, service2);
 
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
 
             ITestService1 resolvedService1 = null;
-            GetRuleInstance<TestRule>().Action = ctx =>
+            Fixture.GetRuleInstance<TestRule>().Action = ctx =>
             {
                 resolvedService1 = ctx.Resolve<ITestService1>();
             };
@@ -68,13 +68,13 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
             Assert.Same(service1, resolvedService1);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public interface ITestService1
@@ -148,7 +148,7 @@ namespace NRules.IntegrationTests
                     .Resolve(() => service2);
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
                     .Do(ctx => Action(ctx))
                     .Do(ctx => service1.Action(fact.TestProperty))

@@ -29,12 +29,12 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTimes(3);
+            Fixture.AssertFiredTimes(3);
             var firedFacts = new[]
             {
-                GetFiredFact<IGrouping<string, FactType2>>(0),
-                GetFiredFact<IGrouping<string, FactType2>>(1),
-                GetFiredFact<IGrouping<string, FactType2>>(2)
+                Fixture.GetFiredFact<IGrouping<string, FactType2>>(0),
+                Fixture.GetFiredFact<IGrouping<string, FactType2>>(1),
+                Fixture.GetFiredFact<IGrouping<string, FactType2>>(2)
             };
 
             var correctNumberofFactsPerGroup = firedFacts.Count(x => x.Count() == 1) == 1 &&
@@ -71,11 +71,11 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTimes(2);
+            Fixture.AssertFiredTwice();
             var firedFacts = new[]
             {
-                GetFiredFact<IGrouping<string, FactType2>>(0),
-                GetFiredFact<IGrouping<string, FactType2>>(1)
+                Fixture.GetFiredFact<IGrouping<string, FactType2>>(0),
+                Fixture.GetFiredFact<IGrouping<string, FactType2>>(1)
             };
 
             var correctNumberofFactsPerGroup = firedFacts.Count(x => x.Count() == 3) == 2;
@@ -99,7 +99,7 @@ namespace NRules.IntegrationTests
 
             var facts = new object[] { fact11, fact12, fact21, fact22, fact23, fact24, fact25, fact26 };
             Session.InsertAll(facts);
-            
+
             var factsForRetract = new[] { fact21, fact22, fact23 };
             Session.RetractAll(factsForRetract);
 
@@ -107,10 +107,10 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTimes(1);
+            Fixture.AssertFiredOnce();
             var firedFacts = new[]
             {
-                GetFiredFact<IGrouping<string, FactType2>>(0)
+                Fixture.GetFiredFact<IGrouping<string, FactType2>>(0)
             };
 
             var correctNumberofFactsPerGroup = firedFacts.Count(x => x.Count() == 3) == 1;
@@ -132,19 +132,19 @@ namespace NRules.IntegrationTests
 
             var facts = new object[] { fact11, fact12, fact61, fact62, fact63, fact64 };
             Session.InsertAll(facts);
-            
+
             //Act - 1
             Session.Fire();
 
             //Assert - 1
-            AssertFiredTimes(2);
+            Fixture.AssertFiredTwice();
 
             //Act - 2
             Session.Update(fact11);
             Session.Fire();
 
             //Assert - 2
-            AssertFiredTimes(3);
+            Fixture.AssertFiredTimes(3);
         }
 
         [Fact]
@@ -162,24 +162,24 @@ namespace NRules.IntegrationTests
 
             var facts = new object[] { fact11, fact12, fact61, fact62, fact63, fact64 };
             Session.InsertAll(facts);
-            
+
             //Act - 1
             Session.Fire();
 
             //Assert - 1
-            AssertFiredTimes(2);
+            Fixture.AssertFiredTwice();
 
             //Act - 2
             Session.Update(fact61);
             Session.Fire();
 
             //Assert - 2
-            AssertFiredTimes(3);
+            Fixture.AssertFiredTimes(3);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType1
@@ -203,7 +203,7 @@ namespace NRules.IntegrationTests
                 IGrouping<string, FactType2> group = null;
 
                 When()
-                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
                     .Query(() => group, x => x
                         .Match<FactType2>(
                             f => f.TestProperty.StartsWith("Valid"),

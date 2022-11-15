@@ -420,7 +420,7 @@ namespace NRules.IntegrationTests
                 FactType fact = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.NoOp());
             }

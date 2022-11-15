@@ -13,27 +13,27 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFactsAndOneInvalid_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
-            var fact1 = new FactType(1) {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType(2) {TestProperty = "Valid Value 2"};
-            var fact3 = new FactType(3) {TestProperty = "Invalid Value 3"};
+            var fact1 = new FactType(1) { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType(2) { TestProperty = "Valid Value 2" };
+            var fact3 = new FactType(3) { TestProperty = "Invalid Value 3" };
 
-            var facts = new[] {fact1, fact2, fact3};
+            var facts = new[] { fact1, fact2, fact3 };
             Session.InsertAll(facts);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+            Fixture.AssertFiredOnce();
+            Assert.Equal(2, Fixture.GetFiredFact<IEnumerable<FactType>>().Count());
         }
-        
+
         [Fact]
         public void Fire_OneMatchingFactInsertedThenUpdated_FiresOnceWithOneFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType(1) {TestProperty = "Valid Value 1"};
-            var fact11 = new FactType(1) {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType(1) { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType(1) { TestProperty = "Valid Value 1" };
 
             Session.Insert(fact1);
             Session.Update(fact11);
@@ -42,19 +42,19 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Single(GetFiredFact<IEnumerable<FactType>>());
+            Fixture.AssertFiredOnce();
+            Assert.Single(Fixture.GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]
         public void Fire_TwoMatchingFactsInsertedOneUpdated_FiresOnceWithTwoFactsInCollection()
         {
             //Arrange
-            var fact1 = new FactType(1) {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType(2) {TestProperty = "Valid Value 2"};
-            var fact21 = new FactType(2) {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType(1) { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType(2) { TestProperty = "Valid Value 2" };
+            var fact21 = new FactType(2) { TestProperty = "Valid Value 2" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
             Session.Update(fact21);
 
@@ -62,19 +62,19 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+            Fixture.AssertFiredOnce();
+            Assert.Equal(2, Fixture.GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
         [Fact]
         public void Fire_TwoMatchingFactsInsertedOneRetracted_FiresOnceWithOneFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType(1) {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType(2) {TestProperty = "Valid Value 2"};
-            var fact21 = new FactType(2) {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType(1) { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType(2) { TestProperty = "Valid Value 2" };
+            var fact21 = new FactType(2) { TestProperty = "Valid Value 2" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
             Session.Retract(fact21);
 
@@ -82,20 +82,20 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Single(GetFiredFact<IEnumerable<FactType>>());
+            Fixture.AssertFiredOnce();
+            Assert.Single(Fixture.GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]
         public void Fire_TwoMatchingFactsInsertedTwoRetracted_FiresOnceWithEmptyCollection()
         {
             //Arrange
-            var fact1 = new FactType(1) {TestProperty = "Valid Value 1"};
-            var fact11 = new FactType(1) {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType(2) {TestProperty = "Valid Value 2"};
-            var fact21 = new FactType(2) {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType(1) { TestProperty = "Valid Value 1" };
+            var fact11 = new FactType(1) { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType(2) { TestProperty = "Valid Value 2" };
+            var fact21 = new FactType(2) { TestProperty = "Valid Value 2" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
             Session.Retract(fact11);
             Session.Retract(fact21);
@@ -104,19 +104,19 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
+            Fixture.AssertFiredOnce();
+            Assert.Empty(Fixture.GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]
         public void Fire_TwoMatchingFactsInsertedOneUpdatedToInvalid_FiresOnceWithOneFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType(1) {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType(2) {TestProperty = "Valid Value 2"};
-            var fact21 = new FactType(2) {TestProperty = "Invalid Value"};
+            var fact1 = new FactType(1) { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType(2) { TestProperty = "Valid Value 2" };
+            var fact21 = new FactType(2) { TestProperty = "Invalid Value" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             Session.Update(fact21);
@@ -125,19 +125,19 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Single(GetFiredFact<IEnumerable<FactType>>());
+            Fixture.AssertFiredOnce();
+            Assert.Single(Fixture.GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]
         public void Fire_OneMatchingFactsAndOneInvalidInsertedTheInvalidUpdatedToValid_FiresOnceWithTwoFactInCollection()
         {
             //Arrange
-            var fact1 = new FactType(1) {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType(2) {TestProperty = "Invalid Value"};
-            var fact21 = new FactType(2) {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType(1) { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType(2) { TestProperty = "Invalid Value" };
+            var fact21 = new FactType(2) { TestProperty = "Valid Value 2" };
 
-            var facts = new[] {fact1, fact2};
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             Session.Update(fact21);
@@ -146,13 +146,13 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+            Fixture.AssertFiredOnce();
+            Assert.Equal(2, Fixture.GetFiredFact<IEnumerable<FactType>>().Count());
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType : IEquatable<FactType>
@@ -167,16 +167,21 @@ namespace NRules.IntegrationTests
 
             public bool Equals(FactType other)
             {
-                if (ReferenceEquals(null, other)) return false;
-                if (ReferenceEquals(this, other)) return true;
+                if (other is null)
+                    return false;
+                if (ReferenceEquals(this, other))
+                    return true;
                 return Id == other.Id;
             }
 
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
+                if (obj is null)
+                    return false;
+                if (ReferenceEquals(this, obj))
+                    return true;
+                if (obj.GetType() != GetType())
+                    return false;
                 return Equals((FactType)obj);
             }
 

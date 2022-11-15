@@ -10,27 +10,27 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingFacts_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Valid Value 2", Parent = fact1};
-            var fact3 = new FactType {TestProperty = "Invalid Value 3", Parent = fact1};
-            var fact4 = new FactType {TestProperty = "Valid Value 4", Parent = null};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Valid Value 2", Parent = fact1 };
+            var fact3 = new FactType { TestProperty = "Invalid Value 3", Parent = fact1 };
+            var fact4 = new FactType { TestProperty = "Valid Value 4", Parent = null };
 
-            var facts = new[] {fact1, fact2, fact3, fact4};
+            var facts = new[] { fact1, fact2, fact3, fact4 };
             Session.InsertAll(facts);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
-        
+
         [Fact]
         public void Fire_FirstMatchingFactSecondInvalid_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Valid Value 2" };
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -39,12 +39,12 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType
@@ -61,8 +61,8 @@ namespace NRules.IntegrationTests
                 FactType fact2 = null;
 
                 When()
-                    .Match<FactType>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Match<FactType>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.Parent == fact1);
+                    .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.Parent == fact1);
 
                 Then()
                     .Do(ctx => ctx.NoOp());

@@ -12,7 +12,7 @@ namespace NRules.IntegrationTests
         public void Fire_YieldThrowsThenUpdatedToValid_YieldsOnUpdate()
         {
             //Arrange
-            var fact1 = new FactType1 { ChainProperty = "Value", ShouldThrow = true};
+            var fact1 = new FactType1 { ChainProperty = "Value", ShouldThrow = true };
             Session.Insert(fact1);
 
             Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
@@ -28,9 +28,9 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, linkedFacts.Count());
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<ForwardChainingFirstRule>();
+            setup.Rule<ForwardChainingFirstRule>();
         }
 
         public class FactType1
@@ -51,15 +51,16 @@ namespace NRules.IntegrationTests
                 FactType1 fact1 = null;
 
                 When()
-                    .Match<FactType1>(() => fact1);
+                    .Match(() => fact1);
                 Then()
                     .Yield(ctx => Create(fact1));
             }
 
             private static FactType2 Create(FactType1 fact1)
             {
-                if (fact1.ShouldThrow) throw new InvalidOperationException();
-                var fact2 = new FactType2 {TestProperty = fact1.ChainProperty};
+                if (fact1.ShouldThrow)
+                    throw new InvalidOperationException();
+                var fact2 = new FactType2 { TestProperty = fact1.ChainProperty };
                 return fact2;
             }
         }

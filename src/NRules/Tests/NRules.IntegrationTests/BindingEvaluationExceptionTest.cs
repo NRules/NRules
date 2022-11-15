@@ -15,7 +15,7 @@ namespace NRules.IntegrationTests
         public void Insert_ErrorInBindingNoErrorHandler_Throws()
         {
             //Arrange
-            GetRuleInstance<TestRule>().Binding = ThrowBinding;
+            Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
             Expression expression = null;
             IList<IFact> facts = null;
@@ -36,7 +36,7 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssert_DoesNotFire()
         {
             //Arrange
-            GetRuleInstance<TestRule>().Binding = ThrowBinding;
+            Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
             Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
@@ -48,22 +48,22 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
         public void Fire_FailedAssertThenAssertAnother_Fires()
         {
             //Arrange
-            GetRuleInstance<TestRule>().Binding = ThrowBinding;
+            Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
             Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
             var fact1 = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact1);
 
-            GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
-            
+            Fixture.GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
+
             var fact2 = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact2);
 
@@ -71,21 +71,21 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
         public void Fire_FailedAssertThenUpdate_Fires()
         {
             //Arrange
-            GetRuleInstance<TestRule>().Binding = ThrowBinding;
+            Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
             Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
-            var fact = new FactType {TestProperty = "Valid value"};
+            var fact = new FactType { TestProperty = "Valid value" };
 
             Session.Insert(fact);
-            GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
+            Fixture.GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
 
             Session.Update(fact);
 
@@ -93,21 +93,21 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
         public void Fire_FailedAssertThenUpdateThenRetract_DoesNotFire()
         {
             //Arrange
-            GetRuleInstance<TestRule>().Binding = ThrowBinding;
+            Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
             Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
-            var fact = new FactType {TestProperty = "Valid value"};
+            var fact = new FactType { TestProperty = "Valid value" };
 
             Session.Insert(fact);
-            GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
+            Fixture.GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
 
             Session.Update(fact);
             Session.Retract(fact);
@@ -116,21 +116,21 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
         public void Fire_FailedAssertThenRetract_DoesNotFire()
         {
             //Arrange
-            GetRuleInstance<TestRule>().Binding = ThrowBinding;
+            Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
             Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
-            var fact = new FactType {TestProperty = "Valid value"};
+            var fact = new FactType { TestProperty = "Valid value" };
 
             Session.Insert(fact);
-            GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
+            Fixture.GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
 
             Session.Retract(fact);
 
@@ -138,12 +138,12 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         private static readonly Func<FactType, string> SuccessfulBinding = f => "value";

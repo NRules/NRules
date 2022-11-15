@@ -11,7 +11,7 @@ namespace NRules.IntegrationTests
         public void Fire_FactInserted_EachRuleFires()
         {
             //Arrange
-            var order = new FactType {Value = "Value1"};
+            var order = new FactType { Value = "Value1" };
 
             Session.Insert(order);
 
@@ -19,16 +19,16 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce<FactToCalc1Rule>();
-            AssertFiredOnce<Calc1ToCalc2Rule>();
-            AssertFiredOnce<Calc1Calc2ToCalc3Rule>();
+            Fixture.AssertFiredOnce<FactToCalc1Rule>();
+            Fixture.AssertFiredOnce<Calc1ToCalc2Rule>();
+            Fixture.AssertFiredOnce<Calc1Calc2ToCalc3Rule>();
         }
 
         [Fact]
         public void Fire_FactInsertedThenUpdated_EachRuleFiresTwice()
         {
             //Arrange
-            var order = new FactType {Value = "Value1"};
+            var order = new FactType { Value = "Value1" };
 
             Session.Insert(order);
             Session.Fire();
@@ -40,16 +40,16 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTwice<FactToCalc1Rule>();
-            AssertFiredTwice<Calc1ToCalc2Rule>();
-            AssertFiredTwice<Calc1Calc2ToCalc3Rule>();
+            Fixture.AssertFiredTwice<FactToCalc1Rule>();
+            Fixture.AssertFiredTwice<Calc1ToCalc2Rule>();
+            Fixture.AssertFiredTwice<Calc1Calc2ToCalc3Rule>();
         }
-        
-        protected override void SetUpRules()
+
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<FactToCalc1Rule>();
-            SetUpRule<Calc1ToCalc2Rule>();
-            SetUpRule<Calc1Calc2ToCalc3Rule>();
+            setup.Rule<FactToCalc1Rule>();
+            setup.Rule<Calc1ToCalc2Rule>();
+            setup.Rule<Calc1Calc2ToCalc3Rule>();
         }
 
         public class FactType
@@ -78,10 +78,13 @@ namespace NRules.IntegrationTests
 
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
-                return Equals((Calc3) obj);
+                if (obj is null)
+                    return false;
+                if (ReferenceEquals(this, obj))
+                    return true;
+                if (obj.GetType() != GetType())
+                    return false;
+                return Equals((Calc3)obj);
             }
 
             public override int GetHashCode()
@@ -103,7 +106,7 @@ namespace NRules.IntegrationTests
                     .OnChange(() => o.Value);
 
                 Then()
-                    .Yield(_ => new Calc1 {Key = o.Value});
+                    .Yield(_ => new Calc1 { Key = o.Value });
             }
         }
 
@@ -120,7 +123,7 @@ namespace NRules.IntegrationTests
                     .OnChange(() => calc);
 
                 Then()
-                    .Yield(_ => new Calc2{Key = calc.Key});
+                    .Yield(_ => new Calc2 { Key = calc.Key });
             }
         }
 

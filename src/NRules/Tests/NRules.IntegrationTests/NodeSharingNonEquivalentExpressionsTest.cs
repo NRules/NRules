@@ -24,10 +24,10 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce<TestRule1>();
-            AssertDidNotFire<TestRule2>();
+            Fixture.AssertFiredOnce<TestRule1>();
+            Fixture.AssertDidNotFire<TestRule2>();
         }
-        
+
         [Fact]
         public void Fire_SecondRuleMatchesFacts_OnlyMatchingRuleFires()
         {
@@ -44,10 +44,10 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire<TestRule1>();
-            AssertFiredOnce<TestRule2>();
+            Fixture.AssertDidNotFire<TestRule1>();
+            Fixture.AssertFiredOnce<TestRule2>();
         }
-        
+
         [Fact]
         public void Fire_ThirdRuleMatchesFacts_OnlyMatchingRuleFires()
         {
@@ -64,10 +64,10 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce<TestRule3>();
-            AssertDidNotFire<TestRule4>();
+            Fixture.AssertFiredOnce<TestRule3>();
+            Fixture.AssertDidNotFire<TestRule4>();
         }
-        
+
         [Fact]
         public void Fire_FourthRuleMatchesFacts_OnlyMatchingRuleFires()
         {
@@ -84,18 +84,18 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire<TestRule3>();
-            AssertFiredOnce<TestRule4>();
+            Fixture.AssertDidNotFire<TestRule3>();
+            Fixture.AssertFiredOnce<TestRule4>();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule1>();
-            SetUpRule<TestRule2>();
-            SetUpRule<TestRule3>();
-            SetUpRule<TestRule4>();
+            setup.Rule<TestRule1>();
+            setup.Rule<TestRule2>();
+            setup.Rule<TestRule3>();
+            setup.Rule<TestRule4>();
         }
-        
+
         public class NameFact
         {
             public string Name { get; set; }
@@ -109,8 +109,8 @@ namespace NRules.IntegrationTests
             {
                 return nameFact;
             }
-        }   
-        
+        }
+
         public class TestRule1 : Rule
         {
             public override void Define()
@@ -128,7 +128,7 @@ namespace NRules.IntegrationTests
                     .Do(ctx => ctx.NoOp());
             }
         }
-        
+
         public class TestRule2 : Rule
         {
             public override void Define()
@@ -146,7 +146,7 @@ namespace NRules.IntegrationTests
                     .Do(ctx => ctx.NoOp());
             }
         }
-        
+
         public class TestRule3 : Rule
         {
             public override void Define()
@@ -167,7 +167,7 @@ namespace NRules.IntegrationTests
                     .Do(ctx => ctx.NoOp());
             }
         }
-        
+
         public class TestRule4 : Rule
         {
             public override void Define()

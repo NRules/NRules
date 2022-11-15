@@ -1,7 +1,7 @@
-﻿using NRules.Fluent.Dsl;
+﻿using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using Xunit;
-using System.Linq;
 
 namespace NRules.IntegrationTests
 {
@@ -19,7 +19,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
             Assert.Equal(0, Session.Query<FactType>().Count());
         }
 
@@ -35,7 +35,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -51,13 +51,13 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTwice();
+            Fixture.AssertFiredTwice();
             Assert.Equal(0, Session.Query<FactType>().Count());
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType
@@ -72,7 +72,7 @@ namespace NRules.IntegrationTests
                 FactType fact = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.TryRetract(fact));
             }

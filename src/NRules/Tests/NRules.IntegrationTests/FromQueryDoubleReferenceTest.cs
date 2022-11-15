@@ -12,9 +12,9 @@ namespace NRules.IntegrationTests
         public void FromDoubleReference_SplitByKey_FiresCorrectNumberOfTimesWithCorrectFactCounts()
         {
             // Arrange
-            var values = new[] {"a", "a", "b", "b", "c", "c"};
-            var keys = new[] {1, 2, 2, 1, 2, 3};
-            var facts = values.Zip(keys, (v, k) => new Fact {Key = k, Value = v})
+            var values = new[] { "a", "a", "b", "b", "c", "c" };
+            var keys = new[] { 1, 2, 2, 1, 2, 3 };
+            var facts = values.Zip(keys, (v, k) => new Fact { Key = k, Value = v })
                 .ToArray();
 
             Session.InsertAll(facts);
@@ -27,9 +27,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
 
-            var firedFacts = GetFiredFacts<IEnumerable<Fact>>().ToArray();
+            var firedFacts = Fixture.GetFiredFacts<IEnumerable<Fact>>().ToArray();
             var factsAllExpected = facts;
             var factsOneExpected = facts.Where(f => f.Key == 1).ToArray();
             var factsTwoExpected = facts.Where(f => f.Key == 2).ToArray();
@@ -45,9 +45,9 @@ namespace NRules.IntegrationTests
             Assert.Equal(factsOneTwoExpected, factsOneTwoActual);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<FromQueryDoubleReferenceRule>();
+            setup.Rule<FromQueryDoubleReferenceRule>();
         }
 
         public class Fact

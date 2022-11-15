@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\NRules.Fluent\NRules.Fluent.csproj" />
     <ProjectReference Include="..\..\NRules.RuleModel\NRules.RuleModel.csproj" />
+    <ProjectReference Include="..\..\NRules.Testing\NRules.Testing.csproj" />
     <ProjectReference Include="..\..\NRules\NRules.csproj" />
   </ItemGroup>
 

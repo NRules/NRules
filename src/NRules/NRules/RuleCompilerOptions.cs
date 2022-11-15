@@ -1,3 +1,6 @@
+using NRules.Aggregators;
+using NRules.Utilities;
+
 namespace NRules
 {
     /// <summary>
@@ -29,5 +32,9 @@ namespace NRules
         /// while comparing them for the purpose of node sharing in the Rete graph.
         /// </summary>
         public RuleCompilerUnsupportedExpressionsHandling UnsupportedExpressionHandling { get; set; } = RuleCompilerUnsupportedExpressionsHandling.FailFast;
+
+        internal IRuleExpressionCompiler RuleExpressionCompiler { get; set; } = new RuleExpressionCompiler();
+
+        internal IAggregatorRegistry AggregatorRegistry { get; set; } = new AggregatorRegistry();
     }
 }

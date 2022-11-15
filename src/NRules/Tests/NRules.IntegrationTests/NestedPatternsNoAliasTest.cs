@@ -13,9 +13,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
-        
+
         [Fact]
         public void Fire_FactTypeOneTwoThreeInserted_FiresOnce()
         {
@@ -28,9 +28,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
-        
+
         [Fact]
         public void Fire_FactTypeOneTwoFourInserted_FiresOnce()
         {
@@ -43,12 +43,12 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType1
@@ -77,7 +77,7 @@ namespace NRules.IntegrationTests
                     .Or(x => x
                         .Match<FactType3>()
                         .Match<FactType4>());
-                
+
                 Then()
                     .Do(ctx => ctx.NoOp());
             }

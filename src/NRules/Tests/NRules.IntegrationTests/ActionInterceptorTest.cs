@@ -20,13 +20,13 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             bool actionExecuted = false;
-            GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
+            Fixture.GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
             Assert.True(actionExecuted);
         }
 
@@ -42,13 +42,13 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             bool actionExecuted = false;
-            GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
+            Fixture.GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
             Assert.True(actionExecuted);
         }
 
@@ -63,7 +63,7 @@ namespace NRules.IntegrationTests
             Session.Insert(fact1);
             Session.Insert(fact2);
 
-            GetRuleInstance<TestRule>().Action = () => { throw new InvalidOperationException("Test"); };
+            Fixture.GetRuleInstance<TestRule>().Action = () => { throw new InvalidOperationException("Test"); };
 
             //Act - Assert
             var ex = Assert.Throws<InvalidOperationException>(() => Session.Fire());
@@ -82,19 +82,19 @@ namespace NRules.IntegrationTests
             Session.Insert(fact2);
 
             bool actionExecuted = false;
-            GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
+            Fixture.GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
             Assert.False(actionExecuted);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         private class ActionInterceptor : IActionInterceptor
@@ -136,7 +136,7 @@ namespace NRules.IntegrationTests
                 IEnumerable<FactType2> collection = null;
 
                 When()
-                    .Match<FactType1>(() => fact)
+                    .Match(() => fact)
                     .Query(() => collection, x => x
                         .Match<FactType2>()
                         .Collect());

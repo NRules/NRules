@@ -12,9 +12,9 @@ namespace NRules.IntegrationTests
         public void Fire_AllPatternsMatch_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1{Key = "key1", Join = "join1"};
-            var fact2 = new FactType2{Join = "join1"};
-            var fact3 = new FactType3{Join = "join1"};
+            var fact1 = new FactType1 { Key = "key1", Join = "join1" };
+            var fact2 = new FactType2 { Join = "join1" };
+            var fact3 = new FactType3 { Join = "join1" };
             Session.Insert(fact1);
             Session.Insert(fact2);
             Session.Insert(fact3);
@@ -23,16 +23,16 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
-        
+
         [Fact]
         public void Fire_AllPatternsMatchThenFirstFactRetracted_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1{Key = "key1", Join = "join1"};
-            var fact2 = new FactType2{Join = "join1"};
-            var fact3 = new FactType3{Join = "join1"};
+            var fact1 = new FactType1 { Key = "key1", Join = "join1" };
+            var fact2 = new FactType2 { Join = "join1" };
+            var fact3 = new FactType3 { Join = "join1" };
             Session.Insert(fact1);
             Session.Insert(fact2);
             Session.Insert(fact3);
@@ -42,16 +42,16 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
-        
+
         [Fact]
         public void Fire_AllPatternsMatchThenSecondFactRetracted_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1{Key = "key1", Join = "join1"};
-            var fact2 = new FactType2{Join = "join1"};
-            var fact3 = new FactType3{Join = "join1"};
+            var fact1 = new FactType1 { Key = "key1", Join = "join1" };
+            var fact2 = new FactType2 { Join = "join1" };
+            var fact3 = new FactType3 { Join = "join1" };
             Session.Insert(fact1);
             Session.Insert(fact2);
             Session.Insert(fact3);
@@ -61,16 +61,16 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
         public void Fire_AllPatternsMatchThenThirdFactRetracted_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1{Key = "key1", Join = "join1"};
-            var fact2 = new FactType2{Join = "join1"};
-            var fact3 = new FactType3{Join = "join1"};
+            var fact1 = new FactType1 { Key = "key1", Join = "join1" };
+            var fact2 = new FactType2 { Join = "join1" };
+            var fact3 = new FactType3 { Join = "join1" };
             Session.Insert(fact1);
             Session.Insert(fact2);
             Session.Insert(fact3);
@@ -80,12 +80,12 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType1
@@ -119,8 +119,8 @@ namespace NRules.IntegrationTests
                     .Query(() => facts2, q => q
                         .Match<FactType2>(f => f.Join == group.First().Join)
                         .Collect())
-                    .Match<FactType3>(() => fact3, f => f.Join == group.First().Join);
-                
+                    .Match(() => fact3, f => f.Join == group.First().Join);
+
                 Then()
                     .Do(ctx => ctx.NoOp());
             }

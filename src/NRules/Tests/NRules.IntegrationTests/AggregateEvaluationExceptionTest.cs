@@ -15,7 +15,7 @@ namespace NRules.IntegrationTests
         public void Fire_ErrorInAggregateNoErrorHandler_Throws()
         {
             //Arrange
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
             Expression expression = null;
             IList<IFact> facts = null;
@@ -40,7 +40,7 @@ namespace NRules.IntegrationTests
         public void Fire_FailedAssert_DoesNotFire()
         {
             //Arrange
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
             Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
@@ -54,7 +54,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace NRules.IntegrationTests
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
             var fact22 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact22);
@@ -78,7 +78,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -90,12 +90,12 @@ namespace NRules.IntegrationTests
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
+            Fixture.GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
 
             var fact22 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact22);
@@ -104,8 +104,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            var group = GetFiredFact<IEnumerable<FactType2>>();
+            Fixture.AssertFiredOnce();
+            var group = Fixture.GetFiredFact<IEnumerable<FactType2>>();
             Assert.Equal(2, group.Count());
         }
 
@@ -118,12 +118,12 @@ namespace NRules.IntegrationTests
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
+            Fixture.GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
 
             var fact22 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact22);
@@ -134,8 +134,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            var group = GetFiredFact<IEnumerable<FactType2>>();
+            Fixture.AssertFiredOnce();
+            var group = Fixture.GetFiredFact<IEnumerable<FactType2>>();
             Assert.Equal(2, group.Count());
         }
 
@@ -154,7 +154,7 @@ namespace NRules.IntegrationTests
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
             var fact22 = new FactType2 { GroupProperty = "Group2", JoinProperty = "Valid Value 2" };
             Session.Insert(fact22);
@@ -163,8 +163,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal("Valid Value 1", GetFiredFact<FactType1>().TestProperty);
+            Fixture.AssertFiredOnce();
+            Assert.Equal("Valid Value 1", Fixture.GetFiredFact<FactType1>().TestProperty);
         }
 
         [Fact]
@@ -179,12 +179,12 @@ namespace NRules.IntegrationTests
             var fact12 = new FactType1 { TestProperty = "Valid Value 2" };
             Session.Insert(fact12);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
+            Fixture.GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
 
             var fact22 = new FactType2 { GroupProperty = "Group2", JoinProperty = "Valid Value 2" };
             Session.Insert(fact22);
@@ -193,8 +193,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal("Valid Value 2", GetFiredFact<FactType1>().TestProperty);
+            Fixture.AssertFiredOnce();
+            Assert.Equal("Valid Value 2", Fixture.GetFiredFact<FactType1>().TestProperty);
         }
 
         [Fact]
@@ -209,14 +209,14 @@ namespace NRules.IntegrationTests
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
             Session.Update(fact21);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -231,17 +231,17 @@ namespace NRules.IntegrationTests
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
             Session.Update(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
+            Fixture.GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
             Session.Update(fact21);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
@@ -253,20 +253,20 @@ namespace NRules.IntegrationTests
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-            
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-            
+            Fixture.GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
+
             Session.Update(fact21);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
@@ -281,21 +281,21 @@ namespace NRules.IntegrationTests
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
             var fact22 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact22);
 
-            GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-            
+            Fixture.GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
+
             Session.Update(fact11);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            var group = GetFiredFact<IEnumerable<FactType2>>();
+            Fixture.AssertFiredOnce();
+            var group = Fixture.GetFiredFact<IEnumerable<FactType2>>();
             Assert.Equal(2, group.Count());
         }
 
@@ -308,13 +308,13 @@ namespace NRules.IntegrationTests
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-            
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-            
+            Fixture.GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
+
             Session.Update(fact21);
             Session.Retract(fact21);
 
@@ -322,7 +322,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -334,20 +334,20 @@ namespace NRules.IntegrationTests
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-            
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-            
+            Fixture.GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
+
             Session.Retract(fact21);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -359,25 +359,25 @@ namespace NRules.IntegrationTests
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact11);
 
-            GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-            
+            Fixture.GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
+
             var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
             Session.Insert(fact21);
 
-            GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-            
+            Fixture.GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
+
             Session.Retract(fact11);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         private static readonly Func<FactType2, object> SuccessfulGrouping = x => x.GroupProperty;

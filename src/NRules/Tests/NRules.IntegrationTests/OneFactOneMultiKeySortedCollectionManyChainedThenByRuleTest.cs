@@ -12,39 +12,41 @@ namespace NRules.IntegrationTests
         public void Fire_FourMatchingFactsAndOneInvalid_FiresOnceWithFourSortedFactsInCollection()
         {
             // Arrange
-            var facts = new List<FactType>();
-            facts.Add(new FactType(0, 0, 0, 0, 0));
-            facts.Add(new FactType(0, 0, 0, 0, 1));
-            facts.Add(new FactType(0, 0, 0, 1, 0));
-            facts.Add(new FactType(0, 0, 0, 1, 1));
-            facts.Add(new FactType(0, 0, 1, 0, 0));
-            facts.Add(new FactType(0, 0, 1, 0, 1));
-            facts.Add(new FactType(0, 0, 1, 1, 0));
-            facts.Add(new FactType(0, 0, 1, 1, 1));
-            facts.Add(new FactType(0, 1, 0, 0, 0));
-            facts.Add(new FactType(0, 1, 0, 0, 1));
-            facts.Add(new FactType(0, 1, 0, 1, 0));
-            facts.Add(new FactType(0, 1, 0, 1, 1));
-            facts.Add(new FactType(0, 1, 1, 0, 0));
-            facts.Add(new FactType(0, 1, 1, 0, 1));
-            facts.Add(new FactType(0, 1, 1, 1, 0));
-            facts.Add(new FactType(0, 1, 1, 1, 1));
-            facts.Add(new FactType(1, 0, 0, 0, 0));
-            facts.Add(new FactType(1, 0, 0, 0, 1));
-            facts.Add(new FactType(1, 0, 0, 1, 0));
-            facts.Add(new FactType(1, 0, 0, 1, 1));
-            facts.Add(new FactType(1, 0, 1, 0, 0));
-            facts.Add(new FactType(1, 0, 1, 0, 1));
-            facts.Add(new FactType(1, 0, 1, 1, 0));
-            facts.Add(new FactType(1, 0, 1, 1, 1));
-            facts.Add(new FactType(1, 1, 0, 0, 0));
-            facts.Add(new FactType(1, 1, 0, 0, 1));
-            facts.Add(new FactType(1, 1, 0, 1, 0));
-            facts.Add(new FactType(1, 1, 0, 1, 1));
-            facts.Add(new FactType(1, 1, 1, 0, 0));
-            facts.Add(new FactType(1, 1, 1, 0, 1));
-            facts.Add(new FactType(1, 1, 1, 1, 0));
-            facts.Add(new FactType(1, 1, 1, 1, 1));
+            var facts = new FactType[]
+            {
+                new(0, 0, 0, 0, 0),
+                new(0, 0, 0, 0, 1),
+                new(0, 0, 0, 1, 0),
+                new(0, 0, 0, 1, 1),
+                new(0, 0, 1, 0, 0),
+                new(0, 0, 1, 0, 1),
+                new(0, 0, 1, 1, 0),
+                new(0, 0, 1, 1, 1),
+                new(0, 1, 0, 0, 0),
+                new(0, 1, 0, 0, 1),
+                new(0, 1, 0, 1, 0),
+                new(0, 1, 0, 1, 1),
+                new(0, 1, 1, 0, 0),
+                new(0, 1, 1, 0, 1),
+                new(0, 1, 1, 1, 0),
+                new(0, 1, 1, 1, 1),
+                new(1, 0, 0, 0, 0),
+                new(1, 0, 0, 0, 1),
+                new(1, 0, 0, 1, 0),
+                new(1, 0, 0, 1, 1),
+                new(1, 0, 1, 0, 0),
+                new(1, 0, 1, 0, 1),
+                new(1, 0, 1, 1, 0),
+                new(1, 0, 1, 1, 1),
+                new(1, 1, 0, 0, 0),
+                new(1, 1, 0, 0, 1),
+                new(1, 1, 0, 1, 0),
+                new(1, 1, 0, 1, 1),
+                new(1, 1, 1, 0, 0),
+                new(1, 1, 1, 0, 1),
+                new(1, 1, 1, 1, 0),
+                new(1, 1, 1, 1, 1)
+            };
 
             Session.InsertAll(facts);
 
@@ -52,8 +54,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
+            Fixture.AssertFiredOnce();
+            var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
             Assert.Equal(32, firedFacts.Count());
 
             var expectedOrder = facts
@@ -70,9 +72,9 @@ namespace NRules.IntegrationTests
             }
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType

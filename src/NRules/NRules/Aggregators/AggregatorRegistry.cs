@@ -3,10 +3,17 @@ using System.Collections.Generic;
 
 namespace NRules.Aggregators
 {
+    public interface IAggregatorRegistry
+    {
+        Type this[string name] { get; }
+
+        void RegisterFactory(string name, Type factoryType);
+    }
+
     /// <summary>
     /// Registry of custom aggregator factories.
     /// </summary>
-    public class AggregatorRegistry
+    public class AggregatorRegistry : IAggregatorRegistry
     {
         private readonly Dictionary<string, Type> _factoryMap = new();
 
@@ -19,7 +26,7 @@ namespace NRules.Aggregators
         /// </summary>
         /// <param name="name">Name of the custom aggregator.</param>
         /// <returns>Custom aggregator type or <c>null</c> if a given aggregator type is not registered.</returns>
-        internal Type this[string name]
+        public Type this[string name]
         {
             get
             {

@@ -11,7 +11,7 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactInsertedThenUpdatedNoFactsOfSecondKind_UpdatePropagatesFiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact1);
 
             fact1.TestProperty = "Valid Value 2";
@@ -21,8 +21,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            var calculatedFact = GetFiredFact<CalculatedFact>();
+            Fixture.AssertFiredOnce();
+            var calculatedFact = Fixture.GetFiredFact<CalculatedFact>();
             Assert.Equal("Valid Value 2", calculatedFact.Value);
         }
 
@@ -30,10 +30,10 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFactInsertedThenUpdatedHasFactsOfSecondKind_UpdatePropagatesFiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
             Session.Insert(fact1);
 
-            var fact2 = new FactType2 {TestProperty = "Valid Value 1"};
+            var fact2 = new FactType2 { TestProperty = "Valid Value 1" };
             Session.Insert(fact2);
 
             fact1.TestProperty = "Valid Value 2";
@@ -43,14 +43,14 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            var calculatedFact = GetFiredFact<CalculatedFact>();
+            Fixture.AssertFiredOnce();
+            var calculatedFact = Fixture.GetFiredFact<CalculatedFact>();
             Assert.Equal("Valid Value 2", calculatedFact.Value);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType1
@@ -82,7 +82,7 @@ namespace NRules.IntegrationTests
                         .Match<FactType2>(f => f.TestProperty.StartsWith("Valid"))
                         .Select(x => x)
                         .Collect())
-                    .Let(() => calculatedFact, () => new CalculatedFact {Value = fact1.TestProperty});
+                    .Let(() => calculatedFact, () => new CalculatedFact { Value = fact1.TestProperty });
 
                 Then()
                     .Do(ctx => ctx.NoOp());

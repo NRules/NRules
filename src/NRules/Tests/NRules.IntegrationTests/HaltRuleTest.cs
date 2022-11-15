@@ -10,25 +10,25 @@ namespace NRules.IntegrationTests
         public void Fire_TwoMatchingFacts_FiresOnceAndHalts()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Valid Value 2"};
-            var facts = new[] {fact1, fact2};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Valid Value 2" };
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
-        
+
         [Fact]
         public void Fire_TwoMatchingFactsFireCalledTwice_FiresOnceThenHaltsThenResumesAndFiresAgain()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType {TestProperty = "Valid Value 2"};
-            var facts = new[] {fact1, fact2};
+            var fact1 = new FactType { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType { TestProperty = "Valid Value 2" };
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             //Act
@@ -36,12 +36,12 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTwice();
+            Fixture.AssertFiredTwice();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType
@@ -56,7 +56,7 @@ namespace NRules.IntegrationTests
                 FactType fact = null;
 
                 When()
-                    .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
                 Then()
                     .Do(ctx => ctx.Halt());
             }

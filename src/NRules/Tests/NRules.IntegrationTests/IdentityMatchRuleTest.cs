@@ -10,37 +10,37 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingFact_FiresOnce()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid value"};
+            var fact = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
         public void Fire_TwoMatchingFacts_FiresTwice()
         {
             //Arrange
-            var fact1 = new FactType {TestProperty = "Valid value"};
-            var fact2 = new FactType {TestProperty = "Valid value"};
-            var facts = new[] {fact1, fact2};
+            var fact1 = new FactType { TestProperty = "Valid value" };
+            var fact2 = new FactType { TestProperty = "Valid value" };
+            var facts = new[] { fact1, fact2 };
             Session.InsertAll(facts);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredTwice();
+            Fixture.AssertFiredTwice();
         }
 
         [Fact]
         public void Fire_MatchingFactInsertedAndRetracted_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid value"};
+            var fact = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact);
             Session.Retract(fact);
 
@@ -48,14 +48,14 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
         public void Fire_MatchingFactInsertedAndUpdatedToInvalid_DoesNotFire()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid value"};
+            var fact = new FactType { TestProperty = "Valid value" };
             Session.Insert(fact);
             fact.TestProperty = "Invalid value";
             Session.Update(fact);
@@ -64,7 +64,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
         [Fact]
@@ -75,12 +75,12 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType
@@ -96,8 +96,8 @@ namespace NRules.IntegrationTests
                 FactType fact2 = null;
 
                 When()
-                    .Match<FactType>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Match<FactType>(() => fact2, f => ReferenceEquals(f, fact1));
+                    .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact2, f => ReferenceEquals(f, fact1));
 
                 Then()
                     .Do(ctx => ctx.NoOp());

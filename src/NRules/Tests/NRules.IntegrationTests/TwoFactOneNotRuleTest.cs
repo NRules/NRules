@@ -10,8 +10,8 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingNotPatternFacts_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -20,15 +20,15 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
-        
+
         [Fact]
         public void Fire_InsertedThenRetractedFactMatchingNotPatternFacts_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -38,15 +38,15 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
-        
+
         [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenRetracted_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -56,15 +56,15 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
-        
+
         [Fact]
         public void Fire_MatchingNotPatternFactAssertedThenUpdatedToInvalid_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -76,14 +76,14 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
         public void Fire_MatchingFactInsertedThenRetractedAndNoFactsMatchingNotPattern_DoesNotFire()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
 
             Session.Insert(fact1);
             Session.Retract(fact1);
@@ -92,14 +92,14 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
-        
+
         [Fact]
         public void Fire_MatchingFactAndNoFactsMatchingNotPattern_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
 
             Session.Insert(fact1);
 
@@ -107,14 +107,14 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
         public void Fire_MatchingFactInsertedThenUpdatedAndNoFactsMatchingNotPattern_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
 
             Session.Insert(fact1);
             Session.Update(fact1);
@@ -123,15 +123,15 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
         public void Fire_TwoMatchingFactsAndNoFactsMatchingNotPattern_FiresTwice()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType1 { TestProperty = "Valid Value 2" };
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -140,7 +140,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTwice();
+            Fixture.AssertFiredTwice();
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace NRules.IntegrationTests
             //Arrange
             var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
             var fact12 = new FactType1 { TestProperty = "Valid Value 2" };
-            var fact21 = new FactType2 { TestProperty = "Valid Value 3", JoinProperty = fact11.TestProperty};
+            var fact21 = new FactType2 { TestProperty = "Valid Value 3", JoinProperty = fact11.TestProperty };
 
             Session.Insert(fact11);
             Session.Insert(fact12);
@@ -159,7 +159,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
@@ -177,7 +177,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert - 1
-            AssertFiredTwice();
+            Fixture.AssertFiredTwice();
 
             //Act - 2
             Session.Insert(fact21);
@@ -185,7 +185,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert - 2
-            AssertFiredTimes(4);
+            Fixture.AssertFiredTimes(4);
         }
 
         [Fact]
@@ -202,19 +202,19 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert - 1
-            AssertFiredTwice();
+            Fixture.AssertFiredTwice();
 
             //Act - 2
             Session.Update(fact11);
             Session.Fire();
 
             //Assert - 2
-            AssertFiredTimes(3);
+            Fixture.AssertFiredTimes(3);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType1
@@ -235,7 +235,7 @@ namespace NRules.IntegrationTests
                 FactType1 fact = null;
 
                 When()
-                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
                     .Not<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact.TestProperty);
                 Then()
                     .Do(ctx => ctx.NoOp());

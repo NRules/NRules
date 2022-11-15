@@ -19,22 +19,18 @@ namespace NRules.Fluent
         /// </summary>
         public RuleRepository()
         {
-            Activator = new RuleActivator();
         }
 
         /// <summary>
         /// Rules activator that instantiates rules based on a CLR type.
         /// </summary>
-        public IRuleActivator Activator { get; set; }
+        public IRuleActivator Activator { get; set; } = new RuleActivator();
 
         /// <summary>
         /// Retrieves all rule sets contained in the repository.
         /// </summary>
         /// <returns>Collection of rule sets.</returns>
-        public IEnumerable<IRuleSet> GetRuleSets()
-        {
-            return _ruleSets;
-        }
+        public IEnumerable<IRuleSet> GetRuleSets() => _ruleSets;
 
         /// <summary>
         /// Loads rules into a rule set using provided loader specification.
@@ -68,7 +64,7 @@ namespace NRules.Fluent
 
         private IRuleSet GetRuleSet(string ruleSetName)
         {
-            IRuleSet ruleSet = _ruleSets.SingleOrDefault(rs => rs.Name == ruleSetName);
+            var ruleSet = _ruleSets.SingleOrDefault(rs => rs.Name == ruleSetName);
             if (ruleSet == null)
             {
                 ruleSet = new RuleSet(ruleSetName);

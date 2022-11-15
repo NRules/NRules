@@ -12,8 +12,8 @@ namespace NRules.IntegrationTests
         public void From_MultipleKeys_ShouldFireOnceForEachGroup()
         {
             // Arrange
-            var keys = new[] {"K1", "K2", "K2", "K1"};
-            var facts = keys.Select(k => new Fact {Value = k})
+            var keys = new[] { "K1", "K2", "K2", "K1" };
+            var facts = keys.Select(k => new Fact { Value = k })
                 .ToArray();
 
             Session.InsertAll(facts);
@@ -22,15 +22,15 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredTwice();
+            Fixture.AssertFiredTwice();
         }
 
         [Fact]
         public void From_SingleKey_FiresOnce()
         {
             // Arrange
-            var keys = new[] {"K1", "K1", "K1", "K1"};
-            var facts = keys.Select(k => new Fact {Value = k})
+            var keys = new[] { "K1", "K1", "K1", "K1" };
+            var facts = keys.Select(k => new Fact { Value = k })
                 .ToArray();
 
             Session.InsertAll(facts);
@@ -39,15 +39,15 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
         public void From_HandlesRetracts_FiresThenDoesNotFire()
         {
             // Arrange
-            var keys = new[] {"K1", "K2", "K2", "K1"};
-            var facts = keys.Select(k => new Fact {Value = k})
+            var keys = new[] { "K1", "K2", "K2", "K1" };
+            var facts = keys.Select(k => new Fact { Value = k })
                 .ToArray();
 
             Session.InsertAll(facts);
@@ -56,7 +56,7 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredTwice();
+            Fixture.AssertFiredTwice();
 
             // Arrange
             Session.RetractAll(facts);
@@ -65,12 +65,12 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredTwice();
+            Fixture.AssertFiredTwice();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<FromQuerySingleReferenceRule>();
+            setup.Rule<FromQuerySingleReferenceRule>();
         }
 
         public class Fact

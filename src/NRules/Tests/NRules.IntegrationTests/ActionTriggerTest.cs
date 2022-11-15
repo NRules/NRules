@@ -28,7 +28,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Fire();
@@ -44,7 +44,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             fact.AcceptFilter = false;
             Session.Insert(fact);
@@ -61,7 +61,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Update(fact);
@@ -78,7 +78,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             fact.AcceptFilter = false;
@@ -96,7 +96,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             fact.AcceptFilter = false;
             Session.Insert(fact);
@@ -261,7 +261,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(0, _rematchActionCount);
             Assert.Equal(1, _unmatchActionCount);
         }
-        
+
         [Fact]
         public void Fire_InsertThenFireThenUpdateThenFireThenRetractThenFire_FiresOnMatchAndOnRematchAndOnUnmatch()
         {
@@ -381,9 +381,9 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, _unmatchActionCount);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType
@@ -433,7 +433,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Fire();
@@ -449,7 +449,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             fact.AcceptFilter = false;
             Session.Insert(fact);
@@ -466,7 +466,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Update(fact);
@@ -483,7 +483,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             fact.AcceptFilter = false;
@@ -501,7 +501,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             fact.AcceptFilter = false;
             Session.Insert(fact);
@@ -666,7 +666,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(0, _rematchActionCount);
             Assert.Equal(1, _unmatchActionCount);
         }
-        
+
         [Fact]
         public void Fire_InsertThenFireThenUpdateThenFireThenRetractThenFire_FiresOnMatchAndOnUnmatch()
         {
@@ -786,9 +786,9 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, _unmatchActionCount);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType
@@ -836,7 +836,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Fire();
@@ -851,7 +851,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             fact.AcceptFilter = false;
             Session.Insert(fact);
@@ -867,7 +867,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Update(fact);
@@ -883,7 +883,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             fact.AcceptFilter = false;
@@ -900,7 +900,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             fact.AcceptFilter = false;
             Session.Insert(fact);
@@ -1056,7 +1056,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, _matchActionCount);
             Assert.Equal(1, _unmatchActionCount);
         }
-        
+
         [Fact]
         public void Fire_InsertThenFireThenUpdateThenFireThenRetractThenFire_FiresOnMatchAndOnRematchAndOnUnmatch()
         {
@@ -1170,9 +1170,9 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, _unmatchActionCount);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType
@@ -1218,7 +1218,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Fire();
@@ -1233,7 +1233,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             fact.AcceptFilter = false;
             Session.Insert(fact);
@@ -1249,7 +1249,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             Session.Update(fact);
@@ -1265,7 +1265,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             Session.Insert(fact);
             fact.AcceptFilter = false;
@@ -1282,7 +1282,7 @@ namespace NRules.IntegrationTests
         {
             //Arrange
             var fact = new FactType();
-            
+
             //Act
             fact.AcceptFilter = false;
             Session.Insert(fact);
@@ -1438,7 +1438,7 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, _matchActionCount);
             Assert.Equal(1, _unmatchActionCount);
         }
-        
+
         [Fact]
         public void Fire_InsertThenFireThenUpdateThenFireThenRetractThenFire_FiresOnMatchAndOnUnmatch()
         {
@@ -1552,9 +1552,9 @@ namespace NRules.IntegrationTests
             Assert.Equal(1, _unmatchActionCount);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType

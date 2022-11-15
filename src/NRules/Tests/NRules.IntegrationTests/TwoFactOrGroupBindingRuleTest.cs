@@ -10,7 +10,7 @@ namespace NRules.IntegrationTests
         public void Fire_FactMatchingFirstPartOfOrGroup_FiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1", Value = "Fact1"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", Value = "Fact1" };
 
             Session.Insert(fact1);
 
@@ -18,15 +18,15 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal("Fact1", GetFiredFact<string>());
+            Fixture.AssertFiredOnce();
+            Assert.Equal("Fact1", Fixture.GetFiredFact<string>());
         }
 
         [Fact]
         public void Fire_FactsMatchingSecondPartOfOrGroup_FiresOnce()
         {
             //Arrange
-            var fact2 = new FactType2 { TestProperty = "Valid Value 2", Value = "Fact2"};
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", Value = "Fact2" };
 
             Session.Insert(fact2);
 
@@ -34,16 +34,16 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
-            Assert.Equal("Fact2", GetFiredFact<string>());
+            Fixture.AssertFiredOnce();
+            Assert.Equal("Fact2", Fixture.GetFiredFact<string>());
         }
 
         [Fact]
         public void Fire_FactsMatchingBothPartsOfOrGroup_FiresTwice()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1", Value = "Fact1"};
-            var fact2 = new FactType2 { TestProperty = "Valid Value 2", Value = "Fact2"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1", Value = "Fact1" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", Value = "Fact2" };
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -52,14 +52,14 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredTwice();
-            Assert.Equal("Fact1", GetFiredFact<string>(0));
-            Assert.Equal("Fact2", GetFiredFact<string>(1));
+            Fixture.AssertFiredTwice();
+            Assert.Equal("Fact1", Fixture.GetFiredFact<string>(0));
+            Assert.Equal("Fact2", Fixture.GetFiredFact<string>(1));
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType1
@@ -84,8 +84,8 @@ namespace NRules.IntegrationTests
 
                 When()
                     .Or(x => x
-                        .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                        .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid")))
+                        .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                        .Match(() => fact2, f => f.TestProperty.StartsWith("Valid")))
                     .Let(() => value, () => GetValue(fact1, fact2));
 
                 Then()

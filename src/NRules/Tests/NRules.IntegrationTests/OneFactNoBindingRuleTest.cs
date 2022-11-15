@@ -13,25 +13,25 @@ namespace NRules.IntegrationTests
         public void Fire_OneMatchingFact_FiresOnce()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
         public void Fire_OneMatchingFact_FactInContext()
         {
             //Arrange
-            var fact = new FactType {TestProperty = "Valid Value 1"};
+            var fact = new FactType { TestProperty = "Valid Value 1" };
             Session.Insert(fact);
 
             IFactMatch[] matches = null;
-            GetRuleInstance<TestRule>().Action = ctx =>
+            Fixture.GetRuleInstance<TestRule>().Action = ctx =>
             {
                 matches = ctx.Match.Facts.ToArray();
             };
@@ -40,14 +40,14 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
             Assert.Single(matches);
             Assert.Same(fact, matches[0].Value);
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType

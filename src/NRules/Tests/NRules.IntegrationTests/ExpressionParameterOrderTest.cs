@@ -13,13 +13,13 @@ namespace NRules.IntegrationTests
             var f0 = new FactType0();
             var f1 = new FactType1();
             var f2 = new FactType2();
-            Session.InsertAll(new object[]{f0, f1, f2});
+            Session.InsertAll(new object[] { f0, f1, f2 });
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
         [Fact]
@@ -28,18 +28,18 @@ namespace NRules.IntegrationTests
             //Arrange
             var f0 = new FactType0();
             var f3 = new FactType3();
-            Session.InsertAll(new object[]{f0, f3});
+            Session.InsertAll(new object[] { f0, f3 });
 
             //Act
             Session.Fire();
 
             //Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType0

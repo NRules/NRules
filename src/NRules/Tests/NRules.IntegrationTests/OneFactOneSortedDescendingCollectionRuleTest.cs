@@ -15,8 +15,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
-            Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
+            Fixture.AssertFiredOnce();
+            Assert.Empty(Fixture.GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]
@@ -34,9 +34,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
 
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
+            var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
             Assert.Equal(2, firedFacts.Count());
             Assert.Equal(fact2, firedFacts.ElementAt(0));
             Assert.Equal(fact3, firedFacts.ElementAt(1));
@@ -59,9 +59,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
 
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
+            var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
             Assert.Equal(2, firedFacts.Count());
             Assert.Equal(fact2, firedFacts.ElementAt(0));
             Assert.Equal(fact1, firedFacts.ElementAt(1));
@@ -82,9 +82,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
 
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
+            var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
             Assert.Single(firedFacts);
             Assert.Equal(fact1, firedFacts.ElementAt(0));
         }
@@ -105,8 +105,8 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
-            Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
+            Fixture.AssertFiredOnce();
+            Assert.Empty(Fixture.GetFiredFact<IEnumerable<FactType>>());
         }
 
         [Fact]
@@ -126,9 +126,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
 
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
+            var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
             Assert.Single(firedFacts);
             Assert.Equal(fact1, firedFacts.ElementAt(0));
         }
@@ -150,9 +150,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
 
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
+            var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
             Assert.Equal(2, firedFacts.Count());
             Assert.Equal(fact1, firedFacts.ElementAt(0));
             Assert.Equal(fact2, firedFacts.ElementAt(1));
@@ -175,9 +175,9 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredOnce();
+            Fixture.AssertFiredOnce();
 
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
+            var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
             Assert.Equal(5, firedFacts.Count());
             Assert.Equal(fact2, firedFacts.ElementAt(0));
             Assert.Equal(fact4, firedFacts.ElementAt(1));
@@ -186,9 +186,9 @@ namespace NRules.IntegrationTests
             Assert.Equal(fact3, firedFacts.ElementAt(4));
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<TestRule>();
+            setup.Rule<TestRule>();
         }
 
         public class FactType

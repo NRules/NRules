@@ -11,7 +11,7 @@ namespace NRules.IntegrationTests
         public void Fire_MatchingFactOfFirstKindNoFactsOfOtherKind_FiresCollect()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
 
             Session.Insert(fact1);
 
@@ -19,16 +19,16 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce<CollectionRule>();
-            AssertDidNotFire<ExistsRule>();
+            Fixture.AssertFiredOnce<CollectionRule>();
+            Fixture.AssertDidNotFire<ExistsRule>();
         }
 
         [Fact]
         public void Fire_MatchingFactOfFirstKindAndMatchingFactOfOtherKind_EachFiresOnce()
         {
             //Arrange
-            var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-            var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+            var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+            var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
             Session.Insert(fact1);
             Session.Insert(fact2);
@@ -37,14 +37,14 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             //Assert
-            AssertFiredOnce<CollectionRule>();
-            AssertFiredOnce<ExistsRule>();
+            Fixture.AssertFiredOnce<CollectionRule>();
+            Fixture.AssertFiredOnce<ExistsRule>();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<ExistsRule>();
-            SetUpRule<CollectionRule>();
+            setup.Rule<ExistsRule>();
+            setup.Rule<CollectionRule>();
         }
 
         public class FactType1
@@ -65,7 +65,7 @@ namespace NRules.IntegrationTests
                 FactType1 fact = null;
 
                 When()
-                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
                     .Exists<FactType2>(f => f.TestProperty.StartsWith("Valid"),
                         f => f.JoinProperty == fact.TestProperty);
                 Then()
@@ -81,7 +81,7 @@ namespace NRules.IntegrationTests
                 IEnumerable<FactType2> collection = null;
 
                 When()
-                    .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
                     .Query(() => collection, x => x
                         .Match<FactType2>(
                             f => f.TestProperty.StartsWith("Valid"),

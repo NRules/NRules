@@ -12,11 +12,11 @@ namespace NRules.IntegrationTests
         public void FromComplex_JoinedWithKeyAndFactsFiltered_FiresForEachGroup()
         {
             // Arrange
-            var values = new[] {"a", "b", "b", "a"};
-            var keys = new[] {1, 1, 2, 2};
-            var facts = values.Zip(keys, (v, k) => new Fact {Key = k, Value = v});
+            var values = new[] { "a", "b", "b", "a" };
+            var keys = new[] { 1, 1, 2, 2 };
+            var facts = values.Zip(keys, (v, k) => new Fact { Key = k, Value = v });
 
-            var key = new Key {Value = 1};
+            var key = new Key { Value = 1 };
 
             Session.Insert(key);
             Session.InsertAll(facts);
@@ -25,18 +25,18 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertFiredTwice();
+            Fixture.AssertFiredTwice();
         }
 
         [Fact]
         public void FromComplex_JoinedWithKeyAndFactsFiltered_NoMatches_DoesNotFire()
         {
             // Arrange
-            var values = new[] {"a", "b", "b", "a"};
-            var keys = new[] {1, 1, 2, 2};
-            var facts = values.Zip(keys, (v, k) => new Fact {Key = k, Value = v});
+            var values = new[] { "a", "b", "b", "a" };
+            var keys = new[] { 1, 1, 2, 2 };
+            var facts = values.Zip(keys, (v, k) => new Fact { Key = k, Value = v });
 
-            var key = new Key {Value = 3};
+            var key = new Key { Value = 3 };
 
             Session.Insert(key);
             Session.InsertAll(facts);
@@ -45,12 +45,12 @@ namespace NRules.IntegrationTests
             Session.Fire();
 
             // Assert
-            AssertDidNotFire();
+            Fixture.AssertDidNotFire();
         }
 
-        protected override void SetUpRules()
+        protected override void SetUpRules(Testing.IRepositorySetup setup)
         {
-            SetUpRule<FromQueryComplexReferenceRule>();
+            setup.Rule<FromQueryComplexReferenceRule>();
         }
 
         public class Fact
