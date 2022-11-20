@@ -1,31 +1,30 @@
-﻿namespace NRules.Samples.MissManners.Domain
+﻿namespace NRules.Samples.MissManners.Domain;
+
+public enum ContextState
 {
-    public enum ContextState
+    StartUp = 0,
+    AssignSeats = 1,
+    MakePath = 2,
+    CheckDone = 3,
+    PrintResults = 4,
+}
+
+public class Context
+{
+    public Context()
     {
-        StartUp = 0,
-        AssignSeats = 1,
-        MakePath = 2,
-        CheckDone = 3,
-        PrintResults = 4,
+        State = ContextState.StartUp;
     }
 
-    public class Context
+    public ContextState State { get; private set; }
+
+    public void SetState(ContextState state)
     {
-        public Context()
-        {
-            State = ContextState.StartUp;
-        }
+        State = state;
+    }
 
-        public ContextState State { get; private set; }
-
-        public void SetState(ContextState state)
-        {
-            State = state;
-        }
-
-        public override string ToString()
-        {
-            return State.ToString();
-        }
+    public override string ToString()
+    {
+        return State.ToString();
     }
 }

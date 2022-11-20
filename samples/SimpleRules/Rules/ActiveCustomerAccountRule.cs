@@ -2,23 +2,22 @@ using System;
 using NRules.Fluent.Dsl;
 using NRules.Samples.SimpleRules.Domain;
 
-namespace NRules.Samples.SimpleRules.Rules
+namespace NRules.Samples.SimpleRules.Rules;
+
+public class ActiveCustomerAccountRule : Rule
 {
-    public class ActiveCustomerAccountRule : Rule
+    public override void Define()
     {
-        public override void Define()
-        {
-            Customer customer = default;
-            Account account = default;
+        Customer customer = default;
+        Account account = default;
 
-            When()
-                .Match(() => customer, c => c.IsPreferred)
-                .Match(() => account, a => a.Owner == customer, a => a.IsActive);
+        When()
+            .Match(() => customer, c => c.IsPreferred)
+            .Match(() => account, a => a.Owner == customer, a => a.IsActive);
 
-            Then()
-                .Do(ctx =>
-                    Console.WriteLine("Customer {0} has active account #{1}",
-                        customer.Name, account.AccountNumber));
-        }
+        Then()
+            .Do(ctx =>
+                Console.WriteLine("Customer {0} has active account #{1}",
+                    customer.Name, account.AccountNumber));
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace NRules.Json.Tests.TestAssets
+﻿namespace NRules.Json.Tests.TestAssets;
+
+public interface ITestService
 {
-    public interface ITestService
-    {
-        public void Operation();
-    }
+    public void Operation();
 }

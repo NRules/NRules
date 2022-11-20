@@ -1,12 +1,11 @@
 ﻿using NRules.RuleModel;
 
-namespace NRules.Utilities
+namespace NRules.Utilities;
+
+internal static class TriggerExtensions
 {
-    internal static class TriggerExtensions
+    public static bool Matches(this MatchTrigger matchTrigger, ActionTrigger actionTrigger)
     {
-        public static bool Matches(this MatchTrigger matchTrigger, ActionTrigger actionTrigger)
-        {
-            return ((int)actionTrigger & (int)matchTrigger) != 0;
-        }
+        return ((int)actionTrigger & (int)matchTrigger) != 0;
     }
 }

@@ -1,22 +1,21 @@
-﻿namespace NRules.Samples.MissManners.Domain
+﻿namespace NRules.Samples.MissManners.Domain;
+
+public class Count
 {
-    public class Count
+    public Count(int value)
     {
-        public Count(int value)
-        {
-            Value = value;
-        }
+        Value = value;
+    }
 
-        public int Value { get; private set; }
+    public int Value { get; private set; }
 
-        public void Increment()
-        {
-            Value++;
-        }
+    public void Increment()
+    {
+        Value++;
+    }
 
-        public override string ToString()
-        {
-            return $"[Count={Value}]";
-        }
+    public override string ToString()
+    {
+        return $"[Count={Value}]";
     }
 }

@@ -1,36 +1,35 @@
 ﻿using System;
 
-namespace NRules.RuleModel
+namespace NRules.RuleModel;
+
+/// <summary>
+/// Dependency that the rule uses when its actions run.
+/// </summary>
+public class DependencyElement : RuleElement
 {
-    /// <summary>
-    /// Dependency that the rule uses when its actions run.
-    /// </summary>
-    public class DependencyElement : RuleElement
+    internal DependencyElement(Declaration declaration, Type serviceType)
     {
-        internal DependencyElement(Declaration declaration, Type serviceType)
-        {
-            Declaration = declaration;
-            ServiceType = serviceType;
+        Declaration = declaration;
+        ServiceType = serviceType;
 
-            AddExport(declaration);
-        }
+        AddExport(declaration);
+    }
 
-        /// <inheritdoc cref="RuleElement.ElementType"/>
-        public override ElementType ElementType => ElementType.Dependency;
+    /// <inheritdoc cref="RuleElement.ElementType"/>
+    public override ElementType ElementType => ElementType.Dependency;
 
-        /// <summary>
-        /// Declaration that references the dependency.
-        /// </summary>
-        public Declaration Declaration { get; }
+    /// <summary>
+    /// Declaration that references the dependency.
+    /// </summary>
+    public Declaration Declaration { get; }
 
-        /// <summary>
-        /// Type of service that this dependency configures.
-        /// </summary>
-        public Type ServiceType { get; }
+    /// <summary>
+    /// Type of service that this dependency configures.
+    /// </summary>
+    public Type ServiceType { get; }
 
-        internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
-        {
-            visitor.VisitDependency(context, this);
-        }
+    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    {
+        visitor.VisitDependency(context, this);
     }
 }
