@@ -2,343 +2,342 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NRules.RuleModel.Builders
+namespace NRules.RuleModel.Builders;
+
+internal static class ElementValidator
 {
-    internal static class ElementValidator
+    public static void ValidateUniqueDeclarations(params RuleElement[] elements)
     {
-        public static void ValidateUniqueDeclarations(params RuleElement[] elements)
+        ValidateUniqueDeclarations(elements.AsEnumerable());
+    }
+
+    public static void ValidateUniqueDeclarations(IEnumerable<RuleElement> elements)
+    {
+        var duplicates = elements.SelectMany(x => x.Exports)
+            .GroupBy(x => x.Name)
+            .Where(x => x.Count() > 1)
+            .ToArray();
+        if (duplicates.Any())
         {
-            ValidateUniqueDeclarations(elements.AsEnumerable());
+            var declarations = string.Join(",", duplicates.Select(x => x.Key));
+            throw new InvalidOperationException($"Duplicate declarations. Declaration={declarations}");
+        }
+    }
+
+    public static void ValidateRuleDefinition(RuleDefinition definition)
+    {
+        var exports = definition.LeftHandSide.Exports
+            .Concat(definition.DependencyGroup.Exports).ToArray();
+
+        var undefinedLhs = definition.LeftHandSide.Imports
+            .Except(exports).ToArray();
+        if (undefinedLhs.Any())
+        {
+            var variables = string.Join(",", undefinedLhs.Select(x => x.Name));
+            throw new InvalidOperationException($"Undefined variables in rule match conditions. Variables={variables}");
         }
 
-        public static void ValidateUniqueDeclarations(IEnumerable<RuleElement> elements)
+        var undefinedFilter = definition.FilterGroup.Imports
+            .Except(exports).ToArray();
+        if (undefinedFilter.Any())
         {
-            var duplicates = elements.SelectMany(x => x.Exports)
-                .GroupBy(x => x.Name)
-                .Where(x => x.Count() > 1)
-                .ToArray();
-            if (duplicates.Any())
-            {
-                var declarations = string.Join(",", duplicates.Select(x => x.Key));
-                throw new InvalidOperationException($"Duplicate declarations. Declaration={declarations}");
-            }
+            var variables = string.Join(",", undefinedFilter.Select(x => x.Name));
+            throw new InvalidOperationException($"Undefined variables in rule filter. Variables={variables}");
         }
 
-        public static void ValidateRuleDefinition(RuleDefinition definition)
+        var undefinedRhs = definition.RightHandSide.Imports
+            .Except(exports).ToArray();
+        if (undefinedRhs.Any())
         {
-            var exports = definition.LeftHandSide.Exports
-                .Concat(definition.DependencyGroup.Exports).ToArray();
-
-            var undefinedLhs = definition.LeftHandSide.Imports
-                .Except(exports).ToArray();
-            if (undefinedLhs.Any())
-            {
-                var variables = string.Join(",", undefinedLhs.Select(x => x.Name));
-                throw new InvalidOperationException($"Undefined variables in rule match conditions. Variables={variables}");
-            }
-
-            var undefinedFilter = definition.FilterGroup.Imports
-                .Except(exports).ToArray();
-            if (undefinedFilter.Any())
-            {
-                var variables = string.Join(",", undefinedFilter.Select(x => x.Name));
-                throw new InvalidOperationException($"Undefined variables in rule filter. Variables={variables}");
-            }
-
-            var undefinedRhs = definition.RightHandSide.Imports
-                .Except(exports).ToArray();
-            if (undefinedRhs.Any())
-            {
-                var variables = string.Join(",", undefinedRhs.Select(x => x.Name));
-                throw new InvalidOperationException($"Undefined variables in rule actions. Variables={variables}");
-            }
-
-            var lhsDependencyRefs = definition.LeftHandSide.Imports
-                .Intersect(definition.DependencyGroup.Exports).ToArray();
-            if (lhsDependencyRefs.Any())
-            {
-                var variables = string.Join(",", lhsDependencyRefs.Select(x => x.Name));
-                throw new InvalidOperationException($"Rule match conditions cannot reference injected dependencies. Variables={variables}");
-            }
+            var variables = string.Join(",", undefinedRhs.Select(x => x.Name));
+            throw new InvalidOperationException($"Undefined variables in rule actions. Variables={variables}");
         }
 
-        public static void ValidateAggregate(AggregateElement element)
+        var lhsDependencyRefs = definition.LeftHandSide.Imports
+            .Intersect(definition.DependencyGroup.Exports).ToArray();
+        if (lhsDependencyRefs.Any())
         {
-            switch (element.Name)
-            {
-                case AggregateElement.CollectName:
-                    ValidateCollectAggregate(element);
-                    break;
-                case AggregateElement.GroupByName:
-                    ValidateGroupByAggregate(element);
-                    break;
-                case AggregateElement.ProjectName:
-                    ValidateProjectAggregate(element);
-                    break;
-                case AggregateElement.FlattenName:
-                    ValidateFlattenAggregate(element);
-                    break;
-            }
+            var variables = string.Join(",", lhsDependencyRefs.Select(x => x.Name));
+            throw new InvalidOperationException($"Rule match conditions cannot reference injected dependencies. Variables={variables}");
+        }
+    }
+
+    public static void ValidateAggregate(AggregateElement element)
+    {
+        switch (element.Name)
+        {
+            case AggregateElement.CollectName:
+                ValidateCollectAggregate(element);
+                break;
+            case AggregateElement.GroupByName:
+                ValidateGroupByAggregate(element);
+                break;
+            case AggregateElement.ProjectName:
+                ValidateProjectAggregate(element);
+                break;
+            case AggregateElement.FlattenName:
+                ValidateFlattenAggregate(element);
+                break;
+        }
+    }
+
+    public static void ValidateCollectAggregate(AggregateElement element)
+    {
+        var sourceType = element.Source.ValueType;
+        var resultType = element.ResultType;
+
+        var keySelectors = element.Expressions.Find(AggregateElement.KeySelectorName).ToArray();
+        if (keySelectors.Length > 1)
+        {
+            throw new ArgumentException(
+                $"Collect aggregator can have no more than one key selector. Count={keySelectors.Length}");
         }
 
-        public static void ValidateCollectAggregate(AggregateElement element)
+        foreach (var keySelector in keySelectors.Select(x => x.Expression))
         {
-            var sourceType = element.Source.ValueType;
-            var resultType = element.ResultType;
-
-            var keySelectors = element.Expressions.Find(AggregateElement.KeySelectorName).ToArray();
-            if (keySelectors.Length > 1)
-            {
-                throw new ArgumentException(
-                    $"Collect aggregator can have no more than one key selector. Count={keySelectors.Length}");
-            }
-
-            foreach (var keySelector in keySelectors.Select(x => x.Expression))
-            {
-                if (keySelector.Parameters.Count == 0)
-                {
-                    throw new ArgumentException(
-                        $"Collect key selector must have at least one parameter. KeySelector={keySelector}");
-                }
-                if (keySelector.Parameters[0].Type != sourceType)
-                {
-                    throw new ArgumentException(
-                        "Collect key selector must have a parameter type that matches the aggregate source. " +
-                        $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}");
-                }
-
-            }
-
-            var elementSelectors = element.Expressions.Find(AggregateElement.ElementSelectorName).ToArray();
-            if (elementSelectors.Length > 1)
-            {
-                throw new ArgumentException(
-                    $"Collect aggregator can have no more than one element selector. Count={elementSelectors.Length}");
-            }
-
-            foreach (var elementSelector in elementSelectors.Select(x => x.Expression))
-            {
-                if (elementSelector.Parameters.Count == 0)
-                {
-                    throw new ArgumentException(
-                        $"Collect element selector must have at least one parameter. KeySelector={elementSelector}");
-                }
-                if (elementSelector.Parameters[0].Type != sourceType)
-                {
-                    throw new ArgumentException(
-                        "Collect element selector must have a parameter type that matches the aggregate source. " +
-                        $"ElementSelector={elementSelector}, ExpectedType={sourceType}, ActualType={elementSelector.Parameters[0].Type}");
-                }
-
-            }
-
-            if (keySelectors.Length > 0)
-            {
-                var expectedResultType = typeof(ILookup<,>).MakeGenericType(
-                    keySelectors[0].Expression.ReturnType, elementSelectors[0].Expression.ReturnType);
-                if (!expectedResultType.IsAssignableFrom(resultType))
-                {
-                    throw new ArgumentException(
-                        $"Collect result with grouping key must be a lookup collection. ExpectedType={expectedResultType}, ActualType={resultType}");
-                }
-            }
-            else
-            {
-                var expectedResultType = typeof(IEnumerable<>).MakeGenericType(sourceType);
-                if (!expectedResultType.IsAssignableFrom(resultType))
-                {
-                    throw new ArgumentException(
-                        $"Collect result must be a collection of source elements. ExpectedType={expectedResultType}, ActualType={resultType}");
-                }
-            }
-
-            var sortKeySelectorsAscending = element.Expressions.Find(AggregateElement.KeySelectorAscendingName);
-            var sortKeySelectorsDescending = element.Expressions.Find(AggregateElement.KeySelectorDescendingName);
-
-            foreach (var sortKeySelector in sortKeySelectorsAscending.Concat(sortKeySelectorsDescending).Select(x => x.Expression))
-            {
-                if (sortKeySelector.Parameters.Count == 0)
-                {
-                    throw new ArgumentException(
-                        $"Sort key selector must have at least one parameter. KeySelector={sortKeySelector}");
-                }
-                if (sortKeySelector.Parameters[0].Type != sourceType)
-                {
-                    throw new ArgumentException(
-                        "Sort key selector must have a parameter type that matches the aggregate source. " +
-                        $"KeySelector={sortKeySelector}, ExpectedType={sourceType}, ActualType={sortKeySelector.Parameters[0].Type}");
-                }
-            }
-        }
-
-        public static void ValidateGroupByAggregate(AggregateElement element)
-        {
-            var sourceType = element.Source.ValueType;
-            var resultType = element.ResultType;
-            var keySelector = element.Expressions[AggregateElement.KeySelectorName].Expression;
             if (keySelector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
-                    $"GroupBy key selector must have at least one parameter. KeySelector={keySelector}");
+                    $"Collect key selector must have at least one parameter. KeySelector={keySelector}");
             }
             if (keySelector.Parameters[0].Type != sourceType)
             {
                 throw new ArgumentException(
-                    "GroupBy key selector must have a parameter type that matches the aggregate source. " +
+                    "Collect key selector must have a parameter type that matches the aggregate source. " +
                     $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}");
             }
 
-            var elementSelector = element.Expressions[AggregateElement.ElementSelectorName].Expression;
+        }
+
+        var elementSelectors = element.Expressions.Find(AggregateElement.ElementSelectorName).ToArray();
+        if (elementSelectors.Length > 1)
+        {
+            throw new ArgumentException(
+                $"Collect aggregator can have no more than one element selector. Count={elementSelectors.Length}");
+        }
+
+        foreach (var elementSelector in elementSelectors.Select(x => x.Expression))
+        {
             if (elementSelector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
-                    $"GroupBy element selector must have at least one parameter. ElementSelector={elementSelector}");
+                    $"Collect element selector must have at least one parameter. KeySelector={elementSelector}");
             }
             if (elementSelector.Parameters[0].Type != sourceType)
             {
                 throw new ArgumentException(
-                    "GroupBy element selector must have a parameter type that matches the aggregate source. " +
+                    "Collect element selector must have a parameter type that matches the aggregate source. " +
                     $"ElementSelector={elementSelector}, ExpectedType={sourceType}, ActualType={elementSelector.Parameters[0].Type}");
             }
 
-            var groupType = typeof(IGrouping<,>).MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
-            if (!resultType.IsAssignableFrom(groupType))
-            {
-                throw new ArgumentException(
-                    "GroupBy key/element selectors must produce a grouping assignable to the aggregation result. " +
-                    $"ElementSelector={elementSelector}, ResultType={resultType}, GroupingType={groupType}");
-            }
         }
 
-        public static void ValidateProjectAggregate(AggregateElement element)
+        if (keySelectors.Length > 0)
         {
-            var sourceType = element.Source.ValueType;
-            var resultType = element.ResultType;
-            var selector = element.Expressions[AggregateElement.SelectorName].Expression;
-            if (selector.Parameters.Count == 0)
+            var expectedResultType = typeof(ILookup<,>).MakeGenericType(
+                keySelectors[0].Expression.ReturnType, elementSelectors[0].Expression.ReturnType);
+            if (!expectedResultType.IsAssignableFrom(resultType))
             {
                 throw new ArgumentException(
-                    $"Projection selector must have at least one parameter. Selector={selector}");
-            }
-            if (selector.Parameters[0].Type != sourceType)
-            {
-                throw new ArgumentException(
-                    "Projection selector must have its first parameter type that matches the aggregate source. " +
-                    $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}");
-            }
-            if (!resultType.IsAssignableFrom(selector.ReturnType))
-            {
-                throw new ArgumentException(
-                    "Projection selector must produce a value assignable to the aggregation result. " +
-                    $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}");
+                    $"Collect result with grouping key must be a lookup collection. ExpectedType={expectedResultType}, ActualType={resultType}");
             }
         }
-
-        public static void ValidateFlattenAggregate(AggregateElement element)
+        else
         {
-            var sourceType = element.Source.ValueType;
-            var resultType = element.ResultType;
-            var selector = element.Expressions[AggregateElement.SelectorName].Expression;
-            if (selector.Parameters.Count != 1)
+            var expectedResultType = typeof(IEnumerable<>).MakeGenericType(sourceType);
+            if (!expectedResultType.IsAssignableFrom(resultType))
             {
                 throw new ArgumentException(
-                    $"Flattening selector must have a single parameter. Selector={selector}");
+                    $"Collect result must be a collection of source elements. ExpectedType={expectedResultType}, ActualType={resultType}");
             }
-            if (selector.Parameters[0].Type != sourceType)
+        }
+
+        var sortKeySelectorsAscending = element.Expressions.Find(AggregateElement.KeySelectorAscendingName);
+        var sortKeySelectorsDescending = element.Expressions.Find(AggregateElement.KeySelectorDescendingName);
+
+        foreach (var sortKeySelector in sortKeySelectorsAscending.Concat(sortKeySelectorsDescending).Select(x => x.Expression))
+        {
+            if (sortKeySelector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
-                    "Flattening selector must have a parameter type that matches the aggregate source. " +
-                    $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}");
+                    $"Sort key selector must have at least one parameter. KeySelector={sortKeySelector}");
             }
-            var resultCollectionType = typeof(IEnumerable<>).MakeGenericType(resultType);
-            if (!resultCollectionType.IsAssignableFrom(selector.ReturnType))
+            if (sortKeySelector.Parameters[0].Type != sourceType)
             {
                 throw new ArgumentException(
-                    "Flattening selector must produce a collection of values that are assignable to the aggregation result. " +
-                    $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}");
+                    "Sort key selector must have a parameter type that matches the aggregate source. " +
+                    $"KeySelector={sortKeySelector}, ExpectedType={sourceType}, ActualType={sortKeySelector.Parameters[0].Type}");
             }
         }
+    }
 
-        public static void ValidatePattern(PatternElement element)
+    public static void ValidateGroupByAggregate(AggregateElement element)
+    {
+        var sourceType = element.Source.ValueType;
+        var resultType = element.ResultType;
+        var keySelector = element.Expressions[AggregateElement.KeySelectorName].Expression;
+        if (keySelector.Parameters.Count == 0)
         {
-            if (element.Source != null)
-            {
-                switch (element.Source.ElementType)
-                {
-                    case ElementType.Aggregate:
-                    case ElementType.Binding:
-                        break;
-                    default:
-                        throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
-                }
-            }
+            throw new ArgumentException(
+                $"GroupBy key selector must have at least one parameter. KeySelector={keySelector}");
         }
-
-        public static void ValidateBinding(BindingElement element)
+        if (keySelector.Parameters[0].Type != sourceType)
         {
-            var resultType = element.ResultType;
-            var expressionReturnType = element.Expression.ReturnType;
-            if (!resultType.IsAssignableFrom(expressionReturnType))
-            {
-                throw new ArgumentException($"Binding expression not assignable to result type. ResultType={resultType}, ExpressionResult={expressionReturnType}");
-            }
+            throw new ArgumentException(
+                "GroupBy key selector must have a parameter type that matches the aggregate source. " +
+                $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}");
         }
 
-        public static void ValidateGroup(GroupElement element)
+        var elementSelector = element.Expressions[AggregateElement.ElementSelectorName].Expression;
+        if (elementSelector.Parameters.Count == 0)
         {
-            if (!element.ChildElements.Any())
-            {
-                throw new InvalidOperationException("Group element requires at least one child element");
-            }
-            foreach (var childElement in element.ChildElements)
-            {
-                switch (childElement.ElementType)
-                {
-                    case ElementType.Pattern:
-                    case ElementType.And:
-                    case ElementType.Or:
-                    case ElementType.Not:
-                    case ElementType.Exists:
-                    case ElementType.ForAll:
-                        break;
-                    default:
-                        throw new ArgumentException($"Invalid element in the group. ElementType={childElement.ElementType}");
-                }
-            }
+            throw new ArgumentException(
+                $"GroupBy element selector must have at least one parameter. ElementSelector={elementSelector}");
+        }
+        if (elementSelector.Parameters[0].Type != sourceType)
+        {
+            throw new ArgumentException(
+                "GroupBy element selector must have a parameter type that matches the aggregate source. " +
+                $"ElementSelector={elementSelector}, ExpectedType={sourceType}, ActualType={elementSelector.Parameters[0].Type}");
         }
 
-        public static void ValidateExists(ExistsElement element)
+        var groupType = typeof(IGrouping<,>).MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
+        if (!resultType.IsAssignableFrom(groupType))
+        {
+            throw new ArgumentException(
+                "GroupBy key/element selectors must produce a grouping assignable to the aggregation result. " +
+                $"ElementSelector={elementSelector}, ResultType={resultType}, GroupingType={groupType}");
+        }
+    }
+
+    public static void ValidateProjectAggregate(AggregateElement element)
+    {
+        var sourceType = element.Source.ValueType;
+        var resultType = element.ResultType;
+        var selector = element.Expressions[AggregateElement.SelectorName].Expression;
+        if (selector.Parameters.Count == 0)
+        {
+            throw new ArgumentException(
+                $"Projection selector must have at least one parameter. Selector={selector}");
+        }
+        if (selector.Parameters[0].Type != sourceType)
+        {
+            throw new ArgumentException(
+                "Projection selector must have its first parameter type that matches the aggregate source. " +
+                $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}");
+        }
+        if (!resultType.IsAssignableFrom(selector.ReturnType))
+        {
+            throw new ArgumentException(
+                "Projection selector must produce a value assignable to the aggregation result. " +
+                $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}");
+        }
+    }
+
+    public static void ValidateFlattenAggregate(AggregateElement element)
+    {
+        var sourceType = element.Source.ValueType;
+        var resultType = element.ResultType;
+        var selector = element.Expressions[AggregateElement.SelectorName].Expression;
+        if (selector.Parameters.Count != 1)
+        {
+            throw new ArgumentException(
+                $"Flattening selector must have a single parameter. Selector={selector}");
+        }
+        if (selector.Parameters[0].Type != sourceType)
+        {
+            throw new ArgumentException(
+                "Flattening selector must have a parameter type that matches the aggregate source. " +
+                $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}");
+        }
+        var resultCollectionType = typeof(IEnumerable<>).MakeGenericType(resultType);
+        if (!resultCollectionType.IsAssignableFrom(selector.ReturnType))
+        {
+            throw new ArgumentException(
+                "Flattening selector must produce a collection of values that are assignable to the aggregation result. " +
+                $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}");
+        }
+    }
+
+    public static void ValidatePattern(PatternElement element)
+    {
+        if (element.Source != null)
         {
             switch (element.Source.ElementType)
             {
-                case ElementType.Pattern:
-                case ElementType.And:
-                case ElementType.Or:
+                case ElementType.Aggregate:
+                case ElementType.Binding:
                     break;
                 default:
                     throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
             }
         }
+    }
 
-        public static void ValidateNot(NotElement element)
+    public static void ValidateBinding(BindingElement element)
+    {
+        var resultType = element.ResultType;
+        var expressionReturnType = element.Expression.ReturnType;
+        if (!resultType.IsAssignableFrom(expressionReturnType))
         {
-            switch (element.Source.ElementType)
+            throw new ArgumentException($"Binding expression not assignable to result type. ResultType={resultType}, ExpressionResult={expressionReturnType}");
+        }
+    }
+
+    public static void ValidateGroup(GroupElement element)
+    {
+        if (!element.ChildElements.Any())
+        {
+            throw new InvalidOperationException("Group element requires at least one child element");
+        }
+        foreach (var childElement in element.ChildElements)
+        {
+            switch (childElement.ElementType)
             {
                 case ElementType.Pattern:
                 case ElementType.And:
                 case ElementType.Or:
+                case ElementType.Not:
+                case ElementType.Exists:
+                case ElementType.ForAll:
                     break;
                 default:
-                    throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
+                    throw new ArgumentException($"Invalid element in the group. ElementType={childElement.ElementType}");
             }
         }
+    }
 
-        public static void ValidateForAll(ForAllElement element)
+    public static void ValidateExists(ExistsElement element)
+    {
+        switch (element.Source.ElementType)
         {
-            if (!element.Patterns.Any())
-            {
-                throw new InvalidOperationException("At least one FORALL pattern must be specified");
-            }
+            case ElementType.Pattern:
+            case ElementType.And:
+            case ElementType.Or:
+                break;
+            default:
+                throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
+        }
+    }
+
+    public static void ValidateNot(NotElement element)
+    {
+        switch (element.Source.ElementType)
+        {
+            case ElementType.Pattern:
+            case ElementType.And:
+            case ElementType.Or:
+                break;
+            default:
+                throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
+        }
+    }
+
+    public static void ValidateForAll(ForAllElement element)
+    {
+        if (!element.Patterns.Any())
+        {
+            throw new InvalidOperationException("At least one FORALL pattern must be specified");
         }
     }
 }

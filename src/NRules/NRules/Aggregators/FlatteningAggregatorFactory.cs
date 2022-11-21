@@ -4,32 +4,31 @@ using System.Linq;
 using System.Linq.Expressions;
 using NRules.RuleModel;
 
-namespace NRules.Aggregators
+namespace NRules.Aggregators;
+
+/// <summary>
+/// Aggregator factory for flattening aggregator.
+/// </summary>
+internal class FlatteningAggregatorFactory : IAggregatorFactory
 {
-    /// <summary>
-    /// Aggregator factory for flattening aggregator.
-    /// </summary>
-    internal class FlatteningAggregatorFactory : IAggregatorFactory
+    private Func<IAggregator> _factory;
+
+    public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
     {
-        private Func<IAggregator> _factory;
+        var sourceType = element.Source.ValueType;
+        //Flatten selector is Source -> IEnumerable<Result>
+        var resultType = element.ResultType;
+        Type aggregatorType = typeof(FlatteningAggregator<,>).MakeGenericType(sourceType, resultType);
 
-        public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
-        {
-            var sourceType = element.Source.ValueType;
-            //Flatten selector is Source -> IEnumerable<Result>
-            var resultType = element.ResultType;
-            Type aggregatorType = typeof(FlatteningAggregator<,>).MakeGenericType(sourceType, resultType);
+        var compiledSelector = compiledExpressions.FindSingle(AggregateElement.SelectorName);
+        var ctor = aggregatorType.GetConstructors().Single();
+        var factoryExpression = Expression.Lambda<Func<IAggregator>>(
+            Expression.New(ctor, Expression.Constant(compiledSelector)));
+        _factory = factoryExpression.Compile();
+    }
 
-            var compiledSelector = compiledExpressions.FindSingle(AggregateElement.SelectorName);
-            var ctor = aggregatorType.GetConstructors().Single();
-            var factoryExpression = Expression.Lambda<Func<IAggregator>>(
-                Expression.New(ctor, Expression.Constant(compiledSelector)));
-            _factory = factoryExpression.Compile();
-        }
-
-        public IAggregator Create()
-        {
-            return _factory();
-        }
+    public IAggregator Create()
+    {
+        return _factory();
     }
 }

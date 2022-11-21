@@ -1,13 +1,12 @@
-﻿namespace NRules.Fluent
+﻿namespace NRules.Fluent;
+
+/// <summary>
+/// Rule property names.
+/// </summary>
+public static class RuleProperties
 {
     /// <summary>
-    /// Rule property names.
+    /// CLR Type of the fluent DSL rule class.
     /// </summary>
-    public static class RuleProperties
-    {
-        /// <summary>
-        /// CLR Type of the fluent DSL rule class.
-        /// </summary>
-        public const string ClrType = "Fluent::ClrType";
-    }
+    public const string ClrType = "Fluent::ClrType";
 }

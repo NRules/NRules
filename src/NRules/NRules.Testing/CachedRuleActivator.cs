@@ -4,26 +4,25 @@ using System.Linq;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
 
-namespace NRules.Testing
+namespace NRules.Testing;
+
+public class CachedRuleActivator : IRuleActivator
 {
-    public class CachedRuleActivator : IRuleActivator
+    private readonly IRuleActivator _activator;
+    private readonly Dictionary<Type, IEnumerable<Rule>> _rules = new();
+
+    public CachedRuleActivator(IRuleActivator activator)
     {
-        private readonly IRuleActivator _activator;
-        private readonly Dictionary<Type, IEnumerable<Rule>> _rules = new();
+        _activator = activator;
+    }
 
-        public CachedRuleActivator(IRuleActivator activator)
+    public IEnumerable<Rule> Activate(Type type)
+    {
+        if (_rules.TryGetValue(type, out var rules))
         {
-            _activator = activator;
+            return rules;
         }
 
-        public IEnumerable<Rule> Activate(Type type)
-        {
-            if (_rules.TryGetValue(type, out var rules))
-            {
-                return rules;
-            }
-
-            return _rules[type] = _activator.Activate(type).ToArray();
-        }
+        return _rules[type] = _activator.Activate(type).ToArray();
     }
 }

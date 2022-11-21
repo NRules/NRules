@@ -1,12 +1,11 @@
 ﻿using NRules.Fluent;
 using NRules.Fluent.Dsl;
 
-namespace NRules.Testing
-{
-    public interface IRepositorySetup
-    {
-        void Rule<T>() where T : Rule;
+namespace NRules.Testing;
 
-        void Rule(IRuleMetadata metadata);
-    }
+public interface IRepositorySetup
+{
+    void Rule<T>() where T : Rule;
+
+    void Rule(IRuleMetadata metadata);
 }

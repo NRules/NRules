@@ -2,29 +2,28 @@
 using NRules.Diagnostics;
 using NRules.Rete;
 
-namespace NRules.Benchmark.Expressions
+namespace NRules.Benchmark.Expressions;
+
+[MemoryDiagnoser]
+public abstract class BenchmarkBase
 {
-    [MemoryDiagnoser]
-    public abstract class BenchmarkBase
+    internal IExecutionContext Context;
+
+    protected BenchmarkBase()
     {
-        internal IExecutionContext Context;
+        Context = new ExecutionContext(null, null, null, new EventAggregator(), null, null);
+    }
 
-        protected BenchmarkBase()
+    internal static Tuple ToTuple(params object[] values)
+    {
+        int i = 0;
+        var tuple = new Tuple(i);
+
+        foreach (var value in values)
         {
-            Context = new ExecutionContext(null, null, null, new EventAggregator(), null, null);
+            tuple = new Tuple(++i, tuple, new Fact(value));
         }
 
-        internal static Tuple ToTuple(params object[] values)
-        {
-            int i = 0;
-            var tuple = new Tuple(i);
-
-            foreach (var value in values)
-            {
-                tuple = new Tuple(++i, tuple, new Fact(value));
-            }
-
-            return tuple;
-        }
+        return tuple;
     }
 }

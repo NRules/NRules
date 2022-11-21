@@ -1,39 +1,38 @@
 ﻿using System.Collections.Generic;
 
-namespace NRules.RuleModel
+namespace NRules.RuleModel;
+
+/// <summary>
+/// Universal quantifier.
+/// </summary>
+public class ForAllElement : RuleElement
 {
-    /// <summary>
-    /// Universal quantifier.
-    /// </summary>
-    public class ForAllElement : RuleElement
+    private readonly List<PatternElement> _patterns;
+
+    internal ForAllElement(PatternElement source, IEnumerable<PatternElement> patterns)
     {
-        private readonly List<PatternElement> _patterns;
+        BasePattern = source;
+        _patterns = new List<PatternElement>(patterns);
 
-        internal ForAllElement(PatternElement source, IEnumerable<PatternElement> patterns)
-        {
-            BasePattern = source;
-            _patterns = new List<PatternElement>(patterns);
+        AddImports(source);
+        AddImports(_patterns);
+    }
 
-            AddImports(source);
-            AddImports(_patterns);
-        }
+    /// <inheritdoc cref="RuleElement.ElementType"/>
+    public override ElementType ElementType => ElementType.ForAll;
 
-        /// <inheritdoc cref="RuleElement.ElementType"/>
-        public override ElementType ElementType => ElementType.ForAll;
+    /// <summary>
+    /// Base pattern that determines the universe of facts that the universal quantifier is applied to.
+    /// </summary>
+    public PatternElement BasePattern { get; }
 
-        /// <summary>
-        /// Base pattern that determines the universe of facts that the universal quantifier is applied to.
-        /// </summary>
-        public PatternElement BasePattern { get; }
+    /// <summary>
+    /// Patterns that must all match for the selected facts.
+    /// </summary>
+    public IEnumerable<PatternElement> Patterns => _patterns;
 
-        /// <summary>
-        /// Patterns that must all match for the selected facts.
-        /// </summary>
-        public IEnumerable<PatternElement> Patterns => _patterns;
-
-        internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
-        {
-            visitor.VisitForAll(context, this);
-        }
+    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    {
+        visitor.VisitForAll(context, this);
     }
 }

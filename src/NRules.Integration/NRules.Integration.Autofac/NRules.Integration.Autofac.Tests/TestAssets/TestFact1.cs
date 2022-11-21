@@ -1,6 +1,5 @@
-﻿namespace NRules.Integration.Autofac.Tests.TestAssets
+﻿namespace NRules.Integration.Autofac.Tests.TestAssets;
+
+public class TestFact1
 {
-    public class TestFact1
-    {
-    }
 }

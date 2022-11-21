@@ -1,7 +1,6 @@
-namespace NRules.RuleModel.Builders
+namespace NRules.RuleModel.Builders;
+
+internal interface IBuilder<out TElement> where TElement : RuleElement
 {
-    internal interface IBuilder<out TElement> where TElement : RuleElement
-    {
-        TElement Build();
-    }
+    TElement Build();
 }

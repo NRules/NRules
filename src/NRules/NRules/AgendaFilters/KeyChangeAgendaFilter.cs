@@ -1,73 +1,72 @@
 using System;
 using System.Collections.Generic;
 
-namespace NRules.AgendaFilters
-{
-    internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
-    {
-        private readonly List<IActivationExpression<object>> _keySelectors;
-        private readonly Dictionary<Activation, ChangeKeys> _changeKeys = new();
+namespace NRules.AgendaFilters;
 
-        public KeyChangeAgendaFilter(IEnumerable<IActivationExpression<object>> keySelectors)
+internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
+{
+    private readonly List<IActivationExpression<object>> _keySelectors;
+    private readonly Dictionary<Activation, ChangeKeys> _changeKeys = new();
+
+    public KeyChangeAgendaFilter(IEnumerable<IActivationExpression<object>> keySelectors)
+    {
+        _keySelectors = new List<IActivationExpression<object>>(keySelectors);
+    }
+
+    public bool Accept(AgendaContext context, Activation activation)
+    {
+        bool initial = false;
+        if (!_changeKeys.TryGetValue(activation, out var keys))
         {
-            _keySelectors = new List<IActivationExpression<object>>(keySelectors);
+            initial = true;
+            keys = new ChangeKeys(_keySelectors.Count);
+            _changeKeys[activation] = keys;
         }
 
-        public bool Accept(AgendaContext context, Activation activation)
+        for (int i = 0; i < _keySelectors.Count; i++)
         {
-            bool initial = false;
-            if (!_changeKeys.TryGetValue(activation, out var keys))
-            {
-                initial = true;
-                keys = new ChangeKeys(_keySelectors.Count);
-                _changeKeys[activation] = keys;
-            }
+            keys.New[i] = _keySelectors[i].Invoke(context, activation);
+        }
+        bool accept = true;
 
-            for (int i = 0; i < _keySelectors.Count; i++)
+        if (!initial)
+        {
+            accept = false;
+            for (int i = 0; i < keys.Current.Length; i++)
             {
-                keys.New[i] = _keySelectors[i].Invoke(context, activation);
-            }
-            bool accept = true;
-
-            if (!initial)
-            {
-                accept = false;
-                for (int i = 0; i < keys.Current.Length; i++)
+                if (!Equals(keys.Current[i], keys.New[i]))
                 {
-                    if (!Equals(keys.Current[i], keys.New[i]))
-                    {
-                        accept = true;
-                        break;
-                    }
+                    accept = true;
+                    break;
                 }
             }
-
-            return accept;
         }
 
-        public void Select(AgendaContext context, Activation activation)
+        return accept;
+    }
+
+    public void Select(AgendaContext context, Activation activation)
+    {
+        if (_changeKeys.TryGetValue(activation, out var keys))
         {
-            if (_changeKeys.TryGetValue(activation, out var keys))
-            {
-                Array.Copy(keys.New, keys.Current, keys.Current.Length);
-            }
+            Array.Copy(keys.New, keys.Current, keys.Current.Length);
         }
+    }
 
-        public void Remove(AgendaContext context, Activation activation)
+    public void Remove(AgendaContext context, Activation activation)
+    {
+        _changeKeys.Remove(activation);
+    }
+
+    private readonly struct ChangeKeys
+    {
+        public ChangeKeys(int size)
         {
-            _changeKeys.Remove(activation);
+            Current = new object[size];
+            New = new object[size];
         }
 
-        private readonly struct ChangeKeys
-        {
-            public ChangeKeys(int size)
-            {
-                Current = new object[size];
-                New = new object[size];
-            }
-
-            public object[] Current { get; }
-            public object[] New { get; }
-        }
+        public object[] Current { get; }
+        public object[] New { get; }
     }
 }

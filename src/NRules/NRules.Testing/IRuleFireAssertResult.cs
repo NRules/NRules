@@ -1,5 +1,7 @@
 ﻿using NRules.Fluent;
 
+namespace NRules.Testing;
+
 public interface IRuleFireAssertResult
 {
     int Expected { get; }
