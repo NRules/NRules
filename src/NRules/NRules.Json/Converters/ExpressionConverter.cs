@@ -129,7 +129,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         writer.WriteEndObject();
     }
 
-    private LambdaExpression ReadLambda(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static LambdaExpression ReadLambda(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         reader.TryReadProperty<Type>(nameof(LambdaExpression.Type), options, out var type);
         reader.TryReadObjectArrayProperty(nameof(LambdaExpression.Parameters), options, ReadParameter, out var parameters);
@@ -145,7 +145,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return result;
     }
 
-    private void WriteLambda(Utf8JsonWriter writer, JsonSerializerOptions options, LambdaExpression value)
+    private static void WriteLambda(Utf8JsonWriter writer, JsonSerializerOptions options, LambdaExpression value)
     {
         var impliedDelegateType = value.GetImpliedDelegateType();
 
@@ -158,47 +158,47 @@ internal class ExpressionConverter : JsonConverter<Expression>
         writer.WriteProperty(nameof(value.Body), value.Body, options);
     }
 
-    private ConstantExpression ReadConstant(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static ConstantExpression ReadConstant(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var type = reader.ReadProperty<Type>(nameof(ConstantExpression.Type), options);
         var value = reader.ReadProperty(nameof(ConstantExpression.Value), type, options);
         return Expression.Constant(value, type);
     }
 
-    private void WriteConstant(Utf8JsonWriter writer, JsonSerializerOptions options, ConstantExpression value)
+    private static void WriteConstant(Utf8JsonWriter writer, JsonSerializerOptions options, ConstantExpression value)
     {
         writer.WriteProperty(nameof(value.Type), value.Type, options);
         writer.WriteProperty(nameof(value.Value), value.Value, value.Type, options);
     }
 
-    private ParameterExpression ReadParameter(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static ParameterExpression ReadParameter(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var name = reader.ReadStringProperty(nameof(ParameterExpression.Name), options);
         var type = reader.ReadProperty<Type>(nameof(ParameterExpression.Type), options);
         return Expression.Parameter(type, name);
     }
 
-    private void WriteParameter(Utf8JsonWriter writer, JsonSerializerOptions options, ParameterExpression value)
+    private static void WriteParameter(Utf8JsonWriter writer, JsonSerializerOptions options, ParameterExpression value)
     {
         writer.WriteStringProperty(nameof(value.Name), value.Name, options);
         writer.WriteProperty(nameof(value.Type), value.Type, options);
     }
 
-    private MemberExpression ReadMember(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static MemberExpression ReadMember(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var member = reader.ReadMemberInfo(options);
         reader.TryReadProperty<Expression>(nameof(MemberExpression.Expression), options, out var expression);
         return Expression.MakeMemberAccess(expression, member);
     }
 
-    private void WriteMember(Utf8JsonWriter writer, JsonSerializerOptions options, MemberExpression value)
+    private static void WriteMember(Utf8JsonWriter writer, JsonSerializerOptions options, MemberExpression value)
     {
         writer.WriteMemberInfo(options, value.Member);
         if (value.Expression is not null)
             writer.WriteProperty(nameof(value.Expression), value.Expression, options);
     }
 
-    private MethodCallExpression ReadMethodCall(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static MethodCallExpression ReadMethodCall(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         reader.TryReadProperty<Expression>(nameof(MethodCallExpression.Object), options, out var @object);
         var methodRecord = reader.ReadMethodInfo(options);
@@ -207,7 +207,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.Call(@object, method, arguments);
     }
 
-    private void WriteMethodCall(Utf8JsonWriter writer, JsonSerializerOptions options, MethodCallExpression value)
+    private static void WriteMethodCall(Utf8JsonWriter writer, JsonSerializerOptions options, MethodCallExpression value)
     {
         if (value.Object is not null)
             writer.WriteProperty(nameof(value.Object), value.Object, options);
@@ -242,7 +242,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return methodRecord.GetMethod(argumentTypes, argumentTypes[0]);
     }
 
-    private void WriteBinaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BinaryExpression value)
+    private static void WriteBinaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BinaryExpression value)
     {
         writer.WriteProperty(nameof(BinaryExpression.Left), value.Left, options);
         writer.WriteProperty(nameof(BinaryExpression.Right), value.Right, options);
@@ -260,7 +260,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return new(operand, type, method);
     }
 
-    private void WriteUnaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, UnaryExpression value)
+    private static void WriteUnaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, UnaryExpression value)
     {
         writer.WriteProperty(nameof(UnaryExpression.Operand), value.Operand, options);
         if (value.Type != value.Operand.Type)
@@ -269,34 +269,34 @@ internal class ExpressionConverter : JsonConverter<Expression>
             writer.WriteMethodInfo(options, value.Method, value.Operand.Type);
     }
 
-    private InvocationExpression ReadInvocationExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static InvocationExpression ReadInvocationExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var expression = reader.ReadProperty<Expression>(nameof(InvocationExpression.Expression), options);
         reader.TryReadArrayProperty<Expression>(nameof(InvocationExpression.Arguments), options, out var arguments);
         return Expression.Invoke(expression, arguments);
     }
 
-    private void WriteInvocationExpression(Utf8JsonWriter writer, JsonSerializerOptions options, InvocationExpression value)
+    private static void WriteInvocationExpression(Utf8JsonWriter writer, JsonSerializerOptions options, InvocationExpression value)
     {
         writer.WriteProperty(nameof(value.Expression), value.Expression, options);
         if (value.Arguments.Any())
             writer.WriteArrayProperty(nameof(value.Arguments), value.Arguments, options);
     }
 
-    private TypeBinaryExpression ReadTypeBinaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static TypeBinaryExpression ReadTypeBinaryExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var expression = reader.ReadProperty<Expression>(nameof(TypeBinaryExpression.Expression), options);
         var typeOperand = reader.ReadProperty<Type>(nameof(TypeBinaryExpression.TypeOperand), options);
         return Expression.TypeIs(expression, typeOperand!);
     }
 
-    private void WriteTypeBinaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, TypeBinaryExpression value)
+    private static void WriteTypeBinaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, TypeBinaryExpression value)
     {
         writer.WriteProperty(nameof(value.Expression), value.Expression, options);
         writer.WriteProperty(nameof(value.TypeOperand), value.TypeOperand, options);
     }
 
-    private NewExpression ReadNewExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static NewExpression ReadNewExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var declaringType = reader.ReadProperty<Type>(nameof(NewExpression.Constructor.DeclaringType), options);
         reader.TryReadArrayProperty<Expression>(nameof(NewExpression.Arguments), options, out var arguments);
@@ -306,28 +306,28 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.New(ctor, arguments);
     }
 
-    private void WriteNewExpression(Utf8JsonWriter writer, JsonSerializerOptions options, NewExpression value)
+    private static void WriteNewExpression(Utf8JsonWriter writer, JsonSerializerOptions options, NewExpression value)
     {
         writer.WriteProperty(nameof(value.Constructor.DeclaringType), value.Constructor.DeclaringType, options);
         if (value.Arguments.Any())
             writer.WriteArrayProperty(nameof(value.Arguments), value.Arguments, options);
     }
 
-    private NewArrayExpression ReadNewArrayInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static NewArrayExpression ReadNewArrayInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var elementType = reader.ReadProperty<Type>("ElementType", options);
         reader.TryReadArrayProperty<Expression>(nameof(NewArrayExpression.Expressions), options, out var expressions);
         return Expression.NewArrayInit(elementType, expressions);
     }
 
-    private void WriteNewArrayInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, NewArrayExpression value)
+    private static void WriteNewArrayInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, NewArrayExpression value)
     {
         writer.WriteProperty("ElementType", value.Type.GetElementType(), options);
         if (value.Expressions.Any())
             writer.WriteArrayProperty(nameof(value.Expressions), value.Expressions, options);
     }
 
-    private MemberInitExpression ReadMemberInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static MemberInitExpression ReadMemberInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var newExpression = ReadNewExpression(ref reader, options);
         var bindings = reader.ReadObjectArrayProperty(nameof(MemberInitExpression.Bindings), options, ReadMemberBinding);
@@ -339,7 +339,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         }
     }
 
-    private void WriteMemberInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, MemberInitExpression value)
+    private static void WriteMemberInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, MemberInitExpression value)
     {
         WriteNewExpression(writer, options, value.NewExpression);
         writer.WriteObjectArrayProperty(nameof(value.Bindings), value.Bindings, options, mb =>
@@ -348,7 +348,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         });
     }
 
-    private ListInitExpression ReadListInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static ListInitExpression ReadListInitExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var newExpression = ReadNewExpression(ref reader, options);
         var initializers = reader.ReadObjectArrayProperty(nameof(ListInitExpression.Initializers), options, ReadElementInit);
@@ -363,7 +363,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         }
     }
 
-    private void WriteListInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ListInitExpression value)
+    private static void WriteListInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ListInitExpression value)
     {
         WriteNewExpression(writer, options, value.NewExpression);
 
@@ -374,7 +374,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         });
     }
 
-    private ConditionalExpression ReadConditionalExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static ConditionalExpression ReadConditionalExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var test = reader.ReadProperty<Expression>(nameof(ConditionalExpression.Test), options);
         var ifTrue = reader.ReadProperty<Expression>(nameof(ConditionalExpression.IfTrue), options);
@@ -382,25 +382,25 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.Condition(test, ifTrue, ifFalse);
     }
 
-    private void WriteConditionalExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ConditionalExpression value)
+    private static void WriteConditionalExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ConditionalExpression value)
     {
         writer.WriteProperty(nameof(value.Test), value.Test, options);
         writer.WriteProperty(nameof(value.IfTrue), value.IfTrue, options);
         writer.WriteProperty(nameof(value.IfFalse), value.IfFalse, options);
     }
 
-    private DefaultExpression ReadDefaultExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static DefaultExpression ReadDefaultExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var type = reader.ReadProperty<Type>(nameof(DefaultExpression.Type), options);
         return Expression.Default(type);
     }
 
-    private void WriteDefaultExpression(Utf8JsonWriter writer, JsonSerializerOptions options, DefaultExpression value)
+    private static void WriteDefaultExpression(Utf8JsonWriter writer, JsonSerializerOptions options, DefaultExpression value)
     {
         writer.WriteProperty(nameof(value.Type), value.Type, options);
     }
 
-    private BlockExpression ReadBlockExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static BlockExpression ReadBlockExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var type = reader.ReadProperty<Type>(nameof(BlockExpression.Type), options);
         if (type is null)
@@ -411,7 +411,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.Block(type, variables, expressions);
     }
 
-    private void WriteBlockExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BlockExpression value)
+    private static void WriteBlockExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BlockExpression value)
     {
         writer.WriteProperty(nameof(value.Type), value.Type, options);
         writer.WriteObjectArrayProperty(nameof(value.Variables), value.Variables, options, variable => WriteParameter(writer, options, variable));
