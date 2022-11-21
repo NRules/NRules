@@ -1,28 +1,27 @@
-namespace NRules.RuleModel
+namespace NRules.RuleModel;
+
+/// <summary>
+/// Negative existential quantifier.
+/// </summary>
+public class NotElement : RuleElement
 {
+    /// <inheritdoc cref="RuleElement.ElementType"/>
+    public override ElementType ElementType => ElementType.Not;
+
     /// <summary>
-    /// Negative existential quantifier.
+    /// Fact source of the not element.
     /// </summary>
-    public class NotElement : RuleElement
+    public RuleElement Source { get; }
+
+    internal NotElement(RuleElement source)
     {
-        /// <inheritdoc cref="RuleElement.ElementType"/>
-        public override ElementType ElementType => ElementType.Not;
+        Source = source;
 
-        /// <summary>
-        /// Fact source of the not element.
-        /// </summary>
-        public RuleElement Source { get; }
+        AddImports(source);
+    }
 
-        internal NotElement(RuleElement source)
-        {
-            Source = source;
-
-            AddImports(source);
-        }
-
-        internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
-        {
-            visitor.VisitNot(context, this);
-        }
+    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    {
+        visitor.VisitNot(context, this);
     }
 }

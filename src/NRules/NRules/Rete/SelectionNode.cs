@@ -1,40 +1,39 @@
 ﻿using NRules.RuleModel;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+internal class SelectionNode : AlphaNode
 {
-    internal class SelectionNode : AlphaNode
+    private readonly ILhsFactExpression<bool> _compiledExpression;
+
+    public ExpressionElement ExpressionElement { get; }
+
+    public SelectionNode(ExpressionElement expressionElement, ILhsFactExpression<bool> compiledExpression)
     {
-        private readonly ILhsFactExpression<bool> _compiledExpression;
+        ExpressionElement = expressionElement;
+        _compiledExpression = compiledExpression;
+    }
 
-        public ExpressionElement ExpressionElement { get; }
-
-        public SelectionNode(ExpressionElement expressionElement, ILhsFactExpression<bool> compiledExpression)
+    public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
+    {
+        try
         {
-            ExpressionElement = expressionElement;
-            _compiledExpression = compiledExpression;
+            return _compiledExpression.Invoke(context, NodeInfo, fact);
         }
-
-        public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
+        catch (ExpressionEvaluationException e)
         {
-            try
+            if (!e.IsHandled)
             {
-                return _compiledExpression.Invoke(context, NodeInfo, fact);
+                throw new RuleLhsExpressionEvaluationException(
+                    "Failed to evaluate condition", e.Expression.ToString(), e.InnerException);
             }
-            catch (ExpressionEvaluationException e)
-            {
-                if (!e.IsHandled)
-                {
-                    throw new RuleLhsExpressionEvaluationException(
-                        "Failed to evaluate condition", e.Expression.ToString(), e.InnerException);
-                }
 
-                return false;
-            }
+            return false;
         }
+    }
 
-        public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
-        {
-            visitor.VisitSelectionNode(context, this);
-        }
+    public override void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
+    {
+        visitor.VisitSelectionNode(context, this);
     }
 }

@@ -3,47 +3,46 @@ using System.Linq.Expressions;
 using NRules.Utilities;
 using Tuple = NRules.Rete.Tuple;
 
-namespace NRules.AgendaFilters
+namespace NRules.AgendaFilters;
+
+internal interface IActivationExpression<out TResult>
 {
-    internal interface IActivationExpression<out TResult>
+    TResult Invoke(AgendaContext context, Activation activation);
+}
+
+internal class ActivationExpression<TResult> : IActivationExpression<TResult>
+{
+    private readonly LambdaExpression _expression;
+    private readonly Func<Tuple, TResult> _compiledExpression;
+    private readonly IArgumentMap _argumentMap;
+
+    public ActivationExpression(LambdaExpression expression, Func<Tuple, TResult> compiledExpression, IArgumentMap argumentMap)
     {
-        TResult Invoke(AgendaContext context, Activation activation);
+        _expression = expression;
+        _compiledExpression = compiledExpression;
+        _argumentMap = argumentMap;
     }
 
-    internal class ActivationExpression<TResult> : IActivationExpression<TResult>
+    public TResult Invoke(AgendaContext context, Activation activation)
     {
-        private readonly LambdaExpression _expression;
-        private readonly Func<Tuple, TResult> _compiledExpression;
-        private readonly IArgumentMap _argumentMap;
-
-        public ActivationExpression(LambdaExpression expression, Func<Tuple, TResult> compiledExpression, IArgumentMap argumentMap)
+        Exception exception = null;
+        TResult result = default;
+        try
         {
-            _expression = expression;
-            _compiledExpression = compiledExpression;
-            _argumentMap = argumentMap;
+            result = _compiledExpression.Invoke(activation.Tuple);
+            return result;
         }
-
-        public TResult Invoke(AgendaContext context, Activation activation)
+        catch (Exception e)
         {
-            Exception exception = null;
-            TResult result = default;
-            try
-            {
-                result = _compiledExpression.Invoke(activation.Tuple);
-                return result;
-            }
-            catch (Exception e)
-            {
-                exception = e;
-                bool isHandled = false;
-                context.EventAggregator.RaiseAgendaExpressionFailed(context.Session, e, _expression, _argumentMap, activation, ref isHandled);
-                throw new ExpressionEvaluationException(e, _expression, isHandled);
-            }
-            finally
-            {
-                if (context.EventAggregator.TraceEnabled)
-                    context.EventAggregator.RaiseAgendaExpressionEvaluated(context.Session, exception, _expression, _argumentMap, result, activation);
-            }
+            exception = e;
+            bool isHandled = false;
+            context.EventAggregator.RaiseAgendaExpressionFailed(context.Session, e, _expression, _argumentMap, activation, ref isHandled);
+            throw new ExpressionEvaluationException(e, _expression, isHandled);
+        }
+        finally
+        {
+            if (context.EventAggregator.TraceEnabled)
+                context.EventAggregator.RaiseAgendaExpressionEvaluated(context.Session, exception, _expression, _argumentMap, result, activation);
         }
     }
 }

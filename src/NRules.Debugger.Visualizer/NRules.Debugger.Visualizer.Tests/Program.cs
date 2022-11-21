@@ -3,22 +3,21 @@ using System.Reflection;
 using NRules.Debugger.Visualizer.Tests.TestAssets;
 using NRules.Fluent;
 
-namespace NRules.Debugger.Visualizer.Tests
+namespace NRules.Debugger.Visualizer.Tests;
+
+public class Program
 {
-    public class Program
+    [STAThread]
+    private static void Main(string[] args)
     {
-        [STAThread]
-        private static void Main(string[] args)
-        {
-            var repository = new RuleRepository();
-            repository.Load(x => x.From(Assembly.GetExecutingAssembly()));
+        var repository = new RuleRepository();
+        repository.Load(x => x.From(Assembly.GetExecutingAssembly()));
 
-            ISessionFactory factory = repository.Compile();
-            ISession session = factory.CreateSession();
+        ISessionFactory factory = repository.Compile();
+        ISession session = factory.CreateSession();
 
-            session.Insert(new Fact1 { TestProperty = "Valid Value" });
+        session.Insert(new Fact1 { TestProperty = "Valid Value" });
 
-            VisualizerHost.Visualize(session);
-        }
+        VisualizerHost.Visualize(session);
     }
 }

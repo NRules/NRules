@@ -1,21 +1,20 @@
 using NRules.Fluent.Dsl;
 using NRules.Samples.MissManners.Domain;
 
-namespace NRules.Samples.MissManners.Rules
+namespace NRules.Samples.MissManners.Rules;
+
+[Name("Continue")]
+public class Continue : Rule
 {
-    [Name("Continue")]
-    public class Continue : Rule
+    public override void Define()
     {
-        public override void Define()
-        {
-            Context context = default;
+        Context context = default;
 
-            When()
-                .Match(() => context, c => c.State == ContextState.CheckDone);
+        When()
+            .Match(() => context, c => c.State == ContextState.CheckDone);
 
-            Then()
-                .Do(ctx => context.SetState(ContextState.AssignSeats))
-                .Do(ctx => ctx.Update(context));
-        }
+        Then()
+            .Do(ctx => context.SetState(ContextState.AssignSeats))
+            .Do(ctx => ctx.Update(context));
     }
 }
