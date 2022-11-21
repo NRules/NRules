@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json;
 using NRules.Fluent;
@@ -223,25 +222,25 @@ public class RuleSerializerTest
         TestRoundtrip(ruleDefinition);
     }
 
+    [Fact]
+    [Trait("Issue", "298")]
+    public void Roundtrip_YieldRule_Equals()
+    {
+        RuleSerializer.Setup(_options);
+
+        var factory = new RuleDefinitionFactory();
+        var definition = factory.Create(new MyRule());
+
+        // NOTE: Make sure that Expression.Block that is used in Then().Yield was serialized and deserialized properly
+        TestRoundtrip(definition);
+    }
+
     private void TestRoundtrip(IRuleDefinition original)
     {
         var jsonString = JsonSerializer.Serialize(original, _options);
         //System.IO.File.WriteAllText(@"C:\temp\rule.json", jsonString);
         var deserialized = JsonSerializer.Deserialize<IRuleDefinition>(jsonString, _options);
         Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
-    }
-
-    [Fact]
-    public void Issue298()
-    {
-        RuleSerializer.Setup(_options);
-
-        var repo = new RuleRepository();
-        repo.Load(spec => spec.From(typeof(MyRule)));
-        foreach (var definition in repo.GetRuleSets().SelectMany(set => set.Rules))
-        {
-            TestRoundtrip(definition);
-        }
     }
 
     private class MyRule : Rule
