@@ -47,6 +47,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
             ExpressionType.ArrayIndex => ReadBinary(ref reader, options).ToExpression(x => Expression.ArrayIndex(x.Left, x.Right)),
             ExpressionType.LeftShift => ReadBinary(ref reader, options).ToExpression(Expression.LeftShift),
             ExpressionType.RightShift => ReadBinary(ref reader, options).ToExpression(Expression.RightShift),
+            ExpressionType.Assign => ReadBinary(ref reader, options).ToExpression(x => Expression.Assign(x.Left, x.Right)),
             ExpressionType.Not => ReadUnary(ref reader, options).ToExpression(Expression.Not),
             ExpressionType.Negate => ReadUnary(ref reader, options).ToExpression(Expression.Negate),
             ExpressionType.NegateChecked => ReadUnary(ref reader, options).ToExpression(Expression.NegateChecked),
