@@ -35,7 +35,7 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var firedFacts = Fixture.GetFiredFact<IGrouping<string, FactType>>();
+        var firedFacts = GetFiredFact<IGrouping<string, FactType>>();
         Assert.Equal(4, firedFacts.Count());
         Assert.Equal(1, firedFacts.Count(x => x.TestCount == 3));
         Assert.Equal(1, firedFacts.Count(x => x.TestCount == 2));

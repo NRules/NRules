@@ -32,8 +32,8 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, Fixture.GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, Fixture.GetFiredFact<FactType>(1));
+        Assert.Equal(fact1, GetFiredFact<FactType>(0));
+        Assert.Equal(fact2, GetFiredFact<FactType>(1));
     }
 
     [Fact]
@@ -52,8 +52,8 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, Fixture.GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, Fixture.GetFiredFact<FactType>(1));
+        Assert.Equal(fact1, GetFiredFact<FactType>(0));
+        Assert.Equal(fact2, GetFiredFact<FactType>(1));
     }
 
     [Fact]
@@ -72,8 +72,8 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, Fixture.GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, Fixture.GetFiredFact<FactType>(1));
+        Assert.Equal(fact1, GetFiredFact<FactType>(0));
+        Assert.Equal(fact2, GetFiredFact<FactType>(1));
     }
 
     [Fact]
@@ -93,10 +93,10 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(4);
-        Assert.Equal(fact1, Fixture.GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, Fixture.GetFiredFact<FactType>(1));
-        Assert.Equal(fact3, Fixture.GetFiredFact<FactType>(2));
-        Assert.Equal(fact4, Fixture.GetFiredFact<FactType>(3));
+        Assert.Equal(fact1, GetFiredFact<FactType>(0));
+        Assert.Equal(fact2, GetFiredFact<FactType>(1));
+        Assert.Equal(fact3, GetFiredFact<FactType>(2));
+        Assert.Equal(fact4, GetFiredFact<FactType>(3));
     }
 
     [Fact]
@@ -118,8 +118,8 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, Fixture.GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, Fixture.GetFiredFact<FactType>(1));
+        Assert.Equal(fact1, GetFiredFact<FactType>(0));
+        Assert.Equal(fact2, GetFiredFact<FactType>(1));
     }
 
     [Fact]
@@ -142,8 +142,8 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, Fixture.GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, Fixture.GetFiredFact<FactType>(1));
+        Assert.Equal(fact1, GetFiredFact<FactType>(0));
+        Assert.Equal(fact2, GetFiredFact<FactType>(1));
     }
 
     [Fact]
@@ -168,9 +168,9 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
         Verify.Rule().FiredTimes(3);
         var firedFacts = new[]
         {
-            Fixture.GetFiredFact<FactType>(0),
-            Fixture.GetFiredFact<FactType>(1),
-            Fixture.GetFiredFact<FactType>(2)
+            GetFiredFact<FactType>(0),
+            GetFiredFact<FactType>(1),
+            GetFiredFact<FactType>(2)
         };
         var valid1 = firedFacts.Any(x => Equals(fact1, x));
         var valid2 = firedFacts.Any(x => Equals(fact2, x));
@@ -198,10 +198,10 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(4);
-        Assert.Equal(fact1, Fixture.GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, Fixture.GetFiredFact<FactType>(1));
-        Assert.Equal(fact3, Fixture.GetFiredFact<FactType>(2));
-        Assert.Equal(fact4, Fixture.GetFiredFact<FactType>(3));
+        Assert.Equal(fact1, GetFiredFact<FactType>(0));
+        Assert.Equal(fact2, GetFiredFact<FactType>(1));
+        Assert.Equal(fact3, GetFiredFact<FactType>(2));
+        Assert.Equal(fact4, GetFiredFact<FactType>(3));
     }
 
     [Fact]
@@ -224,8 +224,8 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, Fixture.GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, Fixture.GetFiredFact<FactType>(1));
+        Assert.Equal(fact1, GetFiredFact<FactType>(0));
+        Assert.Equal(fact2, GetFiredFact<FactType>(1));
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)

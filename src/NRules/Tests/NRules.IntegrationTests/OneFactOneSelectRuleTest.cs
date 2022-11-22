@@ -19,7 +19,7 @@ public class OneFactOneSelectRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, Fixture.GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class OneFactOneSelectRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, Fixture.GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
     }
 
     [Fact]
@@ -52,8 +52,8 @@ public class OneFactOneSelectRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1.TestProperty, Fixture.GetFiredFact<FactProjection>(0).Value);
-        Assert.Equal(fact2.TestProperty, Fixture.GetFiredFact<FactProjection>(1).Value);
+        Assert.Equal(fact1.TestProperty, GetFiredFact<FactProjection>(0).Value);
+        Assert.Equal(fact2.TestProperty, GetFiredFact<FactProjection>(1).Value);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class OneFactOneSelectRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, Fixture.GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class OneFactOneSelectRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, Fixture.GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
     }
 
     [Fact]

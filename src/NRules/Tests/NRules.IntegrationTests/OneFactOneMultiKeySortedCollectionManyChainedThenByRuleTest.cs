@@ -55,7 +55,7 @@ public class OneFactOneMultiKeySortedCollectionManyChainedThenByRuleTest : BaseR
 
         // Assert
         Verify.Rule().FiredTimes(1);
-        var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
+        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Equal(32, firedFacts.Count());
 
         var expectedOrder = facts

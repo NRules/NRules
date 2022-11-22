@@ -16,7 +16,7 @@ public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Empty(Fixture.GetFiredFact<IEnumerable<FactType>>());
+        Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Single(Fixture.GetFiredFact<IEnumerable<FactType>>());
+        Assert.Single(GetFiredFact<IEnumerable<FactType>>());
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Empty(Fixture.GetFiredFact<IEnumerable<FactType>>());
+        Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Single(Fixture.GetFiredFact<IEnumerable<FactType>>());
+        Assert.Single(GetFiredFact<IEnumerable<FactType>>());
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)

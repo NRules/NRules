@@ -16,7 +16,7 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Empty(Fixture.GetFiredFact<ILookup<long, string>>());
+        Assert.Empty(GetFiredFact<ILookup<long, string>>());
     }
 
     [Fact]
@@ -34,8 +34,8 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Single(Fixture.GetFiredFact<IKeyedLookup<long, string>>());
-        Assert.Equal(2, Fixture.GetFiredFact<IKeyedLookup<long, string>>()[1].Count());
+        Assert.Single(GetFiredFact<IKeyedLookup<long, string>>());
+        Assert.Equal(2, GetFiredFact<IKeyedLookup<long, string>>()[1].Count());
     }
 
     [Fact]
@@ -56,9 +56,9 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>().Count());
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>()[1].Count());
-        Assert.Equal(3, Fixture.GetFiredFact<ILookup<long, string>>()[2].Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
+        Assert.Equal(3, GetFiredFact<ILookup<long, string>>()[2].Count());
     }
 
     [Fact]
@@ -81,9 +81,9 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>().Count());
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>()[1].Count());
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>()[2].Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[2].Count());
     }
 
     [Fact]
@@ -105,8 +105,8 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Single(Fixture.GetFiredFact<ILookup<long, string>>());
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>()[1].Count());
+        Assert.Single(GetFiredFact<ILookup<long, string>>());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
     }
 
     [Fact]
@@ -129,9 +129,9 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>().Count());
-        Assert.Equal(3, Fixture.GetFiredFact<ILookup<long, string>>()[1].Count());
-        Assert.Single(Fixture.GetFiredFact<ILookup<long, string>>()[2]);
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
+        Assert.Equal(3, GetFiredFact<ILookup<long, string>>()[1].Count());
+        Assert.Single(GetFiredFact<ILookup<long, string>>()[2]);
     }
 
     [Fact]
@@ -154,9 +154,9 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>().Count());
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>()[1].Count());
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>()[2].Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[2].Count());
     }
 
     [Fact]
@@ -182,9 +182,9 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>().Count());
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>()[1].Count());
-        Assert.Equal(2, Fixture.GetFiredFact<ILookup<long, string>>()[2].Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
+        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[2].Count());
     }
 
     [Fact]

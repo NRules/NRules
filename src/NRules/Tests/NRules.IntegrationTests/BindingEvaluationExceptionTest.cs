@@ -15,7 +15,7 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
     public void Insert_ErrorInBindingNoErrorHandler_Throws()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
+        GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
         Expression expression = null;
         IList<IFact> facts = null;
@@ -36,7 +36,7 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_FailedAssert_DoesNotFire()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
+        GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
@@ -55,14 +55,14 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_FailedAssertThenAssertAnother_Fires()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
+        GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
         var fact1 = new FactType { TestProperty = "Valid value" };
         Session.Insert(fact1);
 
-        Fixture.GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
+        GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
 
         var fact2 = new FactType { TestProperty = "Valid value" };
         Session.Insert(fact2);
@@ -78,14 +78,14 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_FailedAssertThenUpdate_Fires()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
+        GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
         var fact = new FactType { TestProperty = "Valid value" };
 
         Session.Insert(fact);
-        Fixture.GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
+        GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
 
         Session.Update(fact);
 
@@ -100,14 +100,14 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_FailedAssertThenUpdateThenRetract_DoesNotFire()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
+        GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
         var fact = new FactType { TestProperty = "Valid value" };
 
         Session.Insert(fact);
-        Fixture.GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
+        GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
 
         Session.Update(fact);
         Session.Retract(fact);
@@ -123,14 +123,14 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_FailedAssertThenRetract_DoesNotFire()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Binding = ThrowBinding;
+        GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
         var fact = new FactType { TestProperty = "Valid value" };
 
         Session.Insert(fact);
-        Fixture.GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
+        GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
 
         Session.Retract(fact);
 

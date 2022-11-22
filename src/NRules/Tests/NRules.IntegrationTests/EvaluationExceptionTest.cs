@@ -16,7 +16,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
     public void Insert_ConditionErrorNoErrorHandler_Throws()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
         Expression expression = null;
         IList<IFact> facts = null;
@@ -37,7 +37,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_ConditionFailedInsert_DoesNotFire()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
@@ -55,14 +55,14 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_ConditionFailedInsertThenUpdate_Fires()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
         var fact = new FactType { TestProperty = "Valid Value" };
         Session.Insert(fact);
 
-        Fixture.GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
+        GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
 
         Session.Update(fact);
 
@@ -82,7 +82,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
         var fact = new FactType { TestProperty = "Valid Value" };
         Session.Insert(fact);
 
-        Fixture.GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
         Session.Update(fact);
 
@@ -97,14 +97,14 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_ConditionFailedInsertThenRetract_DoesNotFire()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
         var fact = new FactType { TestProperty = "Valid Value" };
         Session.Insert(fact);
 
-        Fixture.GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
+        GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
 
         Session.Retract(fact);
 
@@ -119,14 +119,14 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_ConditionFailedInsertThenUpdateThenRetract_DoesNotFire()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
         var fact = new FactType { TestProperty = "Valid Value" };
         Session.Insert(fact);
 
-        Fixture.GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
+        GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
 
         Session.Update(fact);
         Session.Retract(fact);
@@ -142,7 +142,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
     public void Insert_FilterErrorNoErrorHandler_Throws()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
+        GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
 
         Expression expression = null;
         IList<IFactMatch> facts = null;
@@ -163,7 +163,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
     public void Insert_FilterErrorHasErrorHandler_DoesNotFire()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
+        GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
 
         Session.Events.AgendaExpressionFailedEvent += (sender, args) => args.IsHandled = true;
         var fact = new FactType { TestProperty = "Valid Value" };
@@ -180,7 +180,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_ActionErrorNoErrorHandler_Throws()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Action = ThrowAction;
+        GetRuleInstance<TestRule>().Action = ThrowAction;
 
         Expression expression = null;
         IList<IFactMatch> facts = null;
@@ -202,7 +202,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
     public void Fire_ActionErrorHasErrorHandler_DoesNotThrow()
     {
         //Arrange
-        Fixture.GetRuleInstance<TestRule>().Action = ThrowAction;
+        GetRuleInstance<TestRule>().Action = ThrowAction;
 
         Session.Events.RhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
@@ -218,7 +218,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
     {
         //Arrange
         Session.ActionInterceptor = new PassThroughActionInterceptor();
-        Fixture.GetRuleInstance<TestRule>().Action = ThrowAction;
+        GetRuleInstance<TestRule>().Action = ThrowAction;
 
         Expression expression = null;
         IList<IFactMatch> facts = null;

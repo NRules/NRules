@@ -39,8 +39,8 @@ public class CustomFirstAggregatorTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal("Valid Value 1", Fixture.GetFiredFact<FactType>(0).TestProperty);
-        Assert.Equal("Valid Value 4", Fixture.GetFiredFact<FactType>(1).TestProperty);
+        Assert.Equal("Valid Value 1", GetFiredFact<FactType>(0).TestProperty);
+        Assert.Equal("Valid Value 4", GetFiredFact<FactType>(1).TestProperty);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class CustomFirstAggregatorTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 2", Fixture.GetFiredFact<FactType>().TestProperty);
+        Assert.Equal("Valid Value 2", GetFiredFact<FactType>().TestProperty);
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -121,7 +121,7 @@ internal class CustomFirstAggregatorFactory : IAggregatorFactory
 
 public class CustomFirstAggregator<TElement> : IAggregator
 {
-    private readonly Dictionary<object, TElement> _firstElements = new Dictionary<object, TElement>();
+    private readonly Dictionary<object, TElement> _firstElements = new();
 
     public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
     {

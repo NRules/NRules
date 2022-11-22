@@ -11,7 +11,5 @@ public abstract class BaseRuleTestFixture : RuleTestFixture
         SetUpRules(Setup);
     }
 
-    protected IRuleTestFixture Fixture => this;
-
     protected abstract void SetUpRules(IRepositorySetup setup);
 }

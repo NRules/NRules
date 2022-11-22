@@ -32,9 +32,9 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
         Verify.Rule().FiredTimes(3);
         var firedFacts = new[]
         {
-            Fixture.GetFiredFact<IGrouping<string, FactType2>>(0),
-            Fixture.GetFiredFact<IGrouping<string, FactType2>>(1),
-            Fixture.GetFiredFact<IGrouping<string, FactType2>>(2)
+            GetFiredFact<IGrouping<string, FactType2>>(0),
+            GetFiredFact<IGrouping<string, FactType2>>(1),
+            GetFiredFact<IGrouping<string, FactType2>>(2)
         };
 
         var correctNumberofFactsPerGroup = firedFacts.Count(x => x.Count() == 1) == 1 &&
@@ -74,8 +74,8 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
         Verify.Rule().FiredTimes(2);
         var firedFacts = new[]
         {
-            Fixture.GetFiredFact<IGrouping<string, FactType2>>(0),
-            Fixture.GetFiredFact<IGrouping<string, FactType2>>(1)
+            GetFiredFact<IGrouping<string, FactType2>>(0),
+            GetFiredFact<IGrouping<string, FactType2>>(1)
         };
 
         var correctNumberofFactsPerGroup = firedFacts.Count(x => x.Count() == 3) == 2;
@@ -110,7 +110,7 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
         Verify.Rule().FiredTimes(1);
         var firedFacts = new[]
         {
-            Fixture.GetFiredFact<IGrouping<string, FactType2>>(0)
+            GetFiredFact<IGrouping<string, FactType2>>(0)
         };
 
         var correctNumberofFactsPerGroup = firedFacts.Count(x => x.Count() == 3) == 1;

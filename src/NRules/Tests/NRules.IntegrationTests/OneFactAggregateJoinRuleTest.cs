@@ -30,7 +30,7 @@ public class OneFactAggregateJoinRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Single(Fixture.GetFiredFact<IEnumerable<FactType>>());
+        Assert.Single(GetFiredFact<IEnumerable<FactType>>());
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class OneFactAggregateJoinRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
     }
 
     [Fact]
@@ -64,8 +64,8 @@ public class OneFactAggregateJoinRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, Fixture.GetFiredFact<IEnumerable<FactType>>(0).Count());
-        Assert.Equal(2, Fixture.GetFiredFact<IEnumerable<FactType>>(1).Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>(0).Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>(1).Count());
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)

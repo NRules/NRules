@@ -21,7 +21,7 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Group1|0", Fixture.GetFiredFact<IGrouping<string, FactType2>>().Key);
+        Assert.Equal("Group1|0", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Group1|1", Fixture.GetFiredFact<IGrouping<string, FactType2>>().Key);
+        Assert.Equal("Group1|1", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Group1|1", Fixture.GetFiredFact<IGrouping<string, FactType2>>().Key);
+        Assert.Equal("Group1|1", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Group1|2", Fixture.GetFiredFact<IGrouping<string, FactType2>>().Key);
+        Assert.Equal("Group1|2", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Group2|1", Fixture.GetFiredFact<IGrouping<string, FactType2>>().Key);
+        Assert.Equal("Group2|1", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Group1|0", Fixture.GetFiredFact<IGrouping<string, FactType2>>().Key);
+        Assert.Equal("Group1|0", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
     [Fact]

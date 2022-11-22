@@ -25,7 +25,7 @@ public class OneFactFirstFactRuleTest : BaseRuleTestFixture
 
         // Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact3, Fixture.GetFiredFact<FactType>());
+        Assert.Equal(fact3, GetFiredFact<FactType>());
     }
 
 
@@ -61,7 +61,7 @@ public class OneFactFirstFactRuleTest : BaseRuleTestFixture
 
         // Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact1, Fixture.GetFiredFact<FactType>());
+        Assert.Equal(fact1, GetFiredFact<FactType>());
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class OneFactFirstFactRuleTest : BaseRuleTestFixture
 
         // Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact1, Fixture.GetFiredFact<FactType>());
+        Assert.Equal(fact1, GetFiredFact<FactType>());
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)

@@ -21,7 +21,7 @@ public class TwoFactOneSelectRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", Fixture.GetFiredFact<FactProjection>().Value);
+        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>().Value);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class TwoFactOneSelectRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", Fixture.GetFiredFact<FactProjection>().Value);
+        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>().Value);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class TwoFactOneSelectRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", Fixture.GetFiredFact<FactProjection>().Value);
+        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>().Value);
     }
 
     [Fact]
@@ -154,8 +154,8 @@ public class TwoFactOneSelectRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal($"{fact11.TestProperty}|{fact21.TestProperty}", Fixture.GetFiredFact<FactProjection>(0).Value);
-        Assert.Equal($"{fact12.TestProperty}|{fact22.TestProperty}", Fixture.GetFiredFact<FactProjection>(1).Value);
+        Assert.Equal($"{fact11.TestProperty}|{fact21.TestProperty}", GetFiredFact<FactProjection>(0).Value);
+        Assert.Equal($"{fact12.TestProperty}|{fact22.TestProperty}", GetFiredFact<FactProjection>(1).Value);
     }
 
     [Fact]

@@ -41,7 +41,7 @@ public class CollectionWithConditionsRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(3, Fixture.GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(3, GetFiredFact<IEnumerable<FactType>>().Count());
     }
 
     [Fact]

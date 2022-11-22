@@ -29,7 +29,7 @@ public class CustomSelectAggregatorTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, Fixture.GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class CustomSelectAggregatorTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, Fixture.GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
     }
 
     [Fact]
@@ -172,7 +172,7 @@ internal class CustomSelectAggregateFactory : IAggregatorFactory
 public class CustomSelectAggregator<TSource, TResult> : IAggregator
 {
     private readonly IAggregateExpression _selector;
-    private readonly Dictionary<IFact, object> _sourceToValue = new Dictionary<IFact, object>();
+    private readonly Dictionary<IFact, object> _sourceToValue = new();
 
     public CustomSelectAggregator(IAggregateExpression selector)
     {

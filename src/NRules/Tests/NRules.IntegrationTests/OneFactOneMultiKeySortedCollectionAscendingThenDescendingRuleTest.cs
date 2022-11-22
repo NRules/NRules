@@ -16,7 +16,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
 
         // Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Empty(Fixture.GetFiredFact<IEnumerable<FactType>>());
+        Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         // Assert
         Verify.Rule().FiredTimes(1);
 
-        var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
+        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Equal(4, firedFacts.Count());
         Assert.Equal(fact2, firedFacts.ElementAt(0));
         Assert.Equal(fact4, firedFacts.ElementAt(1));
@@ -65,7 +65,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         // Assert
         Verify.Rule().FiredTimes(1);
 
-        var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
+        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Equal(2, firedFacts.Count());
         Assert.Equal(fact2, firedFacts.ElementAt(0));
         Assert.Equal(fact1, firedFacts.ElementAt(1));
@@ -88,7 +88,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         // Assert
         Verify.Rule().FiredTimes(1);
 
-        var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
+        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Single(firedFacts);
         Assert.Equal(fact1, firedFacts.ElementAt(0));
     }
@@ -110,7 +110,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
 
         // Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Empty(Fixture.GetFiredFact<IEnumerable<FactType>>());
+        Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         // Assert
         Verify.Rule().FiredTimes(1);
 
-        var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
+        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Single(firedFacts);
         Assert.Equal(fact1, firedFacts.ElementAt(0));
     }
@@ -156,7 +156,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         // Assert
         Verify.Rule().FiredTimes(1);
 
-        var firedFacts = Fixture.GetFiredFact<IEnumerable<FactType>>();
+        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Equal(2, firedFacts.Count());
         Assert.Equal(fact1, firedFacts.ElementAt(0));
         Assert.Equal(fact2, firedFacts.ElementAt(1));

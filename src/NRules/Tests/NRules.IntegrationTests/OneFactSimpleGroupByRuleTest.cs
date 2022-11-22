@@ -32,7 +32,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<IGrouping<string, FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<string, FactType>>().Count());
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(0));
-        Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(1));
+        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
+        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
     }
 
     [Fact]
@@ -75,8 +75,8 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(0));
-        Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(1));
+        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
+        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
     }
 
     [Fact]
@@ -95,8 +95,8 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(0));
-        Assert.Single(Fixture.GetFiredFact<IGrouping<string, FactType>>(1));
+        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
+        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var firedGroup = Fixture.GetFiredFact<IGrouping<string, FactType>>();
+        var firedGroup = GetFiredFact<IGrouping<string, FactType>>();
         Assert.Single(firedGroup);
         Assert.Equal("Valid Value Group2", firedGroup.Key);
     }

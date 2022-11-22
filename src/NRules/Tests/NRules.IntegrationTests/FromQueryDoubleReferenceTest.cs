@@ -29,7 +29,7 @@ public class FromQueryDoubleReferenceTest : BaseRuleTestFixture
         // Assert
         Verify.Rule().FiredTimes(1);
 
-        var firedFacts = Fixture.GetFiredFacts<IEnumerable<Fact>>().ToArray();
+        var firedFacts = GetFiredFacts<IEnumerable<Fact>>().ToArray();
         var factsAllExpected = facts;
         var factsOneExpected = facts.Where(f => f.Key == 1).ToArray();
         var factsTwoExpected = facts.Where(f => f.Key == 2).ToArray();

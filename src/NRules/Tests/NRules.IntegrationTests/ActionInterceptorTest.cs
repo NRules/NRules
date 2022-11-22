@@ -42,7 +42,7 @@ public class ActionInterceptorTest : BaseRuleTestFixture
         Session.Insert(fact2);
 
         bool actionExecuted = false;
-        Fixture.GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
+        GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
         //Act
         Session.Fire();
@@ -63,7 +63,7 @@ public class ActionInterceptorTest : BaseRuleTestFixture
         Session.Insert(fact1);
         Session.Insert(fact2);
 
-        Fixture.GetRuleInstance<TestRule>().Action = () => { throw new InvalidOperationException("Test"); };
+        GetRuleInstance<TestRule>().Action = () => { throw new InvalidOperationException("Test"); };
 
         //Act - Assert
         var ex = Assert.Throws<InvalidOperationException>(() => Session.Fire());
@@ -82,7 +82,7 @@ public class ActionInterceptorTest : BaseRuleTestFixture
         Session.Insert(fact2);
 
         bool actionExecuted = false;
-        Fixture.GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
+        GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
 
         //Act
         Session.Fire();

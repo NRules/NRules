@@ -54,7 +54,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Insert(fact2);
 
         IFactMatch[] matches = null;
-        Fixture.GetRuleInstance<TestRule>().Action = ctx =>
+        GetRuleInstance<TestRule>().Action = ctx =>
         {
             matches = ctx.Match.Facts.ToArray();
         };

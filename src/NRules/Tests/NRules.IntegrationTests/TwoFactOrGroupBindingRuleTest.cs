@@ -19,7 +19,7 @@ public class TwoFactOrGroupBindingRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Fact1", Fixture.GetFiredFact<string>());
+        Assert.Equal("Fact1", GetFiredFact<string>());
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class TwoFactOrGroupBindingRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Fact2", Fixture.GetFiredFact<string>());
+        Assert.Equal("Fact2", GetFiredFact<string>());
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public class TwoFactOrGroupBindingRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal("Fact1", Fixture.GetFiredFact<string>(0));
-        Assert.Equal("Fact2", Fixture.GetFiredFact<string>(1));
+        Assert.Equal("Fact1", GetFiredFact<string>(0));
+        Assert.Equal("Fact2", GetFiredFact<string>(1));
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)

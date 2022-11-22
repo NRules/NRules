@@ -31,7 +31,7 @@ public class OneFactNoBindingRuleTest : BaseRuleTestFixture
         Session.Insert(fact);
 
         IFactMatch[] matches = null;
-        Fixture.GetRuleInstance<TestRule>().Action = ctx =>
+        GetRuleInstance<TestRule>().Action = ctx =>
         {
             matches = ctx.Match.Facts.ToArray();
         };

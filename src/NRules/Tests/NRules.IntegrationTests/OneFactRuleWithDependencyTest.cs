@@ -59,7 +59,7 @@ public class OneFactRuleWithDependencyTest : BaseRuleTestFixture
         Session.Insert(fact);
 
         ITestService1 resolvedService1 = null;
-        Fixture.GetRuleInstance<TestRule>().Action = ctx =>
+        GetRuleInstance<TestRule>().Action = ctx =>
         {
             resolvedService1 = ctx.Resolve<ITestService1>();
         };

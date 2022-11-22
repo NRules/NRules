@@ -22,7 +22,7 @@ public class AggregateSubnetTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var calculatedFact = Fixture.GetFiredFact<CalculatedFact>();
+        var calculatedFact = GetFiredFact<CalculatedFact>();
         Assert.Equal("Valid Value 2", calculatedFact.Value);
     }
 
@@ -44,7 +44,7 @@ public class AggregateSubnetTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var calculatedFact = Fixture.GetFiredFact<CalculatedFact>();
+        var calculatedFact = GetFiredFact<CalculatedFact>();
         Assert.Equal("Valid Value 2", calculatedFact.Value);
     }
 

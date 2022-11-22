@@ -23,7 +23,7 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var firedFact = Fixture.GetFiredFact<FactType>();
+        var firedFact = GetFiredFact<FactType>();
         Assert.Equal(2, firedFact.Id);
         Assert.Equal("Original 2", firedFact.ValueProperty);
     }
@@ -42,7 +42,7 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var firedFact = Fixture.GetFiredFact<FactType>();
+        var firedFact = GetFiredFact<FactType>();
         Assert.Equal(0, firedFact.Id);
         Assert.Null(firedFact.ValueProperty);
     }
@@ -64,7 +64,7 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var firedFact = Fixture.GetFiredFact<FactType>();
+        var firedFact = GetFiredFact<FactType>();
         Assert.Equal(1, firedFact.Id);
         Assert.Equal("Original 1", firedFact.ValueProperty);
     }
@@ -86,7 +86,7 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var firedFact = Fixture.GetFiredFact<FactType>();
+        var firedFact = GetFiredFact<FactType>();
         Assert.Equal(1, firedFact.Id);
         Assert.Equal("Updated 1", firedFact.ValueProperty);
     }

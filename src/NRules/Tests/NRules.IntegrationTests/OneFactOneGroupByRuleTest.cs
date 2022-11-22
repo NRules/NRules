@@ -35,7 +35,7 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<IGrouping<long, string>>().Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>().Count());
     }
 
     [Fact]
@@ -55,8 +55,8 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, Fixture.GetFiredFact<IGrouping<long, string>>(0).Count());
-        Assert.Equal(2, Fixture.GetFiredFact<IGrouping<long, string>>(1).Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<IGrouping<long, string>>().Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>().Count());
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, Fixture.GetFiredFact<IGrouping<long, string>>().Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>().Count());
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var actual = Fixture.GetFiredFact<IGrouping<long, string>>().Count();
+        var actual = GetFiredFact<IGrouping<long, string>>().Count();
         Assert.Equal(3, actual);
     }
 
@@ -148,8 +148,8 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, Fixture.GetFiredFact<IGrouping<long, string>>(0).Count());
-        Assert.Equal(2, Fixture.GetFiredFact<IGrouping<long, string>>(1).Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
     }
 
     [Fact]
@@ -175,8 +175,8 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, Fixture.GetFiredFact<IGrouping<long, string>>(0).Count());
-        Assert.Equal(2, Fixture.GetFiredFact<IGrouping<long, string>>(1).Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
     }
 
     [Fact]

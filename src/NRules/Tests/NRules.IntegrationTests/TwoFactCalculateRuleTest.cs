@@ -20,7 +20,7 @@ public class TwoFactCalculateRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1|Valid Value 2", Fixture.GetFiredFact<CalculatedFact3>().Value);
+        Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>().Value);
     }
 
     [Fact]
@@ -37,8 +37,8 @@ public class TwoFactCalculateRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Null(Fixture.GetFiredFact<CalculatedFact3>());
-        Assert.NotNull(Fixture.GetFiredFact<CalculatedFact4>());
+        Assert.Null(GetFiredFact<CalculatedFact3>());
+        Assert.NotNull(GetFiredFact<CalculatedFact4>());
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class TwoFactCalculateRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1|Valid Value 22", Fixture.GetFiredFact<CalculatedFact3>().Value);
+        Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>().Value);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class TwoFactCalculateRuleTest : BaseRuleTestFixture
 
         //Assert - 1
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1|Valid Value 2", Fixture.GetFiredFact<CalculatedFact3>(0).Value);
+        Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>(0).Value);
 
         //Arrange - 2
         fact2.TestProperty = "Valid Value 22";
@@ -102,7 +102,7 @@ public class TwoFactCalculateRuleTest : BaseRuleTestFixture
 
         //Assert - 2
         Verify.Rule().FiredTimes(2);
-        Assert.Equal("Valid Value 1|Valid Value 22", Fixture.GetFiredFact<CalculatedFact3>(1).Value);
+        Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>(1).Value);
     }
 
     [Fact]
@@ -158,8 +158,8 @@ public class TwoFactCalculateRuleTest : BaseRuleTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal("Valid Value 11|Valid Value 21", Fixture.GetFiredFact<CalculatedFact3>(0).Value);
-        Assert.Equal("Valid Value 12|Valid Value 22", Fixture.GetFiredFact<CalculatedFact3>(1).Value);
+        Assert.Equal("Valid Value 11|Valid Value 21", GetFiredFact<CalculatedFact3>(0).Value);
+        Assert.Equal("Valid Value 12|Valid Value 22", GetFiredFact<CalculatedFact3>(1).Value);
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
