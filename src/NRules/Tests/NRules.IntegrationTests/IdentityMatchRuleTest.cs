@@ -2,106 +2,105 @@ using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using Xunit;
 
-namespace NRules.IntegrationTests
+namespace NRules.IntegrationTests;
+
+public class IdentityMatchRuleTest : BaseRuleTestFixture
 {
-    public class IdentityMatchRuleTest : BaseRuleTestFixture
+    [Fact]
+    public void Fire_MatchingFact_FiresOnce()
     {
-        [Fact]
-        public void Fire_MatchingFact_FiresOnce()
+        //Arrange
+        var fact = new FactType { TestProperty = "Valid value" };
+        Session.Insert(fact);
+
+        //Act
+        Session.Fire();
+
+        //Assert
+        Verify.Rule().FiredTimes(1);
+    }
+
+    [Fact]
+    public void Fire_TwoMatchingFacts_FiresTwice()
+    {
+        //Arrange
+        var fact1 = new FactType { TestProperty = "Valid value" };
+        var fact2 = new FactType { TestProperty = "Valid value" };
+        var facts = new[] { fact1, fact2 };
+        Session.InsertAll(facts);
+
+        //Act
+        Session.Fire();
+
+        //Assert
+        Verify.Rule().FiredTimes(2);
+    }
+
+    [Fact]
+    public void Fire_MatchingFactInsertedAndRetracted_DoesNotFire()
+    {
+        //Arrange
+        var fact = new FactType { TestProperty = "Valid value" };
+        Session.Insert(fact);
+        Session.Retract(fact);
+
+        //Act
+        Session.Fire();
+
+        //Assert
+        Verify.Rule().FiredTimes(0);
+    }
+
+    [Fact]
+    public void Fire_MatchingFactInsertedAndUpdatedToInvalid_DoesNotFire()
+    {
+        //Arrange
+        var fact = new FactType { TestProperty = "Valid value" };
+        Session.Insert(fact);
+        fact.TestProperty = "Invalid value";
+        Session.Update(fact);
+
+        //Act
+        Session.Fire();
+
+        //Assert
+        Verify.Rule().FiredTimes(0);
+    }
+
+    [Fact]
+    public void Fire_NoMatchingFact_DoesNotFire()
+    {
+        //Arrange
+        //Act
+        Session.Fire();
+
+        //Assert
+        Verify.Rule().FiredTimes(0);
+    }
+
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    {
+        setup.Rule<TestRule>();
+    }
+
+    public class FactType
+    {
+        public string TestProperty { get; set; }
+    }
+
+    public class TestRule : Rule
+    {
+        public override void Define()
         {
-            //Arrange
-            var fact = new FactType { TestProperty = "Valid value" };
-            Session.Insert(fact);
+            FactType fact1 = null;
+            FactType fact2 = null;
 
-            //Act
-            Session.Fire();
+            When()
+                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact2, f => ReferenceEquals(f, fact1));
 
-            //Assert
-            Fixture.AssertFiredOnce();
-        }
-
-        [Fact]
-        public void Fire_TwoMatchingFacts_FiresTwice()
-        {
-            //Arrange
-            var fact1 = new FactType { TestProperty = "Valid value" };
-            var fact2 = new FactType { TestProperty = "Valid value" };
-            var facts = new[] { fact1, fact2 };
-            Session.InsertAll(facts);
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            Fixture.AssertFiredTwice();
-        }
-
-        [Fact]
-        public void Fire_MatchingFactInsertedAndRetracted_DoesNotFire()
-        {
-            //Arrange
-            var fact = new FactType { TestProperty = "Valid value" };
-            Session.Insert(fact);
-            Session.Retract(fact);
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            Fixture.AssertDidNotFire();
-        }
-
-        [Fact]
-        public void Fire_MatchingFactInsertedAndUpdatedToInvalid_DoesNotFire()
-        {
-            //Arrange
-            var fact = new FactType { TestProperty = "Valid value" };
-            Session.Insert(fact);
-            fact.TestProperty = "Invalid value";
-            Session.Update(fact);
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            Fixture.AssertDidNotFire();
-        }
-
-        [Fact]
-        public void Fire_NoMatchingFact_DoesNotFire()
-        {
-            //Arrange
-            //Act
-            Session.Fire();
-
-            //Assert
-            Fixture.AssertDidNotFire();
-        }
-
-        protected override void SetUpRules(Testing.IRepositorySetup setup)
-        {
-            setup.Rule<TestRule>();
-        }
-
-        public class FactType
-        {
-            public string TestProperty { get; set; }
-        }
-
-        public class TestRule : Rule
-        {
-            public override void Define()
-            {
-                FactType fact1 = null;
-                FactType fact2 = null;
-
-                When()
-                    .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Match(() => fact2, f => ReferenceEquals(f, fact1));
-
-                Then()
-                    .Do(ctx => ctx.NoOp());
-            }
+            Then()
+                .Do(ctx => ctx.NoOp());
         }
     }
 }

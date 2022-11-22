@@ -5,67 +5,66 @@ using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
 using Xunit;
 
-namespace NRules.IntegrationTests
+namespace NRules.IntegrationTests;
+
+public class OneFactNoBindingRuleTest : BaseRuleTestFixture
 {
-    public class OneFactNoBindingRuleTest : BaseRuleTestFixture
+    [Fact]
+    public void Fire_OneMatchingFact_FiresOnce()
     {
-        [Fact]
-        public void Fire_OneMatchingFact_FiresOnce()
+        //Arrange
+        var fact = new FactType { TestProperty = "Valid Value 1" };
+        Session.Insert(fact);
+
+        //Act
+        Session.Fire();
+
+        //Assert
+        Verify.Rule().FiredTimes(1);
+    }
+
+    [Fact]
+    public void Fire_OneMatchingFact_FactInContext()
+    {
+        //Arrange
+        var fact = new FactType { TestProperty = "Valid Value 1" };
+        Session.Insert(fact);
+
+        IFactMatch[] matches = null;
+        Fixture.GetRuleInstance<TestRule>().Action = ctx =>
         {
-            //Arrange
-            var fact = new FactType { TestProperty = "Valid Value 1" };
-            Session.Insert(fact);
+            matches = ctx.Match.Facts.ToArray();
+        };
 
-            //Act
-            Session.Fire();
+        //Act
+        Session.Fire();
 
-            //Assert
-            Fixture.AssertFiredOnce();
-        }
+        //Assert
+        Verify.Rule().FiredTimes(1);
+        Assert.Single(matches);
+        Assert.Same(fact, matches[0].Value);
+    }
 
-        [Fact]
-        public void Fire_OneMatchingFact_FactInContext()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    {
+        setup.Rule<TestRule>();
+    }
+
+    public class FactType
+    {
+        public string TestProperty { get; set; }
+    }
+
+    public class TestRule : Rule
+    {
+        public Action<IContext> Action = ctx => { };
+
+        public override void Define()
         {
-            //Arrange
-            var fact = new FactType { TestProperty = "Valid Value 1" };
-            Session.Insert(fact);
-
-            IFactMatch[] matches = null;
-            Fixture.GetRuleInstance<TestRule>().Action = ctx =>
-            {
-                matches = ctx.Match.Facts.ToArray();
-            };
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            Fixture.AssertFiredOnce();
-            Assert.Single(matches);
-            Assert.Same(fact, matches[0].Value);
-        }
-
-        protected override void SetUpRules(Testing.IRepositorySetup setup)
-        {
-            setup.Rule<TestRule>();
-        }
-
-        public class FactType
-        {
-            public string TestProperty { get; set; }
-        }
-
-        public class TestRule : Rule
-        {
-            public Action<IContext> Action = ctx => { };
-
-            public override void Define()
-            {
-                When()
-                    .Match<FactType>(f => f.TestProperty.StartsWith("Valid"));
-                Then()
-                    .Do(ctx => Action(ctx));
-            }
+            When()
+                .Match<FactType>(f => f.TestProperty.StartsWith("Valid"));
+            Then()
+                .Do(ctx => Action(ctx));
         }
     }
 }

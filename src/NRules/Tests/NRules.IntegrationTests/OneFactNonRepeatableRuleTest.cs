@@ -3,67 +3,66 @@ using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
 using Xunit;
 
-namespace NRules.IntegrationTests
+namespace NRules.IntegrationTests;
+
+public class OneFactNonRepeatableRuleTest : BaseRuleTestFixture
 {
-    public class OneFactNonRepeatableRuleTest : BaseRuleTestFixture
+    [Fact]
+    public void Fire_OneMatchingFactEligibleForOneIncrement_FiresOnce()
     {
-        [Fact]
-        public void Fire_OneMatchingFactEligibleForOneIncrement_FiresOnce()
+        //Arrange
+        var fact = new FactType { TestProperty = "Valid Value 1", TestCount = 2 };
+        Session.Insert(fact);
+
+        //Act
+        Session.Fire();
+
+        //Assert
+        Verify.Rule().FiredTimes(1);
+    }
+
+    [Fact]
+    public void Fire_OneMatchingFactEligibleForTwoIncrements_FiresOnce()
+    {
+        //Arrange
+        var fact = new FactType { TestProperty = "Valid Value 1", TestCount = 1 };
+        Session.Insert(fact);
+
+        //Act
+        Session.Fire();
+
+        //Assert
+        Verify.Rule().FiredTimes(1);
+    }
+
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    {
+        setup.Rule<TestRule>();
+    }
+
+    public class FactType
+    {
+        public string TestProperty { get; set; }
+        public int TestCount { get; set; }
+
+        public void IncrementCount()
         {
-            //Arrange
-            var fact = new FactType { TestProperty = "Valid Value 1", TestCount = 2 };
-            Session.Insert(fact);
-
-            //Act
-            Session.Fire();
-
-            //Assert
-            Fixture.AssertFiredOnce();
+            TestCount++;
         }
+    }
 
-        [Fact]
-        public void Fire_OneMatchingFactEligibleForTwoIncrements_FiresOnce()
+    [Repeatability(RuleRepeatability.NonRepeatable)]
+    public class TestRule : Rule
+    {
+        public override void Define()
         {
-            //Arrange
-            var fact = new FactType { TestProperty = "Valid Value 1", TestCount = 1 };
-            Session.Insert(fact);
+            FactType fact = null;
 
-            //Act
-            Session.Fire();
-
-            //Assert
-            Fixture.AssertFiredOnce();
-        }
-
-        protected override void SetUpRules(Testing.IRepositorySetup setup)
-        {
-            setup.Rule<TestRule>();
-        }
-
-        public class FactType
-        {
-            public string TestProperty { get; set; }
-            public int TestCount { get; set; }
-
-            public void IncrementCount()
-            {
-                TestCount++;
-            }
-        }
-
-        [Repeatability(RuleRepeatability.NonRepeatable)]
-        public class TestRule : Rule
-        {
-            public override void Define()
-            {
-                FactType fact = null;
-
-                When()
-                    .Match(() => fact, f => f.TestProperty.StartsWith("Valid"), f => f.TestCount <= 2);
-                Then()
-                    .Do(ctx => fact.IncrementCount())
-                    .Do(ctx => ctx.Update(fact));
-            }
+            When()
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"), f => f.TestCount <= 2);
+            Then()
+                .Do(ctx => fact.IncrementCount())
+                .Do(ctx => ctx.Update(fact));
         }
     }
 }

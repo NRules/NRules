@@ -3,20 +3,15 @@ using NRules.Testing;
 
 namespace NRules.IntegrationTests.TestAssets;
 
-public abstract class BaseRuleTestFixture
+public abstract class BaseRuleTestFixture : RuleTestFixture
 {
-    private readonly RuleTestFixture _fixture;
-
     protected BaseRuleTestFixture(IRuleActivator activator = null, RuleCompiler compiler = null)
+        : base(new CachedRuleActivator(activator ?? new RuleRepository().Activator), compiler ?? new RuleCompiler(), new XUnitRuleAsseter())
     {
-        _fixture = new RuleTestFixture(new CachedRuleActivator(activator ?? new RuleRepository().Activator), compiler ?? new RuleCompiler());
-
-        SetUpRules(_fixture.Setup);
+        SetUpRules(Setup);
     }
 
-    protected RuleTestFixture Fixture => _fixture;
-
-    protected ISession Session => _fixture.Session;
+    protected IRuleTestFixture Fixture => this;
 
     protected abstract void SetUpRules(IRepositorySetup setup);
 }
