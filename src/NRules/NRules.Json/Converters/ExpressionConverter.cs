@@ -16,56 +16,104 @@ internal class ExpressionConverter : JsonConverter<Expression>
     public override Expression Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         reader.ReadStartObject();
-        return reader.ReadEnumProperty<ExpressionType>(nameof(Expression.NodeType), options) switch
+        var nodeType = reader.ReadEnumProperty<ExpressionType>(nameof(Expression.NodeType), options);
+        switch (nodeType)
         {
-            ExpressionType.Lambda => ReadLambda(ref reader, options),
-            ExpressionType.Parameter => ReadParameter(ref reader, options),
-            ExpressionType.Constant => ReadConstant(ref reader, options),
-            ExpressionType.MemberAccess => ReadMember(ref reader, options),
-            ExpressionType.Call => ReadMethodCall(ref reader, options),
-            ExpressionType.Equal => ReadBinary(ref reader, options).ToExpression(Expression.Equal, false),
-            ExpressionType.NotEqual => ReadBinary(ref reader, options).ToExpression(Expression.NotEqual, false),
-            ExpressionType.LessThanOrEqual => ReadBinary(ref reader, options).ToExpression(Expression.LessThanOrEqual, false),
-            ExpressionType.LessThan => ReadBinary(ref reader, options).ToExpression(Expression.LessThan, false),
-            ExpressionType.GreaterThanOrEqual => ReadBinary(ref reader, options).ToExpression(Expression.GreaterThanOrEqual, false),
-            ExpressionType.GreaterThan => ReadBinary(ref reader, options).ToExpression(Expression.GreaterThan, false),
-            ExpressionType.AndAlso => ReadBinary(ref reader, options).ToExpression(Expression.AndAlso),
-            ExpressionType.OrElse => ReadBinary(ref reader, options).ToExpression(Expression.OrElse),
-            ExpressionType.And => ReadBinary(ref reader, options).ToExpression(Expression.And),
-            ExpressionType.Or => ReadBinary(ref reader, options).ToExpression(Expression.Or),
-            ExpressionType.ExclusiveOr => ReadBinary(ref reader, options).ToExpression(Expression.ExclusiveOr),
-            ExpressionType.Add => ReadBinary(ref reader, options).ToExpression(Expression.Add),
-            ExpressionType.AddChecked => ReadBinary(ref reader, options).ToExpression(Expression.AddChecked),
-            ExpressionType.Divide => ReadBinary(ref reader, options).ToExpression(Expression.Divide),
-            ExpressionType.Modulo => ReadBinary(ref reader, options).ToExpression(Expression.Modulo),
-            ExpressionType.Multiply => ReadBinary(ref reader, options).ToExpression(Expression.Multiply),
-            ExpressionType.MultiplyChecked => ReadBinary(ref reader, options).ToExpression(Expression.MultiplyChecked),
-            ExpressionType.Power => ReadBinary(ref reader, options).ToExpression(Expression.Power),
-            ExpressionType.Subtract => ReadBinary(ref reader, options).ToExpression(Expression.Subtract),
-            ExpressionType.SubtractChecked => ReadBinary(ref reader, options).ToExpression(Expression.SubtractChecked),
-            ExpressionType.Coalesce => ReadBinary(ref reader, options).ToExpression(x => Expression.Coalesce(x.Left, x.Right)),
-            ExpressionType.ArrayIndex => ReadBinary(ref reader, options).ToExpression(x => Expression.ArrayIndex(x.Left, x.Right)),
-            ExpressionType.LeftShift => ReadBinary(ref reader, options).ToExpression(Expression.LeftShift),
-            ExpressionType.RightShift => ReadBinary(ref reader, options).ToExpression(Expression.RightShift),
-            ExpressionType.Assign => ReadBinary(ref reader, options).ToExpression(x => Expression.Assign(x.Left, x.Right)),
-            ExpressionType.Not => ReadUnary(ref reader, options).ToExpression(Expression.Not),
-            ExpressionType.Negate => ReadUnary(ref reader, options).ToExpression(Expression.Negate),
-            ExpressionType.NegateChecked => ReadUnary(ref reader, options).ToExpression(Expression.NegateChecked),
-            ExpressionType.UnaryPlus => ReadUnary(ref reader, options).ToExpression(Expression.UnaryPlus),
-            ExpressionType.Convert => ReadUnary(ref reader, options).ToExpression(Expression.Convert),
-            ExpressionType.ConvertChecked => ReadUnary(ref reader, options).ToExpression(Expression.ConvertChecked),
-            ExpressionType.TypeAs => ReadUnary(ref reader, options).ToExpression(x => Expression.TypeAs(x.Operand, x.Type)),
-            ExpressionType.Invoke => ReadInvocationExpression(ref reader, options),
-            ExpressionType.TypeIs => ReadTypeBinaryExpression(ref reader, options),
-            ExpressionType.New => ReadNewExpression(ref reader, options),
-            ExpressionType.NewArrayInit => ReadNewArrayInitExpression(ref reader, options),
-            ExpressionType.MemberInit => ReadMemberInitExpression(ref reader, options),
-            ExpressionType.ListInit => ReadListInitExpression(ref reader, options),
-            ExpressionType.Conditional => ReadConditionalExpression(ref reader, options),
-            ExpressionType.Default => ReadDefaultExpression(ref reader, options),
-            ExpressionType.Block => ReadBlockExpression(ref reader, options),
-            var type => throw new NotSupportedException($"Unsupported expression type. NodeType={type}"),
-        };
+            case ExpressionType.Lambda:
+                return ReadLambda(ref reader, options);
+            case ExpressionType.Parameter:
+                return ReadParameter(ref reader, options);
+            case ExpressionType.Constant:
+                return ReadConstant(ref reader, options);
+            case ExpressionType.MemberAccess:
+                return ReadMember(ref reader, options);
+            case ExpressionType.Call:
+                return ReadMethodCall(ref reader, options);
+            case ExpressionType.Equal:
+                return ReadBinary(ref reader, options).ToExpression(Expression.Equal, false);
+            case ExpressionType.NotEqual:
+                return ReadBinary(ref reader, options).ToExpression(Expression.NotEqual, false);
+            case ExpressionType.GreaterThanOrEqual:
+                return ReadBinary(ref reader, options).ToExpression(Expression.GreaterThanOrEqual, false);
+            case ExpressionType.GreaterThan:
+                return ReadBinary(ref reader, options).ToExpression(Expression.GreaterThan, false);
+            case ExpressionType.LessThanOrEqual:
+                return ReadBinary(ref reader, options).ToExpression(Expression.LessThanOrEqual, false);
+            case ExpressionType.LessThan:
+                return ReadBinary(ref reader, options).ToExpression(Expression.LessThan, false);
+            case ExpressionType.AndAlso:
+                return ReadBinary(ref reader, options).ToExpression(Expression.AndAlso);
+            case ExpressionType.OrElse:
+                return ReadBinary(ref reader, options).ToExpression(Expression.OrElse);
+            case ExpressionType.And:
+                return ReadBinary(ref reader, options).ToExpression(Expression.And);
+            case ExpressionType.Or:
+                return ReadBinary(ref reader, options).ToExpression(Expression.Or);
+            case ExpressionType.ExclusiveOr:
+                return ReadBinary(ref reader, options).ToExpression(Expression.ExclusiveOr);
+            case ExpressionType.Add:
+                return ReadBinary(ref reader, options).ToExpression(Expression.Add);
+            case ExpressionType.AddChecked:
+                return ReadBinary(ref reader, options).ToExpression(Expression.AddChecked);
+            case ExpressionType.Divide:
+                return ReadBinary(ref reader, options).ToExpression(Expression.Divide);
+            case ExpressionType.Modulo:
+                return ReadBinary(ref reader, options).ToExpression(Expression.Modulo);
+            case ExpressionType.Multiply:
+                return ReadBinary(ref reader, options).ToExpression(Expression.Multiply);
+            case ExpressionType.MultiplyChecked:
+                return ReadBinary(ref reader, options).ToExpression(Expression.MultiplyChecked);
+            case ExpressionType.Power:
+                return ReadBinary(ref reader, options).ToExpression(Expression.Power);
+            case ExpressionType.Subtract:
+                return ReadBinary(ref reader, options).ToExpression(Expression.Subtract);
+            case ExpressionType.SubtractChecked:
+                return ReadBinary(ref reader, options).ToExpression(Expression.SubtractChecked);
+            case ExpressionType.Coalesce:
+                return ReadBinary(ref reader, options).ToExpression(x => Expression.Coalesce(x.Left, x.Right));
+            case ExpressionType.ArrayIndex:
+                return ReadBinary(ref reader, options).ToExpression(x => Expression.ArrayIndex(x.Left, x.Right));
+            case ExpressionType.LeftShift:
+                return ReadBinary(ref reader, options).ToExpression(Expression.LeftShift);
+            case ExpressionType.RightShift:
+                return ReadBinary(ref reader, options).ToExpression(Expression.RightShift);
+            case ExpressionType.Assign:
+                return ReadBinary(ref reader, options).ToExpression(x => Expression.Assign(x.Left, x.Right));
+            case ExpressionType.Not:
+                return ReadUnary(ref reader, options).ToExpression(Expression.Not);
+            case ExpressionType.Negate:
+                return ReadUnary(ref reader, options).ToExpression(Expression.Negate);
+            case ExpressionType.NegateChecked:
+                return ReadUnary(ref reader, options).ToExpression(Expression.NegateChecked);
+            case ExpressionType.UnaryPlus:
+                return ReadUnary(ref reader, options).ToExpression(Expression.UnaryPlus);
+            case ExpressionType.Convert:
+                return ReadUnary(ref reader, options).ToExpression(Expression.Convert);
+            case ExpressionType.ConvertChecked:
+                return ReadUnary(ref reader, options).ToExpression(Expression.ConvertChecked);
+            case ExpressionType.TypeAs:
+                return ReadUnary(ref reader, options).ToExpression(x => Expression.TypeAs(x.Operand, x.Type));
+            case ExpressionType.Invoke:
+                return ReadInvocationExpression(ref reader, options);
+            case ExpressionType.TypeIs:
+                return ReadTypeBinaryExpression(ref reader, options);
+            case ExpressionType.New:
+                return ReadNewExpression(ref reader, options);
+            case ExpressionType.NewArrayInit:
+                return ReadNewArrayInitExpression(ref reader, options);
+            case ExpressionType.MemberInit:
+                return ReadMemberInitExpression(ref reader, options);
+            case ExpressionType.ListInit:
+                return ReadListInitExpression(ref reader, options);
+            case ExpressionType.Conditional:
+                return ReadConditionalExpression(ref reader, options);
+            case ExpressionType.Default:
+                return ReadDefaultExpression(ref reader, options);
+            case ExpressionType.Block:
+                return ReadBlockExpression(ref reader, options);
+            default:
+                throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
+        }
     }
 
     public override void Write(Utf8JsonWriter writer, Expression value, JsonSerializerOptions options)
