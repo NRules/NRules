@@ -29,7 +29,7 @@ public class RulesTestFixture : IRulesTestFixture
 
         ISession CreateSession()
         {
-            var ruleDefinitions = repository.GetRuleSets().SelectMany(set => set.Rules);
+            var ruleDefinitions = repository.GetRules();
             var factory = _compiler.Compile(ruleDefinitions);
             var session = factory.CreateSession();
             session.Events.RuleFiredEvent += (_, args) => _setup.OnRuleFired(args.Match);
