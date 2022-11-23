@@ -1,6 +1,6 @@
 ﻿namespace NRules.Testing;
 
-public interface ISelectedRuleVerification
+public interface IRuleVerification
 {
     void FiredTimes(int expected);
 }

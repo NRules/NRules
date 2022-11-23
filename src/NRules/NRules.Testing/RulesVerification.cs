@@ -14,19 +14,19 @@ internal class RulesVerification : IRulesVerification
         _accessor = accessor;
     }
 
-    public ISelectedRuleVerification Rule()
+    public IRuleVerification Rule()
     {
         var ruleMetadata = _accessor.GetRule();
         return Rule(ruleMetadata);
     }
 
-    public ISelectedRuleVerification Rule<T>() where T : Rule
+    public IRuleVerification Rule<T>() where T : Rule
     {
         var ruleMetadata = _accessor.GetRule<T>();
         return Rule(ruleMetadata);
     }
 
-    private ISelectedRuleVerification Rule(IRuleMetadata ruleMetadata)
+    private IRuleVerification Rule(IRuleMetadata ruleMetadata)
     {
         var matches = _accessor.GetFiredRuleMatches(ruleMetadata.Name);
         return new RuleVerification(_asserter, ruleMetadata, matches);

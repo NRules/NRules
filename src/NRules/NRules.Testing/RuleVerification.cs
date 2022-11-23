@@ -4,7 +4,7 @@ using NRules.RuleModel;
 
 namespace NRules.Testing;
 
-internal class RuleVerification : ISelectedRuleVerification
+internal class RuleVerification : IRuleVerification
 {
     private readonly IRuleAsserter _asserter;
     private readonly IRuleMetadata _ruleMetadata;

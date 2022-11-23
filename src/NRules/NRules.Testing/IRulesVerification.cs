@@ -4,7 +4,7 @@ namespace NRules.Testing;
 
 public interface IRulesVerification
 {
-    ISelectedRuleVerification Rule();
+    IRuleVerification Rule();
 
-    ISelectedRuleVerification Rule<T>() where T : Rule;
+    IRuleVerification Rule<T>() where T : Rule;
 }
