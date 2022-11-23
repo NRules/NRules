@@ -3,7 +3,7 @@ using NRules.Fluent.Dsl;
 
 namespace NRules.Testing;
 
-internal class RulesVerification : IRulesVerification
+internal sealed class RulesVerification : IRulesVerification
 {
     private readonly IRuleAsserter _asserter;
     private readonly IRuleAccessor _accessor;

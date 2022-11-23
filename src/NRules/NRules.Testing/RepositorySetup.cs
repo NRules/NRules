@@ -7,7 +7,7 @@ using NRules.RuleModel;
 
 namespace NRules.Testing;
 
-internal class RepositorySetup : IRepositorySetup, IRuleAccessor
+internal sealed class RepositorySetup : IRepositorySetup, IRuleAccessor
 {
     private readonly RuleRepository _repository;
     private readonly Dictionary<Type, IRuleMetadata> _ruleMap = new();

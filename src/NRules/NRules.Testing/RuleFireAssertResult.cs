@@ -2,7 +2,7 @@
 
 namespace NRules.Testing;
 
-internal class RuleFireAssertResult : IRuleFireAssertResult
+internal sealed class RuleFireAssertResult : IRuleFireAssertResult
 {
     public RuleFireAssertResult(IRuleMetadata rule, int expected, int actual)
     {
