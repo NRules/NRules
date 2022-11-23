@@ -121,55 +121,145 @@ internal class ExpressionConverter : JsonConverter<Expression>
         writer.WriteStartObject();
         writer.WriteEnumProperty(nameof(value.NodeType), value.NodeType, options);
 
-        switch (value)
+        switch (value.NodeType)
         {
-            case LambdaExpression le:
-                WriteLambda(writer, options, le);
+            case ExpressionType.Lambda:
+                WriteExpression(writer, options, (LambdaExpression)value);
                 break;
-            case ParameterExpression pe:
-                WriteParameter(writer, options, pe);
+            case ExpressionType.Parameter:
+                WriteExpression(writer, options, (ParameterExpression)value);
                 break;
-            case ConstantExpression ce:
-                WriteConstant(writer, options, ce);
+            case ExpressionType.Constant:
+                WriteExpression(writer, options, (ConstantExpression)value);
                 break;
-            case MemberExpression me:
-                WriteMember(writer, options, me);
+            case ExpressionType.MemberAccess:
+                WriteExpression(writer, options, (MemberExpression)value);
                 break;
-            case MethodCallExpression mce:
-                WriteMethodCall(writer, options, mce);
+            case ExpressionType.Call:
+                WriteExpression(writer, options, (MethodCallExpression)value);
                 break;
-            case BinaryExpression be:
-                WriteBinaryExpression(writer, options, be);
+            case ExpressionType.Equal:
+                WriteExpression(writer, options, (BinaryExpression)value);
                 break;
-            case UnaryExpression ue:
-                WriteUnaryExpression(writer, options, ue);
+            case ExpressionType.NotEqual:
+                WriteExpression(writer, options, (BinaryExpression)value);
                 break;
-            case InvocationExpression ie:
-                WriteInvocationExpression(writer, options, ie);
+            case ExpressionType.GreaterThanOrEqual:
+                WriteExpression(writer, options, (BinaryExpression)value);
                 break;
-            case TypeBinaryExpression tbe:
-                WriteTypeBinaryExpression(writer, options, tbe);
+            case ExpressionType.GreaterThan:
+                WriteExpression(writer, options, (BinaryExpression)value);
                 break;
-            case NewExpression ne:
-                WriteNewExpression(writer, options, ne);
+            case ExpressionType.LessThanOrEqual:
+                WriteExpression(writer, options, (BinaryExpression)value);
                 break;
-            case NewArrayExpression nae:
-                WriteNewArrayInitExpression(writer, options, nae);
+            case ExpressionType.LessThan:
+                WriteExpression(writer, options, (BinaryExpression)value);
                 break;
-            case MemberInitExpression mie:
-                WriteMemberInitExpression(writer, options, mie);
+            case ExpressionType.AndAlso:
+                WriteExpression(writer, options, (BinaryExpression)value);
                 break;
-            case ListInitExpression lie:
-                WriteListInitExpression(writer, options, lie);
+            case ExpressionType.OrElse:
+                WriteExpression(writer, options, (BinaryExpression)value);
                 break;
-            case ConditionalExpression ce:
-                WriteConditionalExpression(writer, options, ce);
+            case ExpressionType.And:
+                WriteExpression(writer, options, (BinaryExpression)value);
                 break;
-            case DefaultExpression de:
-                WriteDefaultExpression(writer, options, de);
+            case ExpressionType.Or:
+                WriteExpression(writer, options, (BinaryExpression)value);
                 break;
-            case BlockExpression be:
-                WriteBlockExpression(writer, options, be);
+            case ExpressionType.ExclusiveOr:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.Add:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.AddChecked:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.Divide:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.Modulo:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.Multiply:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.MultiplyChecked:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.Power:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.Subtract:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.SubtractChecked:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.Coalesce:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.ArrayIndex:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.LeftShift:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.RightShift:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.Assign:
+                WriteExpression(writer, options, (BinaryExpression)value);
+                break;
+            case ExpressionType.Not:
+                WriteExpression(writer, options, (UnaryExpression)value);
+                break;
+            case ExpressionType.Negate:
+                WriteExpression(writer, options, (UnaryExpression)value);
+                break;
+            case ExpressionType.NegateChecked:
+                WriteExpression(writer, options, (UnaryExpression)value);
+                break;
+            case ExpressionType.UnaryPlus:
+                WriteExpression(writer, options, (UnaryExpression)value);
+                break;
+            case ExpressionType.Convert:
+                WriteExpression(writer, options, (UnaryExpression)value);
+                break;
+            case ExpressionType.ConvertChecked:
+                WriteExpression(writer, options, (UnaryExpression)value);
+                break;
+            case ExpressionType.TypeAs:
+                WriteExpression(writer, options, (UnaryExpression)value);
+                break;
+            case ExpressionType.Invoke:
+                WriteExpression(writer, options, (InvocationExpression)value);
+                break;
+            case ExpressionType.TypeIs:
+                WriteExpression(writer, options, (TypeBinaryExpression)value);
+                break;
+            case ExpressionType.New:
+                WriteExpression(writer, options, (NewExpression)value);
+                break;
+            case ExpressionType.NewArrayInit:
+                WriteExpression(writer, options, (NewArrayExpression)value);
+                break;
+            case ExpressionType.MemberInit:
+                WriteExpression(writer, options, (MemberInitExpression)value);
+                break;
+            case ExpressionType.ListInit:
+                WriteExpression(writer, options, (ListInitExpression)value);
+                break;
+            case ExpressionType.Conditional:
+                WriteExpression(writer, options, (ConditionalExpression)value);
+                break;
+            case ExpressionType.Default:
+                WriteExpression(writer, options, (DefaultExpression)value);
+                break;
+            case ExpressionType.Block:
+                WriteExpression(writer, options, (BlockExpression)value);
                 break;
             default:
                 throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
@@ -194,7 +284,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return result;
     }
 
-    private void WriteLambda(Utf8JsonWriter writer, JsonSerializerOptions options, LambdaExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, LambdaExpression value)
     {
         var impliedDelegateType = value.GetImpliedDelegateType();
 
@@ -202,7 +292,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
             writer.WriteProperty(nameof(value.Type), value.Type, options);
 
         if (value.Parameters.Any())
-            writer.WriteObjectArrayProperty(nameof(value.Parameters), value.Parameters, options, pe => WriteParameter(writer, options, pe));
+            writer.WriteObjectArrayProperty(nameof(value.Parameters), value.Parameters, options, pe => WriteExpression(writer, options, pe));
 
         writer.WriteProperty(nameof(value.Body), value.Body, options);
     }
@@ -214,7 +304,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.Constant(value, type);
     }
 
-    private void WriteConstant(Utf8JsonWriter writer, JsonSerializerOptions options, ConstantExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ConstantExpression value)
     {
         writer.WriteProperty(nameof(value.Type), value.Type, options);
         writer.WriteProperty(nameof(value.Value), value.Value, value.Type, options);
@@ -227,7 +317,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.Parameter(type, name);
     }
 
-    private void WriteParameter(Utf8JsonWriter writer, JsonSerializerOptions options, ParameterExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ParameterExpression value)
     {
         writer.WriteStringProperty(nameof(value.Name), value.Name, options);
         writer.WriteProperty(nameof(value.Type), value.Type, options);
@@ -240,7 +330,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.MakeMemberAccess(expression, member);
     }
 
-    private void WriteMember(Utf8JsonWriter writer, JsonSerializerOptions options, MemberExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, MemberExpression value)
     {
         writer.WriteMemberInfo(options, value.Member);
         if (value.Expression is not null)
@@ -256,7 +346,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.Call(@object, method, arguments);
     }
 
-    private void WriteMethodCall(Utf8JsonWriter writer, JsonSerializerOptions options, MethodCallExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, MethodCallExpression value)
     {
         if (value.Object is not null)
             writer.WriteProperty(nameof(value.Object), value.Object, options);
@@ -291,7 +381,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return methodRecord.GetMethod(argumentTypes, argumentTypes[0]);
     }
 
-    private void WriteBinaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BinaryExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BinaryExpression value)
     {
         writer.WriteProperty(nameof(BinaryExpression.Left), value.Left, options);
         writer.WriteProperty(nameof(BinaryExpression.Right), value.Right, options);
@@ -309,7 +399,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return new(operand, type, method);
     }
 
-    private void WriteUnaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, UnaryExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, UnaryExpression value)
     {
         writer.WriteProperty(nameof(UnaryExpression.Operand), value.Operand, options);
         if (value.Type != value.Operand.Type)
@@ -325,7 +415,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.Invoke(expression, arguments);
     }
 
-    private void WriteInvocationExpression(Utf8JsonWriter writer, JsonSerializerOptions options, InvocationExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, InvocationExpression value)
     {
         writer.WriteProperty(nameof(value.Expression), value.Expression, options);
         if (value.Arguments.Any())
@@ -339,7 +429,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.TypeIs(expression, typeOperand!);
     }
 
-    private void WriteTypeBinaryExpression(Utf8JsonWriter writer, JsonSerializerOptions options, TypeBinaryExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, TypeBinaryExpression value)
     {
         writer.WriteProperty(nameof(value.Expression), value.Expression, options);
         writer.WriteProperty(nameof(value.TypeOperand), value.TypeOperand, options);
@@ -355,7 +445,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.New(ctor, arguments);
     }
 
-    private void WriteNewExpression(Utf8JsonWriter writer, JsonSerializerOptions options, NewExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, NewExpression value)
     {
         writer.WriteProperty(nameof(value.Constructor.DeclaringType), value.Constructor.DeclaringType, options);
         if (value.Arguments.Any())
@@ -369,7 +459,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.NewArrayInit(elementType, expressions);
     }
 
-    private void WriteNewArrayInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, NewArrayExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, NewArrayExpression value)
     {
         writer.WriteProperty("ElementType", value.Type.GetElementType(), options);
         if (value.Expressions.Any())
@@ -388,9 +478,9 @@ internal class ExpressionConverter : JsonConverter<Expression>
         }
     }
 
-    private void WriteMemberInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, MemberInitExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, MemberInitExpression value)
     {
-        WriteNewExpression(writer, options, value.NewExpression);
+        WriteExpression(writer, options, value.NewExpression);
         writer.WriteObjectArrayProperty(nameof(value.Bindings), value.Bindings, options, mb =>
         {
             writer.WriteMemberBinding(mb, options, value.NewExpression.Type);
@@ -412,9 +502,9 @@ internal class ExpressionConverter : JsonConverter<Expression>
         }
     }
 
-    private void WriteListInitExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ListInitExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ListInitExpression value)
     {
-        WriteNewExpression(writer, options, value.NewExpression);
+        WriteExpression(writer, options, value.NewExpression);
 
         writer.WriteObjectArrayProperty(nameof(value.Initializers), value.Initializers, options, initializer =>
         {
@@ -431,7 +521,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.Condition(test, ifTrue, ifFalse);
     }
 
-    private void WriteConditionalExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ConditionalExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, ConditionalExpression value)
     {
         writer.WriteProperty(nameof(value.Test), value.Test, options);
         writer.WriteProperty(nameof(value.IfTrue), value.IfTrue, options);
@@ -444,7 +534,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.Default(type);
     }
 
-    private void WriteDefaultExpression(Utf8JsonWriter writer, JsonSerializerOptions options, DefaultExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, DefaultExpression value)
     {
         writer.WriteProperty(nameof(value.Type), value.Type, options);
     }
@@ -460,10 +550,10 @@ internal class ExpressionConverter : JsonConverter<Expression>
         return Expression.Block(type, variables, expressions);
     }
 
-    private void WriteBlockExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BlockExpression value)
+    private void WriteExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BlockExpression value)
     {
         writer.WriteProperty(nameof(value.Type), value.Type, options);
-        writer.WriteObjectArrayProperty(nameof(value.Variables), value.Variables, options, variable => WriteParameter(writer, options, variable));
+        writer.WriteObjectArrayProperty(nameof(value.Variables), value.Variables, options, variable => WriteExpression(writer, options, variable));
         writer.WriteArrayProperty(nameof(value.Expressions), value.Expressions, options);
     }
 
