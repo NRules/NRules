@@ -6,23 +6,20 @@ using NRules.Fluent.Dsl;
 
 namespace NRules.Testing;
 
-public class CachedRuleActivator : IRuleActivator
+public sealed class CachedRuleActivator : IRuleActivator
 {
     private readonly IRuleActivator _activator;
     private readonly Dictionary<Type, IEnumerable<Rule>> _rules = new();
 
-    public CachedRuleActivator(IRuleActivator activator)
-    {
+    public CachedRuleActivator(IRuleActivator activator) =>
         _activator = activator;
-    }
 
-    public IEnumerable<Rule> Activate(Type type)
-    {
-        if (_rules.TryGetValue(type, out var rules))
-        {
-            return rules;
-        }
+    public IReadOnlyCollection<Type> CachedRuleTypes =>
+        _rules.Keys;
 
-        return _rules[type] = _activator.Activate(type).ToArray();
-    }
+    public IEnumerable<Rule> Activate(Type type) =>
+        _rules.GetOrAdd(type, ActivateRules);
+
+    private IEnumerable<Rule> ActivateRules(Type t) =>
+        _activator.Activate(t).ToArray();
 }

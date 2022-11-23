@@ -5,8 +5,10 @@ namespace NRules.IntegrationTests.TestAssets;
 
 public abstract class BaseRulesTestFixture : RulesTestFixture
 {
+    private static readonly IRuleActivator DefaultActivator = new RuleRepository().Activator;
+
     protected BaseRulesTestFixture(IRuleActivator activator = null, RuleCompiler compiler = null)
-        : base(new CachedRuleActivator(activator ?? new RuleRepository().Activator), compiler ?? new RuleCompiler(), new XUnitRuleAsserter())
+        : base((activator ?? DefaultActivator).AsCached(), compiler ?? new RuleCompiler(), new XUnitRuleAsserter())
     {
         SetUpRules(Setup);
     }
