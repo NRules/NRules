@@ -35,9 +35,12 @@ internal class RepositorySetup : IRepositorySetup, IRuleAccessor
 
     public void Rule<T>()
         where T : Rule =>
-        Rule(new RuleMetadata(typeof(T)));
+        Rule(typeof(T));
 
-    public void Rule(IRuleMetadata metadata)
+    public void Rule(Type ruleType) =>
+        Rule(new RuleMetadata(ruleType));
+
+    private void Rule(IRuleMetadata metadata)
     {
         _ruleMap[metadata.RuleType] = metadata;
         _repository.Load(x => x
