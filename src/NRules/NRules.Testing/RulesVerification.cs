@@ -5,12 +5,12 @@ namespace NRules.Testing;
 
 internal class RulesVerification : IRulesVerification
 {
-    private readonly IRuleAsseter _asseter;
+    private readonly IRuleAsserter _asserter;
     private readonly IRuleAccessor _accessor;
 
-    public RulesVerification(IRuleAsseter asseter, IRuleAccessor accessor)
+    public RulesVerification(IRuleAsserter asserter, IRuleAccessor accessor)
     {
-        _asseter = asseter;
+        _asserter = asserter;
         _accessor = accessor;
     }
 
@@ -29,6 +29,6 @@ internal class RulesVerification : IRulesVerification
     private ISelectedRuleVerification Rule(IRuleMetadata ruleMetadata)
     {
         var matches = _accessor.GetFiredRuleMatches(ruleMetadata.Name);
-        return new RuleVerification(_asseter, ruleMetadata, matches);
+        return new RuleVerification(_asserter, ruleMetadata, matches);
     }
 }

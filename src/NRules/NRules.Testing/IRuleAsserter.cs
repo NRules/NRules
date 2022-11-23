@@ -1,6 +1,6 @@
 ﻿namespace NRules.Testing;
 
-public interface IRuleAsseter
+public interface IRuleAsserter
 {
     void Assert(IRuleFireAssertResult result);
 }

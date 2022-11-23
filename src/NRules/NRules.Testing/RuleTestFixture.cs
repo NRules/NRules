@@ -14,7 +14,7 @@ public class RuleTestFixture : IRuleTestFixture
     private readonly RuleCompiler _compiler;
     private readonly RepositorySetup _setup;
 
-    public RuleTestFixture(IRuleActivator ruleActivator, RuleCompiler compiler, IRuleAsseter asseter)
+    public RuleTestFixture(IRuleActivator ruleActivator, RuleCompiler compiler, IRuleAsserter asserter)
     {
         _ruleActivator = ruleActivator;
         _compiler = compiler;
@@ -23,7 +23,7 @@ public class RuleTestFixture : IRuleTestFixture
             Activator = ruleActivator
         };
         _setup = new RepositorySetup(repository);
-        Verify = new RulesVerification(asseter, _setup);
+        Verify = new RulesVerification(asserter, _setup);
 
         _lazySession = new(CreateSession);
 

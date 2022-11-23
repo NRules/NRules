@@ -2,7 +2,7 @@
 
 namespace NRules.IntegrationTests.TestAssets;
 
-public sealed class XUnitRuleAsseter : IRuleAsseter
+public sealed class XUnitRuleAsserter : IRuleAsserter
 {
     public void Assert(IRuleFireAssertResult result)
     {

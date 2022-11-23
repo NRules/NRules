@@ -6,13 +6,13 @@ namespace NRules.Testing;
 
 internal class RuleVerification : ISelectedRuleVerification
 {
-    private readonly IRuleAsseter _asseter;
+    private readonly IRuleAsserter _asserter;
     private readonly IRuleMetadata _ruleMetadata;
     private readonly IReadOnlyCollection<IMatch> _matches;
 
-    public RuleVerification(IRuleAsseter asseter, IRuleMetadata ruleMetadata, IReadOnlyCollection<IMatch> matches)
+    public RuleVerification(IRuleAsserter asserter, IRuleMetadata ruleMetadata, IReadOnlyCollection<IMatch> matches)
     {
-        _asseter = asseter;
+        _asserter = asserter;
         _ruleMetadata = ruleMetadata;
         _matches = matches;
     }
@@ -20,7 +20,7 @@ internal class RuleVerification : ISelectedRuleVerification
     public void FiredTimes(int expected)
     {
         var result = GetAssertResult(_ruleMetadata, expected);
-        _asseter.Assert(result);
+        _asserter.Assert(result);
     }
 
     private RuleFireAssertResult GetAssertResult(IRuleMetadata ruleMetadata, int expected)
