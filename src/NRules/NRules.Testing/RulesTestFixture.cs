@@ -7,7 +7,10 @@ using NRules.RuleModel;
 
 namespace NRules.Testing;
 
-public class RulesTestFixture : IRulesTestFixture
+/// <summary>
+/// Fixture to test rules
+/// </summary>
+public class RulesTestFixture
 {
     private readonly Lazy<ISession> _lazySession;
     private readonly IRuleActivator _ruleActivator;
@@ -37,27 +40,56 @@ public class RulesTestFixture : IRulesTestFixture
         }
     }
 
+    /// <summary>
+    /// Gets the current rules engine session
+    /// </summary>
+    /// <remarks>Lazily created</remarks>
     public ISession Session => _lazySession.Value;
 
+    /// <summary>
+    /// Gets the setup helper to register rule types
+    /// </summary>
     public IRepositorySetup Setup => _setup;
 
+    /// <summary>
+    /// Gets the rule verification builder
+    /// </summary>
     public IRulesVerification Verify { get; }
 
+    /// <summary>
+    /// Gets the instance of specified rule type <typeparamref name="T"/>
+    /// </summary>
+    /// <typeparam name="T">Type of the rule to get instance of</typeparam>
+    /// <returns>Activated rule of type <typeparamref name="T"/></returns>
     public T GetRuleInstance<T>()
         where T : Rule =>
         _ruleActivator.Activate<T>().Single();
 
+    /// <summary>
+    /// Gets the fact instances of type <typeparamref name="T"/> that was fired last time
+    /// </summary>
+    /// <typeparam name="T">Type of the fact</typeparam>
+    /// <returns>Facts of type <typeparamref name="T"/> that was fired</returns>
     public IEnumerable<T> GetFiredFacts<T>()
     {
-        var factMatchess = GetFiredFactMatches<T>((ruleFirings, ruleMetadata) =>
-            ruleFirings.LastOrDefault() ?? throw new InvalidOperationException($"Unable to retrieve last firing of the rule {ruleMetadata.Name}"));
+        var factMatchess = GetFiredFactMatches<T>(GetLastFiring);
         return factMatchess.Select(f => f.Value).Cast<T>();
     }
 
+    /// <summary>
+    /// Gets the first fact instance of type <typeparamref name="T"/> that was fired last time
+    /// </summary>
+    /// <typeparam name="T">Type of the fact</typeparam>
+    /// <returns>First fact of type <typeparamref name="T"/> that was fired last time</returns>
     public T GetFiredFact<T>() =>
-        GetFiredFact<T>((ruleFirings, ruleMetadata) =>
-            ruleFirings.LastOrDefault() ?? throw new InvalidOperationException($"Unable to retrieve last firing of the rule {ruleMetadata.Name}"));
+         GetFiredFact<T>(GetLastFiring);
 
+    /// <summary>
+    /// Gets the first fact instance of type <typeparamref name="T"/> that was fired at <paramref name="index"/>
+    /// </summary>
+    /// <typeparam name="T">Type of the fact</typeparam>
+    /// <param name="index">Index of firing of the single registered rule</param>
+    /// <returns>First fact of type <typeparamref name="T"/> that was fired at <paramref name="index"/></returns>
     public T GetFiredFact<T>(int index) =>
         GetFiredFact<T>((ruleFirings, ruleMetadata) =>
         {
@@ -66,6 +98,9 @@ public class RulesTestFixture : IRulesTestFixture
 
             return ruleFirings.ElementAt(index);
         });
+
+    private static IMatch GetLastFiring(IReadOnlyCollection<IMatch> ruleFirings, IRuleMetadata ruleMetadata) =>
+        ruleFirings.LastOrDefault() ?? throw new InvalidOperationException($"Unable to retrieve last firing of the rule {ruleMetadata.Name}");
 
     private T GetFiredFact<T>(Func<IReadOnlyCollection<IMatch>, IRuleMetadata, IMatch> selector)
     {
@@ -77,7 +112,8 @@ public class RulesTestFixture : IRulesTestFixture
 
     private IEnumerable<IFactMatch> GetFiredFactMatches<T>(Func<IReadOnlyCollection<IMatch>, IRuleMetadata, IMatch> selector)
     {
-        var ruleMetadata = _setup.GetRule();
+        var ruleType = _setup.RegisteredRuleTypes.Single();
+        var ruleMetadata = _setup.GetRule(ruleType);
         var ruleFirings = _setup.GetFiredRuleMatches(ruleMetadata.Name);
 
         var match = selector(ruleFirings, ruleMetadata);

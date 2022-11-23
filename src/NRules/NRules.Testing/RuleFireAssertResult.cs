@@ -2,16 +2,30 @@
 
 namespace NRules.Testing;
 
-internal sealed class RuleFireAssertResult : IRuleFireAssertResult
+/// <summary>
+/// Represents assertion result for rule fire condition
+/// </summary>
+public sealed class RuleFireAssertResult
 {
-    public RuleFireAssertResult(IRuleMetadata rule, int expected, int actual)
+    public RuleFireAssertResult(IRuleMetadata ruleMetadata, int expected, int actual)
     {
-        Rule = rule;
+        RuleMetadata = ruleMetadata;
         Expected = expected;
         Actual = actual;
     }
 
-    public IRuleMetadata Rule { get; }
+    /// <summary>
+    /// Gets the rule metatada that condition is associated with
+    /// </summary>
+    public IRuleMetadata RuleMetadata { get; }
+
+    /// <summary>
+    /// Gets the expected number of firings
+    /// </summary>
     public int Expected { get; }
+
+    /// <summary>
+    /// Gets the actual number of firings
+    /// </summary>
     public int Actual { get; }
 }

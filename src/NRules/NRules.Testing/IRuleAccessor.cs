@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NRules.Fluent;
-using NRules.Fluent.Dsl;
 using NRules.RuleModel;
 
 namespace NRules.Testing;
 
 internal interface IRuleAccessor
 {
-    IRuleMetadata GetRule();
+    IReadOnlyCollection<Type> RegisteredRuleTypes { get; }
 
-    IRuleMetadata GetRule<T>() where T : Rule;
+    IRuleMetadata GetRule(Type ruleType);
 
     IReadOnlyCollection<IMatch> GetFiredRuleMatches(string ruleName);
 }

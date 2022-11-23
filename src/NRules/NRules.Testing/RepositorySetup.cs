@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
 using NRules.RuleModel;
@@ -15,23 +14,14 @@ internal sealed class RepositorySetup : IRepositorySetup, IRuleAccessor
 
     public RepositorySetup(RuleRepository repository) => _repository = repository;
 
-    public void OnRuleFired(IMatch match) => InternalGetFiredRuleMatches(match.Rule.Name).Add(match);
+    public IReadOnlyCollection<Type> RegisteredRuleTypes => _ruleMap.Keys;
+
+    public IRuleMetadata GetRule(Type ruleType) =>
+        _ruleMap.TryGetValue(ruleType, out var ruleMetadata)
+            ? ruleMetadata
+            : throw new ArgumentException($"Rule of type {ruleType.FullName} was not registered");
 
     public IReadOnlyCollection<IMatch> GetFiredRuleMatches(string ruleName) => InternalGetFiredRuleMatches(ruleName);
-
-    public IRuleMetadata GetRule() =>
-        _ruleMap.Count switch
-        {
-            0 => throw new ArgumentException("Expected single rule test, but found no rules registered"),
-            1 => _ruleMap.Values.First(),
-            _ => throw new ArgumentException("Expected single rule test, but found multiple rules registered"),
-        };
-
-    public IRuleMetadata GetRule<T>()
-        where T : Rule =>
-        _ruleMap.TryGetValue(typeof(T), out var ruleMetadata)
-            ? ruleMetadata
-            : throw new ArgumentException($"Rule of type {typeof(T).FullName} was not found");
 
     public void Rule<T>()
         where T : Rule =>
@@ -39,6 +29,8 @@ internal sealed class RepositorySetup : IRepositorySetup, IRuleAccessor
 
     public void Rule(Type ruleType) =>
         Rule(new RuleMetadata(ruleType));
+
+    public void OnRuleFired(IMatch match) => InternalGetFiredRuleMatches(match.Rule.Name).Add(match);
 
     private void Rule(IRuleMetadata metadata)
     {

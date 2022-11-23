@@ -1,4 +1,6 @@
-﻿using NRules.Fluent;
+﻿using System;
+using System.Linq;
+using NRules.Fluent;
 using NRules.Fluent.Dsl;
 
 namespace NRules.Testing;
@@ -14,15 +16,21 @@ internal sealed class RulesVerification : IRulesVerification
         _accessor = accessor;
     }
 
-    public IRuleVerification Rule()
-    {
-        var ruleMetadata = _accessor.GetRule();
-        return Rule(ruleMetadata);
-    }
+    public IRuleVerification Rule() =>
+        _accessor.RegisteredRuleTypes.Count switch
+        {
+            0 => throw new ArgumentException("Expected single rule test, but found no rules registered"),
+            1 => Rule(_accessor.RegisteredRuleTypes.First()),
+            _ => throw new ArgumentException("Expected single rule test, but found multiple rules registered"),
+        };
 
-    public IRuleVerification Rule<T>() where T : Rule
+    public IRuleVerification Rule<T>()
+        where T : Rule =>
+        Rule(typeof(T));
+
+    public IRuleVerification Rule(Type ruleType)
     {
-        var ruleMetadata = _accessor.GetRule<T>();
+        var ruleMetadata = _accessor.GetRule(ruleType);
         return Rule(ruleMetadata);
     }
 
