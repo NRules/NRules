@@ -76,5 +76,4 @@ internal sealed class ExpressionSerializerCollection : IExpressionSerializerColl
         yield return new DefaultExpressionSerializer();
         yield return new BlockExpressionSerializer(parameter);
     }
-
 }
