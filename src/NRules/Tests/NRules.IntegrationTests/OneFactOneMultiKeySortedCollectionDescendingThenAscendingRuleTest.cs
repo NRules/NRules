@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest : BaseRuleTestFixture
+public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_FiresOnceWithEmptyCollection()

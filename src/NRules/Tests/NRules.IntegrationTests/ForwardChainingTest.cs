@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ForwardChainingTest : BaseRuleTestFixture
+public class ForwardChainingTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFact_FiresFirstRuleAndChainsSecond()

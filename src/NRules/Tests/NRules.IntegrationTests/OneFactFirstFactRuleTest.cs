@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactFirstFactRuleTest : BaseRuleTestFixture
+public class OneFactFirstFactRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_FiveMatchingFactsInserted_FiresOnceWithFirstFact()

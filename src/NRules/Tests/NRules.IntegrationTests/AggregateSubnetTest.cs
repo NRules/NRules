@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class AggregateSubnetTest : BaseRuleTestFixture
+public class AggregateSubnetTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFactInsertedThenUpdatedNoFactsOfSecondKind_UpdatePropagatesFiresOnce()

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class SubnetUpdateTest : BaseRuleTestFixture
+public class SubnetUpdateTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_InsertThenUpdate_OnlyNecessaryEvaluations()

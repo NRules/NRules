@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class NodeSharingNonEquivalentExpressionsTest : BaseRuleTestFixture
+public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_FirstRuleMatchesFacts_OnlyMatchingRuleFires()

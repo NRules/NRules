@@ -3,9 +3,9 @@ using NRules.Testing;
 
 namespace NRules.IntegrationTests.TestAssets;
 
-public abstract class BaseRuleTestFixture : RuleTestFixture
+public abstract class BaseRulesTestFixture : RulesTestFixture
 {
-    protected BaseRuleTestFixture(IRuleActivator activator = null, RuleCompiler compiler = null)
+    protected BaseRulesTestFixture(IRuleActivator activator = null, RuleCompiler compiler = null)
         : base(new CachedRuleActivator(activator ?? new RuleRepository().Activator), compiler ?? new RuleCompiler(), new XUnitRuleAsserter())
     {
         SetUpRules(Setup);

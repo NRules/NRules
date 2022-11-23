@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactOneCollectionRuleTest : BaseRuleTestFixture
+public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_FiresOnceWithEmptyCollection()

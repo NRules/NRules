@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactRetractingRuleTest : BaseRuleTestFixture
+public class OneFactRetractingRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFact_FiresOnceAndRetractsFact()

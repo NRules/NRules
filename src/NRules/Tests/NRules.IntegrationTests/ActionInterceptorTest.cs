@@ -8,7 +8,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ActionInterceptorTest : BaseRuleTestFixture
+public class ActionInterceptorTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_ConditionsMatchNoInterceptor_ExecutesAction()

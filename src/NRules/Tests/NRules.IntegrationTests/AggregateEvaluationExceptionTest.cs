@@ -9,7 +9,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
+public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_ErrorInAggregateNoErrorHandler_Throws()

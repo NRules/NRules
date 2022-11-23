@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactNoBindingRuleTest : BaseRuleTestFixture
+public class OneFactNoBindingRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFact_FiresOnce()

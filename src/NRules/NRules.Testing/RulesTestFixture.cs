@@ -7,14 +7,14 @@ using NRules.RuleModel;
 
 namespace NRules.Testing;
 
-public class RuleTestFixture : IRuleTestFixture
+public class RulesTestFixture : IRulesTestFixture
 {
     private readonly Lazy<ISession> _lazySession;
     private readonly IRuleActivator _ruleActivator;
     private readonly RuleCompiler _compiler;
     private readonly RepositorySetup _setup;
 
-    public RuleTestFixture(IRuleActivator ruleActivator, RuleCompiler compiler, IRuleAsserter asserter)
+    public RulesTestFixture(IRuleActivator ruleActivator, RuleCompiler compiler, IRuleAsserter asserter)
     {
         _ruleActivator = ruleActivator;
         _compiler = compiler;

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRuleTestFixture
+public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_UpdatesWithSameIdButDifferentCount_FiresWithNewCount2()

@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class HavingClauseSingleArgumentConditionTest : BaseRuleTestFixture
+public class HavingClauseSingleArgumentConditionTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_TwoMatchingFactsSameTypeHavingConditionOnFirstAttachedToSecond_FiresOnce()

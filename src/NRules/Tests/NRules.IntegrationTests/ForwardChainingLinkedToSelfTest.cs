@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ForwardChainingLinkedToSelfTest : BaseRuleTestFixture
+public class ForwardChainingLinkedToSelfTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_TwoMatchingSetsOfFactsYieldsThenRetracted_FiresAndYieldedFactsAreRemoved()

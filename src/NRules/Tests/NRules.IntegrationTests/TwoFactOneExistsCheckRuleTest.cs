@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
+public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingFacts_FiresOnce()

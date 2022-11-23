@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class PriorityTest : BaseRuleTestFixture
+public class PriorityTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_LowPriorityActivatesTwiceTriggersHighPriority_HighPriorityPreemptsLowPriority()

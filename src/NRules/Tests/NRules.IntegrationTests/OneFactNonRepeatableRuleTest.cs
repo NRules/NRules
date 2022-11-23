@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactNonRepeatableRuleTest : BaseRuleTestFixture
+public class OneFactNonRepeatableRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFactEligibleForOneIncrement_FiresOnce()

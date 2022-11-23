@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
+public class CoJoinedBindingAndQueryRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingFactOfGroupKindOnly_FiresWithDefaultKey()

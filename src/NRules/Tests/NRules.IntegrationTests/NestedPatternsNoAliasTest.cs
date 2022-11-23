@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class NestedPatternsNoAliasTest : BaseRuleTestFixture
+public class NestedPatternsNoAliasTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_EmptySession_DoesNotFire()

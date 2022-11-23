@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ActionTriggerRepeatableTest : BaseRuleTestFixture
+public class ActionTriggerRepeatableTest : BaseRulesTestFixture
 {
     public ActionTriggerRepeatableTest()
     {
@@ -411,7 +411,7 @@ public class ActionTriggerRepeatableTest : BaseRuleTestFixture
     }
 }
 
-public class ActionTriggerNonRepeatableTest : BaseRuleTestFixture
+public class ActionTriggerNonRepeatableTest : BaseRulesTestFixture
 {
     public ActionTriggerNonRepeatableTest()
     {
@@ -817,7 +817,7 @@ public class ActionTriggerNonRepeatableTest : BaseRuleTestFixture
     }
 }
 
-public class ActionTriggerNoUpdateRepeatableTest : BaseRuleTestFixture
+public class ActionTriggerNoUpdateRepeatableTest : BaseRulesTestFixture
 {
     public ActionTriggerNoUpdateRepeatableTest()
     {
@@ -1199,7 +1199,7 @@ public class ActionTriggerNoUpdateRepeatableTest : BaseRuleTestFixture
     }
 }
 
-public class ActionTriggerNoUpdateNonRepeatableTest : BaseRuleTestFixture
+public class ActionTriggerNoUpdateNonRepeatableTest : BaseRulesTestFixture
 {
     public ActionTriggerNoUpdateNonRepeatableTest()
     {

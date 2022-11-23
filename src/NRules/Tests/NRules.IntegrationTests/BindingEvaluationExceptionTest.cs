@@ -9,7 +9,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class BindingEvaluationExceptionTest : BaseRuleTestFixture
+public class BindingEvaluationExceptionTest : BaseRulesTestFixture
 {
     [Fact]
     public void Insert_ErrorInBindingNoErrorHandler_Throws()

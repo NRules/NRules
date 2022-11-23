@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class BatchedForwardChainingTest : BaseRuleTestFixture
+public class BatchedForwardChainingTest : BaseRulesTestFixture
 {
     public BatchedForwardChainingTest()
     {

@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class TwoFactOneGroupByRuleTest : BaseRuleTestFixture
+public class TwoFactOneGroupByRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFactOfOneKindAndTwoOfAnother_FiresTwiceWithOneFactInEachGroup()

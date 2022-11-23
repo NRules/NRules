@@ -10,7 +10,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class CustomSelectAggregatorTest : BaseRuleTestFixture
+public class CustomSelectAggregatorTest : BaseRulesTestFixture
 {
     public CustomSelectAggregatorTest()
         : base(compiler: CreateCompiler())

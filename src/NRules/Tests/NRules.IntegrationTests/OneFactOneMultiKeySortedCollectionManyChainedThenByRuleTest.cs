@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactOneMultiKeySortedCollectionManyChainedThenByRuleTest : BaseRuleTestFixture
+public class OneFactOneMultiKeySortedCollectionManyChainedThenByRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_FourMatchingFactsAndOneInvalid_FiresOnceWithFourSortedFactsInCollection()

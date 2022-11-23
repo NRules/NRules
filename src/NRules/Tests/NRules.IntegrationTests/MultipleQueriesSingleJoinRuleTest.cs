@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class MultipleQueriesSingleJoinRuleTest : BaseRuleTestFixture
+public class MultipleQueriesSingleJoinRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFactSet_FiresOnce()

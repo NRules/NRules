@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class SessionQueryTest : BaseRuleTestFixture
+public class SessionQueryTest : BaseRulesTestFixture
 {
     [Fact]
     public void Query_NoFacts_Empty()

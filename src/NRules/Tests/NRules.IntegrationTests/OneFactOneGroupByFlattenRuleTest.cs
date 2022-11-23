@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactOneGroupByFlattenRuleTest : BaseRuleTestFixture
+public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_DoesNotFire()

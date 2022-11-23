@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class NodeSharingTest : BaseRuleTestFixture
+public class NodeSharingTest : BaseRulesTestFixture
 {
     [Fact]
     public void Session_AlphaSelectionNodes_OnePerIntraCondition()

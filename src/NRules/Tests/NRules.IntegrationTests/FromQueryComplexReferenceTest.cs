@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class FromQueryComplexReferenceTest : BaseRuleTestFixture
+public class FromQueryComplexReferenceTest : BaseRulesTestFixture
 {
     [Fact]
     public void FromComplex_JoinedWithKeyAndFactsFiltered_FiresForEachGroup()

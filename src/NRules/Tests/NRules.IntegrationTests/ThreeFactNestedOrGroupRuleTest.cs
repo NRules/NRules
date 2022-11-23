@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ThreeFactNestedOrGroupRuleTest : BaseRuleTestFixture
+public class ThreeFactNestedOrGroupRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingOuterFact_FiresOnce()

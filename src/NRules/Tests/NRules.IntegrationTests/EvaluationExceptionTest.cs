@@ -10,7 +10,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class EvaluationExceptionTest : BaseRuleTestFixture
+public class EvaluationExceptionTest : BaseRulesTestFixture
 {
     [Fact]
     public void Insert_ConditionErrorNoErrorHandler_Throws()

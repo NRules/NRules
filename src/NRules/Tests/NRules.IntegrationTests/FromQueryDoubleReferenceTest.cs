@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class FromQueryDoubleReferenceTest : BaseRuleTestFixture
+public class FromQueryDoubleReferenceTest : BaseRulesTestFixture
 {
     [Fact]
     public void FromDoubleReference_SplitByKey_FiresCorrectNumberOfTimesWithCorrectFactCounts()

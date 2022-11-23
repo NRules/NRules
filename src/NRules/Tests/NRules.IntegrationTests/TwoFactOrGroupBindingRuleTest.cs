@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class TwoFactOrGroupBindingRuleTest : BaseRuleTestFixture
+public class TwoFactOrGroupBindingRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_FactMatchingFirstPartOfOrGroup_FiresOnce()

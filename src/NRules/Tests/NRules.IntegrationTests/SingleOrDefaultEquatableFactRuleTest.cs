@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class SingleOrDefaultEquatableFactRuleTest : BaseRuleTestFixture
+public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFactsAndOneInvalid_FiresOnceWithValidFact()

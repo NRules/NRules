@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactRuleWithDependencyTest : BaseRuleTestFixture
+public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_DefaultResolver_Throws()

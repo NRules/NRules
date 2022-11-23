@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class HaltRuleTest : BaseRuleTestFixture
+public class HaltRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_TwoMatchingFacts_FiresOnceAndHalts()

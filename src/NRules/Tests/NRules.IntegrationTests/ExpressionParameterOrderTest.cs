@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ExpressionParameterOrderTest : BaseRuleTestFixture
+public class ExpressionParameterOrderTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchGroup1_FiresOnce()

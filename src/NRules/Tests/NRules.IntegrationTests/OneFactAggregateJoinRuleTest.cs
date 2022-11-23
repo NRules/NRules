@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactAggregateJoinRuleTest : BaseRuleTestFixture
+public class OneFactAggregateJoinRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_DoesNotFire()

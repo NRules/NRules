@@ -10,7 +10,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class CustomFirstAggregatorTest : BaseRuleTestFixture
+public class CustomFirstAggregatorTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_DoesNotFire()

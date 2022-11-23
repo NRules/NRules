@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ForwardChainingTransitiveTest : BaseRuleTestFixture
+public class ForwardChainingTransitiveTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_FactInserted_EachRuleFires()

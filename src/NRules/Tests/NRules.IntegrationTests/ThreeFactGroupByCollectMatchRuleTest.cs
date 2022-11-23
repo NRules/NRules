@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ThreeFactGroupByCollectMatchRuleTest : BaseRuleTestFixture
+public class ThreeFactGroupByCollectMatchRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_AllPatternsMatch_FiresOnce()

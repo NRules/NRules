@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class CoJoinedCollectAndExistsRulesTest : BaseRuleTestFixture
+public class CoJoinedCollectAndExistsRulesTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingFactOfFirstKindNoFactsOfOtherKind_FiresCollect()

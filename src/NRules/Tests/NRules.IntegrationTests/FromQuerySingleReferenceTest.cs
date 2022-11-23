@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class FromQuerySingleReferenceTest : BaseRuleTestFixture
+public class FromQuerySingleReferenceTest : BaseRulesTestFixture
 {
     [Fact]
     public void From_MultipleKeys_ShouldFireOnceForEachGroup()

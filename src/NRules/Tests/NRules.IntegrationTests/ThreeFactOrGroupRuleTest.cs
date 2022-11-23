@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ThreeFactOrGroupRuleTest : BaseRuleTestFixture
+public class ThreeFactOrGroupRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingMainFactAndNoneOfOrGroup_DoesNotFire()

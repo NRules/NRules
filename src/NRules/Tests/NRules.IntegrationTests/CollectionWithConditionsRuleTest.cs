@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class CollectionWithConditionsRuleTest : BaseRuleTestFixture
+public class CollectionWithConditionsRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_TwoMatchingFacts_DoesNotFire()

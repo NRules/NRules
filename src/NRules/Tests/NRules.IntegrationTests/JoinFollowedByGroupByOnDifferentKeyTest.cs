@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
+public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_BulkInsertForMultipleTypes_InsertsOnly_FiresThreeTimesWithCorrectCounts()

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class GroupJoinSeveralQueriesTest : BaseRuleTestFixture
+public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_TwoMatchingFactsOfOneKindAndJoinedGroups_FiresTwice()

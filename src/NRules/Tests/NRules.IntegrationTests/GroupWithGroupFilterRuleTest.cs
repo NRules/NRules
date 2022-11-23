@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class GroupWithGroupFilterRuleTest : BaseRuleTestFixture
+public class GroupWithGroupFilterRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_TwoMatchingGroups_FiresTwice()

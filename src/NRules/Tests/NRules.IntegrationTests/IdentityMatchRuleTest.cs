@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class IdentityMatchRuleTest : BaseRuleTestFixture
+public class IdentityMatchRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingFact_FiresOnce()

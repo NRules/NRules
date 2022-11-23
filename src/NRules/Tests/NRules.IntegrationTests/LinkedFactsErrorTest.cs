@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class LinkedFactsErrorTest : BaseRuleTestFixture
+public class LinkedFactsErrorTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_YieldThrowsThenUpdatedToValid_YieldsOnUpdate()

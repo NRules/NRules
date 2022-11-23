@@ -3,7 +3,7 @@ using NRules.Fluent.Dsl;
 
 namespace NRules.Testing;
 
-public interface IRuleTestFixture
+public interface IRulesTestFixture
 {
     ISession Session { get; }
 
