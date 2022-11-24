@@ -10,10 +10,10 @@
     <projectUrl>https://nrules.net</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/NRules/NRules.media/master/Logo/Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <summary>Testing helper for the NRules rules engine.</summary>
+    <summary>Rules testing facility for the NRules rules engine.</summary>
     <description>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm. NRules is an inference engine that, among other features, supports forward chaining, negative, existential and universal quantifiers. Rules are authored in C# using internal DSL.
 
-This package helps to eliminate the bilerplate code to test the rules.</description>
+This package simplifies testing of rules, authored using fluent DSL in C#. It eliminates boilerplate code associated with the test fixture setup, asserting proper rules firing and accessing facts matched by the rules under test.</description>
     <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
     <copyright>Copyright 2012-2022 Sergiy Nikolayev. All rights reserved.</copyright>
     <tags>nrules test testing</tags>
