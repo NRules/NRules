@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text.Json;
-using NRules.Fluent;
-using NRules.Fluent.Dsl;
 using NRules.Json.Tests.TestAssets;
 using NRules.Json.Tests.Utilities;
 using NRules.RuleModel;
@@ -226,13 +224,58 @@ public class RuleSerializerTest
     [Trait("Issue", "298")]
     public void Roundtrip_YieldRule_Equals()
     {
-        RuleSerializer.Setup(_options);
+        var builder = new RuleBuilder();
+        builder.Name("Test Rule");
 
-        var factory = new RuleDefinitionFactory();
-        var definition = factory.Create(new MyRule());
+        Expression<Func<FactType1, bool>> condition = fact1 => fact1.BooleanProperty;
+        builder.LeftHandSide().Pattern(typeof(FactType1), "fact1").Condition(condition);
 
-        // NOTE: Make sure that Expression.Block that is used in Then().Yield was serialized and deserialized properly
-        TestRoundtrip(definition);
+        var action = Yield(context => new FactType2(), 1);
+        builder.RightHandSide().Action(action, ActionTrigger.Activated | ActionTrigger.Reactivated);
+
+        var ruleDefinition = builder.Build();
+
+        // NOTE: Make sure that Expression.Block and Expression.Assign that are used in Then().Yield are serialized and deserialized properly
+        TestRoundtrip(ruleDefinition);
+
+        static Expression<Action<IContext>> Yield<TFact>(Expression<Func<IContext, TFact>> yield, int linkedCount)
+        {
+            var context = yield.Parameters[0];
+            var linkedFact = Expression.Parameter(typeof(TFact));
+            var yieldUpdate = Expression.Lambda<Func<IContext, TFact, TFact>>(yield.Body, context, linkedFact);
+            var action = CreateYieldAction(yield, yieldUpdate, linkedCount);
+            return action;
+        }
+
+        static Expression<Action<IContext>> CreateYieldAction<TFact>(Expression<Func<IContext, TFact>> yieldInsert, Expression<Func<IContext, TFact, TFact>> yieldUpdate, int linkedCount)
+        {
+            var context = yieldInsert.Parameters[0];
+            var linkedFact = Expression.Parameter(typeof(TFact));
+            var linkedKey = Expression.Constant($"$linkedkey{linkedCount}$");
+
+            var action = Expression.Lambda<Action<IContext>>(
+                Expression.Block(
+                    new[] { linkedFact },
+                    Expression.Assign(linkedFact,
+                        Expression.Convert(
+                            Expression.Call(context,
+                                typeof(IContext).GetMethod(nameof(IContext.GetLinked)),
+                                linkedKey),
+                            typeof(TFact))),
+                    Expression.IfThenElse(
+                        Expression.Equal(linkedFact, Expression.Constant(null)),
+                        Expression.Call(context,
+                            typeof(IContext).GetMethod(nameof(IContext.InsertLinked)), linkedKey,
+                            yieldInsert.Body),
+                        Expression.Block(
+                            Expression.Assign(linkedFact, Expression.Invoke(yieldUpdate, context, linkedFact)),
+                            Expression.Call(context,
+                                typeof(IContext).GetMethod(nameof(IContext.UpdateLinked)),
+                                linkedKey, linkedFact)))
+                ),
+                context);
+            return action;
+        }
     }
 
     private void TestRoundtrip(IRuleDefinition original)
@@ -241,15 +284,5 @@ public class RuleSerializerTest
         //System.IO.File.WriteAllText(@"C:\temp\rule.json", jsonString);
         var deserialized = JsonSerializer.Deserialize<IRuleDefinition>(jsonString, _options);
         Assert.True(RuleDefinitionComparer.AreEqual(original, deserialized));
-    }
-
-    private class MyRule : Rule
-    {
-        public override void Define()
-        {
-            When().Match<FactType1>(myFact => myFact.BooleanProperty);
-
-            Then().Yield(context => new FactType2());
-        }
     }
 }

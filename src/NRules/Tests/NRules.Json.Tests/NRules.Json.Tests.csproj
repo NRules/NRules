@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\NRules.Fluent\NRules.Fluent.csproj" />
     <ProjectReference Include="..\..\NRules.Json\NRules.Json.csproj" />
   </ItemGroup>
 
