@@ -59,5 +59,10 @@
         Contains types that implement serialization of rule definitions to/from JSON.
       </summary>
     </member>
+    <member name="N:NRules.Testing">
+      <summary>
+        Contains types that enable testing of rules authored using internal DSL.
+      </summary>
+    </member>
   </members>
 </doc>

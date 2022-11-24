@@ -59,6 +59,8 @@
       <DocumentationSource sourceFile="..\binaries\NRules\netstandard2.0\NRules.RuleModel.xml" />
       <DocumentationSource sourceFile="..\binaries\NRules\netstandard2.0\NRules.Json.dll" />
       <DocumentationSource sourceFile="..\binaries\NRules\netstandard2.0\NRules.Json.xml" />
+      <DocumentationSource sourceFile="..\binaries\NRules\netstandard2.0\NRules.Testing.dll" />
+      <DocumentationSource sourceFile="..\binaries\NRules\netstandard2.0\NRules.Testing.xml" />
     </DocumentationSources>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
