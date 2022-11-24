@@ -36,7 +36,7 @@ public class EvaluationEventTest
         Assert.Equal(true, eventArgs.Result);
         Assert.Null(eventArgs.Exception);
     }
-    
+
     [Fact]
     public void Insert_Fact_RaisesAlphaConditionExpressionEvalEventWithException()
     {
@@ -61,7 +61,7 @@ public class EvaluationEventTest
         Assert.Equal(false, eventArgs.Result);
         Assert.Same(ex.InnerException, eventArgs.Exception);
     }
-    
+
     [Fact]
     public void Insert_Fact_RaisesBetaConditionExpressionEvalEvent()
     {
@@ -76,7 +76,7 @@ public class EvaluationEventTest
         };
 
         var fact1 = new FactType1 { TestProperty = "Valid Value" };
-        var fact2 = new FactType2 { JoinProperty = "Invalid Value", SelectProperty = "12345"};
+        var fact2 = new FactType2 { JoinProperty = "Invalid Value", SelectProperty = "12345" };
 
         //Act
         session.Insert(fact1);
@@ -90,7 +90,7 @@ public class EvaluationEventTest
         Assert.Equal(false, eventArgs.Result);
         Assert.Null(eventArgs.Exception);
     }
-    
+
     [Fact]
     public void Insert_Fact_RaisesAggregateExpressionEvalEvent()
     {
@@ -105,7 +105,7 @@ public class EvaluationEventTest
         };
 
         var fact1 = new FactType1 { TestProperty = "Valid Value" };
-        var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "12345"};
+        var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "12345" };
 
         //Act
         session.Insert(fact1);
@@ -119,7 +119,7 @@ public class EvaluationEventTest
         Assert.Equal("12345", eventArgs.Result);
         Assert.Null(eventArgs.Exception);
     }
-    
+
     [Fact]
     public void Insert_Fact_RaisesBindingExpressionEvalEvent()
     {
@@ -134,7 +134,7 @@ public class EvaluationEventTest
         };
 
         var fact1 = new FactType1 { TestProperty = "Valid Value" };
-        var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "12345"};
+        var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "12345" };
 
         //Act
         session.Insert(fact1);
@@ -148,7 +148,7 @@ public class EvaluationEventTest
         Assert.Equal(5, eventArgs.Result);
         Assert.Null(eventArgs.Exception);
     }
-    
+
     [Fact]
     public void Insert_Fact_RaisesFilterExpressionEvalEvent()
     {
@@ -163,7 +163,7 @@ public class EvaluationEventTest
         };
 
         var fact1 = new FactType1 { TestProperty = "Valid Value" };
-        var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "123456"};
+        var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "123456" };
 
         //Act
         session.Insert(fact1);
@@ -194,7 +194,7 @@ public class EvaluationEventTest
         };
 
         var fact1 = new FactType1 { TestProperty = "Valid Value" };
-        var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "1234567890A"};
+        var fact2 = new FactType2 { JoinProperty = "Valid Value", SelectProperty = "1234567890A" };
 
         //Act
         session.Insert(fact1);
@@ -240,7 +240,7 @@ public class EvaluationEventTest
             int length = 0;
 
             When()
-                .Match<FactType1>(() => fact,
+                .Match(() => fact,
                     f => f.TestProperty.StartsWith("Valid"))
                 .Query(() => value, q => q
                     .Match<FactType2>(

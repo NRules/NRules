@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class NestedPatternsNoAliasTest : BaseRuleTestFixture
+public class NestedPatternsNoAliasTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_EmptySession_DoesNotFire()
@@ -13,9 +13,9 @@ public class NestedPatternsNoAliasTest : BaseRuleTestFixture
         Session.Fire();
 
         // Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
-    
+
     [Fact]
     public void Fire_FactTypeOneTwoThreeInserted_FiresOnce()
     {
@@ -28,9 +28,9 @@ public class NestedPatternsNoAliasTest : BaseRuleTestFixture
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_FactTypeOneTwoFourInserted_FiresOnce()
     {
@@ -43,12 +43,12 @@ public class NestedPatternsNoAliasTest : BaseRuleTestFixture
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType1
@@ -77,7 +77,7 @@ public class NestedPatternsNoAliasTest : BaseRuleTestFixture
                 .Or(x => x
                     .Match<FactType3>()
                     .Match<FactType4>());
-            
+
             Then()
                 .Do(ctx => ctx.NoOp());
         }

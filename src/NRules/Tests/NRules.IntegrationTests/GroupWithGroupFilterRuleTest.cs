@@ -5,37 +5,37 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class GroupWithGroupFilterRuleTest : BaseRuleTestFixture
+public class GroupWithGroupFilterRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_TwoMatchingGroups_FiresTwice()
     {
         //Arrange
-        var fact11 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good"};
-        var fact12 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good" };
-        var fact13 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP2", GroupTestProperty = "Bad" };
-        var fact14 = new FactType {TestProperty = "Valid Test Property 2", GroupProperty = "GP2", GroupTestProperty = "Good" };
+        var fact11 = new FactType { TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good" };
+        var fact12 = new FactType { TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good" };
+        var fact13 = new FactType { TestProperty = "Valid Test Property 1", GroupProperty = "GP2", GroupTestProperty = "Bad" };
+        var fact14 = new FactType { TestProperty = "Valid Test Property 2", GroupProperty = "GP2", GroupTestProperty = "Good" };
 
-        var facts = new object[] {fact11, fact12, fact13, fact14};
+        var facts = new object[] { fact11, fact12, fact13, fact14 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
     [Fact]
     public void Fire_MakeAllFactsInelligible_DoesNotFire()
     {
         //Arrange
-        var fact11 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good"};
-        var fact12 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good" };
-        var fact13 = new FactType {TestProperty = "Valid Test Property 1", GroupProperty = "GP2", GroupTestProperty = "Bad" };
-        var fact14 = new FactType {TestProperty = "Valid Test Property 2", GroupProperty = "GP2", GroupTestProperty = "Good" };
+        var fact11 = new FactType { TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good" };
+        var fact12 = new FactType { TestProperty = "Valid Test Property 1", GroupProperty = "GP1", GroupTestProperty = "Good" };
+        var fact13 = new FactType { TestProperty = "Valid Test Property 1", GroupProperty = "GP2", GroupTestProperty = "Bad" };
+        var fact14 = new FactType { TestProperty = "Valid Test Property 2", GroupProperty = "GP2", GroupTestProperty = "Good" };
 
-        var facts = new object[] {fact11, fact12, fact13, fact14};
+        var facts = new object[] { fact11, fact12, fact13, fact14 };
         Session.InsertAll(facts);
 
         fact11.TestProperty = "Bad Test Poroperty";
@@ -49,12 +49,12 @@ public class GroupWithGroupFilterRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType

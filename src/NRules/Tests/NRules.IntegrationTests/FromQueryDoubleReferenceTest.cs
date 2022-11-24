@@ -6,15 +6,15 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class FromQueryDoubleReferenceTest : BaseRuleTestFixture
+public class FromQueryDoubleReferenceTest : BaseRulesTestFixture
 {
     [Fact]
     public void FromDoubleReference_SplitByKey_FiresCorrectNumberOfTimesWithCorrectFactCounts()
     {
         // Arrange
-        var values = new[] {"a", "a", "b", "b", "c", "c"};
-        var keys = new[] {1, 2, 2, 1, 2, 3};
-        var facts = values.Zip(keys, (v, k) => new Fact {Key = k, Value = v})
+        var values = new[] { "a", "a", "b", "b", "c", "c" };
+        var keys = new[] { 1, 2, 2, 1, 2, 3 };
+        var facts = values.Zip(keys, (v, k) => new Fact { Key = k, Value = v })
             .ToArray();
 
         Session.InsertAll(facts);
@@ -27,7 +27,7 @@ public class FromQueryDoubleReferenceTest : BaseRuleTestFixture
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFacts<IEnumerable<Fact>>().ToArray();
         var factsAllExpected = facts;
@@ -45,9 +45,9 @@ public class FromQueryDoubleReferenceTest : BaseRuleTestFixture
         Assert.Equal(factsOneTwoExpected, factsOneTwoActual);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<FromQueryDoubleReferenceRule>();
+        setup.Rule<FromQueryDoubleReferenceRule>();
     }
 
     public class Fact

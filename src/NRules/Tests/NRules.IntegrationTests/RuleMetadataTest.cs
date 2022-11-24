@@ -230,7 +230,7 @@ public class RuleMetadataTest
             FactType fact = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
@@ -242,7 +242,7 @@ public class RuleMetadataTest
     {
     }
 
-    [Name("Rule with metadata"), Fluent.Dsl.Description("Rule description")]
+    [Name("Rule with metadata"), Description("Rule description")]
     [TestTag, Tag("Metadata")]
     [Priority(100)]
     public class RuleWithMetadata : Rule
@@ -252,7 +252,7 @@ public class RuleMetadataTest
             FactType fact = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
@@ -270,13 +270,13 @@ public class RuleMetadataTest
             Priority(1000);
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
     }
 
-    [Name("Rule with metadata"), Fluent.Dsl.Description("Rule description")]
+    [Name("Rule with metadata"), Description("Rule description")]
     [Tag("ChildTag"), Tag("ChildMetadata")]
     public class RuleWithMetadataAndParentMetadata : ParentRuleWithMetadata
     {
@@ -285,13 +285,13 @@ public class RuleMetadataTest
             FactType fact = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
     }
 
-    [Name("Rule with metadata"), Fluent.Dsl.Description("Rule description")]
+    [Name("Rule with metadata"), Description("Rule description")]
     [Tag("ChildTag"), Tag("ChildMetadata")]
     [Priority(500)]
     public class RuleWithMetadataAndParentMetadataAndOverrides : ParentRuleWithMetadata
@@ -301,7 +301,7 @@ public class RuleMetadataTest
             FactType fact = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

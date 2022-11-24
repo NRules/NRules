@@ -10,7 +10,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class CustomFirstAggregatorTest : BaseRuleTestFixture
+public class CustomFirstAggregatorTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_DoesNotFire()
@@ -19,7 +19,7 @@ public class CustomFirstAggregatorTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class CustomFirstAggregatorTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
         Assert.Equal("Valid Value 1", GetFiredFact<FactType>(0).TestProperty);
         Assert.Equal("Valid Value 4", GetFiredFact<FactType>(1).TestProperty);
     }
@@ -59,13 +59,13 @@ public class CustomFirstAggregatorTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal("Valid Value 2", GetFiredFact<FactType>().TestProperty);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType
@@ -121,7 +121,7 @@ internal class CustomFirstAggregatorFactory : IAggregatorFactory
 
 public class CustomFirstAggregator<TElement> : IAggregator
 {
-    private readonly Dictionary<object, TElement> _firstElements = new Dictionary<object, TElement>();
+    private readonly Dictionary<object, TElement> _firstElements = new();
 
     public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
     {

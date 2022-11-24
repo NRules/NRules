@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>NRules.Testing</id>
+    <version>$version$</version>
+    <title>NRules.Testing, NRules Testing library</title>
+    <authors>Sergiy Nikolayev</authors>
+    <owners>Sergiy Nikolayev</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://nrules.net</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/NRules/NRules.media/master/Logo/Logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Rules testing facility for the NRules rules engine.</summary>
+    <description>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm. NRules is an inference engine that, among other features, supports forward chaining, negative, existential and universal quantifiers. Rules are authored in C# using internal DSL.
+
+This package simplifies testing of rules, authored using fluent DSL in C#. It eliminates boilerplate code associated with the test fixture setup, asserting proper rules firing and accessing facts matched by the rules under test.</description>
+    <releaseNotes>https://github.com/NRules/NRules/releases/v$version$</releaseNotes>
+    <copyright>Copyright 2012-2022 Sergiy Nikolayev. All rights reserved.</copyright>
+    <tags>nrules test testing</tags>
+    <dependencies>
+      <group targetFramework="netstandard2.0">
+        <dependency id="NRules" version="[$version$]" />
+        <dependency id="NRules.Fluent" version="[$version$]" />
+      </group>
+      <group targetFramework="netstandard2.1">
+        <dependency id="NRules" version="[$version$]" />
+        <dependency id="NRules.Fluent" version="[$version$]" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\binaries\NRules\netstandard2.0\NRules.Testing.dll" target="lib\netstandard2.0" />
+    <file src="..\binaries\NRules\netstandard2.0\NRules.Testing.xml" target="lib\netstandard2.0" />
+    <file src="..\binaries\NRules\netstandard2.0\NRules.Testing.pdb" target="lib\netstandard2.0" />
+    <file src="..\binaries\NRules\netstandard2.1\NRules.Testing.dll" target="lib\netstandard2.1" />
+    <file src="..\binaries\NRules\netstandard2.1\NRules.Testing.xml" target="lib\netstandard2.1" />
+    <file src="..\binaries\NRules\netstandard2.1\NRules.Testing.pdb" target="lib\netstandard2.1" />
+  </files>
+</package>

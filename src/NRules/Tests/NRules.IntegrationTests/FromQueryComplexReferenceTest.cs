@@ -6,17 +6,17 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class FromQueryComplexReferenceTest : BaseRuleTestFixture
+public class FromQueryComplexReferenceTest : BaseRulesTestFixture
 {
     [Fact]
     public void FromComplex_JoinedWithKeyAndFactsFiltered_FiresForEachGroup()
     {
         // Arrange
-        var values = new[] {"a", "b", "b", "a"};
-        var keys = new[] {1, 1, 2, 2};
-        var facts = values.Zip(keys, (v, k) => new Fact {Key = k, Value = v});
+        var values = new[] { "a", "b", "b", "a" };
+        var keys = new[] { 1, 1, 2, 2 };
+        var facts = values.Zip(keys, (v, k) => new Fact { Key = k, Value = v });
 
-        var key = new Key {Value = 1};
+        var key = new Key { Value = 1 };
 
         Session.Insert(key);
         Session.InsertAll(facts);
@@ -25,18 +25,18 @@ public class FromQueryComplexReferenceTest : BaseRuleTestFixture
         Session.Fire();
 
         // Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
     [Fact]
     public void FromComplex_JoinedWithKeyAndFactsFiltered_NoMatches_DoesNotFire()
     {
         // Arrange
-        var values = new[] {"a", "b", "b", "a"};
-        var keys = new[] {1, 1, 2, 2};
-        var facts = values.Zip(keys, (v, k) => new Fact {Key = k, Value = v});
+        var values = new[] { "a", "b", "b", "a" };
+        var keys = new[] { 1, 1, 2, 2 };
+        var facts = values.Zip(keys, (v, k) => new Fact { Key = k, Value = v });
 
-        var key = new Key {Value = 3};
+        var key = new Key { Value = 3 };
 
         Session.Insert(key);
         Session.InsertAll(facts);
@@ -45,12 +45,12 @@ public class FromQueryComplexReferenceTest : BaseRuleTestFixture
         Session.Fire();
 
         // Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<FromQueryComplexReferenceRule>();
+        setup.Rule<FromQueryComplexReferenceRule>();
     }
 
     public class Fact

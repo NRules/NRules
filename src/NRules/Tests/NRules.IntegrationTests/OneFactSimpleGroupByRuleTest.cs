@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
+public class OneFactSimpleGroupByRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_DoesNotFire()
@@ -14,24 +14,24 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_TwoFactsWithNullKey_FiresOnceWithBothFactsInOneGroup()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = null};
-        var fact2 = new FactType {TestProperty = null};
+        var fact1 = new FactType { TestProperty = null };
+        var fact2 = new FactType { TestProperty = null };
 
-        var facts = new[] {fact1, fact2};
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(2, GetFiredFact<IGrouping<string, FactType>>().Count());
     }
 
@@ -39,10 +39,10 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsWithNullKeyOneKeyUpdatedToValue_FiresTwiceWithOneFactInEachGroup()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = null};
-        var fact2 = new FactType {TestProperty = null};
+        var fact1 = new FactType { TestProperty = null };
+        var fact2 = new FactType { TestProperty = null };
 
-        var facts = new[] {fact1, fact2};
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         fact2.TestProperty = "Value";
@@ -52,7 +52,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
         Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
         Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
     }
@@ -61,10 +61,10 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsWithValueKeyOneKeyUpdatedToNull_FiresTwiceWithOneFactInEachGroup()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Value"};
-        var fact2 = new FactType {TestProperty = "Value"};
+        var fact1 = new FactType { TestProperty = "Value" };
+        var fact2 = new FactType { TestProperty = "Value" };
 
-        var facts = new[] {fact1, fact2};
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         fact2.TestProperty = null;
@@ -74,7 +74,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
         Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
         Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
     }
@@ -83,10 +83,10 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
     public void Fire_OneFactWithValueAnotherWithNullThenNullUpdated_FiresTwiceWithOneFactInEachGroup()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Value"};
-        var fact2 = new FactType {TestProperty = null};
+        var fact1 = new FactType { TestProperty = "Value" };
+        var fact2 = new FactType { TestProperty = null };
 
-        var facts = new[] {fact1, fact2};
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
         Session.Update(fact2);
 
@@ -94,7 +94,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
         Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
         Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
     }
@@ -103,10 +103,10 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsWithNullBothRetracted_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = null};
-        var fact2 = new FactType {TestProperty = null};
+        var fact1 = new FactType { TestProperty = null };
+        var fact2 = new FactType { TestProperty = null };
 
-        var facts = new[] {fact1, fact2};
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         Session.Retract(fact1);
@@ -116,16 +116,16 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_OneFactInsertedThenUpdatedToAnotherGroup_FiresOnceWithOneFactInSecondGroup()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value Group1"};
+        var fact1 = new FactType { TestProperty = "Valid Value Group1" };
         Session.Insert(fact1);
-        
+
         fact1.TestProperty = "Valid Value Group2";
         Session.Update(fact1);
 
@@ -133,15 +133,15 @@ public class OneFactSimpleGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         var firedGroup = GetFiredFact<IGrouping<string, FactType>>();
         Assert.Single(firedGroup);
         Assert.Equal("Valid Value Group2", firedGroup.Key);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType

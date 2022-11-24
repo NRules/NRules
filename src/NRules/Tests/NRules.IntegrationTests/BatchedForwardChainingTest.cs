@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class BatchedForwardChainingTest : BaseRuleTestFixture
+public class BatchedForwardChainingTest : BaseRulesTestFixture
 {
     public BatchedForwardChainingTest()
     {
@@ -28,8 +28,8 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce<ForwardChainingFirstRule>();
-        AssertFiredOnce<ForwardChainingSecondRule>();
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(1);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(1);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         //Arrange
         var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
         var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-        Session.InsertAll(new []{fact11, fact12});
+        Session.InsertAll(new[] { fact11, fact12 });
 
         //Act
         Session.Fire();
@@ -47,8 +47,8 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice<ForwardChainingFirstRule>();
-        AssertFiredTwice<ForwardChainingSecondRule>();
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
         Assert.Single(result);
         Assert.Equal(LinkedFactAction.Insert, result.ElementAt(0).Action);
         Assert.Equal(2, result.ElementAt(0).FactCount);
@@ -60,8 +60,8 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         //Arrange
         var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
         var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-        Session.InsertAll(new []{fact11, fact12});
-        Session.UpdateAll(new []{fact11, fact12});
+        Session.InsertAll(new[] { fact11, fact12 });
+        Session.UpdateAll(new[] { fact11, fact12 });
 
         //Act
         Session.Fire();
@@ -69,8 +69,8 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice<ForwardChainingFirstRule>();
-        AssertFiredTwice<ForwardChainingSecondRule>();
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
         Assert.Single(result);
         Assert.Equal(LinkedFactAction.Insert, result.ElementAt(0).Action);
         Assert.Equal(2, result.ElementAt(0).FactCount);
@@ -89,7 +89,7 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         var fact17 = new FactType1 { TestProperty = "Valid Value 7", ChainProperty = "Valid Value 7" };
         var fact18 = new FactType1 { TestProperty = "Valid Value 8", ChainProperty = "Valid Value 8" };
         var fact19 = new FactType1 { TestProperty = "Valid Value 9", ChainProperty = "Valid Value 9" };
-        Session.InsertAll(new []{fact11, fact12, fact13, fact14, fact15, fact16, fact17, fact18, fact19});
+        Session.InsertAll(new[] { fact11, fact12, fact13, fact14, fact15, fact16, fact17, fact18, fact19 });
 
         Session.Fire();
         Session.PropagateLinked();
@@ -121,8 +121,8 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTimes<ForwardChainingFirstRule>(18);
-        AssertFiredTimes<ForwardChainingSecondRule>(18);
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(18);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(18);
         Assert.Single(result);
         Assert.Equal(LinkedFactAction.Update, result.ElementAt(0).Action);
         Assert.Equal(9, result.ElementAt(0).FactCount);
@@ -134,9 +134,9 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         //Arrange
         var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
         var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-        Session.InsertAll(new []{fact11, fact12});
-        Session.UpdateAll(new []{fact11, fact12});
-        Session.RetractAll(new []{fact11, fact12});
+        Session.InsertAll(new[] { fact11, fact12 });
+        Session.UpdateAll(new[] { fact11, fact12 });
+        Session.RetractAll(new[] { fact11, fact12 });
 
         //Act
         Session.Fire();
@@ -145,8 +145,8 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire<ForwardChainingFirstRule>();
-        AssertDidNotFire<ForwardChainingSecondRule>();
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(0);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(0);
         Assert.Empty(result);
     }
 
@@ -156,7 +156,7 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         //Arrange
         var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
         var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-        Session.InsertAll(new []{fact11, fact12});
+        Session.InsertAll(new[] { fact11, fact12 });
 
         Session.Fire();
         Session.PropagateLinked();
@@ -165,7 +165,7 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
 
         fact11.ChainProperty = "Invalid Value 1";
         fact12.ChainProperty = "Invalid Value 1";
-        Session.UpdateAll(new []{fact11, fact12});
+        Session.UpdateAll(new[] { fact11, fact12 });
 
         //Act
         Session.Fire();
@@ -173,8 +173,8 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTimes<ForwardChainingFirstRule>(4);
-        AssertFiredTimes<ForwardChainingSecondRule>(2);
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(4);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
         Assert.Single(result);
         Assert.Equal(LinkedFactAction.Retract, result.ElementAt(0).Action);
         Assert.Equal(2, result.ElementAt(0).FactCount);
@@ -186,7 +186,7 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         //Arrange
         var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
         var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-        Session.InsertAll(new []{fact11, fact12});
+        Session.InsertAll(new[] { fact11, fact12 });
 
         Session.Fire();
         Session.PropagateLinked();
@@ -195,15 +195,15 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
 
         fact11.TestProperty = "Invalid Value 1";
         fact12.TestProperty = "Invalid Value 1";
-        Session.UpdateAll(new []{fact11, fact12});
+        Session.UpdateAll(new[] { fact11, fact12 });
 
         //Act
         Session.Fire();
         var result = Session.PropagateLinked();
 
         //Assert
-        AssertFiredTimes<ForwardChainingFirstRule>(2);
-        AssertFiredTimes<ForwardChainingSecondRule>(2);
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
         Assert.Empty(result);
     }
 
@@ -213,7 +213,7 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         //Arrange
         var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
         var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-        Session.InsertAll(new []{fact11, fact12});
+        Session.InsertAll(new[] { fact11, fact12 });
 
         Session.Fire();
         Session.PropagateLinked();
@@ -222,7 +222,7 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
 
         fact11.ChainProperty = "Throw";
         fact12.ChainProperty = "Throw";
-        Session.UpdateAll(new []{fact11, fact12});
+        Session.UpdateAll(new[] { fact11, fact12 });
 
         //Act
         Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
@@ -230,8 +230,8 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         var result = Session.PropagateLinked();
 
         //Assert
-        AssertFiredTimes<ForwardChainingFirstRule>(2);
-        AssertFiredTimes<ForwardChainingSecondRule>(2);
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
         Assert.Single(result);
         Assert.Equal(LinkedFactAction.Retract, result.ElementAt(0).Action);
         Assert.Equal(2, result.ElementAt(0).FactCount);
@@ -245,13 +245,13 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
 
         var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
         var fact12 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
-        Session.InsertAll(new []{fact11, fact12});
+        Session.InsertAll(new[] { fact11, fact12 });
 
         Session.Fire();
 
         fact11.ChainProperty = "Throw";
         fact12.ChainProperty = "Throw";
-        Session.UpdateAll(new []{fact11, fact12});
+        Session.UpdateAll(new[] { fact11, fact12 });
 
         int retracted = 0;
         Session.Events.FactRetractedEvent += (sender, args) => retracted++;
@@ -261,15 +261,15 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
         Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
 
         //Assert
-        AssertFiredTimes<ForwardChainingFirstRule>(2);
-        AssertFiredTimes<ForwardChainingSecondRule>(2);
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
         Assert.Equal(2, retracted);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<ForwardChainingFirstRule>();
-        SetUpRule<ForwardChainingSecondRule>();
+        setup.Rule<ForwardChainingFirstRule>();
+        setup.Rule<ForwardChainingSecondRule>();
     }
 
     public class FactType1
@@ -318,7 +318,7 @@ public class BatchedForwardChainingTest : BaseRuleTestFixture
 
         private static FactType2 Create(FactType1 fact1)
         {
-            var fact2 = new FactType2 {TestProperty = fact1.ChainProperty};
+            var fact2 = new FactType2 { TestProperty = fact1.ChainProperty };
             return fact2;
         }
 

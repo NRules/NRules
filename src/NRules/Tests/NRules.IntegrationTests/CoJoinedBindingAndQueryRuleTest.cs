@@ -6,13 +6,13 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
+public class CoJoinedBindingAndQueryRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingFactOfGroupKindOnly_FiresWithDefaultKey()
     {
         //Arrange
-        var fact = new FactType2 {GroupKey = "Group1"};
+        var fact = new FactType2 { GroupKey = "Group1" };
 
         Session.Insert(fact);
 
@@ -20,7 +20,7 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal("Group1|0", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
@@ -28,8 +28,8 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
     public void Fire_MatchingFactsOfBothKinds_FiresWithCorrectKey()
     {
         //Arrange
-        var fact1 = new FactType1 {Value = "1"};
-        var fact2 = new FactType2 {GroupKey = "Group1"};
+        var fact1 = new FactType1 { Value = "1" };
+        var fact2 = new FactType2 { GroupKey = "Group1" };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -38,7 +38,7 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal("Group1|1", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
@@ -46,8 +46,8 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
     public void Fire_MatchingFactsOfBothKindsReverseInsertOrder_FiresWithCorrectKey()
     {
         //Arrange
-        var fact1 = new FactType1 {Value = "1"};
-        var fact2 = new FactType2 {GroupKey = "Group1"};
+        var fact1 = new FactType1 { Value = "1" };
+        var fact2 = new FactType2 { GroupKey = "Group1" };
 
         Session.Insert(fact2);
         Session.Insert(fact1);
@@ -56,7 +56,7 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal("Group1|1", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
@@ -64,20 +64,20 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
     public void Fire_MatchingFactsOfBothKindsFirstUpdated_FiresWithCorrectKey()
     {
         //Arrange
-        var fact1 = new FactType1 {Value = "1"};
-        var fact2 = new FactType2 {GroupKey = "Group1"};
+        var fact1 = new FactType1 { Value = "1" };
+        var fact2 = new FactType2 { GroupKey = "Group1" };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
 
         fact1.Value = "2";
         Session.Update(fact1);
-        
+
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal("Group1|2", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
@@ -85,20 +85,20 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
     public void Fire_MatchingFactsOfBothKindsSecondUpdated_FiresWithCorrectKey()
     {
         //Arrange
-        var fact1 = new FactType1 {Value = "1"};
-        var fact2 = new FactType2 {GroupKey = "Group1"};
+        var fact1 = new FactType1 { Value = "1" };
+        var fact2 = new FactType2 { GroupKey = "Group1" };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
 
         fact2.GroupKey = "Group2";
         Session.Update(fact2);
-        
+
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal("Group2|1", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
@@ -106,19 +106,19 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
     public void Fire_MatchingFactsOfBothKindsFirstRetracted_FiresWithDefaultKey()
     {
         //Arrange
-        var fact1 = new FactType1 {Value = "1"};
-        var fact2 = new FactType2 {GroupKey = "Group1"};
+        var fact1 = new FactType1 { Value = "1" };
+        var fact2 = new FactType2 { GroupKey = "Group1" };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
 
         Session.Retract(fact1);
-        
+
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal("Group1|0", GetFiredFact<IGrouping<string, FactType2>>().Key);
     }
 
@@ -126,24 +126,24 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
     public void Fire_MatchingFactsOfBothKindsSecondRetracted_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {Value = "1"};
-        var fact2 = new FactType2 {GroupKey = "Group1"};
+        var fact1 = new FactType1 { Value = "1" };
+        var fact2 = new FactType2 { GroupKey = "Group1" };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
 
         Session.Retract(fact2);
-        
+
         //Act
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
-    
-    protected override void SetUpRules()
+
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType1
@@ -168,7 +168,7 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRuleTestFixture
                 .Query(() => collection, q => q
                     .Match<FactType1>()
                     .Collect())
-                .Let(() => fact, () => collection.FirstOrDefault() ?? new FactType1{Value = "0"})
+                .Let(() => fact, () => collection.FirstOrDefault() ?? new FactType1 { Value = "0" })
                 .Query(() => group, q => q
                     .Match<FactType2>()
                     .GroupBy(x => x.GroupKey + "|" + fact.Value));

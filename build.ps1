@@ -29,7 +29,8 @@ $components = @{
                     "NRules\bin\$configuration\netstandard2.0",
                     "NRules.Fluent\bin\$configuration\netstandard2.0",
                     "NRules.RuleModel\bin\$configuration\netstandard2.0",
-                    "NRules.Json\bin\$configuration\netstandard2.0"
+                    "NRules.Json\bin\$configuration\netstandard2.0",
+                    "NRules.Testing\bin\$configuration\netstandard2.0"
                 )
             }
             'netstandard2.1' = @{
@@ -37,7 +38,8 @@ $components = @{
                     "NRules\bin\$configuration\netstandard2.1",
                     "NRules.Fluent\bin\$configuration\netstandard2.1",
                     "NRules.RuleModel\bin\$configuration\netstandard2.1",
-                    "NRules.Json\bin\$configuration\netstandard2.1"
+                    "NRules.Json\bin\$configuration\netstandard2.1",
+                    "NRules.Testing\bin\$configuration\netstandard2.1"
                 )
             }
         }
@@ -47,7 +49,8 @@ $components = @{
                 'NRules.RuleModel',
                 'NRules.Fluent',
                 'NRules.Runtime',
-                'NRules'
+                'NRules',
+                'NRules.Testing'
             )
         }
     };
@@ -172,8 +175,8 @@ $components = @{
 
 $core = @('NRules')
 $visualizer = @('NRules.Debugger.Visualizer')
-$integration = $components.keys | where { $_.StartsWith("NRules.Integration") }
-$samples = $components.keys | where { $_.StartsWith("Samples.") }
+$integration = $components.keys | Where-Object { $_.StartsWith("NRules.Integration") }
+$samples = $components.keys | Where-Object { $_.StartsWith("Samples.") }
 
 $componentList = @()
 if ($component -eq "Core") {
@@ -195,7 +198,7 @@ if ($component -eq "Core") {
 
 Import-Module .\tools\build\psake.psm1
 $baseDir = Resolve-Path .
-$componentList | % {
+$componentList | ForEach-Object {
     Invoke-psake .\tools\build\psakefile.ps1 $target -properties @{version=$version;configuration=$configuration;baseDir=$baseDir} -parameters @{component=$components[$_]}
     if (-not $psake.build_success) {
         break

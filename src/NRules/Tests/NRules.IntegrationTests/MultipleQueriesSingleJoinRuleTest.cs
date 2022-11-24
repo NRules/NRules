@@ -6,14 +6,14 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class MultipleQueriesSingleJoinRuleTest : BaseRuleTestFixture
+public class MultipleQueriesSingleJoinRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFactSet_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact4 = new FactType4 {TestProperty = "Valid Value 1"};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact4 = new FactType4 { TestProperty = "Valid Value 1" };
 
         Session.Insert(fact1);
         Session.Insert(fact4);
@@ -22,17 +22,17 @@ public class MultipleQueriesSingleJoinRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_OneMatchingFactSetOneNotMatching_FiresOnce()
     {
         //Arrange
-        var fact1A = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact1B = new FactType1 {TestProperty = "Valid Value 2"};
-        var fact4A = new FactType4 {TestProperty = "Valid Value 1"};
-        var fact4B = new FactType4 {TestProperty = "Valid Value 3"};
+        var fact1A = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact1B = new FactType1 { TestProperty = "Valid Value 2" };
+        var fact4A = new FactType4 { TestProperty = "Valid Value 1" };
+        var fact4B = new FactType4 { TestProperty = "Valid Value 3" };
 
         Session.Insert(fact1A);
         Session.Insert(fact1B);
@@ -43,17 +43,17 @@ public class MultipleQueriesSingleJoinRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_TwoMatchingFactSets_FiresTwice()
     {
         //Arrange
-        var fact1A = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact1B = new FactType1 {TestProperty = "Valid Value 2"};
-        var fact4A = new FactType4 {TestProperty = "Valid Value 1"};
-        var fact4B = new FactType4 {TestProperty = "Valid Value 2"};
+        var fact1A = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact1B = new FactType1 { TestProperty = "Valid Value 2" };
+        var fact4A = new FactType4 { TestProperty = "Valid Value 1" };
+        var fact4B = new FactType4 { TestProperty = "Valid Value 2" };
 
         Session.Insert(fact1A);
         Session.Insert(fact1B);
@@ -64,12 +64,12 @@ public class MultipleQueriesSingleJoinRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType1
@@ -102,7 +102,7 @@ public class MultipleQueriesSingleJoinRuleTest : BaseRuleTestFixture
             IEnumerable<FactType4> collection4 = null;
 
             When()
-                .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
                 .Query(() => collection2, q => q
                     .Match<FactType2>(f => f.TestProperty.StartsWith("Valid"))
                     .Collect())

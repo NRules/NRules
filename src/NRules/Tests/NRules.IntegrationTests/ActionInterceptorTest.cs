@@ -8,7 +8,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ActionInterceptorTest : BaseRuleTestFixture
+public class ActionInterceptorTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_ConditionsMatchNoInterceptor_ExecutesAction()
@@ -26,7 +26,7 @@ public class ActionInterceptorTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.True(actionExecuted);
     }
 
@@ -48,7 +48,7 @@ public class ActionInterceptorTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.True(actionExecuted);
     }
 
@@ -88,13 +88,13 @@ public class ActionInterceptorTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.False(actionExecuted);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     private class ActionInterceptor : IActionInterceptor
@@ -136,7 +136,7 @@ public class ActionInterceptorTest : BaseRuleTestFixture
             IEnumerable<FactType2> collection = null;
 
             When()
-                .Match<FactType1>(() => fact)
+                .Match(() => fact)
                 .Query(() => collection, x => x
                     .Match<FactType2>()
                     .Collect());

@@ -4,43 +4,43 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class IdentityMatchRuleTest : BaseRuleTestFixture
+public class IdentityMatchRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingFact_FiresOnce()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid value"};
+        var fact = new FactType { TestProperty = "Valid value" };
         Session.Insert(fact);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_TwoMatchingFacts_FiresTwice()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid value"};
-        var fact2 = new FactType {TestProperty = "Valid value"};
-        var facts = new[] {fact1, fact2};
+        var fact1 = new FactType { TestProperty = "Valid value" };
+        var fact2 = new FactType { TestProperty = "Valid value" };
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
     [Fact]
     public void Fire_MatchingFactInsertedAndRetracted_DoesNotFire()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid value"};
+        var fact = new FactType { TestProperty = "Valid value" };
         Session.Insert(fact);
         Session.Retract(fact);
 
@@ -48,14 +48,14 @@ public class IdentityMatchRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_MatchingFactInsertedAndUpdatedToInvalid_DoesNotFire()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid value"};
+        var fact = new FactType { TestProperty = "Valid value" };
         Session.Insert(fact);
         fact.TestProperty = "Invalid value";
         Session.Update(fact);
@@ -64,7 +64,7 @@ public class IdentityMatchRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -75,12 +75,12 @@ public class IdentityMatchRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType
@@ -96,8 +96,8 @@ public class IdentityMatchRuleTest : BaseRuleTestFixture
             FactType fact2 = null;
 
             When()
-                .Match<FactType>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                .Match<FactType>(() => fact2, f => ReferenceEquals(f, fact1));
+                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact2, f => ReferenceEquals(f, fact1));
 
             Then()
                 .Do(ctx => ctx.NoOp());

@@ -7,27 +7,27 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactNoBindingRuleTest : BaseRuleTestFixture
+public class OneFactNoBindingRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFact_FiresOnce()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_OneMatchingFact_FactInContext()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
         IFactMatch[] matches = null;
@@ -40,14 +40,14 @@ public class OneFactNoBindingRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Single(matches);
         Assert.Same(fact, matches[0].Value);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
+public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_ErrorInAggregateNoErrorHandler_Throws()
@@ -54,7 +54,7 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         var group = GetFiredFact<IEnumerable<FactType2>>();
         Assert.Equal(2, group.Count());
     }
@@ -134,7 +134,7 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         var group = GetFiredFact<IEnumerable<FactType2>>();
         Assert.Equal(2, group.Count());
     }
@@ -163,7 +163,7 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal("Valid Value 1", GetFiredFact<FactType1>().TestProperty);
     }
 
@@ -193,7 +193,7 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal("Valid Value 2", GetFiredFact<FactType1>().TestProperty);
     }
 
@@ -216,7 +216,7 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
@@ -254,19 +254,19 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Insert(fact11);
 
         GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-        
+
         var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
         Session.Insert(fact21);
 
         GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-        
+
         Session.Update(fact21);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
@@ -287,14 +287,14 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Insert(fact22);
 
         GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-        
+
         Session.Update(fact11);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         var group = GetFiredFact<IEnumerable<FactType2>>();
         Assert.Equal(2, group.Count());
     }
@@ -309,12 +309,12 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Insert(fact11);
 
         GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-        
+
         var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
         Session.Insert(fact21);
 
         GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-        
+
         Session.Update(fact21);
         Session.Retract(fact21);
 
@@ -322,7 +322,7 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -335,19 +335,19 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Insert(fact11);
 
         GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-        
+
         var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
         Session.Insert(fact21);
 
         GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-        
+
         Session.Retract(fact21);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -360,24 +360,24 @@ public class AggregateEvaluationExceptionTest : BaseRuleTestFixture
         Session.Insert(fact11);
 
         GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
-        
+
         var fact21 = new FactType2 { GroupProperty = "Group1", JoinProperty = "Valid Value 1" };
         Session.Insert(fact21);
 
         GetRuleInstance<TestRule>().Grouping = x => x.GroupProperty;
-        
+
         Session.Retract(fact11);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     private static readonly Func<FactType2, object> SuccessfulGrouping = x => x.GroupProperty;

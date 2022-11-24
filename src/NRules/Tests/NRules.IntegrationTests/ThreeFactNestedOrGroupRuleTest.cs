@@ -4,13 +4,13 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ThreeFactNestedOrGroupRuleTest : BaseRuleTestFixture
+public class ThreeFactNestedOrGroupRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingOuterFact_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
 
         Session.Insert(fact1);
 
@@ -18,14 +18,14 @@ public class ThreeFactNestedOrGroupRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_MatchingInnerFact_FiresOnce()
     {
         //Arrange
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2"};
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2" };
 
         Session.Insert(fact2);
 
@@ -33,15 +33,15 @@ public class ThreeFactNestedOrGroupRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_MatchingInnerAndOuterFacts_FiresTwice()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2"};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2" };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -50,12 +50,12 @@ public class ThreeFactNestedOrGroupRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType1
@@ -83,10 +83,10 @@ public class ThreeFactNestedOrGroupRuleTest : BaseRuleTestFixture
 
             When()
                 .Or(x => x
-                    .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                    .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
                     .Or(xx => xx
-                        .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"))
-                        .Match<FactType3>(() => fact3, f => f.TestProperty.StartsWith("Valid"))));
+                        .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"))
+                        .Match(() => fact3, f => f.TestProperty.StartsWith("Valid"))));
 
             Then()
                 .Do(ctx => ctx.NoOp());

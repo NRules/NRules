@@ -4,28 +4,28 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ForwardChainingTest : BaseRuleTestFixture
+public class ForwardChainingTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFact_FiresFirstRuleAndChainsSecond()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1" };
         Session.Insert(fact1);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce<ForwardChainingFirstRule>();
-        AssertFiredOnce<ForwardChainingSecondRule>();
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(1);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_OneMatchingFactErrorInSecondCondition_FiresFirstRuleAndChainsSecond()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = null};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = null };
         Session.Insert(fact1);
 
         //Act - Assert
@@ -38,8 +38,8 @@ public class ForwardChainingTest : BaseRuleTestFixture
     public void Fire_OneMatchingFactOfOneKindAndOneOfAnotherKind_FiresSecondRuleDirectlyAndChained()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2"};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2" };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -48,14 +48,14 @@ public class ForwardChainingTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce<ForwardChainingFirstRule>();
-        AssertFiredTwice<ForwardChainingSecondRule>();
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(1);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<ForwardChainingFirstRule>();
-        SetUpRule<ForwardChainingSecondRule>();
+        setup.Rule<ForwardChainingFirstRule>();
+        setup.Rule<ForwardChainingSecondRule>();
     }
 
     public class FactType1
@@ -77,7 +77,7 @@ public class ForwardChainingTest : BaseRuleTestFixture
             FactType1 fact1 = null;
 
             When()
-                .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.Insert(new FactType2
                 {
@@ -94,7 +94,7 @@ public class ForwardChainingTest : BaseRuleTestFixture
             FactType2 fact2 = null;
 
             When()
-                .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

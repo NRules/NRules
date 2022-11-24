@@ -5,39 +5,39 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactRepeatableRuleTest : BaseRuleTestFixture
+public class OneFactRepeatableRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFactEligibleForOneIncrement_FiresOnce()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1", TestCount = 2};
+        var fact = new FactType { TestProperty = "Valid Value 1", TestCount = 2 };
         Session.Insert(fact);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_OneMatchingFactEligibleForTwoIncrements_FiresTwice()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1", TestCount = 1};
+        var fact = new FactType { TestProperty = "Valid Value 1", TestCount = 1 };
         Session.Insert(fact);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
-    
-    protected override void SetUpRules()
+
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType
@@ -59,7 +59,7 @@ public class OneFactRepeatableRuleTest : BaseRuleTestFixture
             FactType fact = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"), f => f.TestCount <= 2);
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"), f => f.TestCount <= 2);
             Then()
                 .Do(ctx => fact.IncrementCount())
                 .Do(ctx => ctx.Update(fact));

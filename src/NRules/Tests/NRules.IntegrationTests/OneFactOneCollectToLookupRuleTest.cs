@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
+public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_FiresOnceWithEmptyLookup()
@@ -15,25 +15,25 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Empty(GetFiredFact<ILookup<long, string>>());
     }
-    
+
     [Fact]
     public void Fire_TwoFactsForOneGroup_FiresOnceWithFactsInOneGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2};
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Single(GetFiredFact<IKeyedLookup<long, string>>());
         Assert.Equal(2, GetFiredFact<IKeyedLookup<long, string>>()[1].Count());
     }
@@ -42,20 +42,20 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsForOneGroupAndThreeForAnother_FiresOnceWithFactsInCorrectGroups()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact4 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact5 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact4 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact5 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3, fact4, fact5};
+        var facts = new[] { fact1, fact2, fact3, fact4, fact5 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
         Assert.Equal(3, GetFiredFact<ILookup<long, string>>()[2].Count());
@@ -65,13 +65,13 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsForOneGroupAndThreeForAnotherOneRetracted_FiresOnceWithTwoFactsInEachGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact4 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact5 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact4 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact5 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3, fact4, fact5};
+        var facts = new[] { fact1, fact2, fact3, fact4, fact5 };
         Session.InsertAll(facts);
 
         Session.Retract(fact4);
@@ -80,7 +80,7 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[2].Count());
@@ -90,11 +90,11 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsForOneGroupAndOneForAnotherOneUpdatedToInvalid_FiresOnceWithTwoFactsInOneGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3};
+        var facts = new[] { fact1, fact2, fact3 };
         Session.InsertAll(facts);
 
         fact3.TestProperty = "Invalid Value";
@@ -104,7 +104,7 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Single(GetFiredFact<ILookup<long, string>>());
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
     }
@@ -113,12 +113,12 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneUpdatedToFirstGroup_FiresOnceWithThreeFactsInOneGroupAndOneInAnother()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact4 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact4 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3, fact4};
+        var facts = new[] { fact1, fact2, fact3, fact4 };
         Session.InsertAll(facts);
 
         fact4.GroupProperty = 1;
@@ -128,7 +128,7 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
         Assert.Equal(3, GetFiredFact<ILookup<long, string>>()[1].Count());
         Assert.Single(GetFiredFact<ILookup<long, string>>()[2]);
@@ -138,12 +138,12 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsForOneGroupAndOneForAnotherAndOneInvalidTheInvalidUpdatedToValid_FiresOnceWithTwoFactsInEachGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact4 = new FactType {GroupProperty = 2, TestProperty = "Invalid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact4 = new FactType { GroupProperty = 2, TestProperty = "Invalid Value" };
 
-        var facts = new[] {fact1, fact2, fact3, fact4};
+        var facts = new[] { fact1, fact2, fact3, fact4 };
         Session.InsertAll(facts);
 
         fact4.TestProperty = "Valid Value";
@@ -153,35 +153,35 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[2].Count());
     }
-    
+
     [Fact]
     public void Fire_TwoFactGroupsKeyChangedGroupRemovedAndReAddedThenNewFactInserted_FiresOnceWithFactsInEachGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3};
+        var facts = new[] { fact1, fact2, fact3 };
         Session.InsertAll(facts);
 
         fact1.GroupProperty = 2;
         fact3.GroupProperty = 1;
-        Session.UpdateAll(new object[] {fact1, fact3});
+        Session.UpdateAll(new object[] { fact1, fact3 });
 
-        var fact4 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
+        var fact4 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
         Session.Insert(fact4);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
         Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[2].Count());
@@ -197,18 +197,18 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
             matchedGroup = args.Facts.Single();
         };
 
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Invalid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Invalid Value" };
 
-        var facts = new[] {fact1, fact2, fact3};
+        var facts = new[] { fact1, fact2, fact3 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.NotNull(matchedGroup);
         Assert.NotNull(matchedGroup.Source);
         Assert.Equal(FactSourceType.Aggregate, matchedGroup.Source.SourceType);
@@ -217,9 +217,9 @@ public class OneFactOneCollectToLookupRuleTest : BaseRuleTestFixture
             item => Assert.Same(fact2, item.Value));
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType

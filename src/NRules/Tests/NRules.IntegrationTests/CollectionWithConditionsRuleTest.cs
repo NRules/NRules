@@ -6,53 +6,53 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class CollectionWithConditionsRuleTest : BaseRuleTestFixture
+public class CollectionWithConditionsRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_TwoMatchingFacts_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType {TestProperty = "Valid Value 2"};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType { TestProperty = "Valid Value 2" };
 
-        var facts = new[] {fact1, fact2};
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
-    
+
     [Fact]
     public void Fire_ThreeMatchingFacts_FiresOnceWithThreeFacts()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType {TestProperty = "Valid Value 2"};
-        var fact3 = new FactType {TestProperty = "Valid Value 3"};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType { TestProperty = "Valid Value 2" };
+        var fact3 = new FactType { TestProperty = "Valid Value 3" };
 
-        var facts = new[] {fact1, fact2, fact3};
+        var facts = new[] { fact1, fact2, fact3 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(3, GetFiredFact<IEnumerable<FactType>>().Count());
     }
-    
+
     [Fact]
     public void Fire_ThreeMatchingFactsOneRetracted_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType {TestProperty = "Valid Value 2"};
-        var fact3 = new FactType {TestProperty = "Valid Value 3"};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType { TestProperty = "Valid Value 2" };
+        var fact3 = new FactType { TestProperty = "Valid Value 3" };
 
-        var facts = new[] {fact1, fact2};
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
         Session.Insert(fact3);
         Session.Retract(fact3);
@@ -61,12 +61,12 @@ public class CollectionWithConditionsRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType

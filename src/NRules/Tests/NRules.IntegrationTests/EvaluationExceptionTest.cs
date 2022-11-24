@@ -10,7 +10,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class EvaluationExceptionTest : BaseRuleTestFixture
+public class EvaluationExceptionTest : BaseRulesTestFixture
 {
     [Fact]
     public void Insert_ConditionErrorNoErrorHandler_Throws()
@@ -19,11 +19,11 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
         GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
         Expression expression = null;
-        IList<IFact> facts = null; 
+        IList<IFact> facts = null;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
-        var fact = new FactType {TestProperty = "Valid Value" };
+        var fact = new FactType { TestProperty = "Valid Value" };
 
         //Act - Assert
         var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact));
@@ -48,7 +48,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -232,9 +232,9 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
         Assert.Throws<InvalidOperationException>(() => Session.Fire());
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     private static readonly Action SuccessfulAction = () => { };
@@ -260,7 +260,7 @@ public class EvaluationExceptionTest : BaseRuleTestFixture
             FactType fact = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid") && Condition(f));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid") && Condition(f));
 
             Filter()
                 .Where(() => FilterCondition(fact));

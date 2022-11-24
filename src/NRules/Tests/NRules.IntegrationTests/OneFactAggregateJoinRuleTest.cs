@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactAggregateJoinRuleTest : BaseRuleTestFixture
+public class OneFactAggregateJoinRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_DoesNotFire()
@@ -15,21 +15,21 @@ public class OneFactAggregateJoinRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_OneMatchingFact_FiresOnceWithOneFactInCollection()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact1);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Single(GetFiredFact<IEnumerable<FactType>>());
     }
 
@@ -37,16 +37,16 @@ public class OneFactAggregateJoinRuleTest : BaseRuleTestFixture
     public void Fire_OneMatchingFactTwoFactsToAggregate_FiresOnceWithTwoFactsInCollection()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType {TestProperty = "Invalid Value 2"};
-        var facts = new[] {fact1, fact2};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType { TestProperty = "Invalid Value 2" };
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
     }
 
@@ -54,23 +54,23 @@ public class OneFactAggregateJoinRuleTest : BaseRuleTestFixture
     public void Fire_TwoMatchingFactsTwoFactsToAggregate_FiresTwiceWithTwoFactsInEachCollection()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType {TestProperty = "Valid Value 2"};
-        var facts = new[] {fact1, fact2};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType { TestProperty = "Valid Value 2" };
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
         Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>(0).Count());
         Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>(1).Count());
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType
@@ -86,7 +86,7 @@ public class OneFactAggregateJoinRuleTest : BaseRuleTestFixture
             IEnumerable<FactType> collection = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
                 .Query(() => collection, x => x
                     .Match<FactType>()
                     .Collect()

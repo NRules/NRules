@@ -4,14 +4,14 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class TwoFactRuleTest : BaseRuleTestFixture
+public class TwoFactRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingFactsInsertAndFireThenUpdateAndFire_FiresTwice()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -22,15 +22,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
-    
+
     [Fact]
     public void Fire_MatchingFactsInsertThenUpdateThenFire_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -40,15 +40,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_MatchingFacts_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -57,15 +57,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_MatchingFactsReverseOrder_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact2);
         Session.Insert(fact1);
@@ -74,18 +74,18 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_TwoMatchingPairsOfFacts_FiresTwice()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
-        var fact3 = new FactType1 {TestProperty = "Valid Value 3"};
-        var fact4 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact3.TestProperty};
+        var fact3 = new FactType1 { TestProperty = "Valid Value 3" };
+        var fact4 = new FactType2 { TestProperty = "Valid Value 4", JoinProperty = fact3.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -96,16 +96,16 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
     [Fact]
     public void Fire_TwoMatchingFactsOfOneKindOneMatchingFactOfAnotherKind_FiresTwice()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
-        var fact3 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
+        var fact3 = new FactType2 { TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -115,15 +115,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
     [Fact]
     public void Fire_FirstMatchingFactSecondInvalidFact_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Invalid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Invalid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -132,15 +132,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_FirstInvalidFactSecondMatchingFact_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Invalid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Invalid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -149,15 +149,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_TwoMatchingFactsUnsatisfiedJoin_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = null};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = null };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -166,15 +166,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_TwoMatchingFactsFirstRetracted_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -184,15 +184,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_TwoMatchingFactsSecondRetracted_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -202,15 +202,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_TwoMatchingFactsFirstUpdatedToInvalid_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -222,15 +222,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_OneInvalidFactAndSecondMatchingFactFirstUpdatedToValid_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Invalid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = "Valid Value 1"};
+        var fact1 = new FactType1 { TestProperty = "Invalid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = "Valid Value 1" };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -242,15 +242,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_TwoMatchingFactsSecondUpdatedToInvalid_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -262,15 +262,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_OneMatchingFactSecondInvalidThenUpdatedToValid_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Invalid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Invalid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -282,15 +282,15 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_OneMatchingFactSecondInvalidThenUpdatedToValidJoin_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = null};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = null };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -302,12 +302,12 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType1
@@ -329,8 +329,8 @@ public class TwoFactRuleTest : BaseRuleTestFixture
         public override void Define()
         {
             When()
-                .Match<FactType1>(() => Fact1, f => f.TestProperty.StartsWith("Valid"))
-                .Match<FactType2>(() => Fact2, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => Fact1, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => Fact2, f => f.TestProperty.StartsWith("Valid"))
                 .Having(() => Fact2.JoinProperty == Fact1.TestProperty);
 
             Then()
