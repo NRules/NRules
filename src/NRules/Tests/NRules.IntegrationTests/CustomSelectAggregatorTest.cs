@@ -10,8 +10,13 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class CustomSelectAggregatorTest : BaseRuleTestFixture
+public class CustomSelectAggregatorTest : BaseRulesTestFixture
 {
+    public CustomSelectAggregatorTest()
+        : base(compiler: CreateCompiler())
+    {
+    }
+
     [Fact]
     public void Fire_OneMatchingFact_FiresOnce()
     {
@@ -23,7 +28,7 @@ public class CustomSelectAggregatorTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
     }
 
@@ -39,7 +44,7 @@ public class CustomSelectAggregatorTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
     }
 
@@ -55,21 +60,19 @@ public class CustomSelectAggregatorTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
-    protected override ISessionFactory Compile()
+    private static RuleCompiler CreateCompiler()
     {
         var compiler = new RuleCompiler();
         compiler.AggregatorRegistry.RegisterFactory("CustomSelect", typeof(CustomSelectAggregateFactory));
-
-        var factory = compiler.Compile(Repository.GetRules());
-        return factory;
+        return compiler;
     }
 
     public class FactType
@@ -88,16 +91,21 @@ public class CustomSelectAggregatorTest : BaseRuleTestFixture
 
         public bool Equals(FactProjection other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (other is null)
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
             return string.Equals(Value, other.Value);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj is null)
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != GetType())
+                return false;
             return Equals((FactProjection)obj);
         }
 
@@ -164,7 +172,7 @@ internal class CustomSelectAggregateFactory : IAggregatorFactory
 public class CustomSelectAggregator<TSource, TResult> : IAggregator
 {
     private readonly IAggregateExpression _selector;
-    private readonly Dictionary<IFact, object> _sourceToValue = new Dictionary<IFact, object>();
+    private readonly Dictionary<IFact, object> _sourceToValue = new();
 
     public CustomSelectAggregator(IAggregateExpression selector)
     {

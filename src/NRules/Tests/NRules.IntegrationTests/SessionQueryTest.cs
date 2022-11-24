@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class SessionQueryTest : BaseRuleTestFixture
+public class SessionQueryTest : BaseRulesTestFixture
 {
     [Fact]
     public void Query_NoFacts_Empty()
@@ -23,7 +23,7 @@ public class SessionQueryTest : BaseRuleTestFixture
     public void Query_OneFact_RetrievesFactFromQuery()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1" };
         Session.Insert(fact1);
 
         //Act
@@ -39,7 +39,7 @@ public class SessionQueryTest : BaseRuleTestFixture
     public void Query_RuleInsertsSecondFact_TwoFactsInMemory()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1" };
         Session.Insert(fact1);
         Session.Fire();
 
@@ -55,7 +55,7 @@ public class SessionQueryTest : BaseRuleTestFixture
     public void Query_QueryFactsByType_OnlyReturnsFactsOfThatType()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1"};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1", JoinProperty = "Valid Value 1" };
         Session.Insert(fact1);
         Session.Fire();
 
@@ -68,9 +68,9 @@ public class SessionQueryTest : BaseRuleTestFixture
         Assert.Equal(fact1.TestProperty, facts[0].JoinProperty);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType1
@@ -92,7 +92,7 @@ public class SessionQueryTest : BaseRuleTestFixture
             FactType1 fact1 = null;
 
             When()
-                .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.Insert(new FactType2()
                 {

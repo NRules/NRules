@@ -4,31 +4,31 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class HaltRuleTest : BaseRuleTestFixture
+public class HaltRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_TwoMatchingFacts_FiresOnceAndHalts()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType {TestProperty = "Valid Value 2"};
-        var facts = new[] {fact1, fact2};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType { TestProperty = "Valid Value 2" };
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_TwoMatchingFactsFireCalledTwice_FiresOnceThenHaltsThenResumesAndFiresAgain()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType {TestProperty = "Valid Value 2"};
-        var facts = new[] {fact1, fact2};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType { TestProperty = "Valid Value 2" };
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         //Act
@@ -36,12 +36,12 @@ public class HaltRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType
@@ -56,7 +56,7 @@ public class HaltRuleTest : BaseRuleTestFixture
             FactType fact = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.Halt());
         }

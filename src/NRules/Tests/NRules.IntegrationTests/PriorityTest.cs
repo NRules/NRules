@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class PriorityTest : BaseRuleTestFixture
+public class PriorityTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_LowPriorityActivatesTwiceTriggersHighPriority_HighPriorityPreemptsLowPriority()
@@ -15,18 +15,18 @@ public class PriorityTest : BaseRuleTestFixture
 
         Session.Events.RuleFiredEvent += (sender, args) => invokedRules.Add(args.Rule.Name);
 
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
-        var facts = new[] {fact1, fact2};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType1 { TestProperty = "Valid Value 2" };
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-            //low priority activates twice
-            //it runs once, activates high priority rule, which preempts low priority and fires once
-            //low priority fires second time, which activates high priority which also fires second time
+        //low priority activates twice
+        //it runs once, activates high priority rule, which preempts low priority and fires once
+        //low priority fires second time, which activates high priority which also fires second time
         Assert.Equal(4, invokedRules.Count);
         Assert.Equal("PriorityLowRule", invokedRules[0]);
         Assert.Equal("PriorityHighRule", invokedRules[1]);
@@ -34,10 +34,10 @@ public class PriorityTest : BaseRuleTestFixture
         Assert.Equal("PriorityHighRule", invokedRules[3]);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<PriorityLowRule>();
-        SetUpRule<PriorityHighRule>();
+        setup.Rule<PriorityLowRule>();
+        setup.Rule<PriorityHighRule>();
     }
 
     public class FactType1
@@ -60,7 +60,7 @@ public class PriorityTest : BaseRuleTestFixture
             FactType1 fact1 = null;
 
             When()
-                .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.Insert(new FactType2()
                 {
@@ -79,7 +79,7 @@ public class PriorityTest : BaseRuleTestFixture
             FactType2 fact2 = null;
 
             When()
-                .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

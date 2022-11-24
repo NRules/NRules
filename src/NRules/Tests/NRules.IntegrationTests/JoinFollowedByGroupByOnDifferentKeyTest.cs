@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
+public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_BulkInsertForMultipleTypes_InsertsOnly_FiresThreeTimesWithCorrectCounts()
@@ -29,7 +29,7 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTimes(3);
+        Verify.Rule().FiredTimes(3);
         var firedFacts = new[]
         {
             GetFiredFact<IGrouping<string, FactType2>>(0),
@@ -71,7 +71,7 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTimes(2);
+        Verify.Rule().FiredTimes(2);
         var firedFacts = new[]
         {
             GetFiredFact<IGrouping<string, FactType2>>(0),
@@ -99,7 +99,7 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
 
         var facts = new object[] { fact11, fact12, fact21, fact22, fact23, fact24, fact25, fact26 };
         Session.InsertAll(facts);
-        
+
         var factsForRetract = new[] { fact21, fact22, fact23 };
         Session.RetractAll(factsForRetract);
 
@@ -107,7 +107,7 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTimes(1);
+        Verify.Rule().FiredTimes(1);
         var firedFacts = new[]
         {
             GetFiredFact<IGrouping<string, FactType2>>(0)
@@ -132,19 +132,19 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
 
         var facts = new object[] { fact11, fact12, fact61, fact62, fact63, fact64 };
         Session.InsertAll(facts);
-        
+
         //Act - 1
         Session.Fire();
 
         //Assert - 1
-        AssertFiredTimes(2);
+        Verify.Rule().FiredTimes(2);
 
         //Act - 2
         Session.Update(fact11);
         Session.Fire();
 
         //Assert - 2
-        AssertFiredTimes(3);
+        Verify.Rule().FiredTimes(3);
     }
 
     [Fact]
@@ -162,24 +162,24 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
 
         var facts = new object[] { fact11, fact12, fact61, fact62, fact63, fact64 };
         Session.InsertAll(facts);
-        
+
         //Act - 1
         Session.Fire();
 
         //Assert - 1
-        AssertFiredTimes(2);
+        Verify.Rule().FiredTimes(2);
 
         //Act - 2
         Session.Update(fact61);
         Session.Fire();
 
         //Assert - 2
-        AssertFiredTimes(3);
+        Verify.Rule().FiredTimes(3);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType1
@@ -203,7 +203,7 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRuleTestFixture
             IGrouping<string, FactType2> group = null;
 
             When()
-                .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
                 .Query(() => group, x => x
                     .Match<FactType2>(
                         f => f.TestProperty.StartsWith("Valid"),

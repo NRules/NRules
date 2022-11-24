@@ -9,7 +9,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class BindingEvaluationExceptionTest : BaseRuleTestFixture
+public class BindingEvaluationExceptionTest : BaseRulesTestFixture
 {
     [Fact]
     public void Insert_ErrorInBindingNoErrorHandler_Throws()
@@ -48,7 +48,7 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
         Session.Insert(fact1);
 
         GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
-        
+
         var fact2 = new FactType { TestProperty = "Valid value" };
         Session.Insert(fact2);
 
@@ -71,7 +71,7 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
-        var fact = new FactType {TestProperty = "Valid value"};
+        var fact = new FactType { TestProperty = "Valid value" };
 
         Session.Insert(fact);
         GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
@@ -93,7 +93,7 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
-        var fact = new FactType {TestProperty = "Valid value"};
+        var fact = new FactType { TestProperty = "Valid value" };
 
         Session.Insert(fact);
         GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
@@ -116,7 +116,7 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
-        var fact = new FactType {TestProperty = "Valid value"};
+        var fact = new FactType { TestProperty = "Valid value" };
 
         Session.Insert(fact);
         GetRuleInstance<TestRule>().Binding = SuccessfulBinding;
@@ -138,12 +138,12 @@ public class BindingEvaluationExceptionTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     private static readonly Func<FactType, string> SuccessfulBinding = f => "value";

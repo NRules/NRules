@@ -7,13 +7,13 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactRuleWithDependencyTest : BaseRuleTestFixture
+public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_DefaultResolver_Throws()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
         //Act - Assert
@@ -35,14 +35,14 @@ public class OneFactRuleWithDependencyTest : BaseRuleTestFixture
 
         Session.DependencyResolver = new TestDependencyResolver(service1, service2);
 
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.True(service1Called);
         Assert.True(service2Called);
     }
@@ -55,7 +55,7 @@ public class OneFactRuleWithDependencyTest : BaseRuleTestFixture
         var service2 = new TestService2();
         Session.DependencyResolver = new TestDependencyResolver(service1, service2);
 
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
         ITestService1 resolvedService1 = null;
@@ -68,13 +68,13 @@ public class OneFactRuleWithDependencyTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Same(service1, resolvedService1);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public interface ITestService1
@@ -148,7 +148,7 @@ public class OneFactRuleWithDependencyTest : BaseRuleTestFixture
                 .Resolve(() => service2);
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => Action(ctx))
                 .Do(ctx => service1.Action(fact.TestProperty))

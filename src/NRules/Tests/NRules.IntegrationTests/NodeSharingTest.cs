@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class NodeSharingTest : BaseRuleTestFixture
+public class NodeSharingTest : BaseRulesTestFixture
 {
     [Fact]
     public void Session_AlphaSelectionNodes_OnePerIntraCondition()
@@ -87,10 +87,10 @@ public class NodeSharingTest : BaseRuleTestFixture
         Assert.Equal(1, count);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TwinRuleOne>();
-        SetUpRule<TwinRuleTwo>();
+        setup.Rule<TwinRuleOne>();
+        setup.Rule<TwinRuleTwo>();
     }
 
     public class FactType1
@@ -124,9 +124,9 @@ public class NodeSharingTest : BaseRuleTestFixture
             IEnumerable<FactType4> group = null;
 
             When()
-                .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
                 .Let(() => joinValue, () => fact1.TestProperty)
-                .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
+                .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
                 .Not<FactType3>(f => f.TestProperty.StartsWith("Invalid"))
                 .Exists<FactType3>(f => f.TestProperty.StartsWith("Valid"))
                 .Query(() => group, q => q
@@ -152,9 +152,9 @@ public class NodeSharingTest : BaseRuleTestFixture
             IEnumerable<FactType4> group = null;
 
             When()
-                .Match<FactType1>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
                 .Let(() => joinValue, () => fact1.TestProperty)
-                .Match<FactType2>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
+                .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == joinValue)
                 .Not<FactType3>(f => f.TestProperty.StartsWith("Invalid"))
                 .Exists<FactType3>(f => f.TestProperty.StartsWith("Valid"))
                 .Query(() => group, q => q

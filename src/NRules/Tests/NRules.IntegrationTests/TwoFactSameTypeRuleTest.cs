@@ -4,33 +4,33 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class TwoFactSameTypeRuleTest : BaseRuleTestFixture
+public class TwoFactSameTypeRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingFacts_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType {TestProperty = "Valid Value 2", Parent = fact1};
-        var fact3 = new FactType {TestProperty = "Invalid Value 3", Parent = fact1};
-        var fact4 = new FactType {TestProperty = "Valid Value 4", Parent = null};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType { TestProperty = "Valid Value 2", Parent = fact1 };
+        var fact3 = new FactType { TestProperty = "Invalid Value 3", Parent = fact1 };
+        var fact4 = new FactType { TestProperty = "Valid Value 4", Parent = null };
 
-        var facts = new[] {fact1, fact2, fact3, fact4};
+        var facts = new[] { fact1, fact2, fact3, fact4 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_FirstMatchingFactSecondInvalid_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType {TestProperty = "Valid Value 2"};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType { TestProperty = "Valid Value 2" };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -39,12 +39,12 @@ public class TwoFactSameTypeRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType
@@ -61,8 +61,8 @@ public class TwoFactSameTypeRuleTest : BaseRuleTestFixture
             FactType fact2 = null;
 
             When()
-                .Match<FactType>(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                .Match<FactType>(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.Parent == fact1);
+                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.Parent == fact1);
 
             Then()
                 .Do(ctx => ctx.NoOp());

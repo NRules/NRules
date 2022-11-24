@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class SubnetUpdateTest : BaseRuleTestFixture
+public class SubnetUpdateTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_InsertThenUpdate_OnlyNecessaryEvaluations()
@@ -18,24 +18,24 @@ public class SubnetUpdateTest : BaseRuleTestFixture
         var fact21 = new FactType2();
         var fact22 = new FactType2();
 
-        Session.InsertAll(new[] {fact11, fact12});
-        Session.InsertAll(new[] {fact21, fact22});
+        Session.InsertAll(new[] { fact11, fact12 });
+        Session.InsertAll(new[] { fact21, fact22 });
 
         int evaluations = 0;
         Session.Events.LhsExpressionEvaluatedEvent += (sender, args) => evaluations++;
 
         //Act
-        Session.UpdateAll(new []{fact11, fact12});
+        Session.UpdateAll(new[] { fact11, fact12 });
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
         Assert.Equal(2, evaluations);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType1

@@ -6,15 +6,15 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ThreeFactGroupByCollectMatchRuleTest : BaseRuleTestFixture
+public class ThreeFactGroupByCollectMatchRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_AllPatternsMatch_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1{Key = "key1", Join = "join1"};
-        var fact2 = new FactType2{Join = "join1"};
-        var fact3 = new FactType3{Join = "join1"};
+        var fact1 = new FactType1 { Key = "key1", Join = "join1" };
+        var fact2 = new FactType2 { Join = "join1" };
+        var fact3 = new FactType3 { Join = "join1" };
         Session.Insert(fact1);
         Session.Insert(fact2);
         Session.Insert(fact3);
@@ -23,16 +23,16 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_AllPatternsMatchThenFirstFactRetracted_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1{Key = "key1", Join = "join1"};
-        var fact2 = new FactType2{Join = "join1"};
-        var fact3 = new FactType3{Join = "join1"};
+        var fact1 = new FactType1 { Key = "key1", Join = "join1" };
+        var fact2 = new FactType2 { Join = "join1" };
+        var fact3 = new FactType3 { Join = "join1" };
         Session.Insert(fact1);
         Session.Insert(fact2);
         Session.Insert(fact3);
@@ -42,16 +42,16 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
-    
+
     [Fact]
     public void Fire_AllPatternsMatchThenSecondFactRetracted_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1{Key = "key1", Join = "join1"};
-        var fact2 = new FactType2{Join = "join1"};
-        var fact3 = new FactType3{Join = "join1"};
+        var fact1 = new FactType1 { Key = "key1", Join = "join1" };
+        var fact2 = new FactType2 { Join = "join1" };
+        var fact3 = new FactType3 { Join = "join1" };
         Session.Insert(fact1);
         Session.Insert(fact2);
         Session.Insert(fact3);
@@ -61,16 +61,16 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_AllPatternsMatchThenThirdFactRetracted_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1{Key = "key1", Join = "join1"};
-        var fact2 = new FactType2{Join = "join1"};
-        var fact3 = new FactType3{Join = "join1"};
+        var fact1 = new FactType1 { Key = "key1", Join = "join1" };
+        var fact2 = new FactType2 { Join = "join1" };
+        var fact3 = new FactType3 { Join = "join1" };
         Session.Insert(fact1);
         Session.Insert(fact2);
         Session.Insert(fact3);
@@ -80,12 +80,12 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType1
@@ -119,8 +119,8 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRuleTestFixture
                 .Query(() => facts2, q => q
                     .Match<FactType2>(f => f.Join == group.First().Join)
                     .Collect())
-                .Match<FactType3>(() => fact3, f => f.Join == group.First().Join);
-            
+                .Match(() => fact3, f => f.Join == group.First().Join);
+
             Then()
                 .Do(ctx => ctx.NoOp());
         }

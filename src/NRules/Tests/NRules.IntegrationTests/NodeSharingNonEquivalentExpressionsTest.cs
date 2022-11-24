@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class NodeSharingNonEquivalentExpressionsTest : BaseRuleTestFixture
+public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_FirstRuleMatchesFacts_OnlyMatchingRuleFires()
@@ -24,10 +24,10 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce<TestRule1>();
-        AssertDidNotFire<TestRule2>();
+        Verify.Rule<TestRule1>().FiredTimes(1);
+        Verify.Rule<TestRule2>().FiredTimes(0);
     }
-    
+
     [Fact]
     public void Fire_SecondRuleMatchesFacts_OnlyMatchingRuleFires()
     {
@@ -44,10 +44,10 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire<TestRule1>();
-        AssertFiredOnce<TestRule2>();
+        Verify.Rule<TestRule1>().FiredTimes(0);
+        Verify.Rule<TestRule2>().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_ThirdRuleMatchesFacts_OnlyMatchingRuleFires()
     {
@@ -64,10 +64,10 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce<TestRule3>();
-        AssertDidNotFire<TestRule4>();
+        Verify.Rule<TestRule3>().FiredTimes(1);
+        Verify.Rule<TestRule4>().FiredTimes(0);
     }
-    
+
     [Fact]
     public void Fire_FourthRuleMatchesFacts_OnlyMatchingRuleFires()
     {
@@ -84,18 +84,18 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire<TestRule3>();
-        AssertFiredOnce<TestRule4>();
+        Verify.Rule<TestRule3>().FiredTimes(0);
+        Verify.Rule<TestRule4>().FiredTimes(1);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule1>();
-        SetUpRule<TestRule2>();
-        SetUpRule<TestRule3>();
-        SetUpRule<TestRule4>();
+        setup.Rule<TestRule1>();
+        setup.Rule<TestRule2>();
+        setup.Rule<TestRule3>();
+        setup.Rule<TestRule4>();
     }
-    
+
     public class NameFact
     {
         public string Name { get; set; }
@@ -109,8 +109,8 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRuleTestFixture
         {
             return nameFact;
         }
-    }   
-    
+    }
+
     public class TestRule1 : Rule
     {
         public override void Define()
@@ -128,7 +128,7 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRuleTestFixture
                 .Do(ctx => ctx.NoOp());
         }
     }
-    
+
     public class TestRule2 : Rule
     {
         public override void Define()
@@ -146,7 +146,7 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRuleTestFixture
                 .Do(ctx => ctx.NoOp());
         }
     }
-    
+
     public class TestRule3 : Rule
     {
         public override void Define()
@@ -167,7 +167,7 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRuleTestFixture
                 .Do(ctx => ctx.NoOp());
         }
     }
-    
+
     public class TestRule4 : Rule
     {
         public override void Define()

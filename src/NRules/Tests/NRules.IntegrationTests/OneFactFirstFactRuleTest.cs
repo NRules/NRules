@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactFirstFactRuleTest : BaseRuleTestFixture
+public class OneFactFirstFactRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_FiveMatchingFactsInserted_FiresOnceWithFirstFact()
@@ -25,7 +24,7 @@ public class OneFactFirstFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(fact3, GetFiredFact<FactType>());
     }
 
@@ -41,7 +40,7 @@ public class OneFactFirstFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         // Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -61,7 +60,7 @@ public class OneFactFirstFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(fact1, GetFiredFact<FactType>());
     }
 
@@ -80,13 +79,13 @@ public class OneFactFirstFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(fact1, GetFiredFact<FactType>());
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType

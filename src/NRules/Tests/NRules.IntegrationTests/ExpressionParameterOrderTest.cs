@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ExpressionParameterOrderTest : BaseRuleTestFixture
+public class ExpressionParameterOrderTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchGroup1_FiresOnce()
@@ -13,13 +13,13 @@ public class ExpressionParameterOrderTest : BaseRuleTestFixture
         var f0 = new FactType0();
         var f1 = new FactType1();
         var f2 = new FactType2();
-        Session.InsertAll(new object[]{f0, f1, f2});
+        Session.InsertAll(new object[] { f0, f1, f2 });
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
@@ -28,18 +28,18 @@ public class ExpressionParameterOrderTest : BaseRuleTestFixture
         //Arrange
         var f0 = new FactType0();
         var f3 = new FactType3();
-        Session.InsertAll(new object[]{f0, f3});
+        Session.InsertAll(new object[] { f0, f3 });
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType0

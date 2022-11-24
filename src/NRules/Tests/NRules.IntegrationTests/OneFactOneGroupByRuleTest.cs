@@ -7,7 +7,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
+public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_DoesNotFire()
@@ -16,25 +16,25 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_TwoFactsForOneGroupAndOneForAnother_FiresOnceWithTwoFactsInOneGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3};
+        var facts = new[] { fact1, fact2, fact3 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(2, GetFiredFact<IGrouping<long, string>>().Count());
     }
 
@@ -42,19 +42,19 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsForOneGroupAndTwoForAnother_FiresTwiceWithTwoFactsInEachGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact4 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact4 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3, fact4};
+        var facts = new[] { fact1, fact2, fact3, fact4 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
         Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
         Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
     }
@@ -63,12 +63,12 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneRetracted_FiresOnceWithTwoFactsInOneGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact4 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact4 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3, fact4};
+        var facts = new[] { fact1, fact2, fact3, fact4 };
         Session.InsertAll(facts);
 
         Session.Retract(fact4);
@@ -77,7 +77,7 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(2, GetFiredFact<IGrouping<long, string>>().Count());
     }
 
@@ -85,12 +85,12 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneUpdatedToInvalid_FiresOnceWithTwoFactsInOneGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact4 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact4 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3, fact4};
+        var facts = new[] { fact1, fact2, fact3, fact4 };
         Session.InsertAll(facts);
 
         fact4.TestProperty = "Invalid Value";
@@ -100,7 +100,7 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(2, GetFiredFact<IGrouping<long, string>>().Count());
     }
 
@@ -108,12 +108,12 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsForOneGroupAndTwoForAnotherOneUpdatedToFirstGroup_FiresOnceWithThreeFactsInOneGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact4 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact4 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3, fact4};
+        var facts = new[] { fact1, fact2, fact3, fact4 };
         Session.InsertAll(facts);
 
         fact4.GroupProperty = 1;
@@ -123,7 +123,7 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         var actual = GetFiredFact<IGrouping<long, string>>().Count();
         Assert.Equal(3, actual);
     }
@@ -132,12 +132,12 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
     public void Fire_TwoFactsForOneGroupAndOneForAnotherAndOneInvalidTheInvalidUpdatedToSecondGroup_FiresTwiceWithTwoFactsInEachGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact4 = new FactType {GroupProperty = 2, TestProperty = "Invalid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact4 = new FactType { GroupProperty = 2, TestProperty = "Invalid Value" };
 
-        var facts = new[] {fact1, fact2, fact3, fact4};
+        var facts = new[] { fact1, fact2, fact3, fact4 };
         Session.InsertAll(facts);
 
         fact4.TestProperty = "Valid Value";
@@ -147,34 +147,34 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
         Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
         Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
     }
-    
+
     [Fact]
     public void Fire_TwoFactGroupsKeyChangedGroupRemovedAndReAddedThenNewFactInserted_FiresTwiceWithFactsInEachGroup()
     {
         //Arrange
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3};
+        var facts = new[] { fact1, fact2, fact3 };
         Session.InsertAll(facts);
 
         fact1.GroupProperty = 2;
         fact3.GroupProperty = 1;
-        Session.UpdateAll(new object[] {fact1, fact3});
+        Session.UpdateAll(new object[] { fact1, fact3 });
 
-        var fact4 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
+        var fact4 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
         Session.Insert(fact4);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
         Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
         Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
     }
@@ -189,18 +189,18 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
             matchedGroup = args.Facts.Single();
         };
 
-        var fact1 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact2 = new FactType {GroupProperty = 1, TestProperty = "Valid Value"};
-        var fact3 = new FactType {GroupProperty = 2, TestProperty = "Valid Value"};
+        var fact1 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact2 = new FactType { GroupProperty = 1, TestProperty = "Valid Value" };
+        var fact3 = new FactType { GroupProperty = 2, TestProperty = "Valid Value" };
 
-        var facts = new[] {fact1, fact2, fact3};
+        var facts = new[] { fact1, fact2, fact3 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.NotNull(matchedGroup);
         Assert.NotNull(matchedGroup.Source);
         Assert.Equal(FactSourceType.Aggregate, matchedGroup.Source.SourceType);
@@ -209,9 +209,9 @@ public class OneFactOneGroupByRuleTest : BaseRuleTestFixture
             item => Assert.Same(fact2, item.Value));
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType

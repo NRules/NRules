@@ -1,11 +1,11 @@
-﻿using NRules.Fluent.Dsl;
+﻿using System.Linq;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using Xunit;
-using System.Linq;
 
 namespace NRules.IntegrationTests;
 
-public class SelfRetractRuleTest : BaseRuleTestFixture
+public class SelfRetractRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFact_FiresOnceAndRetractsFact()
@@ -19,7 +19,7 @@ public class SelfRetractRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(0, Session.Query<FactType>().Count());
     }
 
@@ -35,7 +35,7 @@ public class SelfRetractRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -51,13 +51,13 @@ public class SelfRetractRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
         Assert.Equal(0, Session.Query<FactType>().Count());
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType
@@ -72,7 +72,7 @@ public class SelfRetractRuleTest : BaseRuleTestFixture
             FactType fact = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.TryRetract(fact));
         }

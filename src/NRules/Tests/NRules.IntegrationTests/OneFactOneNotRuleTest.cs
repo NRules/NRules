@@ -4,13 +4,13 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactOneNotRuleTest : BaseRuleTestFixture
+public class OneFactOneNotRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingNotPatternFact_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
 
         Session.Insert(fact1);
 
@@ -18,14 +18,14 @@ public class OneFactOneNotRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
-    
+
     [Fact]
     public void Fire_MatchingNotPatternFactAssertedThenRetracted_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
 
         Session.Insert(fact1);
         Session.Retract(fact1);
@@ -34,14 +34,14 @@ public class OneFactOneNotRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
-    
+
     [Fact]
     public void Fire_MatchingNotPatternFactAssertedThenUpdatedToInvalid_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
 
         Session.Insert(fact1);
 
@@ -52,7 +52,7 @@ public class OneFactOneNotRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
@@ -63,12 +63,12 @@ public class OneFactOneNotRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType

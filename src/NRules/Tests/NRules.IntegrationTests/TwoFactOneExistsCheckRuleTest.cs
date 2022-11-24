@@ -7,14 +7,14 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
+public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_MatchingFacts_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -23,15 +23,15 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_MatchingFactsInReverseOrder_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact2);
         Session.Insert(fact1);
@@ -40,7 +40,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Single(matches);
         Assert.Equal("fact", matches[0].Declaration.Name);
         Assert.Same(fact1, matches[0].Value);
@@ -73,34 +73,34 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
     public void Fire_MatchingFactsMultipleOfTypeTwo_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
-        var fact3 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
+        var fact3 = new FactType2 { TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
-        var facts = new[] {fact2, fact3};
+        var facts = new[] { fact2, fact3 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_MatchingFactsTwoOfTypeOneMultipleOfTypeTwo_FiresTwice()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType1 {TestProperty = "Valid Value 2"};
-        var fact3 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty};
-        var fact4 = new FactType2 {TestProperty = "Valid Value 4", JoinProperty = fact2.TestProperty};
-        var fact5 = new FactType2 {TestProperty = "Valid Value 5", JoinProperty = fact2.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType1 { TestProperty = "Valid Value 2" };
+        var fact3 = new FactType2 { TestProperty = "Valid Value 3", JoinProperty = fact1.TestProperty };
+        var fact4 = new FactType2 { TestProperty = "Valid Value 4", JoinProperty = fact2.TestProperty };
+        var fact5 = new FactType2 { TestProperty = "Valid Value 5", JoinProperty = fact2.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
-        var facts = new[] {fact3, fact4, fact5};
+        var facts = new[] { fact3, fact4, fact5 };
         Session.InsertAll(facts);
 
 
@@ -108,15 +108,15 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
     [Fact]
     public void Fire_FactOneValidFactTwoAssertedAndRetracted_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -126,15 +126,15 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_FactOneAssertedAndRetractedFactTwoValid_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -144,15 +144,15 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_FactOneAssertedAndUpdatedFactTwoValid_FiresOnce()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2", JoinProperty = fact1.TestProperty };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -162,15 +162,15 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_FactOneValidFactTwoAssertedAndUpdatedToInvalid_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType2 {TestProperty = "Valid Value 2"};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType2 { TestProperty = "Valid Value 2" };
 
         Session.Insert(fact1);
         Session.Insert(fact2);
@@ -182,14 +182,14 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_FactTwoDoesNotExist_DoesNotFire()
     {
         //Arrange
-        var fact1 = new FactType1 {TestProperty = "Valid Value 1"};
+        var fact1 = new FactType1 { TestProperty = "Valid Value 1" };
 
         Session.Insert(fact1);
 
@@ -197,18 +197,18 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_TwoMatchingFactsAndOneFactExists_FiresOnce()
     {
         //Arrange
-        var fact11 = new FactType1 {TestProperty = "Valid Value 1"};
-        var fact12 = new FactType1 {TestProperty = "Valid Value 2"};
-        var fact21 = new FactType2 {TestProperty = "Valid Value 3", JoinProperty = fact11.TestProperty};
+        var fact11 = new FactType1 { TestProperty = "Valid Value 1" };
+        var fact12 = new FactType1 { TestProperty = "Valid Value 2" };
+        var fact21 = new FactType2 { TestProperty = "Valid Value 3", JoinProperty = fact11.TestProperty };
 
-        var facts = new[] {fact11, fact12};
+        var facts = new[] { fact11, fact12 };
         Session.InsertAll(facts);
         Session.Insert(fact21);
 
@@ -216,18 +216,18 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_TwoMatchingSetsFactOfSecondKindUpdated_DoesNotRefire()
     {
         //Arrange
-        var fact11 = new FactType1 {TestProperty = "Valid Value"};
-        var fact12 = new FactType1 {TestProperty = "Valid Value"};
-        var fact21 = new FactType2 {TestProperty = "Valid Value", JoinProperty = "Valid Value"};
+        var fact11 = new FactType1 { TestProperty = "Valid Value" };
+        var fact12 = new FactType1 { TestProperty = "Valid Value" };
+        var fact21 = new FactType2 { TestProperty = "Valid Value", JoinProperty = "Valid Value" };
 
-        var facts = new[] {fact11, fact12};
+        var facts = new[] { fact11, fact12 };
         Session.InsertAll(facts);
         Session.Insert(fact21);
 
@@ -235,25 +235,25 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert - 1
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
 
         //Act - 2
         Session.Update(fact21);
         Session.Fire();
 
         //Assert - 2
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
     [Fact]
     public void Fire_TwoMatchingSetsFactOfSecondKindRetractedThenInserted_FiresTwiceThenFiresTwice()
     {
         //Arrange
-        var fact11 = new FactType1 {TestProperty = "Valid Value"};
-        var fact12 = new FactType1 {TestProperty = "Valid Value"};
-        var fact21 = new FactType2 {TestProperty = "Valid Value", JoinProperty = "Valid Value"};
+        var fact11 = new FactType1 { TestProperty = "Valid Value" };
+        var fact12 = new FactType1 { TestProperty = "Valid Value" };
+        var fact21 = new FactType2 { TestProperty = "Valid Value", JoinProperty = "Valid Value" };
 
-        var facts = new[] {fact11, fact12};
+        var facts = new[] { fact11, fact12 };
         Session.InsertAll(facts);
         Session.Insert(fact21);
 
@@ -261,7 +261,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert - 1
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
 
         //Act - 2
         Session.Retract(fact21);
@@ -269,18 +269,18 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert - 2
-        AssertFiredTimes(4);
+        Verify.Rule().FiredTimes(4);
     }
 
     [Fact]
     public void Fire_TwoMatchingSetsFactOfFirstKindUpdated_FiresTwiceThenFiresOnce()
     {
         //Arrange
-        var fact11 = new FactType1 {TestProperty = "Valid Value"};
-        var fact12 = new FactType1 {TestProperty = "Valid Value"};
-        var fact21 = new FactType2 {TestProperty = "Valid Value", JoinProperty = "Valid Value"};
+        var fact11 = new FactType1 { TestProperty = "Valid Value" };
+        var fact12 = new FactType1 { TestProperty = "Valid Value" };
+        var fact21 = new FactType2 { TestProperty = "Valid Value", JoinProperty = "Valid Value" };
 
-        var facts = new[] {fact11, fact12};
+        var facts = new[] { fact11, fact12 };
         Session.InsertAll(facts);
         Session.Insert(fact21);
 
@@ -288,19 +288,19 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert - 1
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
 
         //Act - 2
         Session.Update(fact11);
         Session.Fire();
 
         //Assert - 2
-        AssertFiredTimes(3);
+        Verify.Rule().FiredTimes(3);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType1
@@ -323,7 +323,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRuleTestFixture
             FactType1 fact = null;
 
             When()
-                .Match<FactType1>(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
                 .Exists<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact.TestProperty);
             Then()
                 .Do(ctx => Action(ctx));

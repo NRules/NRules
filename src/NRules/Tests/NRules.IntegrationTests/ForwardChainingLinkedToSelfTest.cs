@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class ForwardChainingLinkedToSelfTest : BaseRuleTestFixture
+public class ForwardChainingLinkedToSelfTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_TwoMatchingSetsOfFactsYieldsThenRetracted_FiresAndYieldedFactsAreRemoved()
@@ -14,21 +14,21 @@ public class ForwardChainingLinkedToSelfTest : BaseRuleTestFixture
         //Arrange
         var order1 = new FactType1 { GroupKey = "Group 1" };
         var order2 = new FactType1 { GroupKey = "Group 2" };
-        Session.InsertAll(new[] {order1, order2});
-        
+        Session.InsertAll(new[] { order1, order2 });
+
         //Act
         Session.Fire();
         Session.Retract(order1);
         Session.Retract(order2);
 
         //Assert
-        AssertFiredTimes(3);
+        Verify.Rule().FiredTimes(3);
         Assert.Equal(0, Session.Query<FactType4>().Count());
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<ForwardChainingRule>();
+        setup.Rule<ForwardChainingRule>();
     }
 
     public class FactType1
@@ -80,12 +80,12 @@ public class ForwardChainingLinkedToSelfTest : BaseRuleTestFixture
 
         private static FactType4 ProjectValue(IEnumerable<FactType3> x)
         {
-            return new FactType4 {Value = x.Select(p => p.Value).FirstOrDefault()};
+            return new FactType4 { Value = x.Select(p => p.Value).FirstOrDefault() };
         }
 
         private static FactType2 Create(IGrouping<string, FactType1> orders)
         {
-            return new FactType2 {Key = orders.Key};
+            return new FactType2 { Key = orders.Key };
         }
     }
 }

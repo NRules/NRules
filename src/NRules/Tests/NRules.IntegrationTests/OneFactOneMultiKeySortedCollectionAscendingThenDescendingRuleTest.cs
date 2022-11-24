@@ -6,7 +6,7 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest : BaseRuleTestFixture
+public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_NoMatchingFacts_FiresOnceWithEmptyCollection()
@@ -15,7 +15,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
     }
 
@@ -36,7 +36,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Equal(4, firedFacts.Count());
@@ -63,7 +63,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Equal(2, firedFacts.Count());
@@ -86,7 +86,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Single(firedFacts);
@@ -109,7 +109,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
     }
 
@@ -130,7 +130,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Single(firedFacts);
@@ -154,7 +154,7 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         Session.Fire();
 
         // Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Equal(2, firedFacts.Count());
@@ -162,9 +162,9 @@ public class OneFactOneMultiKeySortedCollectionDescendingThenAscendingRuleTest :
         Assert.Equal(fact2, firedFacts.ElementAt(1));
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType

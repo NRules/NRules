@@ -5,57 +5,57 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactRuleTest : BaseRuleTestFixture
+public class OneFactRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFact_FiresOnce()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_TwoMatchingFacts_FiresTwice()
     {
         //Arrange
-        var fact1 = new FactType {TestProperty = "Valid Value 1"};
-        var fact2 = new FactType {TestProperty = "Valid Value 2"};
-        var facts = new[] {fact1, fact2};
+        var fact1 = new FactType { TestProperty = "Valid Value 1" };
+        var fact2 = new FactType { TestProperty = "Valid Value 2" };
+        var facts = new[] { fact1, fact2 };
         Session.InsertAll(facts);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredTwice();
+        Verify.Rule().FiredTimes(2);
     }
 
     [Fact]
     public void Fire_ConditionDoesNotMatch_DoesNotFire()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Invalid Value 1"};
+        var fact = new FactType { TestProperty = "Invalid Value 1" };
         Session.Insert(fact);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_OneMatchingFactAssertedAndRetracted_DoesNotFire()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
         Session.Retract(fact);
 
@@ -63,14 +63,14 @@ public class OneFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_OneFactUpdatedFromInvalidToMatching_FiresOnce()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Invalid Value 1"};
+        var fact = new FactType { TestProperty = "Invalid Value 1" };
         Session.Insert(fact);
 
         fact.TestProperty = "Valid Value 1";
@@ -80,14 +80,14 @@ public class OneFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_OneMatchingFactAssertedAndRetractedAndAssertedAgain_FiresOnce()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
         Session.Retract(fact);
         Session.Insert(fact);
@@ -96,14 +96,14 @@ public class OneFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
     }
 
     [Fact]
     public void Fire_OneMatchingFactAssertedAndUpdatedToInvalid_DoesNotFire()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
         fact.TestProperty = "Invalid Value 1";
@@ -113,14 +113,14 @@ public class OneFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
     public void Fire_OneMatchingFactAssertedAndModifiedAndRetracted_DoesNotFire()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
         fact.TestProperty = "Invalid Value 1";
@@ -130,7 +130,7 @@ public class OneFactRuleTest : BaseRuleTestFixture
         Session.Fire();
 
         //Assert
-        AssertDidNotFire();
+        Verify.Rule().FiredTimes(0);
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class OneFactRuleTest : BaseRuleTestFixture
     public void Insert_DuplicateInsert_Throws()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
 
         //Act - Assert
         Session.Insert(fact);
@@ -155,7 +155,7 @@ public class OneFactRuleTest : BaseRuleTestFixture
     public void TryInsert_DuplicateInsert_False()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
 
         //Act
         Session.Insert(fact);
@@ -176,7 +176,7 @@ public class OneFactRuleTest : BaseRuleTestFixture
     public void Update_UpdateWithoutInsert_Throws()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
 
         //Act - Assert
         Assert.Throws<ArgumentException>(() => Session.Update(fact));
@@ -186,7 +186,7 @@ public class OneFactRuleTest : BaseRuleTestFixture
     public void TryUpdate_UpdateWithoutInsert_False()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
 
         //Act
         bool actual = Session.TryUpdate(fact);
@@ -206,7 +206,7 @@ public class OneFactRuleTest : BaseRuleTestFixture
     public void Retract_RetractWithoutInsert_Throws()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
 
         //Act - Assert
         Assert.Throws<ArgumentException>(() => Session.Retract(fact));
@@ -216,7 +216,7 @@ public class OneFactRuleTest : BaseRuleTestFixture
     public void TryRetract_RetractWithoutInsert_False()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
 
         //Act
         bool actual = Session.TryRetract(fact);
@@ -225,9 +225,9 @@ public class OneFactRuleTest : BaseRuleTestFixture
         Assert.False(actual);
     }
 
-    protected override void SetUpRules()
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType
@@ -242,7 +242,7 @@ public class OneFactRuleTest : BaseRuleTestFixture
             FactType fact = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

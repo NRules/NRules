@@ -5,26 +5,26 @@ using Xunit;
 
 namespace NRules.IntegrationTests;
 
-public class OneFactRetractingRuleTest : BaseRuleTestFixture
+public class OneFactRetractingRuleTest : BaseRulesTestFixture
 {
     [Fact]
     public void Fire_OneMatchingFact_FiresOnceAndRetractsFact()
     {
         //Arrange
-        var fact = new FactType {TestProperty = "Valid Value 1"};
+        var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
         //Act
         Session.Fire();
 
         //Assert
-        AssertFiredOnce();
+        Verify.Rule().FiredTimes(1);
         Assert.Equal(0, Session.Query<FactType>().Count());
     }
-    
-    protected override void SetUpRules()
+
+    protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        SetUpRule<TestRule>();
+        setup.Rule<TestRule>();
     }
 
     public class FactType
@@ -39,7 +39,7 @@ public class OneFactRetractingRuleTest : BaseRuleTestFixture
             FactType fact = null;
 
             When()
-                .Match<FactType>(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.Retract(fact));
         }
