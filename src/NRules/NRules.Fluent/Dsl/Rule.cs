@@ -1,6 +1,4 @@
-using System;
 using NRules.Fluent.Expressions;
-using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Dsl;
@@ -16,16 +14,14 @@ namespace NRules.Fluent.Dsl;
 /// </summary>
 public abstract class Rule
 {
-    private readonly Lazy<IRuleDefinition> _definition;
-    private readonly RuleBuilder _builder;
-    private readonly SymbolStack _symbolStack;
+    private readonly RuleBuilder _builder = new();
+    private readonly SymbolStack _symbolStack = new();
 
     protected Rule()
     {
-        _builder = new RuleBuilder();
-        _symbolStack = new SymbolStack();
-        _definition = new Lazy<IRuleDefinition>(BuildDefinition);
     }
+
+    internal RuleBuilder Builder => _builder;
 
     /// <summary>
     /// Sets rule's name.
@@ -95,32 +91,4 @@ public abstract class Rule
     /// Method called by the rules engine to define the rule.
     /// </summary>
     public abstract void Define();
-
-    internal IRuleDefinition GetDefinition()
-    {
-        return _definition.Value;
-    }
-
-    private IRuleDefinition BuildDefinition()
-    {
-        var ruleType = GetType();
-        var metadata = new RuleMetadata(ruleType);
-        _builder.Name(metadata.Name);
-        _builder.Description(metadata.Description);
-        _builder.Tags(metadata.Tags);
-        _builder.Property(RuleProperties.ClrType, ruleType);
-
-        if (metadata.Priority.HasValue)
-        {
-            _builder.Priority(metadata.Priority.Value);
-        }
-        if (metadata.Repeatability.HasValue)
-        {
-            _builder.Repeatability(metadata.Repeatability.Value);
-        }
-
-        Define();
-
-        return _builder.Build();
-    }
 }
