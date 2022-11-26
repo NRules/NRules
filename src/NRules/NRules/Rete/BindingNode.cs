@@ -23,7 +23,7 @@ internal class BindingNode : BetaNode
         Source.Attach(this);
     }
 
-    public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toAssert = new TupleFactList();
         using (var counter = PerfCounter.Assert(context, this))
@@ -35,10 +35,10 @@ internal class BindingNode : BetaNode
 
             counter.AddItems(tuples.Count);
         }
-        MemoryNode.PropagateAssert(context, toAssert);
+        EnsureMemoryNode().PropagateAssert(context, toAssert);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toAssert = new TupleFactList();
         var toUpdate = new TupleFactList();
@@ -48,24 +48,25 @@ internal class BindingNode : BetaNode
             foreach (var tuple in tuples)
             {
                 var fact = context.WorkingMemory.GetState<Fact>(this, tuple);
-                if (fact != null)
+                if (fact is null)
                 {
-                    UpdateBinding(context, tuple, fact, toUpdate, toRetract);
+                    AssertBinding(context, tuple, toAssert);
                 }
                 else
                 {
-                    AssertBinding(context, tuple, toAssert);
+                    UpdateBinding(context, tuple, fact, toUpdate, toRetract);
                 }
             }
 
             counter.AddItems(tuples.Count);
         }
-        MemoryNode.PropagateRetract(context, toRetract);
-        MemoryNode.PropagateUpdate(context, toUpdate);
-        MemoryNode.PropagateAssert(context, toAssert);
+        var memoryNode = EnsureMemoryNode();
+        memoryNode.PropagateRetract(context, toRetract);
+        memoryNode.PropagateUpdate(context, toUpdate);
+        memoryNode.PropagateAssert(context, toAssert);
     }
 
-    public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Retract(context, this))
@@ -77,7 +78,7 @@ internal class BindingNode : BetaNode
 
             counter.AddItems(tuples.Count);
         }
-        MemoryNode.PropagateRetract(context, toRetract);
+        EnsureMemoryNode().PropagateRetract(context, toRetract);
     }
 
     private void AssertBinding(IExecutionContext context, Tuple tuple, TupleFactList toAssert)

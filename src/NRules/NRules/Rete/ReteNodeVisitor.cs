@@ -61,7 +61,7 @@ internal class ReteNodeVisitor<TContext>
     {
         VisitBetaNode(context, node);
     }
-    
+
     protected internal virtual void VisitObjectInputAdapter(TContext context, ObjectInputAdapter node)
     {
         foreach (var objectSink in node.Sinks)
@@ -85,7 +85,7 @@ internal class ReteNodeVisitor<TContext>
 
     protected virtual void VisitBetaNode(TContext context, BetaNode node)
     {
-        Visit(context, node.MemoryNode);
+        Visit(context, node.EnsureMemoryNode());
     }
 
     protected internal virtual void VisitRuleNode(TContext context, RuleNode node)

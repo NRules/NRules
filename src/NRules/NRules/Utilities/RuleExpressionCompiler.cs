@@ -50,7 +50,7 @@ internal class RuleExpressionCompiler : IRuleExpressionCompiler
     public ILhsTupleExpression<TResult> CompileLhsTupleExpression<TResult>(ExpressionElement element, List<Declaration> declarations)
     {
         var factMap = IndexMap.CreateMap(element.Imports, declarations);
-        var optimizedExpression = ExpressionOptimizer.Optimize<Func<Tuple, TResult>>(
+        var optimizedExpression = ExpressionOptimizer.Optimize<Func<Tuple?, TResult>>(
             element.Expression, factMap, tupleInput: true, factInput: false);
         var @delegate = ExpressionCompiler.Compile(optimizedExpression);
         var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count);
@@ -61,7 +61,7 @@ internal class RuleExpressionCompiler : IRuleExpressionCompiler
     public ILhsExpression<TResult> CompileLhsTupleFactExpression<TResult>(ExpressionElement element, List<Declaration> declarations)
     {
         var factMap = IndexMap.CreateMap(element.Imports, declarations);
-        var optimizedExpression = ExpressionOptimizer.Optimize<Func<Tuple, Fact?, TResult>>(
+        var optimizedExpression = ExpressionOptimizer.Optimize<Func<Tuple?, Fact?, TResult>>(
             element.Expression, factMap, tupleInput: true, factInput: true);
         var @delegate = ExpressionCompiler.Compile(optimizedExpression);
         var argumentMap = new ArgumentMap(factMap, element.Expression.Parameters.Count);

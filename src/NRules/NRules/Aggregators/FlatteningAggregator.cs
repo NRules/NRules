@@ -11,6 +11,7 @@ namespace NRules.Aggregators;
 /// <typeparam name="TSource">Type of source element.</typeparam>
 /// <typeparam name="TResult">Type of result element.</typeparam>
 internal class FlatteningAggregator<TSource, TResult> : IAggregator
+    where TResult : notnull
 {
     private readonly IAggregateExpression _selector;
     private readonly Dictionary<TResult, Counter> _referenceCounter = new();
@@ -49,7 +50,7 @@ internal class FlatteningAggregator<TSource, TResult> : IAggregator
             var list = new OrderedHashSet<TResult>();
             var oldList = _sourceToList[fact];
             _sourceToList[fact] = list;
-            
+
             var value = (IEnumerable<TResult>)_selector.Invoke(context, tuple, fact);
             foreach (var item in value)
             {

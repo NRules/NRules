@@ -26,7 +26,7 @@ internal class JoinNode : BinaryBetaNode
         _isSubnetJoin = isSubnetJoin;
     }
 
-    public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toAssert = new TupleFactList();
         using (var counter = PerfCounter.Assert(context, this))
@@ -45,10 +45,10 @@ internal class JoinNode : BinaryBetaNode
             counter.AddOutputs(toAssert.Count);
         }
 
-        MemoryNode.PropagateAssert(context, toAssert);
+        EnsureMemoryNode().PropagateAssert(context, toAssert);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         if (_isSubnetJoin)
             return;
@@ -75,11 +75,12 @@ internal class JoinNode : BinaryBetaNode
             counter.AddOutputs(toUpdate.Count + toRetract.Count);
         }
 
-        MemoryNode.PropagateRetract(context, toRetract);
-        MemoryNode.PropagateUpdate(context, toUpdate);
+        var memoryNode = EnsureMemoryNode();
+        memoryNode.PropagateRetract(context, toRetract);
+        memoryNode.PropagateUpdate(context, toUpdate);
     }
 
-    public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Retract(context, this))
@@ -95,10 +96,10 @@ internal class JoinNode : BinaryBetaNode
             counter.AddOutputs(toRetract.Count);
         }
 
-        MemoryNode.PropagateRetract(context, toRetract);
+        EnsureMemoryNode().PropagateRetract(context, toRetract);
     }
 
-    public override void PropagateAssert(IExecutionContext context, List<Fact> facts)
+    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var toAssert = new TupleFactList();
         using (var counter = PerfCounter.Assert(context, this))
@@ -117,10 +118,10 @@ internal class JoinNode : BinaryBetaNode
             counter.AddOutputs(toAssert.Count);
         }
 
-        MemoryNode.PropagateAssert(context, toAssert);
+        EnsureMemoryNode().PropagateAssert(context, toAssert);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var toUpdate = new TupleFactList();
         var toRetract = new TupleFactList();
@@ -140,11 +141,12 @@ internal class JoinNode : BinaryBetaNode
             counter.AddOutputs(toUpdate.Count + toRetract.Count);
         }
 
-        MemoryNode.PropagateRetract(context, toRetract);
-        MemoryNode.PropagateUpdate(context, toUpdate);
+        var memoryNode = EnsureMemoryNode();
+        memoryNode.PropagateRetract(context, toRetract);
+        memoryNode.PropagateUpdate(context, toUpdate);
     }
 
-    public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Retract(context, this))
@@ -160,10 +162,10 @@ internal class JoinNode : BinaryBetaNode
             counter.AddOutputs(toRetract.Count);
         }
 
-        MemoryNode.PropagateRetract(context, toRetract);
+        EnsureMemoryNode().PropagateRetract(context, toRetract);
     }
 
-    private bool MatchesConditions(IExecutionContext context, Tuple left, Fact right)
+    private bool MatchesConditions(IExecutionContext context, Tuple left, Fact? right)
     {
         try
         {

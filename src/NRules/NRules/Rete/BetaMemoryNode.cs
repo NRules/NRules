@@ -21,7 +21,8 @@ internal class BetaMemoryNode : IBetaMemoryNode
 
     public void PropagateAssert(IExecutionContext context, TupleFactList tupleFactList)
     {
-        if (tupleFactList.Count == 0) return;
+        if (tupleFactList.Count == 0)
+            return;
 
         IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         var toAssert = new List<Tuple>();
@@ -31,12 +32,13 @@ internal class BetaMemoryNode : IBetaMemoryNode
             var enumerator = tupleFactList.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                var childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple,
-                    enumerator.CurrentFact);
-                childTuple.GroupId = enumerator.CurrentTuple.Id;
+                var childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact)
+                {
+                    GroupId = enumerator.CurrentTuple.Id
+                };
                 toAssert.Add(childTuple);
             }
-            
+
             counter.AddItems(tupleFactList.Count);
         }
 
@@ -45,7 +47,8 @@ internal class BetaMemoryNode : IBetaMemoryNode
 
     public void PropagateUpdate(IExecutionContext context, TupleFactList tupleFactList)
     {
-        if (tupleFactList.Count == 0) return;
+        if (tupleFactList.Count == 0)
+            return;
 
         IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         var toAssert = new List<Tuple>();
@@ -59,8 +62,10 @@ internal class BetaMemoryNode : IBetaMemoryNode
                 Tuple childTuple = memory.FindTuple(enumerator.CurrentTuple, enumerator.CurrentFact);
                 if (childTuple == null)
                 {
-                    childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact);
-                    childTuple.GroupId = enumerator.CurrentTuple.Id;
+                    childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact)
+                    {
+                        GroupId = enumerator.CurrentTuple.Id
+                    };
                     toAssert.Add(childTuple);
                 }
                 else
@@ -68,7 +73,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
                     toUpdate.Add(childTuple);
                 }
             }
-            
+
             counter.AddItems(tupleFactList.Count);
         }
 
@@ -78,7 +83,8 @@ internal class BetaMemoryNode : IBetaMemoryNode
 
     public void PropagateRetract(IExecutionContext context, TupleFactList tupleFactList)
     {
-        if (tupleFactList.Count == 0) return;
+        if (tupleFactList.Count == 0)
+            return;
 
         IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         var toRetract = new List<Tuple>();
@@ -89,12 +95,12 @@ internal class BetaMemoryNode : IBetaMemoryNode
             while (enumerator.MoveNext())
             {
                 Tuple childTuple = memory.FindTuple(enumerator.CurrentTuple, enumerator.CurrentFact);
-                if (childTuple != null)
+                if (childTuple is not null)
                 {
                     toRetract.Add(childTuple);
                 }
             }
-            
+
             counter.AddInputs(tupleFactList.Count);
             counter.AddOutputs(toRetract.Count);
         }
@@ -111,11 +117,9 @@ internal class BetaMemoryNode : IBetaMemoryNode
                 _sinks[i].PropagateAssert(context, tuples);
             }
 
-            using (var counter = PerfCounter.Assert(context, this))
-            {
-                memory.Add(tuples);
-                counter.SetCount(memory.TupleCount);
-            }
+            using var counter = PerfCounter.Assert(context, this);
+            memory.Add(tuples);
+            counter.SetCount(memory.TupleCount);
         }
     }
 

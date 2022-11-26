@@ -665,6 +665,10 @@ internal sealed class Session : ISessionInternal
         foreach (var key in linkedKeys)
         {
             var linkedFact = GetLinked(activation, key);
+            if (linkedFact is null)
+            {
+                throw new KeyNotFoundException($"Cannot get linked fact for activation='{activation.Rule.Name}' and key='{key}'");
+            }
             keyedFacts.Add(new KeyValuePair<object, object>(key, linkedFact));
         }
         QueueRetractLinked(activation, keyedFacts);

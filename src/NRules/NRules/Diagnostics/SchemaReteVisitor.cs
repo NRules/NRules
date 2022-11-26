@@ -6,28 +6,32 @@ internal class SchemaReteVisitor : ReteNodeVisitor<SchemaBuilder>
 {
     protected internal override void VisitRootNode(SchemaBuilder builder, RootNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         base.VisitRootNode(builder, node);
     }
 
     protected internal override void VisitTypeNode(SchemaBuilder builder, TypeNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         base.VisitTypeNode(builder, node);
     }
 
     protected internal override void VisitSelectionNode(SchemaBuilder builder, SelectionNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         base.VisitSelectionNode(builder, node);
     }
 
     protected internal override void VisitAlphaMemoryNode(SchemaBuilder builder, AlphaMemoryNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         builder.AddLinks(node, node.Sinks);
         base.VisitAlphaMemoryNode(builder, node);
@@ -45,35 +49,40 @@ internal class SchemaReteVisitor : ReteNodeVisitor<SchemaBuilder>
 
     protected internal override void VisitJoinNode(SchemaBuilder builder, JoinNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         base.VisitJoinNode(builder, node);
     }
 
     protected internal override void VisitNotNode(SchemaBuilder builder, NotNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         base.VisitNotNode(builder, node);
     }
 
     protected internal override void VisitExistsNode(SchemaBuilder builder, ExistsNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         base.VisitExistsNode(builder, node);
     }
 
     protected internal override void VisitAggregateNode(SchemaBuilder builder, AggregateNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         base.VisitAggregateNode(builder, node);
     }
 
     protected internal override void VisitObjectInputAdapter(SchemaBuilder builder, ObjectInputAdapter node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         builder.AddLinks(node, node.Sinks);
         base.VisitObjectInputAdapter(builder, node);
@@ -81,14 +90,16 @@ internal class SchemaReteVisitor : ReteNodeVisitor<SchemaBuilder>
 
     protected internal override void VisitBindingNode(SchemaBuilder builder, BindingNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         base.VisitBindingNode(builder, node);
     }
 
     protected internal override void VisitBetaMemoryNode(SchemaBuilder builder, BetaMemoryNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         builder.AddLinks(node, node.Sinks);
         base.VisitBetaMemoryNode(builder, node);
@@ -96,20 +107,22 @@ internal class SchemaReteVisitor : ReteNodeVisitor<SchemaBuilder>
 
     protected override void VisitBetaNode(SchemaBuilder builder, BetaNode node)
     {
-        builder.AddLink(node, node.MemoryNode);
+        builder.AddLink(node, node.EnsureMemoryNode());
         base.VisitBetaNode(builder, node);
     }
 
     protected internal override void VisitRuleNode(SchemaBuilder builder, RuleNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         base.VisitRuleNode(builder, node);
     }
 
     protected internal override void VisitDummyNode(SchemaBuilder builder, DummyNode node)
     {
-        if (builder.IsVisited(node)) return;
+        if (builder.IsVisited(node))
+            return;
         builder.AddNode(node, ReteNode.Create);
         foreach (var sink in node.Sinks)
         {

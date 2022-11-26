@@ -30,7 +30,7 @@ internal class AggregateNode : BinaryBetaNode
         _isSubnetJoin = isSubnetJoin;
     }
 
-    public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -51,7 +51,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -86,7 +86,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var aggregation = new Aggregation();
         using (var counter = PerfCounter.Retract(context, this))
@@ -107,7 +107,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateAssert(IExecutionContext context, List<Fact> facts)
+    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -139,7 +139,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -171,7 +171,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -261,6 +261,7 @@ internal class AggregateNode : BinaryBetaNode
 
     private void PropagateAggregation(IExecutionContext context, Aggregation aggregation)
     {
+        var memoryNode = EnsureMemoryNode();
         foreach (var aggregateList in aggregation.AggregateLists)
         {
             if (aggregateList.Count == 0)
@@ -269,13 +270,13 @@ internal class AggregateNode : BinaryBetaNode
             switch (aggregateList.Action)
             {
                 case AggregationAction.Added:
-                    MemoryNode.PropagateAssert(context, aggregateList);
+                    memoryNode.PropagateAssert(context, aggregateList);
                     break;
                 case AggregationAction.Modified:
-                    MemoryNode.PropagateUpdate(context, aggregateList);
+                    memoryNode.PropagateUpdate(context, aggregateList);
                     break;
                 case AggregationAction.Removed:
-                    MemoryNode.PropagateRetract(context, aggregateList);
+                    memoryNode.PropagateRetract(context, aggregateList);
                     break;
             }
         }

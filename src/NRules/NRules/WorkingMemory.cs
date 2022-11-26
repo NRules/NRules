@@ -52,7 +52,7 @@ internal class WorkingMemory : IWorkingMemory
 
     public void AddFact(Fact fact)
     {
-        _factMap.Add(fact.RawObject, fact);
+        _factMap.Add(fact.RawObject ?? throw new ArgumentException("Fact cannot contain null object"), fact);
     }
 
     public void UpdateFact(Fact fact)
@@ -63,7 +63,7 @@ internal class WorkingMemory : IWorkingMemory
 
     public void RemoveFact(Fact fact)
     {
-        if (!_factMap.Remove(fact.RawObject))
+        if (!_factMap.Remove(fact.RawObject ?? throw new ArgumentException("Fact cannot contain null object")))
             throw new ArgumentException("Element does not exist", nameof(fact));
     }
 

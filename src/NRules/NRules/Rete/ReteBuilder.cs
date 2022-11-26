@@ -331,13 +331,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private void BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
     {
-        var memoryNode = betaNode.MemoryNode;
-        if (memoryNode is null)
-        {
-            memoryNode = new BetaMemoryNode { Id = GetNodeId() };
-            betaNode.MemoryNode = memoryNode;
-        }
-
+        var memoryNode = betaNode.EnsureMemoryNodeInitialized(GetNodeId);
         memoryNode.NodeInfo.Add(context.Rule);
         context.BetaSource = memoryNode;
     }

@@ -20,7 +20,7 @@ internal sealed class Tuple : ITuple
         Level = 0;
     }
 
-    public Tuple(long id, Tuple left, Fact right) : this(id)
+    public Tuple(long id, Tuple left, Fact? right) : this(id)
     {
         RightFact = right;
         LeftTuple = left;

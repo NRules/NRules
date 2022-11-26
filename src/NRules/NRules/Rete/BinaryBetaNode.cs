@@ -23,9 +23,9 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         RightSource.Attach(this);
     }
 
-    public abstract void PropagateAssert(IExecutionContext context, List<Fact> facts);
-    public abstract void PropagateUpdate(IExecutionContext context, List<Fact> facts);
-    public abstract void PropagateRetract(IExecutionContext context, List<Fact> facts);
+    public abstract void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts);
+    public abstract void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts);
+    public abstract void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts);
 
     protected TupleFactSet JoinedSet(IExecutionContext context, Tuple tuple)
     {

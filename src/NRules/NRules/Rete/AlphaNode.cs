@@ -15,7 +15,7 @@ internal abstract class AlphaNode : IObjectSink
 
     public abstract bool IsSatisfiedBy(IExecutionContext context, Fact fact);
 
-    public virtual void PropagateAssert(IExecutionContext context, List<Fact> facts)
+    public virtual void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var toAssert = new List<Fact>();
         using (var counter = PerfCounter.Assert(context, this))
@@ -39,7 +39,7 @@ internal abstract class AlphaNode : IObjectSink
         }
     }
 
-    public virtual void PropagateUpdate(IExecutionContext context, List<Fact> facts)
+    public virtual void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var toUpdate = new List<Fact>();
         var toRetract = new List<Fact>();
@@ -60,7 +60,7 @@ internal abstract class AlphaNode : IObjectSink
         PropagateRetractInternal(context, toRetract);
     }
 
-    public virtual void PropagateRetract(IExecutionContext context, List<Fact> facts)
+    public virtual void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         using (var counter = PerfCounter.Retract(context, this))
         {
@@ -69,7 +69,7 @@ internal abstract class AlphaNode : IObjectSink
         PropagateRetractInternal(context, facts);
     }
 
-    protected void PropagateUpdateInternal(IExecutionContext context, List<Fact> facts)
+    protected void PropagateUpdateInternal(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         if (facts.Count == 0)
             return;
@@ -80,7 +80,7 @@ internal abstract class AlphaNode : IObjectSink
         MemoryNode?.PropagateUpdate(context, facts);
     }
 
-    protected void PropagateRetractInternal(IExecutionContext context, List<Fact> facts)
+    protected void PropagateRetractInternal(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         if (facts.Count == 0)
             return;

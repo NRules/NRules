@@ -132,7 +132,7 @@ internal interface IEventAggregator : IEventProvider
     void RaiseFactUpdated(ISession session, Fact fact);
     void RaiseFactRetracting(ISession session, Fact fact);
     void RaiseFactRetracted(ISession session, Fact fact);
-    void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple tuple, Fact? fact, NodeInfo nodeInfo, ref bool isHandled);
+    void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple? tuple, Fact? fact, NodeInfo nodeInfo, ref bool isHandled);
     void RaiseLhsExpressionEvaluated(ISession session, Exception? exception, Expression expression, IArgumentMap argumentMap, object? result, Tuple? tuple, Fact? fact, NodeInfo nodeInfo);
     void RaiseAgendaExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Activation activation, ref bool isHandled);
     void RaiseAgendaExpressionEvaluated(ISession session, Exception? exception, Expression expression, IArgumentMap argumentMap, object? result, Activation activation);
@@ -350,7 +350,7 @@ internal class EventAggregator : IEventAggregator
         _parent?.RaiseLhsExpressionEvaluated(session, exception, expression, argumentMap, result, tuple, fact, nodeInfo);
     }
 
-    public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple tuple, Fact? fact, NodeInfo nodeInfo, ref bool isHandled)
+    public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple? tuple, Fact? fact, NodeInfo nodeInfo, ref bool isHandled)
     {
         var handler = LhsExpressionFailedEvent;
         if (handler != null)
