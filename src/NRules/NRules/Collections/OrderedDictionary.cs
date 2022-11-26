@@ -41,13 +41,14 @@ internal class OrderedDictionary<TKey, TValue>
     public bool Remove(TKey key)
     {
         bool found = _dictionary.TryGetValue(key, out var node);
-        if (!found) return false;
+        if (!found)
+            return false;
         _dictionary.Remove(key);
         _linkedList.Remove(node);
         return true;
     }
 
-    public bool TryGetValue(TKey key, out TValue value)
+    public bool TryGetValue(TKey key, /*[NotNullWhen(true)]*/out TValue value)
     {
         bool found = _dictionary.TryGetValue(key, out var node);
         if (!found)

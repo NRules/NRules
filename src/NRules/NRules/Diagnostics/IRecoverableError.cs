@@ -17,5 +17,5 @@ public interface IRecoverableError
     /// <summary>
     /// Exception that caused the error.
     /// </summary>
-    Exception Exception { get; }
+    Exception? Exception { get; }
 }

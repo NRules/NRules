@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NRules.AgendaFilters;
 using NRules.RuleModel;
@@ -62,7 +63,7 @@ internal class Agenda : IAgendaInternal
     private readonly List<IStatefulAgendaFilter> _globalStatefulFilters = new();
     private readonly Dictionary<IRuleDefinition, List<IAgendaFilter>> _ruleFilters = new();
     private readonly Dictionary<IRuleDefinition, List<IStatefulAgendaFilter>> _ruleStatefulFilters = new();
-    private AgendaContext _context;
+    private AgendaContext? _context;
 
     public bool IsEmpty => !_activationQueue.HasActive();
 
@@ -164,9 +165,10 @@ internal class Agenda : IAgendaInternal
             _activationQueue.Remove(activation);
         }
 
-        if (_context.Session.GetLinkedKeys(activation).Any())
+        var context = EnsureContext();
+        if (context.Session.GetLinkedKeys(activation).Any())
         {
-            _context.Session.QueueRetractLinked(activation);
+            context.Session.QueueRetractLinked(activation);
         }
     }
 
@@ -189,41 +191,55 @@ internal class Agenda : IAgendaInternal
 
     private bool AcceptActivation(Activation activation)
     {
+        var context = EnsureContext();
         foreach (var filter in _globalFilters)
         {
-            if (!filter.Accept(_context, activation)) return false;
+            if (!filter.Accept(context, activation))
+                return false;
         }
-        if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters)) return true;
+        if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters))
+            return true;
         foreach (var filter in ruleFilters)
         {
-            if (!filter.Accept(_context, activation)) return false;
+            if (!filter.Accept(context, activation))
+                return false;
         }
         return true;
     }
 
     private void SelectActivation(Activation activation)
     {
+        var context = EnsureContext();
         foreach (var filter in _globalStatefulFilters)
         {
-            filter.Select(_context, activation);
+            filter.Select(context, activation);
         }
-        if (!_ruleStatefulFilters.TryGetValue(activation.Rule, out var ruleStatefulFilters)) return;
+        if (!_ruleStatefulFilters.TryGetValue(activation.Rule, out var ruleStatefulFilters))
+            return;
         foreach (var filter in ruleStatefulFilters)
         {
-            filter.Select(_context, activation);
+            filter.Select(context, activation);
         }
     }
 
     private void RemoveActivation(Activation activation)
     {
+        var context = EnsureContext();
         foreach (var filter in _globalStatefulFilters)
         {
-            filter.Remove(_context, activation);
+            filter.Remove(context, activation);
         }
-        if (!_ruleStatefulFilters.TryGetValue(activation.Rule, out var ruleStatefulFilters)) return;
+        if (!_ruleStatefulFilters.TryGetValue(activation.Rule, out var ruleStatefulFilters))
+            return;
         foreach (var filter in ruleStatefulFilters)
         {
-            filter.Remove(_context, activation);
+            filter.Remove(context, activation);
         }
     }
+
+    private AgendaContext EnsureContext()
+    {
+        return _context ?? throw new InvalidOperationException($"{nameof(Agenda)} is not initialized");
+    }
+
 }

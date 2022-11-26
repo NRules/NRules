@@ -6,12 +6,12 @@ namespace NRules.Rete;
 [DebuggerDisplay("TupleFactList ({Count})")]
 internal class TupleFactList
 {
-    private readonly List<Tuple> _tuples = new(); 
-    private readonly List<Fact> _facts = new();
+    private readonly List<Tuple> _tuples = new();
+    private readonly List<Fact?> _facts = new();
 
     public int Count => _tuples.Count;
 
-    public void Add(Tuple tuple, Fact fact)
+    public void Add(Tuple tuple, Fact? fact)
     {
         _tuples.Add(tuple);
         _facts.Add(fact);
@@ -20,16 +20,16 @@ internal class TupleFactList
     public struct Enumerator
     {
         private List<Tuple>.Enumerator _tupleEnumerator;
-        private List<Fact>.Enumerator _factEnumerator;
+        private List<Fact?>.Enumerator _factEnumerator;
 
-        public Enumerator(List<Tuple>.Enumerator tupleEnumerator, List<Fact>.Enumerator factEnumerator)
+        public Enumerator(List<Tuple>.Enumerator tupleEnumerator, List<Fact?>.Enumerator factEnumerator)
         {
             _tupleEnumerator = tupleEnumerator;
             _factEnumerator = factEnumerator;
         }
 
         public Tuple CurrentTuple => _tupleEnumerator.Current;
-        public Fact CurrentFact => _factEnumerator.Current;
+        public Fact? CurrentFact => _factEnumerator.Current;
 
         public bool MoveNext()
         {

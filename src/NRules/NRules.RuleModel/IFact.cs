@@ -10,15 +10,15 @@ public interface IFact
     /// <summary>
     /// Fact runtime type.
     /// </summary>
-    Type Type { get; }
+    Type? Type { get; }
 
     /// <summary>
     /// Fact value.
     /// </summary>
-    object Value { get; }
+    object? Value { get; }
 
     /// <summary>
     /// Source of this fact, for synthetic facts, or <c>null</c>.
     /// </summary>
-    IFactSource Source { get; }
+    IFactSource? Source { get; }
 }

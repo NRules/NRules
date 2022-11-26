@@ -5,13 +5,13 @@ namespace NRules.Diagnostics.Dgml;
 
 internal static class XmlWriterExtensions
 {
-    public static void WriteAttributeIfNotNull(this XmlWriter writer, string localName, object value)
+    public static void WriteAttributeIfNotNull(this XmlWriter writer, string localName, object? value)
     {
-        if (value != null)
+        if (value is not null)
             writer.WriteAttributeString(localName, value.ToString());
     }
 
-    public static void WriteProperties(this XmlWriter writer, Dictionary<string, object> properties)
+    public static void WriteProperties(this XmlWriter writer, Dictionary<string, object?> properties)
     {
         foreach (var property in properties)
         {

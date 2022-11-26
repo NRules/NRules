@@ -7,13 +7,13 @@ namespace NRules.Rete;
 
 internal class BindingNode : BetaNode
 {
-    private readonly ILhsTupleExpression<object> _compiledExpression;
+    private readonly ILhsTupleExpression<object?> _compiledExpression;
 
     public ExpressionElement ExpressionElement { get; }
     public Type ResultType { get; }
     public ITupleSource Source { get; }
-    
-    public BindingNode(ExpressionElement expressionElement, ILhsTupleExpression<object> compiledExpression, Type resultType, ITupleSource source)
+
+    public BindingNode(ExpressionElement expressionElement, ILhsTupleExpression<object?> compiledExpression, Type resultType, ITupleSource source)
     {
         ExpressionElement = expressionElement;
         _compiledExpression = compiledExpression;

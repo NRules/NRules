@@ -24,8 +24,8 @@ public class LhsExpressionErrorEventArgs : LhsExpressionEventArgs, IRecoverableE
         : base(expression, exception, arguments, null, tuple, fact, rules)
     {
     }
-    
-    internal LhsExpressionErrorEventArgs(Expression expression, Exception exception, IArguments arguments, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
+
+    internal LhsExpressionErrorEventArgs(Expression expression, Exception exception, IArguments arguments, ITuple tuple, IFact? fact, IEnumerable<IRuleDefinition> rules)
         : base(expression, exception, arguments, null, tuple, fact, rules)
     {
     }

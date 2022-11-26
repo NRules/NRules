@@ -22,8 +22,8 @@ public class RhsExpressionEventArgs : ExpressionEventArgs
     {
         Match = match;
     }
-    
-    internal RhsExpressionEventArgs(Expression expression, Exception exception, IArguments arguments, IMatch match)
+
+    internal RhsExpressionEventArgs(Expression expression, Exception? exception, IArguments arguments, IMatch match)
         : base(expression, exception, arguments, null)
     {
         Match = match;

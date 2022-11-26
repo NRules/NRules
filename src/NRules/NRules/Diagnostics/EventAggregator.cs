@@ -19,7 +19,7 @@ public interface IEventProvider
     /// A new activation is created when a new set of facts (tuple) matches a rule.
     /// The activation is placed on the agenda and becomes a candidate for firing.
     /// </summary>
-    event EventHandler<AgendaEventArgs> ActivationCreatedEvent;
+    event EventHandler<AgendaEventArgs>? ActivationCreatedEvent;
 
     /// <summary>
     /// Raised when an existing activation is updated.
@@ -27,7 +27,7 @@ public interface IEventProvider
     /// and it still matches the rule.
     /// The activation is updated in the agenda and remains a candidate for firing.
     /// </summary>
-    event EventHandler<AgendaEventArgs> ActivationUpdatedEvent;
+    event EventHandler<AgendaEventArgs>? ActivationUpdatedEvent;
 
     /// <summary>
     /// Raised when an existing activation is deleted.
@@ -35,87 +35,87 @@ public interface IEventProvider
     /// matches the rule due to updated or retracted facts.
     /// The activation is removed from the agenda and is no longer a candidate for firing.
     /// </summary>
-    event EventHandler<AgendaEventArgs> ActivationDeletedEvent;
+    event EventHandler<AgendaEventArgs>? ActivationDeletedEvent;
 
     /// <summary>
     /// Raised before a rule is about to fire.
     /// </summary>
-    event EventHandler<AgendaEventArgs> RuleFiringEvent;
+    event EventHandler<AgendaEventArgs>? RuleFiringEvent;
 
     /// <summary>
     /// Raised after a rule has fired and all its actions executed.
     /// </summary>
-    event EventHandler<AgendaEventArgs> RuleFiredEvent;
+    event EventHandler<AgendaEventArgs>? RuleFiredEvent;
 
     /// <summary>
     /// Raised before a new fact is inserted into working memory.
     /// </summary>
-    event EventHandler<WorkingMemoryEventArgs> FactInsertingEvent;
+    event EventHandler<WorkingMemoryEventArgs>? FactInsertingEvent;
 
     /// <summary>
     /// Raised after a new fact is inserted into working memory.
     /// </summary>
-    event EventHandler<WorkingMemoryEventArgs> FactInsertedEvent;
+    event EventHandler<WorkingMemoryEventArgs>? FactInsertedEvent;
 
     /// <summary>
     /// Raised before an existing fact is updated in the working memory.
     /// </summary>
-    event EventHandler<WorkingMemoryEventArgs> FactUpdatingEvent;
+    event EventHandler<WorkingMemoryEventArgs>? FactUpdatingEvent;
 
     /// <summary>
     /// Raised after an existing fact is updated in the working memory.
     /// </summary>
-    event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
+    event EventHandler<WorkingMemoryEventArgs>? FactUpdatedEvent;
 
     /// <summary>
     /// Raised before an existing fact is retracted from the working memory.
     /// </summary>
-    event EventHandler<WorkingMemoryEventArgs> FactRetractingEvent;
+    event EventHandler<WorkingMemoryEventArgs>? FactRetractingEvent;
 
     /// <summary>
     /// Raised after an existing fact is retracted from the working memory.
     /// </summary>
-    event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
+    event EventHandler<WorkingMemoryEventArgs>? FactRetractedEvent;
 
     /// <summary>
     /// Raised when left-hand side expression is evaluated.
     /// This event is raised on both, successful expression evaluations, and on exceptions.
     /// </summary>
-    event EventHandler<LhsExpressionEventArgs> LhsExpressionEvaluatedEvent;
+    event EventHandler<LhsExpressionEventArgs>? LhsExpressionEvaluatedEvent;
 
     /// <summary>
     /// Raised when left-hand side expression evaluation threw an exception.
     /// Gives observer of the event control over handling of the exception.
     /// </summary>
-    event EventHandler<LhsExpressionErrorEventArgs> LhsExpressionFailedEvent;
+    event EventHandler<LhsExpressionErrorEventArgs>? LhsExpressionFailedEvent;
 
     /// <summary>
     /// Raised when agenda expression is evaluated.
     /// This event is raised on both, successful expression evaluations, and on exceptions.
     /// </summary>
     /// <seealso cref="IAgendaFilter"/>
-    event EventHandler<AgendaExpressionEventArgs> AgendaExpressionEvaluatedEvent;
+    event EventHandler<AgendaExpressionEventArgs>? AgendaExpressionEvaluatedEvent;
 
     /// <summary>
     /// Raised when agenda expression evaluation threw an exception.
     /// Gives observer of the event control over handling of the exception.
     /// </summary>
     /// <seealso cref="IAgendaFilter"/>
-    event EventHandler<AgendaExpressionErrorEventArgs> AgendaExpressionFailedEvent;
+    event EventHandler<AgendaExpressionErrorEventArgs>? AgendaExpressionFailedEvent;
 
     /// <summary>
     /// Raised when right-hand side expression is evaluated.
     /// This event is raised on both, successful expression evaluations, and on exceptions.
     /// </summary>
     /// <seealso cref="IActionInterceptor"/>
-    event EventHandler<RhsExpressionEventArgs> RhsExpressionEvaluatedEvent;
+    event EventHandler<RhsExpressionEventArgs>? RhsExpressionEvaluatedEvent;
 
     /// <summary>
     /// Raised when right-hand side expression evaluation threw an exception.
     /// Gives observer of the event control over handling of the exception.
     /// </summary>
     /// <seealso cref="IActionInterceptor"/>
-    event EventHandler<RhsExpressionErrorEventArgs> RhsExpressionFailedEvent;
+    event EventHandler<RhsExpressionErrorEventArgs>? RhsExpressionFailedEvent;
 }
 
 internal interface IEventAggregator : IEventProvider
@@ -132,39 +132,39 @@ internal interface IEventAggregator : IEventProvider
     void RaiseFactUpdated(ISession session, Fact fact);
     void RaiseFactRetracting(ISession session, Fact fact);
     void RaiseFactRetracted(ISession session, Fact fact);
-    void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple tuple, Fact fact, NodeInfo nodeInfo, ref bool isHandled);
-    void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, object result, Tuple tuple, Fact fact, NodeInfo nodeInfo);
+    void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple tuple, Fact? fact, NodeInfo nodeInfo, ref bool isHandled);
+    void RaiseLhsExpressionEvaluated(ISession session, Exception? exception, Expression expression, IArgumentMap argumentMap, object? result, Tuple? tuple, Fact? fact, NodeInfo nodeInfo);
     void RaiseAgendaExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Activation activation, ref bool isHandled);
-    void RaiseAgendaExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, object result, Activation activation);
+    void RaiseAgendaExpressionEvaluated(ISession session, Exception? exception, Expression expression, IArgumentMap argumentMap, object? result, Activation activation);
     void RaiseRhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Activation activation, ref bool isHandled);
-    void RaiseRhsExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Activation activation);
+    void RaiseRhsExpressionEvaluated(ISession session, Exception? exception, Expression expression, IArgumentMap argumentMap, Activation activation);
 }
 
 internal class EventAggregator : IEventAggregator
 {
-    private readonly IEventAggregator _parent;
+    private readonly IEventAggregator? _parent;
     private volatile int _traceSubscriberCount = 0;
 
-    private event EventHandler<LhsExpressionEventArgs> LhsExpressionEvaluatedEvent;
-    private event EventHandler<AgendaExpressionEventArgs> AgendaExpressionEvaluatedEvent;
-    private event EventHandler<RhsExpressionEventArgs> RhsExpressionEvaluatedEvent;
+    private event EventHandler<LhsExpressionEventArgs>? LhsExpressionEvaluatedEvent;
+    private event EventHandler<AgendaExpressionEventArgs>? AgendaExpressionEvaluatedEvent;
+    private event EventHandler<RhsExpressionEventArgs>? RhsExpressionEvaluatedEvent;
 
-    public event EventHandler<AgendaEventArgs> ActivationCreatedEvent;
-    public event EventHandler<AgendaEventArgs> ActivationUpdatedEvent;
-    public event EventHandler<AgendaEventArgs> ActivationDeletedEvent;
-    public event EventHandler<AgendaEventArgs> RuleFiringEvent;
-    public event EventHandler<AgendaEventArgs> RuleFiredEvent;
-    public event EventHandler<WorkingMemoryEventArgs> FactInsertingEvent;
-    public event EventHandler<WorkingMemoryEventArgs> FactInsertedEvent;
-    public event EventHandler<WorkingMemoryEventArgs> FactUpdatingEvent;
-    public event EventHandler<WorkingMemoryEventArgs> FactUpdatedEvent;
-    public event EventHandler<WorkingMemoryEventArgs> FactRetractingEvent;
-    public event EventHandler<WorkingMemoryEventArgs> FactRetractedEvent;
-    public event EventHandler<LhsExpressionErrorEventArgs> LhsExpressionFailedEvent;
-    public event EventHandler<AgendaExpressionErrorEventArgs> AgendaExpressionFailedEvent;
-    public event EventHandler<RhsExpressionErrorEventArgs> RhsExpressionFailedEvent;
+    public event EventHandler<AgendaEventArgs>? ActivationCreatedEvent;
+    public event EventHandler<AgendaEventArgs>? ActivationUpdatedEvent;
+    public event EventHandler<AgendaEventArgs>? ActivationDeletedEvent;
+    public event EventHandler<AgendaEventArgs>? RuleFiringEvent;
+    public event EventHandler<AgendaEventArgs>? RuleFiredEvent;
+    public event EventHandler<WorkingMemoryEventArgs>? FactInsertingEvent;
+    public event EventHandler<WorkingMemoryEventArgs>? FactInsertedEvent;
+    public event EventHandler<WorkingMemoryEventArgs>? FactUpdatingEvent;
+    public event EventHandler<WorkingMemoryEventArgs>? FactUpdatedEvent;
+    public event EventHandler<WorkingMemoryEventArgs>? FactRetractingEvent;
+    public event EventHandler<WorkingMemoryEventArgs>? FactRetractedEvent;
+    public event EventHandler<LhsExpressionErrorEventArgs>? LhsExpressionFailedEvent;
+    public event EventHandler<AgendaExpressionErrorEventArgs>? AgendaExpressionFailedEvent;
+    public event EventHandler<RhsExpressionErrorEventArgs>? RhsExpressionFailedEvent;
 
-    event EventHandler<LhsExpressionEventArgs> IEventProvider.LhsExpressionEvaluatedEvent
+    event EventHandler<LhsExpressionEventArgs>? IEventProvider.LhsExpressionEvaluatedEvent
     {
         add
         {
@@ -178,7 +178,7 @@ internal class EventAggregator : IEventAggregator
         }
     }
 
-    event EventHandler<AgendaExpressionEventArgs> IEventProvider.AgendaExpressionEvaluatedEvent
+    event EventHandler<AgendaExpressionEventArgs>? IEventProvider.AgendaExpressionEvaluatedEvent
     {
         add
         {
@@ -192,7 +192,7 @@ internal class EventAggregator : IEventAggregator
         }
     }
 
-    event EventHandler<RhsExpressionEventArgs> IEventProvider.RhsExpressionEvaluatedEvent
+    event EventHandler<RhsExpressionEventArgs>? IEventProvider.RhsExpressionEvaluatedEvent
     {
         add
         {
@@ -338,7 +338,7 @@ internal class EventAggregator : IEventAggregator
         _parent?.RaiseFactRetracted(session, fact);
     }
 
-    public void RaiseLhsExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, object result, Tuple tuple, Fact fact, NodeInfo nodeInfo)
+    public void RaiseLhsExpressionEvaluated(ISession session, Exception? exception, Expression expression, IArgumentMap argumentMap, object? result, Tuple? tuple, Fact? fact, NodeInfo nodeInfo)
     {
         var handler = LhsExpressionEvaluatedEvent;
         if (handler != null)
@@ -350,7 +350,7 @@ internal class EventAggregator : IEventAggregator
         _parent?.RaiseLhsExpressionEvaluated(session, exception, expression, argumentMap, result, tuple, fact, nodeInfo);
     }
 
-    public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple tuple, Fact fact, NodeInfo nodeInfo, ref bool isHandled)
+    public void RaiseLhsExpressionFailed(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Tuple tuple, Fact? fact, NodeInfo nodeInfo, ref bool isHandled)
     {
         var handler = LhsExpressionFailedEvent;
         if (handler != null)
@@ -363,7 +363,7 @@ internal class EventAggregator : IEventAggregator
         _parent?.RaiseLhsExpressionFailed(session, exception, expression, argumentMap, tuple, fact, nodeInfo, ref isHandled);
     }
 
-    public void RaiseAgendaExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, object result, Activation activation)
+    public void RaiseAgendaExpressionEvaluated(ISession session, Exception? exception, Expression expression, IArgumentMap argumentMap, object? result, Activation activation)
     {
         var handler = AgendaExpressionEvaluatedEvent;
         if (handler != null)
@@ -387,8 +387,8 @@ internal class EventAggregator : IEventAggregator
         }
         _parent?.RaiseAgendaExpressionFailed(session, exception, expression, argumentMap, activation, ref isHandled);
     }
-    
-    public void RaiseRhsExpressionEvaluated(ISession session, Exception exception, Expression expression, IArgumentMap argumentMap, Activation activation)
+
+    public void RaiseRhsExpressionEvaluated(ISession session, Exception? exception, Expression expression, IArgumentMap argumentMap, Activation activation)
     {
         var handler = RhsExpressionEvaluatedEvent;
         if (handler != null)

@@ -7,7 +7,7 @@ namespace NRules.Rete;
 
 internal interface ILhsExpression<out TResult>
 {
-    TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact);
+    TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact? fact);
 }
 
 internal interface ILhsFactExpression<out TResult> : ILhsExpression<TResult>
@@ -23,19 +23,19 @@ internal interface ILhsTupleExpression<out TResult> : ILhsExpression<TResult>
 internal sealed class LhsExpression<TResult> : ILhsExpression<TResult>
 {
     private readonly LambdaExpression _expression;
-    private readonly Func<Tuple, Fact, TResult> _compiledExpression;
+    private readonly Func<Tuple, Fact?, TResult> _compiledExpression;
     private readonly IArgumentMap _argumentMap;
 
-    public LhsExpression(LambdaExpression expression, Func<Tuple, Fact, TResult> compiledExpression, IArgumentMap argumentMap)
+    public LhsExpression(LambdaExpression expression, Func<Tuple, Fact?, TResult> compiledExpression, IArgumentMap argumentMap)
     {
         _expression = expression;
         _compiledExpression = compiledExpression;
         _argumentMap = argumentMap;
     }
 
-    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact? fact)
     {
-        Exception exception = null;
+        Exception? exception = null;
         TResult result = default;
         try
         {
@@ -60,10 +60,10 @@ internal sealed class LhsExpression<TResult> : ILhsExpression<TResult>
 internal sealed class LhsFactExpression<TResult> : ILhsFactExpression<TResult>
 {
     private readonly LambdaExpression _expression;
-    private readonly Func<Fact, TResult> _compiledExpression;
+    private readonly Func<Fact?, TResult> _compiledExpression;
     private readonly IArgumentMap _argumentMap;
 
-    public LhsFactExpression(LambdaExpression expression, Func<Fact, TResult> compiledExpression, IArgumentMap argumentMap)
+    public LhsFactExpression(LambdaExpression expression, Func<Fact?, TResult> compiledExpression, IArgumentMap argumentMap)
     {
         _expression = expression;
         _compiledExpression = compiledExpression;
@@ -75,9 +75,9 @@ internal sealed class LhsFactExpression<TResult> : ILhsFactExpression<TResult>
         return Invoke(context, nodeInfo, null, fact);
     }
 
-    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple, Fact? fact)
     {
-        Exception exception = null;
+        Exception? exception = null;
         TResult result = default;
         try
         {
@@ -117,9 +117,9 @@ internal sealed class LhsTupleExpression<TResult> : ILhsTupleExpression<TResult>
         return Invoke(context, nodeInfo, tuple, null);
     }
 
-    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact? fact)
     {
-        Exception exception = null;
+        Exception? exception = null;
         TResult result = default;
         try
         {

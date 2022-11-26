@@ -6,17 +6,17 @@ namespace NRules.Rete;
 
 internal class JoinNode : BinaryBetaNode
 {
-    private readonly List<ILhsExpression<bool>> _compiledExpressions;
+    private readonly IReadOnlyCollection<ILhsExpression<bool>> _compiledExpressions;
     private readonly bool _isSubnetJoin;
 
-    public List<Declaration> Declarations { get; }
-    public List<ExpressionElement> ExpressionElements { get; }
+    public IReadOnlyCollection<Declaration> Declarations { get; }
+    public IReadOnlyCollection<ExpressionElement> ExpressionElements { get; }
 
-    public JoinNode(ITupleSource leftSource, 
+    public JoinNode(ITupleSource leftSource,
         IObjectSource rightSource,
-        List<Declaration> declarations,
-        List<ExpressionElement> expressionElements,
-        List<ILhsExpression<bool>> compiledExpressions,
+        IReadOnlyCollection<Declaration> declarations,
+        IReadOnlyCollection<ExpressionElement> expressionElements,
+        IReadOnlyCollection<ILhsExpression<bool>> compiledExpressions,
         bool isSubnetJoin)
         : base(leftSource, rightSource, isSubnetJoin)
     {
@@ -33,13 +33,13 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, tuples);
             foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
-            {
-                if (MatchesConditions(context, set.Tuple, fact))
+                foreach (var fact in set.Facts)
                 {
-                    toAssert.Add(set.Tuple, fact);
+                    if (MatchesConditions(context, set.Tuple, fact))
+                    {
+                        toAssert.Add(set.Tuple, fact);
+                    }
                 }
-            }
 
             counter.AddInputs(tuples.Count);
             counter.AddOutputs(toAssert.Count);
@@ -50,25 +50,26 @@ internal class JoinNode : BinaryBetaNode
 
     public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
     {
-        if (_isSubnetJoin) return;
-        
+        if (_isSubnetJoin)
+            return;
+
         var toUpdate = new TupleFactList();
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Update(context, this))
         {
             var joinedSets = JoinedSets(context, tuples);
             foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
-            {
-                if (MatchesConditions(context, set.Tuple, fact))
+                foreach (var fact in set.Facts)
                 {
-                    toUpdate.Add(set.Tuple, fact);
+                    if (MatchesConditions(context, set.Tuple, fact))
+                    {
+                        toUpdate.Add(set.Tuple, fact);
+                    }
+                    else
+                    {
+                        toRetract.Add(set.Tuple, fact);
+                    }
                 }
-                else
-                {
-                    toRetract.Add(set.Tuple, fact);
-                }
-            }
 
             counter.AddInputs(tuples.Count);
             counter.AddOutputs(toUpdate.Count + toRetract.Count);
@@ -85,11 +86,11 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, tuples);
             foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
-            {
-                toRetract.Add(set.Tuple, fact);
-            }
-         
+                foreach (var fact in set.Facts)
+                {
+                    toRetract.Add(set.Tuple, fact);
+                }
+
             counter.AddInputs(tuples.Count);
             counter.AddOutputs(toRetract.Count);
         }
@@ -104,13 +105,13 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
-            {
-                if (MatchesConditions(context, set.Tuple, fact))
+                foreach (var fact in set.Facts)
                 {
-                    toAssert.Add(set.Tuple, fact);
+                    if (MatchesConditions(context, set.Tuple, fact))
+                    {
+                        toAssert.Add(set.Tuple, fact);
+                    }
                 }
-            }
 
             counter.AddInputs(facts.Count);
             counter.AddOutputs(toAssert.Count);
@@ -127,13 +128,13 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
-            {
-                if (MatchesConditions(context, set.Tuple, fact))
-                    toUpdate.Add(set.Tuple, fact);
-                else
-                    toRetract.Add(set.Tuple, fact);
-            }
+                foreach (var fact in set.Facts)
+                {
+                    if (MatchesConditions(context, set.Tuple, fact))
+                        toUpdate.Add(set.Tuple, fact);
+                    else
+                        toRetract.Add(set.Tuple, fact);
+                }
 
             counter.AddInputs(facts.Count);
             counter.AddOutputs(toUpdate.Count + toRetract.Count);
@@ -150,10 +151,10 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
-            foreach (var fact in set.Facts)
-            {
-                toRetract.Add(set.Tuple, fact);
-            }
+                foreach (var fact in set.Facts)
+                {
+                    toRetract.Add(set.Tuple, fact);
+                }
 
             counter.AddInputs(facts.Count);
             counter.AddOutputs(toRetract.Count);

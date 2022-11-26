@@ -10,7 +10,7 @@ namespace NRules.Aggregators;
 /// <typeparam name="TElement">Type of elements to collect.</typeparam>
 internal class CollectionAggregator<TElement> : IAggregator
 {
-    private readonly FactCollection<TElement> _items = new();
+    private readonly FactCollection<TElement?> _items = new();
     private bool _created = false;
 
     public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
@@ -19,28 +19,28 @@ internal class CollectionAggregator<TElement> : IAggregator
         if (!_created)
         {
             _created = true;
-            return new[] {AggregationResult.Added(_items, _items.Facts)};
+            return new[] { AggregationResult.Added(_items, _items.Facts) };
         }
-        return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
+        return new[] { AggregationResult.Modified(_items, _items, _items.Facts) };
     }
 
     public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
     {
         ModifyFacts(facts);
-        return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
+        return new[] { AggregationResult.Modified(_items, _items, _items.Facts) };
     }
 
     public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
     {
         RemoveFacts(facts);
-        return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
+        return new[] { AggregationResult.Modified(_items, _items, _items.Facts) };
     }
 
     private void AddFacts(IEnumerable<IFact> facts)
     {
         foreach (var fact in facts)
         {
-            var item = (TElement)fact.Value;
+            var item = (TElement?)fact.Value;
             _items.Add(fact, item);
         }
     }
@@ -49,7 +49,7 @@ internal class CollectionAggregator<TElement> : IAggregator
     {
         foreach (var fact in facts)
         {
-            var item = (TElement)fact.Value;
+            var item = (TElement?)fact.Value;
             _items.Modify(fact, item);
         }
     }

@@ -24,7 +24,7 @@ internal class FactAggregator : IFactAggregator
     }
 
     public IEnumerable<Fact> AggregateFacts => _aggregateFactMap.Values;
-    
+
     public void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
     {
         var results = _aggregator.Add(context, tuple, facts);
@@ -67,8 +67,10 @@ internal class FactAggregator : IFactAggregator
 
     private Fact CreateAggregateFact(AggregationResult result)
     {
-        var fact = new SyntheticFact(result.Aggregate);
-        fact.Source = new AggregateFactSource(result.Source);
+        var fact = new SyntheticFact(result.Aggregate)
+        {
+            Source = new AggregateFactSource(result.Source)
+        };
         _aggregateFactMap.Add(result.Aggregate, fact);
         return fact;
     }

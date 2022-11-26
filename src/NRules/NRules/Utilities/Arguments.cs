@@ -10,10 +10,10 @@ internal interface IArguments
 internal class LhsExpressionArguments : IArguments
 {
     private readonly IArgumentMap _argumentMap;
-    private readonly Tuple _tuple;
-    private readonly Fact _fact;
+    private readonly Tuple? _tuple;
+    private readonly Fact? _fact;
 
-    public LhsExpressionArguments(IArgumentMap argumentMap, Tuple tuple, Fact fact)
+    public LhsExpressionArguments(IArgumentMap argumentMap, Tuple? tuple, Fact? fact)
     {
         _argumentMap = argumentMap;
         _tuple = tuple;
@@ -24,7 +24,7 @@ internal class LhsExpressionArguments : IArguments
     {
         var args = new object[_argumentMap.Count];
 
-        if (_tuple != null)
+        if (_tuple is not null)
         {
             var index = _tuple.Count - 1;
             var enumerable = _tuple.GetEnumerator();
@@ -38,7 +38,7 @@ internal class LhsExpressionArguments : IArguments
             }
         }
 
-        if (_fact != null)
+        if (_fact is not null)
         {
             var mappedIndex = _argumentMap.FactMap[_argumentMap.Count - 1];
             if (mappedIndex >= 0)

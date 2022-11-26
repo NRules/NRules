@@ -4,15 +4,16 @@ namespace NRules.Diagnostics.Dgml;
 
 internal class Property
 {
-    public Property(string id)
+    public Property(string id, string dataType)
     {
         Id = id;
+        DataType = dataType;
     }
 
     public string Id { get; }
-    public string DataType { get; set; }
-    public string Label { get; set; }
-    public string Description { get; set; }
+    public string DataType { get; }
+    public string? Label { get; set; }
+    public string? Description { get; set; }
 
     public void WriteXml(XmlWriter writer)
     {

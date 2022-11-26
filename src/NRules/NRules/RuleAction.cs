@@ -44,7 +44,7 @@ internal class RuleAction : IRuleAction
         var activation = actionContext.Activation;
         var tuple = activation.Tuple;
 
-        Exception exception = null;
+        Exception? exception = null;
         try
         {
             _compiledExpression.Invoke(actionContext, tuple);
@@ -84,7 +84,7 @@ internal class RuleActionWithDependencies : IRuleAction
 
     public Expression Expression => _expression;
     public ActionTrigger Trigger { get; }
-    
+
     public object[] GetArguments(IActionContext actionContext)
     {
         var arguments = new ActivationExpressionArguments(_argumentMap, actionContext.Activation);
@@ -100,7 +100,7 @@ internal class RuleActionWithDependencies : IRuleAction
         var dependencyResolver = executionContext.Session.DependencyResolver;
         var resolutionContext = new ResolutionContext(executionContext.Session, compiledRule.Definition);
 
-        Exception exception = null;
+        Exception? exception = null;
         try
         {
             _compiledExpression.Invoke(actionContext, tuple, dependencyResolver, resolutionContext);

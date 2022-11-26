@@ -39,7 +39,7 @@ public class AggregationResult
 {
     public static readonly AggregationResult[] Empty = Array.Empty<AggregationResult>();
 
-    private AggregationResult(AggregationAction action, object aggregate, object previous, IEnumerable<IFact> source)
+    private AggregationResult(AggregationAction action, object aggregate, object? previous, IEnumerable<IFact>? source)
     {
         Action = action;
         Aggregate = aggregate;
@@ -100,14 +100,14 @@ public class AggregationResult
     /// Resulting aggregate.
     /// </summary>
     public object Aggregate { get; }
-    
+
     /// <summary>
     /// Previous aggregate.
     /// </summary>
-    public object Previous { get; }
+    public object? Previous { get; }
 
     /// <summary>
     /// Facts that produced this aggregation result.
     /// </summary>
-    public IEnumerable<IFact> Source { get; }
+    public IEnumerable<IFact>? Source { get; }
 }

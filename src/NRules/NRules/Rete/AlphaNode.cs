@@ -8,7 +8,7 @@ internal abstract class AlphaNode : IObjectSink
 {
     public int Id { get; set; }
     public NodeInfo NodeInfo { get; } = new();
-    public AlphaMemoryNode MemoryNode { get; set; }
+    public AlphaMemoryNode? MemoryNode { get; set; }
 
     [DebuggerDisplay("Count = {ChildNodes.Count}")]
     public List<AlphaNode> ChildNodes { get; } = new();
@@ -71,7 +71,8 @@ internal abstract class AlphaNode : IObjectSink
 
     protected void PropagateUpdateInternal(IExecutionContext context, List<Fact> facts)
     {
-        if (facts.Count == 0) return;
+        if (facts.Count == 0)
+            return;
         foreach (var childNode in ChildNodes)
         {
             childNode.PropagateUpdate(context, facts);
@@ -81,7 +82,8 @@ internal abstract class AlphaNode : IObjectSink
 
     protected void PropagateRetractInternal(IExecutionContext context, List<Fact> facts)
     {
-        if (facts.Count == 0) return;
+        if (facts.Count == 0)
+            return;
         foreach (var childNode in ChildNodes)
         {
             childNode.PropagateRetract(context, facts);

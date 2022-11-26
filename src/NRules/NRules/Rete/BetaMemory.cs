@@ -9,13 +9,13 @@ internal interface IBetaMemory
     int TupleCount { get; }
     void Add(List<Tuple> tuples);
     void Remove(List<Tuple> tuples);
-    Tuple FindTuple(Tuple leftTuple, Fact rightFact);
+    Tuple FindTuple(Tuple leftTuple, Fact? rightFact);
 }
 
 internal class BetaMemory : IBetaMemory
 {
     private readonly HashSet<Tuple> _tuples = new();
-    private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new(); 
+    private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new();
 
     public IEnumerable<Tuple> Tuples => _tuples;
     public int TupleCount => _tuples.Count;
@@ -38,7 +38,7 @@ internal class BetaMemory : IBetaMemory
         }
     }
 
-    public Tuple FindTuple(Tuple leftTuple, Fact rightFact)
+    public Tuple FindTuple(Tuple leftTuple, Fact? rightFact)
     {
         var key = new TupleFactKey(leftTuple, rightFact);
         _parentToChildMap.TryGetValue(key, out var childTuple);
@@ -47,14 +47,16 @@ internal class BetaMemory : IBetaMemory
 
     private void AddMapping(Tuple tuple)
     {
-        if (tuple.LeftTuple == null) return;
+        if (tuple.LeftTuple == null)
+            return;
         var key = new TupleFactKey(tuple.LeftTuple, tuple.RightFact);
         _parentToChildMap[key] = tuple;
     }
 
     private void RemoveMapping(Tuple tuple)
     {
-        if (tuple.LeftTuple == null) return;
+        if (tuple.LeftTuple == null)
+            return;
         var key = new TupleFactKey(tuple.LeftTuple, tuple.RightFact);
         _parentToChildMap.Remove(key);
     }
@@ -62,9 +64,9 @@ internal class BetaMemory : IBetaMemory
     private readonly struct TupleFactKey : IEquatable<TupleFactKey>
     {
         private readonly Tuple _tuple;
-        private readonly Fact _fact;
+        private readonly Fact? _fact;
 
-        public TupleFactKey(Tuple tuple, Fact fact)
+        public TupleFactKey(Tuple tuple, Fact? fact)
         {
             _tuple = tuple;
             _fact = fact;
@@ -84,7 +86,7 @@ internal class BetaMemory : IBetaMemory
         {
             unchecked
             {
-                return (_tuple.GetHashCode() * 397) ^ (_fact != null ? _fact.GetHashCode() : 0);
+                return (_tuple.GetHashCode() * 397) ^ (_fact is not null ? _fact.GetHashCode() : 0);
             }
         }
     }

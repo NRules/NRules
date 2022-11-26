@@ -26,8 +26,8 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     public ReteBuilder(RuleCompilerOptions options, AggregatorRegistry aggregatorRegistry, IRuleExpressionCompiler ruleExpressionCompiler)
     {
-        _root = new RootNode {Id = GetNodeId()};
-        _dummyNode = new DummyNode {Id = GetNodeId()};
+        _root = new RootNode { Id = GetNodeId() };
+        _dummyNode = new DummyNode { Id = GetNodeId() };
         _aggregatorRegistry = aggregatorRegistry;
         _expressionComparer = new ExpressionElementComparer(options);
         _ruleExpressionCompiler = ruleExpressionCompiler;
@@ -47,7 +47,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             {
                 var context = new ReteBuilderContext(rule, _dummyNode);
                 Visit(context, and);
-                var terminal = BuildTerminal(context, and, ruleDeclarations);
+                var terminal = BuildTerminal(context, ruleDeclarations);
                 terminals.Add(terminal);
             },
             or =>
@@ -56,18 +56,18 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
                 {
                     var context = new ReteBuilderContext(rule, _dummyNode);
                     Visit(context, childElement);
-                    var terminal = BuildTerminal(context, childElement, ruleDeclarations);
+                    var terminal = BuildTerminal(context, ruleDeclarations);
                     terminals.Add(terminal);
                 }
             });
         return terminals;
     }
 
-    private Terminal BuildTerminal(ReteBuilderContext context, RuleElement element, IEnumerable<Declaration> ruleDeclarations)
+    private Terminal BuildTerminal(ReteBuilderContext context, IEnumerable<Declaration> ruleDeclarations)
     {
-        if (context.AlphaSource != null)
+        if (context.AlphaSource is not null)
         {
-            BuildJoinNode(context);
+            BuildJoinNode(context, context.AlphaSource);
         }
         var factMap = IndexMap.CreateMap(ruleDeclarations, context.Declarations);
         var terminalNode = new Terminal(context.BetaSource, factMap);
@@ -78,9 +78,9 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
     {
         foreach (var childElement in element.ChildElements)
         {
-            if (context.AlphaSource != null)
+            if (context.AlphaSource is not null)
             {
-                BuildJoinNode(context);
+                BuildJoinNode(context, context.AlphaSource);
             }
             Visit(context, childElement);
         }
@@ -98,32 +98,32 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     protected override void VisitNot(ReteBuilderContext context, NotElement element)
     {
-        VisitSource(context, element, element.Source);
-        BuildNotNode(context, element);
+        context.AlphaSource = VisitSource(context, element.Source);
+        BuildNotNode(context, context.AlphaSource);
     }
 
     protected override void VisitExists(ReteBuilderContext context, ExistsElement element)
     {
-        VisitSource(context, element, element.Source);
-        BuildExistsNode(context, element);
+        context.AlphaSource = VisitSource(context, element.Source);
+        BuildExistsNode(context, context.AlphaSource);
     }
 
     protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
     {
-        VisitSource(context, element, element.Source);
-        BuildAggregateNode(context, element);
+        context.AlphaSource = VisitSource(context, element.Source);
+        BuildAggregateNode(context, context.AlphaSource, element);
     }
 
     protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
     {
         var conditions = element.Expressions.Find(PatternElement.ConditionName)
             .Cast<ExpressionElement>().ToList();
-        if (element.Source == null)
+        if (element.Source is null)
         {
             context.CurrentAlphaNode = _root;
             context.RegisterDeclaration(element.Declaration);
 
-            BuildTypeNode(context, element, element.ValueType);
+            context.CurrentAlphaNode = BuildTypeNode(context, element.ValueType, context.CurrentAlphaNode);
 
             var alphaConditions = new List<ExpressionElement>();
             var betaConditions = new List<ExpressionElement>();
@@ -135,16 +135,16 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
                 else
                     betaConditions.Add(condition);
             }
-            
+
             foreach (var alphaCondition in alphaConditions)
             {
-                BuildSelectionNode(context, alphaCondition);
+                context.CurrentAlphaNode = BuildSelectionNode(context, alphaCondition, context.CurrentAlphaNode);
             }
-            BuildAlphaMemoryNode(context);
+            context.AlphaSource = BuildAlphaMemoryNode(context, context.CurrentAlphaNode);
 
             if (betaConditions.Count > 0)
             {
-                BuildJoinNode(context, betaConditions);
+                BuildJoinNode(context, context.AlphaSource, betaConditions);
             }
         }
         else
@@ -154,10 +154,10 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             {
                 if (conditions.Any())
                 {
-                    BuildSubnet(context, element);
+                    context.AlphaSource = BuildSubnet(context, element.Source);
 
                     context.RegisterDeclaration(element.Declaration);
-                    BuildJoinNode(context, conditions);
+                    BuildJoinNode(context, context.AlphaSource, conditions);
                 }
                 else
                 {
@@ -168,13 +168,13 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             else
             {
                 var joinContext = new ReteBuilderContext(context.Rule, _dummyNode);
-                BuildSubnet(joinContext, element);
+                joinContext.AlphaSource = BuildSubnet(joinContext, element.Source);
 
                 joinContext.RegisterDeclaration(element.Declaration);
                 if (conditions.Any())
                 {
-                    BuildJoinNode(joinContext, conditions);
-                    BuildAdapter(joinContext);
+                    BuildJoinNode(joinContext, joinContext.AlphaSource, conditions);
+                    joinContext.AlphaSource = BuildAdapter(joinContext);
                 }
                 context.AlphaSource = joinContext.AlphaSource;
 
@@ -188,62 +188,58 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         BuildBindingNode(context, element);
     }
 
-    private void VisitSource(ReteBuilderContext context, RuleElement element, RuleElement source)
+    private IAlphaMemoryNode VisitSource(ReteBuilderContext context, RuleElement source)
     {
         var isJoined = source.Imports.Any();
         var subnetContext = isJoined ? new ReteBuilderContext(context) : new ReteBuilderContext(context.Rule, _dummyNode);
 
         Visit(subnetContext, source);
 
-        if (subnetContext.AlphaSource == null)
+        if (subnetContext.AlphaSource is null)
         {
-            BuildAdapter(subnetContext);
+            subnetContext.AlphaSource = BuildAdapter(subnetContext);
             context.HasSubnet = isJoined;
         }
-        context.AlphaSource = subnetContext.AlphaSource;
+        return subnetContext.AlphaSource;
     }
 
-    private void BuildSubnet(ReteBuilderContext context, PatternElement element)
+    private IAlphaMemoryNode BuildSubnet(ReteBuilderContext context, RuleElement source)
     {
-        var isJoined = element.Source.Imports.Any();
+        var isJoined = source.Imports.Any();
         var subnetContext = isJoined ? new ReteBuilderContext(context) : new ReteBuilderContext(context.Rule, _dummyNode);
 
-        Visit(subnetContext, element.Source);
+        Visit(subnetContext, source);
 
-        if (subnetContext.AlphaSource == null)
+        if (subnetContext.AlphaSource is null)
         {
-            BuildAdapter(subnetContext);
+            subnetContext.AlphaSource = BuildAdapter(subnetContext);
             context.HasSubnet = isJoined;
         }
-        context.AlphaSource = subnetContext.AlphaSource;
+        return subnetContext.AlphaSource;
     }
-    
-    private void BuildAdapter(ReteBuilderContext context)
+
+    private ObjectInputAdapter BuildAdapter(ReteBuilderContext context)
     {
         var adapter = context.BetaSource
             .Sinks.OfType<ObjectInputAdapter>()
-            .SingleOrDefault();
-        if (adapter == null)
-        {
-            adapter = new ObjectInputAdapter(context.BetaSource);
-            adapter.Id = GetNodeId();
-        }
+            .SingleOrDefault()
+            ?? new ObjectInputAdapter(context.BetaSource) { Id = GetNodeId() };
         adapter.NodeInfo.Add(context.Rule);
-        context.AlphaSource = adapter;
+        return adapter;
     }
 
-    private void BuildJoinNode(ReteBuilderContext context, List<ExpressionElement> conditions = null)
+    private void BuildJoinNode(ReteBuilderContext context, IAlphaMemoryNode alphaSource, List<ExpressionElement>? conditions = null)
     {
         var expressionElements = conditions ?? new List<ExpressionElement>();
         var node = context.BetaSource
             .Sinks.OfType<JoinNode>()
             .FirstOrDefault(x =>
-                x.RightSource == context.AlphaSource &&
+                x.RightSource == alphaSource &&
                 x.LeftSource == context.BetaSource &&
                 _expressionComparer.AreEqual(
-                    x.Declarations, x.ExpressionElements, 
+                    x.Declarations, x.ExpressionElements,
                     context.Declarations, expressionElements));
-        if (node == null)
+        if (node is null)
         {
             var compiledExpressions = new List<ILhsExpression<bool>>(expressionElements.Count);
             foreach (var expressionElement in expressionElements)
@@ -251,66 +247,62 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
                 var compiledExpression = _ruleExpressionCompiler.CompileLhsExpression<bool>(expressionElement, context.Declarations);
                 compiledExpressions.Add(compiledExpression);
             }
-            node = new JoinNode(context.BetaSource, context.AlphaSource, context.Declarations.ToList(), expressionElements, compiledExpressions, context.HasSubnet);
-            node.Id = GetNodeId();
+            node = new JoinNode(context.BetaSource, alphaSource, context.Declarations.ToList(), expressionElements, compiledExpressions, context.HasSubnet)
+            {
+                Id = GetNodeId()
+            };
         }
         node.NodeInfo.Add(context.Rule);
         BuildBetaMemoryNode(context, node);
         context.ResetAlphaSource();
     }
 
-    private void BuildNotNode(ReteBuilderContext context, RuleElement element)
+    private void BuildNotNode(ReteBuilderContext context, IAlphaMemoryNode alphaSource)
     {
-        var node = context.AlphaSource
+        var node = alphaSource
             .Sinks.OfType<NotNode>()
             .FirstOrDefault(x =>
-                x.RightSource == context.AlphaSource &&
+                x.RightSource == alphaSource &&
                 x.LeftSource == context.BetaSource);
-        if (node == null)
-        {
-            node = new NotNode(context.BetaSource, context.AlphaSource);
-            node.Id = GetNodeId();
-        }
+        node ??= new NotNode(context.BetaSource, alphaSource) { Id = GetNodeId() };
         node.NodeInfo.Add(context.Rule);
         BuildBetaMemoryNode(context, node);
         context.ResetAlphaSource();
     }
 
-    private void BuildExistsNode(ReteBuilderContext context, RuleElement element)
+    private void BuildExistsNode(ReteBuilderContext context, IAlphaMemoryNode alphaSource)
     {
-        var node = context.AlphaSource
+        var node = alphaSource
             .Sinks.OfType<ExistsNode>()
             .FirstOrDefault(x =>
-                x.RightSource == context.AlphaSource &&
+                x.RightSource == alphaSource &&
                 x.LeftSource == context.BetaSource);
-        if (node == null)
-        {
-            node = new ExistsNode(context.BetaSource, context.AlphaSource);
-            node.Id = GetNodeId();
-        }
+        node ??= new ExistsNode(context.BetaSource, alphaSource) { Id = GetNodeId() };
         node.NodeInfo.Add(context.Rule);
         BuildBetaMemoryNode(context, node);
         context.ResetAlphaSource();
     }
 
-    private void BuildAggregateNode(ReteBuilderContext context, AggregateElement element)
+    private void BuildAggregateNode(ReteBuilderContext context, IAlphaMemoryNode alphaSource, AggregateElement element)
     {
-        var node = context.AlphaSource
+        var node = alphaSource
             .Sinks.OfType<AggregateNode>()
             .FirstOrDefault(x =>
-                x.RightSource == context.AlphaSource &&
+                x.RightSource == alphaSource &&
                 x.LeftSource == context.BetaSource &&
                 x.Name == element.Name &&
                 _expressionComparer.AreEqual(
                     x.Declarations, x.Expressions,
                     context.Declarations, element.Expressions));
-        if (node == null)
+        if (node is null)
         {
             var aggregatorFactory = BuildAggregatorFactory(context, element);
-            node = new AggregateNode(context.BetaSource, context.AlphaSource, element.Name,
-                context.Declarations.ToList(), element.Expressions, aggregatorFactory, context.HasSubnet);
-            node.Id = GetNodeId();
-            node.NodeInfo.OutputType = element.ResultType;
+            node = new AggregateNode(context.BetaSource, alphaSource, element.Name,
+                context.Declarations.ToList(), element.Expressions, aggregatorFactory, context.HasSubnet)
+            {
+                Id = GetNodeId(),
+                NodeInfo = { OutputType = element.ResultType }
+            };
         }
         node.NodeInfo.Add(context.Rule);
         BuildBetaMemoryNode(context, node);
@@ -323,12 +315,14 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             .Sinks.OfType<BindingNode>()
             .FirstOrDefault(x =>
                 _expressionComparer.AreEqual(x.ExpressionElement, element));
-        if (node == null)
+        if (node is null)
         {
-            var compiledExpression = _ruleExpressionCompiler.CompileLhsTupleExpression<object>(element, context.Declarations);
-            node = new BindingNode(element, compiledExpression, element.ResultType, context.BetaSource);
-            node.Id = GetNodeId();
-            node.NodeInfo.OutputType = element.ResultType;
+            var compiledExpression = _ruleExpressionCompiler.CompileLhsTupleExpression<object?>(element, context.Declarations);
+            node = new BindingNode(element, compiledExpression, element.ResultType, context.BetaSource)
+            {
+                Id = GetNodeId(),
+                NodeInfo = { OutputType = element.ResultType }
+            };
         }
         node.NodeInfo.Add(context.Rule);
         BuildBetaMemoryNode(context, node);
@@ -337,87 +331,82 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private void BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
     {
-        BetaMemoryNode memoryNode = betaNode.MemoryNode;
-        if (memoryNode == null)
+        var memoryNode = betaNode.MemoryNode;
+        if (memoryNode is null)
         {
-            memoryNode = new BetaMemoryNode();
-            memoryNode.Id = GetNodeId();
+            memoryNode = new BetaMemoryNode { Id = GetNodeId() };
             betaNode.MemoryNode = memoryNode;
         }
-        betaNode.MemoryNode.NodeInfo.Add(context.Rule);
-        context.BetaSource = betaNode.MemoryNode;
+
+        memoryNode.NodeInfo.Add(context.Rule);
+        context.BetaSource = memoryNode;
     }
 
-    private void BuildTypeNode(ReteBuilderContext context, RuleElement element, Type declarationType)
+    private TypeNode BuildTypeNode(ReteBuilderContext context, Type declarationType, AlphaNode currentAlphaNode)
     {
-        TypeNode node = context.CurrentAlphaNode
+        var node = currentAlphaNode
             .ChildNodes.OfType<TypeNode>()
             .FirstOrDefault(tn => tn.FilterType == declarationType);
 
-        if (node == null)
+        if (node is null)
         {
-            node = new TypeNode(declarationType);
-            node.Id = GetNodeId();
-            node.NodeInfo.OutputType = declarationType;
-            context.CurrentAlphaNode.ChildNodes.Add(node);
+            node = new TypeNode(declarationType)
+            {
+                Id = GetNodeId(),
+                NodeInfo = { OutputType = declarationType }
+            };
+            currentAlphaNode.ChildNodes.Add(node);
         }
         node.NodeInfo.Add(context.Rule);
-        context.CurrentAlphaNode = node;
+        return node;
     }
 
-    private void BuildSelectionNode(ReteBuilderContext context, ExpressionElement element)
+    private SelectionNode BuildSelectionNode(ReteBuilderContext context, ExpressionElement element, AlphaNode currentAlphaNode)
     {
-        SelectionNode node = context.CurrentAlphaNode
+        var node = currentAlphaNode
             .ChildNodes.OfType<SelectionNode>()
             .FirstOrDefault(sn => _expressionComparer.AreEqual(sn.ExpressionElement, element));
 
-        if (node == null)
+        if (node is null)
         {
             var compiledExpression = _ruleExpressionCompiler.CompileLhsFactExpression<bool>(element);
-            node = new SelectionNode(element, compiledExpression);
-            node.Id = GetNodeId();
-            node.NodeInfo.OutputType = context.Declarations.Last().Type;
-            context.CurrentAlphaNode.ChildNodes.Add(node);
+            node = new SelectionNode(element, compiledExpression)
+            {
+                Id = GetNodeId(),
+                NodeInfo = { OutputType = context.Declarations.Last().Type }
+            };
+            currentAlphaNode.ChildNodes.Add(node);
         }
         node.NodeInfo.Add(context.Rule);
-        context.CurrentAlphaNode = node;
+        return node;
     }
 
-    private void BuildAlphaMemoryNode(ReteBuilderContext context)
+    private AlphaMemoryNode BuildAlphaMemoryNode(ReteBuilderContext context, AlphaNode currentAlphaNode)
     {
-        AlphaMemoryNode memoryNode = context.CurrentAlphaNode.MemoryNode;
-        if (memoryNode == null)
+        var memoryNode = currentAlphaNode.MemoryNode;
+        if (memoryNode is null)
         {
-            memoryNode = new AlphaMemoryNode();
-            memoryNode.Id = GetNodeId();
-            memoryNode.NodeInfo.OutputType = context.Declarations.Last().Type;
-            context.CurrentAlphaNode.MemoryNode = memoryNode;
+            memoryNode = new AlphaMemoryNode
+            {
+                Id = GetNodeId(),
+                NodeInfo = { OutputType = context.Declarations.Last().Type }
+            };
+            currentAlphaNode.MemoryNode = memoryNode;
         }
         memoryNode.NodeInfo.Add(context.Rule);
-        context.AlphaSource = memoryNode;
+        return memoryNode;
     }
 
     private IAggregatorFactory BuildAggregatorFactory(ReteBuilderContext context, AggregateElement element)
     {
-        IAggregatorFactory factory;
-        switch (element.Name)
+        var factory = element.Name switch
         {
-            case AggregateElement.CollectName:
-                factory = new CollectionAggregatorFactory();
-                break;
-            case AggregateElement.GroupByName:
-                factory = new GroupByAggregatorFactory();
-                break;
-            case AggregateElement.ProjectName:
-                factory = new ProjectionAggregatorFactory();
-                break;
-            case AggregateElement.FlattenName:
-                factory = new FlatteningAggregatorFactory();
-                break;
-            default:
-                factory = GetCustomFactory(element);
-                break;
-        }
+            AggregateElement.CollectName => new CollectionAggregatorFactory(),
+            AggregateElement.GroupByName => new GroupByAggregatorFactory(),
+            AggregateElement.ProjectName => new ProjectionAggregatorFactory(),
+            AggregateElement.FlattenName => new FlatteningAggregatorFactory(),
+            _ => GetCustomFactory(element),
+        };
         var compiledExpressions = CompileExpressions(context, element);
         factory.Compile(element, compiledExpressions);
         return factory;
@@ -425,13 +414,8 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private IAggregatorFactory GetCustomFactory(AggregateElement element)
     {
-        Type factoryType = element.CustomFactoryType;
-        if (factoryType == null)
-        {
-            factoryType = _aggregatorRegistry[element.Name];
-        }
-
-        if (factoryType == null)
+        var factoryType = element.CustomFactoryType ?? _aggregatorRegistry[element.Name];
+        if (factoryType is null)
         {
             throw new ArgumentException($"Custom aggregator does not have a factory registered. Name={element.Name}");
         }

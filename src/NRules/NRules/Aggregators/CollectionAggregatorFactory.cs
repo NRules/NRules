@@ -12,7 +12,7 @@ namespace NRules.Aggregators;
 /// </summary>
 internal class CollectionAggregatorFactory : IAggregatorFactory
 {
-    private Func<IAggregator> _factory;
+    private Func<IAggregator>? _factory;
 
     public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
     {
@@ -46,6 +46,10 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
 
     public IAggregator Create()
     {
+        if (_factory is null)
+        {
+            throw new InvalidOperationException("Factory is not compiled");
+        }
         return _factory();
     }
 
@@ -66,7 +70,7 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
 
         var ctor = aggregatorType.GetConstructors().Single();
         var factoryExpression = Expression.Lambda<Func<IAggregator>>(
-            Expression.New(ctor, 
+            Expression.New(ctor,
                 Expression.Constant(sortCondition.Expression),
                 Expression.Constant(sortCondition.Direction)));
 
@@ -86,7 +90,7 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
 
     private static SortDirection GetSortDirection(string keySelectorName)
     {
-        return keySelectorName == AggregateElement.KeySelectorAscendingName 
+        return keySelectorName == AggregateElement.KeySelectorAscendingName
             ? SortDirection.Ascending : SortDirection.Descending;
     }
 
@@ -104,7 +108,7 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
         var elementSelectorExpression = elementExpressions[elementSelector.Name];
 
         var aggregatorType = typeof(LookupAggregator<,,>).MakeGenericType(sourceType,
-            keySelectorExpression.Expression.ReturnType, 
+            keySelectorExpression.Expression.ReturnType,
             elementSelectorExpression.Expression.ReturnType);
 
         var ctor = aggregatorType.GetConstructors().Single();

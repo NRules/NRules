@@ -8,8 +8,8 @@ internal class DirectedGraph
 {
     private const string Namespace = "http://schemas.microsoft.com/vs/2009/dgml";
 
-    public string Title { get; set; }
-    public string Background { get; set; }
+    public string? Title { get; set; }
+    public string? Background { get; set; }
 
     public List<Node> Nodes { get; set; } = new();
     public List<Link> Links { get; set; } = new();

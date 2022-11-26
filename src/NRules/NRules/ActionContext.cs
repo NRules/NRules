@@ -88,7 +88,7 @@ internal class ActionContext : IActionContext
         return _session.GetLinkedKeys(Activation);
     }
 
-    public object GetLinked(object key)
+    public object? GetLinked(object key)
     {
         return _session.GetLinked(Activation, key);
     }
@@ -99,9 +99,9 @@ internal class ActionContext : IActionContext
             throw new ArgumentNullException(nameof(key));
         if (fact == null)
             throw new ArgumentNullException(nameof(fact));
-        
+
         var keyedFact = new KeyValuePair<object, object>(key, fact);
-        InsertAllLinked(new[] {keyedFact});
+        InsertAllLinked(new[] { keyedFact });
     }
 
     public void InsertAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
@@ -117,7 +117,7 @@ internal class ActionContext : IActionContext
             throw new ArgumentNullException(nameof(fact));
 
         var keyedFact = new KeyValuePair<object, object>(key, fact);
-        UpdateAllLinked(new[] {keyedFact});
+        UpdateAllLinked(new[] { keyedFact });
     }
 
     public void UpdateAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
@@ -133,7 +133,7 @@ internal class ActionContext : IActionContext
             throw new ArgumentNullException(nameof(fact));
 
         var keyedFact = new KeyValuePair<object, object>(key, fact);
-        RetractAllLinked(new[] {keyedFact});
+        RetractAllLinked(new[] { keyedFact });
     }
 
     public void RetractAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)

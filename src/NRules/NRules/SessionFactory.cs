@@ -59,7 +59,7 @@ public interface ISessionFactory : ISessionSchemaProvider
     /// Action interceptor for all rules sessions.
     /// If provided, invocation of rule actions is delegated to the interceptor.
     /// </summary>
-    IActionInterceptor ActionInterceptor { get; set; }
+    IActionInterceptor? ActionInterceptor { get; set; }
 
     /// <summary>
     /// Creates a new rules session.
@@ -72,7 +72,7 @@ public interface ISessionFactory : ISessionSchemaProvider
     /// </summary>
     /// <param name="initializationAction">Action invoked on the newly created session, before the session is activated (which could result in rule matches placed on the agenda).</param>
     /// <returns>New rules session.</returns>
-    ISession CreateSession(Action<ISession> initializationAction);
+    ISession CreateSession(Action<ISession>? initializationAction);
 }
 
 internal sealed class SessionFactory : ISessionFactory
@@ -90,14 +90,14 @@ internal sealed class SessionFactory : ISessionFactory
 
     public IEventProvider Events => _eventAggregator;
     public IDependencyResolver DependencyResolver { get; set; }
-    public IActionInterceptor ActionInterceptor { get; set; }
+    public IActionInterceptor? ActionInterceptor { get; set; }
 
     public ISession CreateSession()
     {
         return CreateSession(null);
     }
 
-    public ISession CreateSession(Action<ISession> initializationAction)
+    public ISession CreateSession(Action<ISession>? initializationAction)
     {
         var agenda = CreateAgenda();
         var workingMemory = new WorkingMemory();

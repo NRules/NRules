@@ -8,7 +8,7 @@ internal class NodeInfo
 {
     private readonly List<IRuleDefinition> _rules = new();
 
-    public Type OutputType { get; set; }
+    public Type? OutputType { get; set; }
     public IEnumerable<IRuleDefinition> Rules => _rules;
 
     public void Add(IRuleDefinition rule)

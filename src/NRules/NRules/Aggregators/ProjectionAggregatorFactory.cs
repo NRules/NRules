@@ -11,7 +11,7 @@ namespace NRules.Aggregators;
 /// </summary>
 internal class ProjectionAggregatorFactory : IAggregatorFactory
 {
-    private Func<IAggregator> _factory;
+    private Func<IAggregator>? _factory;
 
     public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
     {
@@ -29,6 +29,10 @@ internal class ProjectionAggregatorFactory : IAggregatorFactory
 
     public IAggregator Create()
     {
+        if (_factory is null)
+        {
+            throw new InvalidOperationException("Factory is not compiled");
+        }
         return _factory();
     }
 }

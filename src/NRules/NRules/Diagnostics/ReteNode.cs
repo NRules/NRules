@@ -47,7 +47,7 @@ public class ReteNode
     /// <summary>
     /// Type of elements the node produces as output.
     /// </summary>
-    public Type OutputType { get; }
+    public Type? OutputType { get; }
 
     /// <summary>
     /// Properties associated with the node.
@@ -68,20 +68,20 @@ public class ReteNode
     {
         return new ReteNode(node.Id, NodeType.Root);
     }
-    
+
     internal static ReteNode Create(TypeNode node)
     {
-        return new ReteNode(node.Id, NodeType.Type, outputType: node.FilterType, 
+        return new ReteNode(node.Id, NodeType.Type, outputType: node.FilterType,
             rules: node.NodeInfo.Rules);
     }
-    
+
     internal static ReteNode Create(SelectionNode node)
     {
         var conditions = new[]
         {
             new KeyValuePair<string, LambdaExpression>("Condition", node.ExpressionElement.Expression)
         };
-        return new ReteNode(node.Id, NodeType.Selection, outputType: node.NodeInfo.OutputType, 
+        return new ReteNode(node.Id, NodeType.Selection, outputType: node.NodeInfo.OutputType,
             expressions: conditions, rules: node.NodeInfo.Rules);
     }
 
@@ -93,7 +93,7 @@ public class ReteNode
 
     internal static ReteNode Create(JoinNode node)
     {
-        var conditions = node.ExpressionElements.Select(c => 
+        var conditions = node.ExpressionElements.Select(c =>
             new KeyValuePair<string, LambdaExpression>("Condition", c.Expression));
         return new ReteNode(node.Id, NodeType.Join, expressions: conditions,
             rules: node.NodeInfo.Rules);
@@ -111,7 +111,7 @@ public class ReteNode
 
     internal static ReteNode Create(AggregateNode node)
     {
-        var values = new[] {new KeyValuePair<string, object>("Name", node.Name)};
+        var values = new[] { new KeyValuePair<string, object>("Name", node.Name) };
         var expressions = node.Expressions.Select(e =>
             new KeyValuePair<string, LambdaExpression>(e.Name, e.Expression));
         return new ReteNode(node.Id, NodeType.Aggregate, outputType: node.NodeInfo.OutputType,
@@ -129,7 +129,7 @@ public class ReteNode
         {
             new KeyValuePair<string, LambdaExpression>("Expression", node.ExpressionElement.Expression)
         };
-        return new ReteNode(node.Id, NodeType.Binding, outputType: node.ResultType, 
+        return new ReteNode(node.Id, NodeType.Binding, outputType: node.ResultType,
             expressions: expressions, rules: node.NodeInfo.Rules);
     }
 
@@ -151,12 +151,12 @@ public class ReteNode
         return new ReteNode(node.Id, NodeType.Dummy);
     }
 
-    internal ReteNode(int id, 
-        NodeType nodeType, 
-        Type outputType = null, 
-        IEnumerable<KeyValuePair<string, object>> values = null,
-        IEnumerable<KeyValuePair<string, LambdaExpression>> expressions = null, 
-        IEnumerable<IRuleDefinition> rules = null)
+    internal ReteNode(int id,
+        NodeType nodeType,
+        Type? outputType = null,
+        IEnumerable<KeyValuePair<string, object>>? values = null,
+        IEnumerable<KeyValuePair<string, LambdaExpression>>? expressions = null,
+        IEnumerable<IRuleDefinition>? rules = null)
     {
         Id = id;
         NodeType = nodeType;

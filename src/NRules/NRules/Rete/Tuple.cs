@@ -25,21 +25,23 @@ internal sealed class Tuple : ITuple
         RightFact = right;
         LeftTuple = left;
         Count = left.Count;
-        if (right != null) Count++;
+        if (right != null)
+            Count++;
         Level = left.Level + 1;
     }
 
-    public Fact RightFact { get; }
-    public Tuple LeftTuple { get; }
+    public Fact? RightFact { get; }
+    public Tuple? LeftTuple { get; }
     public int Count { get; }
     public long Id { get; }
     public int Level { get; }
 
     public long GroupId { get; set; }
-    
+
     public long GetGroupId(int level)
     {
-        if (level == Level - 1) return GroupId;
+        if (level == Level - 1)
+            return GroupId;
         long groupId = LeftTuple?.GetGroupId(level) ?? NoGroup;
         return groupId;
     }
@@ -84,7 +86,7 @@ internal sealed class Tuple : ITuple
             return GetEnumerator();
         }
 
-        public void Dispose() {}
+        public void Dispose() { }
         public bool MoveNext() => _enumerator.MoveNext();
         public void Reset() => _enumerator = new Enumerator(_tuple);
         public Fact Current => _enumerator.Current;
@@ -93,7 +95,7 @@ internal sealed class Tuple : ITuple
 
     internal struct Enumerator
     {
-        private Tuple _tuple;
+        private Tuple? _tuple;
 
         public Enumerator(Tuple tuple)
         {
