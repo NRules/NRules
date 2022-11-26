@@ -68,7 +68,7 @@ public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
     /// <param name="type">Pattern type.</param>
     /// <param name="name">Pattern name (optional).</param>
     /// <returns>Pattern builder.</returns>
-    public PatternBuilder Pattern(Type type, string name = null)
+    public PatternBuilder Pattern(Type type, string? name = null)
     {
         var declaration = Element.Declaration(type, DeclarationName(name));
         return Pattern(declaration);
@@ -83,7 +83,7 @@ public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
     {
         var builder = new PatternBuilder(declaration);
         _nestedBuilders.Add(builder);
-        return builder;            
+        return builder;
     }
 
     /// <summary>

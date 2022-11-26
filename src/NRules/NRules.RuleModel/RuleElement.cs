@@ -38,10 +38,10 @@ public abstract class RuleElement
         _imports.UnionWith(imports);
     }
 
-    internal void AddImports(RuleElement element)
+    internal void AddImports(RuleElement? element)
     {
-        if (element != null)
-            AddImports(new[] {element});
+        if (element is not null)
+            AddImports(new[] { element });
     }
 
     internal void AddImports(IEnumerable<RuleElement> elements)
@@ -63,7 +63,7 @@ public abstract class RuleElement
 
     internal void AddExport(Declaration declaration)
     {
-        AddExports(new[] {declaration});
+        AddExports(new[] { declaration });
     }
 
     internal abstract void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor);

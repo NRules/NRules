@@ -40,14 +40,14 @@ public class AggregateElement : RuleElement
     /// <summary>
     /// The type of custom aggregator factory.
     /// </summary>
-    public Type CustomFactoryType { get; }
+    public Type? CustomFactoryType { get; }
 
     /// <summary>
     /// Expressions used by the aggregate.
     /// </summary>
     public ExpressionCollection Expressions { get; }
 
-    internal AggregateElement(Type resultType, string name, ExpressionCollection expressions, PatternElement source, Type customFactoryType)
+    internal AggregateElement(Type resultType, string name, ExpressionCollection expressions, PatternElement source, Type? customFactoryType)
     {
         ResultType = resultType;
         Name = name;

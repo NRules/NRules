@@ -28,21 +28,22 @@ public sealed class Declaration : IEquatable<Declaration>
     /// <summary>
     /// Rule element that this declaration is referencing.
     /// </summary>
-    public RuleElement Target { get; internal set; }
+    public RuleElement? Target { get; internal set; }
 
-    public bool Equals(Declaration other)
+    public bool Equals(Declaration? other)
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
+        if (other is null)
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
         return string.Equals(Name, other.Name);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((Declaration) obj);
+        if (ReferenceEquals(this, obj))
+            return true;
+        return Equals(obj as Declaration);
     }
 
     public override int GetHashCode()

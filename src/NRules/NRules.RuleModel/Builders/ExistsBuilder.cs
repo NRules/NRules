@@ -7,7 +7,7 @@ namespace NRules.RuleModel.Builders;
 /// </summary>
 public class ExistsBuilder : RuleElementBuilder, IBuilder<ExistsElement>
 {
-    private IBuilder<RuleElement> _sourceBuilder;
+    private IBuilder<RuleElement>? _sourceBuilder;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExistsBuilder"/>.
@@ -42,7 +42,7 @@ public class ExistsBuilder : RuleElementBuilder, IBuilder<ExistsElement>
     /// <param name="type">Type of the element the pattern matches.</param>
     /// <param name="name">Pattern name (optional).</param>
     /// <returns>Pattern builder.</returns>
-    public PatternBuilder Pattern(Type type, string name = null)
+    public PatternBuilder Pattern(Type type, string? name = null)
     {
         var declaration = Element.Declaration(type, DeclarationName(name));
         return Pattern(declaration);
@@ -98,14 +98,18 @@ public class ExistsBuilder : RuleElementBuilder, IBuilder<ExistsElement>
 
     ExistsElement IBuilder<ExistsElement>.Build()
     {
-        var sourceElement = _sourceBuilder?.Build();
+        if (_sourceBuilder is null)
+        {
+            throw new InvalidOperationException($"{nameof(Group)} or {nameof(Pattern)} was not called");
+        }
+        var sourceElement = _sourceBuilder.Build();
         var existsElement = Element.Exists(sourceElement);
         return existsElement;
     }
 
     private void AssertSingleSource()
     {
-        if (_sourceBuilder != null)
+        if (_sourceBuilder is not null)
         {
             throw new InvalidOperationException("EXISTS element can only have a single source");
         }

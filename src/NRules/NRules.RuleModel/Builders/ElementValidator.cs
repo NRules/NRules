@@ -90,7 +90,7 @@ internal static class ElementValidator
         if (keySelectors.Length > 1)
         {
             throw new ArgumentException(
-                $"Collect aggregator can have no more than one key selector. Count={keySelectors.Length}");
+                $"Collect aggregator can have no more than one key selector. Count={keySelectors.Length}", nameof(element));
         }
 
         foreach (var keySelector in keySelectors.Select(x => x.Expression))
@@ -98,13 +98,13 @@ internal static class ElementValidator
             if (keySelector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
-                    $"Collect key selector must have at least one parameter. KeySelector={keySelector}");
+                    $"Collect key selector must have at least one parameter. KeySelector={keySelector}", nameof(element));
             }
             if (keySelector.Parameters[0].Type != sourceType)
             {
                 throw new ArgumentException(
                     "Collect key selector must have a parameter type that matches the aggregate source. " +
-                    $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}");
+                    $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}", nameof(element));
             }
 
         }
@@ -113,7 +113,7 @@ internal static class ElementValidator
         if (elementSelectors.Length > 1)
         {
             throw new ArgumentException(
-                $"Collect aggregator can have no more than one element selector. Count={elementSelectors.Length}");
+                $"Collect aggregator can have no more than one element selector. Count={elementSelectors.Length}", nameof(element));
         }
 
         foreach (var elementSelector in elementSelectors.Select(x => x.Expression))
@@ -121,13 +121,13 @@ internal static class ElementValidator
             if (elementSelector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
-                    $"Collect element selector must have at least one parameter. KeySelector={elementSelector}");
+                    $"Collect element selector must have at least one parameter. KeySelector={elementSelector}", nameof(element));
             }
             if (elementSelector.Parameters[0].Type != sourceType)
             {
                 throw new ArgumentException(
                     "Collect element selector must have a parameter type that matches the aggregate source. " +
-                    $"ElementSelector={elementSelector}, ExpectedType={sourceType}, ActualType={elementSelector.Parameters[0].Type}");
+                    $"ElementSelector={elementSelector}, ExpectedType={sourceType}, ActualType={elementSelector.Parameters[0].Type}", nameof(element));
             }
 
         }
@@ -139,7 +139,7 @@ internal static class ElementValidator
             if (!expectedResultType.IsAssignableFrom(resultType))
             {
                 throw new ArgumentException(
-                    $"Collect result with grouping key must be a lookup collection. ExpectedType={expectedResultType}, ActualType={resultType}");
+                    $"Collect result with grouping key must be a lookup collection. ExpectedType={expectedResultType}, ActualType={resultType}", nameof(element));
             }
         }
         else
@@ -148,7 +148,7 @@ internal static class ElementValidator
             if (!expectedResultType.IsAssignableFrom(resultType))
             {
                 throw new ArgumentException(
-                    $"Collect result must be a collection of source elements. ExpectedType={expectedResultType}, ActualType={resultType}");
+                    $"Collect result must be a collection of source elements. ExpectedType={expectedResultType}, ActualType={resultType}", nameof(element));
             }
         }
 
@@ -160,13 +160,13 @@ internal static class ElementValidator
             if (sortKeySelector.Parameters.Count == 0)
             {
                 throw new ArgumentException(
-                    $"Sort key selector must have at least one parameter. KeySelector={sortKeySelector}");
+                    $"Sort key selector must have at least one parameter. KeySelector={sortKeySelector}", nameof(element));
             }
             if (sortKeySelector.Parameters[0].Type != sourceType)
             {
                 throw new ArgumentException(
                     "Sort key selector must have a parameter type that matches the aggregate source. " +
-                    $"KeySelector={sortKeySelector}, ExpectedType={sourceType}, ActualType={sortKeySelector.Parameters[0].Type}");
+                    $"KeySelector={sortKeySelector}, ExpectedType={sourceType}, ActualType={sortKeySelector.Parameters[0].Type}", nameof(element));
             }
         }
     }
@@ -179,26 +179,26 @@ internal static class ElementValidator
         if (keySelector.Parameters.Count == 0)
         {
             throw new ArgumentException(
-                $"GroupBy key selector must have at least one parameter. KeySelector={keySelector}");
+                $"GroupBy key selector must have at least one parameter. KeySelector={keySelector}", nameof(element));
         }
         if (keySelector.Parameters[0].Type != sourceType)
         {
             throw new ArgumentException(
                 "GroupBy key selector must have a parameter type that matches the aggregate source. " +
-                $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}");
+                $"KeySelector={keySelector}, ExpectedType={sourceType}, ActualType={keySelector.Parameters[0].Type}", nameof(element));
         }
 
         var elementSelector = element.Expressions[AggregateElement.ElementSelectorName].Expression;
         if (elementSelector.Parameters.Count == 0)
         {
             throw new ArgumentException(
-                $"GroupBy element selector must have at least one parameter. ElementSelector={elementSelector}");
+                $"GroupBy element selector must have at least one parameter. ElementSelector={elementSelector}", nameof(element));
         }
         if (elementSelector.Parameters[0].Type != sourceType)
         {
             throw new ArgumentException(
                 "GroupBy element selector must have a parameter type that matches the aggregate source. " +
-                $"ElementSelector={elementSelector}, ExpectedType={sourceType}, ActualType={elementSelector.Parameters[0].Type}");
+                $"ElementSelector={elementSelector}, ExpectedType={sourceType}, ActualType={elementSelector.Parameters[0].Type}", nameof(element));
         }
 
         var groupType = typeof(IGrouping<,>).MakeGenericType(keySelector.ReturnType, elementSelector.ReturnType);
@@ -206,7 +206,7 @@ internal static class ElementValidator
         {
             throw new ArgumentException(
                 "GroupBy key/element selectors must produce a grouping assignable to the aggregation result. " +
-                $"ElementSelector={elementSelector}, ResultType={resultType}, GroupingType={groupType}");
+                $"ElementSelector={elementSelector}, ResultType={resultType}, GroupingType={groupType}", nameof(element));
         }
     }
 
@@ -218,19 +218,19 @@ internal static class ElementValidator
         if (selector.Parameters.Count == 0)
         {
             throw new ArgumentException(
-                $"Projection selector must have at least one parameter. Selector={selector}");
+                $"Projection selector must have at least one parameter. Selector={selector}", nameof(element));
         }
         if (selector.Parameters[0].Type != sourceType)
         {
             throw new ArgumentException(
                 "Projection selector must have its first parameter type that matches the aggregate source. " +
-                $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}");
+                $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}", nameof(element));
         }
         if (!resultType.IsAssignableFrom(selector.ReturnType))
         {
             throw new ArgumentException(
                 "Projection selector must produce a value assignable to the aggregation result. " +
-                $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}");
+                $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}", nameof(element));
         }
     }
 
@@ -242,35 +242,33 @@ internal static class ElementValidator
         if (selector.Parameters.Count != 1)
         {
             throw new ArgumentException(
-                $"Flattening selector must have a single parameter. Selector={selector}");
+                $"Flattening selector must have a single parameter. Selector={selector}", nameof(element));
         }
         if (selector.Parameters[0].Type != sourceType)
         {
             throw new ArgumentException(
                 "Flattening selector must have a parameter type that matches the aggregate source. " +
-                $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}");
+                $"Selector={selector}, ExpectedType={sourceType}, ActualType={selector.Parameters[0].Type}", nameof(element));
         }
         var resultCollectionType = typeof(IEnumerable<>).MakeGenericType(resultType);
         if (!resultCollectionType.IsAssignableFrom(selector.ReturnType))
         {
             throw new ArgumentException(
                 "Flattening selector must produce a collection of values that are assignable to the aggregation result. " +
-                $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}");
+                $"Selector={selector}, ResultType={resultType}, SelectorReturnType={selector.ReturnType}", nameof(element));
         }
     }
 
     public static void ValidatePattern(PatternElement element)
     {
-        if (element.Source != null)
+        switch (element.Source?.ElementType)
         {
-            switch (element.Source.ElementType)
-            {
-                case ElementType.Aggregate:
-                case ElementType.Binding:
-                    break;
-                default:
-                    throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
-            }
+            case null:
+            case ElementType.Aggregate:
+            case ElementType.Binding:
+                break;
+            default:
+                throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}", nameof(element));
         }
     }
 
@@ -280,7 +278,7 @@ internal static class ElementValidator
         var expressionReturnType = element.Expression.ReturnType;
         if (!resultType.IsAssignableFrom(expressionReturnType))
         {
-            throw new ArgumentException($"Binding expression not assignable to result type. ResultType={resultType}, ExpressionResult={expressionReturnType}");
+            throw new ArgumentException($"Binding expression not assignable to result type. ResultType={resultType}, ExpressionResult={expressionReturnType}", nameof(element));
         }
     }
 
@@ -302,7 +300,7 @@ internal static class ElementValidator
                 case ElementType.ForAll:
                     break;
                 default:
-                    throw new ArgumentException($"Invalid element in the group. ElementType={childElement.ElementType}");
+                    throw new ArgumentException($"Invalid element in the group. ElementType={childElement.ElementType}", nameof(element));
             }
         }
     }
@@ -316,7 +314,7 @@ internal static class ElementValidator
             case ElementType.Or:
                 break;
             default:
-                throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
+                throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}", nameof(element));
         }
     }
 
@@ -329,7 +327,7 @@ internal static class ElementValidator
             case ElementType.Or:
                 break;
             default:
-                throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}");
+                throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}", nameof(element));
         }
     }
 

@@ -11,17 +11,17 @@ namespace NRules.RuleModel.Builders;
 /// <threadsafety instance="false" />
 public class RuleBuilder
 {
-    private string _name;
+    private string? _name;
     private string _description = string.Empty;
     private int _priority = RuleDefinition.DefaultPriority;
     private RuleRepeatability _repeatability = RuleDefinition.DefaultRepeatability;
     private readonly List<string> _tags = new();
     private readonly List<RuleProperty> _properties = new();
 
-    private DependencyGroupBuilder _dependencyGroupBuilder;
-    private GroupBuilder _lhsBuilder;
-    private FilterGroupBuilder _filterGroupBuilder;
-    private ActionGroupBuilder _rhsBuilder;
+    private DependencyGroupBuilder? _dependencyGroupBuilder;
+    private GroupBuilder? _lhsBuilder;
+    private FilterGroupBuilder? _filterGroupBuilder;
+    private ActionGroupBuilder? _rhsBuilder;
 
     /// <summary>
     /// Constructs an empty rule builder.
@@ -111,10 +111,7 @@ public class RuleBuilder
     /// <returns>Dependencies builder.</returns>
     public DependencyGroupBuilder Dependencies()
     {
-        if (_dependencyGroupBuilder == null)
-            _dependencyGroupBuilder = new DependencyGroupBuilder();
-
-        return _dependencyGroupBuilder;
+        return _dependencyGroupBuilder ??= new DependencyGroupBuilder();
     }
 
     /// <summary>
@@ -123,7 +120,7 @@ public class RuleBuilder
     /// <param name="builder">Builder to set.</param>
     public void Dependencies(DependencyGroupBuilder builder)
     {
-        if (_dependencyGroupBuilder != null)
+        if (_dependencyGroupBuilder is not null)
             throw new ArgumentException("Builder for dependencies is already set", nameof(builder));
 
         _dependencyGroupBuilder = builder;
@@ -135,10 +132,7 @@ public class RuleBuilder
     /// <returns>Left hand side builder.</returns>
     public GroupBuilder LeftHandSide()
     {
-        if (_lhsBuilder == null)
-            _lhsBuilder = new GroupBuilder();
-
-        return _lhsBuilder;
+        return _lhsBuilder ??= new GroupBuilder();
     }
 
     /// <summary>
@@ -147,7 +141,7 @@ public class RuleBuilder
     /// <param name="builder">Builder to set.</param>
     public void LeftHandSide(GroupBuilder builder)
     {
-        if (_lhsBuilder != null)
+        if (_lhsBuilder is not null)
             throw new ArgumentException("Builder for left-hand side is already set", nameof(builder));
 
         _lhsBuilder = builder;
@@ -159,10 +153,7 @@ public class RuleBuilder
     /// <returns>Filters builder.</returns>
     public FilterGroupBuilder Filters()
     {
-        if (_filterGroupBuilder == null)
-            _filterGroupBuilder = new FilterGroupBuilder();
-
-        return _filterGroupBuilder;
+        return _filterGroupBuilder ??= new FilterGroupBuilder();
     }
 
     /// <summary>
@@ -171,7 +162,7 @@ public class RuleBuilder
     /// <param name="builder">Builder to set.</param>
     public void Filters(FilterGroupBuilder builder)
     {
-        if (_filterGroupBuilder != null)
+        if (_filterGroupBuilder is not null)
             throw new ArgumentException($"Builder for filters is already set", nameof(builder));
 
         _filterGroupBuilder = builder;
@@ -183,10 +174,7 @@ public class RuleBuilder
     /// <returns>Right hand side builder.</returns>
     public ActionGroupBuilder RightHandSide()
     {
-        if (_rhsBuilder == null)
-            _rhsBuilder = new ActionGroupBuilder();
-
-        return _rhsBuilder;
+        return _rhsBuilder ??= new ActionGroupBuilder();
     }
 
     /// <summary>
@@ -195,7 +183,7 @@ public class RuleBuilder
     /// <param name="builder">Builder to set.</param>
     public void RightHandSide(ActionGroupBuilder builder)
     {
-        if (_rhsBuilder != null)
+        if (_rhsBuilder is not null)
             throw new ArgumentException($"Builder for right-hand side is already set", nameof(builder));
 
         _rhsBuilder = builder;
@@ -207,23 +195,29 @@ public class RuleBuilder
     /// <returns>Rule definition.</returns>
     public IRuleDefinition Build()
     {
-        IBuilder<DependencyGroupElement> dependencyGroupBuilder = _dependencyGroupBuilder;
-        DependencyGroupElement dependencies = dependencyGroupBuilder?.Build()
-            ?? Element.DependencyGroup();
+        var dependencyGroupBuilder = _dependencyGroupBuilder as IBuilder<DependencyGroupElement>;
+        var dependencies = dependencyGroupBuilder?.Build();
 
-        IBuilder<FilterGroupElement> filterGroupBuilder = _filterGroupBuilder;
-        FilterGroupElement filters = filterGroupBuilder?.Build()
-            ?? Element.FilterGroup();
+        var filterGroupBuilder = _filterGroupBuilder as IBuilder<FilterGroupElement>;
+        var filters = filterGroupBuilder?.Build();
 
-        IBuilder<GroupElement> lhsBuilder = _lhsBuilder;
-        GroupElement lhs = lhsBuilder?.Build()
-            ?? Element.AndGroup();
+        var lhsBuilder = _lhsBuilder as IBuilder<GroupElement>;
+        var lhs = lhsBuilder?.Build();
 
-        IBuilder<ActionGroupElement> rhsBuilder = _rhsBuilder;
-        ActionGroupElement rhs = rhsBuilder?.Build()
-            ?? Element.ActionGroup();
+        var rhsBuilder = _rhsBuilder as IBuilder<ActionGroupElement>;
+        var rhs = rhsBuilder?.Build();
 
-        var ruleDefinition = Element.RuleDefinition(_name, _description, _priority, _repeatability, _tags, _properties, dependencies, lhs, filters, rhs);
+        var ruleDefinition = Element.RuleDefinition(
+            _name ?? throw new InvalidOperationException($"{nameof(Name)} was not called"),
+            _description,
+            _priority,
+            _repeatability,
+            _tags,
+            _properties,
+            dependencies ?? Element.DependencyGroup(),
+            lhs ?? Element.AndGroup(),
+            filters ?? Element.FilterGroup(),
+            rhs ?? Element.ActionGroup());
         return ruleDefinition;
     }
 }

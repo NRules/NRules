@@ -49,7 +49,6 @@ public class RuleTransformation : RuleElementVisitor<RuleTransformation.Context>
 
     private T Transform<T>(Context context, RuleElement element) where T : RuleElement
     {
-        if (element == null) return null;
 
         bool savedIsModified = context.IsModified;
         context.IsModified = false;
@@ -63,7 +62,9 @@ public class RuleTransformation : RuleElementVisitor<RuleTransformation.Context>
 
     protected internal override void VisitPattern(Context context, PatternElement element)
     {
-        var source = Transform<RuleElement>(context, element.Source);
+        var source = element.Source is null
+            ? null
+            : Transform<RuleElement>(context, element.Source);
         if (context.IsModified)
         {
             var newElement = Element.Pattern(element.Declaration, element.Expressions, source);
@@ -102,8 +103,10 @@ public class RuleTransformation : RuleElementVisitor<RuleTransformation.Context>
     protected internal override void VisitAnd(Context context, AndElement element)
     {
         var childElements = element.ChildElements.Select(x => Transform<RuleElement>(context, x)).ToList();
-        if (CollapseSingleGroup(context, childElements)) return;
-        if (SplitOrGroup(context, element, childElements)) return;
+        if (CollapseSingleGroup(context, childElements))
+            return;
+        if (SplitOrGroup(context, childElements))
+            return;
         if (context.IsModified)
         {
             var newElement = Element.AndGroup(childElements);
@@ -114,8 +117,10 @@ public class RuleTransformation : RuleElementVisitor<RuleTransformation.Context>
     protected internal override void VisitOr(Context context, OrElement element)
     {
         var childElements = element.ChildElements.Select(x => Transform<RuleElement>(context, x)).ToList();
-        if (CollapseSingleGroup(context, childElements)) return;
-        if (MergeOrGroups(context, element, childElements)) return;
+        if (CollapseSingleGroup(context, childElements))
+            return;
+        if (MergeOrGroups(context, childElements))
+            return;
         if (context.IsModified)
         {
             var newElement = Element.OrGroup(childElements);
@@ -182,20 +187,23 @@ public class RuleTransformation : RuleElementVisitor<RuleTransformation.Context>
     private bool CollapseSingleGroup(Context context, IList<RuleElement> childElements)
     {
         if (childElements.Count == 1 &&
-            childElements.Single() is GroupElement)
+            childElements.First() is GroupElement groupElement)
         {
-            Result(context, childElements.Single());
+            Result(context, groupElement);
             return true;
         }
         return false;
     }
 
-    private bool SplitOrGroup(Context context, AndElement element, IList<RuleElement> childElements)
+    private bool SplitOrGroup(Context context, IList<RuleElement> childElements)
     {
-        if (!childElements.OfType<OrElement>().Any()) return false;
+        if (!childElements.OfType<OrElement>().Any())
+            return false;
 
-        var groups = new List<IList<RuleElement>>();
-        groups.Add(new List<RuleElement>());
+        var groups = new List<IList<RuleElement>>
+        {
+            new List<RuleElement>()
+        };
         ExpandOrElements(groups, childElements, 0);
 
         var andElements = groups.Select(Element.AndGroup).ToList();
@@ -204,9 +212,10 @@ public class RuleTransformation : RuleElementVisitor<RuleTransformation.Context>
         return true;
     }
 
-    private bool MergeOrGroups(Context context, OrElement element, IList<RuleElement> childElements)
+    private bool MergeOrGroups(Context context, IReadOnlyCollection<RuleElement> childElements)
     {
-        if (!childElements.OfType<OrElement>().Any()) return false;
+        if (!childElements.OfType<OrElement>().Any())
+            return false;
         var newChildElements = new List<RuleElement>();
         foreach (var childElement in childElements)
         {
@@ -227,15 +236,14 @@ public class RuleTransformation : RuleElementVisitor<RuleTransformation.Context>
 
     private void ExpandOrElements(IList<IList<RuleElement>> groups, IList<RuleElement> childElements, int index)
     {
-        if (index == childElements.Count) return;
+        if (index == childElements.Count || index < 0)
+            return;
 
         var currentElement = childElements[index];
-        var orElement = currentElement as OrElement;
-
         var count = groups.Count;
-        for (int i = 0; i < count; i++)
+        if (currentElement is OrElement orElement)
         {
-            if (orElement != null)
+            for (int i = 0; i < count; i++)
             {
                 int offset = groups.Count;
                 var orElementChildren = orElement.ChildElements.ToList();
@@ -248,7 +256,10 @@ public class RuleTransformation : RuleElementVisitor<RuleTransformation.Context>
                 }
                 groups[i].Add(firstChild);
             }
-            else
+        }
+        else
+        {
+            for (int i = 0; i < count; i++)
             {
                 groups[i].Add(currentElement);
             }

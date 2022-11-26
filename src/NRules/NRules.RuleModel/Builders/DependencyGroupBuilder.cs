@@ -32,7 +32,7 @@ public class DependencyGroupBuilder : RuleElementBuilder, IBuilder<DependencyGro
     /// <param name="type">Dependency CLR type.</param>
     /// <param name="name">Dependency name.</param>
     /// <returns>Dependency declaration.</returns>
-    public Declaration Dependency(Type type, string name)
+    public Declaration Dependency(Type type, string? name = null)
     {
         var dependency = Element.Dependency(type, DeclarationName(name));
         _dependencies.Add(dependency);

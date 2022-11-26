@@ -8,7 +8,7 @@ namespace NRules.RuleModel.Builders;
 /// </summary>
 public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
 {
-    private IBuilder<PatternElement> _sourceBuilder;
+    private IBuilder<PatternElement>? _sourceBuilder;
     private readonly List<IBuilder<PatternElement>> _patternBuilders = new();
 
     /// <summary>
@@ -51,7 +51,7 @@ public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
         _sourceBuilder = builder;
         return builder;
     }
-    
+
     /// <summary>
     /// Adds a pattern to the forall element.
     /// </summary>
@@ -86,7 +86,11 @@ public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
 
     ForAllElement IBuilder<ForAllElement>.Build()
     {
-        PatternElement basePatternElement = _sourceBuilder?.Build();
+        if (_sourceBuilder is null)
+        {
+            throw new InvalidOperationException($"{nameof(BasePattern)} was not called");
+        }
+        var basePatternElement = _sourceBuilder.Build();
 
         var patternElements = new List<PatternElement>();
         foreach (var patternBuilder in _patternBuilders)
@@ -100,7 +104,7 @@ public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
 
     private void AssertSingleSource()
     {
-        if (_sourceBuilder != null)
+        if (_sourceBuilder is not null)
         {
             throw new InvalidOperationException("FORALL element can only have a single source");
         }

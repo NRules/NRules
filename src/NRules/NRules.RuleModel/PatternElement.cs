@@ -9,7 +9,7 @@ public class PatternElement : RuleElement
 {
     public const string ConditionName = "Condition";
 
-    internal PatternElement(Declaration declaration, ExpressionCollection expressions, RuleElement source)
+    internal PatternElement(Declaration declaration, ExpressionCollection expressions, RuleElement? source)
     {
         Declaration = declaration;
         ValueType = declaration.Type;
@@ -32,7 +32,7 @@ public class PatternElement : RuleElement
     /// <summary>
     /// Optional pattern source element.
     /// </summary>
-    public RuleElement Source { get; }
+    public RuleElement? Source { get; }
 
     /// <summary>
     /// Type of the values that the pattern matches.

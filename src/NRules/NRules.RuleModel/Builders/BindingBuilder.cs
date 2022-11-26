@@ -8,8 +8,8 @@ namespace NRules.RuleModel.Builders;
 /// </summary>
 public class BindingBuilder : RuleElementBuilder, IBuilder<BindingElement>
 {
-    private Type _resultType;
-    private LambdaExpression _expression;
+    private Type? _resultType;
+    private LambdaExpression? _expression;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BindingBuilder"/>.
@@ -39,7 +39,11 @@ public class BindingBuilder : RuleElementBuilder, IBuilder<BindingElement>
 
     BindingElement IBuilder<BindingElement>.Build()
     {
-        var resultType = _resultType ?? _expression?.ReturnType;
+        if (_expression is null)
+        {
+            throw new InvalidOperationException($"{nameof(BindingExpression)} was not called");
+        }
+        var resultType = _resultType ?? _expression.ReturnType;
         var element = Element.Binding(resultType, _expression);
         return element;
     }

@@ -7,7 +7,7 @@ namespace NRules.RuleModel.Builders;
 /// </summary>
 public class NotBuilder : RuleElementBuilder, IBuilder<NotElement>
 {
-    private IBuilder<RuleElement> _sourceBuilder;
+    private IBuilder<RuleElement>? _sourceBuilder;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NotBuilder"/>.
@@ -42,7 +42,7 @@ public class NotBuilder : RuleElementBuilder, IBuilder<NotElement>
     /// <param name="type">Type of the element the pattern matches.</param>
     /// <param name="name">Pattern name (optional).</param>
     /// <returns>Pattern builder.</returns>
-    public PatternBuilder Pattern(Type type, string name = null)
+    public PatternBuilder Pattern(Type type, string? name = null)
     {
         var declaration = Element.Declaration(type, DeclarationName(name));
         return Pattern(declaration);
@@ -98,14 +98,20 @@ public class NotBuilder : RuleElementBuilder, IBuilder<NotElement>
 
     NotElement IBuilder<NotElement>.Build()
     {
-        var sourceElement = _sourceBuilder?.Build();
+        if (_sourceBuilder is null)
+        {
+            throw new InvalidOperationException($"{nameof(Group)} or {nameof(Pattern)} was not called");
+        }
+
+        var sourceElement = _sourceBuilder.Build();
+
         var notElement = Element.Not(sourceElement);
         return notElement;
     }
 
     private void AssertSingleSource()
     {
-        if (_sourceBuilder != null)
+        if (_sourceBuilder is not null)
         {
             throw new InvalidOperationException("NOT element can only have a single source");
         }
