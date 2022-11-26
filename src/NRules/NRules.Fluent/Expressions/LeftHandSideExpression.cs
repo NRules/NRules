@@ -9,7 +9,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
 {
     private readonly GroupBuilder _builder;
     private readonly SymbolStack _symbolStack;
-    private PatternBuilder _currentPatternBuilder;
+    private PatternBuilder? _currentPatternBuilder;
 
     public LeftHandSideExpression(GroupBuilder builder, SymbolStack symbolStack)
     {
@@ -29,7 +29,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
 
     public ILeftHandSideExpression Match<TFact>(params Expression<Func<TFact, bool>>[] conditions)
     {
-        var symbol = Expression.Parameter(typeof (TFact));
+        var symbol = Expression.Parameter(typeof(TFact));
         var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
         patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
         _symbolStack.Scope.Add(patternBuilder.Declaration);
@@ -111,7 +111,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
 
     public ILeftHandSideExpression Having(params Expression<Func<bool>>[] conditions)
     {
-        if (_currentPatternBuilder == null)
+        if (_currentPatternBuilder is null)
         {
             throw new ArgumentException("HAVING clause can only be used on existing rule patterns");
         }

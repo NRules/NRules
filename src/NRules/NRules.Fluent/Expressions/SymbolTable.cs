@@ -7,7 +7,7 @@ namespace NRules.Fluent.Expressions;
 internal class SymbolTable
 {
     private readonly HashSet<Declaration> _declarations;
-    private readonly SymbolTable _parentScope;
+    private readonly SymbolTable? _parentScope;
 
     internal SymbolTable()
     {

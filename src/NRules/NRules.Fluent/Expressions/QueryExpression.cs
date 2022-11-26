@@ -13,7 +13,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
     private readonly ParameterExpression _symbol;
     private readonly SymbolStack _symbolStack;
     private readonly GroupBuilder _groupBuilder;
-    private Func<string, Type, BuildResult> _buildAction;
+    private Func<string?, Type?, BuildResult>? _buildAction;
 
     public QueryExpression(ParameterExpression symbol, SymbolStack symbolStack, GroupBuilder groupBuilder)
     {
@@ -52,7 +52,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
 
     public void Where<TSource>(Expression<Func<TSource, bool>>[] predicates)
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = EnsureBuildAction();
         _buildAction = (name, type) =>
         {
             var result = previousBuildAction(name, type);
@@ -63,7 +63,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
 
     public void Select<TSource, TResult>(Expression<Func<TSource, TResult>> selector)
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = EnsureBuildAction();
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(TResult), name);
@@ -87,7 +87,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
 
     public void SelectMany<TSource, TResult>(Expression<Func<TSource, IEnumerable<TResult>>> selector)
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = EnsureBuildAction();
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(TResult), name);
@@ -111,7 +111,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
 
     public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = EnsureBuildAction();
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(IGrouping<TKey, TElement>), name);
@@ -136,7 +136,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
 
     public void Collect<TSource>()
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = EnsureBuildAction();
         _buildAction = (name, type) =>
         {
             var patternBuilder = new PatternBuilder(type ?? typeof(IEnumerable<TSource>), name);
@@ -160,10 +160,14 @@ internal class QueryExpression : IQuery, IQueryBuilder
 
     public void ToLookup<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = EnsureBuildAction();
         _buildAction = (name, _) =>
         {
             var result = previousBuildAction(name, typeof(IKeyedLookup<TKey, TElement>));
+            if (result.Source is null || result.Aggregate is null)
+            {
+                throw new InvalidOperationException($"{nameof(ToLookup)} cannot be called directly after {nameof(From)} or {nameof(FactQuery)}");
+            }
             var keySelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
             var elementSelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, elementSelector);
             result.Aggregate.ToLookup(keySelectorExpression, elementSelectorExpression);
@@ -173,10 +177,14 @@ internal class QueryExpression : IQuery, IQueryBuilder
 
     public void OrderBy<TSource, TKey>(Expression<Func<TSource, TKey>> keySelector, SortDirection sortDirection)
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = EnsureBuildAction();
         _buildAction = (name, type) =>
         {
             var result = previousBuildAction(name, type);
+            if (result.Source is null || result.Aggregate is null)
+            {
+                throw new InvalidOperationException($"{nameof(OrderBy)} cannot be called directly after {nameof(From)} or {nameof(FactQuery)}");
+            }
             var keySelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
             result.Aggregate.OrderBy(keySelectorExpression, sortDirection);
             return result;
@@ -188,9 +196,9 @@ internal class QueryExpression : IQuery, IQueryBuilder
         Aggregate<TSource, TResult>(aggregateName, expressions, null);
     }
 
-    public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, Type customFactoryType)
+    public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, Type? customFactoryType)
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = EnsureBuildAction();
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(TResult), name);
@@ -222,11 +230,16 @@ internal class QueryExpression : IQuery, IQueryBuilder
 
     public PatternBuilder Build()
     {
-        var patternBuilder = _buildAction(_symbol.Name, null);
+        var patternBuilder = EnsureBuildAction()(_symbol.Name, null);
         _groupBuilder.Pattern(patternBuilder.Pattern);
         return patternBuilder.Pattern;
     }
-    
+
+    private Func<string?, Type?, BuildResult> EnsureBuildAction()
+    {
+        return _buildAction ?? throw new InvalidOperationException($"{nameof(From)} or {nameof(FactQuery)} was not called");
+    }
+
     private class BuildResult
     {
         public BuildResult(PatternBuilder pattern, AggregateBuilder aggregate, PatternBuilder source)
@@ -242,7 +255,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
         }
 
         public PatternBuilder Pattern { get; }
-        public AggregateBuilder Aggregate { get; }
-        public PatternBuilder Source { get; }
+        public AggregateBuilder? Aggregate { get; }
+        public PatternBuilder? Source { get; }
     }
 }
