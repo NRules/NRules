@@ -13,22 +13,19 @@ namespace NRules.Testing;
 public class RulesTestFixture
 {
     private readonly Lazy<ISession> _lazySession;
-    private readonly IRuleActivator _ruleActivator;
-    private readonly RuleCompiler _compiler;
+    private readonly CachedRuleActivator _ruleActivator;
     private readonly RepositorySetup _setup;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RulesTestFixture"/> class.
     /// </summary>
-    public RulesTestFixture(IRuleActivator ruleActivator, RuleCompiler compiler, IRuleAsserter asserter)
+    public RulesTestFixture(IRuleAsserter asserter)
     {
-        _ruleActivator = ruleActivator;
-        _compiler = compiler;
-        var repository = new RuleRepository
-        {
-            Activator = ruleActivator
-        };
-        _setup = new RepositorySetup(repository);
+        var compiler = new RuleCompiler();
+        var repository = new RuleRepository();
+        _ruleActivator = new CachedRuleActivator(repository.Activator);
+        repository.Activator = _ruleActivator;
+        _setup = new RepositorySetup(compiler, repository);
         Verify = new RulesVerification(asserter, _setup);
 
         _lazySession = new(CreateSession);
@@ -36,7 +33,7 @@ public class RulesTestFixture
         ISession CreateSession()
         {
             var ruleDefinitions = repository.GetRules();
-            var factory = _compiler.Compile(ruleDefinitions);
+            var factory = compiler.Compile(ruleDefinitions);
             var session = factory.CreateSession();
             session.Events.RuleFiredEvent += (_, args) => _setup.OnRuleFired(args.Match);
             return session;

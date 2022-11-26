@@ -9,6 +9,11 @@ namespace NRules.Testing;
 public interface IRepositorySetup
 {
     /// <summary>
+    /// Gets current rule compiler, so that the test can configure rule compilation options.
+    /// </summary>
+    RuleCompiler Compiler { get; }
+
+    /// <summary>
     /// Adds specific rule under test to the repository.
     /// </summary>
     /// <typeparam name="T">Type of the rule to add.</typeparam>
