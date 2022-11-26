@@ -3,19 +3,13 @@
 namespace NRules.Collections;
 
 internal class OrderedDictionary<TKey, TValue>
+    where TKey : notnull
 {
-    private readonly IDictionary<TKey, LinkedListNode<TValue>> _dictionary;
-    private readonly LinkedList<TValue> _linkedList;
+    private readonly Dictionary<TKey, LinkedListNode<TValue>> _dictionary = new();
+    private readonly LinkedList<TValue> _linkedList = new();
 
     public OrderedDictionary()
-        : this(EqualityComparer<TKey>.Default)
     {
-    }
-
-    public OrderedDictionary(IEqualityComparer<TKey> comparer)
-    {
-        _dictionary = new Dictionary<TKey, LinkedListNode<TValue>>(comparer);
-        _linkedList = new LinkedList<TValue>();
     }
 
     public void Clear()
@@ -25,6 +19,7 @@ internal class OrderedDictionary<TKey, TValue>
     }
 
     public int Count => _dictionary.Count;
+
     public IEnumerable<TValue> Values => _linkedList;
 
     public bool ContainsKey(TKey key)
@@ -53,7 +48,7 @@ internal class OrderedDictionary<TKey, TValue>
         bool found = _dictionary.TryGetValue(key, out var node);
         if (!found)
         {
-            value = default;
+            value = default!; // TODO: Use proper value parameter attributes for nullability hints
             return false;
         }
         value = node.Value;

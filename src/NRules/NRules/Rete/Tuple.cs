@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -96,23 +97,39 @@ internal sealed class Tuple : ITuple
     internal struct Enumerator
     {
         private Tuple? _tuple;
+        private Fact? _current;
 
         public Enumerator(Tuple tuple)
         {
             _tuple = tuple;
-            Current = null;
         }
 
         public bool MoveNext()
         {
+            if (_tuple is null)
+            {
+                _current = null;
+                return false;
+            }
+
             do
             {
-                Current = _tuple.RightFact;
+                _current = _tuple.RightFact;
                 _tuple = _tuple.LeftTuple;
-            } while (Current == null && _tuple != null);
-            return Current != null;
+            } while (_current is null && _tuple is not null);
+            return _current is not null;
         }
 
-        public Fact Current { get; private set; }
+        public Fact Current
+        {
+            get
+            {
+                if (_current is null)
+                {
+                    throw new InvalidCastException("Enumeration not started or already finished");
+                }
+                return _current;
+            }
+        }
     }
 }

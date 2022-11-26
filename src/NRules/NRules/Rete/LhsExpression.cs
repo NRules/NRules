@@ -12,7 +12,7 @@ internal interface ILhsExpression<out TResult>
 
 internal interface ILhsFactExpression<out TResult> : ILhsExpression<TResult>
 {
-    TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Fact fact);
+    TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Fact? fact);
 }
 
 internal interface ILhsTupleExpression<out TResult> : ILhsExpression<TResult>
@@ -36,7 +36,7 @@ internal sealed class LhsExpression<TResult> : ILhsExpression<TResult>
     public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple, Fact? fact)
     {
         Exception? exception = null;
-        object? result = null;
+        object? result = default(TResult);
         try
         {
             var value = _compiledExpression(tuple, fact);
@@ -71,7 +71,7 @@ internal sealed class LhsFactExpression<TResult> : ILhsFactExpression<TResult>
         _argumentMap = argumentMap;
     }
 
-    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Fact fact)
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Fact? fact)
     {
         return Invoke(context, nodeInfo, null, fact);
     }
@@ -79,7 +79,7 @@ internal sealed class LhsFactExpression<TResult> : ILhsFactExpression<TResult>
     public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple, Fact? fact)
     {
         Exception? exception = null;
-        object? result = null;
+        object? result = default(TResult);
         try
         {
             var value = _compiledExpression(fact);
@@ -122,7 +122,7 @@ internal sealed class LhsTupleExpression<TResult> : ILhsTupleExpression<TResult>
     public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple, Fact? fact)
     {
         Exception? exception = null;
-        object? result = null;
+        object? result = default(TResult);
         try
         {
             var value = _compiledExpression(tuple);
