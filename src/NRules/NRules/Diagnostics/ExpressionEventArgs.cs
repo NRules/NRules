@@ -10,7 +10,7 @@ namespace NRules.Diagnostics;
 /// </summary>
 public class ExpressionEventArgs : EventArgs
 {
-    private readonly object[]? _arguments;
+    private readonly object?[]? _arguments;
     private readonly IArguments? _lazyArguments;
 
     /// <summary>
@@ -20,7 +20,7 @@ public class ExpressionEventArgs : EventArgs
     /// <param name="exception">Exception thrown during expression evaluation.</param>
     /// <param name="arguments">Arguments passed to expression during evaluation.</param>
     /// <param name="result">Result of expression evaluation.</param>
-    public ExpressionEventArgs(Expression expression, Exception exception, object[] arguments, object? result)
+    public ExpressionEventArgs(Expression expression, Exception exception, object?[] arguments, object? result)
     {
         _arguments = arguments;
         Expression = expression;
@@ -49,7 +49,7 @@ public class ExpressionEventArgs : EventArgs
     /// <summary>
     /// Arguments passed to the expression during evaluation.
     /// </summary>
-    public virtual IEnumerable<object> Arguments => _lazyArguments?.GetValues() ?? _arguments ?? throw new InvalidOperationException("Arguments are not specified");
+    public virtual IEnumerable<object?> Arguments => _lazyArguments?.GetValues() ?? _arguments ?? throw new InvalidOperationException("Arguments are not specified");
 
     /// <summary>
     /// Result of expression evaluation.

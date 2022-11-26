@@ -11,7 +11,7 @@ internal interface IRuleAction
 {
     Expression Expression { get; }
     ActionTrigger Trigger { get; }
-    object[] GetArguments(IActionContext actionContext);
+    object?[] GetArguments(IActionContext actionContext);
     void Invoke(IExecutionContext executionContext, IActionContext actionContext);
 }
 
@@ -33,7 +33,7 @@ internal class RuleAction : IRuleAction
     public Expression Expression => _expression;
     public ActionTrigger Trigger { get; }
 
-    public object[] GetArguments(IActionContext actionContext)
+    public object?[] GetArguments(IActionContext actionContext)
     {
         var arguments = new ActivationExpressionArguments(_argumentMap, actionContext.Activation);
         return arguments.GetValues();
@@ -85,7 +85,7 @@ internal class RuleActionWithDependencies : IRuleAction
     public Expression Expression => _expression;
     public ActionTrigger Trigger { get; }
 
-    public object[] GetArguments(IActionContext actionContext)
+    public object?[] GetArguments(IActionContext actionContext)
     {
         var arguments = new ActivationExpressionArguments(_argumentMap, actionContext.Activation);
         return arguments.GetValues();

@@ -14,7 +14,7 @@ public interface IActionInvocation
     /// </summary>
     /// <remarks>Action arguments also include dependencies that are passed to the action method.</remarks>
     /// <remarks>Action arguments don't include <c>IContext</c>.</remarks>
-    object[] Arguments { get; }
+    object?[] Arguments { get; }
 
     /// <summary>
     /// Invokes the action.
