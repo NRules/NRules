@@ -49,6 +49,11 @@ internal class SyntheticFact : Fact
         : base(@object)
     {
     }
+    public SyntheticFact(object @object, IFactSource source)
+        : base(@object)
+    {
+        Source = source;
+    }
 
     public override IFactSource? Source { get; set; }
 }

@@ -160,14 +160,14 @@ public class DgmlWriter
 
     private static string GetNodeLabel(ReteNode reteNode)
     {
-        var labelParts = new List<object>
+        var labelParts = new List<object?>
         {
             reteNode.NodeType.ToString()
         };
         switch (reteNode.NodeType)
         {
             case NodeType.Type:
-                labelParts.Add(reteNode.OutputType.Name);
+                labelParts.Add(reteNode.OutputType?.Name);
                 break;
             case NodeType.Selection:
                 labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));

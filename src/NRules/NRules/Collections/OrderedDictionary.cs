@@ -48,7 +48,7 @@ internal class OrderedDictionary<TKey, TValue>
         return true;
     }
 
-    public bool TryGetValue(TKey key, /*[NotNullWhen(true)]*/out TValue value)
+    public bool TryGetValue(TKey key, out TValue value)
     {
         bool found = _dictionary.TryGetValue(key, out var node);
         if (!found)

@@ -10,59 +10,51 @@ namespace NRules.Aggregators.Collections;
 internal class DefaultKeyMap<TKey, TValue>
 {
     private readonly Dictionary<TKey, TValue> _map = new();
-    private readonly TKey _defaultKey = default;
-    private TValue _defaultValue;
-    private bool _hasDefault = false;
+    private KeyValuePair<TKey, TValue>? _defaultPair;
 
-    public int Count => _map.Count + (_hasDefault ? 1 : 0);
-    public int KeyCount => _map.Keys.Count + (_hasDefault ? 1 : 0);
+    public int Count => _map.Count + (_defaultPair.HasValue ? 1 : 0);
 
     public bool ContainsKey(TKey key)
     {
-        if (Equals(key, _defaultKey))
-        {
-            return _hasDefault;
-        }
-        return _map.ContainsKey(key);
+        return Equals(key, default(TKey)) ? _defaultPair.HasValue : _map.ContainsKey(key);
     }
 
     public void Add(TKey key, TValue value)
     {
-        if (Equals(key, _defaultKey))
+        if (Equals(key, default(TKey)))
         {
-            if (_hasDefault)
+            if (_defaultPair.HasValue)
                 throw new ArgumentException("An item with the default key has already been added");
-            
-            _hasDefault = true;
-            _defaultValue = value;
+            SetDefaultValue(value);
         }
         else
         {
-           _map.Add(key, value);
+            _map.Add(key, value);
         }
     }
 
     public bool Remove(TKey key)
     {
-        if (Equals(key, _defaultKey))
+        if (Equals(key, default(TKey)))
         {
-            if (_hasDefault)
-            {
-                _defaultValue = default;
-                _hasDefault = false;
-                return true;
-            }
-            return false;
+            if (!_defaultPair.HasValue)
+                return false;
+
+            _defaultPair = null;
+            return true;
         }
         return _map.Remove(key);
     }
 
     public bool TryGetValue(TKey key, out TValue value)
     {
-        if (Equals(key, _defaultKey))
+        if (Equals(key, default(TKey)))
         {
-            value = _defaultValue;
-            return _hasDefault;
+            value = _defaultPair.HasValue
+                ? GetDefaultValueUnsafe()
+                : default!;
+
+            return _defaultPair.HasValue;
         }
         return _map.TryGetValue(key, out value);
     }
@@ -71,20 +63,20 @@ internal class DefaultKeyMap<TKey, TValue>
     {
         get
         {
-            if (Equals(key, _defaultKey))
+            if (Equals(key, default(TKey)))
             {
-                if (!_hasDefault)
+                if (!_defaultPair.HasValue)
                     throw new KeyNotFoundException("Default key was not found");
-                return _defaultValue;
+
+                return GetDefaultValueUnsafe();
             }
             return _map[key];
         }
         set
         {
-            if (Equals(key, _defaultKey))
+            if (Equals(key, default(TKey)))
             {
-                _hasDefault = true;
-                _defaultValue = value;
+                SetDefaultValue(value);
             }
             else
             {
@@ -97,7 +89,9 @@ internal class DefaultKeyMap<TKey, TValue>
     {
         get
         {
-            if (_hasDefault) yield return _defaultKey;
+            if (_defaultPair.HasValue)
+                yield return default(TKey)!; // WARNING: Key can be null for reference types
+
             foreach (var item in _map)
             {
                 yield return item.Key;
@@ -109,11 +103,18 @@ internal class DefaultKeyMap<TKey, TValue>
     {
         get
         {
-            if (_hasDefault) yield return _defaultValue;
+            if (_defaultPair.HasValue)
+                yield return GetDefaultValueUnsafe();
+
             foreach (var item in _map)
             {
                 yield return item.Value;
             }
         }
     }
+
+    private void SetDefaultValue(TValue value) => _defaultPair = new KeyValuePair<TKey, TValue>(default(TKey)!, value); // WARNING: Key can be null for reference types
+
+    private TValue GetDefaultValueUnsafe() => _defaultPair!.Value.Value;
+
 }

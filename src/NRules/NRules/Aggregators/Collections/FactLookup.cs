@@ -10,14 +10,14 @@ internal class FactLookup<TKey, TElement> : IKeyedLookup<TKey, TElement>
 {
     private readonly DefaultKeyMap<TKey, FactGrouping<TKey, TElement>> _groups = new();
 
-    public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator() => 
+    public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator() =>
         _groups.Values.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public bool Contains(TKey key) => _groups.ContainsKey(key);
 
-    public int Count => _groups.KeyCount;
+    public int Count => _groups.Count;
 
     IEnumerable<TElement> ILookup<TKey, TElement>.this[TKey key] =>
         _groups.TryGetValue(key, out var grouping) ? grouping : Array.Empty<TElement>();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NRules.Rete;
+using NRules.Utilities;
 using Tuple = NRules.Rete.Tuple;
 
 namespace NRules;
@@ -15,10 +16,10 @@ internal interface IWorkingMemory
     void RemoveFact(Fact fact);
 
     IEnumerable<object> GetLinkedKeys(Activation activation);
-    Fact? GetLinkedFact(Activation activation, object key);
-    void AddLinkedFact(Activation activation, object key, Fact fact);
-    void UpdateLinkedFact(Activation activation, object key, Fact fact, object factObject);
-    void RemoveLinkedFact(Activation activation, object key, Fact fact);
+    SyntheticFact? GetLinkedFact(Activation activation, object key);
+    void AddLinkedFact(Activation activation, object key, SyntheticFact fact);
+    void UpdateLinkedFact(Activation activation, object key, SyntheticFact fact, object factObject);
+    void RemoveLinkedFact(Activation activation, object key);
 
     IAlphaMemory GetNodeMemory(IAlphaMemoryNode node);
     IBetaMemory GetNodeMemory(IBetaMemoryNode node);
@@ -33,12 +34,12 @@ internal interface IWorkingMemory
 internal class WorkingMemory : IWorkingMemory
 {
     private readonly Dictionary<object, Fact> _factMap = new();
-    private readonly Dictionary<Activation, Dictionary<object, Fact>> _linkedFactMap = new();
+    private readonly Dictionary<Activation, Dictionary<object, SyntheticFact>> _linkedFactMap = new();
     private readonly Dictionary<TupleStateKey, object> _tupleStateMap = new();
 
-    private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap = new();
+    private readonly Dictionary<IAlphaMemoryNode, AlphaMemory> _alphaMap = new();
 
-    private readonly Dictionary<IBetaMemoryNode, IBetaMemory> _betaMap = new();
+    private readonly Dictionary<IBetaMemoryNode, BetaMemory> _betaMap = new();
 
     private static readonly IEnumerable<object> EmptyObjectList = Array.Empty<object>();
 
@@ -74,7 +75,7 @@ internal class WorkingMemory : IWorkingMemory
         return factMap.Keys;
     }
 
-    public Fact? GetLinkedFact(Activation activation, object key)
+    public SyntheticFact? GetLinkedFact(Activation activation, object key)
     {
         if (!_linkedFactMap.TryGetValue(activation, out var factMap))
             return null;
@@ -83,20 +84,15 @@ internal class WorkingMemory : IWorkingMemory
         return fact;
     }
 
-    public void AddLinkedFact(Activation activation, object key, Fact fact)
+    public void AddLinkedFact(Activation activation, object key, SyntheticFact fact)
     {
         AddFact(fact);
 
-        if (!_linkedFactMap.TryGetValue(activation, out var factMap))
-        {
-            factMap = new Dictionary<object, Fact>();
-            _linkedFactMap[activation] = factMap;
-        }
-
+        var factMap = _linkedFactMap.GetOrAdd(activation, _ => new());
         factMap.Add(key, fact);
     }
 
-    public void UpdateLinkedFact(Activation activation, object key, Fact fact, object factObject)
+    public void UpdateLinkedFact(Activation activation, object key, SyntheticFact fact, object factObject)
     {
         if (!ReferenceEquals(fact.RawObject, factObject))
         {
@@ -105,17 +101,12 @@ internal class WorkingMemory : IWorkingMemory
             AddFact(fact);
         }
 
-        if (!_linkedFactMap.TryGetValue(activation, out var factMap))
-        {
-            factMap = new Dictionary<object, Fact>();
-            _linkedFactMap[activation] = factMap;
-        }
-
+        var factMap = _linkedFactMap.GetOrAdd(activation, _ => new());
         factMap.Remove(key);
         factMap.Add(key, fact);
     }
 
-    public void RemoveLinkedFact(Activation activation, object key, Fact fact)
+    public void RemoveLinkedFact(Activation activation, object key)
     {
         if (!_linkedFactMap.TryGetValue(activation, out var factMap))
             return;
@@ -127,22 +118,12 @@ internal class WorkingMemory : IWorkingMemory
 
     public IAlphaMemory GetNodeMemory(IAlphaMemoryNode node)
     {
-        if (!_alphaMap.TryGetValue(node, out var memory))
-        {
-            memory = new AlphaMemory();
-            _alphaMap[node] = memory;
-        }
-        return memory;
+        return _alphaMap.GetOrAdd(node, _ => new());
     }
 
     public IBetaMemory GetNodeMemory(IBetaMemoryNode node)
     {
-        if (!_betaMap.TryGetValue(node, out var memory))
-        {
-            memory = new BetaMemory();
-            _betaMap[node] = memory;
-        }
-        return memory;
+        return _betaMap.GetOrAdd(node, _ => new());
     }
 
     public T? GetState<T>(INode node, Tuple tuple) where T : class
@@ -157,36 +138,33 @@ internal class WorkingMemory : IWorkingMemory
 
     public T GetStateOrThrow<T>(INode node, Tuple tuple) where T : class
     {
-        var key = new TupleStateKey(node, tuple);
-        if (_tupleStateMap.TryGetValue(key, out var value))
-        {
-            return (T)value;
-        }
-        throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
+        return GetState<T>(node, tuple)
+            ?? throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
     }
 
     public T? RemoveState<T>(INode node, Tuple tuple) where T : class
     {
         var key = new TupleStateKey(node, tuple);
+#if NETSTANDARD2_0
         if (_tupleStateMap.TryGetValue(key, out var value))
         {
             var state = (T)value;
             _tupleStateMap.Remove(key);
             return state;
         }
+#else
+        if (_tupleStateMap.Remove(key, out var value))
+        {
+            return (T)value;
+        }
+#endif
         return null;
     }
 
     public T RemoveStateOrThrow<T>(INode node, Tuple tuple) where T : class
     {
-        var key = new TupleStateKey(node, tuple);
-        if (_tupleStateMap.TryGetValue(key, out var value))
-        {
-            var state = (T)value;
-            _tupleStateMap.Remove(key);
-            return state;
-        }
-        throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
+        return RemoveState<T>(node, tuple)
+            ?? throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
     }
 
     public void SetState(INode node, Tuple tuple, object value)

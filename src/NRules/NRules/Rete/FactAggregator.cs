@@ -67,10 +67,7 @@ internal class FactAggregator : IFactAggregator
 
     private Fact CreateAggregateFact(AggregationResult result)
     {
-        var fact = new SyntheticFact(result.Aggregate)
-        {
-            Source = new AggregateFactSource(result.Source)
-        };
+        var fact = new SyntheticFact(result.Aggregate, new AggregateFactSource(result.Source));
         _aggregateFactMap.Add(result.Aggregate, fact);
         return fact;
     }
@@ -86,7 +83,7 @@ internal class FactAggregator : IFactAggregator
         fact.Source = new AggregateFactSource(result.Source);
         if (!ReferenceEquals(fact.RawObject, result.Aggregate))
         {
-            _aggregateFactMap.Remove(fact.RawObject);
+            _aggregateFactMap.Remove(fact.RawObject ?? throw new ArgumentException("Fact cannot contain null object"));
             fact.RawObject = result.Aggregate;
             _aggregateFactMap.Add(fact.RawObject, fact);
         }
@@ -101,7 +98,7 @@ internal class FactAggregator : IFactAggregator
                 $"Fact for aggregate object does not exist. AggregatorType={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
         }
 
-        _aggregateFactMap.Remove(fact.RawObject);
+        _aggregateFactMap.Remove(fact.RawObject ?? throw new ArgumentException("Fact cannot contain null object"));
         fact.RawObject = result.Aggregate;
         fact.Source = null;
         return fact;
