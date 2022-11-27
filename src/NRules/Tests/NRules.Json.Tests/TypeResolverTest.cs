@@ -12,7 +12,7 @@ public class TypeResolverTest
     {
         TestRoundtrip(
             typeof(string),
-            typeof(string).FullName);
+            typeof(string).FullName!);
     }
 
     [Fact]
@@ -20,9 +20,9 @@ public class TypeResolverTest
     {
         TestRoundtrip(
             typeof(FactType1),
-            typeof(FactType1).AssemblyQualifiedName);
+            typeof(FactType1).AssemblyQualifiedName!);
     }
-    
+
     [Fact]
     public void Roundtrip_SimpleTypeWithAlias_Alias()
     {
@@ -33,7 +33,7 @@ public class TypeResolverTest
             typeof(string),
             "string");
     }
-    
+
     [Fact]
     public void Roundtrip_ArrayTypeWithAlias_Alias()
     {
@@ -44,7 +44,7 @@ public class TypeResolverTest
             typeof(string[]),
             "string[]");
     }
-    
+
     [Fact]
     public void Roundtrip_2DArrayTypeWithAlias_Alias()
     {
@@ -55,7 +55,7 @@ public class TypeResolverTest
             typeof(string[,]),
             "string[,]");
     }
-    
+
     [Fact]
     public void Roundtrip_JaggedArrayTypeWithAlias_Alias()
     {
@@ -159,13 +159,13 @@ public class TypeResolverTest
         var target = CreateTarget();
 
         //Act - Assert
-        var ex = Assert.Throws<ArgumentException>(() => target.GetTypeFromName("BadTypeName")); 
+        var ex = Assert.Throws<ArgumentException>(() => target.GetTypeFromName("BadTypeName"));
         Assert.Contains("BadTypeName", ex.Message);
     }
 
     private void TestRoundtrip(Type originalType, string expectedTypeName)
     {
-        TestRoundtrip(new (), originalType, expectedTypeName);
+        TestRoundtrip(new(), originalType, expectedTypeName);
     }
 
     private void TestRoundtrip(Dictionary<string, Type> aliases, Type originalType, string expectedTypeName)

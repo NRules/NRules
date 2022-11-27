@@ -81,7 +81,7 @@ public class ExpressionSerializerTest
     [Fact]
     public void Roundtrip_BinaryExpressionArithmeticOps_Equals()
     {
-        Expression<Func<double, double, double, double, double>> expression = (d1, d2, d3, d4) 
+        Expression<Func<double, double, double, double, double>> expression = (d1, d2, d3, d4)
             => ((d1 + d2 - d3) * d4) / d2 % 3;
         TestRoundtrip(expression);
     }
@@ -124,7 +124,7 @@ public class ExpressionSerializerTest
     [Fact]
     public void Roundtrip_UnaryExpressionTypeAs_Equals()
     {
-        Expression<Func<object, string>> expression = o => o as string;
+        Expression<Func<object, string?>> expression = o => o as string;
         TestRoundtrip(expression);
     }
 
@@ -146,7 +146,7 @@ public class ExpressionSerializerTest
     public void Roundtrip_MemberInit_Equals()
     {
         Expression<Func<bool, string, FactType1>> expression = (b, s) => new FactType1
-            { BooleanProperty = b, StringProperty = s };
+        { BooleanProperty = b, StringProperty = s };
         TestRoundtrip(expression);
     }
 
@@ -156,11 +156,11 @@ public class ExpressionSerializerTest
         Expression<Func<string, string, List<string>>> expression = (s1, s2) => new List<string> { s1, s2 };
         TestRoundtrip(expression);
     }
-    
+
     [Fact]
     public void Roundtrip_NewArrayExpression_Equals()
     {
-        Expression<Func<string, string[]>> expression = s => new[] {s};
+        Expression<Func<string, string[]>> expression = s => new[] { s };
         TestRoundtrip(expression);
     }
 
@@ -213,7 +213,7 @@ public class ExpressionSerializerTest
         Assert.Contains("Unable to convert Enum value. Value=InvalidValue, EnumType=System.Linq.Expressions.ExpressionType", ex.Message);
     }
 
-    private void TestRoundtrip<TExpression>(TExpression expression) where TExpression: Expression
+    private void TestRoundtrip<TExpression>(TExpression expression) where TExpression : Expression
     {
         var jsonString = JsonSerializer.Serialize(expression, _options);
         //System.IO.File.WriteAllText(@"C:\temp\expression.json", jsonString);
