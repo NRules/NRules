@@ -104,7 +104,7 @@ public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
 
     private void AssertSingleSource()
     {
-        if (_sourceBuilder is not null)
+        if (_sourceBuilder != null)
         {
             throw new InvalidOperationException("FORALL element can only have a single source");
         }

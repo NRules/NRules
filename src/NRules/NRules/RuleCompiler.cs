@@ -52,7 +52,11 @@ public class RuleCompiler
     public IExpressionCompiler ExpressionCompiler
     {
         get => _ruleExpressionCompiler.ExpressionCompiler;
-        set => _ruleExpressionCompiler.ExpressionCompiler = value ?? throw new ArgumentNullException(nameof(value));
+        set
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+            _ruleExpressionCompiler.ExpressionCompiler = value;
+        }
     }
 
     /// <summary>
@@ -91,8 +95,7 @@ public class RuleCompiler
                 throw new RuleCompilationException("Failed to compile rule", ruleDefinition.Name, e);
             }
 
-            if (cancellationToken.IsCancellationRequested)
-                break;
+            if (cancellationToken.IsCancellationRequested) break;
         }
 
         INetwork network = reteBuilder.Build();

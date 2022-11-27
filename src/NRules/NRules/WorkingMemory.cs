@@ -37,11 +37,11 @@ internal class WorkingMemory : IWorkingMemory
     private readonly Dictionary<Activation, Dictionary<object, SyntheticFact>> _linkedFactMap = new();
     private readonly Dictionary<TupleStateKey, object> _tupleStateMap = new();
 
-    private readonly Dictionary<IAlphaMemoryNode, AlphaMemory> _alphaMap = new();
+    private readonly Dictionary<IAlphaMemoryNode, IAlphaMemory> _alphaMap = new();
 
-    private readonly Dictionary<IBetaMemoryNode, BetaMemory> _betaMap = new();
+    private readonly Dictionary<IBetaMemoryNode, IBetaMemory> _betaMap = new();
 
-    private static readonly IEnumerable<object> EmptyObjectList = Array.Empty<object>();
+    private static readonly object[] EmptyObjectList = Array.Empty<object>();
 
     public IEnumerable<Fact> Facts => _factMap.Values;
 
@@ -53,7 +53,7 @@ internal class WorkingMemory : IWorkingMemory
 
     public void AddFact(Fact fact)
     {
-        _factMap.Add(fact.RawObject ?? throw new ArgumentException("Fact cannot contain null object"), fact);
+        _factMap.Add(fact.RawObject ?? throw new ArgumentException("Fact cannot contain null object", nameof(fact)), fact);
     }
 
     public void UpdateFact(Fact fact)
@@ -64,7 +64,7 @@ internal class WorkingMemory : IWorkingMemory
 
     public void RemoveFact(Fact fact)
     {
-        if (!_factMap.Remove(fact.RawObject ?? throw new ArgumentException("Fact cannot contain null object")))
+        if (!_factMap.Remove(fact.RawObject ?? throw new ArgumentException("Fact cannot contain null object", nameof(fact))))
             throw new ArgumentException("Element does not exist", nameof(fact));
     }
 
@@ -118,12 +118,12 @@ internal class WorkingMemory : IWorkingMemory
 
     public IAlphaMemory GetNodeMemory(IAlphaMemoryNode node)
     {
-        return _alphaMap.GetOrAdd(node, _ => new());
+        return _alphaMap.GetOrAdd(node, _ => new AlphaMemory());
     }
 
     public IBetaMemory GetNodeMemory(IBetaMemoryNode node)
     {
-        return _betaMap.GetOrAdd(node, _ => new());
+        return _betaMap.GetOrAdd(node, _ => new BetaMemory());
     }
 
     public T? GetState<T>(INode node, Tuple tuple) where T : class

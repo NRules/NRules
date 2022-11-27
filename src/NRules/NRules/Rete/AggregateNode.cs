@@ -30,7 +30,7 @@ internal class AggregateNode : BinaryBetaNode
         _isSubnetJoin = isSubnetJoin;
     }
 
-    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -51,7 +51,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -61,7 +61,7 @@ internal class AggregateNode : BinaryBetaNode
             foreach (var set in joinedSets)
             {
                 var aggregator = GetFactAggregator(context, set.Tuple);
-                if (aggregator is not null)
+                if (aggregator != null)
                 {
                     if (_isSubnetJoin && set.Facts.Count > 0)
                     {
@@ -86,7 +86,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
     {
         var aggregation = new Aggregation();
         using (var counter = PerfCounter.Retract(context, this))
@@ -94,7 +94,7 @@ internal class AggregateNode : BinaryBetaNode
             foreach (var tuple in tuples)
             {
                 var aggregator = RemoveFactAggregator(context, tuple);
-                if (aggregator is not null)
+                if (aggregator != null)
                 {
                     aggregation.Remove(tuple, aggregator.AggregateFacts);
                 }
@@ -107,7 +107,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    public override void PropagateAssert(IExecutionContext context, List<Fact> facts)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -120,7 +120,7 @@ internal class AggregateNode : BinaryBetaNode
                     continue;
 
                 var aggregator = GetFactAggregator(context, set.Tuple);
-                if (aggregator is null)
+                if (aggregator == null)
                 {
                     aggregator = CreateFactAggregator(context, set.Tuple);
 
@@ -139,7 +139,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -152,7 +152,7 @@ internal class AggregateNode : BinaryBetaNode
                     continue;
 
                 var aggregator = GetFactAggregator(context, set.Tuple);
-                if (aggregator is not null)
+                if (aggregator != null)
                 {
                     UpdateInAggregate(aggregationContext, aggregator, aggregation, set.Tuple, set.Facts);
                 }
@@ -171,7 +171,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -184,7 +184,7 @@ internal class AggregateNode : BinaryBetaNode
                     continue;
 
                 var aggregator = GetFactAggregator(context, set.Tuple);
-                if (aggregator is not null)
+                if (aggregator != null)
                 {
                     RetractFromAggregate(aggregationContext, aggregator, aggregation, set.Tuple, set.Facts);
                 }
@@ -202,7 +202,7 @@ internal class AggregateNode : BinaryBetaNode
         visitor.VisitAggregateNode(context, this);
     }
 
-    private void AddToAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IReadOnlyCollection<Fact> facts)
+    private void AddToAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, List<Fact> facts)
     {
         try
         {
@@ -219,7 +219,7 @@ internal class AggregateNode : BinaryBetaNode
         }
     }
 
-    private void UpdateInAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IReadOnlyCollection<Fact> facts)
+    private void UpdateInAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, List<Fact> facts)
     {
         try
         {
@@ -236,7 +236,7 @@ internal class AggregateNode : BinaryBetaNode
         }
     }
 
-    private void RetractFromAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IReadOnlyCollection<Fact> facts)
+    private void RetractFromAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, List<Fact> facts)
     {
         try
         {

@@ -5,11 +5,13 @@ namespace NRules.Collections;
 internal class OrderedDictionary<TKey, TValue>
     where TKey : notnull
 {
-    private readonly Dictionary<TKey, LinkedListNode<TValue>> _dictionary = new();
-    private readonly LinkedList<TValue> _linkedList = new();
+    private readonly IDictionary<TKey, LinkedListNode<TValue>> _dictionary;
+    private readonly LinkedList<TValue> _linkedList;
 
     public OrderedDictionary()
     {
+        _dictionary = new Dictionary<TKey, LinkedListNode<TValue>>();
+        _linkedList = new LinkedList<TValue>();
     }
 
     public void Clear()

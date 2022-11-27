@@ -86,7 +86,7 @@ internal class BetaMemory : IBetaMemory
         {
             unchecked
             {
-                return (_tuple.GetHashCode() * 397) ^ (_fact is not null ? _fact.GetHashCode() : 0);
+                return (_tuple.GetHashCode() * 397) ^ (_fact != null ? _fact.GetHashCode() : 0);
             }
         }
     }

@@ -111,7 +111,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
 
     public ILeftHandSideExpression Having(params Expression<Func<bool>>[] conditions)
     {
-        if (_currentPatternBuilder is null)
+        if (_currentPatternBuilder == null)
         {
             throw new ArgumentException("HAVING clause can only be used on existing rule patterns");
         }

@@ -26,7 +26,9 @@ internal static class MemberExtensions
             ?? throw new JsonException($"Property '{nameof(MemberInfo.Name)}' should have not null value");
         reader.TryReadProperty<Type>(nameof(MemberInfo.DeclaringType), options, out var declaringType);
 
-        var type = DetermineType(declaringType, impliedType, name);
+        var type = declaringType ?? impliedType;
+        if (type == null)
+            throw new ArgumentException($"Unable to determine declaring type for member. Name={name}");
 
         switch (memberType)
         {
@@ -78,15 +80,12 @@ internal static class MemberExtensions
 
     public static MethodInfo GetMethod(this MethodRecord methodRecord, Type[] argumentTypes, Type? impliedType = null)
     {
-        var type = DetermineType(methodRecord.DeclaringType, impliedType, methodRecord.Name);
+        var type = methodRecord.DeclaringType ?? impliedType;
+        if (type == null)
+            throw new ArgumentException($"Unable to determine declaring type for method. Name={methodRecord.Name}");
 
         var method = type.GetMethod(methodRecord.Name, argumentTypes)
             ?? throw new ArgumentException($"Unknown method. DeclaringType={type}, Name={methodRecord.Name}");
         return method;
-    }
-
-    private static Type DetermineType(Type? declaringType, Type? impliedType, string memberName)
-    {
-        return declaringType ?? impliedType ?? throw new ArgumentException($"Unable to determine declaring type for member. Name={memberName}");
     }
 }

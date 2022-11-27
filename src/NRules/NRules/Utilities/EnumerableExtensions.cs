@@ -9,4 +9,11 @@ internal static class EnumerableExtensions
     {
         return source.Concat(Enumerable.Repeat(element, 1));
     }
+
+#if NETSTANDARD2_0
+    public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source)
+    {
+        return new HashSet<TSource>(source);
+    }
+#endif
 }

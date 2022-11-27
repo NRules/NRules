@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using NRules.Utilities;
 
 namespace NRules.Diagnostics.Dgml;
 
@@ -25,7 +26,7 @@ public class DgmlWriter
     /// <param name="ruleNames">Set of rules to use as a filter, or <c>null</c> to remove the filter.</param>
     public void SetRuleFilter(IEnumerable<string>? ruleNames)
     {
-        _ruleNameFilter = ruleNames == null ? null : new HashSet<string>(ruleNames);
+        _ruleNameFilter = ruleNames?.ToHashSet();
     }
 
     /// <summary>
@@ -160,10 +161,8 @@ public class DgmlWriter
 
     private static string GetNodeLabel(ReteNode reteNode)
     {
-        var labelParts = new List<object?>
-        {
-            reteNode.NodeType.ToString()
-        };
+        var labelParts = new List<object?>();
+        labelParts.Add(reteNode.NodeType.ToString());
         switch (reteNode.NodeType)
         {
             case NodeType.Type:
@@ -194,21 +193,23 @@ public class DgmlWriter
 
     private void AddPerformanceMetrics(DirectedGraph graph)
     {
-        long maxDuration = 0;
-        long minDuration = Int64.MaxValue;
+        var maxDuration = 0L;
+        var minDuration = long.MaxValue;
         var reteNodeLookup = _schema.Nodes.ToDictionary(Id);
         foreach (var node in graph.Nodes)
         {
             var reteNode = reteNodeLookup[node.Id];
-            if (_metricsProvider?.FindByNodeId(reteNode.Id) is { } nodeMetrics)
+            if (_metricsProvider?.FindByNodeId(reteNode.Id) is not INodeMetrics nodeMetrics)
             {
-                var totalDuration = nodeMetrics.InsertDurationMilliseconds +
-                                    nodeMetrics.UpdateDurationMilliseconds +
-                                    nodeMetrics.RetractDurationMilliseconds;
-                maxDuration = Math.Max(maxDuration, totalDuration);
-                minDuration = Math.Min(minDuration, totalDuration);
-                AddPerformanceMetrics(node, nodeMetrics);
+                continue;
             }
+
+            var totalDuration = nodeMetrics.InsertDurationMilliseconds +
+                                nodeMetrics.UpdateDurationMilliseconds +
+                                nodeMetrics.RetractDurationMilliseconds;
+            maxDuration = Math.Max(maxDuration, totalDuration);
+            minDuration = Math.Min(minDuration, totalDuration);
+            AddPerformanceMetrics(node, nodeMetrics);
         }
 
         minDuration = Math.Min(minDuration, maxDuration);
@@ -273,7 +274,7 @@ public class DgmlWriter
                 expression: $"Math.Min(72,Math.Max(8,8+4*Math.Log({countProperty},2)))");
 
         var durationProperty = "PerfTotalDurationMilliseconds";
-        maxDuration = Math.Max(50, maxDuration);
+        maxDuration = Math.Max(50L, maxDuration);
         long basis = maxDuration - minDuration;
         int maxRed = 200;
         int maxGreen = 200;
@@ -336,7 +337,7 @@ public class DgmlWriter
     {
         foreach (var reteNode in reteNodes)
         {
-            if (ruleNameFilter is null ||
+            if (ruleNameFilter == null ||
                 reteNode.NodeType == NodeType.Root ||
                 reteNode.NodeType == NodeType.Dummy ||
                 reteNode.Rules.Any(r => ruleNameFilter.Contains(r.Name)))
@@ -346,7 +347,7 @@ public class DgmlWriter
 
     private static IEnumerable<ReteLink> FilterLinks(ReteNode[] reteNodes, ReteLink[] reteLinks)
     {
-        var reteNodeIds = new HashSet<int>(reteNodes.Select(x => x.Id));
+        var reteNodeIds = reteNodes.Select(x => x.Id).ToHashSet();
         foreach (var reteLink in reteLinks)
         {
             if (reteNodeIds.Contains(reteLink.Source.Id) &&

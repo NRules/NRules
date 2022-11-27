@@ -49,7 +49,6 @@ public class RuleTransformation : RuleElementVisitor<RuleTransformation.Context>
 
     private T Transform<T>(Context context, RuleElement element) where T : RuleElement
     {
-
         bool savedIsModified = context.IsModified;
         context.IsModified = false;
 

@@ -120,7 +120,7 @@ public class RuleBuilder
     /// <param name="builder">Builder to set.</param>
     public void Dependencies(DependencyGroupBuilder builder)
     {
-        if (_dependencyGroupBuilder is not null)
+        if (_dependencyGroupBuilder != null)
             throw new ArgumentException("Builder for dependencies is already set", nameof(builder));
 
         _dependencyGroupBuilder = builder;
@@ -141,7 +141,7 @@ public class RuleBuilder
     /// <param name="builder">Builder to set.</param>
     public void LeftHandSide(GroupBuilder builder)
     {
-        if (_lhsBuilder is not null)
+        if (_lhsBuilder != null)
             throw new ArgumentException("Builder for left-hand side is already set", nameof(builder));
 
         _lhsBuilder = builder;
@@ -162,7 +162,7 @@ public class RuleBuilder
     /// <param name="builder">Builder to set.</param>
     public void Filters(FilterGroupBuilder builder)
     {
-        if (_filterGroupBuilder is not null)
+        if (_filterGroupBuilder != null)
             throw new ArgumentException($"Builder for filters is already set", nameof(builder));
 
         _filterGroupBuilder = builder;
@@ -183,7 +183,7 @@ public class RuleBuilder
     /// <param name="builder">Builder to set.</param>
     public void RightHandSide(ActionGroupBuilder builder)
     {
-        if (_rhsBuilder is not null)
+        if (_rhsBuilder != null)
             throw new ArgumentException($"Builder for right-hand side is already set", nameof(builder));
 
         _rhsBuilder = builder;

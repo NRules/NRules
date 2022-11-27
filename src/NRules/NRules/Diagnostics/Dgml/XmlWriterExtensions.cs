@@ -7,7 +7,7 @@ internal static class XmlWriterExtensions
 {
     public static void WriteAttributeIfNotNull(this XmlWriter writer, string localName, object? value)
     {
-        if (value is not null)
+        if (value != null)
             writer.WriteAttributeString(localName, value.ToString());
     }
 

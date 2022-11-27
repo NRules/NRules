@@ -14,7 +14,7 @@ internal class RuleNode : ITupleSink
         CompiledRule = compiledRule;
     }
 
-    public void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    public void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
     {
         using var counter = PerfCounter.Assert(context, this);
         foreach (var tuple in tuples)
@@ -27,7 +27,7 @@ internal class RuleNode : ITupleSink
         counter.AddItems(tuples.Count);
     }
 
-    public void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    public void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
     {
         using var counter = PerfCounter.Update(context, this);
         foreach (var tuple in tuples)
@@ -39,7 +39,7 @@ internal class RuleNode : ITupleSink
         counter.AddItems(tuples.Count);
     }
 
-    public void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    public void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
     {
         using var counter = PerfCounter.Retract(context, this);
         foreach (var tuple in tuples)

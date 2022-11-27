@@ -129,7 +129,7 @@ public class PatternBuilder : RuleElementBuilder, IBuilder<PatternElement>
 
     private void AssertSingleSource()
     {
-        if (_sourceBuilder is not null)
+        if (_sourceBuilder != null)
         {
             throw new InvalidOperationException("Pattern element can only have a single source");
         }

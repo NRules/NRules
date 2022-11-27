@@ -48,7 +48,7 @@ public class LhsExpressionEventArgs : ExpressionEventArgs
     {
         get
         {
-            if (_tuple is not null)
+            if (_tuple != null)
             {
                 foreach (var tupleFact in _tuple.OrderedFacts())
                 {
@@ -56,7 +56,7 @@ public class LhsExpressionEventArgs : ExpressionEventArgs
                 }
             }
 
-            if (_fact is not null)
+            if (_fact != null)
             {
                 yield return _fact;
             }

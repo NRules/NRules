@@ -21,14 +21,16 @@ internal sealed class Tuple : ITuple
         Level = 0;
     }
 
-    public Tuple(long id, Tuple left, Fact? right) : this(id)
+    public Tuple(long id, Tuple left, Fact? right, long groupId = NoGroup)
     {
+        Id = id;
         RightFact = right;
         LeftTuple = left;
         Count = left.Count;
         if (right != null)
             Count++;
         Level = left.Level + 1;
+        GroupId = groupId;
     }
 
     public Fact? RightFact { get; }
@@ -36,8 +38,7 @@ internal sealed class Tuple : ITuple
     public int Count { get; }
     public long Id { get; }
     public int Level { get; }
-
-    public long GroupId { get; set; }
+    public long GroupId { get; }
 
     public long GetGroupId(int level)
     {
@@ -99,14 +100,14 @@ internal sealed class Tuple : ITuple
         private Tuple? _tuple;
         private Fact? _current;
 
-        public Enumerator(Tuple tuple)
+        public Enumerator(Tuple? tuple)
         {
             _tuple = tuple;
         }
 
         public bool MoveNext()
         {
-            if (_tuple is null)
+            if (_tuple == null)
             {
                 _current = null;
                 return false;
@@ -116,20 +117,10 @@ internal sealed class Tuple : ITuple
             {
                 _current = _tuple.RightFact;
                 _tuple = _tuple.LeftTuple;
-            } while (_current is null && _tuple is not null);
-            return _current is not null;
+            } while (_current == null && _tuple != null);
+            return _current != null;
         }
 
-        public Fact Current
-        {
-            get
-            {
-                if (_current is null)
-                {
-                    throw new InvalidCastException("Enumeration not started or already finished");
-                }
-                return _current;
-            }
-        }
+        public Fact Current => _current ?? throw new InvalidCastException("Enumeration not started or already finished");
     }
 }

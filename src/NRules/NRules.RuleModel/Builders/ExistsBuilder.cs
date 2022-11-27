@@ -109,7 +109,7 @@ public class ExistsBuilder : RuleElementBuilder, IBuilder<ExistsElement>
 
     private void AssertSingleSource()
     {
-        if (_sourceBuilder is not null)
+        if (_sourceBuilder != null)
         {
             throw new InvalidOperationException("EXISTS element can only have a single source");
         }

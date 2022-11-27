@@ -45,10 +45,6 @@ internal class Fact : IFact
 [DebuggerDisplay("Fact {Source.SourceType} {Object}")]
 internal class SyntheticFact : Fact
 {
-    public SyntheticFact(object @object)
-        : base(@object)
-    {
-    }
     public SyntheticFact(object @object, IFactSource source)
         : base(@object)
     {

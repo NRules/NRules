@@ -149,7 +149,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         reader.TryReadObjectArrayProperty(nameof(LambdaExpression.Parameters), options, ReadParameter, out var parameters);
         var body = reader.ReadProperty<Expression>(nameof(LambdaExpression.Body), options);
 
-        var expression = type is not null
+        var expression = type != null
             ? Expression.Lambda(type, body, parameters)
             : Expression.Lambda(body, parameters);
 
@@ -209,7 +209,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
     private void WriteMember(Utf8JsonWriter writer, JsonSerializerOptions options, MemberExpression value)
     {
         writer.WriteMemberInfo(options, value.Member);
-        if (value.Expression is not null)
+        if (value.Expression != null)
             writer.WriteProperty(nameof(value.Expression), value.Expression, options);
     }
 
@@ -224,7 +224,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
 
     private void WriteMethodCall(Utf8JsonWriter writer, JsonSerializerOptions options, MethodCallExpression value)
     {
-        if (value.Object is not null)
+        if (value.Object != null)
             writer.WriteProperty(nameof(value.Object), value.Object, options);
         writer.WriteMethodInfo(options, value.Method, value.Object?.Type);
         if (value.Arguments.Any())
@@ -302,7 +302,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         writer.WriteProperty(nameof(BinaryExpression.Left), value.Left, options);
         writer.WriteProperty(nameof(BinaryExpression.Right), value.Right, options);
 
-        if (value.Method?.IsSpecialName == false)
+        if (value.Method != null && !value.Method.IsSpecialName)
             writer.WriteMethodInfo(options, value.Method, value.Left.Type);
     }
 
@@ -342,7 +342,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         writer.WriteProperty(nameof(UnaryExpression.Operand), value.Operand, options);
         if (value.Type != value.Operand.Type)
             writer.WriteProperty(nameof(UnaryExpression.Type), value.Type, options);
-        if (value.Method?.IsSpecialName == false)
+        if (value.Method != null && !value.Method.IsSpecialName)
             writer.WriteMethodInfo(options, value.Method, value.Operand.Type);
     }
 

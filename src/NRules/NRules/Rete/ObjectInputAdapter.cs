@@ -18,7 +18,7 @@ internal class ObjectInputAdapter : ITupleSink, IAlphaMemoryNode
         source.Attach(this);
     }
 
-    public void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    public void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
     {
         var toAssert = new List<Fact>(tuples.Count);
         using (var counter = PerfCounter.Assert(context, this))
@@ -38,7 +38,7 @@ internal class ObjectInputAdapter : ITupleSink, IAlphaMemoryNode
         }
     }
 
-    public void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    public void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
     {
         var toUpdate = new List<Fact>(tuples.Count);
         using (var counter = PerfCounter.Update(context, this))
@@ -57,7 +57,7 @@ internal class ObjectInputAdapter : ITupleSink, IAlphaMemoryNode
         }
     }
 
-    public void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    public void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
     {
         var toRetract = new List<Fact>(tuples.Count);
         using (var counter = PerfCounter.Retract(context, this))

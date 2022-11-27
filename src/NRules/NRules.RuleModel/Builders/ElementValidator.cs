@@ -261,15 +261,11 @@ internal static class ElementValidator
 
     public static void ValidatePattern(PatternElement element)
     {
-        switch (element.Source?.ElementType)
-        {
-            case null:
-            case ElementType.Aggregate:
-            case ElementType.Binding:
-                break;
-            default:
-                throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}", nameof(element));
-        }
+        if (element.Source?.ElementType
+            is not null
+            and not ElementType.Aggregate
+            and not ElementType.Binding)
+            throw new ArgumentException($"Invalid source element. ElementType={element.Source.ElementType}", nameof(element));
     }
 
     public static void ValidateBinding(BindingElement element)

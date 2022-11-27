@@ -183,7 +183,7 @@ public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
 
     private void AssertSingleSource()
     {
-        if (_sourceBuilder is not null)
+        if (_sourceBuilder != null)
         {
             throw new InvalidOperationException("Aggregate element can only have a single source");
         }

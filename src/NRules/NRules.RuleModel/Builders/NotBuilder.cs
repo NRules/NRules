@@ -111,7 +111,7 @@ public class NotBuilder : RuleElementBuilder, IBuilder<NotElement>
 
     private void AssertSingleSource()
     {
-        if (_sourceBuilder is not null)
+        if (_sourceBuilder != null)
         {
             throw new InvalidOperationException("NOT element can only have a single source");
         }

@@ -40,7 +40,7 @@ public abstract class RuleElement
 
     internal void AddImports(RuleElement? element)
     {
-        if (element is not null)
+        if (element != null)
             AddImports(new[] { element });
     }
 

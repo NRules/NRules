@@ -24,7 +24,7 @@ internal class ExpressionComparer
     {
         if (ReferenceEquals(x, y))
             return true;
-        if (x is null || y is null)
+        if (x == null || y == null)
             return false;
         if (x.NodeType != y.NodeType || x.Type != y.Type)
             return false;
@@ -178,7 +178,7 @@ internal class ExpressionComparer
 
     private bool MemberExpressionsEqual(MemberExpression x, MemberExpression y, LambdaExpression? rootX, LambdaExpression? rootY)
     {
-        if (x.Expression is null || y.Expression is null)
+        if (x.Expression == null || y.Expression == null)
             return Equals(x.Member, y.Member);
 
         if (x.Expression.NodeType != y.Expression.NodeType)

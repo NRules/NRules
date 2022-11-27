@@ -7,8 +7,8 @@ internal interface IAlphaMemory
     IEnumerable<Fact> Facts { get; }
     int FactCount { get; }
     bool Contains(Fact fact);
-    void Add(IEnumerable<Fact> facts);
-    void Remove(IEnumerable<Fact> facts);
+    void Add(List<Fact> facts);
+    void Remove(List<Fact> facts);
 }
 
 internal class AlphaMemory : IAlphaMemory
@@ -23,7 +23,7 @@ internal class AlphaMemory : IAlphaMemory
         return _facts.Contains(fact);
     }
 
-    public void Add(IEnumerable<Fact> facts)
+    public void Add(List<Fact> facts)
     {
         foreach (var fact in facts)
         {
@@ -31,7 +31,7 @@ internal class AlphaMemory : IAlphaMemory
         }
     }
 
-    public void Remove(IEnumerable<Fact> facts)
+    public void Remove(List<Fact> facts)
     {
         foreach (var fact in facts)
         {

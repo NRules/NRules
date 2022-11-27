@@ -24,7 +24,7 @@ internal class LhsExpressionArguments : IArguments
     {
         var args = new object?[_argumentMap.Count];
 
-        if (_tuple is not null)
+        if (_tuple != null)
         {
             var index = _tuple.Count - 1;
             var enumerable = _tuple.GetEnumerator();
@@ -38,7 +38,7 @@ internal class LhsExpressionArguments : IArguments
             }
         }
 
-        if (_fact is not null)
+        if (_fact != null)
         {
             var mappedIndex = _argumentMap.FactMap[_argumentMap.Count - 1];
             if (mappedIndex >= 0)

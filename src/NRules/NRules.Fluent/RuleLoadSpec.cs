@@ -136,7 +136,7 @@ internal class RuleLoadSpec : IRuleLoadSpec
 
     public IRuleLoadSpec Where(Func<IRuleMetadata, bool> filter)
     {
-        if (_filter is not null)
+        if (_filter != null)
             throw new InvalidOperationException("Rule load specification can only have a single 'Where' clause");
 
         _filter = filter;
@@ -164,7 +164,7 @@ internal class RuleLoadSpec : IRuleLoadSpec
     private IEnumerable<Type> GetRuleTypes()
     {
         var ruleTypes = _typeScanner.GetRuleTypes();
-        if (_filter is not null)
+        if (_filter != null)
         {
             var metadata = ruleTypes.Select(ruleType => new RuleMetadata(ruleType));
             var filteredTypes = metadata.Where(x => _filter(x)).Select(x => x.RuleType);

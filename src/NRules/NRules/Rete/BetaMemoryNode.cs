@@ -32,10 +32,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
             var enumerator = tupleFactList.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                var childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact)
-                {
-                    GroupId = enumerator.CurrentTuple.Id
-                };
+                var childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact, enumerator.CurrentTuple.Id);
                 toAssert.Add(childTuple);
             }
 
@@ -62,10 +59,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
                 Tuple childTuple = memory.FindTuple(enumerator.CurrentTuple, enumerator.CurrentFact);
                 if (childTuple == null)
                 {
-                    childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact)
-                    {
-                        GroupId = enumerator.CurrentTuple.Id
-                    };
+                    childTuple = new Tuple(context.IdGenerator.NextTupleId(), enumerator.CurrentTuple, enumerator.CurrentFact, enumerator.CurrentTuple.Id);
                     toAssert.Add(childTuple);
                 }
                 else
@@ -95,7 +89,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
             while (enumerator.MoveNext())
             {
                 Tuple childTuple = memory.FindTuple(enumerator.CurrentTuple, enumerator.CurrentFact);
-                if (childTuple is not null)
+                if (childTuple != null)
                 {
                     toRetract.Add(childTuple);
                 }
@@ -117,9 +111,11 @@ internal class BetaMemoryNode : IBetaMemoryNode
                 _sinks[i].PropagateAssert(context, tuples);
             }
 
-            using var counter = PerfCounter.Assert(context, this);
-            memory.Add(tuples);
-            counter.SetCount(memory.TupleCount);
+            using (var counter = PerfCounter.Assert(context, this))
+            {
+                memory.Add(tuples);
+                counter.SetCount(memory.TupleCount);
+            }
         }
     }
 

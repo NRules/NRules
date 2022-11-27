@@ -65,7 +65,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private Terminal BuildTerminal(ReteBuilderContext context, IEnumerable<Declaration> ruleDeclarations)
     {
-        if (context.AlphaSource is not null)
+        if (context.AlphaSource != null)
         {
             BuildJoinNode(context, context.AlphaSource);
         }
@@ -78,7 +78,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
     {
         foreach (var childElement in element.ChildElements)
         {
-            if (context.AlphaSource is not null)
+            if (context.AlphaSource != null)
             {
                 BuildJoinNode(context, context.AlphaSource);
             }
@@ -118,7 +118,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
     {
         var conditions = element.Expressions.Find(PatternElement.ConditionName)
             .Cast<ExpressionElement>().ToList();
-        if (element.Source is null)
+        if (element.Source == null)
         {
             context.CurrentAlphaNode = _root;
             context.RegisterDeclaration(element.Declaration);
@@ -195,7 +195,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
         Visit(subnetContext, source);
 
-        if (subnetContext.AlphaSource is null)
+        if (subnetContext.AlphaSource == null)
         {
             subnetContext.AlphaSource = BuildAdapter(subnetContext);
             context.HasSubnet = isJoined;
@@ -210,7 +210,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
         Visit(subnetContext, source);
 
-        if (subnetContext.AlphaSource is null)
+        if (subnetContext.AlphaSource == null)
         {
             subnetContext.AlphaSource = BuildAdapter(subnetContext);
             context.HasSubnet = isJoined;
@@ -239,7 +239,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
                 _expressionComparer.AreEqual(
                     x.Declarations, x.ExpressionElements,
                     context.Declarations, expressionElements));
-        if (node is null)
+        if (node == null)
         {
             var compiledExpressions = new List<ILhsExpression<bool>>(expressionElements.Count);
             foreach (var expressionElement in expressionElements)
@@ -294,7 +294,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
                 _expressionComparer.AreEqual(
                     x.Declarations, x.Expressions,
                     context.Declarations, element.Expressions));
-        if (node is null)
+        if (node == null)
         {
             var aggregatorFactory = BuildAggregatorFactory(context, element);
             node = new AggregateNode(context.BetaSource, alphaSource, element.Name,
@@ -315,7 +315,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             .Sinks.OfType<BindingNode>()
             .FirstOrDefault(x =>
                 _expressionComparer.AreEqual(x.ExpressionElement, element));
-        if (node is null)
+        if (node == null)
         {
             var compiledExpression = _ruleExpressionCompiler.CompileLhsTupleExpression<object?>(element, context.Declarations);
             node = new BindingNode(element, compiledExpression, element.ResultType, context.BetaSource)
@@ -342,7 +342,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             .ChildNodes.OfType<TypeNode>()
             .FirstOrDefault(tn => tn.FilterType == declarationType);
 
-        if (node is null)
+        if (node == null)
         {
             node = new TypeNode(declarationType)
             {
@@ -361,7 +361,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             .ChildNodes.OfType<SelectionNode>()
             .FirstOrDefault(sn => _expressionComparer.AreEqual(sn.ExpressionElement, element));
 
-        if (node is null)
+        if (node == null)
         {
             var compiledExpression = _ruleExpressionCompiler.CompileLhsFactExpression<bool>(element);
             node = new SelectionNode(element, compiledExpression)
@@ -378,7 +378,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
     private AlphaMemoryNode BuildAlphaMemoryNode(ReteBuilderContext context, AlphaNode currentAlphaNode)
     {
         var memoryNode = currentAlphaNode.MemoryNode;
-        if (memoryNode is null)
+        if (memoryNode == null)
         {
             memoryNode = new AlphaMemoryNode
             {
@@ -393,14 +393,25 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private IAggregatorFactory BuildAggregatorFactory(ReteBuilderContext context, AggregateElement element)
     {
-        var factory = element.Name switch
+        IAggregatorFactory factory;
+        switch (element.Name)
         {
-            AggregateElement.CollectName => new CollectionAggregatorFactory(),
-            AggregateElement.GroupByName => new GroupByAggregatorFactory(),
-            AggregateElement.ProjectName => new ProjectionAggregatorFactory(),
-            AggregateElement.FlattenName => new FlatteningAggregatorFactory(),
-            _ => GetCustomFactory(element),
-        };
+            case AggregateElement.CollectName:
+                factory = new CollectionAggregatorFactory();
+                break;
+            case AggregateElement.GroupByName:
+                factory = new GroupByAggregatorFactory();
+                break;
+            case AggregateElement.ProjectName:
+                factory = new ProjectionAggregatorFactory();
+                break;
+            case AggregateElement.FlattenName:
+                factory = new FlatteningAggregatorFactory();
+                break;
+            default:
+                factory = GetCustomFactory(element);
+                break;
+        }
         var compiledExpressions = CompileExpressions(context, element);
         factory.Compile(element, compiledExpressions);
         return factory;
@@ -408,8 +419,13 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private IAggregatorFactory GetCustomFactory(AggregateElement element)
     {
-        var factoryType = element.CustomFactoryType ?? _aggregatorRegistry[element.Name];
-        if (factoryType is null)
+        var factoryType = element.CustomFactoryType;
+        if (factoryType == null)
+        {
+            factoryType = _aggregatorRegistry[element.Name];
+        }
+
+        if (factoryType == null)
         {
             throw new ArgumentException($"Custom aggregator does not have a factory registered. Name={element.Name}");
         }

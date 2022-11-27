@@ -9,6 +9,8 @@ namespace NRules.Aggregators.Collections;
 /// </summary>
 internal class DefaultKeyMap<TKey, TValue>
 {
+    private static readonly TKey DefaultKey = default(TKey)!;
+
     private readonly Dictionary<TKey, TValue> _map = new();
     private KeyValuePair<TKey, TValue>? _defaultPair;
 
@@ -16,12 +18,16 @@ internal class DefaultKeyMap<TKey, TValue>
 
     public bool ContainsKey(TKey key)
     {
-        return Equals(key, default(TKey)) ? _defaultPair.HasValue : _map.ContainsKey(key);
+        if (Equals(key, DefaultKey))
+        {
+            return _defaultPair.HasValue;
+        }
+        return _map.ContainsKey(key!);
     }
 
     public void Add(TKey key, TValue value)
     {
-        if (Equals(key, default(TKey)))
+        if (Equals(key, DefaultKey))
         {
             if (_defaultPair.HasValue)
                 throw new ArgumentException("An item with the default key has already been added");
@@ -35,25 +41,26 @@ internal class DefaultKeyMap<TKey, TValue>
 
     public bool Remove(TKey key)
     {
-        if (Equals(key, default(TKey)))
+        if (Equals(key, DefaultKey))
         {
-            if (!_defaultPair.HasValue)
-                return false;
+            if (_defaultPair.HasValue)
+            {
+                _defaultPair = null;
+                return true;
+            }
 
-            _defaultPair = null;
-            return true;
+            return false;
         }
         return _map.Remove(key);
     }
 
     public bool TryGetValue(TKey key, out TValue value)
     {
-        if (Equals(key, default(TKey)))
+        if (Equals(key, DefaultKey))
         {
             value = _defaultPair.HasValue
-                ? GetDefaultValueUnsafe()
+                ? _defaultPair.Value.Value
                 : default!;
-
             return _defaultPair.HasValue;
         }
         return _map.TryGetValue(key, out value);
@@ -63,18 +70,18 @@ internal class DefaultKeyMap<TKey, TValue>
     {
         get
         {
-            if (Equals(key, default(TKey)))
+            if (Equals(key, DefaultKey))
             {
                 if (!_defaultPair.HasValue)
                     throw new KeyNotFoundException("Default key was not found");
 
-                return GetDefaultValueUnsafe();
+                return _defaultPair.Value.Value;
             }
             return _map[key];
         }
         set
         {
-            if (Equals(key, default(TKey)))
+            if (Equals(key, DefaultKey))
             {
                 SetDefaultValue(value);
             }
@@ -90,7 +97,7 @@ internal class DefaultKeyMap<TKey, TValue>
         get
         {
             if (_defaultPair.HasValue)
-                yield return default(TKey)!; // WARNING: Key can be null for reference types
+                yield return DefaultKey;
 
             foreach (var item in _map)
             {
@@ -104,7 +111,7 @@ internal class DefaultKeyMap<TKey, TValue>
         get
         {
             if (_defaultPair.HasValue)
-                yield return GetDefaultValueUnsafe();
+                yield return _defaultPair.Value.Value;
 
             foreach (var item in _map)
             {
@@ -113,8 +120,5 @@ internal class DefaultKeyMap<TKey, TValue>
         }
     }
 
-    private void SetDefaultValue(TValue value) => _defaultPair = new KeyValuePair<TKey, TValue>(default(TKey)!, value); // WARNING: Key can be null for reference types
-
-    private TValue GetDefaultValueUnsafe() => _defaultPair!.Value.Value;
-
+    private void SetDefaultValue(TValue value) => _defaultPair = new KeyValuePair<TKey, TValue>(DefaultKey, value);
 }

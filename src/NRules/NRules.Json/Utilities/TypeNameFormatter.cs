@@ -10,17 +10,18 @@ internal static class TypeNameFormatter
 
     public static string ConstructAssemblyQualifiedTypeName(TypeName typeName)
     {
-        if (typeName.AssemblyName is null || SystemAssemblyNames.Contains(typeName.AssemblyName.Name))
+        if (typeName.AssemblyName is null ||
+            SystemAssemblyNames.Contains(typeName.AssemblyName.Name))
             return typeName.FullName;
 
         return Assembly.CreateQualifiedName(typeName.AssemblyName.FullName, typeName.FullName);
     }
 
-    public static TypeName ConstructGenericTypeName(TypeName definitionTypeName, IReadOnlyList<TypeName> typeArgumentNames)
+    public static TypeName ConstructGenericTypeName(TypeName definitionTypeName, TypeName[] typeArgumentNames)
     {
         var sb = new StringBuilder(definitionTypeName.FullName);
         sb.Append('[');
-        for (var i = 0; i < typeArgumentNames.Count; i++)
+        for (var i = 0; i < typeArgumentNames.Length; i++)
         {
             if (i > 0)
                 sb.Append(',');
@@ -28,7 +29,6 @@ internal static class TypeNameFormatter
             sb.Append(ConstructAssemblyQualifiedTypeName(typeArgumentNames[i]));
             sb.Append(']');
         }
-
         sb.Append(']');
         return new TypeName(sb.ToString(), definitionTypeName.AssemblyName);
     }

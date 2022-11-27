@@ -23,14 +23,14 @@ internal class Style
 
     public Style Condition(string expression)
     {
-        var condition = new Condition { Expression = expression };
+        var condition = new Condition(expression);
         Conditions.Add(condition);
         return this;
     }
 
     public Style Setter(string property, string? value = null, string? expression = null)
     {
-        var setter = new Setter { Property = property, Value = value, Expression = expression };
+        var setter = new Setter(property, value, expression);
         Setters.Add(setter);
         return this;
     }

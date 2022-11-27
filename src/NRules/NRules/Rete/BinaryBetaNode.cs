@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,8 +6,8 @@ namespace NRules.Rete;
 internal abstract class BinaryBetaNode : BetaNode, IObjectSink
 {
     private readonly bool _isSubnetJoin;
-    private static readonly IReadOnlyCollection<TupleFactSet> EmptySetList = Array.Empty<TupleFactSet>();
-    private static readonly IReadOnlyDictionary<long, List<Fact>> EmptyGroups = new Dictionary<long, List<Fact>>();
+    private static readonly List<TupleFactSet> EmptySetList = new();
+    private static readonly Dictionary<long, List<Fact>> EmptyGroups = new();
 
     public ITupleSource LeftSource { get; }
     public IObjectSource RightSource { get; }
@@ -23,9 +22,9 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         RightSource.Attach(this);
     }
 
-    public abstract void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts);
-    public abstract void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts);
-    public abstract void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts);
+    public abstract void PropagateAssert(IExecutionContext context, List<Fact> facts);
+    public abstract void PropagateUpdate(IExecutionContext context, List<Fact> facts);
+    public abstract void PropagateRetract(IExecutionContext context, List<Fact> facts);
 
     protected TupleFactSet JoinedSet(IExecutionContext context, Tuple tuple)
     {
@@ -40,15 +39,14 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         return new TupleFactSet(tuple, facts);
     }
 
-    protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
+    protected List<TupleFactSet> JoinedSets(IExecutionContext context, List<Tuple> tuples)
     {
-        if (tuples.Count == 0)
-            return EmptySetList;
+        if (tuples.Count == 0) return EmptySetList;
 
         var facts = RightSource.GetFacts(context).ToList();
         if (facts.Count > 0 && _isSubnetJoin)
         {
-            int level = tuples.First().Level;
+            int level = tuples[0].Level;
             var factGroups = GroupFacts(facts, level);
             if (factGroups.Count > 0)
                 return JoinByGroupId(tuples, factGroups);
@@ -57,11 +55,10 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         return CrossJoin(tuples, facts);
     }
 
-    protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    protected IEnumerable<TupleFactSet> JoinedSets(IExecutionContext context, List<Fact> facts)
     {
         var tuples = LeftSource.GetTuples(context).ToList();
-        if (tuples.Count == 0)
-            return EmptySetList;
+        if (tuples.Count == 0) return EmptySetList;
 
         if (_isSubnetJoin)
         {
@@ -74,7 +71,7 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         return CrossJoin(tuples, facts);
     }
 
-    private IEnumerable<TupleFactSet> JoinByGroupId(IEnumerable<Tuple> tuples, IReadOnlyDictionary<long, List<Fact>> factGroups)
+    private List<TupleFactSet> JoinByGroupId(IEnumerable<Tuple> tuples, Dictionary<long, List<Fact>> factGroups)
     {
         var sets = new List<TupleFactSet>();
         foreach (var tuple in tuples)
@@ -85,7 +82,7 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         return sets;
     }
 
-    private static TupleFactSet JoinByGroupId(Tuple tuple, IReadOnlyDictionary<long, List<Fact>> factGroups)
+    private static TupleFactSet JoinByGroupId(Tuple tuple, IDictionary<long, List<Fact>> factGroups)
     {
         var tupleFactSet = factGroups.TryGetValue(tuple.Id, out var tupleFacts)
             ? new TupleFactSet(tuple, tupleFacts)
@@ -93,7 +90,7 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         return tupleFactSet;
     }
 
-    private IEnumerable<TupleFactSet> CrossJoin(IReadOnlyCollection<Tuple> tuples, IReadOnlyCollection<Fact> facts)
+    private List<TupleFactSet> CrossJoin(List<Tuple> tuples, List<Fact> facts)
     {
         var sets = new List<TupleFactSet>(tuples.Count);
         foreach (var tuple in tuples)
@@ -103,17 +100,16 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         return sets;
     }
 
-    private IReadOnlyDictionary<long, List<Fact>> GroupFacts(IReadOnlyCollection<Fact> facts, int level)
+    private Dictionary<long, List<Fact>> GroupFacts(List<Fact> facts, int level)
     {
-        if (facts.Count == 0 || !facts.First().IsWrapperFact)
-            return EmptyGroups;
+        if (facts.Count == 0 || !facts[0].IsWrapperFact) return EmptyGroups;
 
         //This can be further optimized by grouping tuples by GroupId
         //and only descending to parent tuples once per group
         var factGroups = new Dictionary<long, List<Fact>>();
         foreach (var fact in facts)
         {
-            var wrapperFact = (WrapperFact)fact;
+            var wrapperFact = (WrapperFact) fact;
             long groupId = wrapperFact.WrappedTuple.GetGroupId(level);
             if (!factGroups.TryGetValue(groupId, out var factGroup))
             {

@@ -16,7 +16,7 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
     public NodeInfo NodeInfo { get; } = new();
     public IEnumerable<IObjectSink> Sinks => _sinks;
 
-    public void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    public void PropagateAssert(IExecutionContext context, List<Fact> facts)
     {
         var memory = context.WorkingMemory.GetNodeMemory(this);
         foreach (var sink in _sinks)
@@ -24,14 +24,16 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
             sink.PropagateAssert(context, facts);
         }
 
-        using var counter = PerfCounter.Assert(context, this);
-        memory.Add(facts);
+        using (var counter = PerfCounter.Assert(context, this))
+        {
+            memory.Add(facts);
 
-        counter.AddItems(facts.Count);
-        counter.SetCount(memory.FactCount);
+            counter.AddItems(facts.Count);
+            counter.SetCount(memory.FactCount);
+        }
     }
 
-    public void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    public void PropagateUpdate(IExecutionContext context, List<Fact> facts)
     {
         var memory = context.WorkingMemory.GetNodeMemory(this);
         var toUpdate = new List<Fact>();
@@ -63,7 +65,7 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
         }
     }
 
-    public void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    public void PropagateRetract(IExecutionContext context, List<Fact> facts)
     {
         var memory = context.WorkingMemory.GetNodeMemory(this);
         var toRetract = new List<Fact>(facts.Count);
@@ -86,9 +88,11 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
                 sink.PropagateRetract(context, toRetract);
             }
 
-            using var counter = PerfCounter.Retract(context, this);
-            memory.Remove(toRetract);
-            counter.SetCount(memory.FactCount);
+            using (var counter = PerfCounter.Retract(context, this))
+            {
+                memory.Remove(toRetract);
+                counter.SetCount(memory.FactCount);
+            }
         }
     }
 

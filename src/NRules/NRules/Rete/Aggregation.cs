@@ -42,9 +42,9 @@ internal class Aggregation
         }
     }
 
-    private TupleFactList GetList(AggregationAction action)
+    private AggregateList GetList(AggregationAction action)
     {
-        if (_currentList is null || _currentList.Action != action)
+        if (_currentList == null || _currentList.Action != action)
         {
             _currentList = new AggregateList(action);
             _aggregateLists.Add(_currentList);

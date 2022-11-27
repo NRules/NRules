@@ -361,21 +361,22 @@ internal sealed class Session : ISessionInternal
 
     public IFactResult TryInsertAll(IEnumerable<object> facts, BatchOptions options)
     {
-        if (facts is null)
+        if (facts == null)
             throw new ArgumentNullException(nameof(facts));
 
         var failed = new List<object>();
         var toPropagate = new List<Fact>();
         foreach (var factObject in facts)
         {
-            if (_workingMemory.GetFact(factObject) is not null)
+            if (_workingMemory.GetFact(factObject) == null)
+            {
+                var factWrapper = new Fact(factObject);
+                toPropagate.Add(factWrapper);
+            }
+            else
             {
                 failed.Add(factObject);
-                continue;
             }
-
-            var factWrapper = new Fact(factObject);
-            toPropagate.Add(factWrapper);
         }
 
         var result = new FactResult(failed);
@@ -418,7 +419,7 @@ internal sealed class Session : ISessionInternal
 
     public IFactResult TryUpdateAll(IEnumerable<object> facts, BatchOptions options)
     {
-        if (facts is null)
+        if (facts == null)
             throw new ArgumentNullException(nameof(facts));
 
         var failed = new List<object>();
@@ -426,14 +427,15 @@ internal sealed class Session : ISessionInternal
         foreach (var fact in facts)
         {
             var factWrapper = _workingMemory.GetFact(fact);
-            if (factWrapper is null || factWrapper.Source is not null)
+            if (factWrapper != null && factWrapper.Source == null)
+            {
+                UpdateFact(factWrapper, fact);
+                toPropagate.Add(factWrapper);
+            }
+            else
             {
                 failed.Add(fact);
-                continue;
             }
-
-            UpdateFact(factWrapper, fact);
-            toPropagate.Add(factWrapper);
         }
 
         var result = new FactResult(failed);
@@ -476,7 +478,7 @@ internal sealed class Session : ISessionInternal
 
     public IFactResult TryRetractAll(IEnumerable<object> facts, BatchOptions options)
     {
-        if (facts is null)
+        if (facts == null)
             throw new ArgumentNullException(nameof(facts));
 
         var failed = new List<object>();
@@ -484,13 +486,14 @@ internal sealed class Session : ISessionInternal
         foreach (var fact in facts)
         {
             var factWrapper = _workingMemory.GetFact(fact);
-            if (factWrapper is null || factWrapper.Source is not null)
+            if (factWrapper != null && factWrapper.Source == null)
+            {
+                toPropagate.Add(factWrapper);
+            }
+            else
             {
                 failed.Add(fact);
-                continue;
             }
-
-            toPropagate.Add(factWrapper);
         }
 
         var result = new FactResult(failed);
@@ -571,7 +574,7 @@ internal sealed class Session : ISessionInternal
         foreach (var keyedFact in keyedFacts)
         {
             var key = keyedFact.Key;
-            if (_workingMemory.GetLinkedFact(activation, key) is not null)
+            if (_workingMemory.GetLinkedFact(activation, key) != null)
             {
                 throw new ArgumentException($"Linked fact already exists. Key={key}");
             }
@@ -616,9 +619,12 @@ internal sealed class Session : ISessionInternal
         {
             _workingMemory.UpdateLinkedFact(activation, item.Key, item.Fact, item.Value);
         }
-
+#if NETSTANDARD2_0
         LinkedFactSet current;
         if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Update)
+#else
+        if (!_linkedFacts.TryPeek(out var current) || current.Action != LinkedFactAction.Insert)
+#endif
         {
             current = new LinkedFactSet(LinkedFactAction.Update);
             _linkedFacts.Enqueue(current);
@@ -647,8 +653,12 @@ internal sealed class Session : ISessionInternal
             item.Fact.Source = null;
         }
 
+#if NETSTANDARD2_0
         LinkedFactSet current;
         if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Retract)
+#else
+        if (!_linkedFacts.TryPeek(out var current) || current.Action != LinkedFactAction.Insert)
+#endif
         {
             current = new LinkedFactSet(LinkedFactAction.Retract);
             _linkedFacts.Enqueue(current);
@@ -662,8 +672,7 @@ internal sealed class Session : ISessionInternal
         var keyedFacts = new List<KeyValuePair<object, object>>();
         foreach (var key in linkedKeys)
         {
-            var linkedFact = GetLinked(activation, key);
-            if (linkedFact is null)
+            if (GetLinked(activation, key) is not object linkedFact)
             {
                 throw new KeyNotFoundException($"Cannot get linked fact for activation='{activation.Rule.Name}' and key='{key}'");
             }

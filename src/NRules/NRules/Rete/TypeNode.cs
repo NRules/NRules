@@ -21,7 +21,7 @@ internal class TypeNode : AlphaNode
         return isMatchingType;
     }
 
-    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
     {
         var toUpdate = new List<Fact>();
         using (var counter = PerfCounter.Update(context, this))
@@ -38,7 +38,7 @@ internal class TypeNode : AlphaNode
         PropagateUpdateInternal(context, toUpdate);
     }
 
-    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
+    public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
     {
         var toRetract = new List<Fact>();
         using (var counter = PerfCounter.Retract(context, this))
