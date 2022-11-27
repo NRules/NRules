@@ -1,5 +1,6 @@
 using System;
 using NRules.Fluent.Expressions;
+using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Dsl;
 
@@ -27,7 +28,7 @@ public abstract class Rule
     /// <param name="value">Rule name value.</param>
     protected void Name(string value)
     {
-        InvalidateContext();
+        ValidateContext();
         _context.Builder.Name(value);
     }
 
@@ -38,7 +39,7 @@ public abstract class Rule
     /// <param name="value">Priority value.</param>
     protected void Priority(int value)
     {
-        InvalidateContext();
+        ValidateContext();
         _context.Builder.Priority(value);
     }
 
@@ -48,7 +49,7 @@ public abstract class Rule
     /// <returns>Dependencies expression builder.</returns>
     protected IDependencyExpression Dependency()
     {
-        InvalidateContext();
+        ValidateContext();
         var builder = _context.Builder.Dependencies();
         var expression = new DependencyExpression(builder, _context.SymbolStack);
         return expression;
@@ -60,7 +61,7 @@ public abstract class Rule
     /// <returns>Filters expression builder.</returns>
     protected IFilterExpression Filter()
     {
-        InvalidateContext();
+        ValidateContext();
         var builder = _context.Builder.Filters();
         var expression = new FilterExpression(builder, _context.SymbolStack);
         return expression;
@@ -72,7 +73,7 @@ public abstract class Rule
     /// <returns>Left hand side expression builder.</returns>
     protected ILeftHandSideExpression When()
     {
-        InvalidateContext();
+        ValidateContext();
         var builder = _context.Builder.LeftHandSide();
         var expression = new LeftHandSideExpression(builder, _context.SymbolStack);
         return expression;
@@ -84,7 +85,7 @@ public abstract class Rule
     /// <returns>Right hand side expression builder.</returns>
     protected IRightHandSideExpression Then()
     {
-        InvalidateContext();
+        ValidateContext();
         var builder = _context.Builder.RightHandSide();
         var expression = new RightHandSideExpression(builder, _context.SymbolStack);
         return expression;
@@ -95,12 +96,12 @@ public abstract class Rule
     /// </summary>
     public abstract void Define();
 
-    internal void Define(RuleBuildContext context)
+    internal void Define(RuleBuilder builder)
     {
         var defaultContext = _context;
         try
         {
-            _context = context;
+            _context = new RuleBuildContext(builder);
             Define();
         }
         finally
@@ -109,9 +110,27 @@ public abstract class Rule
         }
     }
 
-    private void InvalidateContext()
+    private void ValidateContext()
     {
         if (_context.IsEmpty)
             throw new InvalidOperationException("Use Define(RuleBuildContext context) method");
     }
+
+    private readonly struct RuleBuildContext
+    {
+        public RuleBuildContext(RuleBuilder builder)
+        {
+            Builder = builder;
+            SymbolStack = new();
+        }
+
+        public static RuleBuildContext Empty = new();
+
+        public SymbolStack SymbolStack { get; }
+
+        public RuleBuilder Builder { get; }
+
+        public bool IsEmpty => Builder is null;
+    }
+
 }
