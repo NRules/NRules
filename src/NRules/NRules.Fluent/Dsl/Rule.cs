@@ -1,27 +1,24 @@
+using System;
 using NRules.Fluent.Expressions;
-using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Dsl;
 
 /// <summary>
 /// Base class for inline rule definitions.
 /// To create a rule using internal DSL, create a class that inherits from <c>NRules.Fluent.Dsl.Rule</c>
-/// and override <see cref="Define"/> method.
-/// Use <see cref="When"/> and <see cref="Then"/> methods to define rule's conditions and actions correspondingly.
+/// and override <see cref="Define()"/> method.
+/// Use <see cref="When()"/> and <see cref="Then()"/> methods to define rule's conditions and actions correspondingly.
 /// A rule can also be decorated with attributes to add relevant metadata:
 /// <see cref="NameAttribute"/>, <see cref="DescriptionAttribute"/>, <see cref="TagAttribute"/>, 
 /// <see cref="PriorityAttribute"/>, <see cref="RepeatabilityAttribute"/>.
 /// </summary>
 public abstract class Rule
 {
-    private readonly RuleBuilder _builder = new();
-    private readonly SymbolStack _symbolStack = new();
+    private RuleBuildContext _context = RuleBuildContext.Empty;
 
     protected Rule()
     {
     }
-
-    internal RuleBuilder Builder => _builder;
 
     /// <summary>
     /// Sets rule's name.
@@ -30,7 +27,8 @@ public abstract class Rule
     /// <param name="value">Rule name value.</param>
     protected void Name(string value)
     {
-        _builder.Name(value);
+        InvalidateContext();
+        _context.Builder.Name(value);
     }
 
     /// <summary>
@@ -40,7 +38,8 @@ public abstract class Rule
     /// <param name="value">Priority value.</param>
     protected void Priority(int value)
     {
-        _builder.Priority(value);
+        InvalidateContext();
+        _context.Builder.Priority(value);
     }
 
     /// <summary>
@@ -49,8 +48,9 @@ public abstract class Rule
     /// <returns>Dependencies expression builder.</returns>
     protected IDependencyExpression Dependency()
     {
-        var builder = _builder.Dependencies();
-        var expression = new DependencyExpression(builder, _symbolStack);
+        InvalidateContext();
+        var builder = _context.Builder.Dependencies();
+        var expression = new DependencyExpression(builder, _context.SymbolStack);
         return expression;
     }
 
@@ -60,8 +60,9 @@ public abstract class Rule
     /// <returns>Filters expression builder.</returns>
     protected IFilterExpression Filter()
     {
-        var builder = _builder.Filters();
-        var expression = new FilterExpression(builder, _symbolStack);
+        InvalidateContext();
+        var builder = _context.Builder.Filters();
+        var expression = new FilterExpression(builder, _context.SymbolStack);
         return expression;
     }
 
@@ -71,8 +72,9 @@ public abstract class Rule
     /// <returns>Left hand side expression builder.</returns>
     protected ILeftHandSideExpression When()
     {
-        var builder = _builder.LeftHandSide();
-        var expression = new LeftHandSideExpression(builder, _symbolStack);
+        InvalidateContext();
+        var builder = _context.Builder.LeftHandSide();
+        var expression = new LeftHandSideExpression(builder, _context.SymbolStack);
         return expression;
     }
 
@@ -82,8 +84,9 @@ public abstract class Rule
     /// <returns>Right hand side expression builder.</returns>
     protected IRightHandSideExpression Then()
     {
-        var builder = _builder.RightHandSide();
-        var expression = new RightHandSideExpression(builder, _symbolStack);
+        InvalidateContext();
+        var builder = _context.Builder.RightHandSide();
+        var expression = new RightHandSideExpression(builder, _context.SymbolStack);
         return expression;
     }
 
@@ -91,4 +94,24 @@ public abstract class Rule
     /// Method called by the rules engine to define the rule.
     /// </summary>
     public abstract void Define();
+
+    internal void Define(RuleBuildContext context)
+    {
+        var defaultContext = _context;
+        try
+        {
+            _context = context;
+            Define();
+        }
+        finally
+        {
+            _context = defaultContext;
+        }
+    }
+
+    private void InvalidateContext()
+    {
+        if (_context.IsEmpty)
+            throw new InvalidOperationException("Use Define(RuleBuildContext context) method");
+    }
 }

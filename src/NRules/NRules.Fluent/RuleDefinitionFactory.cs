@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using NRules.Fluent.Dsl;
 using NRules.RuleModel;
-using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent;
 
@@ -49,27 +48,10 @@ public class RuleDefinitionFactory
     {
         var metadata = new RuleMetadata(rule.GetType());
 
-        ApplyMetadata(rule.Builder, metadata);
+        var context = RuleBuildContext.CreateNew(metadata);
 
-        rule.Define();
+        rule.Define(context);
 
-        return rule.Builder.Build();
-    }
-
-    private static void ApplyMetadata(RuleBuilder builder, RuleMetadata metadata)
-    {
-        builder.Name(metadata.Name);
-        builder.Description(metadata.Description);
-        builder.Tags(metadata.Tags);
-        builder.Property(RuleProperties.ClrType, metadata.RuleType);
-
-        if (metadata.Priority.HasValue)
-        {
-            builder.Priority(metadata.Priority.Value);
-        }
-        if (metadata.Repeatability.HasValue)
-        {
-            builder.Repeatability(metadata.Repeatability.Value);
-        }
+        return context.Builder.Build();
     }
 }
