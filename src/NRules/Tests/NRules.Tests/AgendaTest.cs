@@ -65,7 +65,7 @@ public class AgendaTest
     {
         // Arrange
         var rule = MockRule();
-        var factObject = new FactObject {Value = "Test"};
+        var factObject = new FactObject { Value = "Test" };
         var tuple = CreateTuple(factObject);
         var activation = new Activation(rule, tuple);
         var target = CreateTarget();
@@ -77,7 +77,7 @@ public class AgendaTest
         Assert.False(target.IsEmpty);
         var actualActivation = target.Pop();
         Assert.Equal(rule, actualActivation.CompiledRule);
-        Assert.Equal(factObject, actualActivation.Tuple.RightFact.Object);
+        Assert.Equal(factObject, actualActivation.Tuple.RightFact?.Object);
         Assert.True(target.IsEmpty);
     }
 
@@ -86,7 +86,7 @@ public class AgendaTest
     {
         // Arrange
         var rule = MockRule();
-        var factObject = new FactObject {Value = "Test"};
+        var factObject = new FactObject { Value = "Test" };
         var tuple = CreateTuple(factObject);
         var activation = new Activation(rule, tuple);
         var target = CreateTarget();
@@ -104,7 +104,7 @@ public class AgendaTest
     {
         // Arrange
         var rule = MockRule();
-        var factObject = new FactObject {Value = "Test"};
+        var factObject = new FactObject { Value = "Test" };
         var tuple = CreateTuple(factObject);
         var activation = new Activation(rule, tuple);
         var target = CreateTarget();
@@ -122,7 +122,7 @@ public class AgendaTest
     {
         // Arrange
         var rule = MockRule();
-        var factObject = new FactObject {Value = "Test"};
+        var factObject = new FactObject { Value = "Test" };
         var tuple = CreateTuple(factObject);
         var activation = new Activation(rule, tuple);
         var target = CreateTarget();
@@ -141,7 +141,7 @@ public class AgendaTest
     {
         // Arrange
         var rule = MockRule();
-        var factObject = new FactObject {Value = "Test"};
+        var factObject = new FactObject { Value = "Test" };
         var tuple = CreateTuple(factObject);
         var activation = new Activation(rule, tuple);
         var target = CreateTarget();
@@ -159,7 +159,7 @@ public class AgendaTest
     {
         // Arrange
         var rule = MockRule();
-        var factObject = new FactObject {Value = "Test"};
+        var factObject = new FactObject { Value = "Test" };
         var tuple = CreateTuple(factObject);
         var activation = new Activation(rule, tuple);
         var target = CreateTarget();
@@ -211,7 +211,7 @@ public class AgendaTest
         Assert.False(target.IsEmpty);
         var actualActivation = target.Pop();
         Assert.Equal(rule, actualActivation.CompiledRule);
-        Assert.Equal(factObject.Value, ((FactObject)actualActivation.Tuple.RightFact.Object).Value);
+        Assert.Equal(factObject.Value, ((FactObject?)actualActivation.Tuple.RightFact?.Object)?.Value);
         Assert.True(target.IsEmpty);
     }
 
@@ -290,7 +290,7 @@ public class AgendaTest
         var target = CreateTarget();
         target.Add(activation);
 
-        _session.Setup(x => x.GetLinkedKeys(activation)).Returns(new object[0]);
+        _session.Setup(x => x.GetLinkedKeys(activation)).Returns(Array.Empty<object>());
 
         // Act
         target.Remove(activation);
@@ -389,7 +389,7 @@ public class AgendaTest
 
     private class FactObject
     {
-        public string Value { get; set; }
+        public string? Value { get; set; }
     }
 
     private class RejectingFilter : IAgendaFilter

@@ -15,12 +15,12 @@ internal class ExpressionComparer
         _compilerOptions = compilerOptions;
     }
 
-    public bool AreEqual(Expression x, Expression y)
+    public bool AreEqual(Expression? x, Expression? y)
     {
         return ExpressionEqual(x, y, null, null);
     }
 
-    private bool ExpressionEqual(Expression x, Expression y, LambdaExpression? rootX, LambdaExpression? rootY)
+    private bool ExpressionEqual(Expression? x, Expression? y, LambdaExpression? rootX, LambdaExpression? rootY)
     {
         if (ReferenceEquals(x, y))
             return true;

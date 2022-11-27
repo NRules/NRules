@@ -16,7 +16,7 @@ public class FlatteningAggregatorTest : AggregatorTest
 
         //Act
         var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         //Assert
         Assert.Equal(4, result.Length);
@@ -38,7 +38,7 @@ public class FlatteningAggregatorTest : AggregatorTest
 
         //Act
         var facts = AsFact(new TestFact(1, "value11", "value12", "value12", "valuex"), new TestFact(2, "value21", "value21", "value22", "valuex"));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         //Assert
         Assert.Equal(5, result.Length);
@@ -61,8 +61,8 @@ public class FlatteningAggregatorTest : AggregatorTest
         var target = CreateTarget();
 
         //Act
-        var facts = AsFact(new TestFact[0]);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var facts = AsFact(Array.Empty<TestFact>());
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         //Assert
         Assert.Empty(result);
@@ -74,11 +74,11 @@ public class FlatteningAggregatorTest : AggregatorTest
         //Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         //Act
         var toUpdate = facts.Take(1).ToArray();
-        var result = target.Modify(null, EmptyTuple(), toUpdate).ToArray();
+        var result = target.Modify(Context, EmptyTuple(), toUpdate).ToArray();
 
         //Assert
         Assert.Equal(2, result.Length);
@@ -94,12 +94,12 @@ public class FlatteningAggregatorTest : AggregatorTest
         //Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         //Act
         facts[0].Value = new TestFact(3, "value31", "value32");
         var toUpdate = facts.Take(1).ToArray();
-        var result = target.Modify(null, EmptyTuple(), toUpdate).ToArray();
+        var result = target.Modify(Context, EmptyTuple(), toUpdate).ToArray();
 
         //Assert
         Assert.Equal(4, result.Length);
@@ -119,12 +119,12 @@ public class FlatteningAggregatorTest : AggregatorTest
         //Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         //Act
         facts[0].Value = new TestFact(2, "value12", "value13");
         var toUpdate = facts.Take(1).ToArray();
-        var result = target.Modify(null, EmptyTuple(), toUpdate).ToArray();
+        var result = target.Modify(Context, EmptyTuple(), toUpdate).ToArray();
 
         //Assert
         Assert.Equal(3, result.Length);
@@ -143,12 +143,12 @@ public class FlatteningAggregatorTest : AggregatorTest
         var target = CreateTarget();
 
         var facts = AsFact(new TestFact(1, "value11", "value12", "value12", "valuex"), new TestFact(2, "value21", "value21", "value22", "valuex"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         //Act
         facts[0].Value = new TestFact(2, "value12", "value13");
         var toUpdate = facts.Take(1).ToArray();
-        var result = target.Modify(null, EmptyTuple(), toUpdate).ToArray();
+        var result = target.Modify(Context, EmptyTuple(), toUpdate).ToArray();
 
         //Assert
         Assert.Equal(3, result.Length);
@@ -168,7 +168,7 @@ public class FlatteningAggregatorTest : AggregatorTest
 
         //Act - Assert
         Assert.Throws<KeyNotFoundException>(
-            () => target.Modify(null, EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))));
+            () => target.Modify(Context, EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))));
     }
 
     [Fact]
@@ -177,11 +177,11 @@ public class FlatteningAggregatorTest : AggregatorTest
         //Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         //Act
         var toRemove = facts.Take(1).ToArray();
-        var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
+        var result = target.Remove(Context, EmptyTuple(), toRemove).ToArray();
 
         //Assert
         Assert.Equal(2, result.Length);
@@ -198,11 +198,11 @@ public class FlatteningAggregatorTest : AggregatorTest
         var target = CreateTarget();
 
         var facts = AsFact(new TestFact(1, "value11", "value12", "value12", "valuex"), new TestFact(2, "value21", "value21", "value22", "valuex"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         //Act - I
         var toRemove1 = facts.Take(1).ToArray();
-        var result1 = target.Remove(null, EmptyTuple(), toRemove1).ToArray();
+        var result1 = target.Remove(Context, EmptyTuple(), toRemove1).ToArray();
 
         //Assert - I
         Assert.Equal(2, result1.Length);
@@ -213,7 +213,7 @@ public class FlatteningAggregatorTest : AggregatorTest
 
         //Act - II
         var toRemove2 = facts.Skip(1).Take(1).ToArray();
-        var result2 = target.Remove(null, EmptyTuple(), toRemove2).ToArray();
+        var result2 = target.Remove(Context, EmptyTuple(), toRemove2).ToArray();
 
         //Assert - II
         Assert.Equal(3, result2.Length);
@@ -233,7 +233,7 @@ public class FlatteningAggregatorTest : AggregatorTest
 
         //Act - Assert
         Assert.Throws<KeyNotFoundException>(
-            () => target.Remove(null, EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))));
+            () => target.Remove(Context, EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))));
     }
 
     private FlatteningAggregator<TestFact, string> CreateTarget()
@@ -253,19 +253,24 @@ public class FlatteningAggregatorTest : AggregatorTest
         public int Id { get; }
         public string[] Values { get; }
 
-        public bool Equals(TestFact other)
+        public bool Equals(TestFact? other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
             return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((TestFact) obj);
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != this.GetType())
+                return false;
+            return Equals((TestFact)obj);
         }
 
         public override int GetHashCode()

@@ -56,8 +56,11 @@ public class ReverseComparerTest
         var reversedComparer = new ReverseComparer<string>(comparer);
 
         // Act-Assert (Precondition)
+#if NET48
+        Assert.Equal(-1, comparer.Compare(null!, "A"));
+#else
         Assert.Equal(-1, comparer.Compare(null, "A"));
-
+#endif
         // Act-Assert
         Assert.Equal(1, reversedComparer.Compare(null, "A"));
     }
@@ -70,7 +73,11 @@ public class ReverseComparerTest
         var reversedComparer = new ReverseComparer<string>(comparer);
 
         // Act-Assert (Precondition)
+#if NET48
+        Assert.Equal(0, comparer.Compare(null!, null!));
+#else
         Assert.Equal(0, comparer.Compare(null, null));
+#endif
 
         // Act-Assert
         Assert.Equal(0, reversedComparer.Compare(null, null));
@@ -84,7 +91,11 @@ public class ReverseComparerTest
         var reversedComparer = new ReverseComparer<string>(comparer);
 
         // Act-Assert (Precondition)
+#if NET48
+        Assert.Equal(1, comparer.Compare("A", null!));
+#else
         Assert.Equal(1, comparer.Compare("A", null));
+#endif
 
         // Act-Assert
         Assert.Equal(-1, reversedComparer.Compare("A", null));

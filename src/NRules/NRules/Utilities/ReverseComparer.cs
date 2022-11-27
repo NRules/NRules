@@ -11,8 +11,12 @@ internal class ReverseComparer<T> : IComparer<T>
         _comparer = comparer;
     }
 
-    public int Compare(T x, T y)
+    public int Compare(T? x, T? y)
     {
+#if NETSTANDARD
+        return _comparer.Compare(y!, x!);
+#else
         return _comparer.Compare(y, x);
+#endif
     }
 }

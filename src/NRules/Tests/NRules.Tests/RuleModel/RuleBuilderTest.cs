@@ -53,7 +53,7 @@ public class RuleBuilderTest
         var patternBuilder1 = lhs.Pattern(typeof(FactType1), "fact1");
         Expression<Func<FactType1, bool>> condition11 = invalidName => invalidName.TestProperty.StartsWith("Valid");
         patternBuilder1.Condition(condition11);
-        
+
         Expression<Action<IContext>> action = context => NoOp();
         builder.RightHandSide().Action(action);
 
@@ -74,7 +74,7 @@ public class RuleBuilderTest
         var patternBuilder1 = lhs.Pattern(typeof(FactType1), "fact1");
         Expression<Func<FactType1, bool>> condition11 = fact1 => fact1.TestProperty.StartsWith("Valid");
         patternBuilder1.Condition(condition11);
-        
+
         Expression<Func<FactType1, bool>> filter1 = invalidName => invalidName.TestProperty == "Valid Value";
         builder.Filters().Filter(FilterType.Predicate, filter1);
 
@@ -98,7 +98,7 @@ public class RuleBuilderTest
         var patternBuilder1 = lhs.Pattern(typeof(FactType1), "fact1");
         Expression<Func<FactType1, bool>> condition11 = fact1 => fact1.TestProperty.StartsWith("Valid");
         patternBuilder1.Condition(condition11);
-        
+
         Expression<Action<IContext, FactType1>> action = (context, invalidName) => NoOp();
         builder.RightHandSide().Action(action);
 
@@ -106,7 +106,7 @@ public class RuleBuilderTest
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
         Assert.Equal("Undefined variables in rule actions. Variables=invalidName", ex.Message);
     }
-    
+
     [Fact]
     public void Build_DuplicatePatternDefinition_Throws()
     {
@@ -117,7 +117,7 @@ public class RuleBuilderTest
         var lhs = builder.LeftHandSide();
         lhs.Pattern(typeof(FactType1), "fact1");
         lhs.Pattern(typeof(FactType2), "fact1");
-        
+
         Expression<Action<IContext>> action = (context) => NoOp();
         builder.RightHandSide().Action(action);
 
@@ -125,7 +125,7 @@ public class RuleBuilderTest
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
         Assert.Equal("Duplicate declarations. Declaration=fact1", ex.Message);
     }
-    
+
     [Fact]
     public void Build_DuplicatePatternAndDependencyDefinition_Throws()
     {
@@ -138,7 +138,7 @@ public class RuleBuilderTest
 
         var lhs = builder.LeftHandSide();
         lhs.Pattern(typeof(FactType1), "variable1");
-        
+
         Expression<Action<IContext>> action = (context) => NoOp();
         builder.RightHandSide().Action(action);
 
@@ -146,7 +146,7 @@ public class RuleBuilderTest
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
         Assert.Equal("Duplicate declarations. Declaration=variable1", ex.Message);
     }
-    
+
     [Fact]
     public void Build_DuplicateDependencyDefinition_Throws()
     {
@@ -160,7 +160,7 @@ public class RuleBuilderTest
 
         var lhs = builder.LeftHandSide();
         lhs.Pattern(typeof(FactType1), "fact1");
-        
+
         Expression<Action<IContext>> action = (context) => NoOp();
         builder.RightHandSide().Action(action);
 
@@ -175,16 +175,27 @@ public class RuleBuilderTest
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        public FactType1(string testProperty)
+        {
+            TestProperty = testProperty;
+        }
+
+        public string TestProperty { get; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        public FactType2(string testProperty, string joinProperty)
+        {
+            TestProperty = testProperty;
+            JoinProperty = joinProperty;
+        }
+
+        public string TestProperty { get; }
+        public string JoinProperty { get; }
     }
 
     public interface ITestService
     {
-    }    
+    }
 }

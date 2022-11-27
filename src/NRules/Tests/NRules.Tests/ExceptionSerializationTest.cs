@@ -23,9 +23,9 @@ public class ExceptionSerializationTest
         Assert.NotSame(exception, newException);
         Assert.Equal(exception.Message, newException.Message);
         Assert.Equal(exception.Expression, newException.Expression);
-        Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
+        Assert.Equal(exception.InnerException?.Message, newException.InnerException?.Message);
     }
-        
+
     [Fact]
     public void AgendaExpressionEvaluationException_SerializedDeserialized_Equals()
     {
@@ -41,7 +41,7 @@ public class ExceptionSerializationTest
         Assert.Equal(exception.Message, newException.Message);
         Assert.Equal(exception.RuleName, newException.RuleName);
         Assert.Equal(exception.Expression, newException.Expression);
-        Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
+        Assert.Equal(exception.InnerException?.Message, newException.InnerException?.Message);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class ExceptionSerializationTest
         Assert.Equal(exception.Message, newException.Message);
         Assert.Equal(exception.RuleName, newException.RuleName);
         Assert.Equal(exception.Expression, newException.Expression);
-        Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
+        Assert.Equal(exception.InnerException?.Message, newException.InnerException?.Message);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class ExceptionSerializationTest
         Assert.NotSame(exception, newException);
         Assert.Equal(exception.Message, newException.Message);
         Assert.Equal(exception.RuleName, newException.RuleName);
-        Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
+        Assert.Equal(exception.InnerException?.Message, newException.InnerException?.Message);
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class ExceptionSerializationTest
         Assert.NotSame(exception, newException);
         Assert.Equal(exception.Message, newException.Message);
         Assert.Equal(exception.RuleType, newException.RuleType);
-        Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
+        Assert.Equal(exception.InnerException?.Message, newException.InnerException?.Message);
     }
 
     [Fact]
@@ -110,20 +110,20 @@ public class ExceptionSerializationTest
         Assert.NotSame(exception, newException);
         Assert.Equal(exception.Message, newException.Message);
         Assert.Equal(exception.RuleType, newException.RuleType);
-        Assert.Equal(exception.InnerException.Message, newException.InnerException.Message);
+        Assert.Equal(exception.InnerException?.Message, newException.InnerException?.Message);
     }
 
-    private T SerializeDeserialize<T>(T originalObject) where T: Exception
+    private T SerializeDeserialize<T>(T originalObject) where T : Exception
     {
-        #pragma warning disable SYSLIB0011
+#pragma warning disable SYSLIB0011
         var formatter = new BinaryFormatter();
         using (var stream = new MemoryStream())
         {
             formatter.Serialize(stream, originalObject);
             stream.Seek(0, SeekOrigin.Begin);
-            var newObject = (T) formatter.Deserialize(stream);
+            var newObject = (T)formatter.Deserialize(stream);
             return newObject;
         }
-        #pragma warning restore SYSLIB0011
+#pragma warning restore SYSLIB0011
     }
 }

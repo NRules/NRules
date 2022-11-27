@@ -17,7 +17,7 @@ public class SortedAggregatorTest : AggregatorTest
 
         // Act
         var facts = AsFact(new TestFact(3), new TestFact(1), new TestFact(2));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Added, 1, 2, 3);
@@ -31,7 +31,7 @@ public class SortedAggregatorTest : AggregatorTest
 
         // Act
         var facts = AsFact(new TestFact(2), new TestFact(1), new TestFact(3));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Added, 3, 2, 1);
@@ -45,7 +45,7 @@ public class SortedAggregatorTest : AggregatorTest
 
         // Act
         var facts = AsFact(new TestFact(3, "A"), new TestFact(1, "C"), new TestFact(2, "B"));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Added, "A", "B", "C");
@@ -59,7 +59,7 @@ public class SortedAggregatorTest : AggregatorTest
 
         // Act
         var facts = AsFact(new TestFact(2, "C"), new TestFact(1, "B"), new TestFact(3, "A"));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Added, "C", "B", "A");
@@ -72,11 +72,11 @@ public class SortedAggregatorTest : AggregatorTest
         var target = CreateTarget();
 
         // Act
-        var facts = AsFact(new TestFact[0]);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var facts = AsFact(Array.Empty<TestFact>());
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
-        AssertAggregationResult(result, AggregationAction.Added, new int[0]);
+        AssertAggregationResult(result, AggregationAction.Added, Array.Empty<int>());
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class SortedAggregatorTest : AggregatorTest
 
         // Act
         var facts = AsFact(new TestFact(1), new TestFact(1));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Added, 1, 1);
@@ -98,11 +98,11 @@ public class SortedAggregatorTest : AggregatorTest
     {
         // Arrange
         var target = CreateTarget();
-        target.Add(null, EmptyTuple(), AsFact(new TestFact(5)));
+        target.Add(Context, EmptyTuple(), AsFact(new TestFact(5)));
 
         // Act
         var facts = AsFact(new TestFact(6), new TestFact(4));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 4, 5, 6);
@@ -113,11 +113,11 @@ public class SortedAggregatorTest : AggregatorTest
     {
         // Arrange
         var target = CreateTarget(SortDirection.Descending);
-        target.Add(null, EmptyTuple(), AsFact(new TestFact(5)));
+        target.Add(Context, EmptyTuple(), AsFact(new TestFact(5)));
 
         // Act
         var facts = AsFact(new TestFact(4), new TestFact(6));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 6, 5, 4);
@@ -131,10 +131,10 @@ public class SortedAggregatorTest : AggregatorTest
 
         // Act
         var facts1 = AsFact(new TestFact(1));
-        target.Add(null, EmptyTuple(), facts1).ToArray();
+        _ = target.Add(Context, EmptyTuple(), facts1).ToArray();
 
         var facts2 = AsFact(new TestFact(1));
-        var result = target.Add(null, EmptyTuple(), facts2).ToArray();
+        var result = target.Add(Context, EmptyTuple(), facts2).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 1, 1);
@@ -146,10 +146,10 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1), new TestFact(2));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act
-        var result = target.Modify(null, EmptyTuple(), facts).ToArray();
+        var result = target.Modify(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 1, 2);
@@ -161,12 +161,12 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1), new TestFact(2));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act
         facts[0].Value = new TestFact(4);
         facts[1].Value = new TestFact(3);
-        var result = target.Modify(null, EmptyTuple(), facts).ToArray();
+        var result = target.Modify(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 3, 4);
@@ -178,12 +178,12 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget(SortDirection.Descending);
         var facts = AsFact(new TestFact(1), new TestFact(2));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act
         facts[0].Value = new TestFact(3);
         facts[1].Value = new TestFact(4);
-        var result = target.Modify(null, EmptyTuple(), facts).ToArray();
+        var result = target.Modify(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 4, 3);
@@ -195,10 +195,10 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1), new TestFact(1));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act
-        var result = target.Modify(null, EmptyTuple(), facts).ToArray();
+        var result = target.Modify(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 1, 1);
@@ -210,11 +210,11 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1), new TestFact(1));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act
         facts[0].Value = new TestFact(2);
-        var result = target.Modify(null, EmptyTuple(), facts).ToArray();
+        var result = target.Modify(Context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 1, 2);
@@ -226,14 +226,14 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1), new TestFact(1));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act
         facts[0].Value = new TestFact(3);
-        target.Modify(null, EmptyTuple(), facts.Take(1)).ToArray();
+        _ = target.Modify(Context, EmptyTuple(), facts.Take(1)).ToArray();
 
         facts[1].Value = new TestFact(2);
-        var result = target.Modify(null, EmptyTuple(), facts.Skip(1).Take(1)).ToArray();
+        var result = target.Modify(Context, EmptyTuple(), facts.Skip(1).Take(1)).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 2, 3);
@@ -245,11 +245,11 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1), new TestFact(2));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act - Assert
         Assert.Throws<KeyNotFoundException>(
-            () => target.Modify(null, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
+            () => target.Modify(Context, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
     }
 
     [Fact]
@@ -258,11 +258,11 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1), new TestFact(2), new TestFact(3));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act
         var toRemove = new[] { facts.ElementAt(1) };
-        var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
+        var result = target.Remove(Context, EmptyTuple(), toRemove).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 1, 3);
@@ -274,13 +274,13 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1), new TestFact(2), new TestFact(3));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act
         facts[0].Value = new TestFact(3);
         facts[1].Value = new TestFact(4);
         var toRemove = facts.Take(2).ToArray();
-        var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
+        var result = target.Remove(Context, EmptyTuple(), toRemove).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 3);
@@ -292,11 +292,11 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1), new TestFact(2), new TestFact(2));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act
         var toRemove = facts.Take(2).ToArray();
-        var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
+        var result = target.Remove(Context, EmptyTuple(), toRemove).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 2);
@@ -308,11 +308,11 @@ public class SortedAggregatorTest : AggregatorTest
         // Arrange
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1), new TestFact(2), new TestFact(2));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(Context, EmptyTuple(), facts);
 
         // Act
-        target.Remove(null, EmptyTuple(), facts.Skip(1).Take(1).ToArray()).ToArray();
-        var result = target.Remove(null, EmptyTuple(), facts.Skip(2).Take(1).ToArray()).ToArray();
+        _ = target.Remove(Context, EmptyTuple(), facts.Skip(1).Take(1).ToArray()).ToArray();
+        var result = target.Remove(Context, EmptyTuple(), facts.Skip(2).Take(1).ToArray()).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 1);
@@ -323,11 +323,11 @@ public class SortedAggregatorTest : AggregatorTest
     {
         // Arrange
         var target = CreateTarget();
-        target.Add(null, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2)));
+        target.Add(Context, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2)));
 
         // Act - Assert
         Assert.Throws<KeyNotFoundException>(
-            () => target.Remove(null, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
+            () => target.Remove(Context, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
     }
 
     private static SortedAggregator<TestFact, int> CreateTarget(SortDirection sortDirection = SortDirection.Ascending)
@@ -364,7 +364,7 @@ public class SortedAggregatorTest : AggregatorTest
         Assert.Equal(action == AggregationAction.Added ? null : aggregate, result.Previous);
 
         var actualAggregateKeys = aggregate.Select(keySelector).ToArray();
-        var actualSourceKeys = result.Source.Select(f => keySelector((TestFact)f.Value)).ToArray();
+        var actualSourceKeys = result.Source!.Select(f => keySelector((TestFact)f.Value!)).ToArray();
         Assert.Equal(orderedKeys.Length, actualSourceKeys.Length);
         for (var i = 0; i < orderedKeys.Length; i++)
         {
@@ -389,18 +389,23 @@ public class SortedAggregatorTest : AggregatorTest
         public int Id { get; }
         public string Value { get; }
 
-        public bool Equals(TestFact other)
+        public bool Equals(TestFact? other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
             return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != this.GetType())
+                return false;
             return Equals((TestFact)obj);
         }
 

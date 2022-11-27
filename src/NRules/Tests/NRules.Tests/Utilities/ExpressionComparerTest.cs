@@ -667,7 +667,7 @@ public class ExpressionComparerTest
         AssertNotEqual(first, second, throwOnUnsupported: false);
     }
 
-    private static void AssertEqual(Expression first, Expression second)
+    private static void AssertEqual(Expression? first, Expression? second)
     {
         //Act
         var target = CreateTarget();
@@ -744,7 +744,7 @@ public class ExpressionComparerTest
 
     public class SomeClassWithProperty
     {
-        public string Value { get; set; }
+        public string? Value { get; set; }
     }
 
     public class SomeClassWithListProperty
