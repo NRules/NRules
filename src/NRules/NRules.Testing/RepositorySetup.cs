@@ -8,13 +8,20 @@ namespace NRules.Testing;
 
 internal sealed class RepositorySetup : IRepositorySetup, IRuleAccessor
 {
+    private readonly RuleCompiler _compiler;
     private readonly RuleRepository _repository;
     private readonly Dictionary<Type, IRuleMetadata> _ruleMap = new();
     private readonly Dictionary<string, List<IMatch>> _firedRulesMap = new();
 
-    public RepositorySetup(RuleRepository repository) => _repository = repository;
+    public RepositorySetup(RuleCompiler compiler, RuleRepository repository)
+    {
+        _compiler = compiler;
+        _repository = repository;
+    }
 
     public IReadOnlyCollection<Type> RegisteredRuleTypes => _ruleMap.Keys;
+
+    public RuleCompiler Compiler => _compiler;
 
     public IRuleMetadata GetRule(Type ruleType) =>
         _ruleMap.TryGetValue(ruleType, out var ruleMetadata)

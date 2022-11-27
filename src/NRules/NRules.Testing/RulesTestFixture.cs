@@ -8,24 +8,24 @@ using NRules.RuleModel;
 namespace NRules.Testing;
 
 /// <summary>
-/// Fixture to test rules
+/// Fixture to test rules.
 /// </summary>
 public class RulesTestFixture
 {
     private readonly Lazy<ISession> _lazySession;
-    private readonly IRuleActivator _ruleActivator;
-    private readonly RuleCompiler _compiler;
+    private readonly CachedRuleActivator _ruleActivator;
     private readonly RepositorySetup _setup;
 
-    public RulesTestFixture(IRuleActivator ruleActivator, RuleCompiler compiler, IRuleAsserter asserter)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RulesTestFixture"/> class.
+    /// </summary>
+    public RulesTestFixture(IRuleAsserter asserter)
     {
-        _ruleActivator = ruleActivator;
-        _compiler = compiler;
-        var repository = new RuleRepository
-        {
-            Activator = ruleActivator
-        };
-        _setup = new RepositorySetup(repository);
+        var compiler = new RuleCompiler();
+        var repository = new RuleRepository();
+        _ruleActivator = new CachedRuleActivator(repository.Activator);
+        repository.Activator = _ruleActivator;
+        _setup = new RepositorySetup(compiler, repository);
         Verify = new RulesVerification(asserter, _setup);
 
         _lazySession = new(CreateSession);
@@ -33,7 +33,7 @@ public class RulesTestFixture
         ISession CreateSession()
         {
             var ruleDefinitions = repository.GetRules();
-            var factory = _compiler.Compile(ruleDefinitions);
+            var factory = compiler.Compile(ruleDefinitions);
             var session = factory.CreateSession();
             session.Events.RuleFiredEvent += (_, args) => _setup.OnRuleFired(args.Match);
             return session;
@@ -41,35 +41,35 @@ public class RulesTestFixture
     }
 
     /// <summary>
-    /// Gets the current rules engine session
+    /// Gets the current rules engine session.
     /// </summary>
     /// <remarks>Lazily created</remarks>
     public ISession Session => _lazySession.Value;
 
     /// <summary>
-    /// Gets the setup helper to register rule types
+    /// Gets the setup helper to register rules under test.
     /// </summary>
     public IRepositorySetup Setup => _setup;
 
     /// <summary>
-    /// Gets the rule verification builder
+    /// Gets the rule verification builder to configure rule firing assertions.
     /// </summary>
     public IRulesVerification Verify { get; }
 
     /// <summary>
-    /// Gets the instance of specified rule type <typeparamref name="T"/>
+    /// Gets the instance of the rule under test by the specified rule type.
     /// </summary>
-    /// <typeparam name="T">Type of the rule to get instance of</typeparam>
-    /// <returns>Activated rule of type <typeparamref name="T"/></returns>
+    /// <typeparam name="T">Type of the rule under test to get the instance of.</typeparam>
+    /// <returns>Activated rule instance.</returns>
     public T GetRuleInstance<T>()
         where T : Rule =>
         _ruleActivator.Activate<T>().Single();
 
     /// <summary>
-    /// Gets the fact instances of type <typeparamref name="T"/> that was fired last time
+    /// Gets the matched facts of a given type from the last firing of the rule under test.
     /// </summary>
-    /// <typeparam name="T">Type of the fact</typeparam>
-    /// <returns>Facts of type <typeparamref name="T"/> that was fired</returns>
+    /// <typeparam name="T">Type of the fact.</typeparam>
+    /// <returns>Matching facts.</returns>
     public IEnumerable<T?> GetFiredFacts<T>()
     {
         var factMatchess = GetFiredFactMatches<T>(GetLastFiring);
@@ -77,19 +77,19 @@ public class RulesTestFixture
     }
 
     /// <summary>
-    /// Gets the first fact instance of type <typeparamref name="T"/> that was fired last time
+    /// Gets the first matched fact of a given type from the last firing of the rule under test.
     /// </summary>
-    /// <typeparam name="T">Type of the fact</typeparam>
-    /// <returns>First fact of type <typeparamref name="T"/> that was fired last time</returns>
+    /// <typeparam name="T">Type of the fact.</typeparam>
+    /// <returns>Matching fact.</returns>
     public T? GetFiredFact<T>() =>
          GetFiredFact<T>(GetLastFiring);
 
     /// <summary>
-    /// Gets the first fact instance of type <typeparamref name="T"/> that was fired at <paramref name="index"/>
+    /// Gets the first matched fact of a given type from the firing of the rule under test at <paramref name="index"/> position.
     /// </summary>
-    /// <typeparam name="T">Type of the fact</typeparam>
-    /// <param name="index">Index of firing of the single registered rule</param>
-    /// <returns>First fact of type <typeparamref name="T"/> that was fired at <paramref name="index"/></returns>
+    /// <typeparam name="T">Type of the fact.</typeparam>
+    /// <param name="index">Index of firing of the rule under test (1-based).</param>
+    /// <returns>Matching fact.</returns>
     public T? GetFiredFact<T>(int index) =>
         GetFiredFact<T>((ruleFirings, ruleMetadata) =>
         {
