@@ -13,8 +13,10 @@ internal class NamedExpressionElementConverter : JsonConverter<NamedExpressionEl
     public override NamedExpressionElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         reader.ReadStartObject();
-        var name = reader.ReadStringProperty(nameof(NamedExpressionElement.Name), options);
-        var expression = reader.ReadProperty<LambdaExpression>(nameof(NamedExpressionElement.Expression), options);
+        var name = reader.ReadStringProperty(nameof(NamedExpressionElement.Name), options)
+            ?? throw new JsonException($"Property '{nameof(NamedExpressionElement.Name)}' should have not null value");
+        var expression = reader.ReadProperty<LambdaExpression>(nameof(NamedExpressionElement.Expression), options)
+            ?? throw new JsonException($"Property '{nameof(NamedExpressionElement.Expression)}' should have not null value");
         return Element.Expression(name, expression);
     }
 
@@ -34,7 +36,8 @@ internal class ActionElementConverter : JsonConverter<ActionElement>
         reader.ReadStartObject();
         if (!reader.TryReadEnumProperty<ActionTrigger>(nameof(ActionElement.ActionTrigger), options, out var trigger))
             trigger = ActionElement.DefaultTrigger;
-        var expression = reader.ReadProperty<LambdaExpression>(nameof(ActionElement.Expression), options);
+        var expression = reader.ReadProperty<LambdaExpression>(nameof(ActionElement.Expression), options)
+            ?? throw new JsonException($"Property '{nameof(ActionElement.Expression)}' should have not null value");
         return Element.Action(expression, trigger);
     }
 
@@ -42,7 +45,7 @@ internal class ActionElementConverter : JsonConverter<ActionElement>
     {
         writer.WriteStartObject();
         if (value.ActionTrigger != ActionElement.DefaultTrigger)
-            writer.WriteEnumProperty(nameof(ActionElement.ActionTrigger), value.ActionTrigger, options); 
+            writer.WriteEnumProperty(nameof(ActionElement.ActionTrigger), value.ActionTrigger, options);
         writer.WriteProperty(nameof(ActionElement.Expression), value.Expression, options);
         writer.WriteEndObject();
     }

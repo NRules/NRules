@@ -13,7 +13,7 @@ public class RuleProperty
     /// </summary>
     /// <param name="name">Rule property name.</param>
     /// <param name="value">Rule property value.</param>
-    public RuleProperty(string name, object value)
+    public RuleProperty(string name, object? value)
     {
         Name = name;
         Value = value;
@@ -27,5 +27,5 @@ public class RuleProperty
     /// <summary>
     /// Rule property value.
     /// </summary>
-    public object Value { get; }
+    public object? Value { get; }
 }

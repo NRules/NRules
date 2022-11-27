@@ -16,12 +16,13 @@ internal class TypeName
     {
     }
 
-    public TypeName(string typeFullName, AssemblyName assemblyName)
+    public TypeName(string typeFullName, AssemblyName? assemblyName)
     {
         FullName = typeFullName;
         AssemblyName = assemblyName;
     }
 
     public string FullName { get; }
-    public AssemblyName AssemblyName { get; }
+
+    public AssemblyName? AssemblyName { get; }
 }

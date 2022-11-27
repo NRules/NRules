@@ -45,7 +45,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
                 throw new NotSupportedException($"Unsupported element type. ElementType={elementType}");
         }
     }
-    
+
     public override void Write(Utf8JsonWriter writer, RuleElement value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
@@ -86,7 +86,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
 
         writer.WriteEndObject();
     }
-    
+
     private GroupElement ReadGroup(ref Utf8JsonReader reader, JsonSerializerOptions options, GroupType groupType)
     {
         var children = reader.ReadArrayProperty<RuleElement>(nameof(GroupElement.ChildElements), options);
@@ -100,7 +100,8 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
 
     private ExistsElement ReadExists(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
-        var source = reader.ReadProperty<RuleElement>(nameof(ExistsElement.Source), options);
+        var source = reader.ReadProperty<RuleElement>(nameof(ExistsElement.Source), options)
+            ?? throw new JsonException($"Property '{nameof(ExistsElement.Source)}' should have not null value");
         return Element.Exists(source);
     }
 
@@ -111,7 +112,8 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
 
     private NotElement ReadNot(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
-        var source = reader.ReadProperty<RuleElement>(nameof(NotElement.Source), options);
+        var source = reader.ReadProperty<RuleElement>(nameof(NotElement.Source), options)
+            ?? throw new JsonException($"Property '{nameof(NotElement.Source)}' should have not null value");
         return Element.Not(source);
     }
 
@@ -119,14 +121,17 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
     {
         writer.WriteProperty(nameof(NotElement.Source), value.Source, options);
     }
-    
+
     private AggregateElement ReadAggregate(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
-        var name = reader.ReadStringProperty(nameof(AggregateElement.Name), options);
-        var resultType = reader.ReadProperty<Type>(nameof(AggregateElement.ResultType), options);
+        var name = reader.ReadStringProperty(nameof(AggregateElement.Name), options)
+            ?? throw new JsonException($"Property '{nameof(AggregateElement.Name)}' should have not null value");
+        var resultType = reader.ReadProperty<Type>(nameof(AggregateElement.ResultType), options)
+            ?? throw new JsonException($"Property '{nameof(AggregateElement.ResultType)}' should have not null value");
         reader.TryReadArrayProperty<NamedExpressionElement>(nameof(AggregateElement.Expressions), options, out var expressions);
         reader.TryReadProperty<Type>(nameof(AggregateElement.CustomFactoryType), options, out var customFactoryType);
-        var source = reader.ReadProperty<PatternElement>(nameof(AggregateElement.Source), options);
+        var source = reader.ReadProperty<PatternElement>(nameof(AggregateElement.Source), options)
+            ?? throw new JsonException($"Property '{nameof(AggregateElement.Source)}' should have not null value");
         return Element.Aggregate(resultType, name, expressions, source, customFactoryType);
     }
 
@@ -146,8 +151,10 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
 
     private BindingElement ReadBinding(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
-        var resultType = reader.ReadProperty<Type>(nameof(BindingElement.ResultType), options);
-        var expression = reader.ReadProperty<LambdaExpression>(nameof(BindingElement.Expression), options);
+        var resultType = reader.ReadProperty<Type>(nameof(BindingElement.ResultType), options)
+            ?? throw new JsonException($"Property '{nameof(BindingElement.ResultType)}' should have not null value");
+        var expression = reader.ReadProperty<LambdaExpression>(nameof(BindingElement.Expression), options)
+            ?? throw new JsonException($"Property '{nameof(BindingElement.Expression)}' should have not null value");
         return Element.Binding(resultType, expression);
     }
 
@@ -159,8 +166,10 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
 
     private PatternElement ReadPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
-        var name = reader.ReadStringProperty(nameof(Declaration.Name), options);
-        var type = reader.ReadProperty<Type>(nameof(Declaration.Type), options);
+        var name = reader.ReadStringProperty(nameof(Declaration.Name), options)
+            ?? throw new JsonException($"Property '{nameof(Declaration.Name)}' should have not null value");
+        var type = reader.ReadProperty<Type>(nameof(Declaration.Type), options)
+            ?? throw new JsonException($"Property '{nameof(Declaration.Type)}' should have not null value");
         reader.TryReadArrayProperty<NamedExpressionElement>(nameof(PatternElement.Expressions), options, out var expressions);
         reader.TryReadProperty<RuleElement>(nameof(PatternElement.Source), options, out var source);
         return Element.Pattern(type, name, expressions, source);
@@ -180,13 +189,15 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
 
     private static DependencyElement ReadDependency(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
-        var name = reader.ReadStringProperty(nameof(DependencyElement.Declaration.Name), options);
-        var type = reader.ReadProperty<Type>(nameof(DependencyElement.Declaration.Type), options);
+        var name = reader.ReadStringProperty(nameof(DependencyElement.Declaration.Name), options)
+            ?? throw new JsonException($"Property '{nameof(NamedExpressionElement.Expression)}' should have not null value");
+        var type = reader.ReadProperty<Type>(nameof(DependencyElement.Declaration.Type), options)
+            ?? throw new JsonException($"Property '{nameof(DependencyElement.Declaration.Type)}' should have not null value");
         reader.TryReadProperty<Type>(nameof(DependencyElement.ServiceType), options, out var serviceType);
         var declaration = Element.Declaration(type, name);
         return Element.Dependency(declaration, serviceType ?? type);
     }
-    
+
     private void WriteDependency(Utf8JsonWriter writer, JsonSerializerOptions options, DependencyElement value)
     {
         writer.WriteStringProperty(nameof(Declaration.Name), value.Declaration.Name, options);
@@ -195,14 +206,15 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         if (value.ServiceType != value.Declaration.Type)
             writer.WriteProperty(nameof(value.ServiceType), value.ServiceType, options);
     }
-    
+
     private static FilterElement ReadFilter(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var filterType = reader.ReadEnumProperty<FilterType>(nameof(FilterElement.FilterType), options);
-        var expression = reader.ReadProperty<LambdaExpression>(nameof(FilterElement.Expression), options);
+        var expression = reader.ReadProperty<LambdaExpression>(nameof(FilterElement.Expression), options)
+            ?? throw new JsonException($"Property '{nameof(FilterElement.Expression)}' should have not null value");
         return Element.Filter(filterType, expression);
     }
-    
+
     private void WriteFilter(Utf8JsonWriter writer, JsonSerializerOptions options, FilterElement value)
     {
         writer.WriteEnumProperty(nameof(value.FilterType), value.FilterType, options);
@@ -211,7 +223,8 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
 
     private ForAllElement ReadForAll(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
-        var basePattern = reader.ReadProperty<PatternElement>(nameof(ForAllElement.BasePattern), options);
+        var basePattern = reader.ReadProperty<PatternElement>(nameof(ForAllElement.BasePattern), options)
+            ?? throw new JsonException($"Property '{nameof(ForAllElement.BasePattern)}' should have not null value");
         var patterns = reader.ReadArrayProperty<PatternElement>(nameof(ForAllElement.Patterns), options);
         return Element.ForAll(basePattern, patterns);
     }

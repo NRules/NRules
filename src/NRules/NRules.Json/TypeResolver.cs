@@ -50,7 +50,7 @@ public class TypeResolver : ITypeResolver
     {
         if (_aliasResolver.TryGetAliasForType(type, out var alias))
             return new TypeName(alias);
-        
+
         if (type.IsArray)
         {
             var elementType = type.GetElementType();

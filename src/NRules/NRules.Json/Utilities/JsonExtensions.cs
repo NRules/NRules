@@ -47,39 +47,39 @@ internal static class JsonExtensions
             return false;
 
         reader.Read();
-        
+
         return true;
     }
 
-    public static string ReadStringProperty(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
+    public static string? ReadStringProperty(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
     {
         reader.ReadPropertyName(name, options);
-        
-        string value = reader.GetString();
+
+        var value = reader.GetString();
         reader.Read();
-        
+
         return value;
     }
 
-    public static bool TryReadStringProperty(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out string value)
+    public static bool TryReadStringProperty(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out string? value)
     {
         value = default;
         if (!reader.TryReadPropertyName(name, options))
             return false;
-        
+
         value = reader.GetString();
         reader.Read();
-        
+
         return true;
     }
 
     public static int ReadInt32Property(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
     {
         reader.ReadPropertyName(name, options);
-        
+
         int value = reader.GetInt32();
         reader.Read();
-        
+
         return value;
     }
 
@@ -88,39 +88,39 @@ internal static class JsonExtensions
         value = default;
         if (!reader.TryReadPropertyName(name, options))
             return false;
-        
+
         value = reader.GetInt32();
         reader.Read();
-        
+
         return true;
     }
 
-    public static TEnum ReadEnumProperty<TEnum>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options) where TEnum : struct
+    public static TEnum ReadEnumProperty<TEnum>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options) where TEnum : struct, Enum
     {
         reader.ReadPropertyName(name, options);
-        
-        return reader.ReadEnum<TEnum>(options);
+
+        return reader.ReadEnum<TEnum>();
     }
 
-    public static bool TryReadEnumProperty<TEnum>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out TEnum value) where TEnum : struct
+    public static bool TryReadEnumProperty<TEnum>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out TEnum value) where TEnum : struct, Enum
     {
         value = default;
         if (!reader.TryReadPropertyName(name, options))
             return false;
-        
-        value = reader.ReadEnum<TEnum>(options);
-        
+
+        value = reader.ReadEnum<TEnum>();
+
         return true;
     }
 
-    public static TEnum ReadEnum<TEnum>(this ref Utf8JsonReader reader, JsonSerializerOptions options) where TEnum : struct
+    public static TEnum ReadEnum<TEnum>(this ref Utf8JsonReader reader) where TEnum : struct
     {
         var rawValue = reader.GetString();
         if (!Enum.TryParse(rawValue, ignoreCase: false, out TEnum value) &&
             !Enum.TryParse(rawValue, ignoreCase: true, out value))
             throw new JsonException($"Unable to convert Enum value. Value={rawValue}, EnumType={typeof(TEnum)}");
         reader.Read();
-        
+
         return value;
     }
 
@@ -129,7 +129,7 @@ internal static class JsonExtensions
     public static IReadOnlyCollection<TElement> ReadObjectArrayProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, YieldElement<TElement> elementReader)
     {
         reader.ReadPropertyName(name, options);
-        
+
         return reader.ReadObjectArray(options, elementReader);
     }
 
@@ -138,16 +138,16 @@ internal static class JsonExtensions
         value = Array.Empty<TElement>();
         if (!reader.TryReadPropertyName(name, options))
             return false;
-        
+
         value = reader.ReadObjectArray(options, elementReader);
-        
+
         return true;
     }
 
     private static IReadOnlyCollection<TElement> ReadObjectArray<TElement>(this ref Utf8JsonReader reader, JsonSerializerOptions options, YieldElement<TElement> elementReader)
     {
         reader.ReadStartArray();
-        
+
         var elements = new List<TElement>();
         while (reader.TokenType != JsonTokenType.EndArray)
         {
@@ -159,25 +159,27 @@ internal static class JsonExtensions
             reader.ReadEndObject();
         }
         reader.Read();
-        
+
         return elements;
     }
 
     public static IReadOnlyCollection<TElement> ReadArrayProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
+        where TElement : class
     {
         reader.ReadPropertyName(name, options);
-        
+
         return reader.ReadArray<TElement>(options);
     }
 
     public static bool TryReadArrayProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out IReadOnlyCollection<TElement> value)
+        where TElement : class
     {
         value = Array.Empty<TElement>();
         if (!reader.TryReadPropertyName(name, options))
             return false;
-        
+
         value = reader.ReadArray<TElement>(options);
-        
+
         return true;
     }
 
@@ -188,37 +190,39 @@ internal static class JsonExtensions
             return false;
 
         reader.ReadStartArray();
-        
+
         var elements = new List<string>();
         while (reader.TokenType != JsonTokenType.EndArray)
         {
             var element = reader.GetString();
-            elements.Add(element);
+            elements.Add(element ?? throw new JsonException($"Deserialized element of array of type '{typeof(string).FullName}' at index {elements.Count} as null"));
             reader.Read();
         }
         reader.Read();
-        
+
         value = elements.ToArray();
         return true;
     }
 
     public static IReadOnlyCollection<TElement> ReadArray<TElement>(this ref Utf8JsonReader reader, JsonSerializerOptions options)
+         where TElement : class
     {
         reader.ReadStartArray();
-        
+
         var elements = new List<TElement>();
         while (reader.TokenType != JsonTokenType.EndArray)
         {
             var element = JsonSerializer.Deserialize<TElement>(ref reader, options);
-            elements.Add(element);
+            elements.Add(element ?? throw new JsonException($"Deserialized element of array of type '{typeof(TElement).FullName}' at index {elements.Count} as null"));
             reader.Read();
         }
         reader.Read();
-        
+
         return elements;
     }
 
-    public static TElement ReadProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
+    public static TElement? ReadProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
+        where TElement : class
     {
         reader.ReadPropertyName(name, options);
 
@@ -228,7 +232,7 @@ internal static class JsonExtensions
         return value;
     }
 
-    public static object ReadProperty(this ref Utf8JsonReader reader, string name, Type type, JsonSerializerOptions options)
+    public static object? ReadProperty(this ref Utf8JsonReader reader, string name, Type type, JsonSerializerOptions options)
     {
         reader.ReadPropertyName(name, options);
 
@@ -238,7 +242,8 @@ internal static class JsonExtensions
         return value;
     }
 
-    public static bool TryReadProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out TElement value)
+    public static bool TryReadProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out TElement? value)
+        where TElement : class
     {
         value = default;
         if (!reader.TryReadPropertyName(name, options))
@@ -260,7 +265,7 @@ internal static class JsonExtensions
         writer.WriteNumber(name.ToName(options), value);
     }
 
-    public static void WriteEnumProperty<TEnum>(this Utf8JsonWriter writer, string name, TEnum value, JsonSerializerOptions options) where TEnum: struct
+    public static void WriteEnumProperty<TEnum>(this Utf8JsonWriter writer, string name, TEnum value, JsonSerializerOptions options) where TEnum : struct, Enum
     {
         writer.WriteString(name.ToName(options), value.ToString());
     }
@@ -275,7 +280,7 @@ internal static class JsonExtensions
         writer.WriteEndArray();
     }
 
-    public static void WriteArrayProperty(this Utf8JsonWriter writer, string name, IEnumerable<string> elements, JsonSerializerOptions options)
+    public static void WriteArrayProperty(this Utf8JsonWriter writer, string name, IEnumerable<string?> elements, JsonSerializerOptions options)
     {
         writer.WriteStartArray(name.ToName(options));
         foreach (var element in elements)
@@ -284,7 +289,7 @@ internal static class JsonExtensions
         }
         writer.WriteEndArray();
     }
-    
+
     public static void WriteObjectArrayProperty<TElement>(this Utf8JsonWriter writer, string name, IEnumerable<TElement> elements, JsonSerializerOptions options, Action<TElement> elementAction)
     {
         writer.WriteStartArray(name.ToName(options));
@@ -303,19 +308,27 @@ internal static class JsonExtensions
         JsonSerializer.Serialize(writer, value, options);
     }
 
-    public static void WriteProperty(this Utf8JsonWriter writer, string name, object value, Type valueType, JsonSerializerOptions options)
+    public static void WriteProperty(this Utf8JsonWriter writer, string name, object? value, Type valueType, JsonSerializerOptions options)
     {
         writer.WritePropertyName(name.ToName(options));
         JsonSerializer.Serialize(writer, value, valueType, options);
     }
 
-    private static string ToName(this string name, JsonSerializerOptions options)
+    private static string ToName(this string name, JsonSerializerOptions? options)
     {
         return options?.PropertyNamingPolicy?.ConvertName(name) ?? name;
     }
 
-    private static bool NameEquals(this string rawExpectedName, string rawActualName, JsonSerializerOptions options)
+    private static bool NameEquals(this string? rawExpectedName, string? rawActualName, JsonSerializerOptions? options)
     {
+        if (rawExpectedName is null && rawActualName is null)
+        {
+            return true;
+        }
+        if (rawExpectedName is null || rawActualName is null)
+        {
+            return false;
+        }
         var comparisonType = options?.PropertyNameCaseInsensitive ?? false
             ? StringComparison.CurrentCultureIgnoreCase
             : StringComparison.CurrentCulture;

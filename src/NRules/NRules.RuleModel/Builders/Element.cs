@@ -338,7 +338,7 @@ public static class Element
     /// <param name="expressions">Expressions used by the pattern to match elements.</param>
     /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
     /// <returns>Created element.</returns>
-    public static PatternElement Pattern(Type type, string name, IEnumerable<NamedExpressionElement> expressions, RuleElement source)
+    public static PatternElement Pattern(Type type, string name, IEnumerable<NamedExpressionElement> expressions, RuleElement? source)
     {
         var declaration = Declaration(type, name);
         var element = Pattern(declaration, expressions, source);

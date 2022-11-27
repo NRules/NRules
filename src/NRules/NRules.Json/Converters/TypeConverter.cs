@@ -15,7 +15,7 @@ internal class TypeConverter : JsonConverter<Type>
 
     public override Type Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var typeName = reader.GetString();
+        var typeName = reader.GetString() ?? throw new JsonException("Failed to read type name");
         var type = _typeResolver.GetTypeFromName(typeName);
         return type;
     }

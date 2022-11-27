@@ -14,8 +14,9 @@ internal class RuleDefinitionConverter : JsonConverter<IRuleDefinition>
     {
         reader.ReadStartObject();
 
-        var name = reader.ReadStringProperty(nameof(IRuleDefinition.Name), options);
-        if (!reader.TryReadStringProperty(nameof(IRuleDefinition.Description), options, out var description))
+        var name = reader.ReadStringProperty(nameof(IRuleDefinition.Name), options)
+            ?? throw new JsonException($"Property '{nameof(IRuleDefinition.Name)}' should have not null value");
+        if (!reader.TryReadStringProperty(nameof(IRuleDefinition.Description), options, out var description) || description is null)
             description = string.Empty;
         if (!reader.TryReadInt32Property(nameof(IRuleDefinition.Priority), options, out var priority))
             priority = 0;
@@ -24,13 +25,22 @@ internal class RuleDefinitionConverter : JsonConverter<IRuleDefinition>
         reader.TryReadArrayProperty(nameof(IRuleDefinition.Tags), options, out string[] tags);
         reader.TryReadArrayProperty<RuleProperty>(nameof(IRuleDefinition.Properties), options, out var properties);
         reader.TryReadArrayProperty<DependencyElement>(nameof(DependencyGroupElement.Dependencies), options, out var dependencies);
-        var lhs = reader.ReadProperty<GroupElement>(nameof(IRuleDefinition.LeftHandSide), options);
+        var lhs = reader.ReadProperty<GroupElement>(nameof(IRuleDefinition.LeftHandSide), options)
+            ?? throw new JsonException($"Property '{nameof(IRuleDefinition.LeftHandSide)}' should have not null value");
         reader.TryReadArrayProperty<FilterElement>(nameof(FilterGroupElement.Filters), options, out var filters);
         var actions = reader.ReadArrayProperty<ActionElement>(nameof(IRuleDefinition.RightHandSide), options);
-        
-        var ruleDefinition = Element.RuleDefinition(name, description, priority, 
-            repeatability, tags, properties, Element.DependencyGroup(dependencies),
-            lhs, Element.FilterGroup(filters), Element.ActionGroup(actions));
+
+        var ruleDefinition = Element.RuleDefinition(
+            name,
+            description,
+            priority,
+            repeatability,
+            tags,
+            properties,
+            Element.DependencyGroup(dependencies),
+            lhs,
+            Element.FilterGroup(filters),
+            Element.ActionGroup(actions));
         return ruleDefinition;
     }
 
@@ -55,10 +65,10 @@ internal class RuleDefinitionConverter : JsonConverter<IRuleDefinition>
             writer.WriteArrayProperty(nameof(DependencyGroupElement.Dependencies), value.DependencyGroup.Dependencies, options);
 
         writer.WriteProperty(nameof(IRuleDefinition.LeftHandSide), value.LeftHandSide, options);
-        
+
         if (value.FilterGroup.Filters.Any())
             writer.WriteArrayProperty(nameof(FilterGroupElement.Filters), value.FilterGroup.Filters, options);
-        
+
         writer.WriteArrayProperty(nameof(IRuleDefinition.RightHandSide), value.RightHandSide.Actions, options);
         writer.WriteEndObject();
     }

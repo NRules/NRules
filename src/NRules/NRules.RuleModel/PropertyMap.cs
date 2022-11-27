@@ -33,7 +33,7 @@ public class PropertyMap : IEnumerable<RuleProperty>
     /// </summary>
     /// <param name="name">Property name.</param>
     /// <returns>Matching property value.</returns>
-    public object this[string name]
+    public object? this[string name]
     {
         get
         {
