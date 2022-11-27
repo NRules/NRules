@@ -70,10 +70,10 @@ public class RulesTestFixture
     /// </summary>
     /// <typeparam name="T">Type of the fact</typeparam>
     /// <returns>Facts of type <typeparamref name="T"/> that was fired</returns>
-    public IEnumerable<T> GetFiredFacts<T>()
+    public IEnumerable<T?> GetFiredFacts<T>()
     {
         var factMatchess = GetFiredFactMatches<T>(GetLastFiring);
-        return factMatchess.Select(f => f.Value).Cast<T>();
+        return factMatchess.Select(f => f.Value).Cast<T?>();
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ public class RulesTestFixture
     /// </summary>
     /// <typeparam name="T">Type of the fact</typeparam>
     /// <returns>First fact of type <typeparamref name="T"/> that was fired last time</returns>
-    public T GetFiredFact<T>() =>
+    public T? GetFiredFact<T>() =>
          GetFiredFact<T>(GetLastFiring);
 
     /// <summary>
@@ -90,7 +90,7 @@ public class RulesTestFixture
     /// <typeparam name="T">Type of the fact</typeparam>
     /// <param name="index">Index of firing of the single registered rule</param>
     /// <returns>First fact of type <typeparamref name="T"/> that was fired at <paramref name="index"/></returns>
-    public T GetFiredFact<T>(int index) =>
+    public T? GetFiredFact<T>(int index) =>
         GetFiredFact<T>((ruleFirings, ruleMetadata) =>
         {
             if (ruleFirings.Count < index + 1)
@@ -102,12 +102,12 @@ public class RulesTestFixture
     private static IMatch GetLastFiring(IReadOnlyCollection<IMatch> ruleFirings, IRuleMetadata ruleMetadata) =>
         ruleFirings.LastOrDefault() ?? throw new InvalidOperationException($"Unable to retrieve last firing of the rule {ruleMetadata.Name}");
 
-    private T GetFiredFact<T>(Func<IReadOnlyCollection<IMatch>, IRuleMetadata, IMatch> selector)
+    private T? GetFiredFact<T>(Func<IReadOnlyCollection<IMatch>, IRuleMetadata, IMatch> selector)
     {
         var factMatchess = GetFiredFactMatches<T>(selector);
         var factMatch = factMatchess.FirstOrDefault()
             ?? throw new InvalidOperationException($"Did not find any facts of type {typeof(T)} in the rule match");
-        return (T)factMatch.Value;
+        return (T?)factMatch.Value;
     }
 
     private IEnumerable<IFactMatch> GetFiredFactMatches<T>(Func<IReadOnlyCollection<IMatch>, IRuleMetadata, IMatch> selector)
