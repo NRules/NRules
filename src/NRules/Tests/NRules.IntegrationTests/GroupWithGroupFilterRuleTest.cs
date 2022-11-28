@@ -68,18 +68,18 @@ public class GroupWithGroupFilterRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IGrouping<string, FactType>? group = null;
+            IGrouping<string?, FactType> group = null!;
 
             When()
                 .Query(() => group, x => x
                     .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                     .GroupBy(f => f.GroupProperty)
-                    .Where(z => HasCorrectValue(z!)));
+                    .Where(z => HasCorrectValue(z)));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
 
-        private static bool HasCorrectValue(IGrouping<string, FactType> group)
+        private static bool HasCorrectValue(IGrouping<string?, FactType> group)
         {
             return group.Any(x => x.GroupTestProperty!.Contains("Good"));
         }

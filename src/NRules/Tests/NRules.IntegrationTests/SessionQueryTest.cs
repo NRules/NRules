@@ -89,14 +89,14 @@ public class SessionQueryTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
+            FactType1 fact1 = null!;
 
             When()
-                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"));
+                .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.Insert(new FactType2()
                 {
-                    TestProperty = fact1!.JoinProperty,
+                    TestProperty = fact1.JoinProperty,
                     JoinProperty = fact1.TestProperty
                 }));
         }

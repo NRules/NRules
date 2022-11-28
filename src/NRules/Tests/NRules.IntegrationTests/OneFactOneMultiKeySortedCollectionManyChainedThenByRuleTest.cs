@@ -55,8 +55,8 @@ public class OneFactOneMultiKeySortedCollectionManyChainedThenByRuleTest : BaseR
 
         // Assert
         Verify.Rule().FiredTimes(1);
-        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(32, firedFacts?.Count());
+        var firedFacts = GetFiredFact<IEnumerable<FactType>>()!;
+        Assert.Equal(32, firedFacts.Count());
 
         var expectedOrder = facts
             .OrderBy(f => f.TestPropertyInt1)
@@ -68,7 +68,7 @@ public class OneFactOneMultiKeySortedCollectionManyChainedThenByRuleTest : BaseR
 
         for (int i = 0; i < expectedOrder.Length; i++)
         {
-            Assert.Equal(expectedOrder[i], firedFacts?.ElementAt(i));
+            Assert.Equal(expectedOrder[i], firedFacts.ElementAt(i));
         }
     }
 
@@ -99,7 +99,7 @@ public class OneFactOneMultiKeySortedCollectionManyChainedThenByRuleTest : BaseR
     {
         public override void Define()
         {
-            IEnumerable<FactType>? collection = null;
+            IEnumerable<FactType> collection = null!;
 
             When()
                 .Query(() => collection, x => x

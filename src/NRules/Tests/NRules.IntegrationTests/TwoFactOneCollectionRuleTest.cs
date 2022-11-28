@@ -29,7 +29,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>()?.Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>()!.Count());
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Assert.Equal("fact", matches[0].Declaration.Name);
         Assert.Same(fact1, matches[0].Value);
         Assert.Equal("collection", matches[1].Declaration.Name);
-        Assert.Equal(new[] { fact2 }, (IEnumerable<FactType2>?)matches[1].Value);
+        Assert.Equal(new[] { fact2 }, (IEnumerable<FactType2>)matches[1].Value!);
     }
 
     [Fact]
@@ -92,10 +92,10 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Act
         Session.Fire();
-        var actualCount1 = GetFiredFact<IEnumerable<FactType2>>()?.Count();
+        var actualCount1 = GetFiredFact<IEnumerable<FactType2>>()!.Count();
         Session.Insert(fact23);
         Session.Fire();
-        var actualCount2 = GetFiredFact<IEnumerable<FactType2>>()?.Count();
+        var actualCount2 = GetFiredFact<IEnumerable<FactType2>>()!.Count();
 
         //Assert
         Verify.Rule().FiredTimes(2);
@@ -118,7 +118,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Act
         Session.Fire();
-        var actualCount = GetFiredFact<IEnumerable<FactType2>>()?.Count();
+        var actualCount = GetFiredFact<IEnumerable<FactType2>>()!.Count();
 
         //Assert
         Verify.Rule().FiredTimes(1);
@@ -254,7 +254,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>(0)?.Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>(0)!.Count());
         Assert.Empty(GetFiredFact<IEnumerable<FactType2>>(1));
     }
 
@@ -278,7 +278,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>(0)?.Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>(0)!.Count());
         Assert.Single(GetFiredFact<IEnumerable<FactType2>>(1));
     }
 
@@ -362,15 +362,15 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType1? fact = null;
-            IEnumerable<FactType2>? collection = null;
+            FactType1 fact = null!;
+            IEnumerable<FactType2> collection = null!;
 
             When()
-                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"))
+                .Match(() => fact, f => f.TestProperty!.StartsWith("Valid"))
                 .Query(() => collection, x => x
                     .Match<FactType2>(
-                        f => f!.TestProperty!.StartsWith("Valid"),
-                        f => f.JoinProperty == fact!.TestProperty)
+                        f => f.TestProperty!.StartsWith("Valid"),
+                        f => f.JoinProperty == fact.TestProperty)
                     .Collect());
             Then()
                 .Do(ctx => Action(ctx));

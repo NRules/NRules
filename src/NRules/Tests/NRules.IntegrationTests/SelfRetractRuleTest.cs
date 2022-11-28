@@ -69,12 +69,12 @@ public class SelfRetractRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType? fact = null;
+            FactType fact = null!;
 
             When()
-                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty!.StartsWith("Valid"));
             Then()
-                .Do(ctx => ctx.TryRetract(fact!));
+                .Do(ctx => ctx.TryRetract(fact));
         }
     }
 }

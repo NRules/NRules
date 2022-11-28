@@ -24,7 +24,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>()?.Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>()!.Value);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>()?.Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>()!.Value);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactProjection? projection = null;
+            FactProjection projection = null!;
 
             When()
                 .Query(() => projection, q => q

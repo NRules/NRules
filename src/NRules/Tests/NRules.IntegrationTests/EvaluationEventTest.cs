@@ -3,6 +3,7 @@ using System.Linq;
 using NRules.Diagnostics;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
+using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
 using Xunit;
 
@@ -235,29 +236,25 @@ public class EvaluationEventTest
     {
         public override void Define()
         {
-            FactType1? fact = null;
-            string? value = null;
+            FactType1 fact = null!;
+            string value = null!;
             int length = 0;
 
             When()
                 .Match(() => fact,
-                    f => f!.TestProperty!.StartsWith("Valid"))
+                    f => f.TestProperty!.StartsWith("Valid"))
                 .Query(() => value, q => q
                     .Match<FactType2>(
-                        f => f.JoinProperty == fact!.TestProperty)
+                        f => f.JoinProperty == fact.TestProperty)
                     .Select(x => x.SelectProperty))
-                .Let(() => length, () => value!.Length)
+                .Let(() => length, () => value.Length)
                 .Having(() => length > 5);
 
             Filter()
                 .Where(() => length > 10);
 
             Then()
-                .Do(ctx => NoOp(fact, value));
-        }
-
-        private void NoOp(FactType1? fact, string? value)
-        {
+                .Do(ctx => ctx.NoOp(fact, value));
         }
     }
 }

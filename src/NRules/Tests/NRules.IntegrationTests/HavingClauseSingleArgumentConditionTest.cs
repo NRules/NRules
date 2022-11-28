@@ -37,13 +37,13 @@ public class HavingClauseSingleArgumentConditionTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = default;
-            FactType1? fact2 = default;
+            FactType1 fact1 = null!;
+            FactType1 fact2 = null!;
 
             When()
-                .Match(() => fact1, i => i!.Discriminator == "Type1")
-                .Match(() => fact2, o => o!.Discriminator == "Type2")
-                .Having(() => fact1!.TestProperty == "Valid");
+                .Match(() => fact1, i => i.Discriminator == "Type1")
+                .Match(() => fact2, o => o.Discriminator == "Type2")
+                .Having(() => fact1.TestProperty == "Valid");
 
             Then()
                 .Do(ctx => ctx.NoOp());

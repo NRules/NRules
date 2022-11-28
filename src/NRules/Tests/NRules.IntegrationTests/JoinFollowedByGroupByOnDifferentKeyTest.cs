@@ -37,9 +37,9 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRulesTestFixture
             GetFiredFact<IGrouping<string, FactType2>>(2)
         };
 
-        var correctNumberofFactsPerGroup = firedFacts.Count(x => x?.Count() == 1) == 1 &&
-                                           firedFacts.Count(x => x?.Count() == 2) == 1 &&
-                                           firedFacts.Count(x => x?.Count() == 3) == 1;
+        var correctNumberofFactsPerGroup = firedFacts.Count(x => x!.Count() == 1) == 1 &&
+                                           firedFacts.Count(x => x!.Count() == 2) == 1 &&
+                                           firedFacts.Count(x => x!.Count() == 3) == 1;
         Assert.True(correctNumberofFactsPerGroup);
     }
 
@@ -78,7 +78,7 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRulesTestFixture
             GetFiredFact<IGrouping<string, FactType2>>(1)
         };
 
-        var correctNumberofFactsPerGroup = firedFacts.Count(x => x?.Count() == 3) == 2;
+        var correctNumberofFactsPerGroup = firedFacts.Count(x => x!.Count() == 3) == 2;
         Assert.True(correctNumberofFactsPerGroup);
     }
 
@@ -113,7 +113,7 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRulesTestFixture
             GetFiredFact<IGrouping<string, FactType2>>(0)
         };
 
-        var correctNumberofFactsPerGroup = firedFacts.Count(x => x?.Count() == 3) == 1;
+        var correctNumberofFactsPerGroup = firedFacts.Count(x => x!.Count() == 3) == 1;
         Assert.True(correctNumberofFactsPerGroup);
     }
 
@@ -199,15 +199,15 @@ public class JoinFollowedByGroupByOnDifferentKeyTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact = null;
-            IGrouping<string, FactType2>? group = null;
+            FactType1 fact = null!;
+            IGrouping<string, FactType2> group = null!;
 
             When()
-                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"))
+                .Match(() => fact, f => f.TestProperty!.StartsWith("Valid"))
                 .Query(() => group, x => x
                     .Match<FactType2>(
                         f => f.TestProperty!.StartsWith("Valid"),
-                        f => f.JoinProperty == fact!.JoinProperty)
+                        f => f.JoinProperty == fact.JoinProperty)
                     .GroupBy(f => f.GroupProperty));
             Then()
                 .Do(ctx => ctx.NoOp());

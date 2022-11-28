@@ -242,7 +242,7 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType? fact = null;
+            FactType fact = null!;
 
             When()
                 .Query(() => fact, q => q

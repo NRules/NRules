@@ -307,12 +307,12 @@ public class ThreeFactTwoNotRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
+            FactType1 fact1 = null!;
 
             When()
-                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
-                .Not<FactType2>(f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == fact1!.TestProperty)
-                .Not<FactType3>(f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == fact1!.TestProperty);
+                .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"))
+                .Not<FactType2>(f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
+                .Not<FactType3>(f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty);
             Then()
                 .Do(ctx => ctx.NoOp());
         }

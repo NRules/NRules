@@ -88,15 +88,15 @@ public class TwoFactOrGroupRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
-            FactType2? fact2 = null;
+            FactType1 fact1 = null!;
+            FactType2 fact2 = null!;
 
             When()
                 .Or(x => x
-                    .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                    .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"))
                     .And(xx => xx
-                        .Match(() => fact1, f => f!.TestProperty!.StartsWith("Invalid"))
-                        .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"), f => f!.JoinProperty == fact1!.TestProperty)));
+                        .Match(() => fact1, f => f.TestProperty!.StartsWith("Invalid"))
+                        .Match(() => fact2, f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)));
 
             Then()
                 .Do(ctx => ctx.NoOp());

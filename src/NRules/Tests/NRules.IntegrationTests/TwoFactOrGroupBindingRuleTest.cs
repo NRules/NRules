@@ -78,15 +78,15 @@ public class TwoFactOrGroupBindingRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
-            FactType2? fact2 = null;
-            string? value = null;
+            FactType1 fact1 = null!;
+            FactType2 fact2 = null!;
+            string value = null!;
 
             When()
                 .Or(x => x
-                    .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
-                    .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid")))
-                .Let(() => value, () => GetValue(fact1, fact2!));
+                    .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"))
+                    .Match(() => fact2, f => f.TestProperty!.StartsWith("Valid")))
+                .Let(() => value, () => GetValue(fact1, fact2));
 
             Then()
                 .Do(ctx => ctx.NoOp());

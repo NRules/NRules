@@ -41,7 +41,7 @@ public class CollectionWithConditionsRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(3, GetFiredFact<IEnumerable<FactType>>()?.Count());
+        Assert.Equal(3, GetFiredFact<IEnumerable<FactType>>()!.Count());
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class CollectionWithConditionsRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<FactType>? collection = null;
+            IEnumerable<FactType> collection = null!;
 
             When()
                 .Query(() => collection, x => x

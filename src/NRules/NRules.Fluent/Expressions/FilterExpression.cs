@@ -17,7 +17,7 @@ internal class FilterExpression : IFilterExpression
         _symbolStack = symbolStack;
     }
 
-    public IFilterExpression OnChange(params Expression<Func<object>>[] keySelectors)
+    public IFilterExpression OnChange(params Expression<Func<object?>>[] keySelectors)
     {
         foreach (var keySelector in keySelectors)
         {

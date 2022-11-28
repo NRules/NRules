@@ -180,16 +180,16 @@ public class TwoFactFilterRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
-            FactType2? fact2 = null;
+            FactType1 fact1 = null!;
+            FactType2 fact2 = null!;
 
             When()
-                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
-                .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"));
+                .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"))
+                .Match(() => fact2, f => f.TestProperty!.StartsWith("Valid"));
 
             Filter()
-                .OnChange(() => fact1!.TestProperty!, () => fact2!.TestProperty!)
-                .Where(() => fact1!.Allow, () => fact2!.Allow);
+                .OnChange(() => fact1.TestProperty, () => fact2.TestProperty)
+                .Where(() => fact1.Allow, () => fact2.Allow);
 
             Then()
                 .Do(ctx => ctx.NoOp());

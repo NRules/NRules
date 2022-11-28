@@ -35,11 +35,11 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var firedFacts = GetFiredFact<IGrouping<string, FactType>>();
-        Assert.Equal(4, firedFacts?.Count());
-        Assert.Equal(1, firedFacts?.Count(x => x.TestCount == 3));
-        Assert.Equal(1, firedFacts?.Count(x => x.TestCount == 2));
-        Assert.Equal(2, firedFacts?.Count(x => x.TestCount == 1));
+        var firedFacts = GetFiredFact<IGrouping<string, FactType>>()!;
+        Assert.Equal(4, firedFacts.Count());
+        Assert.Equal(1, firedFacts.Count(x => x.TestCount == 3));
+        Assert.Equal(1, firedFacts.Count(x => x.TestCount == 2));
+        Assert.Equal(2, firedFacts.Count(x => x.TestCount == 1));
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -84,7 +84,7 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<FactType>? facts = null;
+            IEnumerable<FactType> facts = null!;
 
             When()
                 .Query(() => facts, q => q

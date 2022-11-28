@@ -320,11 +320,11 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType1? fact = null;
+            FactType1 fact = null!;
 
             When()
-                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"))
-                .Exists<FactType2>(f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == fact!.TestProperty);
+                .Match(() => fact, f => f.TestProperty!.StartsWith("Valid"))
+                .Exists<FactType2>(f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == fact.TestProperty);
             Then()
                 .Do(ctx => Action(ctx));
         }

@@ -186,11 +186,11 @@ public class TwoFactOneForAllCheckRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact = null;
+            FactType1 fact = null!;
 
             When()
-                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"))
-                .All<FactType2>(f => f.JoinProperty == fact!.TestProperty,
+                .Match(() => fact, f => f.TestProperty!.StartsWith("Valid"))
+                .All<FactType2>(f => f.JoinProperty == fact.TestProperty,
                     f => f.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());

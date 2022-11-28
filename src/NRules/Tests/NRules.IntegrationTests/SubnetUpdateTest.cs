@@ -52,8 +52,8 @@ public class SubnetUpdateTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType1? fact = null;
-            IEnumerable<FactType2>? collection = null;
+            FactType1 fact = null!;
+            IEnumerable<FactType2> collection = null!;
 
             When()
                 .Match(() => fact)
@@ -78,7 +78,7 @@ public class SubnetUpdateTest : BaseRulesTestFixture
             return facts;
         }
 
-        private IEnumerable<FactType2> TransformWithJoin(IEnumerable<FactType2> facts, FactType1? fact)
+        private IEnumerable<FactType2> TransformWithJoin(IEnumerable<FactType2> facts, FactType1 fact)
         {
             return facts;
         }

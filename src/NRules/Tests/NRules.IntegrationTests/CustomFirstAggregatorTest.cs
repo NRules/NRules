@@ -39,8 +39,8 @@ public class CustomFirstAggregatorTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal("Valid Value 1", GetFiredFact<FactType>(0)?.TestProperty);
-        Assert.Equal("Valid Value 4", GetFiredFact<FactType>(1)?.TestProperty);
+        Assert.Equal("Valid Value 1", GetFiredFact<FactType>(0)!.TestProperty);
+        Assert.Equal("Valid Value 4", GetFiredFact<FactType>(1)!.TestProperty);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class CustomFirstAggregatorTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 2", GetFiredFact<FactType>()?.TestProperty);
+        Assert.Equal("Valid Value 2", GetFiredFact<FactType>()!.TestProperty);
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -78,7 +78,7 @@ public class CustomFirstAggregatorTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType? first = null;
+            FactType first = null!;
 
             When()
                 .Query(() => first, q => q

@@ -22,8 +22,8 @@ public class AggregateSubnetTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var calculatedFact = GetFiredFact<CalculatedFact>();
-        Assert.Equal("Valid Value 2", calculatedFact?.Value);
+        var calculatedFact = GetFiredFact<CalculatedFact>()!;
+        Assert.Equal("Valid Value 2", calculatedFact.Value);
     }
 
     [Fact]
@@ -44,8 +44,8 @@ public class AggregateSubnetTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var calculatedFact = GetFiredFact<CalculatedFact>();
-        Assert.Equal("Valid Value 2", calculatedFact?.Value);
+        var calculatedFact = GetFiredFact<CalculatedFact>()!;
+        Assert.Equal("Valid Value 2", calculatedFact.Value);
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -72,9 +72,9 @@ public class AggregateSubnetTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
-            IEnumerable<FactType2>? query = null;
-            CalculatedFact? calculatedFact = null;
+            FactType1 fact1 = null!;
+            IEnumerable<FactType2> query = null!;
+            CalculatedFact calculatedFact = null!;
 
             When()
                 .Match(() => fact1)
@@ -82,7 +82,7 @@ public class AggregateSubnetTest : BaseRulesTestFixture
                     .Match<FactType2>(f => f.TestProperty!.StartsWith("Valid"))
                     .Select(x => x)
                     .Collect())
-                .Let(() => calculatedFact, () => new CalculatedFact { Value = fact1!.TestProperty });
+                .Let(() => calculatedFact, () => new CalculatedFact { Value = fact1.TestProperty });
 
             Then()
                 .Do(ctx => ctx.NoOp());

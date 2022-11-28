@@ -21,7 +21,7 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>()?.Value);
+        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>()!.Value);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>()?.Value);
+        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>()!.Value);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>()?.Value);
+        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>()!.Value);
     }
 
     [Fact]
@@ -154,8 +154,8 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal($"{fact11.TestProperty}|{fact21.TestProperty}", GetFiredFact<FactProjection>(0)?.Value);
-        Assert.Equal($"{fact12.TestProperty}|{fact22.TestProperty}", GetFiredFact<FactProjection>(1)?.Value);
+        Assert.Equal($"{fact11.TestProperty}|{fact21.TestProperty}", GetFiredFact<FactProjection>(0)!.Value);
+        Assert.Equal($"{fact12.TestProperty}|{fact22.TestProperty}", GetFiredFact<FactProjection>(1)!.Value);
     }
 
     [Fact]
@@ -284,14 +284,14 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
-            FactProjection? projection = null;
+            FactType1 fact1 = null!;
+            FactProjection projection = null!;
 
             When()
-                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"))
                 .Query(() => projection, q => q
-                    .Match<FactType2>(f => f.JoinProperty == fact1!.JoinProperty)
-                    .Select(f => new FactProjection(fact1!, f))
+                    .Match<FactType2>(f => f.JoinProperty == fact1.JoinProperty)
+                    .Select(f => new FactProjection(fact1, f))
                     .Where(p => IsValid(p))
                     );
             Then()

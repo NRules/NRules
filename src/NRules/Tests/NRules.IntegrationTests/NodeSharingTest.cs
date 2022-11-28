@@ -118,15 +118,15 @@ public class NodeSharingTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
-            string? joinValue = null;
-            FactType2? fact2 = null;
-            IEnumerable<FactType4>? group = null;
+            FactType1 fact1 = null!;
+            string joinValue = null!;
+            FactType2 fact2 = null!;
+            IEnumerable<FactType4> group = null!;
 
             When()
-                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
-                .Let(() => joinValue, () => fact1!.TestProperty)
-                .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"), f => f!.JoinProperty == joinValue)
+                .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"))
+                .Let(() => joinValue, () => fact1.TestProperty)
+                .Match(() => fact2, f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == joinValue)
                 .Not<FactType3>(f => f.TestProperty!.StartsWith("Invalid"))
                 .Exists<FactType3>(f => f.TestProperty!.StartsWith("Valid"))
                 .Query(() => group, q => q
@@ -146,15 +146,15 @@ public class NodeSharingTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
-            string? joinValue = null;
-            FactType2? fact2 = null;
-            IEnumerable<FactType4>? group = null;
+            FactType1 fact1 = null!;
+            string joinValue = null!;
+            FactType2 fact2 = null!;
+            IEnumerable<FactType4> group = null!;
 
             When()
-                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
-                .Let(() => joinValue, () => fact1!.TestProperty)
-                .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"), f => f!.JoinProperty == joinValue)
+                .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"))
+                .Let(() => joinValue, () => fact1.TestProperty)
+                .Match(() => fact2, f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == joinValue)
                 .Not<FactType3>(f => f.TestProperty!.StartsWith("Invalid"))
                 .Exists<FactType3>(f => f.TestProperty!.StartsWith("Valid"))
                 .Query(() => group, q => q

@@ -34,10 +34,10 @@ public class FromQueryDoubleReferenceTest : BaseRulesTestFixture
         var factsOneExpected = facts.Where(f => f.Key == 1).ToArray();
         var factsTwoExpected = facts.Where(f => f.Key == 2).ToArray();
         var factsOneTwoExpected = factsOneExpected.Concat(factsTwoExpected).ToArray();
-        var factsAllActual = firedFacts.Single(f => f?.Count() == 6)?.ToArray();
-        var factsOneActual = firedFacts.Single(f => f?.Count() == 2)?.ToArray();
-        var factsTwoActual = firedFacts.Single(f => f?.Count() == 3)?.ToArray();
-        var factsOneTwoActual = firedFacts.Single(f => f?.Count() == 5)?.ToArray();
+        var factsAllActual = firedFacts.Single(f => f!.Count() == 6)!.ToArray();
+        var factsOneActual = firedFacts.Single(f => f!.Count() == 2)!.ToArray();
+        var factsTwoActual = firedFacts.Single(f => f!.Count() == 3)!.ToArray();
+        var factsOneTwoActual = firedFacts.Single(f => f!.Count() == 5)!.ToArray();
 
         Assert.Equal(factsAllExpected, factsAllActual);
         Assert.Equal(factsOneExpected, factsOneActual);
@@ -60,10 +60,10 @@ public class FromQueryDoubleReferenceTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<Fact>? factsAll = null;
-            IEnumerable<Fact>? factsOne = null;
-            IEnumerable<Fact>? factsTwo = null;
-            IEnumerable<Fact>? factsOneTwo = null;
+            IEnumerable<Fact> factsAll = null!;
+            IEnumerable<Fact> factsOne = null!;
+            IEnumerable<Fact> factsTwo = null!;
+            IEnumerable<Fact> factsOneTwo = null!;
 
             When()
                 .Query(() => factsAll, q => q
@@ -72,18 +72,18 @@ public class FromQueryDoubleReferenceTest : BaseRulesTestFixture
                     .Where(c => c.Any()))
                 .Query(() => factsOne, q => q
                     .From(() => factsAll)
-                    .SelectMany(f => f!)
+                    .SelectMany(f => f)
                     .Where(f => f.Key == 1)
                     .Collect()
                     .Where(c => c.Any()))
                 .Query(() => factsTwo, q => q
                     .From(() => factsAll)
-                    .SelectMany(c => c!)
+                    .SelectMany(c => c)
                     .Where(f => f.Key == 2)
                     .Collect()
                     .Where(c => c.Any()))
                 .Query(() => factsOneTwo, q => q
-                    .From(() => factsOne!.Concat(factsTwo!)));
+                    .From(() => factsOne.Concat(factsTwo)));
 
             Then()
                 .Do(ctx => ctx.NoOp());

@@ -74,14 +74,14 @@ public class ForwardChainingTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
+            FactType1 fact1 = null!;
 
             When()
-                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"));
+                .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.Insert(new FactType2
                 {
-                    TestProperty = fact1!.JoinProperty,
+                    TestProperty = fact1.JoinProperty,
                     JoinProperty = fact1.TestProperty
                 }));
         }
@@ -91,10 +91,10 @@ public class ForwardChainingTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType2? fact2 = null;
+            FactType2 fact2 = null!;
 
             When()
-                .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"));
+                .Match(() => fact2, f => f.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

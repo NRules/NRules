@@ -96,13 +96,13 @@ public class MultipleQueriesSingleJoinRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
-            IEnumerable<FactType2>? collection2 = null;
-            IEnumerable<FactType3>? collection3 = null;
-            IEnumerable<FactType4>? collection4 = null;
+            FactType1 fact1 = null!;
+            IEnumerable<FactType2> collection2 = null!;
+            IEnumerable<FactType3> collection3 = null!;
+            IEnumerable<FactType4> collection4 = null!;
 
             When()
-                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"))
                 .Query(() => collection2, q => q
                     .Match<FactType2>(f => f.TestProperty!.StartsWith("Valid"))
                     .Collect())
@@ -112,12 +112,12 @@ public class MultipleQueriesSingleJoinRuleTest : BaseRulesTestFixture
                 .Query(() => collection4, q => q
                     .Match<FactType4>(f => f.TestProperty!.StartsWith("Valid"))
                     .Collect()
-                    .Where(x => IsMatch(fact1!, collection2, collection3, x)));
+                    .Where(x => IsMatch(fact1, collection2, collection3, x)));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
 
-        private bool IsMatch(FactType1 fact1, IEnumerable<FactType2>? collection2, IEnumerable<FactType3>? collection3, IEnumerable<FactType4> collection4)
+        private bool IsMatch(FactType1 fact1, IEnumerable<FactType2> collection2, IEnumerable<FactType3> collection3, IEnumerable<FactType4> collection4)
         {
             return collection4.Any(x => x.TestProperty == fact1.TestProperty);
         }

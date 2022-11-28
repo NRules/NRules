@@ -149,13 +149,13 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
-            FactType2? fact21 = null;
-            FactType2? fact22 = null;
-            IEnumerable<FactType3>? group = null;
+            FactType1 fact1 = null!;
+            FactType2 fact21 = null!;
+            FactType2 fact22 = null!;
+            IEnumerable<FactType3> group = null!;
 
             When()
-                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                .Match(() => fact1, f => f.TestProperty!.StartsWith("Valid"))
                 .Query(() => fact21, q => q
                     .Match<FactType2>(f => f.TestProperty == "Value 1")
                     .Collect()
@@ -167,12 +167,12 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
                 .Query(() => group, q => q
                     .Match<FactType3>(f => f.TestProperty!.StartsWith("Valid"))
                     .GroupBy(x => x.GroupProperty)
-                    .Where(g => ValidGroup(fact1!, fact21, fact22, g!)));
+                    .Where(g => ValidGroup(fact1, fact21, fact22, g)));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
 
-        private bool ValidGroup(FactType1 fact1, FactType2? fact21, FactType2? fact22, IGrouping<string, FactType3> group)
+        private bool ValidGroup(FactType1 fact1, FactType2 fact21, FactType2 fact22, IGrouping<string?, FactType3> group)
         {
             fact1.EvalCount++;
             return group.Key == fact1.JoinProperty;

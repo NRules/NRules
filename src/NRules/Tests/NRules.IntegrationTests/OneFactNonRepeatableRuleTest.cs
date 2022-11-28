@@ -56,12 +56,12 @@ public class OneFactNonRepeatableRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType? fact = null;
+            FactType fact = null!;
 
             When()
-                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"), f => f!.TestCount <= 2);
+                .Match(() => fact, f => f.TestProperty!.StartsWith("Valid"), f => f.TestCount <= 2);
             Then()
-                .Do(ctx => fact!.IncrementCount())
+                .Do(ctx => fact.IncrementCount())
                 .Do(ctx => ctx.Update(fact!));
         }
     }

@@ -25,7 +25,7 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()?.Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()!.Count());
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()?.Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()!.Count());
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()?.Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()!.Count());
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -195,7 +195,7 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<FactType>? collection = null;
+            IEnumerable<FactType> collection = null!;
 
             When()
                 .Query(() => collection, q => q

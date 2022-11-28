@@ -48,12 +48,12 @@ public class LinkedFactsErrorTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1? fact1 = null;
+            FactType1 fact1 = null!;
 
             When()
                 .Match(() => fact1);
             Then()
-                .Yield(ctx => Create(fact1!));
+                .Yield(ctx => Create(fact1));
         }
 
         private static FactType2 Create(FactType1 fact1)

@@ -30,9 +30,10 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact21));
         Assert.NotNull(expression);
-        Assert.Equal(2, facts?.Count);
-        Assert.Same(fact11, facts?.First().Value);
-        Assert.Same(fact21, facts?.Skip(1).First().Value);
+        Assert.NotNull(facts);
+        Assert.Equal(2, facts!.Count);
+        Assert.Same(fact11, facts.First().Value);
+        Assert.Same(fact21, facts.Skip(1).First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
     }
 
@@ -105,8 +106,8 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var group = GetFiredFact<IEnumerable<FactType2>>();
-        Assert.Equal(2, group?.Count());
+        var group = GetFiredFact<IEnumerable<FactType2>>()!;
+        Assert.Equal(2, group.Count());
     }
 
     [Fact]
@@ -135,8 +136,8 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var group = GetFiredFact<IEnumerable<FactType2>>();
-        Assert.Equal(2, group?.Count());
+        var group = GetFiredFact<IEnumerable<FactType2>>()!;
+        Assert.Equal(2, group.Count());
     }
 
     [Fact]
@@ -164,7 +165,7 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1", GetFiredFact<FactType1>()?.TestProperty);
+        Assert.Equal("Valid Value 1", GetFiredFact<FactType1>()!.TestProperty);
     }
 
     [Fact]
@@ -194,7 +195,7 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 2", GetFiredFact<FactType1>()?.TestProperty);
+        Assert.Equal("Valid Value 2", GetFiredFact<FactType1>()!.TestProperty);
     }
 
     [Fact]
@@ -295,8 +296,8 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var group = GetFiredFact<IEnumerable<FactType2>>();
-        Assert.Equal(2, group?.Count());
+        var group = GetFiredFact<IEnumerable<FactType2>>()!;
+        Assert.Equal(2, group.Count());
     }
 
     [Fact]
@@ -400,20 +401,18 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType1? fact1 = null;
-            IEnumerable<FactType2>? fact2Group = null;
+            FactType1 fact1 = null!;
+            IEnumerable<FactType2> fact2Group = null!;
 
             When()
                 .Match(() => fact1)
                 .Query(() => fact2Group, q => q
-                    .Match<FactType2>(f => f.JoinProperty == fact1!.TestProperty)
+                    .Match<FactType2>(f => f.JoinProperty == fact1.TestProperty)
                     .GroupBy(f => Grouping(f))
                     .Select(x => x)
                 );
             Then()
-                .Do(ctx => NoOp());
+                .Do(ctx => ctx.NoOp());
         }
-
-        private static void NoOp() { }
     }
 }

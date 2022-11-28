@@ -39,8 +39,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Fact.Value);
-        Assert.Same(fact, sessionArgs?.Fact.Value);
+        Assert.Same(fact, factoryArgs!.Fact.Value);
+        Assert.Same(fact, sessionArgs!.Fact.Value);
     }
 
     [Fact]
@@ -73,8 +73,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Fact.Value);
-        Assert.Same(fact, sessionArgs?.Fact.Value);
+        Assert.Same(fact, factoryArgs!.Fact.Value);
+        Assert.Same(fact, sessionArgs!.Fact.Value);
     }
 
     [Fact]
@@ -108,8 +108,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Fact.Value);
-        Assert.Same(fact, sessionArgs?.Fact.Value);
+        Assert.Same(fact, factoryArgs!.Fact.Value);
+        Assert.Same(fact, sessionArgs!.Fact.Value);
     }
 
     [Fact]
@@ -143,8 +143,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Fact.Value);
-        Assert.Same(fact, sessionArgs?.Fact.Value);
+        Assert.Same(fact, factoryArgs!.Fact.Value);
+        Assert.Same(fact, sessionArgs!.Fact.Value);
     }
 
     [Fact]
@@ -178,8 +178,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Fact.Value);
-        Assert.Same(fact, sessionArgs?.Fact.Value);
+        Assert.Same(fact, factoryArgs!.Fact.Value);
+        Assert.Same(fact, sessionArgs!.Fact.Value);
     }
 
     [Fact]
@@ -213,8 +213,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Fact.Value);
-        Assert.Same(fact, sessionArgs?.Fact.Value);
+        Assert.Same(fact, factoryArgs!.Fact.Value);
+        Assert.Same(fact, sessionArgs!.Fact.Value);
     }
 
     [Fact]
@@ -247,10 +247,10 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Facts.Single().Value);
-        Assert.Same(fact, sessionArgs?.Facts.Single().Value);
-        Assert.Contains("TestRule", factoryArgs?.Rule.Name);
-        Assert.Contains("TestRule", sessionArgs?.Rule.Name);
+        Assert.Same(fact, factoryArgs!.Facts.Single().Value);
+        Assert.Same(fact, sessionArgs!.Facts.Single().Value);
+        Assert.Contains("TestRule", factoryArgs.Rule.Name);
+        Assert.Contains("TestRule", sessionArgs.Rule.Name);
     }
 
     [Fact]
@@ -284,10 +284,10 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Facts.Single().Value);
-        Assert.Same(fact, sessionArgs?.Facts.Single().Value);
-        Assert.Contains("TestRule", factoryArgs?.Rule.Name);
-        Assert.Contains("TestRule", sessionArgs?.Rule.Name);
+        Assert.Same(fact, factoryArgs!.Facts.Single().Value);
+        Assert.Same(fact, sessionArgs!.Facts.Single().Value);
+        Assert.Contains("TestRule", factoryArgs.Rule.Name);
+        Assert.Contains("TestRule", sessionArgs.Rule.Name);
     }
 
     [Fact]
@@ -321,10 +321,10 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Facts.Single().Value);
-        Assert.Same(fact, sessionArgs?.Facts.Single().Value);
-        Assert.Contains("TestRule", factoryArgs?.Rule.Name);
-        Assert.Contains("TestRule", sessionArgs?.Rule.Name);
+        Assert.Same(fact, factoryArgs!.Facts.Single().Value);
+        Assert.Same(fact, sessionArgs!.Facts.Single().Value);
+        Assert.Contains("TestRule", factoryArgs.Rule.Name);
+        Assert.Contains("TestRule", sessionArgs.Rule.Name);
     }
 
     [Fact]
@@ -358,10 +358,10 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Facts.Single().Value);
-        Assert.Same(fact, sessionArgs?.Facts.Single().Value);
-        Assert.Contains("TestRule", factoryArgs?.Rule.Name);
-        Assert.Contains("TestRule", sessionArgs?.Rule.Name);
+        Assert.Same(fact, factoryArgs!.Facts.Single().Value);
+        Assert.Same(fact, sessionArgs!.Facts.Single().Value);
+        Assert.Contains("TestRule", factoryArgs.Rule.Name);
+        Assert.Contains("TestRule", sessionArgs.Rule.Name);
     }
 
     [Fact]
@@ -395,10 +395,10 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs?.Facts.Single().Value);
-        Assert.Same(fact, sessionArgs?.Facts.Single().Value);
-        Assert.Contains("TestRule", factoryArgs?.Rule.Name);
-        Assert.Contains("TestRule", sessionArgs?.Rule.Name);
+        Assert.Same(fact, factoryArgs!.Facts.Single().Value);
+        Assert.Same(fact, sessionArgs!.Facts.Single().Value);
+        Assert.Contains("TestRule", factoryArgs.Rule.Name);
+        Assert.Contains("TestRule", sessionArgs.Rule.Name);
     }
 
     private ISessionFactory CreateTarget()
@@ -417,10 +417,10 @@ public class LifecycleEventTest
     {
         public override void Define()
         {
-            FactType? fact = null;
+            FactType fact = null!;
 
             When()
-                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

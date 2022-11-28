@@ -108,18 +108,18 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IGrouping<string, FactType1>? group = default;
-            IEnumerable<FactType2>? facts2 = default;
-            FactType3? fact3 = default;
+            IGrouping<string, FactType1> group = null!;
+            IEnumerable<FactType2> facts2 = null!;
+            FactType3 fact3 = null!;
 
             When()
                 .Query(() => group, x => x
                     .Match<FactType1>()
                     .GroupBy(f => f.Key))
                 .Query(() => facts2, q => q
-                    .Match<FactType2>(f => f.Join == group!.First().Join)
+                    .Match<FactType2>(f => f.Join == group.First().Join)
                     .Collect())
-                .Match(() => fact3, f => f!.Join == group!.First().Join);
+                .Match(() => fact3, f => f.Join == group.First().Join);
 
             Then()
                 .Do(ctx => ctx.NoOp());

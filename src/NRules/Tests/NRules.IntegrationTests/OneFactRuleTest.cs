@@ -239,10 +239,10 @@ public class OneFactRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType? fact = null;
+            FactType fact = null!;
 
             When()
-                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
+                .Match(() => fact, f => f.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

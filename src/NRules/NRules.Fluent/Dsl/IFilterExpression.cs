@@ -14,7 +14,7 @@ public interface IFilterExpression
     /// </summary>
     /// <param name="keySelectors">Key selector expressions.</param>
     /// <returns>Filters expression builder.</returns>
-    IFilterExpression OnChange(params Expression<Func<object>>[] keySelectors);
+    IFilterExpression OnChange(params Expression<Func<object?>>[] keySelectors);
 
     /// <summary>
     /// Configures the engine to filter rule's matches given a set of predicates.

@@ -28,8 +28,9 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact));
         Assert.NotNull(expression);
+        Assert.NotNull(facts);
         Assert.Single(facts);
-        Assert.Same(fact, facts?.First().Value);
+        Assert.Same(fact, facts!.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
     }
 
@@ -154,8 +155,9 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<AgendaExpressionEvaluationException>(() => Session.Insert(fact));
         Assert.NotNull(expression);
+        Assert.NotNull(facts);
         Assert.Single(facts);
-        Assert.Same(fact, facts?.First().Value);
+        Assert.Same(fact, facts!.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
     }
 
@@ -193,8 +195,9 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
         Assert.NotNull(expression);
+        Assert.NotNull(facts);
         Assert.Single(facts);
-        Assert.Same(fact, facts?.First().Value);
+        Assert.Same(fact, facts!.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
     }
 
@@ -239,10 +242,10 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
 
     private static readonly Action SuccessfulAction = () => { };
     private static readonly Action ThrowAction = () => throw new InvalidOperationException("Action failed");
-    private static readonly Func<FactType?, bool> SuccessfulCondition = f => true;
-    private static readonly Func<FactType?, bool> ThrowCondition = f => throw new InvalidOperationException("Condition failed");
-    private static readonly Func<FactType?, bool> SuccessfulFilter = f => true;
-    private static readonly Func<FactType?, bool> ThrowFilter = f => throw new InvalidOperationException("Filter failed");
+    private static readonly Func<FactType, bool> SuccessfulCondition = f => true;
+    private static readonly Func<FactType, bool> ThrowCondition = f => throw new InvalidOperationException("Condition failed");
+    private static readonly Func<FactType, bool> SuccessfulFilter = f => true;
+    private static readonly Func<FactType, bool> ThrowFilter = f => throw new InvalidOperationException("Filter failed");
 
     public class FactType
     {
@@ -252,15 +255,15 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
     public class TestRule : Rule
     {
         public Action Action = SuccessfulAction;
-        public Func<FactType?, bool> Condition = SuccessfulCondition;
-        public Func<FactType?, bool> FilterCondition = SuccessfulFilter;
+        public Func<FactType, bool> Condition = SuccessfulCondition;
+        public Func<FactType, bool> FilterCondition = SuccessfulFilter;
 
         public override void Define()
         {
-            FactType? fact = null;
+            FactType fact = null!;
 
             When()
-                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid") && Condition(f));
+                .Match(() => fact, f => f.TestProperty!.StartsWith("Valid") && Condition(f));
 
             Filter()
                 .Where(() => FilterCondition(fact));
