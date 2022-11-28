@@ -1,13 +1,14 @@
 ﻿namespace NRules.Testing;
 
 /// <summary>
-/// Abstracts assertion logic for specific testing/validation framework
+/// Abstracts assertion logic for the specific testing/assertion framework.
 /// </summary>
 public interface IRuleAsserter
 {
     /// <summary>
-    /// Asserts specific rule fire condition. <seealso cref="RuleFireAssertResult"/>
+    /// Asserts a condition specific to rule firing.
     /// </summary>
-    /// <param name="result">Result that need to be verified</param>
+    /// <param name="result">Result that need to be verified.</param>
+    /// <seealso cref="RuleFireAssertResult"/>
     void Assert(RuleFireAssertResult result);
 }

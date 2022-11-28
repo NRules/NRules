@@ -1,6 +1,5 @@
 using System;
 using NRules.Fluent.Expressions;
-using NRules.RuleModel;
 using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Dsl;
@@ -8,23 +7,18 @@ namespace NRules.Fluent.Dsl;
 /// <summary>
 /// Base class for inline rule definitions.
 /// To create a rule using internal DSL, create a class that inherits from <c>NRules.Fluent.Dsl.Rule</c>
-/// and override <see cref="Define"/> method.
-/// Use <see cref="When"/> and <see cref="Then"/> methods to define rule's conditions and actions correspondingly.
+/// and override <see cref="Define()"/> method.
+/// Use <see cref="When()"/> and <see cref="Then()"/> methods to define rule's conditions and actions correspondingly.
 /// A rule can also be decorated with attributes to add relevant metadata:
 /// <see cref="NameAttribute"/>, <see cref="DescriptionAttribute"/>, <see cref="TagAttribute"/>, 
 /// <see cref="PriorityAttribute"/>, <see cref="RepeatabilityAttribute"/>.
 /// </summary>
 public abstract class Rule
 {
-    private readonly Lazy<IRuleDefinition> _definition;
-    private readonly RuleBuilder _builder;
-    private readonly SymbolStack _symbolStack;
+    private RuleBuildContext _context = RuleBuildContext.Empty;
 
     protected Rule()
     {
-        _builder = new RuleBuilder();
-        _symbolStack = new SymbolStack();
-        _definition = new Lazy<IRuleDefinition>(BuildDefinition);
     }
 
     /// <summary>
@@ -34,7 +28,8 @@ public abstract class Rule
     /// <param name="value">Rule name value.</param>
     protected void Name(string value)
     {
-        _builder.Name(value);
+        ValidateContext();
+        _context.Builder.Name(value);
     }
 
     /// <summary>
@@ -44,7 +39,8 @@ public abstract class Rule
     /// <param name="value">Priority value.</param>
     protected void Priority(int value)
     {
-        _builder.Priority(value);
+        ValidateContext();
+        _context.Builder.Priority(value);
     }
 
     /// <summary>
@@ -53,8 +49,9 @@ public abstract class Rule
     /// <returns>Dependencies expression builder.</returns>
     protected IDependencyExpression Dependency()
     {
-        var builder = _builder.Dependencies();
-        var expression = new DependencyExpression(builder, _symbolStack);
+        ValidateContext();
+        var builder = _context.Builder.Dependencies();
+        var expression = new DependencyExpression(builder, _context.SymbolStack);
         return expression;
     }
 
@@ -64,8 +61,9 @@ public abstract class Rule
     /// <returns>Filters expression builder.</returns>
     protected IFilterExpression Filter()
     {
-        var builder = _builder.Filters();
-        var expression = new FilterExpression(builder, _symbolStack);
+        ValidateContext();
+        var builder = _context.Builder.Filters();
+        var expression = new FilterExpression(builder, _context.SymbolStack);
         return expression;
     }
 
@@ -75,8 +73,9 @@ public abstract class Rule
     /// <returns>Left hand side expression builder.</returns>
     protected ILeftHandSideExpression When()
     {
-        var builder = _builder.LeftHandSide();
-        var expression = new LeftHandSideExpression(builder, _symbolStack);
+        ValidateContext();
+        var builder = _context.Builder.LeftHandSide();
+        var expression = new LeftHandSideExpression(builder, _context.SymbolStack);
         return expression;
     }
 
@@ -86,8 +85,9 @@ public abstract class Rule
     /// <returns>Right hand side expression builder.</returns>
     protected IRightHandSideExpression Then()
     {
-        var builder = _builder.RightHandSide();
-        var expression = new RightHandSideExpression(builder, _symbolStack);
+        ValidateContext();
+        var builder = _context.Builder.RightHandSide();
+        var expression = new RightHandSideExpression(builder, _context.SymbolStack);
         return expression;
     }
 
@@ -96,31 +96,41 @@ public abstract class Rule
     /// </summary>
     public abstract void Define();
 
-    internal IRuleDefinition GetDefinition()
+    internal void Define(RuleBuilder builder)
     {
-        return _definition.Value;
+        var defaultContext = _context;
+        try
+        {
+            _context = new RuleBuildContext(builder);
+            Define();
+        }
+        finally
+        {
+            _context = defaultContext;
+        }
     }
 
-    private IRuleDefinition BuildDefinition()
+    private void ValidateContext()
     {
-        var ruleType = GetType();
-        var metadata = new RuleMetadata(ruleType);
-        _builder.Name(metadata.Name);
-        _builder.Description(metadata.Description);
-        _builder.Tags(metadata.Tags);
-        _builder.Property(RuleProperties.ClrType, ruleType);
-
-        if (metadata.Priority.HasValue)
-        {
-            _builder.Priority(metadata.Priority.Value);
-        }
-        if (metadata.Repeatability.HasValue)
-        {
-            _builder.Repeatability(metadata.Repeatability.Value);
-        }
-
-        Define();
-
-        return _builder.Build();
+        if (_context.IsEmpty)
+            throw new InvalidOperationException("Use Define(RuleBuildContext context) method");
     }
+
+    private readonly struct RuleBuildContext
+    {
+        public RuleBuildContext(RuleBuilder builder)
+        {
+            Builder = builder;
+            SymbolStack = new();
+        }
+
+        public static RuleBuildContext Empty = new();
+
+        public SymbolStack SymbolStack { get; }
+
+        public RuleBuilder Builder { get; }
+
+        public bool IsEmpty => Builder is null;
+    }
+
 }

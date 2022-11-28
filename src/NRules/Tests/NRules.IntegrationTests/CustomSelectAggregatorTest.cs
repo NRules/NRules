@@ -12,11 +12,6 @@ namespace NRules.IntegrationTests;
 
 public class CustomSelectAggregatorTest : BaseRulesTestFixture
 {
-    public CustomSelectAggregatorTest()
-        : base(compiler: CreateCompiler())
-    {
-    }
-
     [Fact]
     public void Fire_OneMatchingFact_FiresOnce()
     {
@@ -65,14 +60,10 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
     {
-        setup.Rule<TestRule>();
-    }
+        setup.Compiler.AggregatorRegistry.RegisterFactory(
+            "CustomSelect", typeof(CustomSelectAggregateFactory));
 
-    private static RuleCompiler CreateCompiler()
-    {
-        var compiler = new RuleCompiler();
-        compiler.AggregatorRegistry.RegisterFactory("CustomSelect", typeof(CustomSelectAggregateFactory));
-        return compiler;
+        setup.Rule<TestRule>();
     }
 
     public class FactType
