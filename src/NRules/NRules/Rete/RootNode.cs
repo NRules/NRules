@@ -1,6 +1,6 @@
 ﻿namespace NRules.Rete;
 
-internal class RootNode : AlphaNode
+internal class RootNode : AlphaNode<RootNode>
 {
     public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
     {
@@ -11,4 +11,6 @@ internal class RootNode : AlphaNode
     {
         visitor.VisitRootNode(context, this);
     }
+
+    protected override RootNode CreateClone() => new();
 }

@@ -46,7 +46,7 @@ public interface IAgenda
     void AddFilter(IRuleDefinition rule, IAgendaFilter filter);
 }
 
-internal interface IAgendaInternal : IAgenda
+internal interface IAgendaInternal : IAgenda, ICanDeepClone<IAgendaInternal>
 {
     void Initialize(IExecutionContext context);
     Activation Pop();
@@ -57,12 +57,32 @@ internal interface IAgendaInternal : IAgenda
 
 internal class Agenda : IAgendaInternal
 {
-    private readonly ActivationQueue _activationQueue = new();
+    private readonly ActivationQueue _activationQueue;
     private readonly List<IAgendaFilter> _globalFilters = new();
     private readonly List<IStatefulAgendaFilter> _globalStatefulFilters = new();
     private readonly Dictionary<IRuleDefinition, List<IAgendaFilter>> _ruleFilters = new();
     private readonly Dictionary<IRuleDefinition, List<IStatefulAgendaFilter>> _ruleStatefulFilters = new();
     private AgendaContext _context;
+
+    public Agenda()
+        : this(new())
+    {
+    }
+
+    private Agenda(ActivationQueue activationQueue)
+    {
+        _activationQueue = activationQueue;
+    }
+
+    public IAgendaInternal DeepClone()
+    {
+        var agenda = new Agenda(_activationQueue.DeepClone());
+        _globalFilters.CloneInto(agenda._globalFilters);
+        _globalStatefulFilters.CloneInto(agenda._globalStatefulFilters);
+        _ruleFilters.CloneInto(agenda._ruleFilters, x => new(x));
+        _ruleStatefulFilters.CloneInto(agenda._ruleStatefulFilters, x => x.DeepClone(new List<IStatefulAgendaFilter>()));
+        return agenda;
+    }
 
     public bool IsEmpty => !_activationQueue.HasActive();
 
@@ -191,12 +211,15 @@ internal class Agenda : IAgendaInternal
     {
         foreach (var filter in _globalFilters)
         {
-            if (!filter.Accept(_context, activation)) return false;
+            if (!filter.Accept(_context, activation))
+                return false;
         }
-        if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters)) return true;
+        if (!_ruleFilters.TryGetValue(activation.Rule, out var ruleFilters))
+            return true;
         foreach (var filter in ruleFilters)
         {
-            if (!filter.Accept(_context, activation)) return false;
+            if (!filter.Accept(_context, activation))
+                return false;
         }
         return true;
     }
@@ -207,7 +230,8 @@ internal class Agenda : IAgendaInternal
         {
             filter.Select(_context, activation);
         }
-        if (!_ruleStatefulFilters.TryGetValue(activation.Rule, out var ruleStatefulFilters)) return;
+        if (!_ruleStatefulFilters.TryGetValue(activation.Rule, out var ruleStatefulFilters))
+            return;
         foreach (var filter in ruleStatefulFilters)
         {
             filter.Select(_context, activation);
@@ -220,7 +244,8 @@ internal class Agenda : IAgendaInternal
         {
             filter.Remove(_context, activation);
         }
-        if (!_ruleStatefulFilters.TryGetValue(activation.Rule, out var ruleStatefulFilters)) return;
+        if (!_ruleStatefulFilters.TryGetValue(activation.Rule, out var ruleStatefulFilters))
+            return;
         foreach (var filter in ruleStatefulFilters)
         {
             filter.Remove(_context, activation);

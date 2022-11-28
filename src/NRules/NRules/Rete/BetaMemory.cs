@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using NRules.Utilities;
 
 namespace NRules.Rete;
 
-internal interface IBetaMemory
+internal interface IBetaMemory : ICanDeepClone<IBetaMemory>
 {
     IEnumerable<Tuple> Tuples { get; }
     int TupleCount { get; }
@@ -15,7 +16,15 @@ internal interface IBetaMemory
 internal class BetaMemory : IBetaMemory
 {
     private readonly HashSet<Tuple> _tuples = new();
-    private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new(); 
+    private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new();
+
+    public IBetaMemory DeepClone()
+    {
+        var memory = new BetaMemory();
+        _tuples.CloneInto(memory._tuples);
+        _parentToChildMap.CloneInto(memory._parentToChildMap);
+        return memory;
+    }
 
     public IEnumerable<Tuple> Tuples => _tuples;
     public int TupleCount => _tuples.Count;
@@ -47,14 +56,16 @@ internal class BetaMemory : IBetaMemory
 
     private void AddMapping(Tuple tuple)
     {
-        if (tuple.LeftTuple == null) return;
+        if (tuple.LeftTuple == null)
+            return;
         var key = new TupleFactKey(tuple.LeftTuple, tuple.RightFact);
         _parentToChildMap[key] = tuple;
     }
 
     private void RemoveMapping(Tuple tuple)
     {
-        if (tuple.LeftTuple == null) return;
+        if (tuple.LeftTuple == null)
+            return;
         var key = new TupleFactKey(tuple.LeftTuple, tuple.RightFact);
         _parentToChildMap.Remove(key);
     }

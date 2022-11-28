@@ -1,6 +1,6 @@
 ﻿namespace NRules;
 
-internal interface IIdGenerator
+internal interface IIdGenerator : ICanDeepClone<IIdGenerator>
 {
     long NextTupleId();
 }
@@ -8,6 +8,11 @@ internal interface IIdGenerator
 internal class IdGenerator : IIdGenerator
 {
     private long _nextId = 1;
+
+    public IIdGenerator DeepClone()
+    {
+        return new IdGenerator { _nextId = _nextId };
+    }
 
     public long NextTupleId()
     {

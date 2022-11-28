@@ -4,7 +4,7 @@ namespace NRules.Collections;
 
 internal class OrderedPriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TValue>
 {
-    private readonly PriorityQueue<OrderedKey<TPriority>, TValue> _priorityQueue;
+    private readonly IPriorityQueue<OrderedKey<TPriority>, TValue> _priorityQueue;
     private int _insertionOrderCounter = 0;
 
     public OrderedPriorityQueue()
@@ -13,10 +13,20 @@ internal class OrderedPriorityQueue<TPriority, TValue> : IPriorityQueue<TPriorit
     }
 
     public OrderedPriorityQueue(IComparer<TPriority> comparer)
+        : this(new PriorityQueue<OrderedKey<TPriority>, TValue>(new OrderedKeyComparer<TPriority>(comparer)))
     {
-        var orderComparer = new OrderedKeyComparer<TPriority>(comparer);
-        _priorityQueue = new PriorityQueue<OrderedKey<TPriority>, TValue>(orderComparer);
     }
+
+    private OrderedPriorityQueue(IPriorityQueue<OrderedKey<TPriority>, TValue> priorityQueue)
+    {
+        _priorityQueue = priorityQueue;
+    }
+
+    public IPriorityQueue<TPriority, TValue> DeepClone() =>
+        new OrderedPriorityQueue<TPriority, TValue>(_priorityQueue.DeepClone())
+        {
+            _insertionOrderCounter = _insertionOrderCounter
+        };
 
     public void Enqueue(TPriority priority, TValue value)
     {
@@ -56,12 +66,11 @@ internal class OrderedPriorityQueue<TPriority, TValue> : IPriorityQueue<TPriorit
     private class OrderedKeyComparer<T> : IComparer<OrderedKey<T>>
     {
         private readonly IComparer<T> _keyComparer;
-        private readonly IComparer<int> _orderComparer;
+        private readonly IComparer<int> _orderComparer = Comparer<int>.Default;
 
         public OrderedKeyComparer(IComparer<T> comparer)
         {
             _keyComparer = comparer;
-            _orderComparer = Comparer<int>.Default;
         }
 
         public int Compare(OrderedKey<T> x, OrderedKey<T> y)
@@ -69,7 +78,7 @@ internal class OrderedPriorityQueue<TPriority, TValue> : IPriorityQueue<TPriorit
             int result = _keyComparer.Compare(x.Key, y.Key);
             if (result == 0)
             {
-                result = -1*_orderComparer.Compare(x.Order, y.Order); //min first - FIFO
+                result = -1 * _orderComparer.Compare(x.Order, y.Order); //min first - FIFO
             }
             return result;
         }

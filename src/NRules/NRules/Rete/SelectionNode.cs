@@ -2,7 +2,7 @@
 
 namespace NRules.Rete;
 
-internal class SelectionNode : AlphaNode
+internal class SelectionNode : AlphaNode<SelectionNode>
 {
     private readonly ILhsFactExpression<bool> _compiledExpression;
 
@@ -36,4 +36,6 @@ internal class SelectionNode : AlphaNode
     {
         visitor.VisitSelectionNode(context, this);
     }
+
+    protected override SelectionNode CreateClone() => new(ExpressionElement, _compiledExpression);
 }

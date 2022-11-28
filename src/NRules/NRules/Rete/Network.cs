@@ -3,7 +3,7 @@ using NRules.Diagnostics;
 
 namespace NRules.Rete;
 
-internal interface INetwork
+internal interface INetwork : ICanDeepClone<INetwork>
 {
     void PropagateAssert(IExecutionContext context, List<Fact> factObjects);
     void PropagateUpdate(IExecutionContext context, List<Fact> factObjects);
@@ -22,6 +22,11 @@ internal class Network : INetwork
     {
         _root = root;
         _dummyNode = dummyNode;
+    }
+
+    public INetwork DeepClone()
+    {
+        return new Network(((ICanDeepClone<RootNode>)_root).DeepClone(), _dummyNode.DeepClone());
     }
 
     public void PropagateAssert(IExecutionContext context, List<Fact> facts)

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using NRules.Rete;
+using NRules.Utilities;
 using Tuple = NRules.Rete.Tuple;
 
 namespace NRules;
 
-internal interface IWorkingMemory
+internal interface IWorkingMemory : ICanDeepClone<IWorkingMemory>
 {
     IEnumerable<Fact> Facts { get; }
 
@@ -42,6 +43,17 @@ internal class WorkingMemory : IWorkingMemory
 
     private static readonly object[] EmptyObjectList = Array.Empty<object>();
 
+    public IWorkingMemory DeepClone()
+    {
+        var memory = new WorkingMemory();
+        _factMap.CloneInto(memory._factMap);
+        _linkedFactMap.CloneInto(memory._linkedFactMap, x => x.Clone());
+        _tupleStateMap.CloneInto(memory._tupleStateMap);
+        _alphaMap.DeepCloneInto(memory._alphaMap);
+        _betaMap.DeepCloneInto(memory._betaMap);
+        return memory;
+    }
+
     public IEnumerable<Fact> Facts => _factMap.Values;
 
     public Fact GetFact(object factObject)
@@ -69,13 +81,15 @@ internal class WorkingMemory : IWorkingMemory
 
     public IEnumerable<object> GetLinkedKeys(Activation activation)
     {
-        if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return EmptyObjectList;
+        if (!_linkedFactMap.TryGetValue(activation, out var factMap))
+            return EmptyObjectList;
         return factMap.Keys;
     }
 
     public Fact GetLinkedFact(Activation activation, object key)
     {
-        if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return null;
+        if (!_linkedFactMap.TryGetValue(activation, out var factMap))
+            return null;
 
         factMap.TryGetValue(key, out var fact);
         return fact;
@@ -115,10 +129,12 @@ internal class WorkingMemory : IWorkingMemory
 
     public void RemoveLinkedFact(Activation activation, object key, Fact fact)
     {
-        if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return;
+        if (!_linkedFactMap.TryGetValue(activation, out var factMap))
+            return;
 
         factMap.Remove(key);
-        if (factMap.Count == 0) _linkedFactMap.Remove(activation);
+        if (factMap.Count == 0)
+            _linkedFactMap.Remove(activation);
     }
 
     public IAlphaMemory GetNodeMemory(IAlphaMemoryNode node)
@@ -146,17 +162,17 @@ internal class WorkingMemory : IWorkingMemory
         var key = new TupleStateKey(node, tuple);
         if (_tupleStateMap.TryGetValue(key, out var value))
         {
-            return (T) value;
+            return (T)value;
         }
         return default;
     }
-    
+
     public T GetStateOrThrow<T>(INode node, Tuple tuple)
     {
         var key = new TupleStateKey(node, tuple);
         if (_tupleStateMap.TryGetValue(key, out var value))
         {
-            return (T) value;
+            return (T)value;
         }
         throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
     }

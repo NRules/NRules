@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NRules.Rete;
+using NRules.Utilities;
 
 namespace NRules.Diagnostics;
 
@@ -28,7 +29,7 @@ public interface IMetricsProvider
     void Reset();
 }
 
-internal interface IMetricsAggregator : IMetricsProvider
+internal interface IMetricsAggregator : IMetricsProvider, ICanDeepClone<IMetricsAggregator>
 {
     NodeMetrics GetMetrics(INode node);
 }
@@ -36,6 +37,15 @@ internal interface IMetricsAggregator : IMetricsProvider
 internal class MetricsAggregator : IMetricsAggregator
 {
     private readonly Dictionary<int, NodeMetrics> _metrics = new();
+
+    public IMetricsAggregator DeepClone()
+    {
+        var aggregator = new MetricsAggregator();
+
+        _metrics.DeepCloneInto(aggregator._metrics);
+
+        return aggregator;
+    }
 
     public INodeMetrics FindByNodeId(int nodeId)
     {

@@ -1,10 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using NRules.Diagnostics;
+using NRules.Utilities;
 
 namespace NRules.Rete;
 
-internal abstract class AlphaNode : IObjectSink
+internal abstract class AlphaNode<TNode> : AlphaNode, ICanDeepClone<TNode>
+    where TNode : AlphaNode<TNode>
+{
+    TNode ICanDeepClone<TNode>.DeepClone()
+    {
+        var node = CreateClone();
+        node.Id = Id;
+        node.MemoryNode = MemoryNode;
+        NodeInfo.CloneInto(node.NodeInfo);
+        ChildNodes.DeepCloneInto(node.ChildNodes);
+        return node;
+    }
+
+    protected abstract TNode CreateClone();
+
+    public sealed override AlphaNode DeepClone() => ((ICanDeepClone<TNode>)this).DeepClone();
+}
+
+internal abstract class AlphaNode : IObjectSink, ICanDeepClone<AlphaNode>
 {
     public int Id { get; set; }
     public NodeInfo NodeInfo { get; } = new();
@@ -12,6 +31,8 @@ internal abstract class AlphaNode : IObjectSink
 
     [DebuggerDisplay("Count = {ChildNodes.Count}")]
     public List<AlphaNode> ChildNodes { get; } = new();
+
+    public abstract AlphaNode DeepClone();
 
     public abstract bool IsSatisfiedBy(IExecutionContext context, Fact fact);
 
@@ -71,7 +92,8 @@ internal abstract class AlphaNode : IObjectSink
 
     protected void PropagateUpdateInternal(IExecutionContext context, List<Fact> facts)
     {
-        if (facts.Count == 0) return;
+        if (facts.Count == 0)
+            return;
         foreach (var childNode in ChildNodes)
         {
             childNode.PropagateUpdate(context, facts);
@@ -81,7 +103,8 @@ internal abstract class AlphaNode : IObjectSink
 
     protected void PropagateRetractInternal(IExecutionContext context, List<Fact> facts)
     {
-        if (facts.Count == 0) return;
+        if (facts.Count == 0)
+            return;
         foreach (var childNode in ChildNodes)
         {
             childNode.PropagateRetract(context, facts);

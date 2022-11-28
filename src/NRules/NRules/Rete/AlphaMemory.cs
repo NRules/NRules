@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using NRules.Utilities;
 
 namespace NRules.Rete;
 
-internal interface IAlphaMemory
+internal interface IAlphaMemory : ICanDeepClone<IAlphaMemory>
 {
     IEnumerable<Fact> Facts { get; }
     int FactCount { get; }
@@ -14,6 +15,13 @@ internal interface IAlphaMemory
 internal class AlphaMemory : IAlphaMemory
 {
     private readonly HashSet<Fact> _facts = new();
+
+    public IAlphaMemory DeepClone()
+    {
+        var memory = new AlphaMemory();
+        _facts.CloneInto(memory._facts);
+        return memory;
+    }
 
     public IEnumerable<Fact> Facts => _facts;
     public int FactCount => _facts.Count;

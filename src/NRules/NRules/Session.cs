@@ -41,7 +41,7 @@ namespace NRules;
 /// This exception can also be observed as an event <see cref="IEventProvider.RhsExpressionFailedEvent"/>.</exception>
 /// <seealso cref="ISessionFactory"/>
 /// <threadsafety instance="false" />
-public interface ISession : ISessionSchemaProvider
+public interface ISession : ISessionSchemaProvider, ICanDeepClone<ISession>
 {
     /// <summary>
     /// Controls how the engine propagates linked facts from rules that insert/update/retract linked facts in their actions.
@@ -332,6 +332,32 @@ internal sealed class Session : ISessionInternal
         AutoPropagateLinkedFacts = true;
     }
 
+    public ISession DeepClone()
+    {
+        var session = new Session(
+            _network.DeepClone(),
+            _agenda.DeepClone(),
+            _workingMemory.DeepClone(),
+            _eventAggregator,
+            _metricsAggregator.DeepClone(),
+            _actionExecutor,
+            _executionContext.IdGenerator.DeepClone(),
+            DependencyResolver,
+            ActionInterceptor)
+        {
+            AutoPropagateLinkedFacts = AutoPropagateLinkedFacts,
+        };
+
+        foreach (var linkedFact in _linkedFacts)
+        {
+            session._linkedFacts.Enqueue(linkedFact);
+        }
+
+        session.Activate();
+
+        return session;
+    }
+
     public bool AutoPropagateLinkedFacts { get; set; }
     public IAgenda Agenda => _agenda;
     public IEventProvider Events => _eventAggregator;
@@ -402,7 +428,7 @@ internal sealed class Session : ISessionInternal
 
     public bool TryInsert(object fact)
     {
-        var result = TryInsertAll(new[] {fact});
+        var result = TryInsertAll(new[] { fact });
         return result.FailedCount == 0;
     }
 
@@ -456,12 +482,12 @@ internal sealed class Session : ISessionInternal
 
     public void Update(object fact)
     {
-        UpdateAll(new[] {fact});
+        UpdateAll(new[] { fact });
     }
 
     public bool TryUpdate(object fact)
     {
-        var result = TryUpdateAll(new[] {fact});
+        var result = TryUpdateAll(new[] { fact });
         return result.FailedCount == 0;
     }
 
@@ -514,12 +540,12 @@ internal sealed class Session : ISessionInternal
 
     public void Retract(object fact)
     {
-        RetractAll(new[] {fact});
+        RetractAll(new[] { fact });
     }
 
     public bool TryRetract(object fact)
     {
-        var result = TryRetractAll(new[] {fact});
+        var result = TryRetractAll(new[] { fact });
         return result.FailedCount == 0;
     }
 
@@ -702,10 +728,12 @@ internal sealed class Session : ISessionInternal
             finally
             {
                 ruleFiredCount++;
-                if (AutoPropagateLinkedFacts) PropagateLinked();
+                if (AutoPropagateLinkedFacts)
+                    PropagateLinked();
             }
 
-            if (actionContext.IsHalted || cancellationToken.IsCancellationRequested) break;
+            if (actionContext.IsHalted || cancellationToken.IsCancellationRequested)
+                break;
         }
         return ruleFiredCount;
     }
@@ -717,7 +745,8 @@ internal sealed class Session : ISessionInternal
 
     private static void UpdateFact(Fact fact, object factObject)
     {
-        if (ReferenceEquals(fact.RawObject, factObject)) return;
+        if (ReferenceEquals(fact.RawObject, factObject))
+            return;
         fact.RawObject = factObject;
     }
 

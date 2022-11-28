@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NRules.Collections;
 
-internal interface IPriorityQueue<in TPriority, TValue>
+internal interface IPriorityQueue<TPriority, TValue> : ICanDeepClone<IPriorityQueue<TPriority, TValue>>
 {
     void Enqueue(TPriority priority, TValue value);
     TValue Dequeue();
@@ -14,7 +14,7 @@ internal interface IPriorityQueue<in TPriority, TValue>
 
 internal class PriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TValue>
 {
-    private readonly List<KeyValuePair<TPriority, TValue>> _baseHeap;
+    private readonly IList<KeyValuePair<TPriority, TValue>> _baseHeap;
     private readonly IComparer<TPriority> _comparer;
 
     public PriorityQueue()
@@ -23,9 +23,19 @@ internal class PriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TVal
     }
 
     public PriorityQueue(IComparer<TPriority> comparer)
+        : this(new(), comparer ?? throw new ArgumentNullException(nameof(comparer)))
     {
-        _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
-        _baseHeap = new List<KeyValuePair<TPriority, TValue>>();
+    }
+
+    private PriorityQueue(List<KeyValuePair<TPriority, TValue>> baseHeap, IComparer<TPriority> comparer)
+    {
+        _baseHeap = baseHeap;
+        _comparer = comparer;
+    }
+
+    public IPriorityQueue<TPriority, TValue> DeepClone()
+    {
+        return new PriorityQueue<TPriority, TValue>(new(_baseHeap), _comparer);
     }
 
     public void Enqueue(TPriority priority, TValue value)
@@ -79,13 +89,14 @@ internal class PriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TVal
 
         while (pos > 0)
         {
-            int parentPos = (pos - 1)/2;
+            int parentPos = (pos - 1) / 2;
             if (_comparer.Compare(_baseHeap[parentPos].Key, _baseHeap[pos].Key) < 0)
             {
                 ExchangeElements(parentPos, pos);
                 pos = parentPos;
             }
-            else break;
+            else
+                break;
         }
     }
 
@@ -113,8 +124,8 @@ internal class PriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TVal
         {
             //exchange element with its largest child if heap property is violated
             int largest = pos;
-            int left = 2*pos + 1;
-            int right = 2*pos + 2;
+            int left = 2 * pos + 1;
+            int right = 2 * pos + 2;
             if (left < _baseHeap.Count && _comparer.Compare(_baseHeap[largest].Key, _baseHeap[left].Key) < 0)
                 largest = left;
             if (right < _baseHeap.Count && _comparer.Compare(_baseHeap[largest].Key, _baseHeap[right].Key) < 0)
@@ -125,7 +136,8 @@ internal class PriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TVal
                 ExchangeElements(largest, pos);
                 pos = largest;
             }
-            else break;
+            else
+                break;
         }
     }
 }

@@ -82,7 +82,7 @@ public interface INodeMetrics
     void Reset();
 }
 
-internal class NodeMetrics : INodeMetrics
+internal class NodeMetrics : INodeMetrics, ICanDeepClone<NodeMetrics>
 {
     public int NodeId { get; }
     public int? ElementCount { get; set; }
@@ -99,6 +99,23 @@ internal class NodeMetrics : INodeMetrics
     public NodeMetrics(int nodeId)
     {
         NodeId = nodeId;
+    }
+
+    public NodeMetrics DeepClone()
+    {
+        return new NodeMetrics(NodeId)
+        {
+            ElementCount = ElementCount,
+            InsertInputCount = InsertInputCount,
+            UpdateInputCount = UpdateInputCount,
+            RetractInputCount = RetractInputCount,
+            InsertOutputCount = InsertOutputCount,
+            UpdateOutputCount = UpdateOutputCount,
+            RetractOutputCount = RetractOutputCount,
+            InsertDurationMilliseconds = InsertDurationMilliseconds,
+            UpdateDurationMilliseconds = UpdateDurationMilliseconds,
+            RetractDurationMilliseconds = RetractDurationMilliseconds,
+        };
     }
 
     public void Reset()

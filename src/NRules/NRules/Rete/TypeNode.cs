@@ -6,7 +6,7 @@ using NRules.Diagnostics;
 namespace NRules.Rete;
 
 [DebuggerDisplay("Type {FilterType.FullName,nq}")]
-internal class TypeNode : AlphaNode
+internal class TypeNode : AlphaNode<TypeNode>
 {
     public TypeNode(Type filterType)
     {
@@ -59,4 +59,5 @@ internal class TypeNode : AlphaNode
     {
         visitor.VisitTypeNode(context, this);
     }
+    protected override TypeNode CreateClone() => new(FilterType);
 }

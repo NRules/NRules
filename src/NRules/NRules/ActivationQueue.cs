@@ -3,9 +3,24 @@ using NRules.Utilities;
 
 namespace NRules;
 
-internal class ActivationQueue
+internal class ActivationQueue : ICanDeepClone<ActivationQueue>
 {
-    private readonly IPriorityQueue<int, Activation> _queue = new OrderedPriorityQueue<int, Activation>();
+    private readonly IPriorityQueue<int, Activation> _queue;
+
+    public ActivationQueue()
+        : this(new OrderedPriorityQueue<int, Activation>())
+    {
+    }
+
+    private ActivationQueue(IPriorityQueue<int, Activation> queue)
+    {
+        _queue = queue;
+    }
+
+    public ActivationQueue DeepClone()
+    {
+        return new ActivationQueue(_queue.DeepClone());
+    }
 
     public void Enqueue(int priority, Activation activation)
     {
@@ -45,7 +60,8 @@ internal class ActivationQueue
         while (!_queue.IsEmpty)
         {
             Activation current = _queue.Peek();
-            if (current.IsEnqueued && current.Trigger.Matches(current.CompiledRule.ActionTriggers)) return;
+            if (current.IsEnqueued && current.Trigger.Matches(current.CompiledRule.ActionTriggers))
+                return;
             Dequeue();
         }
     }
@@ -57,5 +73,10 @@ internal class ActivationQueue
             Activation activation = Dequeue();
             activation.Clear();
         }
+    }
+
+    public void CloneInto(ActivationQueue queue)
+    {
+
     }
 }

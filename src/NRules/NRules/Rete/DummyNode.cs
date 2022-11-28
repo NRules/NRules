@@ -1,15 +1,24 @@
 ﻿using System.Collections.Generic;
 using NRules.Diagnostics;
+using NRules.Utilities;
 
 namespace NRules.Rete;
 
-internal class DummyNode : IBetaMemoryNode
+internal class DummyNode : IBetaMemoryNode, ICanDeepClone<DummyNode>
 {
     private readonly List<ITupleSink> _sinks = new();
 
     public int Id { get; set; }
     public NodeInfo NodeInfo { get; } = new NodeInfo();
     public IEnumerable<ITupleSink> Sinks => _sinks;
+
+    public DummyNode DeepClone()
+    {
+        var node = new DummyNode { Id = Id };
+        NodeInfo.CloneInto(node.NodeInfo);
+        _sinks.CloneInto(node._sinks);
+        return node;
+    }
 
     public void Activate(IExecutionContext context)
     {

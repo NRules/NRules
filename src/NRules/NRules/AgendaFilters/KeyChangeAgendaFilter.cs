@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NRules.Utilities;
 
 namespace NRules.AgendaFilters;
 
@@ -56,6 +57,13 @@ internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
     public void Remove(AgendaContext context, Activation activation)
     {
         _changeKeys.Remove(activation);
+    }
+
+    public IStatefulAgendaFilter DeepClone()
+    {
+        var filter = new KeyChangeAgendaFilter(_keySelectors);
+        _changeKeys.CloneInto(filter._changeKeys);
+        return filter;
     }
 
     private readonly struct ChangeKeys
