@@ -26,8 +26,8 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     public ReteBuilder(RuleCompilerOptions options, AggregatorRegistry aggregatorRegistry, IRuleExpressionCompiler ruleExpressionCompiler)
     {
-        _root = new RootNode {Id = GetNodeId()};
-        _dummyNode = new DummyNode {Id = GetNodeId()};
+        _root = new RootNode { Id = GetNodeId() };
+        _dummyNode = new DummyNode { Id = GetNodeId() };
         _aggregatorRegistry = aggregatorRegistry;
         _expressionComparer = new ExpressionElementComparer(options);
         _ruleExpressionCompiler = ruleExpressionCompiler;
@@ -135,7 +135,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
                 else
                     betaConditions.Add(condition);
             }
-            
+
             foreach (var alphaCondition in alphaConditions)
             {
                 BuildSelectionNode(context, alphaCondition);
@@ -217,7 +217,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         }
         context.AlphaSource = subnetContext.AlphaSource;
     }
-    
+
     private void BuildAdapter(ReteBuilderContext context)
     {
         var adapter = context.BetaSource
@@ -232,7 +232,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         context.AlphaSource = adapter;
     }
 
-    private void BuildJoinNode(ReteBuilderContext context, List<ExpressionElement> conditions = null)
+    private void BuildJoinNode(ReteBuilderContext context, IReadOnlyCollection<ExpressionElement> conditions = null)
     {
         var expressionElements = conditions ?? new List<ExpressionElement>();
         var node = context.BetaSource
@@ -241,7 +241,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
                 x.RightSource == context.AlphaSource &&
                 x.LeftSource == context.BetaSource &&
                 _expressionComparer.AreEqual(
-                    x.Declarations, x.ExpressionElements, 
+                    x.Declarations, x.ExpressionElements,
                     context.Declarations, expressionElements));
         if (node == null)
         {
@@ -359,7 +359,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             node = new TypeNode(declarationType);
             node.Id = GetNodeId();
             node.NodeInfo.OutputType = declarationType;
-            context.CurrentAlphaNode.ChildNodes.Add(node);
+            context.CurrentAlphaNode.AddChild(node);
         }
         node.NodeInfo.Add(context.Rule);
         context.CurrentAlphaNode = node;
@@ -377,7 +377,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             node = new SelectionNode(element, compiledExpression);
             node.Id = GetNodeId();
             node.NodeInfo.OutputType = context.Declarations.Last().Type;
-            context.CurrentAlphaNode.ChildNodes.Add(node);
+            context.CurrentAlphaNode.AddChild(node);
         }
         node.NodeInfo.Add(context.Rule);
         context.CurrentAlphaNode = node;

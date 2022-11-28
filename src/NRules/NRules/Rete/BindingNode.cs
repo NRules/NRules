@@ -12,7 +12,7 @@ internal class BindingNode : BetaNode
     public ExpressionElement ExpressionElement { get; }
     public Type ResultType { get; }
     public ITupleSource Source { get; }
-    
+
     public BindingNode(ExpressionElement expressionElement, ILhsTupleExpression<object> compiledExpression, Type resultType, ITupleSource source)
     {
         ExpressionElement = expressionElement;
@@ -23,7 +23,7 @@ internal class BindingNode : BetaNode
         Source.Attach(this);
     }
 
-    public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toAssert = new TupleFactList();
         using (var counter = PerfCounter.Assert(context, this))
@@ -38,7 +38,7 @@ internal class BindingNode : BetaNode
         MemoryNode.PropagateAssert(context, toAssert);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toAssert = new TupleFactList();
         var toUpdate = new TupleFactList();
@@ -65,7 +65,7 @@ internal class BindingNode : BetaNode
         MemoryNode.PropagateAssert(context, toAssert);
     }
 
-    public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Retract(context, this))

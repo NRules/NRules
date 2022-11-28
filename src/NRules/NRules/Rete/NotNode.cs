@@ -9,7 +9,7 @@ internal class NotNode : BinaryBetaNode
     {
     }
 
-    public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toAssert = new TupleFactList();
         using (var counter = PerfCounter.Assert(context, this))
@@ -32,7 +32,7 @@ internal class NotNode : BinaryBetaNode
         MemoryNode.PropagateAssert(context, toAssert);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toUpdate = new TupleFactList();
         using (var counter = PerfCounter.Update(context, this))
@@ -52,7 +52,7 @@ internal class NotNode : BinaryBetaNode
         MemoryNode.PropagateUpdate(context, toUpdate);
     }
 
-    public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Retract(context, this))
@@ -72,7 +72,7 @@ internal class NotNode : BinaryBetaNode
         MemoryNode.PropagateRetract(context, toRetract);
     }
 
-    public override void PropagateAssert(IExecutionContext context, List<Fact> facts)
+    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Assert(context, this))
@@ -96,12 +96,12 @@ internal class NotNode : BinaryBetaNode
         MemoryNode.PropagateRetract(context, toRetract);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         //Do nothing
     }
 
-    public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var toAssert = new TupleFactList();
         using (var counter = PerfCounter.Retract(context, this))

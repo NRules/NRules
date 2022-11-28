@@ -8,14 +8,45 @@ internal class DirectedGraph
 {
     private const string Namespace = "http://schemas.microsoft.com/vs/2009/dgml";
 
+    private readonly List<Node> _nodes = new();
+    private readonly List<Link> _links = new();
+    private readonly List<Category> _categories = new();
+    private readonly List<Style> _styles = new();
+    private readonly List<Property> _properties = new();
+
     public string Title { get; set; }
     public string Background { get; set; }
 
-    public List<Node> Nodes { get; set; } = new();
-    public List<Link> Links { get; set; } = new();
-    public List<Category> Categories { get; set; } = new();
-    public List<Style> Styles { get; set; } = new();
-    public List<Property> Properties { get; set; } = new();
+    public IEnumerable<Node> Nodes => _nodes;
+    public IEnumerable<Link> Links => _links;
+    public IEnumerable<Category> Categories => _categories;
+    public IEnumerable<Style> Styles => _styles;
+    public IEnumerable<Property> Properties => _properties;
+
+    public void AddRange(IEnumerable<Node> items)
+    {
+        _nodes.AddRange(items);
+    }
+
+    public void AddRange(IEnumerable<Link> items)
+    {
+        _links.AddRange(items);
+    }
+
+    public void AddRange(IEnumerable<Category> items)
+    {
+        _categories.AddRange(items);
+    }
+
+    public void AddRange(IEnumerable<Style> items)
+    {
+        _styles.AddRange(items);
+    }
+
+    public void AddRange(IEnumerable<Property> items)
+    {
+        _properties.AddRange(items);
+    }
 
     public void WriteXml(XmlWriter writer)
     {

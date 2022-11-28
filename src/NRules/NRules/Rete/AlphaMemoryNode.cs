@@ -16,7 +16,7 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
     public NodeInfo NodeInfo { get; } = new();
     public IEnumerable<IObjectSink> Sinks => _sinks;
 
-    public void PropagateAssert(IExecutionContext context, List<Fact> facts)
+    public void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         foreach (var sink in _sinks)
@@ -33,7 +33,7 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
         }
     }
 
-    public void PropagateUpdate(IExecutionContext context, List<Fact> facts)
+    public void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         var toUpdate = new List<Fact>();
@@ -65,7 +65,7 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
         }
     }
 
-    public void PropagateRetract(IExecutionContext context, List<Fact> facts)
+    public void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         var toRetract = new List<Fact>(facts.Count);
@@ -106,7 +106,7 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
     {
         _sinks.Add(sink);
     }
-    
+
     public void Accept<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
     {
         visitor.VisitAlphaMemoryNode(context, this);

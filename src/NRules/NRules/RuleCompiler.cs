@@ -54,7 +54,8 @@ public class RuleCompiler
         get => _ruleExpressionCompiler.ExpressionCompiler;
         set
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
             _ruleExpressionCompiler.ExpressionCompiler = value;
         }
     }
@@ -95,7 +96,8 @@ public class RuleCompiler
                 throw new RuleCompilationException("Failed to compile rule", ruleDefinition.Name, e);
             }
 
-            if (cancellationToken.IsCancellationRequested) break;
+            if (cancellationToken.IsCancellationRequested)
+                break;
         }
 
         INetwork network = reteBuilder.Build();
@@ -159,7 +161,7 @@ public class RuleCompiler
         return rules;
     }
 
-    private IRuleFilter CompileFilters(IRuleDefinition ruleDefinition, List<Declaration> ruleDeclarations, IndexMap tupleFactMap)
+    private IRuleFilter CompileFilters(IRuleDefinition ruleDefinition, IReadOnlyCollection<Declaration> ruleDeclarations, IndexMap tupleFactMap)
     {
         var conditions = new List<IActivationExpression<bool>>();
         var keySelectors = new List<IActivationExpression<object>>();

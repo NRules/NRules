@@ -59,10 +59,10 @@ internal static class ExpressionOptimizer
     }
 
     public static Expression<TDelegate> Optimize<TDelegate>(LambdaExpression expression,
-        IndexMap factIndexMap, List<DependencyElement> dependencies, IndexMap dependencyIndexMap)
+        IndexMap factIndexMap, IReadOnlyList<DependencyElement> dependencies, IndexMap dependencyIndexMap)
     {
         var parts = new ExpressionParts(expression, 1);
-        
+
         UnwrapTuple(parts, factIndexMap, factIndexMap.Length);
         ResolveDependencies(parts, dependencies, dependencyIndexMap);
 
@@ -95,7 +95,8 @@ internal static class ExpressionOptimizer
         var tupleParameter = Expression.Parameter(typeof(Tuple), "<tuple>");
         parts.InputParameters.Add(tupleParameter);
 
-        if (tupleSize <= 0) return;
+        if (tupleSize <= 0)
+            return;
 
         var enumerator = Expression.Variable(typeof(Tuple.Enumerator), "<enumerator>");
         parts.BodyParameters.Add(enumerator);
@@ -124,8 +125,8 @@ internal static class ExpressionOptimizer
         }
     }
 
-    private static void ResolveDependencies(ExpressionParts parts, 
-        List<DependencyElement> dependencies, IndexMap indexMap)
+    private static void ResolveDependencies(ExpressionParts parts,
+        IReadOnlyList<DependencyElement> dependencies, IndexMap indexMap)
     {
         var resolverParameter = Expression.Parameter(typeof(IDependencyResolver), "<resolver>");
         parts.InputParameters.Add(resolverParameter);
@@ -156,12 +157,15 @@ internal static class ExpressionOptimizer
     private static Expression EnsureReturnType(Expression expression, Type delegateType)
     {
         var invokeMethod = delegateType.GetMethod(nameof(Action.Invoke));
-        if (invokeMethod == null) return expression;
+        if (invokeMethod == null)
+            return expression;
 
         var returnType = invokeMethod.ReturnType;
-        if (returnType == typeof(void)) return expression;
-        if (expression.Type == returnType) return expression;
-        
+        if (returnType == typeof(void))
+            return expression;
+        if (expression.Type == returnType)
+            return expression;
+
         var convertedExpression = Expression.Convert(expression, returnType);
         return convertedExpression;
     }

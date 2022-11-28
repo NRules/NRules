@@ -21,7 +21,7 @@ internal class PatternExpressionRewriter : ExpressionRewriter
     {
         _originalParameter = expression.Parameters.Single();
         _normalizedParameter = _patternDeclaration.ToParameterExpression();
-        Parameters.Add(_normalizedParameter);
+        AddParameter(_normalizedParameter);
     }
 
     protected override Expression VisitParameter(ParameterExpression parameter)

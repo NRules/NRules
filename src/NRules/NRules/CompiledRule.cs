@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NRules.Rete;
 using NRules.RuleModel;
 
@@ -20,16 +21,16 @@ internal interface ICompiledRule
 [DebuggerDisplay("{Definition.Name}")]
 internal class CompiledRule : ICompiledRule
 {
-    private readonly List<Declaration> _declarations;
-    private readonly List<IRuleAction> _actions;
+    private readonly IEnumerable<Declaration> _declarations;
+    private readonly IEnumerable<IRuleAction> _actions;
 
-    public CompiledRule(IRuleDefinition definition, IEnumerable<Declaration> declarations, IEnumerable<IRuleAction> actions, IRuleFilter filter, IndexMap factMap)
+    public CompiledRule(IRuleDefinition definition, IEnumerable<Declaration> declarations, IReadOnlyCollection<IRuleAction> actions, IRuleFilter filter, IndexMap factMap)
     {
         Definition = definition;
         Filter = filter;
         FactMap = factMap;
-        _declarations = new List<Declaration>(declarations);
-        _actions = new List<IRuleAction>(actions);
+        _declarations = declarations.ToList();
+        _actions = actions;
 
         foreach (var ruleAction in _actions)
         {

@@ -8,7 +8,7 @@ internal class Aggregation
     private readonly List<AggregateList> _aggregateLists = new();
     private AggregateList _currentList;
 
-    public List<AggregateList> AggregateLists => _aggregateLists;
+    public IEnumerable<AggregateList> AggregateLists => _aggregateLists;
     public int Count { get; private set; }
 
     public void Add(Tuple tuple, Fact aggregateFact)
@@ -24,7 +24,7 @@ internal class Aggregation
         list.Add(tuple, aggregateFact);
         Count++;
     }
-    
+
     public void Remove(Tuple tuple, Fact aggregateFact)
     {
         var list = GetList(AggregationAction.Removed);
@@ -38,7 +38,7 @@ internal class Aggregation
         foreach (var aggregateFact in aggregateFacts)
         {
             list.Add(tuple, aggregateFact);
-           Count++;
+            Count++;
         }
     }
 

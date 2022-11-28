@@ -7,9 +7,9 @@ namespace NRules.Rete;
 internal class TupleFactSet
 {
     public Tuple Tuple { get; }
-    public List<Fact> Facts { get; }
+    public IReadOnlyCollection<Fact> Facts { get; }
 
-    public TupleFactSet(Tuple tuple, List<Fact> facts)
+    public TupleFactSet(Tuple tuple, IReadOnlyCollection<Fact> facts)
     {
         Tuple = tuple;
         Facts = facts;

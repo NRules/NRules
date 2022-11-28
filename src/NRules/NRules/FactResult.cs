@@ -20,9 +20,9 @@ public interface IFactResult
 
 internal class FactResult : IFactResult
 {
-    private readonly List<object> _failed;
+    private readonly IReadOnlyCollection<object> _failed;
 
-    internal FactResult(List<object> failed)
+    internal FactResult(IReadOnlyCollection<object> failed)
     {
         _failed = failed;
     }

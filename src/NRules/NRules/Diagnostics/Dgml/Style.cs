@@ -5,6 +5,9 @@ namespace NRules.Diagnostics.Dgml;
 
 internal class Style
 {
+    private readonly List<Condition> _conditions = new();
+    private readonly List<Setter> _setters = new();
+
     public Style(string targetType)
     {
         TargetType = targetType;
@@ -13,8 +16,8 @@ internal class Style
     public string TargetType { get; }
     public string GroupLabel { get; set; }
     public string ValueLabel { get; set; }
-    public List<Condition> Conditions { get; set; } = new();
-    public List<Setter> Setters { get; set; } = new();
+    public IEnumerable<Condition> Conditions => _conditions;
+    public IEnumerable<Setter> Setters => _setters;
 
     public Style HasCategory(string category)
     {
@@ -23,15 +26,15 @@ internal class Style
 
     public Style Condition(string expression)
     {
-        var condition = new Condition {Expression = expression};
-        Conditions.Add(condition);
+        var condition = new Condition { Expression = expression };
+        _conditions.Add(condition);
         return this;
     }
 
     public Style Setter(string property, string value = null, string expression = null)
     {
-        var setter = new Setter {Property = property, Value = value, Expression = expression};
-        Setters.Add(setter);
+        var setter = new Setter { Property = property, Value = value, Expression = expression };
+        _setters.Add(setter);
         return this;
     }
 

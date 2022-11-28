@@ -7,20 +7,20 @@ internal interface IBetaMemory
 {
     IEnumerable<Tuple> Tuples { get; }
     int TupleCount { get; }
-    void Add(List<Tuple> tuples);
-    void Remove(List<Tuple> tuples);
+    void Add(IEnumerable<Tuple> tuples);
+    void Remove(IEnumerable<Tuple> tuples);
     Tuple FindTuple(Tuple leftTuple, Fact rightFact);
 }
 
 internal class BetaMemory : IBetaMemory
 {
     private readonly HashSet<Tuple> _tuples = new();
-    private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new(); 
+    private readonly Dictionary<TupleFactKey, Tuple> _parentToChildMap = new();
 
     public IEnumerable<Tuple> Tuples => _tuples;
     public int TupleCount => _tuples.Count;
 
-    public void Add(List<Tuple> tuples)
+    public void Add(IEnumerable<Tuple> tuples)
     {
         foreach (var tuple in tuples)
         {
@@ -29,7 +29,7 @@ internal class BetaMemory : IBetaMemory
         }
     }
 
-    public void Remove(List<Tuple> tuples)
+    public void Remove(IEnumerable<Tuple> tuples)
     {
         foreach (var tuple in tuples)
         {
@@ -47,14 +47,16 @@ internal class BetaMemory : IBetaMemory
 
     private void AddMapping(Tuple tuple)
     {
-        if (tuple.LeftTuple == null) return;
+        if (tuple.LeftTuple == null)
+            return;
         var key = new TupleFactKey(tuple.LeftTuple, tuple.RightFact);
         _parentToChildMap[key] = tuple;
     }
 
     private void RemoveMapping(Tuple tuple)
     {
-        if (tuple.LeftTuple == null) return;
+        if (tuple.LeftTuple == null)
+            return;
         var key = new TupleFactKey(tuple.LeftTuple, tuple.RightFact);
         _parentToChildMap.Remove(key);
     }

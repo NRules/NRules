@@ -402,7 +402,7 @@ internal sealed class Session : ISessionInternal
 
     public bool TryInsert(object fact)
     {
-        var result = TryInsertAll(new[] {fact});
+        var result = TryInsertAll(new[] { fact });
         return result.FailedCount == 0;
     }
 
@@ -456,12 +456,12 @@ internal sealed class Session : ISessionInternal
 
     public void Update(object fact)
     {
-        UpdateAll(new[] {fact});
+        UpdateAll(new[] { fact });
     }
 
     public bool TryUpdate(object fact)
     {
-        var result = TryUpdateAll(new[] {fact});
+        var result = TryUpdateAll(new[] { fact });
         return result.FailedCount == 0;
     }
 
@@ -514,12 +514,12 @@ internal sealed class Session : ISessionInternal
 
     public void Retract(object fact)
     {
-        RetractAll(new[] {fact});
+        RetractAll(new[] { fact });
     }
 
     public bool TryRetract(object fact)
     {
-        var result = TryRetractAll(new[] {fact});
+        var result = TryRetractAll(new[] { fact });
         return result.FailedCount == 0;
     }
 
@@ -596,7 +596,7 @@ internal sealed class Session : ISessionInternal
             current = new LinkedFactSet(LinkedFactAction.Insert);
             _linkedFacts.Enqueue(current);
         }
-        current.Facts.AddRange(toPropagate);
+        current.AddRange(toPropagate);
     }
 
     public void QueueUpdateLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts)
@@ -626,7 +626,7 @@ internal sealed class Session : ISessionInternal
             current = new LinkedFactSet(LinkedFactAction.Update);
             _linkedFacts.Enqueue(current);
         }
-        current.Facts.AddRange(toPropagate);
+        current.AddRange(toPropagate);
     }
 
     public void QueueRetractLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts)
@@ -657,7 +657,7 @@ internal sealed class Session : ISessionInternal
             current = new LinkedFactSet(LinkedFactAction.Retract);
             _linkedFacts.Enqueue(current);
         }
-        current.Facts.AddRange(toPropagate);
+        current.AddRange(toPropagate);
     }
 
     public void QueueRetractLinked(Activation activation)
@@ -702,10 +702,12 @@ internal sealed class Session : ISessionInternal
             finally
             {
                 ruleFiredCount++;
-                if (AutoPropagateLinkedFacts) PropagateLinked();
+                if (AutoPropagateLinkedFacts)
+                    PropagateLinked();
             }
 
-            if (actionContext.IsHalted || cancellationToken.IsCancellationRequested) break;
+            if (actionContext.IsHalted || cancellationToken.IsCancellationRequested)
+                break;
         }
         return ruleFiredCount;
     }
@@ -717,7 +719,8 @@ internal sealed class Session : ISessionInternal
 
     private static void UpdateFact(Fact fact, object factObject)
     {
-        if (ReferenceEquals(fact.RawObject, factObject)) return;
+        if (ReferenceEquals(fact.RawObject, factObject))
+            return;
         fact.RawObject = factObject;
     }
 

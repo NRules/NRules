@@ -5,9 +5,9 @@ namespace NRules.Rete;
 
 internal interface INetwork
 {
-    void PropagateAssert(IExecutionContext context, List<Fact> factObjects);
-    void PropagateUpdate(IExecutionContext context, List<Fact> factObjects);
-    void PropagateRetract(IExecutionContext context, List<Fact> factObjects);
+    void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> factObjects);
+    void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> factObjects);
+    void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> factObjects);
     void Activate(IExecutionContext context);
     void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor);
     ReteGraph GetSchema();
@@ -24,7 +24,7 @@ internal class Network : INetwork
         _dummyNode = dummyNode;
     }
 
-    public void PropagateAssert(IExecutionContext context, List<Fact> facts)
+    public void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         foreach (var fact in facts)
         {
@@ -39,7 +39,7 @@ internal class Network : INetwork
         }
     }
 
-    public void PropagateUpdate(IExecutionContext context, List<Fact> facts)
+    public void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         foreach (var fact in facts)
         {
@@ -54,7 +54,7 @@ internal class Network : INetwork
         }
     }
 
-    public void PropagateRetract(IExecutionContext context, List<Fact> facts)
+    public void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         foreach (var fact in facts)
         {

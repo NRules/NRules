@@ -22,7 +22,7 @@ internal class ReteBuilderContext
     }
 
     public IRuleDefinition Rule { get; }
-    public List<Declaration> Declarations => _declarations;
+    public IReadOnlyCollection<Declaration> Declarations => _declarations;
 
     public AlphaNode CurrentAlphaNode { get; set; }
     public IAlphaMemoryNode AlphaSource { get; set; }

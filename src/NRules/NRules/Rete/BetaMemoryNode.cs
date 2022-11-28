@@ -21,7 +21,8 @@ internal class BetaMemoryNode : IBetaMemoryNode
 
     public void PropagateAssert(IExecutionContext context, TupleFactList tupleFactList)
     {
-        if (tupleFactList.Count == 0) return;
+        if (tupleFactList.Count == 0)
+            return;
 
         IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         var toAssert = new List<Tuple>();
@@ -36,7 +37,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
                 childTuple.GroupId = enumerator.CurrentTuple.Id;
                 toAssert.Add(childTuple);
             }
-            
+
             counter.AddItems(tupleFactList.Count);
         }
 
@@ -45,7 +46,8 @@ internal class BetaMemoryNode : IBetaMemoryNode
 
     public void PropagateUpdate(IExecutionContext context, TupleFactList tupleFactList)
     {
-        if (tupleFactList.Count == 0) return;
+        if (tupleFactList.Count == 0)
+            return;
 
         IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         var toAssert = new List<Tuple>();
@@ -68,7 +70,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
                     toUpdate.Add(childTuple);
                 }
             }
-            
+
             counter.AddItems(tupleFactList.Count);
         }
 
@@ -78,7 +80,8 @@ internal class BetaMemoryNode : IBetaMemoryNode
 
     public void PropagateRetract(IExecutionContext context, TupleFactList tupleFactList)
     {
-        if (tupleFactList.Count == 0) return;
+        if (tupleFactList.Count == 0)
+            return;
 
         IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         var toRetract = new List<Tuple>();
@@ -94,7 +97,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
                     toRetract.Add(childTuple);
                 }
             }
-            
+
             counter.AddInputs(tupleFactList.Count);
             counter.AddOutputs(toRetract.Count);
         }
@@ -102,7 +105,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
         PropagateRetractInternal(context, memory, toRetract);
     }
 
-    private void PropagateAssertInternal(IExecutionContext context, IBetaMemory memory, List<Tuple> tuples)
+    private void PropagateAssertInternal(IExecutionContext context, IBetaMemory memory, IReadOnlyCollection<Tuple> tuples)
     {
         if (tuples.Count > 0)
         {
@@ -119,7 +122,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
         }
     }
 
-    private void PropagateUpdateInternal(IExecutionContext context, List<Tuple> tuples)
+    private void PropagateUpdateInternal(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         if (tuples.Count > 0)
         {
@@ -130,7 +133,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
         }
     }
 
-    private void PropagateRetractInternal(IExecutionContext context, IBetaMemory memory, List<Tuple> tuples)
+    private void PropagateRetractInternal(IExecutionContext context, IBetaMemory memory, IReadOnlyCollection<Tuple> tuples)
     {
         if (tuples.Count > 0)
         {

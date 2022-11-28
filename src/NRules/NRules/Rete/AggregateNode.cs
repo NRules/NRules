@@ -11,13 +11,13 @@ internal class AggregateNode : BinaryBetaNode
     private readonly bool _isSubnetJoin;
 
     public string Name { get; }
-    public List<Declaration> Declarations { get; }
+    public IReadOnlyCollection<Declaration> Declarations { get; }
     public ExpressionCollection Expressions { get; }
-    
-    public AggregateNode(ITupleSource leftSource, 
-        IObjectSource rightSource, 
+
+    public AggregateNode(ITupleSource leftSource,
+        IObjectSource rightSource,
         string name,
-        List<Declaration> declarations,
+        IReadOnlyCollection<Declaration> declarations,
         ExpressionCollection expressions,
         IAggregatorFactory aggregatorFactory,
         bool isSubnetJoin)
@@ -30,7 +30,7 @@ internal class AggregateNode : BinaryBetaNode
         _isSubnetJoin = isSubnetJoin;
     }
 
-    public override void PropagateAssert(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -51,7 +51,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -86,7 +86,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateRetract(IExecutionContext context, List<Tuple> tuples)
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Tuple> tuples)
     {
         var aggregation = new Aggregation();
         using (var counter = PerfCounter.Retract(context, this))
@@ -107,7 +107,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateAssert(IExecutionContext context, List<Fact> facts)
+    public override void PropagateAssert(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -116,7 +116,8 @@ internal class AggregateNode : BinaryBetaNode
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
             {
-                if (set.Facts.Count == 0) continue;
+                if (set.Facts.Count == 0)
+                    continue;
 
                 IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
                 if (aggregator == null)
@@ -138,7 +139,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateUpdate(IExecutionContext context, List<Fact> facts)
+    public override void PropagateUpdate(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -147,7 +148,8 @@ internal class AggregateNode : BinaryBetaNode
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
             {
-                if (set.Facts.Count == 0) continue;
+                if (set.Facts.Count == 0)
+                    continue;
 
                 IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
                 if (aggregator != null)
@@ -169,7 +171,7 @@ internal class AggregateNode : BinaryBetaNode
         PropagateAggregation(context, aggregation);
     }
 
-    public override void PropagateRetract(IExecutionContext context, List<Fact> facts)
+    public override void PropagateRetract(IExecutionContext context, IReadOnlyCollection<Fact> facts)
     {
         var aggregationContext = new AggregationContext(context, NodeInfo);
         var aggregation = new Aggregation();
@@ -178,7 +180,8 @@ internal class AggregateNode : BinaryBetaNode
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
             {
-                if (set.Facts.Count == 0) continue;
+                if (set.Facts.Count == 0)
+                    continue;
 
                 IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
                 if (aggregator != null)
@@ -199,7 +202,7 @@ internal class AggregateNode : BinaryBetaNode
         visitor.VisitAggregateNode(context, this);
     }
 
-    private void AddToAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, List<Fact> facts)
+    private void AddToAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
     {
         try
         {
@@ -216,7 +219,7 @@ internal class AggregateNode : BinaryBetaNode
         }
     }
 
-    private void UpdateInAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, List<Fact> facts)
+    private void UpdateInAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
     {
         try
         {
@@ -233,7 +236,7 @@ internal class AggregateNode : BinaryBetaNode
         }
     }
 
-    private void RetractFromAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, List<Fact> facts)
+    private void RetractFromAggregate(AggregationContext context, IFactAggregator aggregator, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
     {
         try
         {
@@ -260,7 +263,8 @@ internal class AggregateNode : BinaryBetaNode
     {
         foreach (var aggregateList in aggregation.AggregateLists)
         {
-            if (aggregateList.Count == 0) continue;
+            if (aggregateList.Count == 0)
+                continue;
 
             switch (aggregateList.Action)
             {
