@@ -586,13 +586,7 @@ internal sealed class Session : ISessionInternal
         {
             _workingMemory.AddLinkedFact(activation, item.Key, item.Fact);
         }
-
-#if NETSTANDARD2_0
-        LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Insert)
-#else
-        if (!_linkedFacts.TryPeek(out var current) || current.Action != LinkedFactAction.Insert)
-#endif
+        if (!TryPeekAction(LinkedFactAction.Insert, out var current))
         {
             current = new LinkedFactSet(LinkedFactAction.Insert);
             _linkedFacts.Enqueue(current);
@@ -619,12 +613,7 @@ internal sealed class Session : ISessionInternal
         {
             _workingMemory.UpdateLinkedFact(activation, item.Key, item.Fact, item.Value);
         }
-#if NETSTANDARD2_0
-        LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Update)
-#else
-        if (!_linkedFacts.TryPeek(out var current) || current.Action != LinkedFactAction.Insert)
-#endif
+        if (!TryPeekAction(LinkedFactAction.Update, out var current))
         {
             current = new LinkedFactSet(LinkedFactAction.Update);
             _linkedFacts.Enqueue(current);
@@ -653,12 +642,7 @@ internal sealed class Session : ISessionInternal
             item.Fact.Source = null;
         }
 
-#if NETSTANDARD2_0
-        LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Retract)
-#else
-        if (!_linkedFacts.TryPeek(out var current) || current.Action != LinkedFactAction.Insert)
-#endif
+        if (!TryPeekAction(LinkedFactAction.Retract, out var current))
         {
             current = new LinkedFactSet(LinkedFactAction.Retract);
             _linkedFacts.Enqueue(current);
@@ -734,4 +718,14 @@ internal sealed class Session : ISessionInternal
     }
 
     ReteGraph ISessionSchemaProvider.GetSchema() => _network.GetSchema();
+
+    private bool TryPeekAction(LinkedFactAction action, out LinkedFactSet set)
+    {
+        set = default;
+#if NETSTANDARD2_0
+        return _linkedFacts.Count > 0 && (set = _linkedFacts.Peek()).Action == action;
+#else
+        return _linkedFacts.TryPeek(out set) && set.Action == action;
+#endif
+    }
 }
