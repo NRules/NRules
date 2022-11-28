@@ -173,25 +173,25 @@ public class TwoFactOneForAllCheckRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact = null;
+            FactType1? fact = null;
 
             When()
-                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
-                .All<FactType2>(f => f.JoinProperty == fact.TestProperty,
-                    f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"))
+                .All<FactType2>(f => f.JoinProperty == fact!.TestProperty,
+                    f => f.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

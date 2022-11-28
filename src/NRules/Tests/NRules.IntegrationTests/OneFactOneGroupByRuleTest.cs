@@ -35,7 +35,7 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>().Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>()?.Count());
     }
 
     [Fact]
@@ -55,8 +55,8 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
-        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0)?.Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1)?.Count());
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>().Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>()?.Count());
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>().Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>()?.Count());
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        var actual = GetFiredFact<IGrouping<long, string>>().Count();
+        var actual = GetFiredFact<IGrouping<long, string>>()?.Count();
         Assert.Equal(3, actual);
     }
 
@@ -148,8 +148,8 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
-        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0)?.Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1)?.Count());
     }
 
     [Fact]
@@ -175,15 +175,15 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0).Count());
-        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1).Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(0)?.Count());
+        Assert.Equal(2, GetFiredFact<IGrouping<long, string>>(1)?.Count());
     }
 
     [Fact]
     public void Fire_TwoFactsOneGroupAnotherFactFilteredOut_FiresOnceAggregateHasSource()
     {
         //Arrange
-        IFact matchedGroup = null;
+        IFact? matchedGroup = null;
         Session.Events.RuleFiredEvent += (sender, args) =>
         {
             matchedGroup = args.Facts.Single();
@@ -202,8 +202,8 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
         //Assert
         Verify.Rule().FiredTimes(1);
         Assert.NotNull(matchedGroup);
-        Assert.NotNull(matchedGroup.Source);
-        Assert.Equal(FactSourceType.Aggregate, matchedGroup.Source.SourceType);
+        Assert.NotNull(matchedGroup!.Source);
+        Assert.Equal(FactSourceType.Aggregate, matchedGroup.Source!.SourceType);
         Assert.Collection(matchedGroup.Source.Facts,
             item => Assert.Same(fact1, item.Value),
             item => Assert.Same(fact2, item.Value));
@@ -217,18 +217,18 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
     public class FactType
     {
         public long GroupProperty { get; set; }
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            IEnumerable<string> group = null;
+            IEnumerable<string?>? group = null;
 
             When()
                 .Query(() => group, x => x
-                    .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                    .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                     .GroupBy(f => f.GroupProperty, f => f.TestProperty)
                     .Where(g => g.Count() > 1));
             Then()

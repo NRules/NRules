@@ -37,9 +37,9 @@ public class OneFactOneSortedDescendingCollectionRuleTest : BaseRulesTestFixture
         Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(2, firedFacts.Count());
-        Assert.Equal(fact2, firedFacts.ElementAt(0));
-        Assert.Equal(fact3, firedFacts.ElementAt(1));
+        Assert.Equal(2, firedFacts?.Count());
+        Assert.Equal(fact2, firedFacts?.ElementAt(0));
+        Assert.Equal(fact3, firedFacts?.ElementAt(1));
     }
 
     [Fact]
@@ -62,9 +62,9 @@ public class OneFactOneSortedDescendingCollectionRuleTest : BaseRulesTestFixture
         Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(2, firedFacts.Count());
-        Assert.Equal(fact2, firedFacts.ElementAt(0));
-        Assert.Equal(fact1, firedFacts.ElementAt(1));
+        Assert.Equal(2, firedFacts?.Count());
+        Assert.Equal(fact2, firedFacts?.ElementAt(0));
+        Assert.Equal(fact1, firedFacts?.ElementAt(1));
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class OneFactOneSortedDescendingCollectionRuleTest : BaseRulesTestFixture
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Single(firedFacts);
-        Assert.Equal(fact1, firedFacts.ElementAt(0));
+        Assert.Equal(fact1, firedFacts?.ElementAt(0));
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public class OneFactOneSortedDescendingCollectionRuleTest : BaseRulesTestFixture
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Single(firedFacts);
-        Assert.Equal(fact1, firedFacts.ElementAt(0));
+        Assert.Equal(fact1, firedFacts?.ElementAt(0));
     }
 
     [Fact]
@@ -153,9 +153,9 @@ public class OneFactOneSortedDescendingCollectionRuleTest : BaseRulesTestFixture
         Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(2, firedFacts.Count());
-        Assert.Equal(fact1, firedFacts.ElementAt(0));
-        Assert.Equal(fact2, firedFacts.ElementAt(1));
+        Assert.Equal(2, firedFacts?.Count());
+        Assert.Equal(fact1, firedFacts?.ElementAt(0));
+        Assert.Equal(fact2, firedFacts?.ElementAt(1));
     }
 
     [Fact]
@@ -178,12 +178,12 @@ public class OneFactOneSortedDescendingCollectionRuleTest : BaseRulesTestFixture
         Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(5, firedFacts.Count());
-        Assert.Equal(fact2, firedFacts.ElementAt(0));
-        Assert.Equal(fact4, firedFacts.ElementAt(1));
-        Assert.Equal(fact1, firedFacts.ElementAt(2));
-        Assert.Equal(fact5, firedFacts.ElementAt(3));
-        Assert.Equal(fact3, firedFacts.ElementAt(4));
+        Assert.Equal(5, firedFacts?.Count());
+        Assert.Equal(fact2, firedFacts?.ElementAt(0));
+        Assert.Equal(fact4, firedFacts?.ElementAt(1));
+        Assert.Equal(fact1, firedFacts?.ElementAt(2));
+        Assert.Equal(fact5, firedFacts?.ElementAt(3));
+        Assert.Equal(fact3, firedFacts?.ElementAt(4));
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -200,7 +200,7 @@ public class OneFactOneSortedDescendingCollectionRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<FactType> collection = null;
+            IEnumerable<FactType>? collection = null;
 
             When()
                 .Query(() => collection, x => x

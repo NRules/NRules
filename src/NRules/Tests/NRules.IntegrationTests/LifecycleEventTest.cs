@@ -18,10 +18,10 @@ public class LifecycleEventTest
 
         var fact = new FactType { TestProperty = "Valid Value" };
 
-        object factorySender = null;
-        WorkingMemoryEventArgs factoryArgs = null;
-        object sessionSender = null;
-        WorkingMemoryEventArgs sessionArgs = null;
+        object? factorySender = null;
+        WorkingMemoryEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        WorkingMemoryEventArgs? sessionArgs = null;
         factory.Events.FactInsertingEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -39,8 +39,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Fact.Value);
-        Assert.Same(fact, sessionArgs.Fact.Value);
+        Assert.Same(fact, factoryArgs?.Fact.Value);
+        Assert.Same(fact, sessionArgs?.Fact.Value);
     }
 
     [Fact]
@@ -52,10 +52,10 @@ public class LifecycleEventTest
 
         var fact = new FactType { TestProperty = "Valid Value" };
 
-        object factorySender = null;
-        WorkingMemoryEventArgs factoryArgs = null;
-        object sessionSender = null;
-        WorkingMemoryEventArgs sessionArgs = null;
+        object? factorySender = null;
+        WorkingMemoryEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        WorkingMemoryEventArgs? sessionArgs = null;
         factory.Events.FactInsertedEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -73,8 +73,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Fact.Value);
-        Assert.Same(fact, sessionArgs.Fact.Value);
+        Assert.Same(fact, factoryArgs?.Fact.Value);
+        Assert.Same(fact, sessionArgs?.Fact.Value);
     }
 
     [Fact]
@@ -87,10 +87,10 @@ public class LifecycleEventTest
         var fact = new FactType { TestProperty = "Valid Value" };
         session.Insert(fact);
 
-        object factorySender = null;
-        WorkingMemoryEventArgs factoryArgs = null;
-        object sessionSender = null;
-        WorkingMemoryEventArgs sessionArgs = null;
+        object? factorySender = null;
+        WorkingMemoryEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        WorkingMemoryEventArgs? sessionArgs = null;
         factory.Events.FactUpdatingEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -108,8 +108,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Fact.Value);
-        Assert.Same(fact, sessionArgs.Fact.Value);
+        Assert.Same(fact, factoryArgs?.Fact.Value);
+        Assert.Same(fact, sessionArgs?.Fact.Value);
     }
 
     [Fact]
@@ -122,10 +122,10 @@ public class LifecycleEventTest
         var fact = new FactType { TestProperty = "Valid Value" };
         session.Insert(fact);
 
-        object factorySender = null;
-        WorkingMemoryEventArgs factoryArgs = null;
-        object sessionSender = null;
-        WorkingMemoryEventArgs sessionArgs = null;
+        object? factorySender = null;
+        WorkingMemoryEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        WorkingMemoryEventArgs? sessionArgs = null;
         factory.Events.FactUpdatedEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -143,8 +143,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Fact.Value);
-        Assert.Same(fact, sessionArgs.Fact.Value);
+        Assert.Same(fact, factoryArgs?.Fact.Value);
+        Assert.Same(fact, sessionArgs?.Fact.Value);
     }
 
     [Fact]
@@ -157,10 +157,10 @@ public class LifecycleEventTest
         var fact = new FactType { TestProperty = "Valid Value" };
         session.Insert(fact);
 
-        object factorySender = null;
-        WorkingMemoryEventArgs factoryArgs = null;
-        object sessionSender = null;
-        WorkingMemoryEventArgs sessionArgs = null;
+        object? factorySender = null;
+        WorkingMemoryEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        WorkingMemoryEventArgs? sessionArgs = null;
         factory.Events.FactRetractingEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -178,8 +178,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Fact.Value);
-        Assert.Same(fact, sessionArgs.Fact.Value);
+        Assert.Same(fact, factoryArgs?.Fact.Value);
+        Assert.Same(fact, sessionArgs?.Fact.Value);
     }
 
     [Fact]
@@ -192,10 +192,10 @@ public class LifecycleEventTest
         var fact = new FactType { TestProperty = "Valid Value" };
         session.Insert(fact);
 
-        object factorySender = null;
-        WorkingMemoryEventArgs factoryArgs = null;
-        object sessionSender = null;
-        WorkingMemoryEventArgs sessionArgs = null;
+        object? factorySender = null;
+        WorkingMemoryEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        WorkingMemoryEventArgs? sessionArgs = null;
         factory.Events.FactRetractedEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -213,8 +213,8 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Fact.Value);
-        Assert.Same(fact, sessionArgs.Fact.Value);
+        Assert.Same(fact, factoryArgs?.Fact.Value);
+        Assert.Same(fact, sessionArgs?.Fact.Value);
     }
 
     [Fact]
@@ -226,10 +226,10 @@ public class LifecycleEventTest
 
         var fact = new FactType { TestProperty = "Valid Value" };
 
-        object factorySender = null;
-        AgendaEventArgs factoryArgs = null;
-        object sessionSender = null;
-        AgendaEventArgs sessionArgs = null;
+        object? factorySender = null;
+        AgendaEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        AgendaEventArgs? sessionArgs = null;
         factory.Events.ActivationCreatedEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -247,10 +247,10 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Facts.Single().Value);
-        Assert.Same(fact, sessionArgs.Facts.Single().Value);
-        Assert.Contains("TestRule", factoryArgs.Rule.Name);
-        Assert.Contains("TestRule", sessionArgs.Rule.Name);
+        Assert.Same(fact, factoryArgs?.Facts.Single().Value);
+        Assert.Same(fact, sessionArgs?.Facts.Single().Value);
+        Assert.Contains("TestRule", factoryArgs?.Rule.Name);
+        Assert.Contains("TestRule", sessionArgs?.Rule.Name);
     }
 
     [Fact]
@@ -263,10 +263,10 @@ public class LifecycleEventTest
         var fact = new FactType { TestProperty = "Valid Value" };
         session.Insert(fact);
 
-        object factorySender = null;
-        AgendaEventArgs factoryArgs = null;
-        object sessionSender = null;
-        AgendaEventArgs sessionArgs = null;
+        object? factorySender = null;
+        AgendaEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        AgendaEventArgs? sessionArgs = null;
         factory.Events.ActivationUpdatedEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -284,10 +284,10 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Facts.Single().Value);
-        Assert.Same(fact, sessionArgs.Facts.Single().Value);
-        Assert.Contains("TestRule", factoryArgs.Rule.Name);
-        Assert.Contains("TestRule", sessionArgs.Rule.Name);
+        Assert.Same(fact, factoryArgs?.Facts.Single().Value);
+        Assert.Same(fact, sessionArgs?.Facts.Single().Value);
+        Assert.Contains("TestRule", factoryArgs?.Rule.Name);
+        Assert.Contains("TestRule", sessionArgs?.Rule.Name);
     }
 
     [Fact]
@@ -300,10 +300,10 @@ public class LifecycleEventTest
         var fact = new FactType { TestProperty = "Valid Value" };
         session.Insert(fact);
 
-        object factorySender = null;
-        AgendaEventArgs factoryArgs = null;
-        object sessionSender = null;
-        AgendaEventArgs sessionArgs = null;
+        object? factorySender = null;
+        AgendaEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        AgendaEventArgs? sessionArgs = null;
         factory.Events.ActivationDeletedEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -321,10 +321,10 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Facts.Single().Value);
-        Assert.Same(fact, sessionArgs.Facts.Single().Value);
-        Assert.Contains("TestRule", factoryArgs.Rule.Name);
-        Assert.Contains("TestRule", sessionArgs.Rule.Name);
+        Assert.Same(fact, factoryArgs?.Facts.Single().Value);
+        Assert.Same(fact, sessionArgs?.Facts.Single().Value);
+        Assert.Contains("TestRule", factoryArgs?.Rule.Name);
+        Assert.Contains("TestRule", sessionArgs?.Rule.Name);
     }
 
     [Fact]
@@ -337,10 +337,10 @@ public class LifecycleEventTest
         var fact = new FactType { TestProperty = "Valid Value" };
         session.Insert(fact);
 
-        object factorySender = null;
-        AgendaEventArgs factoryArgs = null;
-        object sessionSender = null;
-        AgendaEventArgs sessionArgs = null;
+        object? factorySender = null;
+        AgendaEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        AgendaEventArgs? sessionArgs = null;
         factory.Events.RuleFiringEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -358,10 +358,10 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Facts.Single().Value);
-        Assert.Same(fact, sessionArgs.Facts.Single().Value);
-        Assert.Contains("TestRule", factoryArgs.Rule.Name);
-        Assert.Contains("TestRule", sessionArgs.Rule.Name);
+        Assert.Same(fact, factoryArgs?.Facts.Single().Value);
+        Assert.Same(fact, sessionArgs?.Facts.Single().Value);
+        Assert.Contains("TestRule", factoryArgs?.Rule.Name);
+        Assert.Contains("TestRule", sessionArgs?.Rule.Name);
     }
 
     [Fact]
@@ -374,10 +374,10 @@ public class LifecycleEventTest
         var fact = new FactType { TestProperty = "Valid Value" };
         session.Insert(fact);
 
-        object factorySender = null;
-        AgendaEventArgs factoryArgs = null;
-        object sessionSender = null;
-        AgendaEventArgs sessionArgs = null;
+        object? factorySender = null;
+        AgendaEventArgs? factoryArgs = null;
+        object? sessionSender = null;
+        AgendaEventArgs? sessionArgs = null;
         factory.Events.RuleFiredEvent += (sender, args) =>
         {
             factorySender = sender;
@@ -395,10 +395,10 @@ public class LifecycleEventTest
         //Assert
         Assert.Same(session, factorySender);
         Assert.Same(session, sessionSender);
-        Assert.Same(fact, factoryArgs.Facts.Single().Value);
-        Assert.Same(fact, sessionArgs.Facts.Single().Value);
-        Assert.Contains("TestRule", factoryArgs.Rule.Name);
-        Assert.Contains("TestRule", sessionArgs.Rule.Name);
+        Assert.Same(fact, factoryArgs?.Facts.Single().Value);
+        Assert.Same(fact, sessionArgs?.Facts.Single().Value);
+        Assert.Contains("TestRule", factoryArgs?.Rule.Name);
+        Assert.Contains("TestRule", sessionArgs?.Rule.Name);
     }
 
     private ISessionFactory CreateTarget()
@@ -410,17 +410,17 @@ public class LifecycleEventTest
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType? fact = null;
 
             When()
-                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

@@ -17,8 +17,8 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
         //Arrange
         GetRuleInstance<TestRule>().Grouping = ThrowGrouping;
 
-        Expression expression = null;
-        IList<IFact> facts = null;
+        Expression? expression = null;
+        IList<IFact>? facts = null;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
@@ -30,9 +30,9 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact21));
         Assert.NotNull(expression);
-        Assert.Equal(2, facts.Count);
-        Assert.Same(fact11, facts.First().Value);
-        Assert.Same(fact21, facts.Skip(1).First().Value);
+        Assert.Equal(2, facts?.Count);
+        Assert.Same(fact11, facts?.First().Value);
+        Assert.Same(fact21, facts?.Skip(1).First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
     }
 
@@ -106,7 +106,7 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
         //Assert
         Verify.Rule().FiredTimes(1);
         var group = GetFiredFact<IEnumerable<FactType2>>();
-        Assert.Equal(2, group.Count());
+        Assert.Equal(2, group?.Count());
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
         //Assert
         Verify.Rule().FiredTimes(1);
         var group = GetFiredFact<IEnumerable<FactType2>>();
-        Assert.Equal(2, group.Count());
+        Assert.Equal(2, group?.Count());
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1", GetFiredFact<FactType1>().TestProperty);
+        Assert.Equal("Valid Value 1", GetFiredFact<FactType1>()?.TestProperty);
     }
 
     [Fact]
@@ -194,7 +194,7 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 2", GetFiredFact<FactType1>().TestProperty);
+        Assert.Equal("Valid Value 2", GetFiredFact<FactType1>()?.TestProperty);
     }
 
     [Fact]
@@ -296,7 +296,7 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
         //Assert
         Verify.Rule().FiredTimes(1);
         var group = GetFiredFact<IEnumerable<FactType2>>();
-        Assert.Equal(2, group.Count());
+        Assert.Equal(2, group?.Count());
     }
 
     [Fact]
@@ -380,33 +380,33 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
         setup.Rule<TestRule>();
     }
 
-    private static readonly Func<FactType2, object> SuccessfulGrouping = x => x.GroupProperty;
-    private static readonly Func<FactType2, object> ThrowGrouping = x => throw new InvalidOperationException("Grouping failed");
+    private static readonly Func<FactType2, object?> SuccessfulGrouping = x => x.GroupProperty;
+    private static readonly Func<FactType2, object?> ThrowGrouping = x => throw new InvalidOperationException("Grouping failed");
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string JoinProperty { get; set; }
-        public string GroupProperty { get; set; }
+        public string? JoinProperty { get; set; }
+        public string? GroupProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
-        public Func<FactType2, object> Grouping = SuccessfulGrouping;
+        public Func<FactType2, object?> Grouping = SuccessfulGrouping;
 
         public override void Define()
         {
-            FactType1 fact1 = null;
-            IEnumerable<FactType2> fact2Group = null;
+            FactType1? fact1 = null;
+            IEnumerable<FactType2>? fact2Group = null;
 
             When()
                 .Match(() => fact1)
                 .Query(() => fact2Group, q => q
-                    .Match<FactType2>(f => f.JoinProperty == fact1.TestProperty)
+                    .Match<FactType2>(f => f.JoinProperty == fact1!.TestProperty)
                     .GroupBy(f => Grouping(f))
                     .Select(x => x)
                 );

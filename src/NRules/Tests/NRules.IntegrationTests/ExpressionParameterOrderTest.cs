@@ -62,10 +62,10 @@ public class ExpressionParameterOrderTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType0 f0 = null;
-            FactType1 f1 = null;
-            FactType2 f2 = null;
-            FactType3 f3 = null;
+            FactType0? f0 = null;
+            FactType1? f1 = null;
+            FactType2? f2 = null;
+            FactType3? f3 = null;
 
             When()
                 .Or(x => x
@@ -86,27 +86,27 @@ public class ExpressionParameterOrderTest : BaseRulesTestFixture
                 .Do(ctx => Action(f2, f0, f3));
         }
 
-        private bool Condition(FactType0 f0, FactType1 f1, FactType2 f2)
+        private bool Condition(FactType0? f0, FactType1? f1, FactType2? f2)
         {
             return true;
         }
 
-        private bool Condition(FactType2 f2, FactType3 f3, FactType0 f0)
+        private bool Condition(FactType2? f2, FactType3? f3, FactType0? f0)
         {
             return true;
         }
 
-        private bool Condition(FactType0 f0, FactType3 f3)
+        private bool Condition(FactType0? f0, FactType3? f3)
         {
             return true;
         }
 
-        private bool Condition(FactType3 f3, FactType0 f0)
+        private bool Condition(FactType3? f3, FactType0? f0)
         {
             return true;
         }
 
-        private void Action(FactType2 f2, FactType0 f0, FactType3 f3)
+        private void Action(FactType2? f2, FactType0? f0, FactType3? f3)
         {
         }
     }

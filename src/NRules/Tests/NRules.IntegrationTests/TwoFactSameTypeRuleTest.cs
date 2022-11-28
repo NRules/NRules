@@ -49,20 +49,20 @@ public class TwoFactSameTypeRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
-        public FactType Parent { get; set; }
+        public string? TestProperty { get; set; }
+        public FactType? Parent { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType fact1 = null;
-            FactType fact2 = null;
+            FactType? fact1 = null;
+            FactType? fact2 = null;
 
             When()
-                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.Parent == fact1);
+                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"), f => f!.Parent == fact1);
 
             Then()
                 .Do(ctx => ctx.NoOp());

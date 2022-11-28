@@ -395,13 +395,13 @@ public class ActionTriggerRepeatableTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType? fact = null;
 
             When()
                 .Match(() => fact);
 
             Filter()
-                .Where(() => fact.AcceptFilter);
+                .Where(() => fact!.AcceptFilter);
 
             Then()
                 .Action(ctx => OnMatchAction(), ActionTrigger.Activated)
@@ -801,13 +801,13 @@ public class ActionTriggerNonRepeatableTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType? fact = null;
 
             When()
                 .Match(() => fact);
 
             Filter()
-                .Where(() => fact.AcceptFilter);
+                .Where(() => fact!.AcceptFilter);
 
             Then()
                 .Action(ctx => OnMatchAction(), ActionTrigger.Activated)
@@ -1184,13 +1184,13 @@ public class ActionTriggerNoUpdateRepeatableTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType? fact = null;
 
             When()
                 .Match(() => fact);
 
             Filter()
-                .Where(() => fact.AcceptFilter);
+                .Where(() => fact!.AcceptFilter);
 
             Then()
                 .Action(ctx => OnMatchAction(), ActionTrigger.Activated)
@@ -1567,13 +1567,13 @@ public class ActionTriggerNoUpdateNonRepeatableTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType? fact = null;
 
             When()
                 .Match(() => fact);
 
             Filter()
-                .Where(() => fact.AcceptFilter);
+                .Where(() => fact!.AcceptFilter);
 
             Then()
                 .Action(ctx => OnMatchAction(), ActionTrigger.Activated)

@@ -98,12 +98,12 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
 
     public class NameFact
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
     }
 
     public class ReferenceFact
     {
-        public NameFact Reference { get; set; }
+        public NameFact? Reference { get; set; }
 
         public NameFact GetKey(NameFact nameFact)
         {
@@ -115,14 +115,14 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            NameFact thisNameFact = null;
-            NameFact otherNameFact = null;
-            ReferenceFact referenceFact = null;
+            NameFact? thisNameFact = null;
+            NameFact? otherNameFact = null;
+            ReferenceFact? referenceFact = null;
 
             When()
-                .Match(() => thisNameFact, f => f.Name == "ThisName")
-                .Match(() => otherNameFact, f => f.Name == "OtherName")
-                .Match(() => referenceFact, rf => rf.Reference == thisNameFact);
+                .Match(() => thisNameFact, f => f!.Name == "ThisName")
+                .Match(() => otherNameFact, f => f!.Name == "OtherName")
+                .Match(() => referenceFact, rf => rf!.Reference == thisNameFact);
 
             Then()
                 .Do(ctx => ctx.NoOp());
@@ -133,14 +133,14 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            NameFact thisNameFact = null;
-            NameFact otherNameFact = null;
-            ReferenceFact referenceFact = null;
+            NameFact? thisNameFact = null;
+            NameFact? otherNameFact = null;
+            ReferenceFact? referenceFact = null;
 
             When()
-                .Match(() => thisNameFact, f => f.Name == "ThisName")
-                .Match(() => otherNameFact, f => f.Name == "OtherName")
-                .Match(() => referenceFact, rf => rf.Reference == otherNameFact);
+                .Match(() => thisNameFact, f => f!.Name == "ThisName")
+                .Match(() => otherNameFact, f => f!.Name == "OtherName")
+                .Match(() => referenceFact, rf => rf!.Reference == otherNameFact);
 
             Then()
                 .Do(ctx => ctx.NoOp());
@@ -151,16 +151,16 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            NameFact thisNameFact = null;
-            NameFact otherNameFact = null;
-            IEnumerable<ReferenceFact> referenceFacts = null;
+            NameFact? thisNameFact = null;
+            NameFact? otherNameFact = null;
+            IEnumerable<ReferenceFact>? referenceFacts = null;
 
             When()
-                .Match(() => thisNameFact, f => f.Name == "ThisName")
-                .Match(() => otherNameFact, f => f.Name == "OtherName")
+                .Match(() => thisNameFact, f => f!.Name == "ThisName")
+                .Match(() => otherNameFact, f => f!.Name == "OtherName")
                 .Query(() => referenceFacts, q => q
                     .Match<ReferenceFact>()
-                    .GroupBy(x => x.GetKey(thisNameFact))
+                    .GroupBy(x => x.GetKey(thisNameFact!))
                     .Where(g => g.All(x => x.Reference == g.Key)));
 
             Then()
@@ -172,16 +172,16 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            NameFact thisNameFact = null;
-            NameFact otherNameFact = null;
-            IEnumerable<ReferenceFact> referenceFacts = null;
+            NameFact? thisNameFact = null;
+            NameFact? otherNameFact = null;
+            IEnumerable<ReferenceFact>? referenceFacts = null;
 
             When()
-                .Match(() => thisNameFact, f => f.Name == "ThisName")
-                .Match(() => otherNameFact, f => f.Name == "OtherName")
+                .Match(() => thisNameFact, f => f!.Name == "ThisName")
+                .Match(() => otherNameFact, f => f!.Name == "OtherName")
                 .Query(() => referenceFacts, q => q
                     .Match<ReferenceFact>()
-                    .GroupBy(x => x.GetKey(otherNameFact))
+                    .GroupBy(x => x.GetKey(otherNameFact!))
                     .Where(g => g.All(x => x.Reference == g.Key)));
 
             Then()

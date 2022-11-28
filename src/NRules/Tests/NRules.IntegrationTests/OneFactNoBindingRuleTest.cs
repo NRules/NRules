@@ -30,7 +30,7 @@ public class OneFactNoBindingRuleTest : BaseRulesTestFixture
         var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
-        IFactMatch[] matches = null;
+        IFactMatch[]? matches = null;
         GetRuleInstance<TestRule>().Action = ctx =>
         {
             matches = ctx.Match.Facts.ToArray();
@@ -42,7 +42,7 @@ public class OneFactNoBindingRuleTest : BaseRulesTestFixture
         //Assert
         Verify.Rule().FiredTimes(1);
         Assert.Single(matches);
-        Assert.Same(fact, matches[0].Value);
+        Assert.Same(fact, matches![0].Value);
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -52,7 +52,7 @@ public class OneFactNoBindingRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
@@ -62,7 +62,7 @@ public class OneFactNoBindingRuleTest : BaseRulesTestFixture
         public override void Define()
         {
             When()
-                .Match<FactType>(f => f.TestProperty.StartsWith("Valid"));
+                .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => Action(ctx));
         }

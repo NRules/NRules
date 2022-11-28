@@ -56,7 +56,7 @@ public class FromQueryComplexReferenceTest : BaseRulesTestFixture
     public class Fact
     {
         public int Key { get; set; }
-        public string Value { get; set; }
+        public string? Value { get; set; }
     }
 
     public class Key
@@ -68,9 +68,9 @@ public class FromQueryComplexReferenceTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<Fact> factsAll = null;
-            Key key = null;
-            IGrouping<string, Fact> factsFilteredGrouped = null;
+            IEnumerable<Fact>? factsAll = null;
+            Key? key = null;
+            IGrouping<string, Fact>? factsFilteredGrouped = null;
 
             When()
                 .Query(() => factsAll, q => q
@@ -79,7 +79,7 @@ public class FromQueryComplexReferenceTest : BaseRulesTestFixture
                     .Where(c => c.Any()))
                 .Match(() => key)
                 .Query(() => factsFilteredGrouped, q => q
-                    .From(() => factsAll.Where(f => f.Key == key.Value))
+                    .From(() => factsAll!.Where(f => f.Key == key!.Value))
                     .SelectMany(c => c)
                     .GroupBy(f => f.Value));
 

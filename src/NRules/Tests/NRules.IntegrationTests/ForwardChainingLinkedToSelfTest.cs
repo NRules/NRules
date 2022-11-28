@@ -33,12 +33,12 @@ public class ForwardChainingLinkedToSelfTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string GroupKey { get; set; }
+        public string? GroupKey { get; set; }
     }
 
     public class FactType2
     {
-        public string Key { get; set; }
+        public string? Key { get; set; }
     }
 
     public class FactType3
@@ -55,16 +55,16 @@ public class ForwardChainingLinkedToSelfTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IGrouping<string, FactType1> facts = null;
-            IEnumerable<FactType2> otherFacts = null;
-            FactType4 projection = null;
+            IGrouping<string, FactType1>? facts = null;
+            IEnumerable<FactType2>? otherFacts = null;
+            FactType4? projection = null;
 
             When()
                 .Query(() => facts, q => q
                     .Match<FactType1>()
                     .GroupBy(x => x.GroupKey))
                 .Query(() => otherFacts, q => q
-                    .Match<FactType2>(x => x.Key != facts.Key)
+                    .Match<FactType2>(x => x.Key != facts!.Key)
                     .Collect())
                 .Query(() => projection, q => q
                     .Match<FactType3>()
@@ -72,10 +72,10 @@ public class ForwardChainingLinkedToSelfTest : BaseRulesTestFixture
                     .Select(x => ProjectValue(x)));
 
             Filter()
-                .OnChange(() => otherFacts.Count());
+                .OnChange(() => otherFacts!.Count());
 
             Then()
-                .Yield(ctx => Create(facts));
+                .Yield(ctx => Create(facts!));
         }
 
         private static FactType4 ProjectValue(IEnumerable<FactType3> x)

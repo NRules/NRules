@@ -58,7 +58,7 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
         var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
-        ITestService1 resolvedService1 = null;
+        ITestService1? resolvedService1 = null;
         GetRuleInstance<TestRule>().Action = ctx =>
         {
             resolvedService1 = ctx.Resolve<ITestService1>();
@@ -79,14 +79,14 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 
     public interface ITestService1
     {
-        void Action(string value);
+        void Action(string? value);
     }
 
     private class TestService1 : ITestService1
     {
-        public event EventHandler ServiceCalled;
+        public event EventHandler? ServiceCalled;
 
-        public void Action(string value)
+        public void Action(string? value)
         {
             ServiceCalled?.Invoke(this, EventArgs.Empty);
         }
@@ -94,14 +94,14 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 
     public interface ITestService2
     {
-        void Action(string value);
+        void Action(string? value);
     }
 
     private class TestService2 : ITestService2
     {
-        public event EventHandler ServiceCalled;
+        public event EventHandler? ServiceCalled;
 
-        public void Action(string value)
+        public void Action(string? value)
         {
             ServiceCalled?.Invoke(this, EventArgs.Empty);
         }
@@ -130,7 +130,7 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
@@ -139,21 +139,21 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType fact = null;
-            ITestService1 service1 = null;
-            ITestService2 service2 = null;
+            FactType? fact = null;
+            ITestService1? service1 = null;
+            ITestService2? service2 = null;
 
             Dependency()
                 .Resolve(() => service1)
                 .Resolve(() => service2);
 
             When()
-                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => Action(ctx))
-                .Do(ctx => service1.Action(fact.TestProperty))
-                .Do(ctx => service2.Action(fact.TestProperty))
-                .Do(ctx => SomeAction(fact, service1, service2));
+                .Do(ctx => service1!.Action(fact!.TestProperty))
+                .Do(ctx => service2!.Action(fact!.TestProperty))
+                .Do(ctx => SomeAction(fact!, service1!, service2!));
         }
 
         private void SomeAction(FactType fact, ITestService1 service1, ITestService2 service2)

@@ -123,8 +123,8 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
         public int EvalCount { get; set; }
     }
 
@@ -136,26 +136,26 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
         }
 
         public int Id { get; }
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class FactType3
     {
-        public string TestProperty { get; set; }
-        public string GroupProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? GroupProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
-            FactType2 fact21 = null;
-            FactType2 fact22 = null;
-            IEnumerable<FactType3> group = null;
+            FactType1? fact1 = null;
+            FactType2? fact21 = null;
+            FactType2? fact22 = null;
+            IEnumerable<FactType3>? group = null;
 
             When()
-                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
                 .Query(() => fact21, q => q
                     .Match<FactType2>(f => f.TestProperty == "Value 1")
                     .Collect()
@@ -165,14 +165,14 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
                     .Collect()
                     .Select(x => x.FirstOrDefault() ?? new FactType2(0) { TestProperty = "Value 2" }))
                 .Query(() => group, q => q
-                    .Match<FactType3>(f => f.TestProperty.StartsWith("Valid"))
+                    .Match<FactType3>(f => f.TestProperty!.StartsWith("Valid"))
                     .GroupBy(x => x.GroupProperty)
-                    .Where(g => ValidGroup(fact1, fact21, fact22, g)));
+                    .Where(g => ValidGroup(fact1!, fact21, fact22, g!)));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
 
-        private bool ValidGroup(FactType1 fact1, FactType2 fact21, FactType2 fact22, IGrouping<string, FactType3> group)
+        private bool ValidGroup(FactType1 fact1, FactType2? fact21, FactType2? fact22, IGrouping<string, FactType3> group)
         {
             fact1.EvalCount++;
             return group.Key == fact1.JoinProperty;

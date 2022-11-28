@@ -35,7 +35,7 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()?.Count());
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()?.Count());
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()?.Count());
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -145,18 +145,18 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            IEnumerable<FactType> collection = null;
+            IEnumerable<FactType>? collection = null;
 
             When()
                 .Query(() => collection, x => x
-                    .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                    .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                     .Collect());
             Then()
                 .Do(ctx => ctx.NoOp());

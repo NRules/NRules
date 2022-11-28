@@ -25,7 +25,7 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()?.Count());
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()?.Count());
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()?.Count());
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -163,9 +163,9 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
         }
 
         public int Id { get; }
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
 
-        public bool Equals(FactType other)
+        public bool Equals(FactType? other)
         {
             if (other is null)
                 return false;
@@ -174,7 +174,7 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
             return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -195,11 +195,11 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<FactType> collection = null;
+            IEnumerable<FactType>? collection = null;
 
             When()
                 .Query(() => collection, q => q
-                    .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                    .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                     .Collect());
             Then()
                 .Do(ctx => ctx.NoOp());

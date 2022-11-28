@@ -17,8 +17,8 @@ public class BindingEvaluationExceptionTest : BaseRulesTestFixture
         //Arrange
         GetRuleInstance<TestRule>().Binding = ThrowBinding;
 
-        Expression expression = null;
-        IList<IFact> facts = null;
+        Expression? expression = null;
+        IList<IFact>? facts = null;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
@@ -27,8 +27,8 @@ public class BindingEvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact));
         Assert.NotNull(expression);
-        Assert.Equal(1, facts.Count);
-        Assert.Same(fact, facts.First().Value);
+        Assert.Equal(1, facts?.Count);
+        Assert.Same(fact, facts?.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
     }
 
@@ -146,25 +146,25 @@ public class BindingEvaluationExceptionTest : BaseRulesTestFixture
         setup.Rule<TestRule>();
     }
 
-    private static readonly Func<FactType, string> SuccessfulBinding = f => "value";
-    private static readonly Func<FactType, string> ThrowBinding = f => throw new InvalidOperationException("Binding failed");
+    private static readonly Func<FactType?, string> SuccessfulBinding = f => "value";
+    private static readonly Func<FactType?, string> ThrowBinding = f => throw new InvalidOperationException("Binding failed");
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
-        public Func<FactType, string> Binding = SuccessfulBinding;
+        public Func<FactType?, string> Binding = SuccessfulBinding;
 
         public override void Define()
         {
-            FactType fact = null;
-            string binding = null;
+            FactType? fact = null;
+            string? binding = null;
 
             When()
-                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"))
                 .Let(() => binding, () => Binding(fact));
             Then()
                 .Do(ctx => NoOp());

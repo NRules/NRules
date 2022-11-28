@@ -20,7 +20,7 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>().Value);
+        Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>()?.Value);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>().Value);
+        Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>()?.Value);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
 
         //Assert - 1
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>(0).Value);
+        Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>(0)?.Value);
 
         //Arrange - 2
         fact2.TestProperty = "Valid Value 22";
@@ -102,7 +102,7 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
 
         //Assert - 2
         Verify.Rule().FiredTimes(2);
-        Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>(1).Value);
+        Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>(1)?.Value);
     }
 
     [Fact]
@@ -158,8 +158,8 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal("Valid Value 11|Valid Value 21", GetFiredFact<CalculatedFact3>(0).Value);
-        Assert.Equal("Valid Value 12|Valid Value 22", GetFiredFact<CalculatedFact3>(1).Value);
+        Assert.Equal("Valid Value 11|Valid Value 21", GetFiredFact<CalculatedFact3>(0)?.Value);
+        Assert.Equal("Valid Value 12|Valid Value 22", GetFiredFact<CalculatedFact3>(1)?.Value);
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -169,7 +169,7 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
         public int Counter { get; set; }
         public bool ShouldProduceNull3 { get; set; }
         public bool ShouldProduceNull4 { get; set; }
@@ -177,9 +177,9 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
         public int Counter { get; set; }
-        public string JoinProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class CalculatedFact3
@@ -206,30 +206,30 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
-            FactType2 fact2 = null;
-            CalculatedFact3 fact3 = null;
-            CalculatedFact4 fact4 = null;
+            FactType1? fact1 = null;
+            FactType2? fact2 = null;
+            CalculatedFact3? fact3 = null;
+            CalculatedFact4? fact4 = null;
 
             When()
-                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
-                .Let(() => fact3, () => CreateFact3(fact1, fact2))
-                .Let(() => fact4, () => CreateFact4(fact1, fact2))
+                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"), f => f!.JoinProperty == fact1!.TestProperty)
+                .Let(() => fact3, () => CreateFact3(fact1!, fact2!))
+                .Let(() => fact4, () => CreateFact4(fact1!, fact2!))
                 .Having(() => fact4 != null && fact4.Value == 0);
 
             Then()
                 .Do(ctx => ctx.NoOp());
         }
 
-        private static CalculatedFact3 CreateFact3(FactType1 fact1, FactType2 fact2)
+        private static CalculatedFact3? CreateFact3(FactType1 fact1, FactType2 fact2)
         {
             if (fact1.ShouldProduceNull3)
                 return null;
             return new CalculatedFact3(fact1, fact2);
         }
 
-        private static CalculatedFact4 CreateFact4(FactType1 fact1, FactType2 fact2)
+        private static CalculatedFact4? CreateFact4(FactType1 fact1, FactType2 fact2)
         {
             if (fact1.ShouldProduceNull4)
                 return null;

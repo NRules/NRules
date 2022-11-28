@@ -39,11 +39,11 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(4, firedFacts.Count());
-        Assert.Equal(fact5, firedFacts.ElementAt(0));
-        Assert.Equal(fact3, firedFacts.ElementAt(1));
-        Assert.Equal(fact4, firedFacts.ElementAt(2));
-        Assert.Equal(fact2, firedFacts.ElementAt(3));
+        Assert.Equal(4, firedFacts?.Count());
+        Assert.Equal(fact5, firedFacts?.ElementAt(0));
+        Assert.Equal(fact3, firedFacts?.ElementAt(1));
+        Assert.Equal(fact4, firedFacts?.ElementAt(2));
+        Assert.Equal(fact2, firedFacts?.ElementAt(3));
     }
 
     [Fact]
@@ -66,9 +66,9 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(2, firedFacts.Count());
-        Assert.Equal(fact1, firedFacts.ElementAt(0));
-        Assert.Equal(fact2, firedFacts.ElementAt(1));
+        Assert.Equal(2, firedFacts?.Count());
+        Assert.Equal(fact1, firedFacts?.ElementAt(0));
+        Assert.Equal(fact2, firedFacts?.ElementAt(1));
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Single(firedFacts);
-        Assert.Equal(fact1, firedFacts.ElementAt(0));
+        Assert.Equal(fact1, firedFacts?.ElementAt(0));
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
         Assert.Single(firedFacts);
-        Assert.Equal(fact1, firedFacts.ElementAt(0));
+        Assert.Equal(fact1, firedFacts?.ElementAt(0));
     }
 
     [Fact]
@@ -157,9 +157,9 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Verify.Rule().FiredTimes(1);
 
         var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(2, firedFacts.Count());
-        Assert.Equal(fact2, firedFacts.ElementAt(0));
-        Assert.Equal(fact1, firedFacts.ElementAt(1));
+        Assert.Equal(2, firedFacts?.Count());
+        Assert.Equal(fact2, firedFacts?.ElementAt(0));
+        Assert.Equal(fact1, firedFacts?.ElementAt(1));
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -169,21 +169,21 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
 
     public class FactType
     {
-        public FactType(int testInt, string testString)
+        public FactType(int testInt, string? testString)
         {
             TestPropertyInt = testInt;
             TestPropertyString = testString;
         }
 
         public int TestPropertyInt { get; set; }
-        public string TestPropertyString { get; set; }
+        public string? TestPropertyString { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            IEnumerable<FactType> collection = null;
+            IEnumerable<FactType>? collection = null;
 
             When()
                 .Query(() => collection, x => x

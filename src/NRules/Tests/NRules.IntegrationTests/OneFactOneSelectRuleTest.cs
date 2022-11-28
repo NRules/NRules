@@ -19,7 +19,7 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>()?.Value);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>()?.Value);
     }
 
     [Fact]
@@ -52,8 +52,8 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1.TestProperty, GetFiredFact<FactProjection>(0).Value);
-        Assert.Equal(fact2.TestProperty, GetFiredFact<FactProjection>(1).Value);
+        Assert.Equal(fact1.TestProperty, GetFiredFact<FactProjection>(0)?.Value);
+        Assert.Equal(fact2.TestProperty, GetFiredFact<FactProjection>(1)?.Value);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>()?.Value);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>()?.Value);
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class FactProjection : IEquatable<FactProjection>
@@ -154,9 +154,9 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
             Value = fact.TestProperty;
         }
 
-        public string Value { get; }
+        public string? Value { get; }
 
-        public bool Equals(FactProjection other)
+        public bool Equals(FactProjection? other)
         {
             if (other is null)
                 return false;
@@ -165,7 +165,7 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
             return string.Equals(Value, other.Value);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -186,13 +186,13 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactProjection projection = null;
+            FactProjection? projection = null;
 
             When()
                 .Query(() => projection, x => x
                     .Match<FactType>()
                     .Select(f => new FactProjection(f))
-                    .Where(p => p.Value.StartsWith("Valid")));
+                    .Where(p => p.Value!.StartsWith("Valid")));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

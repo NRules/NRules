@@ -18,8 +18,8 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Arrange
         GetRuleInstance<TestRule>().Condition = ThrowCondition;
 
-        Expression expression = null;
-        IList<IFact> facts = null;
+        Expression? expression = null;
+        IList<IFact>? facts = null;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
@@ -29,7 +29,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact));
         Assert.NotNull(expression);
         Assert.Single(facts);
-        Assert.Same(fact, facts.First().Value);
+        Assert.Same(fact, facts?.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
     }
 
@@ -144,8 +144,8 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Arrange
         GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
 
-        Expression expression = null;
-        IList<IFactMatch> facts = null;
+        Expression? expression = null;
+        IList<IFactMatch>? facts = null;
         Session.Events.AgendaExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.AgendaExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
@@ -155,7 +155,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         var ex = Assert.Throws<AgendaExpressionEvaluationException>(() => Session.Insert(fact));
         Assert.NotNull(expression);
         Assert.Single(facts);
-        Assert.Same(fact, facts.First().Value);
+        Assert.Same(fact, facts?.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
     }
 
@@ -182,8 +182,8 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Arrange
         GetRuleInstance<TestRule>().Action = ThrowAction;
 
-        Expression expression = null;
-        IList<IFactMatch> facts = null;
+        Expression? expression = null;
+        IList<IFactMatch>? facts = null;
         Session.Events.RhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.RhsExpressionFailedEvent += (sender, args) => facts = args.Match.Facts.ToList();
 
@@ -194,7 +194,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         var ex = Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
         Assert.NotNull(expression);
         Assert.Single(facts);
-        Assert.Same(fact, facts.First().Value);
+        Assert.Same(fact, facts?.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
     }
 
@@ -220,8 +220,8 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         Session.ActionInterceptor = new PassThroughActionInterceptor();
         GetRuleInstance<TestRule>().Action = ThrowAction;
 
-        Expression expression = null;
-        IList<IFactMatch> facts = null;
+        Expression? expression = null;
+        IList<IFactMatch>? facts = null;
         Session.Events.RhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.RhsExpressionFailedEvent += (sender, args) => facts = args.Match.Facts.ToList();
 
@@ -239,28 +239,28 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
 
     private static readonly Action SuccessfulAction = () => { };
     private static readonly Action ThrowAction = () => throw new InvalidOperationException("Action failed");
-    private static readonly Func<FactType, bool> SuccessfulCondition = f => true;
-    private static readonly Func<FactType, bool> ThrowCondition = f => throw new InvalidOperationException("Condition failed");
-    private static readonly Func<FactType, bool> SuccessfulFilter = f => true;
-    private static readonly Func<FactType, bool> ThrowFilter = f => throw new InvalidOperationException("Filter failed");
+    private static readonly Func<FactType?, bool> SuccessfulCondition = f => true;
+    private static readonly Func<FactType?, bool> ThrowCondition = f => throw new InvalidOperationException("Condition failed");
+    private static readonly Func<FactType?, bool> SuccessfulFilter = f => true;
+    private static readonly Func<FactType?, bool> ThrowFilter = f => throw new InvalidOperationException("Filter failed");
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public Action Action = SuccessfulAction;
-        public Func<FactType, bool> Condition = SuccessfulCondition;
-        public Func<FactType, bool> FilterCondition = SuccessfulFilter;
+        public Func<FactType?, bool> Condition = SuccessfulCondition;
+        public Func<FactType?, bool> FilterCondition = SuccessfulFilter;
 
         public override void Define()
         {
-            FactType fact = null;
+            FactType? fact = null;
 
             When()
-                .Match(() => fact, f => f.TestProperty.StartsWith("Valid") && Condition(f));
+                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid") && Condition(f));
 
             Filter()
                 .Where(() => FilterCondition(fact));

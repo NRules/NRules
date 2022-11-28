@@ -137,7 +137,7 @@ public class OneFactRuleTest : BaseRulesTestFixture
     public void Insert_Null_Throws()
     {
         //Arrange - Act - Assert
-        Assert.Throws<ArgumentNullException>(() => Session.Insert(null));
+        Assert.Throws<ArgumentNullException>(() => Session.Insert(null!));
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class OneFactRuleTest : BaseRulesTestFixture
     public void Update_Null_Throws()
     {
         //Arrange - Act - Assert
-        Assert.Throws<ArgumentNullException>(() => Session.Update(null));
+        Assert.Throws<ArgumentNullException>(() => Session.Update(null!));
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class OneFactRuleTest : BaseRulesTestFixture
     public void Retract_Null_Throws()
     {
         //Arrange - Act - Assert
-        Assert.Throws<ArgumentNullException>(() => Session.Retract(null));
+        Assert.Throws<ArgumentNullException>(() => Session.Retract(null!));
     }
 
     [Fact]
@@ -232,17 +232,17 @@ public class OneFactRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType? fact = null;
 
             When()
-                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

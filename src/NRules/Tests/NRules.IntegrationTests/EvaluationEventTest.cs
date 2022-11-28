@@ -221,13 +221,13 @@ public class EvaluationEventTest
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string JoinProperty { get; set; }
-        public string SelectProperty { get; set; }
+        public string? JoinProperty { get; set; }
+        public string? SelectProperty { get; set; }
     }
 
     [Name("Test Rule")]
@@ -235,18 +235,18 @@ public class EvaluationEventTest
     {
         public override void Define()
         {
-            FactType1 fact = null;
-            string value = null;
+            FactType1? fact = null;
+            string? value = null;
             int length = 0;
 
             When()
                 .Match(() => fact,
-                    f => f.TestProperty.StartsWith("Valid"))
+                    f => f!.TestProperty!.StartsWith("Valid"))
                 .Query(() => value, q => q
                     .Match<FactType2>(
-                        f => f.JoinProperty == fact.TestProperty)
+                        f => f.JoinProperty == fact!.TestProperty)
                     .Select(x => x.SelectProperty))
-                .Let(() => length, () => value.Length)
+                .Let(() => length, () => value!.Length)
                 .Having(() => length > 5);
 
             Filter()
@@ -256,7 +256,7 @@ public class EvaluationEventTest
                 .Do(ctx => NoOp(fact, value));
         }
 
-        private void NoOp(FactType1 fact, string value)
+        private void NoOp(FactType1? fact, string? value)
         {
         }
     }

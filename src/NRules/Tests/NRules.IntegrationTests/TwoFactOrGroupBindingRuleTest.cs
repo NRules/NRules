@@ -64,35 +64,35 @@ public class TwoFactOrGroupBindingRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
-        public string Value { get; set; }
+        public string? TestProperty { get; set; }
+        public string? Value { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string Value { get; set; }
+        public string? TestProperty { get; set; }
+        public string? Value { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
-            FactType2 fact2 = null;
-            string value = null;
+            FactType1? fact1 = null;
+            FactType2? fact2 = null;
+            string? value = null;
 
             When()
                 .Or(x => x
-                    .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                    .Match(() => fact2, f => f.TestProperty.StartsWith("Valid")))
-                .Let(() => value, () => GetValue(fact1, fact2));
+                    .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                    .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid")))
+                .Let(() => value, () => GetValue(fact1, fact2!));
 
             Then()
                 .Do(ctx => ctx.NoOp());
         }
 
-        private static string GetValue(FactType1 fact1, FactType2 fact2)
+        private static string? GetValue(FactType1? fact1, FactType2 fact2)
         {
             return fact1 != null ? fact1.Value : fact2.Value;
         }

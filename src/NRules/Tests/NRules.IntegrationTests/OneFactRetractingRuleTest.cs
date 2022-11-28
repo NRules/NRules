@@ -29,19 +29,19 @@ public class OneFactRetractingRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType? fact = null;
 
             When()
-                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"));
             Then()
-                .Do(ctx => ctx.Retract(fact));
+                .Do(ctx => ctx.Retract(fact!));
         }
     }
 }

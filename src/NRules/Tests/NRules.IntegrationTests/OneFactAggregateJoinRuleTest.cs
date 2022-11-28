@@ -47,7 +47,7 @@ public class OneFactAggregateJoinRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>()?.Count());
     }
 
     [Fact]
@@ -64,8 +64,8 @@ public class OneFactAggregateJoinRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>(0).Count());
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>(1).Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>(0)?.Count());
+        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>(1)?.Count());
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -75,18 +75,18 @@ public class OneFactAggregateJoinRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType fact = null;
-            IEnumerable<FactType> collection = null;
+            FactType? fact = null;
+            IEnumerable<FactType>? collection = null;
 
             When()
-                .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))
+                .Match(() => fact, f => f!.TestProperty!.StartsWith("Valid"))
                 .Query(() => collection, x => x
                     .Match<FactType>()
                     .Collect()

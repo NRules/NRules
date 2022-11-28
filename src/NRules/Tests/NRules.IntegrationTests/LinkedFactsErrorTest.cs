@@ -35,25 +35,25 @@ public class LinkedFactsErrorTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string ChainProperty { get; set; }
+        public string? ChainProperty { get; set; }
         public bool ShouldThrow { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class ForwardChainingFirstRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
+            FactType1? fact1 = null;
 
             When()
                 .Match(() => fact1);
             Then()
-                .Yield(ctx => Create(fact1));
+                .Yield(ctx => Create(fact1!));
         }
 
         private static FactType2 Create(FactType1 fact1)

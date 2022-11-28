@@ -59,29 +59,29 @@ public class GroupWithGroupFilterRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
-        public string GroupTestProperty { get; set; }
-        public string GroupProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? GroupTestProperty { get; set; }
+        public string? GroupProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            IGrouping<string, FactType> group = null;
+            IGrouping<string, FactType>? group = null;
 
             When()
                 .Query(() => group, x => x
-                    .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                    .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                     .GroupBy(f => f.GroupProperty)
-                    .Where(z => HasCorrectValue(z)));
+                    .Where(z => HasCorrectValue(z!)));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
 
         private static bool HasCorrectValue(IGrouping<string, FactType> group)
         {
-            return group.Any(x => x.GroupTestProperty.Contains("Good"));
+            return group.Any(x => x.GroupTestProperty!.Contains("Good"));
         }
     }
 }

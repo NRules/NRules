@@ -54,29 +54,29 @@ public class ForwardChainingTransitiveTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string Value { get; set; }
+        public string? Value { get; set; }
     }
 
     public class Calc1
     {
-        public string Key { get; set; }
-        public string Value { get; set; }
+        public string? Key { get; set; }
+        public string? Value { get; set; }
     }
 
     public class Calc2
     {
-        public string Key { get; set; }
-        public string Value { get; set; }
+        public string? Key { get; set; }
+        public string? Value { get; set; }
     }
 
     public class Calc3 : IEquatable<Calc3>
     {
-        public bool Equals(Calc3 other)
+        public bool Equals(Calc3? other)
         {
             return true;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -97,16 +97,16 @@ public class ForwardChainingTransitiveTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType o = null;
+            FactType? o = null;
 
             When()
                 .Match(() => o);
 
             Filter()
-                .OnChange(() => o.Value);
+                .OnChange(() => o!.Value!);
 
             Then()
-                .Yield(_ => new Calc1 { Key = o.Value });
+                .Yield(_ => new Calc1 { Key = o!.Value });
         }
     }
 
@@ -114,16 +114,16 @@ public class ForwardChainingTransitiveTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            Calc1 calc = null;
+            Calc1? calc = null;
 
             When()
                 .Match(() => calc);
 
             Filter()
-                .OnChange(() => calc);
+                .OnChange(() => calc!);
 
             Then()
-                .Yield(_ => new Calc2 { Key = calc.Key });
+                .Yield(_ => new Calc2 { Key = calc!.Key });
         }
     }
 
@@ -131,12 +131,12 @@ public class ForwardChainingTransitiveTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            Calc1 calc1 = null;
-            Calc2 calc2 = null;
+            Calc1? calc1 = null;
+            Calc2? calc2 = null;
 
             When()
                 .Match(() => calc1)
-                .Match(() => calc2, c => c.Key.Equals(calc1.Key));
+                .Match(() => calc2, c => c!.Key!.Equals(calc1!.Key));
 
             Then()
                 .Yield(_ => new Calc3());

@@ -288,31 +288,31 @@ public class ThreeFactTwoNotRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class FactType3
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
+            FactType1? fact1 = null;
 
             When()
-                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
-                .Not<FactType2>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty)
-                .Not<FactType3>(f => f.TestProperty.StartsWith("Valid"), f => f.JoinProperty == fact1.TestProperty);
+                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                .Not<FactType2>(f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == fact1!.TestProperty)
+                .Not<FactType3>(f => f.TestProperty!.StartsWith("Valid"), f => f.JoinProperty == fact1!.TestProperty);
             Then()
                 .Do(ctx => ctx.NoOp());
         }

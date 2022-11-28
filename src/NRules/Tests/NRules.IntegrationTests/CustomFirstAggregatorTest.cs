@@ -39,8 +39,8 @@ public class CustomFirstAggregatorTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(2);
-        Assert.Equal("Valid Value 1", GetFiredFact<FactType>(0).TestProperty);
-        Assert.Equal("Valid Value 4", GetFiredFact<FactType>(1).TestProperty);
+        Assert.Equal("Valid Value 1", GetFiredFact<FactType>(0)?.TestProperty);
+        Assert.Equal("Valid Value 4", GetFiredFact<FactType>(1)?.TestProperty);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class CustomFirstAggregatorTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 2", GetFiredFact<FactType>().TestProperty);
+        Assert.Equal("Valid Value 2", GetFiredFact<FactType>()?.TestProperty);
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -70,19 +70,19 @@ public class CustomFirstAggregatorTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string GroupProperty { get; set; }
-        public string TestProperty { get; set; }
+        public string? GroupProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType first = null;
+            FactType? first = null;
 
             When()
                 .Query(() => first, q => q
-                    .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                    .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                     .GroupBy(x => x.GroupProperty)
                     .First());
             Then()
@@ -103,7 +103,7 @@ public static class FirstQueryExtensions
 
 internal class CustomFirstAggregatorFactory : IAggregatorFactory
 {
-    private Func<IAggregator> _factory;
+    private Func<IAggregator>? _factory;
 
     public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
     {
@@ -115,11 +115,12 @@ internal class CustomFirstAggregatorFactory : IAggregatorFactory
 
     public IAggregator Create()
     {
-        return _factory();
+        return _factory!();
     }
 }
 
 public class CustomFirstAggregator<TElement> : IAggregator
+    where TElement : notnull
 {
     private readonly Dictionary<object, TElement> _firstElements = new();
 
@@ -128,7 +129,7 @@ public class CustomFirstAggregator<TElement> : IAggregator
         var results = new List<AggregationResult>();
         foreach (var fact in facts)
         {
-            var collection = (IEnumerable<TElement>)fact.Value;
+            var collection = (IEnumerable<TElement>)fact.Value!;
             foreach (var value in collection)
             {
                 _firstElements[fact] = value;
@@ -144,7 +145,7 @@ public class CustomFirstAggregator<TElement> : IAggregator
         var results = new List<AggregationResult>();
         foreach (var fact in facts)
         {
-            var collection = (IEnumerable<TElement>)fact.Value;
+            var collection = (IEnumerable<TElement>)fact.Value!;
             foreach (var value in collection)
             {
                 if (_firstElements.TryGetValue(fact, out var oldFirst))

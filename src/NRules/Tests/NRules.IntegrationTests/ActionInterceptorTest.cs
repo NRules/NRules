@@ -132,8 +132,8 @@ public class ActionInterceptorTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType1 fact = null;
-            IEnumerable<FactType2> collection = null;
+            FactType1? fact = null;
+            IEnumerable<FactType2>? collection = null;
 
             When()
                 .Match(() => fact)
@@ -144,7 +144,7 @@ public class ActionInterceptorTest : BaseRulesTestFixture
                 .Do(ctx => CallAction(ctx, fact, collection));
         }
 
-        private void CallAction(IContext context, FactType1 fact1, IEnumerable<FactType2> collection2)
+        private void CallAction(IContext context, FactType1? fact1, IEnumerable<FactType2>? collection2)
         {
             Action();
         }

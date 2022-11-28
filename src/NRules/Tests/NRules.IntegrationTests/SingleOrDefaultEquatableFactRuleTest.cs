@@ -24,8 +24,8 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         //Assert
         Verify.Rule().FiredTimes(1);
         var firedFact = GetFiredFact<FactType>();
-        Assert.Equal(2, firedFact.Id);
-        Assert.Equal("Original 2", firedFact.ValueProperty);
+        Assert.Equal(2, firedFact?.Id);
+        Assert.Equal("Original 2", firedFact?.ValueProperty);
     }
 
     [Fact]
@@ -43,8 +43,8 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         //Assert
         Verify.Rule().FiredTimes(1);
         var firedFact = GetFiredFact<FactType>();
-        Assert.Equal(0, firedFact.Id);
-        Assert.Null(firedFact.ValueProperty);
+        Assert.Equal(0, firedFact?.Id);
+        Assert.Null(firedFact?.ValueProperty);
     }
 
     [Fact]
@@ -65,8 +65,8 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         //Assert
         Verify.Rule().FiredTimes(1);
         var firedFact = GetFiredFact<FactType>();
-        Assert.Equal(1, firedFact.Id);
-        Assert.Equal("Original 1", firedFact.ValueProperty);
+        Assert.Equal(1, firedFact?.Id);
+        Assert.Equal("Original 1", firedFact?.ValueProperty);
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         //Assert
         Verify.Rule().FiredTimes(1);
         var firedFact = GetFiredFact<FactType>();
-        Assert.Equal(1, firedFact.Id);
-        Assert.Equal("Updated 1", firedFact.ValueProperty);
+        Assert.Equal(1, firedFact?.Id);
+        Assert.Equal("Updated 1", firedFact?.ValueProperty);
     }
 
     [Fact]
@@ -128,10 +128,10 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         }
 
         public int Id { get; }
-        public string TestProperty { get; set; }
-        public string ValueProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? ValueProperty { get; set; }
 
-        public bool Equals(FactType other)
+        public bool Equals(FactType? other)
         {
             if (other is null)
                 return false;
@@ -140,7 +140,7 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
             return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -161,11 +161,11 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType? fact = null;
 
             When()
                 .Query(() => fact, q => q
-                    .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                    .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                     .Collect()
                     .Select(x => x.OrderBy(f => f.Id).FirstOrDefault() ?? new FactType(0)));
             Then()

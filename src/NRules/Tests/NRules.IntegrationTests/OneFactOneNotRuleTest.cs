@@ -73,7 +73,7 @@ public class OneFactOneNotRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
@@ -81,7 +81,7 @@ public class OneFactOneNotRuleTest : BaseRulesTestFixture
         public override void Define()
         {
             When()
-                .Not<FactType>(f => f.TestProperty.StartsWith("Valid"));
+                .Not<FactType>(f => f.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }

@@ -75,28 +75,28 @@ public class SessionQueryTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
+            FactType1? fact1 = null;
 
             When()
-                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.Insert(new FactType2()
                 {
-                    TestProperty = fact1.JoinProperty,
+                    TestProperty = fact1!.JoinProperty,
                     JoinProperty = fact1.TestProperty
                 }));
         }

@@ -36,10 +36,10 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
         //Assert
         Verify.Rule().FiredTimes(1);
         var firedFacts = GetFiredFact<IGrouping<string, FactType>>();
-        Assert.Equal(4, firedFacts.Count());
-        Assert.Equal(1, firedFacts.Count(x => x.TestCount == 3));
-        Assert.Equal(1, firedFacts.Count(x => x.TestCount == 2));
-        Assert.Equal(2, firedFacts.Count(x => x.TestCount == 1));
+        Assert.Equal(4, firedFacts?.Count());
+        Assert.Equal(1, firedFacts?.Count(x => x.TestCount == 3));
+        Assert.Equal(1, firedFacts?.Count(x => x.TestCount == 2));
+        Assert.Equal(2, firedFacts?.Count(x => x.TestCount == 1));
     }
 
     protected override void SetUpRules(Testing.IRepositorySetup setup)
@@ -51,10 +51,10 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
     {
         public long Id { get; set; }
         public int TestCount { get; set; }
-        public string GroupingProperty { get; set; }
-        public string GroupingProperty2 { get; set; }
+        public string? GroupingProperty { get; set; }
+        public string? GroupingProperty2 { get; set; }
 
-        public bool Equals(FactType other)
+        public bool Equals(FactType? other)
         {
             if (other is null)
                 return false;
@@ -63,7 +63,7 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
             return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -84,7 +84,7 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<FactType> facts = null;
+            IEnumerable<FactType>? facts = null;
 
             When()
                 .Query(() => facts, q => q

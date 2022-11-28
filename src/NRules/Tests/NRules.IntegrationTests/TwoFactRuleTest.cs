@@ -312,26 +312,26 @@ public class TwoFactRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
-        public FactType1 Fact1 { get; set; }
-        public FactType2 Fact2;
+        public FactType1? Fact1 { get; set; }
+        public FactType2? Fact2;
 
         public override void Define()
         {
             When()
-                .Match(() => Fact1, f => f.TestProperty.StartsWith("Valid"))
-                .Match(() => Fact2, f => f.TestProperty.StartsWith("Valid"))
-                .Having(() => Fact2.JoinProperty == Fact1.TestProperty);
+                .Match(() => Fact1, f => f!.TestProperty!.StartsWith("Valid"))
+                .Match(() => Fact2, f => f!.TestProperty!.StartsWith("Valid"))
+                .Having(() => Fact2!.JoinProperty == Fact1!.TestProperty);
 
             Then()
                 .Do(ctx => ctx.NoOp());

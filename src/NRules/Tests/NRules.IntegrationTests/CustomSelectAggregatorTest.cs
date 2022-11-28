@@ -24,7 +24,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>()?.Value);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
 
         //Assert
         Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>()?.Value);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class FactProjection : IEquatable<FactProjection>
@@ -78,9 +78,9 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
             Value = fact.TestProperty;
         }
 
-        public string Value { get; }
+        public string? Value { get; }
 
-        public bool Equals(FactProjection other)
+        public bool Equals(FactProjection? other)
         {
             if (other is null)
                 return false;
@@ -89,7 +89,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
             return string.Equals(Value, other.Value);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -110,13 +110,13 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactProjection projection = null;
+            FactProjection? projection = null;
 
             When()
                 .Query(() => projection, q => q
                     .Match<FactType>()
                     .CustomSelect(f => new FactProjection(f))
-                    .Where(p => p.Value.StartsWith("Valid")));
+                    .Where(p => p.Value!.StartsWith("Valid")));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
@@ -138,7 +138,7 @@ public static class CustomSelectQuery
 
 internal class CustomSelectAggregateFactory : IAggregatorFactory
 {
-    private Func<IAggregator> _factory;
+    private Func<IAggregator>? _factory;
 
     public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
     {
@@ -156,7 +156,7 @@ internal class CustomSelectAggregateFactory : IAggregatorFactory
 
     public IAggregator Create()
     {
-        return _factory();
+        return _factory!();
     }
 }
 

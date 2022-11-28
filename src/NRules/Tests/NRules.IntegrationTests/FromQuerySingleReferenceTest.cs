@@ -75,15 +75,15 @@ public class FromQuerySingleReferenceTest : BaseRulesTestFixture
 
     public class Fact
     {
-        public string Value { get; set; }
+        public string? Value { get; set; }
     }
 
     public class FromQuerySingleReferenceRule : Rule
     {
         public override void Define()
         {
-            IEnumerable<Fact> factsAll = null;
-            IGrouping<string, Fact> factsGrouped = null;
+            IEnumerable<Fact>? factsAll = null;
+            IGrouping<string, Fact>? factsGrouped = null;
 
             When()
                 .Query(() => factsAll, q => q
@@ -92,7 +92,7 @@ public class FromQuerySingleReferenceTest : BaseRulesTestFixture
                     .Where(c => c.Any()))
                 .Query(() => factsGrouped, q => q
                     .From(() => factsAll)
-                    .SelectMany(c => c)
+                    .SelectMany(c => c!)
                     .GroupBy(f => f.Value));
 
             Then()

@@ -235,18 +235,18 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType? fact = null;
 
             When()
                 .Query(() => fact, q => q
-                    .Match<FactType>(f => f.TestProperty.StartsWith("Valid"))
+                    .Match<FactType>(f => f.TestProperty!.StartsWith("Valid"))
                     .GroupBy(f => f.TestProperty)
                     .Where(g => g.Count() > 1)
                     .SelectMany(x => x));

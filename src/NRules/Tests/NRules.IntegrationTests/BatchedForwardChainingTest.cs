@@ -274,33 +274,33 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
-        public string ChainProperty { get; set; }
+        public string? TestProperty { get; set; }
+        public string? ChainProperty { get; set; }
     }
 
     public class FactType2
     {
         public int UpdateCount { get; set; } = 1;
-        public string TestProperty { get; set; }
+        public string? TestProperty { get; set; }
     }
 
     public class ForwardChainingFirstRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
+            FactType1? fact1 = null;
 
             When()
-                .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact1, f => f!.TestProperty!.StartsWith("Valid"));
             Then()
                 //.Yield(ctx => Create(fact1), (ctx, fact2) => Update(fact1, fact2))
-                .Do(ctx => YieldIfValid(ctx, fact1));
+                .Do(ctx => YieldIfValid(ctx, fact1!));
         }
 
         private void YieldIfValid(IContext ctx, FactType1 fact1)
         {
-            var fact2 = (FactType2)ctx.GetLinked("key");
-            if (fact1.ChainProperty.StartsWith("Valid"))
+            var fact2 = (FactType2?)ctx.GetLinked("key");
+            if (fact1.ChainProperty!.StartsWith("Valid"))
             {
                 if (fact2 == null)
                     ctx.InsertLinked("key", Create(fact1));
@@ -334,10 +334,10 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType2 fact2 = null;
+            FactType2? fact2 = null;
 
             When()
-                .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"));
+                .Match(() => fact2, f => f!.TestProperty!.StartsWith("Valid"));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
