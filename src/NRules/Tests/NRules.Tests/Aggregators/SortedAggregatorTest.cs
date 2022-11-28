@@ -330,6 +330,20 @@ public class SortedAggregatorTest : AggregatorTest
             () => target.Remove(null, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
     }
 
+    [Fact]
+    public void Add_NewInstance_AddedResult_String_Ascending_Null()
+    {
+        // Arrange
+        var target = CreateTarget_SortByValue();
+
+        // Act
+        var facts = AsFact(new TestFact(3, null), new TestFact(1, "C"), new TestFact(2, "B"));
+        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+
+        // Assert
+        AssertAggregationResult(result, AggregationAction.Added, (string)null, "B", "C");
+    }
+
     private static SortedAggregator<TestFact, int> CreateTarget(SortDirection sortDirection = SortDirection.Ascending)
     {
         var expression = new FactExpression<TestFact, int>(x => x.Id);
@@ -391,16 +405,21 @@ public class SortedAggregatorTest : AggregatorTest
 
         public bool Equals(TestFact other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
             return Id == other.Id;
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != this.GetType())
+                return false;
             return Equals((TestFact)obj);
         }
 
