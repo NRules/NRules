@@ -15,99 +15,108 @@ public static class ExpressionComparer
 
     private static bool ExpressionEqual(Expression x, Expression y, LambdaExpression rootX, LambdaExpression rootY)
     {
-        if (ReferenceEquals(x, y)) return true;
-        if (x == null || y == null) return false;
-        if (x.NodeType != y.NodeType || x.Type != y.Type) return false;
+        if (ReferenceEquals(x, y))
+            return true;
+        if (x == null || y == null)
+            return false;
+        if (x.NodeType != y.NodeType || x.Type != y.Type)
+            return false;
 
         switch (x)
         {
             case LambdaExpression lx:
-            {
-                var ly = (LambdaExpression)y;
-                var paramsX = lx.Parameters;
-                var paramsY = ly.Parameters;
-                return CollectionsEqual(paramsX, paramsY, lx, ly) && ExpressionEqual(lx.Body, ly.Body, lx, ly);
-            }
+                {
+                    var ly = (LambdaExpression)y;
+                    var paramsX = lx.Parameters;
+                    var paramsY = ly.Parameters;
+                    return CollectionsEqual(paramsX, paramsY, lx, ly) && ExpressionEqual(lx.Body, ly.Body, lx, ly);
+                }
             case MemberExpression mex:
-            {
-                var mey = (MemberExpression)y;
-                return MemberExpressionsEqual(mex, mey, rootX, rootY);
-            }
+                {
+                    var mey = (MemberExpression)y;
+                    return MemberExpressionsEqual(mex, mey, rootX, rootY);
+                }
             case BinaryExpression bx:
-            {
-                var by = (BinaryExpression)y;
-                return bx.Method == @by.Method && ExpressionEqual(bx.Left, @by.Left, rootX, rootY) &&
-                       ExpressionEqual(bx.Right, @by.Right, rootX, rootY);
-            }
+                {
+                    var by = (BinaryExpression)y;
+                    return bx.Method == @by.Method && ExpressionEqual(bx.Left, @by.Left, rootX, rootY) &&
+                           ExpressionEqual(bx.Right, @by.Right, rootX, rootY);
+                }
             case UnaryExpression ux:
-            {
-                var uy = (UnaryExpression)y;
-                return ux.Method == uy.Method && ExpressionEqual(ux.Operand, uy.Operand, rootX, rootY);
-            }
+                {
+                    var uy = (UnaryExpression)y;
+                    return ux.Method == uy.Method && ExpressionEqual(ux.Operand, uy.Operand, rootX, rootY);
+                }
             case ParameterExpression px:
-            {
-                var py = (ParameterExpression)y;
-                return rootX.Parameters.IndexOf(px) == rootY.Parameters.IndexOf(py) &&
-                       px.Name == py.Name;
-            }
+                {
+                    var py = (ParameterExpression)y;
+                    return rootX.Parameters.IndexOf(px) == rootY.Parameters.IndexOf(py) &&
+                           px.Name == py.Name;
+                }
             case MethodCallExpression cx:
-            {
-                var cy = (MethodCallExpression)y;
-                return cx.Method == cy.Method
-                       && ExpressionEqual(cx.Object, cy.Object, rootX, rootY)
-                       && CollectionsEqual(cx.Arguments, cy.Arguments, rootX, rootY);
-            }
+                {
+                    var cy = (MethodCallExpression)y;
+                    return cx.Method == cy.Method
+                           && ExpressionEqual(cx.Object, cy.Object, rootX, rootY)
+                           && CollectionsEqual(cx.Arguments, cy.Arguments, rootX, rootY);
+                }
             case InvocationExpression ix:
-            {
-                var iy = (InvocationExpression)y;
-                return ExpressionEqual(ix.Expression, iy.Expression, rootX, rootY)
-                       && CollectionsEqual(ix.Arguments, iy.Arguments, rootX, rootY);
-            }
+                {
+                    var iy = (InvocationExpression)y;
+                    return ExpressionEqual(ix.Expression, iy.Expression, rootX, rootY)
+                           && CollectionsEqual(ix.Arguments, iy.Arguments, rootX, rootY);
+                }
             case NewExpression nx:
-            {
-                var ny = (NewExpression)y;
-                return nx.Constructor == ny.Constructor
-                       && CollectionsEqual(nx.Arguments, ny.Arguments, rootX, rootY);
-            }
+                {
+                    var ny = (NewExpression)y;
+                    return nx.Constructor == ny.Constructor
+                           && CollectionsEqual(nx.Arguments, ny.Arguments, rootX, rootY);
+                }
             case MemberInitExpression mix:
-            {
-                var miy = (MemberInitExpression)y;
-                return ExpressionEqual(mix.NewExpression, miy.NewExpression, rootX, rootY)
-                       && MemberBindingCollectionsEqual(mix.Bindings, miy.Bindings, rootX, rootY);
-            }
+                {
+                    var miy = (MemberInitExpression)y;
+                    return ExpressionEqual(mix.NewExpression, miy.NewExpression, rootX, rootY)
+                           && MemberBindingCollectionsEqual(mix.Bindings, miy.Bindings, rootX, rootY);
+                }
             case ListInitExpression lix:
-            {
-                var liy = (ListInitExpression)y;
-                return ExpressionEqual(lix.NewExpression, liy.NewExpression, rootX, rootY)
-                       && ElementInitCollectionsEqual(lix.Initializers, liy.Initializers, rootX, rootY);
-            }
+                {
+                    var liy = (ListInitExpression)y;
+                    return ExpressionEqual(lix.NewExpression, liy.NewExpression, rootX, rootY)
+                           && ElementInitCollectionsEqual(lix.Initializers, liy.Initializers, rootX, rootY);
+                }
             case ConstantExpression cx:
-            {
-                var cy = (ConstantExpression)y;
-                return Equals(cx.Value, cy.Value);
-            }
+                {
+                    var cy = (ConstantExpression)y;
+                    return Equals(cx.Value, cy.Value);
+                }
             case TypeBinaryExpression tbx:
-            {
-                var tby = (TypeBinaryExpression)y;
-                return tbx.TypeOperand == tby.TypeOperand;
-            }
+                {
+                    var tby = (TypeBinaryExpression)y;
+                    return tbx.TypeOperand == tby.TypeOperand;
+                }
             case ConditionalExpression cx:
-            {
-                var cy = (ConditionalExpression)y;
-                return ExpressionEqual(cx.Test, cy.Test, rootX, rootY)
-                       && ExpressionEqual(cx.IfTrue, cy.IfTrue, rootX, rootY)
-                       && ExpressionEqual(cx.IfFalse, cy.IfFalse, rootX, rootY);
-            }
+                {
+                    var cy = (ConditionalExpression)y;
+                    return ExpressionEqual(cx.Test, cy.Test, rootX, rootY)
+                           && ExpressionEqual(cx.IfTrue, cy.IfTrue, rootX, rootY)
+                           && ExpressionEqual(cx.IfFalse, cy.IfFalse, rootX, rootY);
+                }
             case NewArrayExpression ax:
-            {
-                var ay = (NewArrayExpression) y;
-                return ax.Type == ay.Type && CollectionsEqual(ax.Expressions, ay.Expressions, rootX, rootY);
-            }
+                {
+                    var ay = (NewArrayExpression)y;
+                    return ax.Type == ay.Type && CollectionsEqual(ax.Expressions, ay.Expressions, rootX, rootY);
+                }
             case DefaultExpression dx:
-            {
-                var dy = (DefaultExpression) y;
-                return dx.Type == dy.Type;
-            }
+                {
+                    var dy = (DefaultExpression)y;
+                    return dx.Type == dy.Type;
+                }
+            case BlockExpression bx:
+                {
+                    var by = (BlockExpression)y;
+                    return ExpressionEqual(bx.Result, by.Result, rootX, rootY)
+                        && CollectionsEqual(bx.Expressions, by.Expressions, rootX, rootY);
+                }
             default:
                 throw new NotImplementedException(x.ToString());
         }
@@ -117,7 +126,7 @@ public static class ExpressionComparer
         LambdaExpression rootX, LambdaExpression rootY)
     {
         return x.Count == y.Count
-               && x.Zip(y, (first, second) => new {X = first, Y = second})
+               && x.Zip(y, (first, second) => new { X = first, Y = second })
                    .All(o => MemberBindingsEqual(o.X, o.Y, rootX, rootY));
     }
 
@@ -125,7 +134,7 @@ public static class ExpressionComparer
         LambdaExpression rootX, LambdaExpression rootY)
     {
         return x.Count == y.Count
-               && x.Zip(y, (first, second) => new {X = first, Y = second})
+               && x.Zip(y, (first, second) => new { X = first, Y = second })
                    .All(o => ElementInitsEqual(o.X, o.Y, rootX, rootY));
     }
 
@@ -133,7 +142,7 @@ public static class ExpressionComparer
         LambdaExpression rootX, LambdaExpression rootY)
     {
         return x.Count == y.Count
-               && x.Zip(y, (first, second) => new {X = first, Y = second})
+               && x.Zip(y, (first, second) => new { X = first, Y = second })
                    .All(o => ExpressionEqual(o.X, o.Y, rootX, rootY));
     }
 
