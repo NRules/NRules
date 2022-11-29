@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NRules.Collections;
@@ -29,7 +30,8 @@ internal class FlatteningAggregator<TSource, TResult> : IAggregator
         {
             var list = new OrderedHashSet<TResult>();
             _sourceToList[fact] = list;
-            var value = (IEnumerable<TResult>)_selector.Invoke(context, tuple, fact);
+            var selected = _selector.Invoke(context, tuple, fact) ?? throw new InvalidOperationException("Selector must return not null enumerable");
+            var value = (IEnumerable<TResult>)selected;
             foreach (var item in value)
             {
                 if (list.Add(item) &&
@@ -51,7 +53,8 @@ internal class FlatteningAggregator<TSource, TResult> : IAggregator
             var oldList = _sourceToList[fact];
             _sourceToList[fact] = list;
 
-            var value = (IEnumerable<TResult>)_selector.Invoke(context, tuple, fact);
+            var selected = _selector.Invoke(context, tuple, fact) ?? throw new InvalidOperationException("Selector must return not null enumerable");
+            var value = (IEnumerable<TResult>)selected;
             foreach (var item in value)
             {
                 list.Add(item);

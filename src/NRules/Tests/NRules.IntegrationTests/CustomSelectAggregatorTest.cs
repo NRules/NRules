@@ -175,7 +175,7 @@ public class CustomSelectAggregator<TSource, TResult> : IAggregator
         var results = new List<AggregationResult>();
         foreach (var fact in facts)
         {
-            var value = _selector.Invoke(context, tuple, fact);
+            var value = _selector.Invoke(context, tuple, fact)!;
             _sourceToValue[fact] = value;
             results.Add(AggregationResult.Added(value, Enumerable.Repeat(fact, 1)));
         }
@@ -187,7 +187,7 @@ public class CustomSelectAggregator<TSource, TResult> : IAggregator
         var results = new List<AggregationResult>();
         foreach (var fact in facts)
         {
-            var value = _selector.Invoke(context, tuple, fact);
+            var value = _selector.Invoke(context, tuple, fact)!;
             var oldValue = (TResult)_sourceToValue[fact];
             _sourceToValue[fact] = value;
             results.Add(AggregationResult.Modified(value, oldValue, Enumerable.Repeat(fact, 1)));

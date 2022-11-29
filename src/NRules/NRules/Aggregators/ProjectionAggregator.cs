@@ -12,7 +12,7 @@ namespace NRules.Aggregators;
 internal class ProjectionAggregator<TSource, TResult> : IAggregator
 {
     private readonly IAggregateExpression _selector;
-    private readonly Dictionary<IFact, object> _sourceToValue = new();
+    private readonly Dictionary<IFact, object?> _sourceToValue = new();
 
     public ProjectionAggregator(IAggregateExpression selector)
     {
@@ -37,7 +37,7 @@ internal class ProjectionAggregator<TSource, TResult> : IAggregator
         foreach (var fact in facts)
         {
             var value = _selector.Invoke(context, tuple, fact);
-            var oldValue = (TResult)_sourceToValue[fact];
+            var oldValue = (TResult?)_sourceToValue[fact];
             _sourceToValue[fact] = value;
             results.Add(AggregationResult.Modified(value, oldValue, Enumerable.Repeat(fact, 1)));
         }

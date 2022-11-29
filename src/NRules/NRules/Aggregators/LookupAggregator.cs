@@ -15,9 +15,9 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
     private readonly IAggregateExpression _keySelector;
     private readonly IAggregateExpression _elementSelector;
 
-    private readonly Dictionary<IFact, TKey> _sourceToKey = new();
+    private readonly Dictionary<IFact, TKey?> _sourceToKey = new();
 
-    private readonly FactLookup<TKey, TElement> _lookup = new();
+    private readonly FactLookup<TKey?, TElement?> _lookup = new();
     private bool _created = false;
 
     public LookupAggregator(IAggregateExpression keySelector, IAggregateExpression elementSelector)
@@ -30,20 +30,20 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
     {
         foreach (var fact in facts)
         {
-            var key = (TKey)_keySelector.Invoke(context, tuple, fact);
-            var element = (TElement)_elementSelector.Invoke(context, tuple, fact);
+            var key = (TKey?)_keySelector.Invoke(context, tuple, fact);
+            var element = (TElement?)_elementSelector.Invoke(context, tuple, fact);
 
             _sourceToKey[fact] = key;
-            
+
             AddFact(fact, key, element);
         }
 
         if (!_created)
         {
             _created = true;
-            return new[] {AggregationResult.Added(_lookup, _lookup.Facts)};
+            return new[] { AggregationResult.Added(_lookup, _lookup.Facts) };
         }
-        return new[] {AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)};
+        return new[] { AggregationResult.Modified(_lookup, _lookup, _lookup.Facts) };
     }
 
     public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
@@ -51,8 +51,8 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
         foreach (var fact in facts)
         {
             var oldKey = _sourceToKey[fact];
-            var key = (TKey)_keySelector.Invoke(context, tuple, fact);
-            var element = (TElement)_elementSelector.Invoke(context, tuple, fact);
+            var key = (TKey?)_keySelector.Invoke(context, tuple, fact);
+            var element = (TElement?)_elementSelector.Invoke(context, tuple, fact);
 
             if (Equals(key, oldKey))
             {
@@ -65,7 +65,7 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
             }
         }
 
-        return new[] {AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)};
+        return new[] { AggregationResult.Modified(_lookup, _lookup, _lookup.Facts) };
     }
 
     public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
@@ -76,14 +76,14 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
             RemoveFact(fact, key);
         }
 
-        return new[] {AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)};
+        return new[] { AggregationResult.Modified(_lookup, _lookup, _lookup.Facts) };
     }
 
-    private void AddFact(IFact fact, TKey key, TElement element)
+    private void AddFact(IFact fact, TKey? key, TElement? element)
     {
         if (!_lookup.TryGetValue(key, out var grouping))
         {
-            grouping = new FactGrouping<TKey, TElement>(key);
+            grouping = new FactGrouping<TKey?, TElement?>(key);
             _lookup.Add(key, grouping);
         }
         else
@@ -94,14 +94,14 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
         grouping.Add(fact, element);
     }
 
-    private void ModifyFact(IFact fact, TKey key, TElement element)
+    private void ModifyFact(IFact fact, TKey? key, TElement? element)
     {
         var grouping = _lookup[key];
         grouping.Key = key;
         grouping.Modify(fact, element);
     }
 
-    private void RemoveFact(IFact fact, TKey key)
+    private void RemoveFact(IFact fact, TKey? key)
     {
         var grouping = _lookup[key];
         grouping.Remove(fact);

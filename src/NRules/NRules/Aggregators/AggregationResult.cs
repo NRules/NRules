@@ -39,7 +39,7 @@ public class AggregationResult
 {
     public static readonly AggregationResult[] Empty = Array.Empty<AggregationResult>();
 
-    private AggregationResult(AggregationAction action, object aggregate, object? previous, IEnumerable<IFact>? source)
+    private AggregationResult(AggregationAction action, object? aggregate, object? previous, IEnumerable<IFact>? source)
     {
         Action = action;
         Aggregate = aggregate;
@@ -64,7 +64,7 @@ public class AggregationResult
     /// <param name="result">Aggregate.</param>
     /// <param name="source">Aggregate source facts.</param>
     /// <returns>Aggregation result.</returns>
-    public static AggregationResult Added(object result, IEnumerable<IFact> source)
+    public static AggregationResult Added(object? result, IEnumerable<IFact> source)
     {
         return new AggregationResult(AggregationAction.Added, result, null, source);
     }
@@ -76,7 +76,7 @@ public class AggregationResult
     /// <param name="previous">Previous aggregate.</param>
     /// <param name="source">Aggregate source facts.</param>
     /// <returns>Aggregation result.</returns>
-    public static AggregationResult Modified(object result, object previous, IEnumerable<IFact> source)
+    public static AggregationResult Modified(object? result, object? previous, IEnumerable<IFact> source)
     {
         return new AggregationResult(AggregationAction.Modified, result, previous, source);
     }
@@ -86,7 +86,7 @@ public class AggregationResult
     /// </summary>
     /// <param name="result">Aggregate.</param>
     /// <returns>Aggregation result.</returns>
-    public static AggregationResult Removed(object result)
+    public static AggregationResult Removed(object? result)
     {
         return new AggregationResult(AggregationAction.Removed, result, result, null);
     }

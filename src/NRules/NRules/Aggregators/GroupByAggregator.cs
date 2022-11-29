@@ -14,10 +14,10 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
 {
     private readonly IAggregateExpression _keySelector;
     private readonly IAggregateExpression _elementSelector;
-    
-    private readonly Dictionary<IFact, TKey> _sourceToKey = new();
 
-    private readonly DefaultKeyMap<TKey, FactGrouping<TKey, TElement>> _groups = new();
+    private readonly Dictionary<IFact, TKey?> _sourceToKey = new();
+
+    private readonly DefaultKeyMap<TKey?, FactGrouping<TKey?, TElement?>> _groups = new();
 
     public GroupByAggregator(IAggregateExpression keySelector, IAggregateExpression elementSelector)
     {
@@ -27,12 +27,12 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
 
     public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
     {
-        var keys = new List<TKey>();
-        var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
+        var keys = new List<TKey?>();
+        var resultLookup = new DefaultKeyMap<TKey?, AggregationResult>();
         foreach (var fact in facts)
         {
-            var key = (TKey)_keySelector.Invoke(context, tuple, fact);
-            var element = (TElement)_elementSelector.Invoke(context, tuple, fact);
+            var key = (TKey?)_keySelector.Invoke(context, tuple, fact);
+            var element = (TElement?)_elementSelector.Invoke(context, tuple, fact);
             _sourceToKey[fact] = key;
             var result = Add(fact, key, element);
             if (!resultLookup.ContainsKey(key))
@@ -47,16 +47,16 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
 
     public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
     {
-        var keys = new List<TKey>();
-        var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
-        var removedKeys = new HashSet<TKey>();
+        var keys = new List<TKey?>();
+        var resultLookup = new DefaultKeyMap<TKey?, AggregationResult>();
+        var removedKeys = new HashSet<TKey?>();
         foreach (var fact in facts)
         {
-            var key = (TKey)_keySelector.Invoke(context, tuple, fact);
-            var element = (TElement)_elementSelector.Invoke(context, tuple, fact);
+            var key = (TKey?)_keySelector.Invoke(context, tuple, fact);
+            var element = (TElement?)_elementSelector.Invoke(context, tuple, fact);
             var oldKey = _sourceToKey[fact];
             _sourceToKey[fact] = key;
-    
+
             if (Equals(key, oldKey))
             {
                 var result = Modify(fact, key, element);
@@ -104,8 +104,8 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
 
     public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
     {
-        var keys = new List<TKey>();
-        var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
+        var keys = new List<TKey?>();
+        var resultLookup = new DefaultKeyMap<TKey?, AggregationResult>();
         foreach (var fact in facts)
         {
             var oldKey = _sourceToKey[fact];
@@ -121,11 +121,11 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
         return results;
     }
 
-    private AggregationResult Add(IFact fact, TKey key, TElement element)
+    private AggregationResult Add(IFact fact, TKey? key, TElement? element)
     {
         if (!_groups.TryGetValue(key, out var group))
         {
-            group = new FactGrouping<TKey, TElement>(key);
+            group = new FactGrouping<TKey?, TElement?>(key);
             _groups[key] = group;
 
             group.Add(fact, element);
@@ -137,7 +137,7 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
         return AggregationResult.Modified(group, group, group.Facts);
     }
 
-    private AggregationResult Modify(IFact fact, TKey key, TElement element)
+    private AggregationResult Modify(IFact fact, TKey? key, TElement? element)
     {
         var group = _groups[key];
         group.Modify(fact, element);
@@ -145,7 +145,7 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
         return AggregationResult.Modified(group, group, group.Facts);
     }
 
-    private AggregationResult Remove(IFact fact, TKey key)
+    private AggregationResult Remove(IFact fact, TKey? key)
     {
         var group = _groups[key];
         group.Remove(fact);
@@ -157,7 +157,7 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
         return AggregationResult.Modified(group, group, group.Facts);
     }
 
-    private AggregationResult RemoveElementOnly(IFact fact, TKey key)
+    private AggregationResult RemoveElementOnly(IFact fact, TKey? key)
     {
         var group = _groups[key];
         group.Remove(fact);
@@ -168,7 +168,7 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
         return AggregationResult.Modified(group, group, group.Facts);
     }
 
-    private static IEnumerable<AggregationResult> GetResults(IEnumerable<TKey> keys, DefaultKeyMap<TKey, AggregationResult> lookup)
+    private static IEnumerable<AggregationResult> GetResults(IEnumerable<TKey?> keys, DefaultKeyMap<TKey?, AggregationResult> lookup)
     {
         var results = new List<AggregationResult>();
         foreach (var key in keys)

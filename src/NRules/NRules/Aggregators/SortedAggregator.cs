@@ -12,7 +12,7 @@ namespace NRules.Aggregators;
 /// <typeparam name="TKey">Type of key used in the key selector for sorting.</typeparam>
 internal class SortedAggregator<TSource, TKey> : IAggregator
 {
-    private readonly SortedFactCollection<TSource, TKey> _sortedFactCollection;
+    private readonly SortedFactCollection<TSource, TKey?> _sortedFactCollection;
     private readonly IAggregateExpression _keySelector;
     private bool _created = false;
 
@@ -20,13 +20,13 @@ internal class SortedAggregator<TSource, TKey> : IAggregator
     {
         _keySelector = keySelector;
         var comparer = CreateComparer(sortDirection);
-        _sortedFactCollection = new SortedFactCollection<TSource, TKey>(comparer);
+        _sortedFactCollection = new SortedFactCollection<TSource, TKey?>(comparer);
     }
 
-    private static IComparer<TKey> CreateComparer(SortDirection sortDirection)
+    private static IComparer<TKey?> CreateComparer(SortDirection sortDirection)
     {
-        var defaultComparer = (IComparer<TKey>)Comparer<TKey>.Default;
-        var comparer = sortDirection == SortDirection.Ascending ? defaultComparer : new ReverseComparer<TKey>(defaultComparer);
+        var defaultComparer = (IComparer<TKey?>)Comparer<TKey?>.Default;
+        var comparer = sortDirection == SortDirection.Ascending ? defaultComparer : new ReverseComparer<TKey?>(defaultComparer);
         return comparer;
     }
 
@@ -57,7 +57,7 @@ internal class SortedAggregator<TSource, TKey> : IAggregator
     {
         foreach (var fact in facts)
         {
-            var key = (TKey)_keySelector.Invoke(context, tuple, fact);
+            var key = (TKey?)_keySelector.Invoke(context, tuple, fact);
             _sortedFactCollection.AddFact(key, fact);
         }
     }
@@ -68,7 +68,7 @@ internal class SortedAggregator<TSource, TKey> : IAggregator
         {
             _sortedFactCollection.RemoveFact(fact);
 
-            var key = (TKey)_keySelector.Invoke(context, tuple, fact);
+            var key = (TKey?)_keySelector.Invoke(context, tuple, fact);
             _sortedFactCollection.AddFact(key, fact);
         }
     }

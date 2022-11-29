@@ -13,32 +13,32 @@ namespace NRules.Aggregators;
 internal class MultiKeySortedAggregator<TSource> : IAggregator
 {
     private readonly SortCondition[] _sortConditions;
-    private readonly SortedFactCollection<TSource, object[]> _sortedFactCollection;
+    private readonly SortedFactCollection<TSource, object?[]> _sortedFactCollection;
     private bool _created = false;
 
     public MultiKeySortedAggregator(IEnumerable<SortCondition> sortConditions)
     {
         _sortConditions = sortConditions.ToArray();
         var comparer = CreateComparer(_sortConditions);
-        _sortedFactCollection = new SortedFactCollection<TSource, object[]>(comparer);
+        _sortedFactCollection = new SortedFactCollection<TSource, object?[]>(comparer);
     }
 
-    private static IComparer<object[]> CreateComparer(IEnumerable<SortCondition> sortConditions)
+    private static IComparer<object?[]> CreateComparer(IEnumerable<SortCondition> sortConditions)
     {
-        var comparers = new List<IComparer<object>>();
+        var comparers = new List<IComparer<object?>>();
         foreach (var sortCondition in sortConditions)
         {
-            var defaultComparer = (IComparer<object>)Comparer<object>.Default;
-            var comparer = sortCondition.Direction == SortDirection.Ascending ? defaultComparer : new ReverseComparer<object>(defaultComparer);
+            var defaultComparer = (IComparer<object?>)Comparer<object?>.Default;
+            var comparer = sortCondition.Direction == SortDirection.Ascending ? defaultComparer : new ReverseComparer<object?>(defaultComparer);
             comparers.Add(comparer);
         }
 
         return new MultiKeyComparer(comparers);
     }
 
-    private object[] GetKey(AggregationContext context, ITuple tuple, IFact fact)
+    private object?[] GetKey(AggregationContext context, ITuple tuple, IFact fact)
     {
-        var key = new object[_sortConditions.Length];
+        var key = new object?[_sortConditions.Length];
         for (int i = 0; i < _sortConditions.Length; i++)
         {
             key[i] = _sortConditions[i].Expression.Invoke(context, tuple, fact);
@@ -97,23 +97,24 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
         }
     }
 
-    private class MultiKeyComparer : IComparer<object[]>
+    private class MultiKeyComparer : IComparer<object?[]>
     {
-        private readonly IComparer<object>[] _comparers;
+        private readonly IComparer<object?>[] _comparers;
 
-        public MultiKeyComparer(IEnumerable<IComparer<object>> comparers)
+        public MultiKeyComparer(IEnumerable<IComparer<object?>> comparers)
         {
             _comparers = comparers.ToArray();
         }
 
-        public int Compare(object[] x, object[] y)
+        public int Compare(object?[] x, object?[] y)
         {
             var result = 0;
 
             for (int i = 0; i < _comparers.Length; i++)
             {
                 result = _comparers[i].Compare(x[i], y[i]);
-                if (result != 0) break;
+                if (result != 0)
+                    break;
             }
 
             return result;

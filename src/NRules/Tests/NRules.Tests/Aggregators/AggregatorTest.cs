@@ -53,7 +53,6 @@ public abstract class AggregatorTest
 }
 
 public class FactExpression<TFact, TResult> : IAggregateExpression
-    where TResult : notnull
 {
     private readonly Func<TFact, TResult> _func;
 
@@ -65,7 +64,7 @@ public class FactExpression<TFact, TResult> : IAggregateExpression
 
     public string Name { get; }
 
-    public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
+    public object? Invoke(AggregationContext context, ITuple tuple, IFact fact)
     {
         var value = fact.Value ?? throw new InvalidOperationException("Fact contains null value");
         return _func((TFact)value);
