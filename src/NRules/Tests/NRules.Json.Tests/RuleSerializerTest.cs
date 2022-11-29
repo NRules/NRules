@@ -235,7 +235,6 @@ public class RuleSerializerTest
 
         var ruleDefinition = builder.Build();
 
-        // NOTE: Make sure that Expression.Block and Expression.Assign that are used in Then().Yield are serialized and deserialized properly
         TestRoundtrip(ruleDefinition);
 
         static Expression<Action<IContext>> Yield<TFact>(Expression<Func<IContext, TFact>> yield, int linkedCount)
