@@ -111,6 +111,12 @@ public static class ExpressionComparer
                     var dy = (DefaultExpression)y;
                     return dx.Type == dy.Type;
                 }
+            case BlockExpression bx:
+                {
+                    var by = (BlockExpression)y;
+                    return ExpressionEqual(bx.Result, by.Result, rootX, rootY)
+                        && CollectionsEqual(bx.Expressions, by.Expressions, rootX, rootY);
+                }
             default:
                 throw new NotImplementedException(x.ToString());
         }

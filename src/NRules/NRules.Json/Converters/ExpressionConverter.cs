@@ -54,6 +54,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
             case ExpressionType.ArrayIndex:
             case ExpressionType.LeftShift:
             case ExpressionType.RightShift:
+            case ExpressionType.Assign:
                 return ReadBinaryExpression(ref reader, options, nodeType);
             case ExpressionType.Not:
             case ExpressionType.Negate:
@@ -79,6 +80,8 @@ internal class ExpressionConverter : JsonConverter<Expression>
                 return ReadConditionalExpression(ref reader, options);
             case ExpressionType.Default:
                 return ReadDefaultExpression(ref reader, options);
+            case ExpressionType.Block:
+                return ReadBlockExpression(ref reader, options);
             default:
                 throw new NotSupportedException($"Unsupported expression type. NodeType={nodeType}");
         }
@@ -135,6 +138,9 @@ internal class ExpressionConverter : JsonConverter<Expression>
                 break;
             case DefaultExpression de:
                 WriteDefaultExpression(writer, options, de);
+                break;
+            case BlockExpression be:
+                WriteBlockExpression(writer, options, be);
                 break;
             default:
                 throw new NotSupportedException($"Unsupported expression type. NodeType={value.NodeType}");
@@ -292,6 +298,8 @@ internal class ExpressionConverter : JsonConverter<Expression>
                 return Expression.LeftShift(left, right, method);
             case ExpressionType.RightShift:
                 return Expression.RightShift(left, right, method);
+            case ExpressionType.Assign:
+                return Expression.Assign(left, right);
             default:
                 throw new NotSupportedException($"Unrecognized binary expression: {expressionType}");
         }
@@ -476,5 +484,20 @@ internal class ExpressionConverter : JsonConverter<Expression>
     private void WriteDefaultExpression(Utf8JsonWriter writer, JsonSerializerOptions options, DefaultExpression value)
     {
         writer.WriteProperty(nameof(value.Type), value.Type, options);
+    }
+
+    private BlockExpression ReadBlockExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    {
+        var type = reader.ReadProperty<Type>(nameof(BlockExpression.Type), options);
+        reader.TryReadObjectArrayProperty(nameof(BlockExpression.Variables), options, ReadParameter, out var variables);
+        var expressions = reader.ReadArrayProperty<Expression>(nameof(BlockExpression.Expressions), options);
+        return Expression.Block(type, variables, expressions);
+    }
+
+    private void WriteBlockExpression(Utf8JsonWriter writer, JsonSerializerOptions options, BlockExpression expression)
+    {
+        writer.WriteProperty(nameof(expression.Type), expression.Type, options);
+        writer.WriteObjectArrayProperty(nameof(expression.Variables), expression.Variables, options, variable => WriteParameter(writer, options, variable));
+        writer.WriteArrayProperty(nameof(expression.Expressions), expression.Expressions, options);
     }
 }

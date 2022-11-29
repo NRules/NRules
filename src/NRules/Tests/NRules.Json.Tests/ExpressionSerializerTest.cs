@@ -193,6 +193,30 @@ public class ExpressionSerializerTest
     }
 
     [Fact]
+    public void Roundtrip_BlockExpression_Equals()
+    {
+        var parameter = Expression.Parameter(typeof(string), "s");
+        var expression = Expression.Lambda<Func<string, string>>(
+            Expression.Block(
+                parameter
+                ),
+            parameter);
+        TestRoundtrip(expression);
+    }
+
+    [Fact]
+    public void Roundtrip_AssignExpression_Equals()
+    {
+        var parameter = Expression.Parameter(typeof(string), "s");
+        var expression = Expression.Lambda<Action<string>>(
+            Expression.Assign(
+                parameter,
+                Expression.Constant("Constant")),
+            parameter);
+        TestRoundtrip(expression);
+    }
+
+    [Fact]
     public void Deserialize_WrongPropertyPosition_Throws()
     {
         var jsonString = @"{

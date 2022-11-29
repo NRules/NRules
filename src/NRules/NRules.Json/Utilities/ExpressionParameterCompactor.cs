@@ -11,7 +11,7 @@ internal class ExpressionParameterCompactor : ExpressionVisitor
 
     public LambdaExpression Compact(LambdaExpression lambdaExpression)
     {
-        _parameterMap = lambdaExpression.Parameters.ToDictionary(p => p.Name);
+        _parameterMap = lambdaExpression.Parameters.ToDictionary(p => p.Name ?? p.ToString());
         var result = Visit(lambdaExpression);
         return (LambdaExpression)result;
     }
@@ -22,7 +22,7 @@ internal class ExpressionParameterCompactor : ExpressionVisitor
         {
             throw new InvalidOperationException($"{nameof(Compact)} was not called");
         }
-        if (_parameterMap.TryGetValue(node.Name, out var lambdaParameter))
+        if (_parameterMap.TryGetValue(node.Name ?? node.ToString(), out var lambdaParameter))
             return lambdaParameter;
 
         return base.VisitParameter(node);

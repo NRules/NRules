@@ -330,16 +330,30 @@ public class SortedAggregatorTest : AggregatorTest
             () => target.Remove(Context, EmptyTuple(), AsFact(new TestFact(1), new TestFact(2))));
     }
 
+    [Fact]
+    public void Add_NewInstance_AddedResult_String_Ascending_Null()
+    {
+        // Arrange
+        var target = CreateTarget_SortByValue();
+
+        // Act
+        var facts = AsFact(new TestFact(3, null), new TestFact(1, "C"), new TestFact(2, "B"));
+        var result = target.Add(Context, EmptyTuple(), facts).ToArray();
+
+        // Assert
+        AssertAggregationResult(result, AggregationAction.Added, (string?)null, "B", "C");
+    }
+
     private static SortedAggregator<TestFact, int> CreateTarget(SortDirection sortDirection = SortDirection.Ascending)
     {
         var expression = new FactExpression<TestFact, int>(x => x.Id);
         return new SortedAggregator<TestFact, int>(expression, sortDirection);
     }
 
-    private static SortedAggregator<TestFact, string> CreateTarget_SortByValue(SortDirection sortDirection = SortDirection.Ascending)
+    private static SortedAggregator<TestFact, string?> CreateTarget_SortByValue(SortDirection sortDirection = SortDirection.Ascending)
     {
-        var expression = new FactExpression<TestFact, string>(x => x.Value);
-        return new SortedAggregator<TestFact, string>(expression, sortDirection);
+        var expression = new FactExpression<TestFact, string?>(x => x.Value);
+        return new SortedAggregator<TestFact, string?>(expression, sortDirection);
     }
 
     private static void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params int[] orderedKeys)
@@ -347,7 +361,7 @@ public class SortedAggregatorTest : AggregatorTest
         AssertAggregationResult(results, action, f => f.Id, orderedKeys);
     }
 
-    private static void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params string[] orderedKeys)
+    private static void AssertAggregationResult(AggregationResult[] results, AggregationAction action, params string?[] orderedKeys)
     {
         AssertAggregationResult(results, action, f => f.Value, orderedKeys);
     }
@@ -380,14 +394,14 @@ public class SortedAggregatorTest : AggregatorTest
         {
         }
 
-        public TestFact(int id, string value)
+        public TestFact(int id, string? value)
         {
             Id = id;
             Value = value;
         }
 
         public int Id { get; }
-        public string Value { get; }
+        public string? Value { get; }
 
         public bool Equals(TestFact? other)
         {

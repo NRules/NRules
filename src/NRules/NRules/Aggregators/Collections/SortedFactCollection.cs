@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using NRules.RuleModel;
 
@@ -6,21 +7,22 @@ namespace NRules.Aggregators.Collections;
 
 internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement?>
 {
-    private readonly SortedDictionary<TKey, LinkedList<IFact>> _items;
+    private readonly SortedDictionary<KeyContainer, LinkedList<IFact>> _items;
     private readonly Dictionary<IFact, SortedFactData> _dataMap;
 
     public SortedFactCollection(IComparer<TKey> comparer)
     {
         _dataMap = new Dictionary<IFact, SortedFactData>();
-        _items = new SortedDictionary<TKey, LinkedList<IFact>>(comparer);
+        _items = new SortedDictionary<KeyContainer, LinkedList<IFact>>(new KeyComparer(comparer));
     }
 
     public void AddFact(TKey key, IFact fact)
     {
-        if (!_items.TryGetValue(key, out var list))
+        var container = new KeyContainer(key);
+        if (!_items.TryGetValue(container, out var list))
         {
             list = new LinkedList<IFact>();
-            _items.Add(key, list);
+            _items.Add(container, list);
         }
 
         var linkedListNode = list.AddLast(fact);
@@ -32,12 +34,13 @@ internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement?>
         var data = _dataMap[fact];
         _dataMap.Remove(fact);
 
-        var list = _items[data.Key];
+        var container = new KeyContainer(data.Key);
+        var list = _items[container];
         list.Remove(data.LinkedListNode);
 
         if (list.Count == 0)
         {
-            _items.Remove(data.Key);
+            _items.Remove(container);
         }
     }
 
@@ -78,5 +81,45 @@ internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement?>
 
         public TKey Key { get; }
         public LinkedListNode<IFact> LinkedListNode { get; }
+    }
+
+    private readonly struct KeyContainer : IEquatable<KeyContainer>
+    {
+        public KeyContainer(TKey key)
+        {
+            Key = key;
+        }
+
+        public TKey Key { get; }
+
+        public bool Equals(KeyContainer other)
+        {
+            return EqualityComparer<TKey>.Default.Equals(Key, other.Key);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is KeyContainer container && Equals(container);
+        }
+
+        public override int GetHashCode()
+        {
+            return 990326508 + EqualityComparer<TKey>.Default.GetHashCode(Key);
+        }
+    }
+
+    private class KeyComparer : IComparer<KeyContainer>
+    {
+        private readonly IComparer<TKey> _keyComparer;
+
+        public KeyComparer(IComparer<TKey> keyComparer)
+        {
+            _keyComparer = keyComparer;
+        }
+
+        public int Compare(KeyContainer x, KeyContainer y)
+        {
+            return _keyComparer.Compare(x.Key, y.Key);
+        }
     }
 }
