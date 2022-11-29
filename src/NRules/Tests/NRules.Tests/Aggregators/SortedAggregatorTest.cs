@@ -374,7 +374,7 @@ public class SortedAggregatorTest : AggregatorTest
         var distinctKeys = orderedKeys.Distinct().ToArray();
         Assert.Equal(action, result.Action);
 
-        var aggregate = (IEnumerable<TestFact>)result.Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result.Aggregate!;
         Assert.Equal(action == AggregationAction.Added ? null : aggregate, result.Previous);
 
         var actualAggregateKeys = aggregate.Select(keySelector).ToArray();

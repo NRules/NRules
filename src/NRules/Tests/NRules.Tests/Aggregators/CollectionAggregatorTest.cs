@@ -21,7 +21,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Added, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Equal(2, aggregate.Count());
     }
 
@@ -38,7 +38,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Added, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Empty(aggregate);
     }
 
@@ -55,7 +55,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Added, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Equal(2, aggregate.Count());
     }
 
@@ -72,7 +72,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Added, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Equal(2, aggregate.Count());
     }
 
@@ -90,7 +90,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Equal(3, aggregate.Count());
     }
 
@@ -108,7 +108,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Equal(2, aggregate.Count());
     }
 
@@ -128,7 +128,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Equal(2, aggregate.Count());
     }
 
@@ -146,7 +146,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Equal(2, aggregate.Count());
     }
 
@@ -178,7 +178,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Single(aggregate);
         Assert.Equal(3, aggregate.ElementAt(0).Id);
     }
@@ -200,7 +200,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Single(aggregate);
         Assert.Equal(3, aggregate.ElementAt(0).Id);
     }
@@ -220,7 +220,7 @@ public class CollectionAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result[0].Aggregate!;
         Assert.Single(aggregate);
         Assert.Equal(2, aggregate.ElementAt(0).Id);
     }

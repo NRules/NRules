@@ -440,7 +440,7 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
         var result = results[0];
         Assert.Equal(action, result.Action);
 
-        var aggregate = (IEnumerable<TestFact>)result.Aggregate;
+        var aggregate = (IEnumerable<TestFact>)result.Aggregate!;
         Assert.Equal(action == AggregationAction.Added ? null : aggregate, result.Previous);
 
         var actualAggregateFacts = aggregate.ToArray();

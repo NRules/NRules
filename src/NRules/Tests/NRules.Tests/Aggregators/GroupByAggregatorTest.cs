@@ -21,11 +21,11 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Equal(2, result.Length);
         Assert.Equal(AggregationAction.Added, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Equal(2, aggregate1.Count());
         Assert.Equal(AggregationAction.Added, result[1].Action);
-        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate;
+        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate!;
         Assert.Equal("key2", aggregate2.Key.Value);
         Assert.Single(aggregate2);
     }
@@ -43,11 +43,11 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Equal(2, result.Length);
         Assert.Equal(AggregationAction.Added, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Single(aggregate1);
         Assert.Equal(AggregationAction.Added, result[1].Action);
-        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate;
+        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate!;
         Assert.Null(aggregate2.Key);
         Assert.Single(aggregate2);
     }
@@ -67,7 +67,7 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Added, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key2", aggregate1.Key.Value);
         Assert.Equal(2, aggregate1.Count());
     }
@@ -87,11 +87,11 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Equal(2, result.Length);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Equal(2, aggregate1.Count());
         Assert.Equal(AggregationAction.Modified, result[1].Action);
-        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate;
+        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate!;
         Assert.Equal("key2", aggregate2.Key.Value);
         Assert.Equal(2, aggregate2.Count());
     }
@@ -111,7 +111,7 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Equal(2, aggregate1.Key.CachedPayload);
     }
@@ -131,11 +131,11 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Equal(2, result.Length);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Equal(2, aggregate1.Count());
         Assert.Equal(AggregationAction.Modified, result[1].Action);
-        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate;
+        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate!;
         Assert.Null(aggregate2.Key);
         Assert.Equal(2, aggregate2.Count());
     }
@@ -155,11 +155,11 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Equal(2, result.Length);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Equal(2, aggregate1.Count());
         Assert.Equal(AggregationAction.Added, result[1].Action);
-        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate;
+        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate!;
         Assert.Equal("key2", aggregate2.Key.Value);
         Assert.Equal(2, aggregate2.Count());
     }
@@ -229,7 +229,7 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate1.Key.CachedPayload);
     }
 
@@ -271,8 +271,8 @@ public class GroupByAggregatorTest : AggregatorTest
         Assert.Equal(AggregationAction.Modified, result[1].Action);
         Assert.Same(result[0].Previous, result[0].Aggregate);
         Assert.Same(result[1].Previous, result[1].Aggregate);
-        Assert.Single(((IEnumerable<GroupElement>)result[0].Aggregate));
-        Assert.Equal(2, ((IEnumerable<GroupElement>)result[1].Aggregate).Count());
+        Assert.Single(((IEnumerable<GroupElement>)result[0].Aggregate!));
+        Assert.Equal(2, ((IEnumerable<GroupElement>)result[1].Aggregate!).Count());
     }
 
     [Fact]
@@ -291,11 +291,11 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Equal(2, result.Length);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Single(aggregate1);
         Assert.Equal(AggregationAction.Added, result[1].Action);
-        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate;
+        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate!;
         Assert.Equal("key2", aggregate2.Key.Value);
         Assert.Single(aggregate2);
     }
@@ -316,11 +316,11 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Equal(2, result.Length);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Single(aggregate1);
         Assert.Equal(AggregationAction.Added, result[1].Action);
-        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate;
+        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate!;
         Assert.Null(aggregate2.Key);
         Assert.Single(aggregate2);
     }
@@ -342,11 +342,11 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Equal(2, result.Length);
         Assert.Equal(AggregationAction.Removed, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Empty(aggregate1);
         Assert.Equal(AggregationAction.Added, result[1].Action);
-        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate;
+        var aggregate2 = (IGrouping<GroupKey, GroupElement>)result[1].Aggregate!;
         Assert.Equal("key2", aggregate2.Key.Value);
         Assert.Equal(2, aggregate2.Count());
     }
@@ -389,7 +389,7 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Single(aggregate1);
     }
@@ -410,7 +410,7 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Null(aggregate1.Key);
         Assert.Single(aggregate1);
     }
@@ -429,7 +429,7 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Removed, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal("key1", aggregate1.Key.Value);
         Assert.Empty(aggregate1);
     }
@@ -448,7 +448,7 @@ public class GroupByAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Removed, result[0].Action);
-        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (IGrouping<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Null(aggregate1.Key);
         Assert.Empty(aggregate1);
     }

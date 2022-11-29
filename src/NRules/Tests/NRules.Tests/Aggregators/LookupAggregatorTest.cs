@@ -21,7 +21,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Added, result[0].Action);
-        var aggregate = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Empty(aggregate);
         Assert.Empty(aggregate[GetKey("key1")]);
         Assert.Empty(aggregate[GetKey(null)]);
@@ -40,7 +40,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Added, result[0].Action);
-        var aggregate = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate.Count);
         Assert.Equal(2, aggregate[GetKey("key1")].Count());
         Assert.Single(aggregate[GetKey("key2")]);
@@ -59,7 +59,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Added, result[0].Action);
-        var aggregate = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate.Count);
         Assert.Single(aggregate[GetKey("key1")]);
         Assert.Single(aggregate[GetKey(null)]);
@@ -80,7 +80,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate1.Count);
         Assert.Equal(2, aggregate1[GetKey("key1")].Count());
         Assert.Equal(2, aggregate1[GetKey("key2")].Count());
@@ -101,7 +101,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate1.Count);
         Assert.Equal(2, aggregate1[GetKey("key1")].Count());
         Assert.Equal(2, aggregate1[GetKey("key2")].Count());
@@ -122,7 +122,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate1.Single(x => x.Key.Value == "key1").Key.CachedPayload);
     }
 
@@ -141,7 +141,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate1.Count);
         Assert.Equal(2, aggregate1[GetKey("key1")].Count());
         Assert.Equal(2, aggregate1[GetKey(null)].Count());
@@ -162,7 +162,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate1.Count);
         Assert.Equal(2, aggregate1[GetKey("key1")].Count());
         Assert.Equal(2, aggregate1[GetKey("key2")].Count());
@@ -220,7 +220,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate1.Single(x => x.Key.Value == "key1").Key.CachedPayload);
     }
 
@@ -259,7 +259,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate1.Count);
         Assert.Single(aggregate1[GetKey("key1")]);
         Assert.Equal(2, aggregate1[GetKey("key2")].Count());
@@ -281,7 +281,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate1.Count);
         Assert.Single(aggregate1[GetKey("key1")]);
         Assert.Single(aggregate1[GetKey("key2")]);
@@ -303,7 +303,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Equal(2, aggregate1.Count);
         Assert.Single(aggregate1[GetKey("key1")]);
         Assert.Single(aggregate1[GetKey(null)]);
@@ -326,7 +326,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Single(aggregate1);
         Assert.Equal(2, aggregate1[GetKey("key2")].Count());
     }
@@ -369,7 +369,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Single(aggregate1);
         Assert.Single(aggregate1[GetKey("key1")]);
     }
@@ -390,7 +390,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey?, GroupElement>)result[0].Aggregate!;
         Assert.Single(aggregate1);
         Assert.Single(aggregate1[GetKey(null)]);
     }
@@ -409,7 +409,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Empty(aggregate1);
     }
 
@@ -427,7 +427,7 @@ public class LookupAggregatorTest : AggregatorTest
         //Assert
         Assert.Single(result);
         Assert.Equal(AggregationAction.Modified, result[0].Action);
-        var aggregate1 = (ILookup<GroupKey, GroupElement>)result[0].Aggregate;
+        var aggregate1 = (ILookup<GroupKey, GroupElement>)result[0].Aggregate!;
         Assert.Empty(aggregate1);
     }
 

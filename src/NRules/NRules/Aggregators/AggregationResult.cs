@@ -99,7 +99,7 @@ public class AggregationResult
     /// <summary>
     /// Resulting aggregate.
     /// </summary>
-    public object Aggregate { get; }
+    public object? Aggregate { get; }
 
     /// <summary>
     /// Previous aggregate.

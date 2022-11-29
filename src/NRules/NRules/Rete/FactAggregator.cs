@@ -67,17 +67,21 @@ internal class FactAggregator : IFactAggregator
 
     private Fact CreateAggregateFact(AggregationResult result)
     {
-        var fact = new SyntheticFact(result.Aggregate, new AggregateFactSource(result.Source));
+        var fact = new SyntheticFact(
+            result.Aggregate ?? throw new ArgumentException($"Result should contain {nameof(result.Aggregate)}", nameof(result)),
+            new AggregateFactSource(result.Source));
         _aggregateFactMap.Add(result.Aggregate, fact);
         return fact;
     }
 
     private Fact GetAggregateFact(AggregationResult result)
     {
-        if (!_aggregateFactMap.TryGetValue(result.Previous ?? result.Aggregate, out var fact))
+        var key = result.Previous ?? result.Aggregate
+            ?? throw new ArgumentException($"Result should contain {nameof(result.Previous)} or {nameof(result.Aggregate)}", nameof(result));
+        if (!_aggregateFactMap.TryGetValue(key, out var fact))
         {
             throw new InvalidOperationException(
-                $"Fact for aggregate object does not exist. AggregatorType={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
+                $"Fact for aggregate object does not exist. AggregatorType={_aggregator.GetType()}, FactType={key.GetType()}");
         }
 
         fact.Source = new AggregateFactSource(result.Source);
@@ -85,14 +89,16 @@ internal class FactAggregator : IFactAggregator
         {
             _aggregateFactMap.Remove(fact.RawObject ?? throw new ArgumentException("Fact cannot contain null object"));
             fact.RawObject = result.Aggregate;
-            _aggregateFactMap.Add(fact.RawObject, fact);
+            _aggregateFactMap.Add(fact.RawObject!, fact);
         }
         return fact;
     }
 
     private Fact RemoveAggregateFact(AggregationResult result)
     {
-        if (!_aggregateFactMap.TryGetValue(result.Aggregate, out var fact))
+        if (!_aggregateFactMap.TryGetValue(
+            result.Aggregate ?? throw new ArgumentException($"Result should contain {nameof(result.Aggregate)}", nameof(result)),
+            out var fact))
         {
             throw new InvalidOperationException(
                 $"Fact for aggregate object does not exist. AggregatorType={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
