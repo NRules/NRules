@@ -24,7 +24,7 @@ internal static class ElementValidator
         }
     }
 
-    public static void ValidateRuleDefinition(RuleDefinition definition)
+    public static void ValidateRuleDefinition(IRuleDefinition definition)
     {
         var exports = definition.LeftHandSide.Exports
             .Concat(definition.DependencyGroup.Exports).ToArray();

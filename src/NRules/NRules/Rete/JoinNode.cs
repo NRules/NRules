@@ -33,7 +33,7 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, tuples);
             foreach (var set in joinedSets)
-                foreach (var fact in set.Facts)
+                foreach (var fact in set)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
                     {
@@ -59,7 +59,7 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, tuples);
             foreach (var set in joinedSets)
-                foreach (var fact in set.Facts)
+                foreach (var fact in set)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
                     {
@@ -86,7 +86,7 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, tuples);
             foreach (var set in joinedSets)
-                foreach (var fact in set.Facts)
+                foreach (var fact in set)
                 {
                     toRetract.Add(set.Tuple, fact);
                 }
@@ -105,7 +105,7 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
-                foreach (var fact in set.Facts)
+                foreach (var fact in set)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
                     {
@@ -128,7 +128,7 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
-                foreach (var fact in set.Facts)
+                foreach (var fact in set)
                 {
                     if (MatchesConditions(context, set.Tuple, fact))
                         toUpdate.Add(set.Tuple, fact);
@@ -151,7 +151,7 @@ internal class JoinNode : BinaryBetaNode
         {
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
-                foreach (var fact in set.Facts)
+                foreach (var fact in set)
                 {
                     toRetract.Add(set.Tuple, fact);
                 }

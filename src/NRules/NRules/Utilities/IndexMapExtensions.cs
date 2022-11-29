@@ -11,9 +11,9 @@ internal static class IndexMapExtensions
     /// <typeparam name="TElement">Type of element in the sequence.</typeparam>
     /// <param name="sequence">Sequence to convert.</param>
     /// <returns>Index lookup dictionary.</returns>
-    public static Dictionary<TElement, int> ToIndexMap<TElement>(this IEnumerable<TElement> sequence)
+    public static IReadOnlyDictionary<TElement, int> ToIndexMap<TElement>(this IEnumerable<TElement> sequence)
     {
-        return sequence.Select((value, index) => new {value, index}).ToDictionary(x => x.value, x => x.index);
+        return sequence.Select((value, index) => new { value, index }).ToDictionary(x => x.value, x => x.index);
     }
 
     /// <summary>
@@ -23,7 +23,7 @@ internal static class IndexMapExtensions
     /// <param name="indexMap">Index map.</param>
     /// <param name="element">Element to lookup.</param>
     /// <returns></returns>
-    public static int IndexOrDefault<TElement>(this Dictionary<TElement, int> indexMap, TElement element)
+    public static int IndexOrDefault<TElement>(this IReadOnlyDictionary<TElement, int> indexMap, TElement element)
     {
         if (indexMap.TryGetValue(element, out var index))
         {

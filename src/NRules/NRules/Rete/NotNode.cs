@@ -18,7 +18,7 @@ internal class NotNode : BinaryBetaNode
             foreach (var set in joinedSets)
             {
                 var quantifier = context.CreateQuantifier(this, set.Tuple);
-                quantifier.Value += set.Facts.Count;
+                quantifier.Value += set.Count;
                 if (quantifier.Value == 0)
                 {
                     toAssert.Add(set.Tuple, null);
@@ -82,7 +82,7 @@ internal class NotNode : BinaryBetaNode
             {
                 var quantifier = context.GetQuantifier(this, set.Tuple);
                 int startingCount = quantifier.Value;
-                quantifier.Value += set.Facts.Count;
+                quantifier.Value += set.Count;
                 if (startingCount == 0 && quantifier.Value > 0)
                 {
                     toRetract.Add(set.Tuple, null);
@@ -111,7 +111,7 @@ internal class NotNode : BinaryBetaNode
             {
                 var quantifier = context.GetQuantifier(this, set.Tuple);
                 int startingCount = quantifier.Value;
-                quantifier.Value -= set.Facts.Count;
+                quantifier.Value -= set.Count;
                 if (startingCount > 0 && quantifier.Value == 0)
                 {
                     toAssert.Add(set.Tuple, null);

@@ -2,25 +2,25 @@
 
 internal static class BuilderAdapter
 {
-    public static BuilderAdapter<T> Create<T>(T element)
+    public static IBuilder<T> Create<T>(T element)
         where T : RuleElement
     {
-        return new BuilderAdapter<T>(element);
-    }
-}
-
-internal class BuilderAdapter<T> : RuleElementBuilder, IBuilder<T>
-    where T : RuleElement
-{
-    private readonly T _element;
-
-    public BuilderAdapter(T element)
-    {
-        _element = element;
+        return new Adapter<T>(element);
     }
 
-    public T Build()
+    private class Adapter<T> : RuleElementBuilder, IBuilder<T>
+        where T : RuleElement
     {
-        return _element;
+        private readonly T _element;
+
+        public Adapter(T element)
+        {
+            _element = element;
+        }
+
+        public T Build()
+        {
+            return _element;
+        }
     }
 }

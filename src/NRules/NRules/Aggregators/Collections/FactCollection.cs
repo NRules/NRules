@@ -4,7 +4,7 @@ using NRules.RuleModel;
 
 namespace NRules.Aggregators.Collections;
 
-internal class FactCollection<TElement> : IEnumerable<TElement>
+internal class FactCollection<TElement> : IReadOnlyCollection<TElement>
 {
     private readonly Dictionary<IFact, NodePair> _nodeLookup = new();
     private readonly LinkedList<TElement> _elements = new();
