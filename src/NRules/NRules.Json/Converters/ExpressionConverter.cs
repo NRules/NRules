@@ -484,9 +484,6 @@ internal class ExpressionConverter : JsonConverter<Expression>
     private BlockExpression ReadBlockExpression(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var type = reader.ReadProperty<Type>(nameof(BlockExpression.Type), options);
-        if (type is null)
-            throw new JsonException($"Failed to read {nameof(BlockExpression.Type)} property value");
-
         reader.TryReadObjectArrayProperty(nameof(BlockExpression.Variables), options, ReadParameter, out var variables);
         var expressions = reader.ReadArrayProperty<Expression>(nameof(BlockExpression.Expressions), options);
         return Expression.Block(type, variables, expressions);
