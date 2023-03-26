@@ -14,14 +14,13 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
 {
     private Func<IAggregator> _factory;
 
-    public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
+    public void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions)
     {
         var sourceType = element.Source.ValueType;
 
-        var expressions = compiledExpressions.ToList();
-        var sortConditions = expressions.Where(x => Equals(x.Name, AggregateElement.KeySelectorAscendingName) || Equals(x.Name, AggregateElement.KeySelectorDescendingName))
+        var sortConditions = compiledExpressions.Where(x => Equals(x.Name, AggregateElement.KeySelectorAscendingName) || Equals(x.Name, AggregateElement.KeySelectorDescendingName))
             .Select(x => new SortCondition(x.Name, GetSortDirection(x.Name), x)).ToArray();
-        var groupConditions = expressions.Where(x => Equals(x.Name, AggregateElement.KeySelectorName)).ToArray();
+        var groupConditions = compiledExpressions.Where(x => Equals(x.Name, AggregateElement.KeySelectorName)).ToArray();
 
         switch (element.Name)
         {
@@ -36,7 +35,7 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
                 _factory = CreateMultiKeySortedAggregatorFactory(sourceType, sortConditions);
                 break;
             case AggregateElement.CollectName when sortConditions.Length == 0 && groupConditions.Length == 1:
-                _factory = CreateLookupAggregator(sourceType, expressions, element.Expressions);
+                _factory = CreateLookupAggregator(sourceType, compiledExpressions, element.Expressions);
                 break;
             default:
                 throw new ArgumentException("Unsupported collection aggregator. " +

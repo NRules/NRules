@@ -18,7 +18,7 @@ public interface IAggregatorFactory
     /// </summary>
     /// <param name="element">Corresponding aggregate element from the rule definition.</param>
     /// <param name="compiledExpressions">Aggregate expressions compiled to an executable form.</param>
-    void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions);
+    void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions);
 
     /// <summary>
     /// Creates a new aggregator instance.

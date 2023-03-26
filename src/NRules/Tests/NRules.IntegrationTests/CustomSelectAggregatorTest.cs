@@ -139,7 +139,7 @@ internal class CustomSelectAggregateFactory : IAggregatorFactory
 {
     private Func<IAggregator> _factory;
 
-    public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
+    public void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions)
     {
         var selector = element.Expressions["Selector"];
         var sourceType = element.Source.ValueType;

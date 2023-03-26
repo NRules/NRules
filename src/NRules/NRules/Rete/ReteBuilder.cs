@@ -440,7 +440,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         return factory;
     }
 
-    private IEnumerable<IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
+    private IReadOnlyCollection<IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
     {
         var declarations = context.Declarations.Concat(element.Source.Declaration).ToList();
         var result = new List<IAggregateExpression>(element.Expressions.Count);

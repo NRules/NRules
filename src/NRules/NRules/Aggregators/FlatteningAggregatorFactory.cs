@@ -13,7 +13,7 @@ internal class FlatteningAggregatorFactory : IAggregatorFactory
 {
     private Func<IAggregator> _factory;
 
-    public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
+    public void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions)
     {
         var sourceType = element.Source.ValueType;
         //Flatten selector is Source -> IEnumerable<Result>

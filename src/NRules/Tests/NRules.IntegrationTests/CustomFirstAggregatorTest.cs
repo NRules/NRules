@@ -110,7 +110,7 @@ internal class CustomFirstAggregatorFactory : IAggregatorFactory
 {
     private Func<IAggregator> _factory;
 
-    public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
+    public void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions)
     {
         var elementType = element.ResultType;
         var aggregatorType = typeof(CustomFirstAggregator<>).MakeGenericType(elementType);

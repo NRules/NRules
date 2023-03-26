@@ -29,7 +29,7 @@ internal class RuleExpressionCompiler : IRuleExpressionCompiler
 
     public ILhsExpression<TResult> CompileLhsExpression<TResult>(ExpressionElement element, List<Declaration> declarations)
     {
-        if (element.Imports.Count() == 1 &&
+        if (element.Imports.Count == 1 &&
             Equals(element.Imports.Single(), declarations.Last()))
         {
             return CompileLhsFactExpression<TResult>(element);

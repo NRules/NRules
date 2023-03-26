@@ -13,7 +13,7 @@ internal class GroupByAggregatorFactory : IAggregatorFactory
 {
     private Func<IAggregator> _factory;
 
-    public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
+    public void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions)
     {
         var keySelector = element.Expressions[AggregateElement.KeySelectorName];
         var elementSelector = element.Expressions[AggregateElement.ElementSelectorName];
