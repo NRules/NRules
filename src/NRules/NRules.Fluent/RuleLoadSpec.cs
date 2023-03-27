@@ -163,17 +163,17 @@ internal class RuleLoadSpec : IRuleLoadSpec
 
     private IEnumerable<Type> GetRuleTypes()
     {
-        var ruleTypes = _typeScanner.GetRuleTypes();
         if (IsFilterSet())
         {
-            var metadata = ruleTypes.Select(ruleType => new RuleMetadata(ruleType));
-            var filteredTypes = metadata.Where(x => _filter(x)).Select(x => x.RuleType);
-            ruleTypes = filteredTypes.ToArray();
+            return _typeScanner.GetRuleTypes()
+                .Select(ruleType => new RuleMetadata(ruleType))
+                .Where(x => _filter(x))
+                .Select(x => x.RuleType);
         }
-        return ruleTypes;
+        return _typeScanner.GetRuleTypes();
     }
 
-    private IEnumerable<Rule> Activate(Type type)
+    private IReadOnlyCollection<Rule> Activate(Type type)
     {
         try
         {
