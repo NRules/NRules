@@ -138,7 +138,7 @@ public class RuleTypeScanner : IRuleTypeScanner
     /// Retrieves found types.
     /// </summary>
     /// <returns>Rule types.</returns>
-    public IReadOnlyCollection<Type> GetRuleTypes()
+    public Type[] GetRuleTypes()
     {
         var ruleTypes = _ruleTypes
             .Where(t => _privateTypes || !t.IsNotPublic)
