@@ -41,7 +41,7 @@ internal class RuleExpressionCompiler : IRuleExpressionCompiler
     {
         var optimizedExpression = ExpressionOptimizer.Optimize<Func<Fact, TResult>>(
             element.Expression, IndexMap.Unit, tupleInput: false, factInput: true);
-        var @delegate = optimizedExpression.Compile();
+        var @delegate = ExpressionCompiler.Compile(optimizedExpression);;
         var argumentMap = new ArgumentMap(IndexMap.Unit, 1);
         var expression = new LhsFactExpression<TResult>(element.Expression, @delegate, argumentMap);
         return expression;
