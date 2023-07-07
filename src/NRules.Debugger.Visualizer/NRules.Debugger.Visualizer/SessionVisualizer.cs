@@ -23,6 +23,11 @@ namespace NRules.Debugger.Visualizer;
 
 public class SessionVisualizer : DialogDebuggerVisualizer
 {
+    public SessionVisualizer()
+        : base(FormatterPolicy.Legacy)
+    {
+    }
+
     protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
     {
         var stream = objectProvider.GetData();
