@@ -307,7 +307,7 @@ internal sealed class Session : ISessionInternal
     private readonly IMetricsAggregator _metricsAggregator;
     private readonly IActionExecutor _actionExecutor;
     private readonly IExecutionContext _executionContext;
-    private readonly Queue<LinkedFactSet> _linkedFacts = new();
+    private readonly LinkedList<LinkedFactSet> _linkedFacts = new();
 
     internal Session(
         INetwork network,
@@ -531,7 +531,8 @@ internal sealed class Session : ISessionInternal
         var factSets = new List<ILinkedFactSet>(_linkedFacts.Count);
         while (_linkedFacts.Count > 0)
         {
-            var item = _linkedFacts.Dequeue();
+            var item = _linkedFacts.First.Value;
+            _linkedFacts.RemoveFirst();
             factSets.Add(item);
             switch (item.Action)
             {
@@ -591,10 +592,10 @@ internal sealed class Session : ISessionInternal
         }
 
         LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Insert)
+        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Last.Value).Action != LinkedFactAction.Insert)
         {
             current = new LinkedFactSet(LinkedFactAction.Insert);
-            _linkedFacts.Enqueue(current);
+            _linkedFacts.AddLast(current);
         }
         current.Facts.AddRange(toPropagate);
     }
@@ -621,10 +622,10 @@ internal sealed class Session : ISessionInternal
         }
 
         LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Update)
+        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Last.Value).Action != LinkedFactAction.Update)
         {
             current = new LinkedFactSet(LinkedFactAction.Update);
-            _linkedFacts.Enqueue(current);
+            _linkedFacts.AddLast(current);
         }
         current.Facts.AddRange(toPropagate);
     }
@@ -652,10 +653,10 @@ internal sealed class Session : ISessionInternal
         }
 
         LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Peek()).Action != LinkedFactAction.Retract)
+        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Last.Value).Action != LinkedFactAction.Retract)
         {
             current = new LinkedFactSet(LinkedFactAction.Retract);
-            _linkedFacts.Enqueue(current);
+            _linkedFacts.AddLast(current);
         }
         current.Facts.AddRange(toPropagate);
     }

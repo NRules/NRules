@@ -129,6 +129,49 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
     }
 
     [Fact]
+    public void Fire_ManyMatchingFactsInsertedUpdatedRetracted_FiresFirstRuleAndChainsSecond()
+    {
+        //Arrange
+        var fact11 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Invalid Value 1" };
+        var fact12 = new FactType1 { TestProperty = "Valid Value 2", ChainProperty = "Invalid Value 2" };
+        var fact13 = new FactType1 { TestProperty = "Valid Value 3", ChainProperty = "Invalid Value 3" };
+        var fact14 = new FactType1 { TestProperty = "Valid Value 4", ChainProperty = "Valid Value 4" };
+        var fact15 = new FactType1 { TestProperty = "Valid Value 5", ChainProperty = "Valid Value 5" };
+        var fact16 = new FactType1 { TestProperty = "Valid Value 6", ChainProperty = "Valid Value 6" };
+        var fact17 = new FactType1 { TestProperty = "Valid Value 7", ChainProperty = "Valid Value 7" };
+        var fact18 = new FactType1 { TestProperty = "Valid Value 8", ChainProperty = "Valid Value 8" };
+        var fact19 = new FactType1 { TestProperty = "Valid Value 9", ChainProperty = "Valid Value 9" };
+        Session.InsertAll(new[] { fact11, fact12, fact13, fact14, fact15, fact16, fact17, fact18, fact19 });
+
+        Session.Fire();
+        Session.PropagateLinked();
+
+        //Act
+        fact11.ChainProperty = "Valid Value 1";
+        fact12.ChainProperty = "Valid Value 2";
+        fact13.ChainProperty = "Valid Value 3";
+        fact18.ChainProperty = "Invalid Value 8";
+        fact19.ChainProperty = "Invalid Value 9";
+        Session.UpdateAll(new[] { fact11, fact12, fact13, fact14, fact15, fact16, fact17, fact18, fact19 });
+
+        Session.Fire();
+        var result = Session.PropagateLinked();
+
+        Session.Fire();
+
+        //Assert
+        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(18);
+        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(13);
+        Assert.Equal(3, result.Count());
+        Assert.Equal(LinkedFactAction.Insert, result.ElementAt(0).Action);
+        Assert.Equal(3, result.ElementAt(0).FactCount);
+        Assert.Equal(LinkedFactAction.Update, result.ElementAt(1).Action);
+        Assert.Equal(4, result.ElementAt(1).FactCount);
+        Assert.Equal(LinkedFactAction.Retract, result.ElementAt(2).Action);
+        Assert.Equal(2, result.ElementAt(2).FactCount);
+    }
+
+    [Fact]
     public void Fire_TwoMatchingFactsInsertedThenUpdatedThenRetracted_FiresFirstRuleAndChainsSecond()
     {
         //Arrange
