@@ -48,7 +48,7 @@ public interface ISession : ISessionSchemaProvider
     /// By default, <see cref="AutoPropagateLinkedFacts"/> is <c>true</c> and the engine automatically
     /// propagates linked facts at the end of the rule's actions.
     /// If <see cref="AutoPropagateLinkedFacts"/> is <c>false</c>, linked facts are queued, and have to be
-    /// explicitly propagated by calling <see cref="PropagateLinked"/> method.
+    /// explicitly propagated by calling <see cref="PropagateChained"/> method.
     /// </summary>
     bool AutoPropagateLinkedFacts { get; set; }
 
@@ -239,10 +239,10 @@ public interface ISession : ISessionSchemaProvider
     bool TryRetract(object facts);
 
     /// <summary>
-    /// Propagates all queued linked facts.
+    /// Propagates all queued chained facts.
     /// </summary>
-    /// <returns>Collection of propagated sets of linked facts.</returns>
-    IEnumerable<ILinkedFactSet> PropagateLinked();
+    /// <returns>Collection of propagated sets of chained facts.</returns>
+    IEnumerable<IChainedFactSet> PropagateChained();
 
     /// <summary>
     /// Starts rules execution cycle.
@@ -288,6 +288,10 @@ internal interface ISessionInternal : ISession
 {
     new IAgendaInternal Agenda { get; }
 
+    void QueueInsertAll(IEnumerable<object> facts);
+    void QueueUpdateAll(IEnumerable<object> facts);
+    void QueueRetractAll(IEnumerable<object> facts);
+
     IEnumerable<object> GetLinkedKeys(Activation activation);
     object GetLinked(Activation activation, object key);
     void QueueInsertLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts);
@@ -298,7 +302,7 @@ internal interface ISessionInternal : ISession
 
 internal sealed class Session : ISessionInternal
 {
-    private static readonly ILinkedFactSet[] EmptyLinkedFactResult = Array.Empty<ILinkedFactSet>();
+    private static readonly IChainedFactSet[] EmptyChainedFactResult = Array.Empty<IChainedFactSet>();
 
     private readonly IAgendaInternal _agenda;
     private readonly INetwork _network;
@@ -307,7 +311,7 @@ internal sealed class Session : ISessionInternal
     private readonly IMetricsAggregator _metricsAggregator;
     private readonly IActionExecutor _actionExecutor;
     private readonly IExecutionContext _executionContext;
-    private readonly LinkedList<LinkedFactSet> _linkedFacts = new();
+    private readonly LinkedList<ChainedFactSet> _chainedFactQueue = new();
 
     internal Session(
         INetwork network,
@@ -390,7 +394,7 @@ internal sealed class Session : ISessionInternal
 
             _network.PropagateAssert(_executionContext, toPropagate);
 
-            PropagateLinked();
+            PropagateChained();
         }
         return result;
     }
@@ -449,7 +453,7 @@ internal sealed class Session : ISessionInternal
 
             _network.PropagateUpdate(_executionContext, toPropagate);
 
-            PropagateLinked();
+            PropagateChained();
         }
         return result;
     }
@@ -507,7 +511,7 @@ internal sealed class Session : ISessionInternal
                 _workingMemory.RemoveFact(fact);
             }
 
-            PropagateLinked();
+            PropagateChained();
         }
         return result;
     }
@@ -523,26 +527,26 @@ internal sealed class Session : ISessionInternal
         return result.FailedCount == 0;
     }
 
-    public IEnumerable<ILinkedFactSet> PropagateLinked()
+    public IEnumerable<IChainedFactSet> PropagateChained()
     {
-        if (_linkedFacts.Count == 0)
-            return EmptyLinkedFactResult;
+        if (_chainedFactQueue.Count == 0)
+            return EmptyChainedFactResult;
 
-        var factSets = new List<ILinkedFactSet>(_linkedFacts.Count);
-        while (_linkedFacts.Count > 0)
+        var factSets = new List<IChainedFactSet>(_chainedFactQueue.Count);
+        while (_chainedFactQueue.Count > 0)
         {
-            var item = _linkedFacts.First.Value;
-            _linkedFacts.RemoveFirst();
+            var item = _chainedFactQueue.First.Value;
+            _chainedFactQueue.RemoveFirst();
             factSets.Add(item);
             switch (item.Action)
             {
-                case LinkedFactAction.Insert:
+                case ChainedFactAction.Insert:
                     _network.PropagateAssert(_executionContext, item.Facts);
                     break;
-                case LinkedFactAction.Update:
+                case ChainedFactAction.Update:
                     _network.PropagateUpdate(_executionContext, item.Facts);
                     break;
-                case LinkedFactAction.Retract:
+                case ChainedFactAction.Retract:
                     _network.PropagateRetract(_executionContext, item.Facts);
                     foreach (var fact in item.Facts)
                     {
@@ -550,11 +554,88 @@ internal sealed class Session : ISessionInternal
                     }
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException($"Unrecognized linked fact action. Action={item.Action}");
+                    throw new ArgumentOutOfRangeException($"Unrecognized chained fact action. Action={item.Action}");
             }
         }
 
         return factSets;
+    }
+
+    public void QueueInsertAll(IEnumerable<object> facts)
+    {
+        var toPropagate = new List<Fact>();
+        foreach (var factObject in facts)
+        {
+            var factWrapper = _workingMemory.GetFact(factObject);
+            if (factWrapper != null)
+            {
+                throw new ArgumentException($"Fact already exists");
+            }
+            factWrapper = new SyntheticFact(factObject);
+            toPropagate.Add(factWrapper);
+        }
+        foreach (var item in toPropagate)
+        {
+            _workingMemory.AddFact(item);
+        }
+
+        ChainedFactSet current;
+        if (_chainedFactQueue.Count == 0 || (current = _chainedFactQueue.Last.Value).Action != ChainedFactAction.Insert)
+        {
+            current = new ChainedFactSet(ChainedFactAction.Insert);
+            _chainedFactQueue.AddLast(current);
+        }
+        current.Facts.AddRange(toPropagate);
+    }
+
+    public void QueueUpdateAll(IEnumerable<object> facts)
+    {
+        var toPropagate = new List<Fact>();
+        foreach (var factObject in facts)
+        {
+            var factWrapper = _workingMemory.GetFact(factObject);
+            if (factWrapper == null)
+            {
+                throw new ArgumentException($"Fact does not exist");
+            }
+            UpdateFact(factWrapper, factObject);
+            toPropagate.Add(factWrapper);
+        }
+        foreach (var item in toPropagate)
+        {
+            _workingMemory.UpdateFact(item);
+        }
+
+        ChainedFactSet current;
+        if (_chainedFactQueue.Count == 0 || (current = _chainedFactQueue.Last.Value).Action != ChainedFactAction.Update)
+        {
+            current = new ChainedFactSet(ChainedFactAction.Update);
+            _chainedFactQueue.AddLast(current);
+        }
+        current.Facts.AddRange(toPropagate);
+    }
+
+    public void QueueRetractAll(IEnumerable<object> facts)
+    {
+        var toPropagate = new List<Fact>();
+        foreach (var factObject in facts)
+        {
+            var factWrapper = _workingMemory.GetFact(factObject);
+            if (factWrapper == null)
+            {
+                throw new ArgumentException($"Fact does not exist");
+            }
+            UpdateFact(factWrapper, factObject);
+            toPropagate.Add(factWrapper);
+        }
+
+        ChainedFactSet current;
+        if (_chainedFactQueue.Count == 0 || (current = _chainedFactQueue.Last.Value).Action != ChainedFactAction.Retract)
+        {
+            current = new ChainedFactSet(ChainedFactAction.Retract);
+            _chainedFactQueue.AddLast(current);
+        }
+        current.Facts.AddRange(toPropagate);
     }
 
     public IEnumerable<object> GetLinkedKeys(Activation activation)
@@ -591,11 +672,11 @@ internal sealed class Session : ISessionInternal
             _workingMemory.AddLinkedFact(activation, item.Item1, item.Item2);
         }
 
-        LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Last.Value).Action != LinkedFactAction.Insert)
+        ChainedFactSet current;
+        if (_chainedFactQueue.Count == 0 || (current = _chainedFactQueue.Last.Value).Action != ChainedFactAction.Insert)
         {
-            current = new LinkedFactSet(LinkedFactAction.Insert);
-            _linkedFacts.AddLast(current);
+            current = new ChainedFactSet(ChainedFactAction.Insert);
+            _chainedFactQueue.AddLast(current);
         }
         current.Facts.AddRange(toPropagate);
     }
@@ -621,11 +702,11 @@ internal sealed class Session : ISessionInternal
             _workingMemory.UpdateLinkedFact(activation, item.Item1, item.Item2, item.Item3);
         }
 
-        LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Last.Value).Action != LinkedFactAction.Update)
+        ChainedFactSet current;
+        if (_chainedFactQueue.Count == 0 || (current = _chainedFactQueue.Last.Value).Action != ChainedFactAction.Update)
         {
-            current = new LinkedFactSet(LinkedFactAction.Update);
-            _linkedFacts.AddLast(current);
+            current = new ChainedFactSet(ChainedFactAction.Update);
+            _chainedFactQueue.AddLast(current);
         }
         current.Facts.AddRange(toPropagate);
     }
@@ -652,11 +733,11 @@ internal sealed class Session : ISessionInternal
             item.Item2.Source = null;
         }
 
-        LinkedFactSet current;
-        if (_linkedFacts.Count == 0 || (current = _linkedFacts.Last.Value).Action != LinkedFactAction.Retract)
+        ChainedFactSet current;
+        if (_chainedFactQueue.Count == 0 || (current = _chainedFactQueue.Last.Value).Action != ChainedFactAction.Retract)
         {
-            current = new LinkedFactSet(LinkedFactAction.Retract);
-            _linkedFacts.AddLast(current);
+            current = new ChainedFactSet(ChainedFactAction.Retract);
+            _chainedFactQueue.AddLast(current);
         }
         current.Facts.AddRange(toPropagate);
     }
@@ -703,7 +784,7 @@ internal sealed class Session : ISessionInternal
             finally
             {
                 ruleFiredCount++;
-                if (AutoPropagateLinkedFacts) PropagateLinked();
+                if (AutoPropagateLinkedFacts) PropagateChained();
             }
 
             if (actionContext.IsHalted || cancellationToken.IsCancellationRequested) break;

@@ -52,6 +52,20 @@ public interface IContext
     bool TryInsert(object fact);
 
     /// <summary>
+    /// Inserts a new fact to the rules engine memory.
+    /// </summary>
+    /// <param name="fact">Fact to add.</param>
+    /// <exception cref="ArgumentException">If fact already exists in working memory.</exception>
+    void QueueInsert(object fact);
+
+    /// <summary>
+    /// Inserts new facts to the rules engine memory.
+    /// </summary>
+    /// <param name="facts">Facts to add.</param>
+    /// <exception cref="ArgumentException">If any fact already exists in working memory.</exception>
+    void QueueInsertAll(IEnumerable<object> facts);
+
+    /// <summary>
     /// Updates existing fact in the rules engine memory.
     /// </summary>
     /// <param name="fact">Fact to update.</param>
@@ -73,6 +87,20 @@ public interface IContext
     bool TryUpdate(object fact);
 
     /// <summary>
+    /// Updates existing fact in the rules engine memory.
+    /// </summary>
+    /// <param name="fact">Fact to update.</param>
+    /// <exception cref="ArgumentException">If fact does not exist in working memory.</exception>
+    void QueueUpdate(object fact);
+
+    /// <summary>
+    /// Updates existing facts in the rules engine memory.
+    /// </summary>
+    /// <param name="facts">Facts to update.</param>
+    /// <exception cref="ArgumentException">If any fact does not exist in working memory.</exception>
+    void QueueUpdateAll(IEnumerable<object> facts);
+
+    /// <summary>
     /// Removes existing fact from the rules engine memory.
     /// </summary>
     /// <param name="fact">Fact to remove.</param>
@@ -92,6 +120,20 @@ public interface IContext
     /// <param name="fact">Fact to remove.</param>
     /// <returns>Whether the fact was retracted or not.</returns>
     bool TryRetract(object fact);
+
+    /// <summary>
+    /// Removes existing fact from the rules engine memory.
+    /// </summary>
+    /// <param name="fact">Fact to remove.</param>
+    /// <exception cref="ArgumentException">If fact does not exist in working memory.</exception>
+    void QueueRetract(object fact);
+
+    /// <summary>
+    /// Removes existing facts from the rules engine memory.
+    /// </summary>
+    /// <param name="facts">Facts to remove.</param>
+    /// <exception cref="ArgumentException">If any fact does not exist in working memory.</exception>
+    void QueueRetractAll(IEnumerable<object> facts);
 
     /// <summary>
     /// Retrieves keys of facts linked to the current rule activation.

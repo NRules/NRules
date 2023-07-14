@@ -53,6 +53,16 @@ internal class ActionContext : IActionContext
         return _session.TryInsert(fact);
     }
 
+    public void QueueInsert(object fact)
+    {
+        QueueInsertAll(new[] {fact});
+    }
+
+    public void QueueInsertAll(IEnumerable<object> facts)
+    {
+        _session.QueueInsertAll(facts);
+    }
+
     public void Update(object fact)
     {
         _session.Update(fact);
@@ -68,6 +78,16 @@ internal class ActionContext : IActionContext
         return _session.TryUpdate(fact);
     }
 
+    public void QueueUpdate(object fact)
+    {
+        QueueUpdateAll(new[] {fact});
+    }
+    
+    public void QueueUpdateAll(IEnumerable<object> facts)
+    {
+        _session.QueueUpdateAll(facts);
+    }
+
     public void Retract(object fact)
     {
         _session.Retract(fact);
@@ -81,6 +101,16 @@ internal class ActionContext : IActionContext
     public bool TryRetract(object fact)
     {
         return _session.TryRetract(fact);
+    }
+
+    public void QueueRetract(object fact)
+    {
+        QueueRetractAll(new[] {fact});
+    }
+
+    public void QueueRetractAll(IEnumerable<object> facts)
+    {
+        _session.QueueRetractAll(facts);
     }
 
     public IEnumerable<object> GetLinkedKeys()
