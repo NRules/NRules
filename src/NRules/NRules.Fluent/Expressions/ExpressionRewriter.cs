@@ -8,13 +8,13 @@ namespace NRules.Fluent.Expressions;
 
 internal class ExpressionRewriter : ExpressionVisitor
 {
+    private ISymbolLookup SymbolLookup { get; }
     protected List<ParameterExpression> Parameters { get; }
-    public ISymbolLookup SymbolLookup { get; }
 
     public ExpressionRewriter(ISymbolLookup symbolLookup)
     {
-        Parameters = new List<ParameterExpression>();
         SymbolLookup = symbolLookup;
+        Parameters = new List<ParameterExpression>();
     }
 
     public LambdaExpression Rewrite(LambdaExpression expression)

@@ -37,7 +37,7 @@ internal class ProjectionAggregator<TSource, TResult> : IAggregator
         foreach (var fact in facts)
         {
             var value = _selector.Invoke(context, tuple, fact);
-            var oldValue = (TResult)_sourceToValue[fact];
+            var oldValue = _sourceToValue[fact];
             _sourceToValue[fact] = value;
             results.Add(AggregationResult.Modified(value, oldValue, Enumerable.Repeat(fact, 1)));
         }
