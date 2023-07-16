@@ -25,7 +25,7 @@ internal class RightHandSideExpression : IRightHandSideExpression
 
     public IRightHandSideExpression Action(Expression<Action<IContext>> action, ActionTrigger actionTrigger)
     {
-        _builder.DslAction(_symbolStack.Scope.Declarations, action, actionTrigger);
+        _builder.DslAction(_symbolStack.Scope, action, actionTrigger);
         return this;
     }
 

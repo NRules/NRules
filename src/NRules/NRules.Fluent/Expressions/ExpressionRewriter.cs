@@ -8,13 +8,13 @@ namespace NRules.Fluent.Expressions;
 
 internal class ExpressionRewriter : ExpressionVisitor
 {
-    private IDictionary<string, Declaration> Declarations { get; }
     protected List<ParameterExpression> Parameters { get; }
+    public ISymbolLookup SymbolLookup { get; }
 
-    public ExpressionRewriter(IEnumerable<Declaration> declarations)
+    public ExpressionRewriter(ISymbolLookup symbolLookup)
     {
-        Declarations = declarations.ToDictionary(d => d.Name);
         Parameters = new List<ParameterExpression>();
+        SymbolLookup = symbolLookup;
     }
 
     public LambdaExpression Rewrite(LambdaExpression expression)
@@ -33,7 +33,7 @@ internal class ExpressionRewriter : ExpressionVisitor
 
     protected override Expression VisitMember(MemberExpression member)
     {
-        if (Declarations.TryGetValue(member.Member.Name, out var declaration))
+        if (SymbolLookup.TryGetValue(member.Member.Name, out var declaration))
         {
             ParameterExpression parameter = Parameters.FirstOrDefault(p => p.Name == declaration.Name);
             if (parameter == null)
