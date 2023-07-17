@@ -128,13 +128,13 @@ public class DgmlWriter
                 node.Properties.Add($"{reteNode.NodeType}{key}", value);
             }
 
-            if (reteNode.Rules.Length > 0)
+            if (reteNode.Rules.Count > 0)
             {
                 var value = string.Join("; ", reteNode.Rules.Select(x => x.Name));
                 node.Properties.Add("Rule", value);
             }
 
-            if (reteNode.Rules.Length > 1)
+            if (reteNode.Rules.Count > 1)
             {
                 node.Properties.Add("Shared", true);
             }

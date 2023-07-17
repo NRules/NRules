@@ -59,7 +59,7 @@ internal static class ExpressionOptimizer
     }
 
     public static Expression<TDelegate> Optimize<TDelegate>(LambdaExpression expression,
-        IndexMap factIndexMap, List<DependencyElement> dependencies, IndexMap dependencyIndexMap)
+        IndexMap factIndexMap, IReadOnlyList<DependencyElement> dependencies, IndexMap dependencyIndexMap)
     {
         var parts = new ExpressionParts(expression, 1);
         
@@ -125,7 +125,7 @@ internal static class ExpressionOptimizer
     }
 
     private static void ResolveDependencies(ExpressionParts parts, 
-        List<DependencyElement> dependencies, IndexMap indexMap)
+        IReadOnlyList<DependencyElement> dependencies, IndexMap indexMap)
     {
         var resolverParameter = Expression.Parameter(typeof(IDependencyResolver), "<resolver>");
         parts.InputParameters.Add(resolverParameter);

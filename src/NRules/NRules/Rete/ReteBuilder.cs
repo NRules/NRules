@@ -40,7 +40,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     public IEnumerable<ITerminal> AddRule(IRuleDefinition rule)
     {
-        var ruleDeclarations = rule.LeftHandSide.Exports.ToList();
+        var ruleDeclarations = rule.LeftHandSide.Exports;
         var terminals = new List<ITerminal>();
         rule.LeftHandSide.Match(
             and =>
