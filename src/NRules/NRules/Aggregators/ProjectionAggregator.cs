@@ -19,9 +19,9 @@ internal class ProjectionAggregator<TSource, TResult> : IAggregator
         _selector = selector;
     }
 
-    public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Add(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
-        var results = new List<AggregationResult>();
+        var results = new List<AggregationResult>(facts.Count);
         foreach (var fact in facts)
         {
             var value = _selector.Invoke(context, tuple, fact);
@@ -31,9 +31,9 @@ internal class ProjectionAggregator<TSource, TResult> : IAggregator
         return results;
     }
 
-    public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
-        var results = new List<AggregationResult>();
+        var results = new List<AggregationResult>(facts.Count);
         foreach (var fact in facts)
         {
             var value = _selector.Invoke(context, tuple, fact);
@@ -44,9 +44,9 @@ internal class ProjectionAggregator<TSource, TResult> : IAggregator
         return results;
     }
 
-    public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
-        var results = new List<AggregationResult>();
+        var results = new List<AggregationResult>(facts.Count);
         foreach (var fact in facts)
         {
             var oldValue = _sourceToValue[fact];

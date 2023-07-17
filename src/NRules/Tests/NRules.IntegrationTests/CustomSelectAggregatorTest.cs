@@ -169,7 +169,7 @@ public class CustomSelectAggregator<TSource, TResult> : IAggregator
         _selector = selector;
     }
 
-    public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Add(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         var results = new List<AggregationResult>();
         foreach (var fact in facts)
@@ -181,7 +181,7 @@ public class CustomSelectAggregator<TSource, TResult> : IAggregator
         return results;
     }
 
-    public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         var results = new List<AggregationResult>();
         foreach (var fact in facts)
@@ -194,7 +194,7 @@ public class CustomSelectAggregator<TSource, TResult> : IAggregator
         return results;
     }
 
-    public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         var results = new List<AggregationResult>();
         foreach (var fact in facts)

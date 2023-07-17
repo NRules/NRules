@@ -301,11 +301,11 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
         // Act
         var fact1 = new TestFact(1, "B");
         facts[0].Value = fact1;
-        target.Modify(null, EmptyTuple(), facts.Take(1)).ToArray();
+        target.Modify(null, EmptyTuple(), facts.Take(1).ToList()).ToArray();
 
         var fact2 = new TestFact(1, "C");
         facts[1].Value = fact2;
-        var result = target.Modify(null, EmptyTuple(), facts.Skip(1).Take(1)).ToArray();
+        var result = target.Modify(null, EmptyTuple(), facts.Skip(1).Take(1).ToList()).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact1, fact2);
