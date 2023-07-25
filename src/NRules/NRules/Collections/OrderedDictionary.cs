@@ -4,7 +4,7 @@ namespace NRules.Collections;
 
 internal class OrderedDictionary<TKey, TValue>
 {
-    private readonly IDictionary<TKey, LinkedListNode<TValue>> _dictionary;
+    private readonly Dictionary<TKey, LinkedListNode<TValue>> _dictionary;
     private readonly LinkedList<TValue> _linkedList;
 
     public OrderedDictionary()

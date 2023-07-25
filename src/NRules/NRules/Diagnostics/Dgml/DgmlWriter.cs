@@ -331,7 +331,7 @@ public class DgmlWriter
             .Setter(nameof(Node.Background), value: "Purple");
     }
     
-    private static IEnumerable<ReteNode> FilterNodes(HashSet<string> ruleNameFilter, ReteNode[] reteNodes)
+    private static IEnumerable<ReteNode> FilterNodes(HashSet<string> ruleNameFilter, IEnumerable<ReteNode> reteNodes)
     {
         foreach (var reteNode in reteNodes)
         {
@@ -343,7 +343,7 @@ public class DgmlWriter
         }
     }
 
-    private static IEnumerable<ReteLink> FilterLinks(ReteNode[] reteNodes, ReteLink[] reteLinks)
+    private static IEnumerable<ReteLink> FilterLinks(IReadOnlyCollection<ReteNode> reteNodes, IEnumerable<ReteLink> reteLinks)
     {
         var reteNodeIds = new HashSet<int>(reteNodes.Select(x => x.Id));
         foreach (var reteLink in reteLinks)
