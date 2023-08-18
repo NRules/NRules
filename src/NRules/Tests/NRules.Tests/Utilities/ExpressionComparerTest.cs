@@ -402,6 +402,50 @@ public class ExpressionComparerTest
     }
 
     [Fact]
+    public void AreEqual_EquivalentMemberCallProperty_True()
+    {
+        //Arrange
+        Expression<Func<Dictionary<string, SomeDto>, bool>> first = x => x["key"].One;
+        Expression<Func<Dictionary<string, SomeDto>, bool>> second = x => x["key"].One;
+
+        //Act - Assert
+        AssertEqual(first, second);
+    }
+
+    [Fact]
+    public void AreEqual_NonEquivalentMemberCallProperty_False()
+    {
+        //Arrange
+        Expression<Func<Dictionary<string, SomeDto>, bool>> first = x => x["key"].One;
+        Expression<Func<Dictionary<string, SomeDto>, bool>> second = x => x["key"].Two;
+
+        //Act - Assert
+        AssertNotEqual(first, second);
+    }
+
+    [Fact]
+    public void AreEqual_EquivalentMemberCallMethod_True()
+    {
+        //Arrange
+        Expression<Func<Dictionary<string, SomeDto>, bool>> first = x => x["key"].CallOne();
+        Expression<Func<Dictionary<string, SomeDto>, bool>> second = x => x["key"].CallOne();
+
+        //Act - Assert
+        AssertEqual(first, second);
+    }
+
+    [Fact]
+    public void AreEqual_NonEquivalentMemberCallMethod_False()
+    {
+        //Arrange
+        Expression<Func<Dictionary<string, SomeDto>, bool>> first = x => x["key"].CallOne();
+        Expression<Func<Dictionary<string, SomeDto>, bool>> second = x => x["key"].CallTwo();
+
+        //Act - Assert
+        AssertNotEqual(first, second);
+    }
+
+    [Fact]
     public void AreEqual_EquivalentTypeBinaryExpression_True()
     {
         //Arrange
@@ -725,6 +769,14 @@ public class ExpressionComparerTest
         int ISomeFact.Value { get; set; }
         public DateTime Value1 { get; set; }
         public TimeSpan Value2 { get; set; }
+    }
+
+    public class SomeDto
+    {
+        public bool One { get; set; }
+        public bool Two { get; set; }
+        public bool CallOne() => One;
+        public bool CallTwo() => Two;
     }
 
     public class SomeClass

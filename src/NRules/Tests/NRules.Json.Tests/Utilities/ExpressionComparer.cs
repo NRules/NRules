@@ -205,9 +205,9 @@ public static class ExpressionComparer
             case ExpressionType.Modulo:
             case ExpressionType.Power:
             case ExpressionType.Conditional:
+            case ExpressionType.Call:
                 return Equals(x.Member, y.Member) && ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
             case ExpressionType.New:
-            case ExpressionType.Call:
                 return ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
             default:
                 throw new NotImplementedException(x.ToString());
