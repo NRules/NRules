@@ -4,8 +4,8 @@ param (
 
 properties {
     $version = $null
-    $sdkVersion = "6.0.101"
-    $nugetVersion = "5.8.0"
+    $sdkVersion = "7.0.306"
+    $nugetVersion = "6.7.0"
     $configuration = "Release"
     $baseDir = $null
 }
