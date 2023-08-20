@@ -13,18 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="BenchmarkDotNet.Artifacts\**" />
-    <EmbeddedResource Remove="BenchmarkDotNet.Artifacts\**" />
-    <None Remove="BenchmarkDotNet.Artifacts\**" />
   </ItemGroup>
 
   <ItemGroup>

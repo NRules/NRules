@@ -1,6 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\..\Common.props" />
+  
+  <PropertyGroup>
+    <Title>NRules.Fluent</Title>
+    <Description>Internal DSL for NRules</Description>
+  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
@@ -10,11 +15,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-  </ItemGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\NRules.RuleModel\NRules.RuleModel.csproj" />
   </ItemGroup>

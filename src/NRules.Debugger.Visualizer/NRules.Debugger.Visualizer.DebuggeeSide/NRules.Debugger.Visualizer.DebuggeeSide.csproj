@@ -4,15 +4,15 @@
   <Import Project="..\VisualStudio.props" />
 
   <PropertyGroup>
+    <Title>NRules.Debugger.Visualizer.DebuggeeSide</Title>
+    <Description>Visual Studio Debugger Visualizer for NRules</Description>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>NRules.Debugger.Visualizer</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
@@ -28,5 +28,5 @@
       <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.RuleModel.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
+
 </Project>
