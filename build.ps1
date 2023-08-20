@@ -20,7 +20,7 @@ $components = @{
         }
         test = @{
             location = 'Tests'
-            frameworks = @('net6', 'net48', 'netcoreapp3.1')
+            frameworks = @('net6', 'net48')
         }
         bin = @{
             artifacts = @('netstandard2.0', 'netstandard2.1')
@@ -88,7 +88,7 @@ $components = @{
             tool = 'dotnet'
         }
         test = @{
-            frameworks = @('net6', 'netcoreapp3.1')
+            frameworks = @('net6')
         }
         bin = @{
             artifacts = @('netstandard2.0', 'netstandard2.1')
@@ -140,7 +140,7 @@ $components = @{
             tool = 'dotnet'
         }
         bin = @{
-            artifacts = @('net6', 'net48', 'netcoreapp3.1')
+            artifacts = @('net6', 'net48')
             'net6' = @{
                 include = @(
                     "NRules.Benchmark\bin\$configuration\net6"
@@ -149,11 +149,6 @@ $components = @{
             'net48' = @{
                 include = @(
                     "NRules.Benchmark\bin\$configuration\net48"
-                )
-            }
-            'netcoreapp3.1' = @{
-                include = @(
-                    "NRules.Benchmark\bin\$configuration\netcoreapp3.1"
                 )
             }
         }

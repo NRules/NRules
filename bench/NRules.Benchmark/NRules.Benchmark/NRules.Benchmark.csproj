@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6;net48;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6;net48</TargetFrameworks>
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <SignAssembly>true</SignAssembly>
