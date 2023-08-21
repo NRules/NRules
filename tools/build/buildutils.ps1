@@ -46,66 +46,6 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
     }
 }
 
-function Update-Properties([string] $path, [string] $version, [string] $propsFileName = "Common.props") {
-    if ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}") {
-        Write-Error "Version number incorrect format: $version"
-    }
-    Write-Host Patching project properties files with version $version
-    
-    $versionPrefixPattern = '<VersionPrefix>[0-9]+(\.([0-9]+|\*)){1,3}<\/VersionPrefix>'
-    $versionPrefix = '<VersionPrefix>' + $version + '</VersionPrefix>';
-
-    Get-ChildItem -Path $path -Recurse -Filter $propsFileName | % {
-        $filename = $_.fullname
-
-        $tmp = ($filename + ".tmp")
-        Delete-File $tmp
-
-        (Get-Content $filename) |
-            % {$_ -replace $versionPrefixPattern, $versionPrefix } |
-            out-file $tmp -Encoding ASCII
-        Move-Item $tmp $filename -Force
-    }
-}
-
-function Update-AssemblyInfoFiles([string] $path, [string] $version, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
-    if ($version -notmatch "[0-9]+(\.([0-9]+|\*)){1,3}") {
-        Write-Error "Version number incorrect format: $version"
-    }
-    Write-Host Patching AssemblyInfo files with version $version
-    
-    $assemblyVersionPattern = 'AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
-    $assemblyVersion = 'AssemblyVersion("' + $version + '")';
-    $assemblyFileVersionPattern = 'AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
-    $assemblyFileVersion = 'AssemblyFileVersion("' + $version + '")';
-    $assemblyInfoVersionPattern = 'AssemblyInformationalVersionAttribute\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
-    $assemblyInfoVersion = 'AssemblyInformationalVersionAttribute("' + $version + '")';
-
-    Get-ChildItem -Path $path -Recurse -Filter $assemblyInfoFileName | % {
-        $filename = $_.fullname
-
-        $tmp = ($filename + ".tmp")
-        Delete-File $tmp
-
-        (Get-Content $filename) |
-            % {$_ -replace $assemblyVersionPattern, $assemblyVersion } |
-            % {$_ -replace $assemblyFileVersionPattern, $assemblyFileVersion } | 
-            % {$_ -replace $assemblyInfoVersionPattern, $assemblyInfoVersion } |
-            out-file $tmp -Encoding ASCII
-        Move-Item $tmp $filename -Force
-    }
-}
-
-function Update-Version([string] $path, [string] $version) {
-    Update-AssemblyInfoFiles $path $version "GlobalAssemblyInfo.cs"
-    Update-Properties $path $version "Common.props"
-}
-
-function Reset-Version([string] $path) {
-    Update-AssemblyInfoFiles $path "1.0.0.0" "GlobalAssemblyInfo.cs"
-    Update-Properties $path "1.0.0" "Common.props"
-}
-
 function Get-DotNetProjects([string] $path) {
     Get-ChildItem -Path $path -Recurse -Include "*.csproj" | Select-Object @{ Name="ParentFolder"; Expression={ $_.Directory.FullName.TrimEnd("\") } } | Select-Object -ExpandProperty ParentFolder
 }

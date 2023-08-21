@@ -43,8 +43,6 @@ task Clean -depends Init {
 }
 
 task PatchFiles {
-    Update-Version $baseDir $version
-    
     $signingKey = "$baseDir\SigningKey.snk"
     $secureKey = "$baseDir\..\SecureSigningKey.snk"
     $secureHash = "$baseDir\..\SecureSigningKey.sha1"
@@ -61,16 +59,18 @@ task PatchFiles {
 }
 
 task ResetPatch {
-    Reset-Version $baseDir
-    
     $signingKey = "$baseDir\SigningKey.snk"
+    $secureKey = "$baseDir\..\SecureSigningKey.snk"
+    $secureHash = "$baseDir\..\SecureSigningKey.sha1"
     $devKey = "$baseDir\DevSigningKey.snk"
     $devHash = "$baseDir\DevSigningKey.sha1"
     
-    $publicKey = Get-Content $devHash
-    $publicKey = $publicKey.Trim()
-    Update-InternalsVisible $baseDir $publicKey
-    Copy-Item $devKey -Destination $signingKey -Force
+    if ((Test-Path $secureKey) -and (Test-Path $secureHash)) {
+        $publicKey = Get-Content $devHash
+        $publicKey = $publicKey.Trim()
+        Update-InternalsVisible $baseDir $publicKey
+        Copy-Item $devKey -Destination $signingKey -Force
+    }
 }
 
 task RestoreDependencies -precondition { return $component.ContainsKey('restore') } {
