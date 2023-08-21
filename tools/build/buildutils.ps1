@@ -27,11 +27,11 @@ function Get-Msbuild() {
     return $msbuild
 }
 
-function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $assemblyInfoFileName = "AssemblyInfo.cs") {
-    Write-Host Patching AssemblyInfo files with public key
+function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $assemblyInfoFileName = "InternalsVisibleTo.props") {
+    Write-Host Patching InternalsVisibleTo with public key
     
-    $internalsVisibleToPattern = '\[assembly\:\s*InternalsVisibleTo\(\"(NRules.+?),PublicKey=.*?\"\)\]'
-    $internalsVisibleTo = '[assembly: InternalsVisibleTo("$1,PublicKey=' + $publicKey + '")]';
+    $internalsVisibleToPattern = '\<InternalsVisibleTo\s+Include=\"(NRules.+?),PublicKey=.*?\"\s+\/\>'
+    $internalsVisibleTo = '<InternalsVisibleTo Include="$1,PublicKey=' + $publicKey + '" />'
 
     Get-ChildItem -Path $path -Recurse -Filter $assemblyInfoFileName | % {
         $filename = $_.fullname

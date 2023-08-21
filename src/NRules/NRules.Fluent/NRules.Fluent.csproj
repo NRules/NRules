@@ -17,4 +17,6 @@
     <ProjectReference Include="..\NRules.RuleModel\NRules.RuleModel.csproj" />
   </ItemGroup>
 
+  <Import Project="..\InternalsVisibleTo.props" />
+
 </Project>

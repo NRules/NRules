@@ -13,4 +13,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <Import Project="..\InternalsVisibleTo.props" />
+
 </Project>
