@@ -4,6 +4,10 @@
     <VersionPrefix>1.0.0</VersionPrefix>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Company>NRules</Company>
     <Product>NRules</Product>
     <Copyright>Copyright 2012-2022 Sergiy Nikolayev. All rights reserved.</Copyright>

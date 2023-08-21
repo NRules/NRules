@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\..\Common.props" />
-
   <PropertyGroup>
     <Title>NRules.Testing</Title>
     <Description>Rules unit testing for NRules</Description>

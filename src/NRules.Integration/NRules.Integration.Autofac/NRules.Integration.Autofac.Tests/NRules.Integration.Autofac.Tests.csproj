@@ -15,7 +15,7 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\NRules.Integration.Autofac\NRules.Integration.Autofac.csproj" />
   </ItemGroup>

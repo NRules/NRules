@@ -94,7 +94,7 @@ task Compile -depends Init, Clean, PatchFiles, RestoreDependencies -precondition
         exec { &$msbuild $solutionFile /p:Configuration=$configuration /v:m /nologo }
     }
     if ($component.build.tool -eq 'dotnet') {
-        exec { dotnet build $solutionFile --configuration $configuration --verbosity minimal }
+        exec { dotnet build $solutionFile --configuration $configuration --property:VersionPrefix=$version --verbosity minimal }
     }
     if ($component.build.tool -eq 'shfb') {
         Assert (Test-Path Env:\SHFBROOT) 'Sandcastle root environment variable SHFBROOT is not set'

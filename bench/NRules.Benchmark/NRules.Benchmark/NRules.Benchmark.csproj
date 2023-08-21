@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\..\Common.props" />
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net6;net48</TargetFrameworks>

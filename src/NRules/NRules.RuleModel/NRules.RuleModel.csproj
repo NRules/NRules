@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\..\Common.props" />
-  
   <PropertyGroup>
     <Title>NRules.RuleModel</Title>
     <Description>Canonical rules model for NRules</Description>
@@ -14,5 +12,5 @@
     <AssemblyOriginatorKeyFile>..\..\..\SigningKey.snk</AssemblyOriginatorKeyFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-  
+
 </Project>

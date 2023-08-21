@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\..\Common.props" />
-  
   <PropertyGroup>
     <Title>NRules.Fluent</Title>
     <Description>Internal DSL for NRules</Description>
