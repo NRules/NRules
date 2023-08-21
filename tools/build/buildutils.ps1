@@ -13,7 +13,7 @@ function Delete-File([string] $fileName) {
 }
 
 function Get-Msbuild() {
-    $vsRoot = "${env:ProgramFiles(x86)}\Microsoft Visual Studio"
+    $vsRoot = "${env:ProgramFiles}\Microsoft Visual Studio"
     $msbuild = "msbuild.exe"
     if (Test-Path $vsRoot) {
         Get-ChildItem -Path $vsRoot | Where {$_ -match "^\d+$"} | Sort-Object -Descending |% {
@@ -21,7 +21,6 @@ function Get-Msbuild() {
             Get-ChildItem -Path $vsPath |% {
                 $msbuildPath = "$vsPath\$_\MSBuild\Current\Bin"
                 $msbuild = "$msbuildPath\msbuild.exe"
-                return
             }
         }
     }
