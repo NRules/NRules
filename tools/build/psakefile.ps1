@@ -21,19 +21,18 @@ task Init {
     Write-Host "Building $($component.name) version $version ($configuration)" -ForegroundColor Green
     
     $compName = $component.name
-    $srcRoot = if ($component.ContainsKey('src_root')) { $component.src_root } else { 'src' }
     
-    $script:srcRootDir = "$baseDir\$srcRoot"
-    $script:srcDir = "$srcRootDir\$compName"
+    $script:solutionDir = "$baseDir\src\$compName"
     $script:buildDir = "$baseDir\build"
     $script:binOutDir = "$buildDir\bin\$compName"
     $script:pkgOutDir = "$buildDir\packages\$compName"
     $script:toolsDir = "$baseDir\tools"
     $script:msbuild = Get-Msbuild
     
-    $script:solutionFile = "$srcDir\$($component.name).sln"
+    $script:solutionFile = "$solutionDir\$($component.name).sln"
     if ($component.ContainsKey('solution_file')) {
-        $script:solutionFile = "$srcRootDir\$($component.solution_file)"
+        $script:solutionFile = "$baseDir\$($component.solution_file)"
+        $script:solutionDir = Split-Path $script:solutionFile -Parent
     }
     
     Install-DotNetCli $toolsDir\.dotnet $sdkVersion
@@ -75,18 +74,17 @@ task ResetPatch {
     }
 }
 
-task Restore -precondition { return Test-Path $solutionFile } {
+task Restore -precondition { return $component.ContainsKey('solution_file') } {
     exec { dotnet restore $solutionFile --verbosity minimal }
 }
 
-task Compile -depends Restore -precondition { return Test-Path $solutionFile } { 
+task Compile -depends Init, Restore -precondition { return $component.ContainsKey('solution_file') } { 
     Create-Directory $buildDir
     exec { dotnet build $solutionFile --no-restore -c $configuration -p:Version=$version -p:ContinuousIntegrationBuild=true -v minimal }
 }
 
-task Test -depends Compile -precondition { return Test-Path $solutionFile } {
-    $testsDir = Split-Path $solutionFile -Parent
-    Get-ChildItem $testsDir -recurse -filter "*.trx" | % { Delete-File $_.fullname }
+task Test -depends Compile -precondition { return $component.ContainsKey('solution_file') } {
+    Get-ChildItem $solutionDir -recurse -filter "*.trx" | % { Delete-File $_.fullname }
     
     $hasError = $false
     try {
@@ -99,7 +97,7 @@ task Test -depends Compile -precondition { return Test-Path $solutionFile } {
     if (Test-Path Env:CI) {
         Write-Host "Uploading test results to CI server"
         $wc = New-Object 'System.Net.WebClient'
-        Get-ChildItem $testsDir -recurse -filter "*.trx" | % {
+        Get-ChildItem $solutionDir -recurse -filter "*.trx" | % {
             $testFile = $_.fullname
             $wc.UploadFile("https://ci.appveyor.com/api/testresults/mstest/$($Env:APPVEYOR_JOB_ID)", (Resolve-Path $testFile))
         }
@@ -120,12 +118,12 @@ task Bench -depends Compile -precondition { return $component.ContainsKey('bench
     }
 }
 
-task PackageNuGet -depends Compile -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') -and (Test-Path $solutionFile) } {
+task PackageNuGet -depends Compile -precondition { $component.package.ContainsKey('nuget') -and $component.ContainsKey('solution_file') } {
     Create-Directory $pkgOutDir
     exec { dotnet pack $solutionFile -c $configuration --no-restore --no-build -p:Version=$version -o $pkgOutDir -v minimal }
 }
 
-task PackageBin -depends Compile -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('bin') } {
+task PackageBin -depends Compile -precondition { $component.package.ContainsKey('bin') } {
     Create-Directory $binOutDir
     $bin = $component.package.bin
     foreach ($artifact in $bin.artifacts) {
@@ -136,7 +134,7 @@ task PackageBin -depends Compile -precondition { return $component.ContainsKey('
         $destDir = "$binOutDir\$outputDir"
         Create-Directory $destDir
         foreach ($item in $bin.$artifact.include) {
-            $itemPath = "$srcDir\$item"
+            $itemPath = "$solutionDir\$item"
             if (Test-Path -Path $itemPath -PathType Container) {
                 $itemPath = "$itemPath\**"
             }

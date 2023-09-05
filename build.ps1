@@ -12,6 +12,7 @@ if (Test-Path Env:CI) { $configuration = $Env:CONFIGURATION }
 $components = @{
     'NRules' = @{
         name = 'NRules'
+        solution_file = 'src\NRules\NRules.sln'
         package = @{
             bin = @{
                 artifacts = @('netstandard2.0', 'netstandard2.1')
@@ -46,6 +47,7 @@ $components = @{
     };
     'NRules.Debugger.Visualizer' = @{
         name = 'NRules.Debugger.Visualizer'
+        solution_file = 'src\NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.sln'
         package = @{
             bin = @{
                 artifacts = @('debugger-side', 'debuggee-side-netstandard2.0')
@@ -66,7 +68,7 @@ $components = @{
     };
     'NRules.Integration.Autofac' = @{
         name = 'NRules.Integration.Autofac'
-        src_root = 'src/NRules.Integration'
+        solution_file = 'src\NRules.Integration\NRules.Integration.Autofac\NRules.Integration.Autofac.sln'
         package = @{
             bin = @{
                 artifacts = @('netstandard2.0', 'netstandard2.1')
@@ -88,19 +90,19 @@ $components = @{
     };
     'Samples.SimpleRules' = @{
         name = 'SimpleRules'
-        src_root = 'samples'
+        solution_file = 'samples\SimpleRules\SimpleRules.sln'
     };
     'Samples.MissManners' = @{
         name = 'MissManners'
-        src_root = 'samples'
+        solution_file = 'samples\MissManners\MissManners.sln'
     };
     'Samples.RuleBuilder' = @{
         name = 'RuleBuilder'
-        src_root = 'samples'
+        solution_file = 'samples\RuleBuilder\RuleBuilder.sln'
     };
     'Benchmark' = @{
         name = 'NRules.Benchmark'
-        src_root = 'bench'
+        solution_file = 'bench\NRules.Benchmark\NRules.Benchmark.sln'
         package = @{
             bin = @{
                 artifacts = @('net6', 'net48')
