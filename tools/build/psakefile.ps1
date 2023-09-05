@@ -108,16 +108,6 @@ task Test -depends Compile -precondition { return $component.ContainsKey('soluti
     }
 }
 
-task Bench -depends Compile -precondition { return $component.ContainsKey('bench') } {
-    $exe = $component.bench.exe
-    $categories = $component.bench.categories -join ","
-    foreach ($framework in $component.bench.frameworks) {
-        $exeFile = "$binOutDir\$framework\$exe"
-        $artifacts = "$buildDir\bench\$framework"
-        exec { &$exeFile --join --anyCategories=$categories --artifacts=$artifacts }
-    }
-}
-
 task PackageNuGet -depends Compile -precondition { $component.package.ContainsKey('nuget') -and $component.ContainsKey('solution_file') } {
     Create-Directory $pkgOutDir
     exec { dotnet pack $solutionFile -c $configuration --no-restore --no-build -p:Version=$version -o $pkgOutDir -v minimal }
@@ -144,6 +134,16 @@ task PackageBin -depends Compile -precondition { $component.package.ContainsKey(
 }
 
 task Package -depends PackageNuGet, PackageBin -precondition { return $component.ContainsKey('package') } {
+}
+
+task Bench -depends Package -precondition { return $component.ContainsKey('bench') } {
+    $exe = $component.bench.exe
+    $categories = $component.bench.categories -join ","
+    foreach ($framework in $component.bench.frameworks) {
+        $exeFile = "$binOutDir\$framework\$exe"
+        $artifacts = "$buildDir\bench\$framework"
+        exec { &$exeFile --join --anyCategories=$categories --artifacts=$artifacts }
+    }
 }
 
 task CompileDocs -precondition { return $component.ContainsKey('doc') -and $component.doc.ContainsKey('shfb') } {
