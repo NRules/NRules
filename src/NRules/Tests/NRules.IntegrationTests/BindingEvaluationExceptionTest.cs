@@ -27,7 +27,7 @@ public class BindingEvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact));
         Assert.NotNull(expression);
-        Assert.Equal(1, facts.Count);
+        Assert.Single(facts);
         Assert.Same(fact, facts.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
     }

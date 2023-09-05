@@ -2,10 +2,10 @@
 
 namespace NRules.IntegrationTests.TestAssets;
 
-public class RuleFiredAssertionException : AssertActualExpectedException
+public class RuleFiredAssertionException : XunitException
 {
     public RuleFiredAssertionException(object expected, object actual, string ruleName) 
-        : base(expected, actual, $"Rule {ruleName}", "Expected fired times", "Actual fired times")
+        : base($"Rule {ruleName}: Expected fired times {expected}. Actual fired times {actual}")
     {
     }
 }
