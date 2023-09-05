@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>NRules.Fluent</Title>
-    <Description>Internal DSL for NRules</Description>
+    <Title>NRules Fluent DSL</Title>
+    <Description>Fluent DSL for authoring rules in C# with the NRules rules engine.</Description>
+    <PackageId>NRules.Fluent</PackageId>
+    <PackageTags>rules;engine;inference;rete;business;dsl</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup>

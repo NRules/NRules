@@ -46,10 +46,6 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
     }
 }
 
-function Get-DotNetProjects([string] $path) {
-    Get-ChildItem -Path $path -Recurse -Include "*.csproj" | Select-Object @{ Name="ParentFolder"; Expression={ $_.Directory.FullName.TrimEnd("\") } } | Select-Object -ExpandProperty ParentFolder
-}
-
 function Install-DotNetCli([string] $location, [string] $version) {
     Assert ($version -ne $null) 'DotNet CLI version should not be null'
     
@@ -79,24 +75,4 @@ function Install-DotNetCli([string] $location, [string] $version) {
         $env:PATH = "$installDir;$env:PATH"
     }
     $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
-}
-
-function Install-NuGet([string] $location, [string] $version) {
-    Assert ($version -ne $null) 'NuGet version should not be null'
-    
-    (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
-    $installDir = $location
-    if (!(Test-Path $installDir)) {
-        Create-Directory $installDir
-    }
-
-    if (!(Test-Path $location\nuget.exe)) {
-        Write-Host "Downloading NuGet version $version"
-        $url = "https://dist.nuget.org/win-x86-commandline/v$version/nuget.exe"
-        Invoke-WebRequest $url -OutFile "$location\nuget.exe"
-    }
-
-    if (!($env:PATH -contains $installDir)) {
-        $env:PATH = "$installDir;$env:PATH"
-    }
 }

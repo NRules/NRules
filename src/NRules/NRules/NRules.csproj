@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>NRules</Title>
-    <Description>Rules engine for .NET</Description>
+    <Title>NRules Rules Engine Runtime</Title>
+    <Description>Execution engine for the NRules rules engine.</Description>
+    <PackageId>NRules.Runtime</PackageId>
+    <PackageTags>rules;engine;inference;rete;business;dsl</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup>

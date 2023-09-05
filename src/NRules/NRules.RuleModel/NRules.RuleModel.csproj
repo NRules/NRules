@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>NRules.RuleModel</Title>
-    <Description>Canonical rules model for NRules</Description>
+    <Title>NRules Canonical Rules Model</Title>
+    <Description>Canonical rules model to define rules for the NRules rules engine.</Description>
+    <PackageId>NRules.RuleModel</PackageId>
+    <PackageTags>rules;engine;inference;rete;business;dsl</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup>

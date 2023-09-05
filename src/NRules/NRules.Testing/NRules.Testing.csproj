@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>NRules.Testing</Title>
-    <Description>Rules unit testing for NRules</Description>
+    <Title>NRules Testing Harness</Title>
+    <Description>Rules unit testing harness for NRules.</Description>
+    <PackageId>NRules.Testing</PackageId>
+    <PackageTags>nrules;test;testing</PackageTags>
   </PropertyGroup>
   
   <PropertyGroup>

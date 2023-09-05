@@ -1,5 +1,4 @@
 # Build Folders
-/binaries
 /build
 
 ## Visual Studio temporary files, build results, etc.
@@ -17,18 +16,16 @@ x64/
 [Bb]in/
 [Oo]bj/
 
-# MSTest test Results
+# Test results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
-
-# NUnit test Results
 TestResult.xml
+*.trx
 
 *_i.c
 *_p.c
 *_i.h
 *.ilk
-*.meta
 *.obj
 *.pch
 *.pdb

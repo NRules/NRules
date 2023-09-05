@@ -19,16 +19,16 @@
   <ItemGroup>
     <ProjectReference Include="..\NRules.Integration.Autofac\NRules.Integration.Autofac.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Reference Include="NRules">
-      <HintPath>..\..\..\..\binaries\NRules\netstandard2.1\NRules.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\NRules\netstandard2.1\NRules.dll</HintPath>
     </Reference>
     <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\..\binaries\NRules\netstandard2.1\NRules.Fluent.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\NRules\netstandard2.1\NRules.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\..\binaries\NRules\netstandard2.1\NRules.RuleModel.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\NRules\netstandard2.1\NRules.RuleModel.dll</HintPath>
     </Reference>
   </ItemGroup>
 

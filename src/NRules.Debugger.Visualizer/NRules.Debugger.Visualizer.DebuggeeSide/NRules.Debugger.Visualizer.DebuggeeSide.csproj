@@ -18,13 +18,13 @@
       <HintPath>$(VisualStudioLocation)\Common7\Packages\Debugger\Visualizers\netstandard2.0\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
     </Reference>
     <Reference Include="NRules">
-      <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.dll</HintPath>
+      <HintPath>..\..\..\build\bin\NRules\netstandard2.0\NRules.dll</HintPath>
     </Reference>
     <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.Fluent.dll</HintPath>
+      <HintPath>..\..\..\build\bin\NRules\netstandard2.0\NRules.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\binaries\NRules\netstandard2.0\NRules.RuleModel.dll</HintPath>
+      <HintPath>..\..\..\build\bin\NRules\netstandard2.0\NRules.RuleModel.dll</HintPath>
     </Reference>
   </ItemGroup>
 

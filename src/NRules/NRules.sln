@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Json", "NRules.Json\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Json.Tests", "Tests\NRules.Json.Tests\NRules.Json.Tests.csproj", "{846AAC54-E7D1-4167-8D53-13B836DE7CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Testing", "NRules.Testing\NRules.Testing.csproj", "{C35D16EE-6FFD-47B4-91F9-0930A0CCD699}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Testing", "NRules.Testing\NRules.Testing.csproj", "{C35D16EE-6FFD-47B4-91F9-0930A0CCD699}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Meta", "NRules.Meta\NRules.Meta.csproj", "{7EAE8259-9D3C-409C-8D26-AA409D3E36BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{C35D16EE-6FFD-47B4-91F9-0930A0CCD699}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C35D16EE-6FFD-47B4-91F9-0930A0CCD699}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C35D16EE-6FFD-47B4-91F9-0930A0CCD699}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EAE8259-9D3C-409C-8D26-AA409D3E36BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EAE8259-9D3C-409C-8D26-AA409D3E36BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EAE8259-9D3C-409C-8D26-AA409D3E36BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EAE8259-9D3C-409C-8D26-AA409D3E36BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

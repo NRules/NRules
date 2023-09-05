@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>NRules.Integration.Autofac</Title>
+    <Title>NRules Autofac Integration</Title>
     <Description>Autofac integration for NRules</Description>
+    <PackageId>NRules.Integration.Autofac</PackageId>
+    <PackageTags>nrules;autofac</PackageTags>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -19,13 +21,13 @@
 
   <ItemGroup>
     <Reference Include="NRules">
-      <HintPath>..\..\..\..\binaries\NRules\$(TargetFramework)\NRules.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\NRules\$(TargetFramework)\NRules.dll</HintPath>
     </Reference>
     <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\..\binaries\NRules\$(TargetFramework)\NRules.Fluent.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\NRules\$(TargetFramework)\NRules.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\..\binaries\NRules\$(TargetFramework)\NRules.RuleModel.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\NRules\$(TargetFramework)\NRules.RuleModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   

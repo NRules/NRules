@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>NRules.Json</Title>
-    <Description>Json serialization for NRules</Description>
+    <Title>NRules JSON Serialization</Title>
+    <Description>JSON serialization for the NRules rules engine.</Description>
+    <PackageId>NRules.Json</PackageId>
+    <PackageTags>nrules;json</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup>
