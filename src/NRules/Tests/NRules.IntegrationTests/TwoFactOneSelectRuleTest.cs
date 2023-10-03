@@ -1,6 +1,7 @@
 using System;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -20,8 +21,8 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>().Value);
+        Verify(x => x.Rule().Fired(Matched.Fact<FactProjection>()
+            .Callback(fact => Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", fact.Value))));
     }
 
     [Fact]
@@ -40,8 +41,8 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>().Value);
+        Verify(x => x.Rule().Fired(Matched.Fact<FactProjection>()
+            .Callback(fact => Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", fact.Value))));
     }
 
     [Fact]
@@ -60,8 +61,8 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", GetFiredFact<FactProjection>().Value);
+        Verify(x => x.Rule().Fired(Matched.Fact<FactProjection>()
+            .Callback(fact => Assert.Equal($"{fact1.TestProperty}|{fact2.TestProperty}", fact.Value))));
     }
 
     [Fact]
@@ -80,7 +81,7 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -99,7 +100,7 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -117,7 +118,7 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -135,7 +136,7 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -153,9 +154,13 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal($"{fact11.TestProperty}|{fact21.TestProperty}", GetFiredFact<FactProjection>(0).Value);
-        Assert.Equal($"{fact12.TestProperty}|{fact22.TestProperty}", GetFiredFact<FactProjection>(1).Value);
+        VerifySequence(s =>
+        {
+            s.Rule().Fired(Matched.Fact<FactProjection>()
+                .Callback(fact => Assert.Equal($"{fact11.TestProperty}|{fact21.TestProperty}", fact.Value)));
+            s.Rule().Fired(Matched.Fact<FactProjection>()
+                .Callback(fact => Assert.Equal($"{fact12.TestProperty}|{fact22.TestProperty}", fact.Value)));
+        });
     }
 
     [Fact]
@@ -177,7 +182,7 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -197,7 +202,7 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -211,7 +216,7 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -225,10 +230,10 @@ public class TwoFactOneSelectRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

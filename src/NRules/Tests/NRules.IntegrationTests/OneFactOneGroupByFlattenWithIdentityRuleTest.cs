@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -34,15 +35,17 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        var firedFacts = GetFiredFact<IGrouping<string, FactType>>();
-        Assert.Equal(4, firedFacts.Count());
-        Assert.Equal(1, firedFacts.Count(x => x.TestCount == 3));
-        Assert.Equal(1, firedFacts.Count(x => x.TestCount == 2));
-        Assert.Equal(2, firedFacts.Count(x => x.TestCount == 1));
+        Verify(x => x.Rule().Fired(Matched.Fact<IGrouping<string, FactType>>()
+            .Callback(firedFacts =>
+            {
+                Assert.Equal(4, firedFacts.Count());
+                Assert.Equal(1, firedFacts.Count(x => x.TestCount == 3));
+                Assert.Equal(1, firedFacts.Count(x => x.TestCount == 2));
+                Assert.Equal(2, firedFacts.Count(x => x.TestCount == 1));
+            })));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

@@ -2,6 +2,7 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -54,10 +55,6 @@ public class OneFactOneMultiKeySortedCollectionManyChainedThenByRuleTest : BaseR
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(32, firedFacts.Count());
-
         var expectedOrder = facts
             .OrderBy(f => f.TestPropertyInt1)
             .ThenByDescending(f => f.TestPropertyInt2)
@@ -66,13 +63,19 @@ public class OneFactOneMultiKeySortedCollectionManyChainedThenByRuleTest : BaseR
             .ThenBy(f => f.TestPropertyInt5)
             .ToArray();
 
-        for (int i = 0; i < expectedOrder.Length; i++)
-        {
-            Assert.Equal(expectedOrder[i], firedFacts.ElementAt(i));
-        }
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact =>
+            {
+                Assert.Equal(32, firedFact.Count());
+
+                for (int i = 0; i < expectedOrder.Length; i++)
+                {
+                    Assert.Equal(expectedOrder[i], firedFact.ElementAt(i));
+                }
+            })));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

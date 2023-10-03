@@ -3,6 +3,7 @@ using System.Linq;
 using NRules.Diagnostics;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -87,7 +88,7 @@ public class NodeSharingTest : BaseRulesTestFixture
         Assert.Equal(1, count);
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TwinRuleOne>();
         setup.Rule<TwinRuleTwo>();

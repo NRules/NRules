@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -19,8 +20,8 @@ public class CoJoinedCollectAndExistsRulesTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<CollectionRule>().FiredTimes(1);
-        Verify.Rule<ExistsRule>().FiredTimes(0);
+        Verify(x => x.Rule<CollectionRule>().Fired());
+        Verify(x => x.Rule<ExistsRule>().Fired(Times.Never));
     }
 
     [Fact]
@@ -37,11 +38,14 @@ public class CoJoinedCollectAndExistsRulesTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<CollectionRule>().FiredTimes(1);
-        Verify.Rule<ExistsRule>().FiredTimes(1);
+        Verify(x =>
+        {
+            x.Rule<CollectionRule>().Fired();
+            x.Rule<ExistsRule>().Fired();
+        });
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<ExistsRule>();
         setup.Rule<CollectionRule>();

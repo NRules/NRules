@@ -15,11 +15,20 @@ public class RuleRepository : IRuleRepository
     private readonly List<IRuleSet> _ruleSets = new();
 
     /// <summary>
-    /// Creates an empty rule repository.
+    /// Creates an empty rule repository with the default <see cref="IRuleActivator"/>.
     /// </summary>
+    /// <seealso cref="DefaultRuleActivator"/>"/>
     public RuleRepository()
+        : this(new DefaultRuleActivator())
     {
-        Activator = new RuleActivator();
+    }
+
+    /// <summary>
+    /// Creates an empty rule repository with the specified <see cref="IRuleActivator"/>.
+    /// </summary>
+    public RuleRepository(IRuleActivator activator)
+    {
+        Activator = activator;
     }
 
     /// <summary>

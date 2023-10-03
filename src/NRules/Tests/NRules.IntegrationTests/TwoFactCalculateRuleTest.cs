@@ -1,5 +1,6 @@
 ﻿using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -19,8 +20,8 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>().Value);
+        Verify(x => x.Rule().Fired(Matched.Fact<CalculatedFact3>()
+            .Callback(f => Assert.Equal("Valid Value 1|Valid Value 2", f.Value))));
     }
 
     [Fact]
@@ -36,9 +37,11 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Null(GetFiredFact<CalculatedFact3>());
-        Assert.NotNull(GetFiredFact<CalculatedFact4>());
+        Verify(x => x.Rule().Fired(
+            Matched.Fact<CalculatedFact3>()
+                .Callback(Assert.Null),
+            Matched.Fact<CalculatedFact4>()
+                .Callback(Assert.NotNull)));
     }
 
     [Fact]
@@ -54,7 +57,7 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -73,9 +76,9 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>().Value);
-    }
+        Verify(x => x.Rule().Fired(Matched.Fact<CalculatedFact3>()
+            .Callback(f => Assert.Equal("Valid Value 1|Valid Value 22", f.Value))));
+   }
 
     [Fact]
     public void Fire_OneMatchingFactOfEachKindFireThenSecondFactUpdated_FiresTwice()
@@ -90,10 +93,11 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 1|Valid Value 2", GetFiredFact<CalculatedFact3>(0).Value);
+        Verify(x => x.Rule().Fired());
+        Verify(x => x.Rule().Fired(Matched.Fact<CalculatedFact3>(f => f.Value == "Valid Value 1|Valid Value 2")));
 
         //Arrange - 2
+        Recorder.Clear();
         fact2.TestProperty = "Valid Value 22";
         Session.Update(fact2);
 
@@ -101,8 +105,8 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal("Valid Value 1|Valid Value 22", GetFiredFact<CalculatedFact3>(1).Value);
+        Verify(x => x.Rule().Fired(Matched.Fact<CalculatedFact3>()
+            .Callback(f => Assert.Equal("Valid Value 1|Valid Value 22", f.Value))));
     }
 
     [Fact]
@@ -121,7 +125,7 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -139,7 +143,7 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -157,12 +161,16 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal("Valid Value 11|Valid Value 21", GetFiredFact<CalculatedFact3>(0).Value);
-        Assert.Equal("Valid Value 12|Valid Value 22", GetFiredFact<CalculatedFact3>(1).Value);
+        VerifySequence(s =>
+        {
+            s.Rule().Fired(Matched.Fact<CalculatedFact3>()
+                .Callback(f => Assert.Equal("Valid Value 11|Valid Value 21", f.Value)));
+            s.Rule().Fired(Matched.Fact<CalculatedFact3>()
+                .Callback(f => Assert.Equal("Valid Value 12|Valid Value 22", f.Value)));
+        });
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

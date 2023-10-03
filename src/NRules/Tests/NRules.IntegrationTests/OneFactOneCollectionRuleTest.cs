@@ -2,6 +2,7 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -15,8 +16,7 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(c => !c.Any())));
     }
 
     [Fact]
@@ -34,8 +34,7 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(c => c.Count() == 2)));
     }
 
     [Fact]
@@ -53,8 +52,7 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(c => c.Count() == 2)));
     }
 
     [Fact]
@@ -72,8 +70,7 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Single(GetFiredFact<IEnumerable<FactType>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(c => c.Count() == 1)));
     }
 
     [Fact]
@@ -92,8 +89,7 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(c => !c.Any())));
     }
 
     [Fact]
@@ -113,8 +109,7 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Single(GetFiredFact<IEnumerable<FactType>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(c => c.Count() == 1)));
     }
 
     [Fact]
@@ -134,11 +129,10 @@ public class OneFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType>>().Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(c => c.Count() == 2)));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

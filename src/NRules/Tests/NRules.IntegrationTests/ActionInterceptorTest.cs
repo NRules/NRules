@@ -4,12 +4,15 @@ using NRules.Extensibility;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
 
 public class ActionInterceptorTest : BaseRulesTestFixture
 {
+    private TestRule _testRule;
+
     [Fact]
     public void Fire_ConditionsMatchNoInterceptor_ExecutesAction()
     {
@@ -20,13 +23,13 @@ public class ActionInterceptorTest : BaseRulesTestFixture
         Session.Insert(fact2);
 
         bool actionExecuted = false;
-        GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
+        _testRule.Action = () => { actionExecuted = true; };
 
         //Act
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
         Assert.True(actionExecuted);
     }
 
@@ -42,13 +45,13 @@ public class ActionInterceptorTest : BaseRulesTestFixture
         Session.Insert(fact2);
 
         bool actionExecuted = false;
-        GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
+        _testRule.Action = () => { actionExecuted = true; };
 
         //Act
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
         Assert.True(actionExecuted);
     }
 
@@ -63,7 +66,7 @@ public class ActionInterceptorTest : BaseRulesTestFixture
         Session.Insert(fact1);
         Session.Insert(fact2);
 
-        GetRuleInstance<TestRule>().Action = () => { throw new InvalidOperationException("Test"); };
+        _testRule.Action = () => { throw new InvalidOperationException("Test"); };
 
         //Act - Assert
         var ex = Assert.Throws<InvalidOperationException>(() => Session.Fire());
@@ -82,19 +85,20 @@ public class ActionInterceptorTest : BaseRulesTestFixture
         Session.Insert(fact2);
 
         bool actionExecuted = false;
-        GetRuleInstance<TestRule>().Action = () => { actionExecuted = true; };
+        _testRule.Action = () => { actionExecuted = true; };
 
         //Act
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
         Assert.False(actionExecuted);
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
-        setup.Rule<TestRule>();
+        _testRule = new TestRule();
+        setup.Rule(_testRule);
     }
 
     private class ActionInterceptor : IActionInterceptor

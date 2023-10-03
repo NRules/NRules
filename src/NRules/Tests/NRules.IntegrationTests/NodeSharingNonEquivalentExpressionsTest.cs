@@ -2,6 +2,7 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -24,8 +25,12 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<TestRule1>().FiredTimes(1);
-        Verify.Rule<TestRule2>().FiredTimes(0);
+        Verify(x =>
+        {
+            x.Rule<TestRule1>().Fired();
+            x.Rule<TestRule3>().Fired();
+        });
+        Verify(x => x.Rule<TestRule2>().Fired(Times.Never));
     }
 
     [Fact]
@@ -44,8 +49,12 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<TestRule1>().FiredTimes(0);
-        Verify.Rule<TestRule2>().FiredTimes(1);
+        Verify(x => x.Rule<TestRule1>().Fired(Times.Never));
+        Verify(x =>
+        {
+            x.Rule<TestRule2>().Fired();
+            x.Rule<TestRule4>().Fired();
+        });
     }
 
     [Fact]
@@ -64,8 +73,12 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<TestRule3>().FiredTimes(1);
-        Verify.Rule<TestRule4>().FiredTimes(0);
+        Verify(x => x.Rule<TestRule4>().Fired(Times.Never));
+        Verify(x =>
+        {
+            x.Rule<TestRule1>().Fired();
+            x.Rule<TestRule3>().Fired();
+        });
     }
 
     [Fact]
@@ -84,11 +97,15 @@ public class NodeSharingNonEquivalentExpressionsTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<TestRule3>().FiredTimes(0);
-        Verify.Rule<TestRule4>().FiredTimes(1);
+        Verify(x => x.Rule<TestRule3>().Fired(Times.Never));
+        Verify(x =>
+        {
+            x.Rule<TestRule2>().Fired();
+            x.Rule<TestRule4>().Fired();
+        });
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule1>();
         setup.Rule<TestRule2>();

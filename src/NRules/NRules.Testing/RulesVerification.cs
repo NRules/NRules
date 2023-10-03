@@ -1,42 +1,58 @@
 ﻿using System;
-using System.Linq;
-using NRules.Fluent;
-using NRules.Fluent.Dsl;
+using System.Collections.Generic;
+using NRules.RuleModel;
 
 namespace NRules.Testing;
 
-internal sealed class RulesVerification : IRulesVerification
+/// <summary>
+/// Verifies recorded rules invocations against expectations.
+/// </summary>
+public interface IRulesVerification
 {
-    private readonly IRuleAsserter _asserter;
-    private readonly IRuleAccessor _accessor;
+    /// <summary>
+    /// Verifies that the rules under test fired with a set of facts matching the specified expectations.
+    /// </summary>
+    /// <remarks>Recorded rule invocations are compared to expectations one by one.</remarks>
+    /// <param name="action">Expectations configuration action.</param>
+    /// <returns>Outcome of validation of recorded rule invocations against the provided expectations.</returns>
+    RuleAssertResult VerifySequence(Action<IRuleSequenceVerification> action);
 
-    public RulesVerification(IRuleAsserter asserter, IRuleAccessor accessor)
+    /// <summary>
+    /// Verifies that the rules under test fired with a set of facts matching the specified expectations.
+    /// </summary>
+    /// <remarks>Recorded rule invocations are compared to expectations according to the expected number of invocations for each rule,
+    /// specified using <see cref="Times"/>.</remarks>
+    /// <param name="action">Expectations configuration action.</param>
+    /// <returns>Outcome of validation of recorded rule invocations against the provided expectations.</returns>
+    RuleAssertResult Verify(Action<IRuleVerification> action);
+}
+
+internal class RulesVerification : IRulesVerification
+{
+    private readonly IRulesUnderTest _rulesUnderTest;
+    private readonly IReadOnlyList<IMatch> _invocations;
+
+    public RulesVerification(IRulesUnderTest rulesUnderTest, IReadOnlyList<IMatch> invocations)
     {
-        _asserter = asserter;
-        _accessor = accessor;
+        _rulesUnderTest = rulesUnderTest;
+        _invocations = invocations;
     }
 
-    public IRuleVerification Rule() =>
-        _accessor.RegisteredRuleTypes.Count switch
-        {
-            0 => throw new ArgumentException("Expected single rule test, but found no rules registered"),
-            1 => Rule(_accessor.RegisteredRuleTypes.First()),
-            _ => throw new ArgumentException("Expected single rule test, but found multiple rules registered"),
-        };
-
-    public IRuleVerification Rule<T>()
-        where T : Rule =>
-        Rule(typeof(T));
-
-    public IRuleVerification Rule(Type ruleType)
+    public RuleAssertResult VerifySequence(Action<IRuleSequenceVerification> action)
     {
-        var ruleMetadata = _accessor.GetRule(ruleType);
-        return Rule(ruleMetadata);
+        var verification = new RulesSequenceFiringVerification(_rulesUnderTest);
+        action(verification);
+        var expectation = verification.Build();
+        var result = expectation.Verify(_invocations);
+        return result;
     }
 
-    private IRuleVerification Rule(IRuleMetadata ruleMetadata)
+    public RuleAssertResult Verify(Action<IRuleVerification> action)
     {
-        var matches = _accessor.GetFiredRuleMatches(ruleMetadata.Name);
-        return new RuleVerification(_asserter, ruleMetadata, matches);
+        var verification = new RulesFiringVerification(_rulesUnderTest);
+        action(verification);
+        var expectation = verification.Build();
+        var result = expectation.Verify(_invocations);
+        return result;
     }
 }

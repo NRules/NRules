@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -25,9 +26,7 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(0));
-        Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(1));
+        Verify(s => s.Rule().Fired(Times.Twice, Matched.Fact<IGrouping<string, GroupElement>>(f => f.Count() == 1)));
     }
 
     [Fact]
@@ -42,7 +41,7 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -63,9 +62,7 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(0));
-        Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(1));
+        Verify(s => s.Rule().Fired(Times.Twice, Matched.Fact<IGrouping<string, GroupElement>>(f => f.Count() == 1)));
     }
 
     [Fact]
@@ -83,18 +80,17 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
 
         //Act
         Session.Fire();
-        var actualCount11 = GetFiredFact<IGrouping<string, GroupElement>>(0).Count();
-        var actualCount12 = GetFiredFact<IGrouping<string, GroupElement>>(1).Count();
-
-        Session.Insert(fact23);
-        Session.Fire();
-        var actualCount2 = GetFiredFact<IGrouping<string, GroupElement>>(2).Count();
 
         //Assert
-        Verify.Rule().FiredTimes(3);
-        Assert.Equal(1, actualCount11);
-        Assert.Equal(1, actualCount12);
-        Assert.Equal(2, actualCount2);
+        Verify(s => s.Rule().Fired(Times.Twice, Matched.Fact<IGrouping<string, GroupElement>>(f => f.Count() == 1)));
+
+        //Act
+        Recorder.Clear();
+        Session.Insert(fact23);
+        Session.Fire();
+
+        //Assert
+        Verify(s => s.Rule().Fired(Matched.Fact<IGrouping<string, GroupElement>>(f => f.Count() == 2)));
     }
 
     [Fact]
@@ -115,8 +111,7 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<IGrouping<string, GroupElement>>(f => f.Count() == 1)));
     }
 
     [Fact]
@@ -138,7 +133,7 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -158,7 +153,7 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -180,7 +175,7 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -203,7 +198,7 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -226,9 +221,7 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(0));
-        Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(1));
+        Verify(s => s.Rule().Fired(Times.Twice, Matched.Fact<IGrouping<string, GroupElement>>(f => f.Count() == 1)));
     }
 
     [Fact]
@@ -249,8 +242,7 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IGrouping<string, GroupElement>>().Count());
+        Verify(s => s.Rule().Fired(Matched.Fact<IGrouping<string, GroupElement>>(f => f.Count() == 2)));
     }
 
     [Fact]
@@ -273,25 +265,32 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(3);
-        var firedFacts2 = new[]
-        {
-            GetFiredFact<IGrouping<string, GroupElement>>(0),
-            GetFiredFact<IGrouping<string, GroupElement>>(1),
-            GetFiredFact<IGrouping<string, GroupElement>>(2)
-        };
-        var firedFacts1 = new[]
-        {
-            GetFiredFact<FactType1>(0),
-            GetFiredFact<FactType1>(1),
-            GetFiredFact<FactType1>(2)
-        };
+        FactType1 firedFact1 = null;
+        FactType1 firedFact2 = null;
+        FactType1 firedFact3 = null;
+        IGrouping<string, GroupElement> firedGroup1 = null;
+        IGrouping<string, GroupElement> firedGroup2 = null;
+        IGrouping<string, GroupElement> firedGroup3 = null;
 
-        var validAmountsPerGroup = firedFacts2.Count(x => x.Count() == 1) == 2 &&
-                                   firedFacts2.Count(x => x.Count() == 2) == 1;
-        var valid1 = firedFacts1.Count(x => Equals(fact11, x)) == 2;
-        var valid2 = firedFacts1.Count(x => Equals(fact12, x)) == 1;
-        Assert.True(validAmountsPerGroup && valid1 && valid2);
+        VerifySequence(s =>
+        {
+            s.Rule().Fired(
+                Matched.Fact<FactType1>().Callback(f => firedFact1 = f),
+                Matched.Fact<IGrouping<string, GroupElement>>().Callback(f => firedGroup1 = f));
+            s.Rule().Fired(
+                Matched.Fact<FactType1>().Callback(f => firedFact2 = f),
+                Matched.Fact<IGrouping<string, GroupElement>>().Callback(f => firedGroup2 = f));
+            s.Rule().Fired(
+                Matched.Fact<FactType1>().Callback(f => firedFact3 = f),
+                Matched.Fact<IGrouping<string, GroupElement>>().Callback(f => firedGroup3 = f));
+        });
+
+        Assert.Equal(fact11, firedFact1);
+        Assert.Equal(fact11, firedFact2);
+        Assert.Equal(fact12, firedFact3);
+        Assert.Equal(2, firedGroup1.Count());
+        Assert.Single(firedGroup2);
+        Assert.Single(firedGroup3);
     }
 
     [Fact]
@@ -312,24 +311,32 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(3);
-        var firedFacts2 = new[]
+        FactType1 firedFact1 = null;
+        FactType1 firedFact2 = null;
+        FactType1 firedFact3 = null;
+        IGrouping<string, GroupElement> firedGroup1 = null;
+        IGrouping<string, GroupElement> firedGroup2 = null;
+        IGrouping<string, GroupElement> firedGroup3 = null;
+
+        VerifySequence(s =>
         {
-            GetFiredFact<IGrouping<string, GroupElement>>(0),
-            GetFiredFact<IGrouping<string, GroupElement>>(1),
-            GetFiredFact<IGrouping<string, GroupElement>>(2)
-        };
-        var firedFacts1 = new[]
-        {
-            GetFiredFact<FactType1>(0),
-            GetFiredFact<FactType1>(1),
-            GetFiredFact<FactType1>(2)
-        };
-        var validAmountsPerGroup = firedFacts2.Count(x => x.Count() == 1) == 2 &&
-                                   firedFacts2.Count(x => x.Count() == 2) == 1;
-        var valid1 = firedFacts1.Count(x => Equals(fact11, x)) == 2;
-        var valid2 = firedFacts1.Count(x => Equals(fact12, x)) == 1;
-        Assert.True(validAmountsPerGroup && valid1 && valid2);
+            s.Rule().Fired(
+                Matched.Fact<FactType1>().Callback(f => firedFact1 = f),
+                Matched.Fact<IGrouping<string, GroupElement>>().Callback(f => firedGroup1 = f));
+            s.Rule().Fired(
+                Matched.Fact<FactType1>().Callback(f => firedFact2 = f),
+                Matched.Fact<IGrouping<string, GroupElement>>().Callback(f => firedGroup2 = f));
+            s.Rule().Fired(
+                Matched.Fact<FactType1>().Callback(f => firedFact3 = f),
+                Matched.Fact<IGrouping<string, GroupElement>>().Callback(f => firedGroup3 = f));
+        });
+
+        Assert.Equal(fact11, firedFact1);
+        Assert.Equal(fact11, firedFact2);
+        Assert.Equal(fact12, firedFact3);
+        Assert.Equal(2, firedGroup1.Count());
+        Assert.Single(firedGroup2);
+        Assert.Single(firedGroup3);
     }
 
     [Fact]
@@ -352,24 +359,32 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(3);
-        var firedFacts2 = new[]
+        FactType1 firedFact1 = null;
+        FactType1 firedFact2 = null;
+        FactType1 firedFact3 = null;
+        IGrouping<string, GroupElement> firedGroup1 = null;
+        IGrouping<string, GroupElement> firedGroup2 = null;
+        IGrouping<string, GroupElement> firedGroup3 = null;
+
+        VerifySequence(s =>
         {
-            GetFiredFact<IGrouping<string, GroupElement>>(0),
-            GetFiredFact<IGrouping<string, GroupElement>>(1),
-            GetFiredFact<IGrouping<string, GroupElement>>(2)
-        };
-        var firedFacts1 = new[]
-        {
-            GetFiredFact<FactType1>(0),
-            GetFiredFact<FactType1>(1),
-            GetFiredFact<FactType1>(2)
-        };
-        var validAmountsPerGroup = firedFacts2.Count(x => x.Count() == 1) == 2 &&
-                                   firedFacts2.Count(x => x.Count() == 2) == 1;
-        var valid1 = firedFacts1.Count(x => Equals(fact11, x)) == 2;
-        var valid2 = firedFacts1.Count(x => Equals(fact12, x)) == 1;
-        Assert.True(validAmountsPerGroup && valid1 && valid2);
+            s.Rule().Fired(
+                Matched.Fact<FactType1>().Callback(f => firedFact1 = f),
+                Matched.Fact<IGrouping<string, GroupElement>>().Callback(f => firedGroup1 = f));
+            s.Rule().Fired(
+                Matched.Fact<FactType1>().Callback(f => firedFact2 = f),
+                Matched.Fact<IGrouping<string, GroupElement>>().Callback(f => firedGroup2 = f));
+            s.Rule().Fired(
+                Matched.Fact<FactType1>().Callback(f => firedFact3 = f),
+                Matched.Fact<IGrouping<string, GroupElement>>().Callback(f => firedGroup3 = f));
+        });
+
+        Assert.Equal(fact12, firedFact1);
+        Assert.Equal(fact11, firedFact2);
+        Assert.Equal(fact11, firedFact3);
+        Assert.Single(firedGroup1);
+        Assert.Single(firedGroup2);
+        Assert.Equal(2, firedGroup3.Count());
     }
 
     [Fact]
@@ -390,14 +405,14 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
 
         //Act - 2
         Session.Update(fact11);
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(3);
+        Verify(x => x.Rule().Fired(Times.Exactly(3)));
     }
 
     [Fact]
@@ -418,14 +433,14 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
 
         //Act - 2
         Session.Update(fact21);
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(3);
+        Verify(x => x.Rule().Fired(Times.Exactly(3)));
     }
 
     [Fact]
@@ -447,8 +462,8 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal("Group 2|Group 1", GetFiredFact<IGrouping<string, GroupElement>>().Key);
+        Verify(x => x.Rule().Fired(Matched.Fact<IGrouping<string, GroupElement>>()
+            .Callback(firedFact => Assert.Equal("Group 2|Group 1", firedFact.Key))));
     }
 
     [Fact]
@@ -472,14 +487,24 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal("Group 1|Group 1", GetFiredFact<IGrouping<string, GroupElement>>(0).Key);
-        Assert.Single(GetFiredFact<IGrouping<string, GroupElement>>(0));
-        Assert.Equal("Group 1|Group 2", GetFiredFact<IGrouping<string, GroupElement>>(1).Key);
-        Assert.Equal(2, GetFiredFact<IGrouping<string, GroupElement>>(1).Count());
+        VerifySequence(s =>
+        {
+            s.Rule().Fired(Matched.Fact<IGrouping<string, GroupElement>>()
+                .Callback(firedFact =>
+                {
+                    Assert.Single(firedFact);
+                    Assert.Equal("Group 1|Group 1", firedFact.Key);
+                }));
+            s.Rule().Fired(Matched.Fact<IGrouping<string, GroupElement>>()
+                .Callback(firedFact =>
+                {
+                    Assert.Equal(2, firedFact.Count());
+                    Assert.Equal("Group 1|Group 2", firedFact.Key);
+                }));
+        });
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

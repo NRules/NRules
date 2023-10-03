@@ -24,8 +24,16 @@ public interface IRuleActivator
     IEnumerable<Rule> Activate(Type type);
 }
 
-internal class RuleActivator : IRuleActivator
+/// <summary>
+/// Default rule activator that uses reflection to instantiate rules.
+/// </summary>
+public class DefaultRuleActivator : IRuleActivator
 {
+    /// <summary>
+    /// Creates rule's instances from a CLR type.
+    /// </summary>
+    /// <param name="type">Rule CLR type.</param>
+    /// <returns>Rule instances.</returns>
     public IEnumerable<Rule> Activate(Type type)
     {
         yield return (Rule) Activator.CreateInstance(type);

@@ -3,12 +3,15 @@ using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
 
 public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
 {
+    private TestRule _testRule;
+
     [Fact]
     public void Fire_MatchingFacts_FiresOnce()
     {
@@ -23,7 +26,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
     }
 
     [Fact]
@@ -40,7 +43,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
     }
 
     [Fact]
@@ -54,7 +57,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Insert(fact2);
 
         IFactMatch[] matches = null;
-        GetRuleInstance<TestRule>().Action = ctx =>
+        _testRule.Action = ctx =>
         {
             matches = ctx.Match.Facts.ToArray();
         };
@@ -63,7 +66,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
         Assert.Single(matches);
         Assert.Equal("fact", matches[0].Declaration.Name);
         Assert.Same(fact1, matches[0].Value);
@@ -85,7 +88,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
     }
 
     [Fact]
@@ -108,7 +111,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
     }
 
     [Fact]
@@ -126,7 +129,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -144,7 +147,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -162,7 +165,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
     }
 
     [Fact]
@@ -182,7 +185,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -197,7 +200,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -216,7 +219,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
     }
 
     [Fact]
@@ -235,14 +238,14 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
 
         //Act - 2
         Session.Update(fact21);
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
     }
 
     [Fact]
@@ -261,7 +264,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
 
         //Act - 2
         Session.Retract(fact21);
@@ -269,7 +272,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(4);
+        Verify(x => x.Rule().Fired(Times.Exactly(4)));
     }
 
     [Fact]
@@ -288,19 +291,20 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
 
         //Act - 2
         Session.Update(fact11);
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(3);
+        Verify(x => x.Rule().Fired(Times.Exactly(3)));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
-        setup.Rule<TestRule>();
+        _testRule = new TestRule();
+        setup.Rule(_testRule);
     }
 
     public class FactType1
