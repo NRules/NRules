@@ -1,8 +1,11 @@
 # Build Folders
 /build
 
-## Visual Studio temporary files, build results, etc.
+## Visual Studio temporary files
 .vs
+
+## IntelliJ temporary files
+.idea
 
 # User-specific files
 *.suo
