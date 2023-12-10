@@ -39,8 +39,8 @@ task Init {
 }
 
 task Clean -depends Init {
-    Delete-Directory "$pkgOutDir\$compName"
-    Delete-Directory "$binOutDir\$compName"
+    Remove-Directory "$pkgOutDir\$compName"
+    Remove-Directory "$binOutDir\$compName"
 }
 
 task PatchFiles {
@@ -79,12 +79,12 @@ task Restore -precondition { return $component.ContainsKey('solution_file') } {
 }
 
 task Compile -depends Init, Restore -precondition { return $component.ContainsKey('solution_file') } { 
-    Create-Directory $buildDir
+    New-Directory $buildDir
     exec { dotnet build $solutionFile --no-restore -c $configuration -p:Version=$version -p:ContinuousIntegrationBuild=true -v minimal }
 }
 
 task Test -depends Compile -precondition { return $component.ContainsKey('solution_file') } {
-    Get-ChildItem $solutionDir -recurse -filter "*.trx" | % { Delete-File $_.fullname }
+    Get-ChildItem $solutionDir -recurse -filter "*.trx" | % { Remove-File $_.fullname }
     
     $hasError = $false
     try {
@@ -109,12 +109,12 @@ task Test -depends Compile -precondition { return $component.ContainsKey('soluti
 }
 
 task PackageNuGet -depends Compile -precondition { $component.package.ContainsKey('nuget') -and $component.ContainsKey('solution_file') } {
-    Create-Directory $pkgOutDir
+    New-Directory $pkgOutDir
     exec { dotnet pack $solutionFile -c $configuration --no-restore --no-build -p:Version=$version -o $pkgOutDir -v minimal }
 }
 
 task PackageBin -depends Compile -precondition { $component.package.ContainsKey('bin') } {
-    Create-Directory $binOutDir
+    New-Directory $binOutDir
     $bin = $component.package.bin
     foreach ($artifact in $bin.artifacts) {
         $outputDir = $artifact
@@ -122,7 +122,7 @@ task PackageBin -depends Compile -precondition { $component.package.ContainsKey(
             $outputDir = $bin.$artifact.output
         }
         $destDir = "$binOutDir\$outputDir"
-        Create-Directory $destDir
+        New-Directory $destDir
         foreach ($item in $bin.$artifact.include) {
             $itemPath = "$solutionDir\$item"
             if (Test-Path -Path $itemPath -PathType Container) {
