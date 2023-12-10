@@ -63,7 +63,7 @@ function Install-DotNetCli([string] $location, [string] $version) {
         New-Directory $installDir
     }
 
-    $installScriptName = "dotnet-install.ps1"
+    $installScriptName = if ($IsWindows) { "dotnet-install.ps1" } else { "dotnet-install.sh" }
     $installScriptPath = Join-Path $location $installScriptName
 
     if (!(Test-Path $location\dotnet-install.ps1)) {
