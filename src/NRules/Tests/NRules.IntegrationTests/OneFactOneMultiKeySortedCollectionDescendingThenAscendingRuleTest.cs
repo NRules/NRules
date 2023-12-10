@@ -2,6 +2,7 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -15,8 +16,7 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(x => !x.Any())));
     }
 
     [Fact]
@@ -36,14 +36,14 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-
-        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(4, firedFacts.Count());
-        Assert.Equal(fact5, firedFacts.ElementAt(0));
-        Assert.Equal(fact3, firedFacts.ElementAt(1));
-        Assert.Equal(fact4, firedFacts.ElementAt(2));
-        Assert.Equal(fact2, firedFacts.ElementAt(3));
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact => {
+                Assert.Equal(4, firedFact.Count());
+                Assert.Equal(fact5, firedFact.ElementAt(0));
+                Assert.Equal(fact3, firedFact.ElementAt(1));
+                Assert.Equal(fact4, firedFact.ElementAt(2));
+                Assert.Equal(fact2, firedFact.ElementAt(3));
+            })));
     }
 
     [Fact]
@@ -63,12 +63,12 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-
-        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(2, firedFacts.Count());
-        Assert.Equal(fact1, firedFacts.ElementAt(0));
-        Assert.Equal(fact2, firedFacts.ElementAt(1));
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact => {
+                Assert.Equal(2, firedFact.Count());
+                Assert.Equal(fact1, firedFact.ElementAt(0));
+                Assert.Equal(fact2, firedFact.ElementAt(1));
+            })));
     }
 
     [Fact]
@@ -86,11 +86,11 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-
-        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Single(firedFacts);
-        Assert.Equal(fact1, firedFacts.ElementAt(0));
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact => {
+                Assert.Single(firedFact);
+                Assert.Equal(fact1, firedFact.ElementAt(0));
+            })));
     }
 
     [Fact]
@@ -109,8 +109,7 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(x => !x.Any())));
     }
 
     [Fact]
@@ -130,11 +129,11 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-
-        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Single(firedFacts);
-        Assert.Equal(fact1, firedFacts.ElementAt(0));
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact => {
+                Assert.Single(firedFact);
+                Assert.Equal(fact1, firedFact.ElementAt(0));
+            })));
     }
 
     [Fact]
@@ -154,15 +153,16 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-
-        var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-        Assert.Equal(2, firedFacts.Count());
-        Assert.Equal(fact2, firedFacts.ElementAt(0));
-        Assert.Equal(fact1, firedFacts.ElementAt(1));
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact =>
+            {
+                Assert.Equal(2, firedFact.Count());
+                Assert.Equal(fact2, firedFact.ElementAt(0));
+                Assert.Equal(fact1, firedFact.ElementAt(1));
+            })));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

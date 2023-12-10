@@ -2,6 +2,7 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -22,10 +23,12 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        var firedFact = GetFiredFact<FactType>();
-        Assert.Equal(2, firedFact.Id);
-        Assert.Equal("Original 2", firedFact.ValueProperty);
+        Verify(x => x.Rule().Fired(Matched.Fact<FactType>()
+            .Callback(firedFact =>
+            {
+                Assert.Equal(2, firedFact.Id);
+                Assert.Equal("Original 2", firedFact.ValueProperty);
+            })));
     }
 
     [Fact]
@@ -41,10 +44,12 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        var firedFact = GetFiredFact<FactType>();
-        Assert.Equal(0, firedFact.Id);
-        Assert.Null(firedFact.ValueProperty);
+        Verify(x => x.Rule().Fired(Matched.Fact<FactType>()
+            .Callback(firedFact =>
+            {
+                Assert.Equal(0, firedFact.Id);
+                Assert.Null(firedFact.ValueProperty);
+            })));
     }
 
     [Fact]
@@ -63,10 +68,12 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        var firedFact = GetFiredFact<FactType>();
-        Assert.Equal(1, firedFact.Id);
-        Assert.Equal("Original 1", firedFact.ValueProperty);
+        Verify(x => x.Rule().Fired(Matched.Fact<FactType>()
+            .Callback(firedFact =>
+            {
+                Assert.Equal(1, firedFact.Id);
+                Assert.Equal("Original 1", firedFact.ValueProperty);
+            })));
     }
 
     [Fact]
@@ -85,10 +92,12 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        var firedFact = GetFiredFact<FactType>();
-        Assert.Equal(1, firedFact.Id);
-        Assert.Equal("Updated 1", firedFact.ValueProperty);
+        Verify(x => x.Rule().Fired(Matched.Fact<FactType>()
+            .Callback(firedFact =>
+            {
+                Assert.Equal(1, firedFact.Id);
+                Assert.Equal("Updated 1", firedFact.ValueProperty);
+            })));
     }
 
     [Fact]
@@ -105,17 +114,17 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
 
         //Act - 2
         Session.Update(fact1);
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

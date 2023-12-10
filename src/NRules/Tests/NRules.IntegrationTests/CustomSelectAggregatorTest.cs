@@ -6,6 +6,7 @@ using NRules.Aggregators;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -23,8 +24,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+        Verify(x => x.Rule().Fired(Matched.Fact<FactProjection>(f => f.Value == fact.TestProperty)));
     }
 
     [Fact]
@@ -39,8 +39,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact.TestProperty, GetFiredFact<FactProjection>().Value);
+        Verify(x => x.Rule().Fired(Matched.Fact<FactProjection>(f => f.Value == fact.TestProperty)));
     }
 
     [Fact]
@@ -55,13 +54,13 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
-        setup.Compiler.AggregatorRegistry.RegisterFactory(
-            "CustomSelect", typeof(CustomSelectAggregateFactory));
+        setup.CompilerSetupAction = c => c
+            .AggregatorRegistry.RegisterFactory("CustomSelect", typeof(CustomSelectAggregateFactory));
 
         setup.Rule<TestRule>();
     }

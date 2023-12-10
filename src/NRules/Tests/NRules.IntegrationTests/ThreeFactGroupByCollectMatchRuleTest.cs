@@ -2,6 +2,7 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -23,7 +24,7 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
     }
 
     [Fact]
@@ -42,7 +43,7 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -61,7 +62,7 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
     }
 
     [Fact]
@@ -80,10 +81,10 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

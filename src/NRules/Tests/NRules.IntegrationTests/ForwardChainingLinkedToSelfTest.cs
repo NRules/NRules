@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -22,11 +23,11 @@ public class ForwardChainingLinkedToSelfTest : BaseRulesTestFixture
         Session.Retract(order2);
 
         //Assert
-        Verify.Rule().FiredTimes(3);
+        Verify(x => x.Rule().Fired(Times.Exactly(3)));
         Assert.Equal(0, Session.Query<FactType4>().Count());
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<ForwardChainingRule>();
     }

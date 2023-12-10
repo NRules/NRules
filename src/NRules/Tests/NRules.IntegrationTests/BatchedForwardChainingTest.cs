@@ -3,6 +3,7 @@ using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -28,8 +29,11 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(1);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(1);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired();
+            x.Rule<ForwardChainingSecondRule>().Fired();
+        });
     }
 
     [Fact]
@@ -47,8 +51,11 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(2));
+            x.Rule<ForwardChainingSecondRule>().Fired(Times.Exactly(2));
+        });
         Assert.Single(result);
         Assert.Equal(LinkedFactAction.Insert, result.ElementAt(0).Action);
         Assert.Equal(2, result.ElementAt(0).FactCount);
@@ -69,8 +76,11 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(2));
+            x.Rule<ForwardChainingSecondRule>().Fired(Times.Exactly(2));
+        });
         Assert.Single(result);
         Assert.Equal(LinkedFactAction.Insert, result.ElementAt(0).Action);
         Assert.Equal(2, result.ElementAt(0).FactCount);
@@ -121,8 +131,13 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(18);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(18);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(9));
+            x.Rule<ForwardChainingSecondRule>().Fired(Times.Exactly(9));
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(9));
+            x.Rule<ForwardChainingSecondRule>().Fired(Times.Exactly(9));
+        });
         Assert.Single(result);
         Assert.Equal(LinkedFactAction.Update, result.ElementAt(0).Action);
         Assert.Equal(9, result.ElementAt(0).FactCount);
@@ -160,8 +175,13 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(18);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(13);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(9));
+            x.Rule<ForwardChainingSecondRule>().Fired(Times.Exactly(6));
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(9));
+            x.Rule<ForwardChainingSecondRule>().Fired(Times.Exactly(7));
+        });
         Assert.Equal(3, result.Count());
         Assert.Equal(LinkedFactAction.Insert, result.ElementAt(0).Action);
         Assert.Equal(3, result.ElementAt(0).FactCount);
@@ -188,8 +208,8 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(0);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(0);
+        Verify(x => x.Rule<ForwardChainingFirstRule>().Fired(Times.Never));
+        Verify(x => x.Rule<ForwardChainingSecondRule>().Fired(Times.Never));
         Assert.Empty(result);
     }
 
@@ -216,8 +236,12 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(4);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(2));
+            x.Rule<ForwardChainingSecondRule>().Fired(Times.Exactly(2));
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(2));
+        });
         Assert.Single(result);
         Assert.Equal(LinkedFactAction.Retract, result.ElementAt(0).Action);
         Assert.Equal(2, result.ElementAt(0).FactCount);
@@ -245,8 +269,11 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
         var result = Session.PropagateLinked();
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(2));
+            x.Rule<ForwardChainingSecondRule>().Fired(Times.Exactly(2));
+        });
         Assert.Empty(result);
     }
 
@@ -273,8 +300,11 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
         var result = Session.PropagateLinked();
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(2));
+            x.Rule<ForwardChainingSecondRule>().Fired(Times.Exactly(2));
+        });
         Assert.Single(result);
         Assert.Equal(LinkedFactAction.Retract, result.ElementAt(0).Action);
         Assert.Equal(2, result.ElementAt(0).FactCount);
@@ -304,12 +334,15 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
         Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired(Times.Exactly(2));
+            x.Rule<ForwardChainingSecondRule>().Fired(Times.Exactly(2));
+        });
         Assert.Equal(2, retracted);
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<ForwardChainingFirstRule>();
         setup.Rule<ForwardChainingSecondRule>();

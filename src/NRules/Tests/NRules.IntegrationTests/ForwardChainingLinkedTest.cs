@@ -3,6 +3,7 @@ using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -20,8 +21,11 @@ public class ForwardChainingLinkedTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(1);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(1);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired();
+            x.Rule<ForwardChainingSecondRule>().Fired();
+        });
     }
 
     [Fact]
@@ -52,8 +56,11 @@ public class ForwardChainingLinkedTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - I
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(1);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(1);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired();
+            x.Rule<ForwardChainingSecondRule>().Fired();
+        });
         Assert.Equal(1, matchedFact2.UpdateCount);
         Assert.Equal("Valid Value 1", matchedFact2.TestProperty);
         Assert.Equal("Valid Value 1", matchedFact3.TestProperty);
@@ -64,8 +71,13 @@ public class ForwardChainingLinkedTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - II
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(2);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(2);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired();
+            x.Rule<ForwardChainingSecondRule>().Fired();
+            x.Rule<ForwardChainingFirstRule>().Fired();
+            x.Rule<ForwardChainingSecondRule>().Fired();
+        });
         Assert.Equal(2, matchedFact2.UpdateCount);
         Assert.Equal("Valid Value 2", matchedFact2.TestProperty);
         Assert.Equal("Valid Value 2", matchedFact3.TestProperty);
@@ -82,8 +94,11 @@ public class ForwardChainingLinkedTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - I
-        Verify.Rule<ForwardChainingFirstRule>().FiredTimes(1);
-        Verify.Rule<ForwardChainingSecondRule>().FiredTimes(1);
+        Verify(x =>
+        {
+            x.Rule<ForwardChainingFirstRule>().Fired();
+            x.Rule<ForwardChainingSecondRule>().Fired();
+        });
         Assert.Equal(1, Session.Query<FactType2>().Count());
         Assert.Equal(1, Session.Query<FactType3>().Count());
 
@@ -156,7 +171,7 @@ public class ForwardChainingLinkedTest : BaseRulesTestFixture
         Assert.Throws<ArgumentException>(() => Session.RetractAll(linkedFacts));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<ForwardChainingFirstRule>();
         setup.Rule<ForwardChainingSecondRule>();

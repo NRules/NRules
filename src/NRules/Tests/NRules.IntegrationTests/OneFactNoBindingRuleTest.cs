@@ -3,12 +3,15 @@ using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
 
 public class OneFactNoBindingRuleTest : BaseRulesTestFixture
 {
+    private TestRule _testRule;
+
     [Fact]
     public void Fire_OneMatchingFact_FiresOnce()
     {
@@ -20,7 +23,7 @@ public class OneFactNoBindingRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
     }
 
     [Fact]
@@ -31,7 +34,7 @@ public class OneFactNoBindingRuleTest : BaseRulesTestFixture
         Session.Insert(fact);
 
         IFactMatch[] matches = null;
-        GetRuleInstance<TestRule>().Action = ctx =>
+        _testRule.Action = ctx =>
         {
             matches = ctx.Match.Facts.ToArray();
         };
@@ -40,14 +43,15 @@ public class OneFactNoBindingRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
         Assert.Single(matches);
         Assert.Same(fact, matches[0].Value);
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
-        setup.Rule<TestRule>();
+        _testRule = new TestRule();
+        setup.Rule(_testRule);
     }
 
     public class FactType

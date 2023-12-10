@@ -4,11 +4,11 @@ namespace NRules.IntegrationTests.TestAssets;
 
 public sealed class XUnitRuleAsserter : IRuleAsserter
 {
-    public void Assert(RuleFireAssertResult result)
+    public void Assert(RuleAssertResult result)
     {
-        if (result.Expected != result.Actual)
+        if (result.Status == RuleAssertStatus.Failed)
         {
-            throw new RuleFiredAssertionException(result.Expected, result.Actual, result.RuleMetadata.Name);
+            throw new RuleFiredAssertionException(result.GetMessage());
         }
     }
 }

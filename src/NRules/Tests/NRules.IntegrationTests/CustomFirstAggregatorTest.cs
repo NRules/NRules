@@ -6,6 +6,7 @@ using NRules.Aggregators;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -19,7 +20,7 @@ public class CustomFirstAggregatorTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -38,9 +39,11 @@ public class CustomFirstAggregatorTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal("Valid Value 1", GetFiredFact<FactType>(0).TestProperty);
-        Assert.Equal("Valid Value 4", GetFiredFact<FactType>(1).TestProperty);
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact<FactType>(f => f.TestProperty == "Valid Value 1"));
+            s.Rule().Fired(Matched.Fact<FactType>(f => f.TestProperty == "Valid Value 4"));
+        });
     }
 
     [Fact]
@@ -59,11 +62,13 @@ public class CustomFirstAggregatorTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal("Valid Value 2", GetFiredFact<FactType>().TestProperty);
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact<FactType>(f => f.TestProperty == "Valid Value 2"));
+        });
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

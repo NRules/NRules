@@ -4,12 +4,15 @@ using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
 
 public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 {
+    private TestRule _testRule;
+
     [Fact]
     public void Fire_OneMatchingFactOfOneKindAndTwoOfAnother_FiresOnceWithTwoFactsInCollection()
     {
@@ -28,8 +31,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>().Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => f.Count() == 2)));
     }
 
     [Fact]
@@ -44,8 +46,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Empty(GetFiredFact<IEnumerable<FactType2>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => !f.Any())));
     }
 
     [Fact]
@@ -59,7 +60,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Insert(fact2);
 
         IFactMatch[] matches = null;
-        GetRuleInstance<TestRule>().Action = ctx =>
+        _testRule.Action = ctx =>
         {
             matches = ctx.Match.Facts.ToArray();
         };
@@ -68,7 +69,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
         Assert.Equal(2, matches.Length);
         Assert.Equal("fact", matches[0].Declaration.Name);
         Assert.Same(fact1, matches[0].Value);
@@ -91,15 +92,17 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Act
         Session.Fire();
-        var actualCount1 = GetFiredFact<IEnumerable<FactType2>>().Count();
-        Session.Insert(fact23);
-        Session.Fire();
-        var actualCount2 = GetFiredFact<IEnumerable<FactType2>>().Count();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, actualCount1);
-        Assert.Equal(3, actualCount2);
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => f.Count() == 2)));
+
+        //Act
+        Recorder.Clear();
+        Session.Insert(fact23);
+        Session.Fire();
+
+        //Assert
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => f.Count() == 3)));
     }
 
     [Fact]
@@ -117,11 +120,9 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Act
         Session.Fire();
-        var actualCount = GetFiredFact<IEnumerable<FactType2>>().Count();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(3, actualCount);
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => f.Count() == 3)));
     }
 
     [Fact]
@@ -142,8 +143,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Single(GetFiredFact<IEnumerable<FactType2>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => f.Count() == 1)));
     }
 
     [Fact]
@@ -165,8 +165,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Empty(GetFiredFact<IEnumerable<FactType2>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => !f.Any())));
     }
 
     [Fact]
@@ -186,7 +185,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -208,7 +207,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -231,7 +230,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -252,9 +251,11 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>(0).Count());
-        Assert.Empty(GetFiredFact<IEnumerable<FactType2>>(1));
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => f.Count() == 2));
+            s.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => !f.Any()));
+        });
     }
 
     [Fact]
@@ -276,9 +277,11 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal(2, GetFiredFact<IEnumerable<FactType2>>(0).Count());
-        Assert.Single(GetFiredFact<IEnumerable<FactType2>>(1));
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => f.Count() == 2));
+            s.Rule().Fired(Matched.Fact<IEnumerable<FactType2>>(f => f.Count() == 1));
+        });
     }
 
     [Fact]
@@ -300,14 +303,14 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
 
         //Act - 2
         Session.Update(fact11);
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(3);
+        Verify(x => x.Rule().Fired(Times.Exactly(3)));
     }
 
     [Fact]
@@ -329,19 +332,20 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
 
         //Act - 2
         Session.Update(fact21);
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(3);
+        Verify(x => x.Rule().Fired(Times.Exactly(3)));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
-        setup.Rule<TestRule>();
+        _testRule = new TestRule();
+        setup.Rule(_testRule);
     }
 
     public class FactType1

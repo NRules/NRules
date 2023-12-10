@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -24,10 +25,8 @@ public class OneFactFirstFactRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact3, GetFiredFact<FactType>());
+        Verify(x => x.Rule().Fired(Matched.Fact(fact3)));
     }
-
 
     [Fact]
     public void Fire_NoMatchingFacts_DoesNotFire()
@@ -40,7 +39,7 @@ public class OneFactFirstFactRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -60,8 +59,7 @@ public class OneFactFirstFactRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact1, GetFiredFact<FactType>());
+        Verify(x => x.Rule().Fired(Matched.Fact(fact1)));
     }
 
     [Fact]
@@ -79,11 +77,10 @@ public class OneFactFirstFactRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         // Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(fact1, GetFiredFact<FactType>());
+        Verify(x => x.Rule().Fired(Matched.Fact(fact1)));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

@@ -1,5 +1,6 @@
 ﻿using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -18,8 +19,7 @@ public class TwoFactOrGroupBindingRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal("Fact1", GetFiredFact<string>());
+        Verify(x => x.Rule().Fired(Matched.Fact<string>().Callback(x => Assert.Equal("Fact1", x))));
     }
 
     [Fact]
@@ -34,8 +34,7 @@ public class TwoFactOrGroupBindingRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal("Fact2", GetFiredFact<string>());
+        Verify(x => x.Rule().Fired(Matched.Fact<string>().Callback(x => Assert.Equal("Fact2", x))));
     }
 
     [Fact]
@@ -52,12 +51,14 @@ public class TwoFactOrGroupBindingRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal("Fact1", GetFiredFact<string>(0));
-        Assert.Equal("Fact2", GetFiredFact<string>(1));
+        VerifySequence(s =>
+        {
+            s.Rule().Fired(Matched.Fact<string>().Callback(x => Assert.Equal("Fact1", x)));
+            s.Rule().Fired(Matched.Fact<string>().Callback(x => Assert.Equal("Fact2", x)));
+        });
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

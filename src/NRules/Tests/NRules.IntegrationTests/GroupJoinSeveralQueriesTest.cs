@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -28,7 +29,7 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
         Assert.Equal(2, fact11.EvalCount);
     }
 
@@ -48,7 +49,7 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
         Assert.Equal(1, fact11.EvalCount);
 
         //Act - 2
@@ -56,7 +57,7 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
         Assert.Equal(2, fact11.EvalCount);
     }
 
@@ -76,7 +77,7 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
         Assert.Equal(1, fact11.EvalCount);
 
         //Act - 2
@@ -84,7 +85,7 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
         Assert.Equal(2, fact11.EvalCount);
     }
 
@@ -104,7 +105,7 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 1
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
         Assert.Equal(1, fact11.EvalCount);
 
         //Act - 2
@@ -112,11 +113,11 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert - 2
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
         Assert.Equal(2, fact11.EvalCount);
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

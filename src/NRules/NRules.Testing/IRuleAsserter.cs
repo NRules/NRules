@@ -9,6 +9,6 @@ public interface IRuleAsserter
     /// Asserts a condition specific to rule firing.
     /// </summary>
     /// <param name="result">Result that need to be verified.</param>
-    /// <seealso cref="RuleFireAssertResult"/>
-    void Assert(RuleFireAssertResult result);
+    /// <seealso cref="RuleAssertResult"/>
+    void Assert(RuleAssertResult result);
 }

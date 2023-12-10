@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -14,7 +15,7 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -31,9 +32,11 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, GetFiredFact<FactType>(1));
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact(fact1));
+            s.Rule().Fired(Matched.Fact(fact2));
+        });
     }
 
     [Fact]
@@ -51,9 +54,11 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, GetFiredFact<FactType>(1));
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact(fact1));
+            s.Rule().Fired(Matched.Fact(fact2));
+        });
     }
 
     [Fact]
@@ -71,9 +76,11 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, GetFiredFact<FactType>(1));
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact(fact1));
+            s.Rule().Fired(Matched.Fact(fact2));
+        });
     }
 
     [Fact]
@@ -92,11 +99,13 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(4);
-        Assert.Equal(fact1, GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, GetFiredFact<FactType>(1));
-        Assert.Equal(fact3, GetFiredFact<FactType>(2));
-        Assert.Equal(fact4, GetFiredFact<FactType>(3));
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact(fact1));
+            s.Rule().Fired(Matched.Fact(fact2));
+            s.Rule().Fired(Matched.Fact(fact3));
+            s.Rule().Fired(Matched.Fact(fact4));
+        });
     }
 
     [Fact]
@@ -117,9 +126,11 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, GetFiredFact<FactType>(1));
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact(fact1));
+            s.Rule().Fired(Matched.Fact(fact2));
+        });
     }
 
     [Fact]
@@ -141,9 +152,11 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, GetFiredFact<FactType>(1));
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact(fact1));
+            s.Rule().Fired(Matched.Fact(fact2));
+        });
     }
 
     [Fact]
@@ -165,17 +178,12 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(3);
-        var firedFacts = new[]
+        Verify(s =>
         {
-            GetFiredFact<FactType>(0),
-            GetFiredFact<FactType>(1),
-            GetFiredFact<FactType>(2)
-        };
-        var valid1 = firedFacts.Any(x => Equals(fact1, x));
-        var valid2 = firedFacts.Any(x => Equals(fact2, x));
-        var valid4 = firedFacts.Any(x => Equals(fact4, x));
-        Assert.True(valid1 && valid2 && valid4);
+            s.Rule().Fired(Matched.Fact(fact1));
+            s.Rule().Fired(Matched.Fact(fact2));
+            s.Rule().Fired(Matched.Fact(fact4));
+        });
     }
 
     [Fact]
@@ -197,11 +205,13 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(4);
-        Assert.Equal(fact1, GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, GetFiredFact<FactType>(1));
-        Assert.Equal(fact3, GetFiredFact<FactType>(2));
-        Assert.Equal(fact4, GetFiredFact<FactType>(3));
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact(fact1));
+            s.Rule().Fired(Matched.Fact(fact2));
+            s.Rule().Fired(Matched.Fact(fact3));
+            s.Rule().Fired(Matched.Fact(fact4));
+        });
     }
 
     [Fact]
@@ -223,12 +233,14 @@ public class OneFactOneGroupByFlattenRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Equal(fact1, GetFiredFact<FactType>(0));
-        Assert.Equal(fact2, GetFiredFact<FactType>(1));
+        Verify(s =>
+        {
+            s.Rule().Fired(Matched.Fact(fact1));
+            s.Rule().Fired(Matched.Fact(fact2));
+        });
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

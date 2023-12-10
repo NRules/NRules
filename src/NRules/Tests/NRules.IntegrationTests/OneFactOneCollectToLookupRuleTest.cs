@@ -2,6 +2,7 @@
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -15,8 +16,8 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Empty(GetFiredFact<ILookup<long, string>>());
+        Verify(x => x.Rule().Fired(Matched.Fact<ILookup<long, string>>()
+            .Callback(Assert.Empty)));
     }
 
     [Fact]
@@ -33,9 +34,12 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Single(GetFiredFact<IKeyedLookup<long, string>>());
-        Assert.Equal(2, GetFiredFact<IKeyedLookup<long, string>>()[1].Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<ILookup<long, string>>()
+            .Callback(lookup =>
+            {
+                Assert.Single(lookup);
+                Assert.Equal(2, lookup[1].Count());
+            })));
     }
 
     [Fact]
@@ -55,10 +59,13 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
-        Assert.Equal(3, GetFiredFact<ILookup<long, string>>()[2].Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<ILookup<long, string>>()
+            .Callback(lookup =>
+            {
+                Assert.Equal(2, lookup.Count());
+                Assert.Equal(2, lookup[1].Count());
+                Assert.Equal(3, lookup[2].Count());
+            })));
     }
 
     [Fact]
@@ -80,10 +87,13 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[2].Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<ILookup<long, string>>()
+            .Callback(lookup =>
+            {
+                Assert.Equal(2, lookup.Count());
+                Assert.Equal(2, lookup[1].Count());
+                Assert.Equal(2, lookup[2].Count());
+            })));
     }
 
     [Fact]
@@ -104,9 +114,12 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Single(GetFiredFact<ILookup<long, string>>());
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<ILookup<long, string>>()
+            .Callback(lookup =>
+            {
+                Assert.Single(lookup);
+                Assert.Equal(2, lookup[1].Count());
+            })));
     }
 
     [Fact]
@@ -128,10 +141,13 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
-        Assert.Equal(3, GetFiredFact<ILookup<long, string>>()[1].Count());
-        Assert.Single(GetFiredFact<ILookup<long, string>>()[2]);
+        Verify(x => x.Rule().Fired(Matched.Fact<ILookup<long, string>>()
+            .Callback(lookup =>
+            {
+                Assert.Equal(2, lookup.Count());
+                Assert.Equal(3, lookup[1].Count());
+                Assert.Single(lookup[2]);
+            })));
     }
 
     [Fact]
@@ -153,10 +169,13 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[2].Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<ILookup<long, string>>()
+            .Callback(lookup =>
+            {
+                Assert.Equal(2, lookup.Count());
+                Assert.Equal(2, lookup[1].Count());
+                Assert.Equal(2, lookup[2].Count());
+            })));
     }
 
     [Fact]
@@ -181,10 +200,13 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>().Count());
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[1].Count());
-        Assert.Equal(2, GetFiredFact<ILookup<long, string>>()[2].Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<ILookup<long, string>>()
+            .Callback(lookup =>
+            {
+                Assert.Equal(2, lookup.Count());
+                Assert.Equal(2, lookup[1].Count());
+                Assert.Equal(2, lookup[2].Count());
+            })));
     }
 
     [Fact]
@@ -208,7 +230,7 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
         Assert.NotNull(matchedGroup);
         Assert.NotNull(matchedGroup.Source);
         Assert.Equal(FactSourceType.Aggregate, matchedGroup.Source.SourceType);
@@ -217,7 +239,7 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
             item => Assert.Same(fact2, item.Value));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

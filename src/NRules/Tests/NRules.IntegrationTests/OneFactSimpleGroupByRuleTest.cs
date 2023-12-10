@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -14,7 +15,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -31,8 +32,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        Assert.Equal(2, GetFiredFact<IGrouping<string, FactType>>().Count());
+        Verify(x => x.Rule().Fired(Matched.Fact<IGrouping<string, FactType>>(f => f.Count() == 2)));
     }
 
     [Fact]
@@ -52,9 +52,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
-        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
+        Verify(s => s.Rule().Fired(Times.Twice, Matched.Fact<IGrouping<string, FactType>>(f => f.Count() == 1)));
     }
 
     [Fact]
@@ -74,9 +72,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
-        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
+        Verify(s => s.Rule().Fired(Times.Twice, Matched.Fact<IGrouping<string, FactType>>(f => f.Count() == 1)));
     }
 
     [Fact]
@@ -94,9 +90,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
-        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(0));
-        Assert.Single(GetFiredFact<IGrouping<string, FactType>>(1));
+        Verify(s => s.Rule().Fired(Times.Twice, Matched.Fact<IGrouping<string, FactType>>(f => f.Count() == 1)));
     }
 
     [Fact]
@@ -116,7 +110,7 @@ public class OneFactSimpleGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
@@ -133,13 +127,15 @@ public class OneFactSimpleGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        var firedGroup = GetFiredFact<IGrouping<string, FactType>>();
-        Assert.Single(firedGroup);
-        Assert.Equal("Valid Value Group2", firedGroup.Key);
+        Verify(x => x.Rule().Fired(Matched.Fact<IGrouping<string, FactType>>()
+            .Callback(firedGroup =>
+            {
+                Assert.Single(firedGroup);
+                Assert.Equal("Valid Value Group2", firedGroup.Key);
+            })));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

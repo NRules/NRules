@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -34,7 +35,7 @@ public class PriorityTest : BaseRulesTestFixture
         Assert.Equal("PriorityHighRule", invokedRules[3]);
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<PriorityLowRule>();
         setup.Rule<PriorityHighRule>();

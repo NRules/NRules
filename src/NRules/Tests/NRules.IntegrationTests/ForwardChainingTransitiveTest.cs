@@ -1,6 +1,7 @@
 ﻿using System;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -19,9 +20,12 @@ public class ForwardChainingTransitiveTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<FactToCalc1Rule>().FiredTimes(1);
-        Verify.Rule<Calc1ToCalc2Rule>().FiredTimes(1);
-        Verify.Rule<Calc1Calc2ToCalc3Rule>().FiredTimes(1);
+        Verify(s =>
+        {
+            s.Rule<FactToCalc1Rule>().Fired();
+            s.Rule<Calc1ToCalc2Rule>().Fired();
+            s.Rule<Calc1Calc2ToCalc3Rule>().Fired();
+        });
     }
 
     [Fact]
@@ -40,12 +44,18 @@ public class ForwardChainingTransitiveTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule<FactToCalc1Rule>().FiredTimes(2);
-        Verify.Rule<Calc1ToCalc2Rule>().FiredTimes(2);
-        Verify.Rule<Calc1Calc2ToCalc3Rule>().FiredTimes(2);
+        Verify(s =>
+        {
+            s.Rule<FactToCalc1Rule>().Fired();
+            s.Rule<Calc1ToCalc2Rule>().Fired();
+            s.Rule<Calc1Calc2ToCalc3Rule>().Fired();
+            s.Rule<FactToCalc1Rule>().Fired();
+            s.Rule<Calc1ToCalc2Rule>().Fired();
+            s.Rule<Calc1Calc2ToCalc3Rule>().Fired();
+        });
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<FactToCalc1Rule>();
         setup.Rule<Calc1ToCalc2Rule>();

@@ -6,6 +6,7 @@ using NRules.Extensibility;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -16,7 +17,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
     public void Insert_ConditionErrorNoErrorHandler_Throws()
     {
         //Arrange
-        GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        _testRule.Condition = ThrowCondition;
 
         Expression expression = null;
         IList<IFact> facts = null;
@@ -37,7 +38,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
     public void Fire_ConditionFailedInsert_DoesNotFire()
     {
         //Arrange
-        GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        _testRule.Condition = ThrowCondition;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
@@ -48,21 +49,21 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
     public void Fire_ConditionFailedInsertThenUpdate_Fires()
     {
         //Arrange
-        GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        _testRule.Condition = ThrowCondition;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
         var fact = new FactType { TestProperty = "Valid Value" };
         Session.Insert(fact);
 
-        GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
+        _testRule.Condition = SuccessfulCondition;
 
         Session.Update(fact);
 
@@ -70,7 +71,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
+        Verify(x => x.Rule().Fired());
     }
 
     [Fact]
@@ -82,7 +83,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         var fact = new FactType { TestProperty = "Valid Value" };
         Session.Insert(fact);
 
-        GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        _testRule.Condition = ThrowCondition;
 
         Session.Update(fact);
 
@@ -90,21 +91,21 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
     public void Fire_ConditionFailedInsertThenRetract_DoesNotFire()
     {
         //Arrange
-        GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        _testRule.Condition = ThrowCondition;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
         var fact = new FactType { TestProperty = "Valid Value" };
         Session.Insert(fact);
 
-        GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
+        _testRule.Condition = SuccessfulCondition;
 
         Session.Retract(fact);
 
@@ -112,21 +113,21 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
     public void Fire_ConditionFailedInsertThenUpdateThenRetract_DoesNotFire()
     {
         //Arrange
-        GetRuleInstance<TestRule>().Condition = ThrowCondition;
+        _testRule.Condition = ThrowCondition;
 
         Session.Events.LhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
         var fact = new FactType { TestProperty = "Valid Value" };
         Session.Insert(fact);
 
-        GetRuleInstance<TestRule>().Condition = SuccessfulCondition;
+        _testRule.Condition = SuccessfulCondition;
 
         Session.Update(fact);
         Session.Retract(fact);
@@ -135,14 +136,14 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
     public void Insert_FilterErrorNoErrorHandler_Throws()
     {
         //Arrange
-        GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
+        _testRule.FilterCondition = ThrowFilter;
 
         Expression expression = null;
         IList<IFactMatch> facts = null;
@@ -163,7 +164,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
     public void Insert_FilterErrorHasErrorHandler_DoesNotFire()
     {
         //Arrange
-        GetRuleInstance<TestRule>().FilterCondition = ThrowFilter;
+        _testRule.FilterCondition = ThrowFilter;
 
         Session.Events.AgendaExpressionFailedEvent += (sender, args) => args.IsHandled = true;
         var fact = new FactType { TestProperty = "Valid Value" };
@@ -173,14 +174,14 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
     [Fact]
     public void Fire_ActionErrorNoErrorHandler_Throws()
     {
         //Arrange
-        GetRuleInstance<TestRule>().Action = ThrowAction;
+        _testRule.Action = ThrowAction;
 
         Expression expression = null;
         IList<IFactMatch> facts = null;
@@ -202,7 +203,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
     public void Fire_ActionErrorHasErrorHandler_DoesNotThrow()
     {
         //Arrange
-        GetRuleInstance<TestRule>().Action = ThrowAction;
+        _testRule.Action = ThrowAction;
 
         Session.Events.RhsExpressionFailedEvent += (sender, args) => args.IsHandled = true;
 
@@ -218,7 +219,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
     {
         //Arrange
         Session.ActionInterceptor = new PassThroughActionInterceptor();
-        GetRuleInstance<TestRule>().Action = ThrowAction;
+        _testRule.Action = ThrowAction;
 
         Expression expression = null;
         IList<IFactMatch> facts = null;
@@ -232,9 +233,10 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         Assert.Throws<InvalidOperationException>(() => Session.Fire());
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
-        setup.Rule<TestRule>();
+        _testRule = new TestRule();
+        setup.Rule(_testRule);
     }
 
     private static readonly Action SuccessfulAction = () => { };
@@ -243,6 +245,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
     private static readonly Func<FactType, bool> ThrowCondition = f => throw new InvalidOperationException("Condition failed");
     private static readonly Func<FactType, bool> SuccessfulFilter = f => true;
     private static readonly Func<FactType, bool> ThrowFilter = f => throw new InvalidOperationException("Filter failed");
+    private TestRule _testRule;
 
     public class FactType
     {

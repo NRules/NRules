@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -23,7 +24,7 @@ public class GroupWithGroupFilterRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(2);
+        Verify(x => x.Rule().Fired(Times.Twice));
     }
 
     [Fact]
@@ -38,10 +39,10 @@ public class GroupWithGroupFilterRuleTest : BaseRulesTestFixture
         var facts = new object[] { fact11, fact12, fact13, fact14 };
         Session.InsertAll(facts);
 
-        fact11.TestProperty = "Bad Test Poroperty";
-        fact12.TestProperty = "Bad Test Poroperty";
-        fact13.TestProperty = "Bad Test Poroperty";
-        fact14.TestProperty = "Bad Test Poroperty";
+        fact11.TestProperty = "Bad Test Property";
+        fact12.TestProperty = "Bad Test Property";
+        fact13.TestProperty = "Bad Test Property";
+        fact14.TestProperty = "Bad Test Property";
         var factsToUpdate = new object[] { fact11, fact12, fact13, fact14 };
         Session.UpdateAll(factsToUpdate);
 
@@ -49,10 +50,10 @@ public class GroupWithGroupFilterRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(0);
+        Verify(x => x.Rule().Fired(Times.Never));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }

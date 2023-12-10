@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;
@@ -21,9 +23,7 @@ public class AggregateSubnetTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        var calculatedFact = GetFiredFact<CalculatedFact>();
-        Assert.Equal("Valid Value 2", calculatedFact.Value);
+        Verify(x => x.Rule().Fired(Matched.Fact<CalculatedFact>(f => f.Value == "Valid Value 2")));
     }
 
     [Fact]
@@ -43,12 +43,10 @@ public class AggregateSubnetTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        Verify.Rule().FiredTimes(1);
-        var calculatedFact = GetFiredFact<CalculatedFact>();
-        Assert.Equal("Valid Value 2", calculatedFact.Value);
+        Verify(x => x.Rule().Fired(Matched.Fact<CalculatedFact>(f => f.Value == "Valid Value 2")));
     }
 
-    protected override void SetUpRules(Testing.IRepositorySetup setup)
+    protected override void SetUpRules(IRulesTestSetup setup)
     {
         setup.Rule<TestRule>();
     }
