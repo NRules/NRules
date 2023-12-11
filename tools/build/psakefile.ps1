@@ -137,12 +137,14 @@ task Package -depends PackageNuGet, PackageBin -precondition { return $component
 }
 
 task Bench -depends Package -precondition { return $component.ContainsKey('bench') } {
-    $exe = $component.bench.exe
+    $benchRunner = $component.bench.runner
     $categories = $component.bench.categories -join ","
     foreach ($framework in $component.bench.frameworks) {
-        $exeFile = "$binOutDir\$framework\$exe"
+        $benchRunnerPath = "$binOutDir\$framework\$benchRunner"
         $artifacts = "$buildDir\bench\$framework"
-        exec { &$exeFile --join --anyCategories=$categories --artifacts=$artifacts }
+        Push-Location $solutionDir
+        exec { &$benchRunnerPath --join --anyCategories=$categories --artifacts=$artifacts }
+        Pop-Location
     }
 }
 
