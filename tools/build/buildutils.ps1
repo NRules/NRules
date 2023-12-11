@@ -48,6 +48,8 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
 
 function Install-DotNetCli([string] $location, [string] $version) {
     Assert ($version -ne $null) 'DotNet CLI version should not be null'
+
+    $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
     
     (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     if ($null -ne (Get-Command "dotnet" -ErrorAction SilentlyContinue)) {
@@ -63,6 +65,7 @@ function Install-DotNetCli([string] $location, [string] $version) {
         New-Directory $installDir
     }
 
+    $IsWindows = if (!(Get-Variable -Name IsWindows -ErrorAction SilentlyContinue)) { $true } else { $IsWindows }
     $installScriptName = if ($IsWindows) { "dotnet-install.ps1" } else { "dotnet-install.sh" }
     $installScriptPath = Join-Path $location $installScriptName
 
@@ -77,6 +80,4 @@ function Install-DotNetCli([string] $location, [string] $version) {
     if (!($env:PATH -contains $installDir)) {
         $env:PATH = "$installDir;$env:PATH"
     }
-
-    $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
 }
