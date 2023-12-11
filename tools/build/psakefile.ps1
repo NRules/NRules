@@ -4,7 +4,7 @@ param (
 
 properties {
     $version = $null
-    $sdkVersion = "7.0.306"
+    $sdkVersion = "8.0.100"
     $configuration = "Release"
     $baseDir = $null
 }
