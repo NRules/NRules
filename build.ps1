@@ -105,22 +105,22 @@ $components = @{
         solution_file = 'bench\NRules.Benchmark\NRules.Benchmark.sln'
         package = @{
             bin = @{
-                artifacts = @('net6', 'net48')
+                artifacts = @('net6', 'net8')
                 'net6' = @{
                     include = @(
                         "NRules.Benchmark\bin\$configuration\net6"
                     )
                 }
-                'net48' = @{
+                'net8' = @{
                     include = @(
-                        "NRules.Benchmark\bin\$configuration\net48"
+                        "NRules.Benchmark\bin\$configuration\net8"
                     )
                 }
             }
         }
         bench = @{
-            frameworks = @('net48')
-            exe = 'NRules.Benchmark.exe'
+            frameworks = @('net8')
+            runner = 'NRules.Benchmark'
             categories = @('Micro')
         }
     };

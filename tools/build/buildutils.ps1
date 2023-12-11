@@ -1,12 +1,12 @@
-﻿function Create-Directory([string] $directoryName) {
+﻿function New-Directory([string] $directoryName) {
     New-Item $directoryName -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
 }
 
-function Delete-Directory([string] $directoryName) {
+function Remove-Directory([string] $directoryName) {
     Remove-Item -Force -Recurse $directoryName -ErrorAction SilentlyContinue
 }
 
-function Delete-File([string] $fileName) {
+function Remove-File([string] $fileName) {
     if ($fileName) {
         Remove-Item $fileName -Force -ErrorAction SilentlyContinue | Out-Null
     } 
@@ -37,7 +37,7 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
         $filename = $_.fullname
 
         $tmp = ($filename + ".tmp")
-        Delete-File $tmp
+        Remove-File $tmp
 
         (Get-Content $filename) |
             % {$_ -replace $internalsVisibleToPattern, $internalsVisibleTo } |
@@ -48,31 +48,42 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
 
 function Install-DotNetCli([string] $location, [string] $version) {
     Assert ($version -ne $null) 'DotNet CLI version should not be null'
+
+    $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
     
     (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
-    if ((Get-Command "dotnet.exe" -ErrorAction SilentlyContinue) -ne $null) {
+    if ($null -ne (Get-Command "dotnet" -ErrorAction SilentlyContinue)) {
         $installedVersion = dotnet --version
         if ($installedVersion -eq $version) {
             Write-Host ".NET Core SDK version $version is already installed"
             return;
         }
     }
-  
+
     $installDir = Join-Path -Path $location -ChildPath "cli"
     if (!(Test-Path $installDir)) {
-        Create-Directory $installDir
+        New-Directory $installDir
     }
 
-    if (!(Test-Path $location\dotnet-install.ps1)) {
-        $url = "https://dot.net/v1/dotnet-install.ps1"
-        Invoke-WebRequest $url -OutFile "$location\dotnet-install.ps1"
+    $installScriptName = if (IsOnWindows) { "dotnet-install.ps1" } else { "dotnet-install.sh" }
+    $installScriptPath = Join-Path $location $installScriptName
+
+    if (!(Test-Path $installScriptPath)) {
+        $url = "https://dot.net/v1/$installScriptName"
+        Invoke-WebRequest $url -OutFile $installScriptPath
+        if (!(IsOnWindows)) {
+            & chmod +x $installScriptPath
+        }
     }
 
     Write-Host "Installing .NET Core SDK"
-    & $location\dotnet-install.ps1 -InstallDir "$installDir" -Version $version
+    & $installScriptPath -InstallDir "$installDir" -Version $version
 
     if (!($env:PATH -contains $installDir)) {
         $env:PATH = "$installDir;$env:PATH"
     }
-    $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
+}
+
+function IsOnWindows() {
+    return !(Get-Variable -Name IsWindows -ErrorAction SilentlyContinue) -or $IsWindows
 }
