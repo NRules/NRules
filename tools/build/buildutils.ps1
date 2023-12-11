@@ -37,7 +37,7 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
         $filename = $_.fullname
 
         $tmp = ($filename + ".tmp")
-        Delete-File $tmp
+        Remove-File $tmp
 
         (Get-Content $filename) |
             % {$_ -replace $internalsVisibleToPattern, $internalsVisibleTo } |
