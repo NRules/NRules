@@ -65,11 +65,10 @@ function Install-DotNetCli([string] $location, [string] $version) {
         New-Directory $installDir
     }
 
-    $IsWindows = if (!(Get-Variable -Name IsWindows -ErrorAction SilentlyContinue)) { $true } else { $IsWindows }
-    $installScriptName = if ($IsWindows) { "dotnet-install.ps1" } else { "dotnet-install.sh" }
+    $installScriptName = if (IsOnWindows) { "dotnet-install.ps1" } else { "dotnet-install.sh" }
     $installScriptPath = Join-Path $location $installScriptName
 
-    if (!(Test-Path $location\dotnet-install.ps1)) {
+    if (!(Test-Path $installScriptPath)) {
         $url = "https://dot.net/v1/$installScriptName"
         Invoke-WebRequest $url -OutFile $installScriptPath
     }
@@ -80,4 +79,8 @@ function Install-DotNetCli([string] $location, [string] $version) {
     if (!($env:PATH -contains $installDir)) {
         $env:PATH = "$installDir;$env:PATH"
     }
+}
+
+function IsOnWindows() {
+    return !(Get-Variable -Name IsWindows -ErrorAction SilentlyContinue) -or $IsWindows
 }
