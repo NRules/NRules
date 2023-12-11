@@ -71,6 +71,9 @@ function Install-DotNetCli([string] $location, [string] $version) {
     if (!(Test-Path $installScriptPath)) {
         $url = "https://dot.net/v1/$installScriptName"
         Invoke-WebRequest $url -OutFile $installScriptPath
+        if (!(IsOnWindows)) {
+            & chmod +x $installScriptPath
+        }
     }
 
     Write-Host "Installing .NET Core SDK"
