@@ -31,32 +31,30 @@ public class RulesTestFixture
     /// <summary>
     /// Gets the current rules engine session.
     /// </summary>
-    /// <remarks>Lazily created.</remarks>
     public ISession Session => _testHarness.Value.Session;
 
     /// <summary>
     /// Gets the rule invocation recorder to inspect rule firing.
     /// </summary>
-    /// <remarks>Lazily created.</remarks>
     public IRuleInvocationRecorder Recorder => _testHarness.Value.Recorder;
 
     /// <summary>
-    /// Configures rule firing assertions using an expectation builder.
+    /// Configures assertions for rules firing using an expectation builder.
     /// </summary>
-    /// <remarks>Lazily created.</remarks>
-    public void Verify(Action<IRuleVerification> buildAction)
+    public void Verify(Action<IRulesFiringVerification> buildAction)
     {
+        if (Asserter == null) throw new ArgumentNullException(nameof(Asserter), "Rule asserter is not set");
         var verification = _testHarness.Value.GetRulesVerification();
         var result = verification.Verify(buildAction);
         Asserter.Assert(result);
     }
 
     /// <summary>
-    /// Configures exact rule sequence firing assertions using an expectation builder.
+    /// Configures assertions of the exact rules firing sequence using an expectation builder.
     /// </summary>
-    /// <remarks>Lazily created.</remarks>
-    public void VerifySequence(Action<IRuleSequenceVerification> buildAction)
+    public void VerifySequence(Action<IRuleSequenceFiringVerification> buildAction)
     {
+        if (Asserter == null) throw new ArgumentNullException(nameof(Asserter), "Rule asserter is not set");
         var verification = _testHarness.Value.GetRulesVerification();
         var result = verification.VerifySequence(buildAction);
         Asserter.Assert(result);

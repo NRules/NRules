@@ -19,12 +19,14 @@ public interface IRulesUnderTest
     /// </summary>
     /// <param name="ruleType">Type of the rule to look for.</param>
     /// <returns>Found rule.</returns>
+    /// <throws><see cref="ArgumentException"/> if rule type is not registered.</throws>
     RuleInfo GetRuleInfo(Type ruleType);
 
     /// <summary>
     /// Gets the rule information for the single rule under test.
     /// </summary>
     /// <returns>Found rule.</returns>
+    /// <throws><see cref="ArgumentException"/> if multiple or no rules are registered.</throws>
     RuleInfo GetSingle();
 }
 

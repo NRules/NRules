@@ -13,7 +13,7 @@ public struct RuleInfo
     /// </summary>
     /// <param name="type">CLR type that contains rule's definition using Fluent DSL.</param>
     /// <param name="instance">Instance of the rule's type.</param>
-    /// <param name="definition">Rule's definition.</param>
+    /// <param name="definition">Rule's definition in a canonical form.</param>
     public RuleInfo(Type type, object instance, IRuleDefinition definition)
     {
         Type = type;

@@ -3,7 +3,7 @@
 namespace NRules.Testing;
 
 /// <summary>
-/// Rules under test compiled into a rules engine session along with means to verify rules invocation.
+/// Rules under test compiled into a rules engine session along with the means to verify rules firing.
 /// </summary>
 public class RulesTestHarness
 {
@@ -40,14 +40,14 @@ public class RulesTestHarness
     public ISession Session { get; }
 
     /// <summary>
-    /// Gets the rule invocation recorder to inspect rule firing.
+    /// Gets the rule invocation recorder to control and inspect rules firing.
     /// </summary>
     public IRuleInvocationRecorder Recorder => _invocationRecorder;
 
     /// <summary>
-    /// Creates a rules verification builder to verify rules firing.
+    /// Creates a rules verification builder to check rules firing expectations.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Instance of the verification builder.</returns>
     public IRulesVerification GetRulesVerification()
     {
         return new RulesVerification(_ruleSet, Recorder.GetInvocations());

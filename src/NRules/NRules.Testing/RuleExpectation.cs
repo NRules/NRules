@@ -74,7 +74,7 @@ internal class SingleRuleExpectation : IRuleExpectation
 
         foreach (var match in invocations)
         {
-            if (IsMetForRule(match.Rule) && IsMetForFacts(match))
+            if (IsRuleEqual(match.Rule) && AreConstraintsSatisfied(match))
             {
                 resultMatches.Add(match);
                 OnMetExpectation();
@@ -96,29 +96,27 @@ internal class SingleRuleExpectation : IRuleExpectation
         return result;
     }
 
-    protected bool IsMetForRule(IRuleDefinition ruleDefinition)
+    private bool IsRuleEqual(IRuleDefinition ruleDefinition)
     {
-        return ruleDefinition.Name == _ruleDefinition.Name;
+        return Equals(ruleDefinition.Name, _ruleDefinition.Name);
     }
 
-    private bool IsMetForFacts(IMatch match)
+    private bool AreConstraintsSatisfied(IMatch match)
     {
-        bool isMetForAll = true;
         int j = 0;
         var facts = match.Facts.ToArray();
         for (int i = 0; i < _constraints.Length; i++)
         {
-            bool isMet = false;
-            for (; j < facts.Length && !isMet; j++)
+            bool isSatisfied = false;
+            for (; j < facts.Length && !isSatisfied; j++)
             {
-                isMet = _constraints[i].IsSatisfied(facts[j]);
+                isSatisfied = _constraints[i].IsSatisfied(facts[j]);
                 _matchedFacts[i] = facts[j];
             }
-            
-            isMetForAll = isMet;
-            if (!isMetForAll) break;
+
+            if (!isSatisfied) return false;
         }
-        return isMetForAll;
+        return true;
     }
 
     private void OnMetExpectation()

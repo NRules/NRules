@@ -8,16 +8,15 @@ namespace NRules.Testing;
 /// </summary>
 public interface IRuleFiringVerification
 {
-    
     /// <summary>
     /// Asserts that a given rule under test fired with a set of facts matching the specified expectations.
     /// </summary>
-    /// <param name="expectations">Expected facts matched by the rule.</param>
-    void Fired(params FactConstraint[] expectations);
+    /// <param name="constraints">Constraints narrowing down the rule firing expectation.</param>
+    void Fired(params FactConstraint[] constraints);
 }
 
 /// <summary>
-/// Represents specific rule firing verification.
+/// Represents specific rule firing verification that uses qualified rule firing expectations.
 /// </summary>
 public interface IQualifiedRuleFiringVerification : IRuleFiringVerification
 {
@@ -25,21 +24,21 @@ public interface IQualifiedRuleFiringVerification : IRuleFiringVerification
     /// Asserts that a given rule under test fired the given number of times with a set of facts matching the specified expectations.
     /// </summary>
     /// <param name="times">Expected number of rule firings.</param>
-    /// <param name="expectations">Expected facts matched by the rule.</param>
-    void Fired(Times times, params FactConstraint[] expectations);
+    /// <param name="constraints">Constraints narrowing down the rule firing expectation.</param>
+    void Fired(Times times, params FactConstraint[] constraints);
 }
 
 internal class RuleFiringVerification : IQualifiedRuleFiringVerification
 {
     private readonly IRuleDefinition _rule;
-    private readonly bool _isExactInvocation;
+    private readonly bool _isExact;
     private FactConstraint[] _constraints = Array.Empty<FactConstraint>();
     private Times _times = Times.Once;
 
-    public RuleFiringVerification(IRuleDefinition rule, bool isExactInvocation)
+    public RuleFiringVerification(IRuleDefinition rule, bool isExact)
     {
         _rule = rule;
-        _isExactInvocation = isExactInvocation;
+        _isExact = isExact;
     }
 
     public void Fired(params FactConstraint[] constraints)
@@ -55,7 +54,7 @@ internal class RuleFiringVerification : IQualifiedRuleFiringVerification
 
     public IRuleExpectation Build()
     {
-        var expectation = new SingleRuleExpectation(_rule, _constraints, _times, _isExactInvocation);
+        var expectation = new SingleRuleExpectation(_rule, _constraints, _times, _isExact);
         return expectation;
     }
 }

@@ -1,7 +1,8 @@
 ﻿namespace NRules.Testing;
 
 /// <summary>
-/// Represents assertion outcome (pass/fail). </summary>
+/// Represents assertion outcome (pass/fail).
+/// </summary>
 public enum RuleAssertStatus
 {
     /// <summary>

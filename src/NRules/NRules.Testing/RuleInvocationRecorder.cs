@@ -5,12 +5,12 @@ using System.Collections.Generic;
 namespace NRules.Testing;
 
 /// <summary>
-/// Controls the recording of rule invocations and provides access to recorded rule invocations.
+/// Controls the recording of rule invocations and provides access to the recorded invocations.
 /// </summary>
 public interface IRuleInvocationRecorder
 {
     /// <summary>
-    /// Gets all recorded rule invocations.
+    /// Gets all recorded invocations.
     /// </summary>
     IReadOnlyList<IMatch> GetInvocations();
 

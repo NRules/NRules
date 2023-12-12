@@ -15,7 +15,7 @@ public interface IRulesVerification
     /// <remarks>Recorded rule invocations are compared to expectations one by one.</remarks>
     /// <param name="action">Expectations configuration action.</param>
     /// <returns>Outcome of validation of recorded rule invocations against the provided expectations.</returns>
-    RuleAssertResult VerifySequence(Action<IRuleSequenceVerification> action);
+    RuleAssertResult VerifySequence(Action<IRuleSequenceFiringVerification> action);
 
     /// <summary>
     /// Verifies that the rules under test fired with a set of facts matching the specified expectations.
@@ -24,7 +24,7 @@ public interface IRulesVerification
     /// specified using <see cref="Times"/>.</remarks>
     /// <param name="action">Expectations configuration action.</param>
     /// <returns>Outcome of validation of recorded rule invocations against the provided expectations.</returns>
-    RuleAssertResult Verify(Action<IRuleVerification> action);
+    RuleAssertResult Verify(Action<IRulesFiringVerification> action);
 }
 
 internal class RulesVerification : IRulesVerification
@@ -38,16 +38,16 @@ internal class RulesVerification : IRulesVerification
         _invocations = invocations;
     }
 
-    public RuleAssertResult VerifySequence(Action<IRuleSequenceVerification> action)
+    public RuleAssertResult VerifySequence(Action<IRuleSequenceFiringVerification> action)
     {
-        var verification = new RulesSequenceFiringVerification(_rulesUnderTest);
+        var verification = new RuleSequenceFiringVerification(_rulesUnderTest);
         action(verification);
         var expectation = verification.Build();
         var result = expectation.Verify(_invocations);
         return result;
     }
 
-    public RuleAssertResult Verify(Action<IRuleVerification> action)
+    public RuleAssertResult Verify(Action<IRulesFiringVerification> action)
     {
         var verification = new RulesFiringVerification(_rulesUnderTest);
         action(verification);

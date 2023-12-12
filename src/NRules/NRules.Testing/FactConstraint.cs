@@ -24,7 +24,7 @@ public abstract class FactConstraint
     internal abstract string GetText();
 
     /// <summary>
-    /// Called with the corresponding <see cref="IFactMatch"/> when all rule firing fact constraints are satisfied.
+    /// Called with the corresponding <see cref="IFactMatch"/> when all fact constraints are satisfied for a rule firing.
     /// </summary>
     /// <param name="factMatch"></param>
     internal virtual void OnSatisfied(IFactMatch factMatch)
@@ -35,20 +35,17 @@ public abstract class FactConstraint
 /// <summary>
 /// Represents a strongly-typed constraint on facts matched by a rule.
 /// </summary>
-public abstract class FactConstraint<T> : FactConstraint
+public abstract class FactConstraint<TFact> : FactConstraint
 {
-    private List<Action<T>> _callbacks;
+    private List<Action<TFact>> _callbacks;
 
     /// <summary>
     /// Called with the corresponding fact when all rule firing fact constraints are satisfied.
     /// </summary>
     /// <param name="callback">The delegate to call.</param>
-    public FactConstraint<T> Callback(Action<T> callback)
+    public FactConstraint<TFact> Callback(Action<TFact> callback)
     {
-        if (_callbacks == null)
-        {
-            _callbacks = new List<Action<T>>();
-        }
+        _callbacks ??= new List<Action<TFact>>();
         _callbacks.Add(callback);
         return this;
     }
@@ -56,35 +53,33 @@ public abstract class FactConstraint<T> : FactConstraint
     internal override void OnSatisfied(IFactMatch factMatch)
     {
         base.OnSatisfied(factMatch);
-        if (_callbacks != null)
+        if (_callbacks == null) return;
+        foreach (var callback in _callbacks)
         {
-            foreach (var callback in _callbacks)
-            {
-                callback.Invoke((T)factMatch.Value);
-            }
+            callback.Invoke((TFact)factMatch.Value);
         }
     }
 }
 
-internal class TypedFactConstraint<T> : FactConstraint<T>
+internal class TypedFactConstraint<TFact> : FactConstraint<TFact>
 {
     internal override bool IsSatisfied(IFactMatch factMatch)
     {
-        return typeof(T).IsAssignableFrom(factMatch.Declaration.Type);
+        return typeof(TFact).IsAssignableFrom(factMatch.Declaration.Type);
     }
 
     internal override string GetText()
     {
-        return $"Fact {typeof(T)}";
+        return $"Fact {typeof(TFact)}";
     }
 }
 
-internal class PredicatedFactConstraint<T> : FactConstraint<T>
+internal class PredicatedFactConstraint<TFact> : FactConstraint<TFact>
 {
-    private readonly Expression<Func<T, bool>> _predicateExpression;
-    private readonly Func<T, bool> _predicate;
+    private readonly Expression<Func<TFact, bool>> _predicateExpression;
+    private readonly Func<TFact, bool> _predicate;
 
-    public PredicatedFactConstraint(Expression<Func<T, bool>> predicateExpression)
+    public PredicatedFactConstraint(Expression<Func<TFact, bool>> predicateExpression)
     {
         _predicateExpression = predicateExpression;
         _predicate = predicateExpression.Compile();
@@ -92,16 +87,16 @@ internal class PredicatedFactConstraint<T> : FactConstraint<T>
 
     internal override bool IsSatisfied(IFactMatch factMatch)
     {
-        if (typeof(T).IsAssignableFrom(factMatch.Declaration.Type))
+        if (typeof(TFact).IsAssignableFrom(factMatch.Declaration.Type))
         {
-            return _predicate((T)factMatch.Value);
+            return _predicate((TFact)factMatch.Value);
         }
         return false;
     }
 
     internal override string GetText()
     {
-        return $"Fact {typeof(T)} where {_predicateExpression}";
+        return $"Fact {typeof(TFact)} where {_predicateExpression}";
     }
 }
 

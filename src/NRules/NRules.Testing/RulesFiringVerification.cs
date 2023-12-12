@@ -8,7 +8,7 @@ namespace NRules.Testing;
 /// <summary>
 /// Fluent interface to build rules verification.
 /// </summary>
-public interface IRuleVerification<out TVerification>
+public interface IRulesFiringVerification<out TVerification>
 {
     /// <summary>
     /// Single registered rule under test.
@@ -36,18 +36,18 @@ public interface IRuleVerification<out TVerification>
 /// <summary>
 /// Fluent interface to build specific rule invocation verification.
 /// </summary>
-public interface IRuleVerification : IRuleVerification<IQualifiedRuleFiringVerification>
+public interface IRulesFiringVerification : IRulesFiringVerification<IQualifiedRuleFiringVerification>
 {
 }
 
 /// <summary>
 /// Fluent interface to build specific rule invocation verification.
 /// </summary>
-public interface IRuleSequenceVerification : IRuleVerification<IRuleFiringVerification>
+public interface IRuleSequenceFiringVerification : IRulesFiringVerification<IRuleFiringVerification>
 {
 }
 
-internal abstract class RulesFiringVerification<TVerification> : IRuleVerification<TVerification>
+internal abstract class RulesFiringVerification<TVerification> : IRulesFiringVerification<TVerification>
 {
     private readonly IRulesUnderTest _rulesUnderTest;
     private readonly List<RuleFiringVerification> _verifications = new();
@@ -86,22 +86,22 @@ internal abstract class RulesFiringVerification<TVerification> : IRuleVerificati
     }
 }
 
-internal class RulesSequenceFiringVerification : RulesFiringVerification<IRuleFiringVerification>, IRuleSequenceVerification
+internal class RuleSequenceFiringVerification : RulesFiringVerification<IRuleFiringVerification>, IRuleSequenceFiringVerification
 {
 
-    public RulesSequenceFiringVerification(IRulesUnderTest rulesUnderTest) : base(rulesUnderTest)
+    public RuleSequenceFiringVerification(IRulesUnderTest rulesUnderTest) : base(rulesUnderTest)
     {
     }
 
     protected override IRuleFiringVerification Rule(RuleInfo rule)
     {
-        var verification = new RuleFiringVerification(rule.Definition, isExactInvocation: true);
+        var verification = new RuleFiringVerification(rule.Definition, isExact: true);
         AddVerification(verification);
         return verification;
     }
 }
 
-internal class RulesFiringVerification : RulesFiringVerification<IQualifiedRuleFiringVerification>, IRuleVerification
+internal class RulesFiringVerification : RulesFiringVerification<IQualifiedRuleFiringVerification>, IRulesFiringVerification
 {
     public RulesFiringVerification(IRulesUnderTest rulesUnderTest) : base(rulesUnderTest)
     {
@@ -109,7 +109,7 @@ internal class RulesFiringVerification : RulesFiringVerification<IQualifiedRuleF
 
     protected override IQualifiedRuleFiringVerification Rule(RuleInfo rule)
     {
-        var verification = new RuleFiringVerification(rule.Definition, isExactInvocation: false);
+        var verification = new RuleFiringVerification(rule.Definition, isExact: false);
         AddVerification(verification);
         return verification;
     }

@@ -3,15 +3,15 @@
 namespace NRules.Testing;
 
 /// <summary>
-/// Represents result for a rule assertion.
+/// Represents the result for a rule firing assertion.
 /// </summary>
 public sealed class RuleAssertResult
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RuleAssertResult"/> class.
     /// </summary>
-    /// <param name="ruleName">Name of the rule corresponding to the rule assertion.</param>
-    /// <param name="status">Rule assertion outcome.</param>
+    /// <param name="ruleName">Name of the rule corresponding to the assertion.</param>
+    /// <param name="status">Assertion outcome.</param>
     /// <param name="assertionText">Text that describes the assertion.</param>
     /// <param name="expected">Expected outcome.</param>
     /// <param name="actual">Actual outcome.</param>
@@ -25,7 +25,7 @@ public sealed class RuleAssertResult
     }
 
     /// <summary>
-    /// Gets the rule definition corresponding to the rule assertion.
+    /// Gets the name of the rule corresponding to the assertion.
     /// </summary>
     public string RuleName { get; }
 
