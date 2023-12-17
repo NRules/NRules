@@ -3,13 +3,21 @@
     {
       "src": [
         {
-          "src": "../build/bin",
+          "src": "../src",
           "files": [
-            "NRules/netstandard2.1/*.dll",
-            "NRules.Integration.Autofac/netstandard2.1/NRules.Integration.*.dll"
+            "NRules/**/*.csproj",
+            "NRules.Integration.*/**/NRules.Integration.*.csproj"
+          ],
+          "exclude": [
+            "**/bin/**",
+            "**/obj/**",
+            "**/*Tests/**"
           ]
         }
       ],
+      "properties": {
+        "TargetFramework": "netstandard2.1"
+      },
       "dest": "api",
       "filter": "filterConfig.yml",
       "namespaceLayout": "flattened",
