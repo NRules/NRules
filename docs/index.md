@@ -39,4 +39,5 @@ Use the following discussion and Q&A platforms to get help with NRules
 ## Contributing
 
 Clone NRules on GitHub: https://github.com/NRules/NRules
+
 See [Contributor Guide](https://github.com/NRules/NRules/blob/main/CONTRIBUTING.md) for the guidelines on how to contribute to the project.
