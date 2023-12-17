@@ -8,3 +8,5 @@
   href: articles/advanced/toc.yml
 - name: API Documentation
   href: api/
+- name: GitHub
+  href: https://github.com/NRules/NRules
