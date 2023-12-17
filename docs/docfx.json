@@ -6,7 +6,7 @@
           "src": "../src",
           "files": [
             "NRules/**/*.csproj",
-            "NRules.Integration.*/**/NRules.Integration.*.csproj"
+            "NRules.Integration/**/NRules.Integration.*.csproj"
           ],
           "exclude": [
             "**/bin/**",
