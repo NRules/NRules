@@ -10,7 +10,11 @@
           ]
         }
       ],
-      "dest": "api"
+      "dest": "api",
+      "filter": "filterConfig.yml",
+      "namespaceLayout": "flattened",
+      "memberLayout": "samePage",
+      "EnumSortOrder": "alphabetic"
     }
   ],
   "build": {
