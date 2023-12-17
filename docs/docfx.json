@@ -11,7 +11,8 @@
           "exclude": [
             "**/bin/**",
             "**/obj/**",
-            "**/*Tests/**"
+            "**/NRules*Tests/**",
+            "**/NRules.Meta/**"
           ]
         }
       ],
