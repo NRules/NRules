@@ -12,21 +12,6 @@ function Remove-File([string] $fileName) {
     } 
 }
 
-function Get-Msbuild() {
-    $vsRoot = "${env:ProgramFiles}\Microsoft Visual Studio"
-    $msbuild = "msbuild.exe"
-    if (Test-Path $vsRoot) {
-        Get-ChildItem -Path $vsRoot | Where {$_ -match "^\d+$"} | Sort-Object -Descending |% {
-            $vsPath = "$vsRoot\$_"
-            Get-ChildItem -Path $vsPath |% {
-                $msbuildPath = "$vsPath\$_\MSBuild\Current\Bin"
-                $msbuild = "$msbuildPath\msbuild.exe"
-            }
-        }
-    }
-    return $msbuild
-}
-
 function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $assemblyInfoFileName = "InternalsVisibleTo.props") {
     Write-Host Patching InternalsVisibleTo with public key
     

@@ -127,8 +127,8 @@ $components = @{
     'Documentation' = @{
         name = 'Documentation'
         doc = @{
-            shfb = @{
-                project_file = 'doc\NRules.shfbproj'
+            docfx = @{
+                project_file = 'docs\docfx.json'
             }
         }
     };

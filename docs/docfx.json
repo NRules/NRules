@@ -1,0 +1,58 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../build/bin",
+          "files": [
+            "NRules/netstandard2.1/*.dll",
+            "NRules.Integration.Autofac/netstandard2.1/NRules.Integration.*.dll"
+          ]
+        }
+      ],
+      "dest": "api"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "**/*.{md,yml}"
+        ],
+        "exclude": [
+          "_site/**"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**",
+          "articles/images/**"
+        ]
+      }
+    ],
+    "output": "../build/docs",
+    "xref": [
+      "https://learn.microsoft.com/en-us/dotnet/.xrefmap.json"
+    ],
+    "template": [
+      "default",
+      "modern"
+    ],
+    "globalMetadata": {
+      "_appName": "NRules",
+      "_appTitle": "NRules",
+      "_appLogoPath": "images/logo.png",
+      "_appFaviconPath": "images/logo.png",
+      "_enableSearch": true,
+      "_lang": "en",
+      "_gitContribute": {
+        "branch": "develop"
+      },
+      "_gitUrlPattern": "github",
+      "_appFooter": "<span>Copyright &copy; 2012-2023 <a href=\"https://github.com/snikolayev\">Sergiy Nikolayev</a> under the <a href=\"https://raw.github.com/NRules/NRules/main/LICENSE.txt\">MIT license</a>.</span>",
+      "pdf": false
+    }
+  }
+}
