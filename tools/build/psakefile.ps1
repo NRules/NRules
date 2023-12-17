@@ -22,11 +22,15 @@ task Init {
     
     $compName = $component.name
     
-    $script:solutionDir = Join-Path $baseDir src $compName
+    $script:sourceDir = Join-Path $baseDir src
     $script:buildDir = Join-Path $baseDir build
-    $script:binOutDir = Join-Path $buildDir bin $compName
-    $script:pkgOutDir = Join-Path $buildDir packages $compName
+    $script:binDir = Join-Path $buildDir bin
+    $script:pkgDir = Join-Path $buildDir pkg
     $script:toolsDir = Join-Path $baseDir tools
+
+    $script:solutionDir = Join-Path $sourceDir $compName
+    $script:binOutDir = Join-Path $binDir $compName
+    $script:pkgOutDir = Join-Path $pkgDir $compName
     
     $script:solutionFile = Join-Path $solutionDir "$($component.name).sln"
     if ($component.ContainsKey('solution_file')) {
@@ -139,8 +143,10 @@ task Bench -depends Package -precondition { return $component.ContainsKey('bench
     $benchRunner = $component.bench.runner
     $categories = $component.bench.categories -join ","
     foreach ($framework in $component.bench.frameworks) {
-        $benchRunnerPath = Join-Path $binOutDir $framework $benchRunner
-        $artifacts = Join-Path $buildDir bench $framework
+        $benchRunnerFmkPath = Join-Path $binOutDir $framework
+        $benchRunnerPath = Join-Path $benchRunnerFmkPath $benchRunner
+        $benchDir = Join-Path $buildDir bench
+        $artifacts = Join-Path $benchDir $framework
         Push-Location $solutionDir
         exec { &$benchRunnerPath --join --anyCategories=$categories --artifacts=$artifacts }
         Pop-Location
