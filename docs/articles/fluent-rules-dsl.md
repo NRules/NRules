@@ -8,17 +8,17 @@ Within the [Define](xref:NRules.Fluent.Dsl.Rule.Define) method, LHS is specified
 
 > :warning: Make sure rule classes are public, otherwise the engine won't find them.
 
-See [[Fluent Rules Loading]] on how to load rules defined with the fluent rules DSL.
+See [Fluent Rules Loading](fluent-rules-loading.md) on how to load rules defined with the fluent rules DSL.
 
 Rule class can also optionally be decorated with the following custom attributes to associate additional metadata with the rule.
 
 Attribute | Allow Multiple? | Inherited? | Description
 --- | --- | --- | ---
-Name | No | No | Specifies rule name. Default is the fully qualified rule class name.
-Description | No | No | Specifies rule description. Default is an empty string.
-Tag | Yes | Yes | Associates arbitrary tag with the rule (can later be used to group or filter rules).
-Priority | No | Yes | Sets rule priority. If multiple rules get activated at the same time, rules with higher priority (larger number) get executed first. Priority can be positive or negative. Default is zero.
-Repeatability | No | No | Sets rule's repeatability, that is, how it behaves when it is activated with the same set of facts multiple times, which is important for recursion control. Repeatability can be set to repeatable - the rule is activated if any of the matched facts are updated, or non-repeatable - the rule is only activated once for a given set of matched facts (unless the match is retracted, before being re-asserted again). Default is `Repeatable`.
+[Name](xref:NRules.Fluent.Dsl.NameAttribute) | No | No | Specifies rule name. Default is the fully qualified rule class name.
+[Description](xref:NRules.Fluent.Dsl.DescriptionAttribute) | No | No | Specifies rule description. Default is an empty string.
+[Tag](xref:NRules.Fluent.Dsl.TagAttribute) | Yes | Yes | Associates arbitrary tag with the rule (can later be used to group or filter rules).
+[Priority](xref:NRules.Fluent.Dsl.PriorityAttribute) | No | Yes | Sets rule priority. If multiple rules get activated at the same time, rules with higher priority (larger number) get executed first. Priority can be positive or negative. Default is zero.
+[Repeatability](xref:NRules.Fluent.Dsl.RepeatabilityAttribute) | No | No | Sets rule's repeatability, that is, how it behaves when it is activated with the same set of facts multiple times, which is important for recursion control. Repeatability can be set to repeatable - the rule is activated if any of the matched facts are updated, or non-repeatable - the rule is only activated once for a given set of matched facts (unless the match is retracted, before being re-asserted again). Default is `Repeatable`.
 
 ```c#
 [Name("MyRule"), Description("Test rule that demonstrates metadata usage")]
