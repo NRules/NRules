@@ -49,10 +49,10 @@ public class Order
 ```
 
 ## Creating Rules
-When using NRules internal DSL, a rule is a class that inherits from `NRules.Fluent.Dsl.Rule`. A rule consists of a set of conditions (patterns that match facts in the rules engine's memory) and a set of actions executed by the engine should the rule fire.
+When using NRules internal DSL, a rule is a class that inherits from [Rule](xref:NRules.Fluent.Dsl.Rule). A rule consists of a set of conditions (patterns that match facts in the rules engine's memory) and a set of actions executed by the engine should the rule fire.
 
 Let's look at the first rule. We want to find all preferred customers, and for every matching customer we want to collect all orders and apply a discount of 10%.
-Each pattern in the `When` part of the rule is bound to a variable via an expression, and then can be used in the `Then` part of the rule. Also note that if there is more than one pattern in the rule, the patterns must be joined to avoid a Cartesian Product between the matching facts. In this example the orders are joined with the customer.
+Each pattern in the [When](xref:NRules.Fluent.Dsl.Rule.When) part of the rule is bound to a variable via an expression, and then can be used in the [Then](xref:NRules.Fluent.Dsl.Rule.Then) part of the rule. Also note that if there is more than one pattern in the rule, the patterns must be joined to avoid a Cartesian Product between the matching facts. In this example the orders are joined with the customer.
 ```c#
 public class PreferredCustomerDiscountRule : Rule
 {

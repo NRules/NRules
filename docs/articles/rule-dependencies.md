@@ -5,7 +5,7 @@ In a real software project, however, this is not enough. Rules also need ability
 
 Since rules are regular .NET classes, they could just access various singleton and static services. This is obviously less than desirable, since the use of singletons results in tightly-coupled designs and is generally discouraged.
 
-A much better design is to resolve dependencies via a DI container. And one option here is to resolve rule types via a container and inject dependencies into them (see [[Rule Activation|Fluent-Rules-Loading#rule-activation]]).
+A much better design is to resolve dependencies via a DI container. And one option here is to resolve rule types via a container and inject dependencies into them (see [Rule Activation](fluent-rules-loading.md#rule-activation)).
 This however presents a problem. Rule classes are instantiated only once in the lifetime of the application, and therefore can only be injected with single-instance services. This may be sufficient for some applications, but when it's not enough there is another alternative.
 
 Rules can declare their dependencies using fluent DSL, and rules engine will dynamically resolve those dependencies at runtime.
@@ -36,9 +36,9 @@ The service variable can then be used in rule actions. The rules engine will inj
 
 > :warning: Rule dependencies cannot be used in rule conditions.
 
-In order to be able to use rule dependencies, one must implement `IDependencyResolver` interface and set resolver instance either at the `ISession` or at the `ISessionFactory` level.
+In order to be able to use rule dependencies, one must implement [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) interface and set resolver instance either at the [ISession](xref:NRules.ISession) or at the [ISessionFactory](xref:NRules.ISessionFactory) level.
 
-NRules ships with the implementation of `IDependencyResolver` as well as `IRuleActivator` for Autofac IoC container in a separate integration assembly (see [NRules.Integration.Autofac](https://www.nuget.org/packages/NRules.Integration.Autofac)).
+NRules ships with the implementation of [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) as well as [IRuleActivator](xref:NRules.Fluent.IRuleActivator) for Autofac IoC container in a separate integration assembly (see [NRules.Integration.Autofac](xref:NRules.Integration.Autofac)).
 With the integration package, the following fully bootstraps and registers NRules with Autofac container. Registration extensions return registration builders that allow customization of individual registrations.
 
 ```c#

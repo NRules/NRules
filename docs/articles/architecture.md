@@ -17,13 +17,13 @@ NRules is a production rules engine and its executable form is a [rete network](
 
 ![NRules Architecture](https://raw.githubusercontent.com/wiki/NRules/NRules/images/NRules-Architecture.png)
 
-`NRules.Fluent` namespace contains classes that enable declaratively authoring rules using internal DSL, which is a fluent C# API.
-A `RuleRepository` is then used to scan assemblies to discover rules and interact with `RuleBuilder` to translate them into their canonical form.
+[NRules.Fluent](xref:NRules.Fluent) namespace contains classes that enable declaratively authoring rules using internal DSL, which is a fluent C# API.
+A [RuleRepository](xref:NRules.Fluent.RuleRepository) is then used to scan assemblies to discover rules and interact with [RuleBuilder](xref:NRules.RuleModel.Builders.RuleBuilder) to translate them into their canonical form.
 
-`NRules.RuleModel` namespace contains classes that represent rules as a canonical model. At this level rules are a collection of rule sets, each containing rule definitions.
+[NRules.RuleModel](xref:NRules.RuleModel) namespace contains classes that represent rules as a canonical model. At this level rules are a collection of rule sets, each containing rule definitions.
 
-`NRules` namespace contains classes that implement the run-time side of the rules engine.
-`RuleCompiler` converts rules from the canonical form to a rete network, which is contained within a `SessionFactory`.
-The session factory is then used to create instances of a `Session`, which contains the facts that the engine will use for inference (aka working memory).
+[NRules](xref:NRules) namespace contains classes that implement the run-time side of the rules engine.
+[RuleCompiler](xref:NRules.RuleCompiler) converts rules from the canonical form to a rete network, which is contained within an [ISessionFactory](xref:NRules.ISessionFactory).
+The session factory is then used to create instances of an [ISession](xref:NRules.ISession), which contains the facts that the engine will use for inference (aka working memory).
 There may be multiple concurrent sessions created off of the same session factory; they will all share the same rete network (which means they will use the same set of rules), 
 but they will use different sets of facts and, from the client's perspective, are completely independent.

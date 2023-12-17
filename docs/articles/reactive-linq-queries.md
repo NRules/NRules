@@ -10,14 +10,14 @@ Thus, reactive queries are as efficient as matching individual facts.
 
 A query result must be bound to a variable, so that it can then be used within other rule patterns, or by the rule's actions.
 
-The following operators are supported in reactive LINQ queries.
+The following operators are supported in reactive LINQ queries and are defined as [extension methods](xref:NRules.Fluent.Dsl.QueryExtensions).
 
-* Match - starts a query by matching facts in rules engine's memory
-* Where - filters source elements by a set of conditions
-* GroupBy - aggregates source elements into groups
-* Collect - aggregates source elements into a collection
-* Select - projects source elements
-* SelectMany - flattens source collections
+* `Match` - starts a query by matching facts in rules engine's memory
+* `Where` - filters source elements by a set of conditions
+* `GroupBy` - aggregates source elements into groups
+* `Collect` - aggregates source elements into a collection
+* `Select` - projects source elements into new elements
+* `SelectMany` - flattens source collections
 
 ```c#
 [Name("Preferred customer discount")]

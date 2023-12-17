@@ -1,6 +1,6 @@
 # Unit Testing Rules
 
-NRules is a production rules engine, which means rules are defined in a form of `When <conditions> Then <actions>`. This makes the rules easy to unit test, by creating an isolated rules session with a single rule in it, supplying test inputs by inserting facts into the session, calling the `Fire` method and asserting that the rule fired or didn't fire given those inputs.  
+NRules is a production rules engine, which means rules are defined in a form of `When <conditions> Then <actions>`. This makes the rules easy to unit test, by creating an isolated rules session with a single rule in it, supplying test inputs by inserting facts into the session, calling the [Fire](xref:NRules.ISession.Fire) method and asserting that the rule fired or didn't fire given those inputs.  
 
 Below is an example of a test fixture that uses [xUnit](https://xunit.net/) that bootstraps the rules session for any single rule, and exposes methods for asserting the rule's firing.
 ```c#

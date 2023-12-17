@@ -2,9 +2,9 @@
 
 The standard way to define rules in NRules is with the internal DSL using fluent C# API.
 
-A rule is a .NET class that inherits from `NRules.Fluent.Dsl.Rule`.
-Rule class overrides `Define` method where the actual conditions (left-hand side, or LHS) and actions (right-hand side, or RHS) parts are specified.
-Within the `Define` method, LHS is specified by fluently chaining conditions to the `When()` method; and RHS by fluently chaining actions to `Then()` method.
+A rule is a .NET class that inherits from [Rule](xref:NRules.Fluent.Dsl.Rule).
+Rule class overrides [Define](xref:NRules.Fluent.Dsl.Rule.Define) method where the actual conditions (left-hand side, or LHS) and actions (right-hand side, or RHS) parts are specified.
+Within the [Define](xref:NRules.Fluent.Dsl.Rule.Define) method, LHS is specified by fluently chaining conditions to the [When()](xref:NRules.Fluent.Dsl.Rule.When) method; and RHS by fluently chaining actions to [Then()](xref:NRules.Fluent.Dsl.Rule.Then) method.
 
 > :warning: Make sure rule classes are public, otherwise the engine won't find them.
 
@@ -42,7 +42,7 @@ While fluent rules DSL uses C#, the rules have to be defined using declarative a
 If a rule pattern is bound to a variable (see below), that variable should only be used in subsequent condition and action expressions directly. The purpose of the binding variable is to serve as a token (that has a name and a type) that instructs the engine to link corresponding conditions and actions. Don't write any code that manipulates the binding variables outside of the condition/action expressions.
 
 ## Matching Facts with Patterns
-Rule's left hand side is a set of patterns that match facts of a given type. A pattern is defined using a `Match` method.
+Rule's left hand side is a set of patterns that match facts of a given type. A pattern is defined using a [Match](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.Match``1(System.Linq.Expressions.Expression{System.Func{``0}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}}[])) method.
 A pattern can have zero, one or many conditions that must all be true in order for the pattern to match a given fact.
 
 Pattern matching is also polymorphic, which means it matches all facts of a given type and any derived type. Given a class hierarchy of Fruit, Apple and Pear, ```Match<Fruit>``` will match both Apples and Pears. Consequently, ```Match<object>``` will match all facts in the engine's working memory. 
@@ -72,7 +72,7 @@ public class PreferredCustomerActiveAccountsRule : Rule
 ```
 
 ## Existential Rules
-Existential rules test for presence of facts that match a particular set of conditions. An existential quantifier is defined using `Exists` method.
+Existential rules test for presence of facts that match a particular set of conditions. An existential quantifier is defined using [Exists](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.Exists``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}}[])) method.
 An existential quantifier cannot be bound to a variable, since it does not match any single fact.
 
 ```c#
@@ -93,7 +93,7 @@ public class PreferredCustomerActiveAccountsRule : Rule
 ```
 
 ## Negative Rules
-Opposite to existential rules, negative rules test for absence of facts that match a particular set of conditions. A negative existential quantifier is defined using `Not` method.
+Opposite to existential rules, negative rules test for absence of facts that match a particular set of conditions. A negative existential quantifier is defined using [Not](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.Not``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}}[])) method.
 A negative existential quantifier cannot be bound to a variable, since it does not match any single fact.
 
 ```c#
@@ -114,7 +114,7 @@ public class PreferredCustomerNotDelinquentRule : Rule
 ```
 
 ## Universal Quantifier
-Universal quantifier ensures that all facts that match a particular condition also match all subsequent conditions defined by the quantifier. A universal quantifier is defined using `All` method.
+Universal quantifier ensures that all facts that match a particular condition also match all subsequent conditions defined by the quantifier. A universal quantifier is defined using [All](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.All``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}}[])) method.
 A universal quantifier cannot be bound to a variable, since it does not match any single fact.
 
 ```c#
@@ -161,11 +161,11 @@ public class PreferredCustomerOrHasLargeOrderRule : Rule
 ## Rules with Complex Logic
 In complex rules it is usually required to aggregate or project facts, calculate derived values and correlate different matched facts. The rules engine provides several different DSL operators to express such logic.
 
-Rules can match and transform sets of facts using `Query` syntax, which enables rules authors to apply LINQ operators to matched facts; see [[Reactive LINQ Queries]] for more details.
+Rules can match and transform sets of facts using [Query](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.Query``1(System.Linq.Expressions.Expression{System.Func{``0}},System.Func{NRules.Fluent.Dsl.IQuery,NRules.Fluent.Dsl.IQuery{``0}})) syntax, which enables rules authors to apply LINQ operators to matched facts; see [[Reactive LINQ Queries]] for more details.
 
-A `Let` operator binds an expression to a variable, so that the results of intermediate calculations can be used in subsequent rule conditions and actions.
+A [Let](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.Let``1(System.Linq.Expressions.Expression{System.Func{``0}},System.Linq.Expressions.Expression{System.Func{``0}})) operator binds an expression to a variable, so that the results of intermediate calculations can be used in subsequent rule conditions and actions.
 
-Also, `Having` operator can add new conditions to previously defined patterns, including `Let` expressions, improving rules expressiveness and composability.
+Also, [Having](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.Having(System.Linq.Expressions.Expression{System.Func{System.Boolean}}[])) operator can add new conditions to previously defined patterns, including `Let` expressions, improving rules expressiveness and composability.
 
 ```c#
 public class LargeTotalRule : Rule

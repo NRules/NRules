@@ -1,6 +1,6 @@
 # DSL Extensions
 
-When defining rules using internal DSL in C#, the DSL is limited to the verbs provided by the rules engine (see [[Fluent Rules DSL]]).
+When defining rules using internal DSL in C#, the DSL is limited to the verbs provided by the rules engine (see [Fluent Rules DSL](fluent-rules-dsl.md)).
 Consider this example:
 
 ```c#

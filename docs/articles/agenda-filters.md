@@ -37,13 +37,13 @@ public class OrderAmountCalculationRule : Rule
 }
 ```
 
-This rule will fire the first time a given order is matched, and then subsequently if its Quantity, UnitPrice or PercentDiscount changes (OnChange filter). This rule will never fire on an order whose Quantity is less than or equal to zero (Where filter). The ordering of filter conditions doesn't matter.
+This rule will fire the first time a given order is matched, and then subsequently if its Quantity, UnitPrice or PercentDiscount changes ([OnChange](xref:NRules.Fluent.Dsl.IFilterExpression.OnChange(System.Linq.Expressions.Expression{System.Func{System.Object}}[])) filter). This rule will never fire on an order whose Quantity is less than or equal to zero ([Where](xref:NRules.Fluent.Dsl.IFilterExpression.Where(System.Linq.Expressions.Expression{System.Func{System.Boolean}}[])) filter). The ordering of filter conditions doesn't matter.
 
 Multiple `Where` filters are always interpreted to have an `AND` relationship, whereas `OnChange` filters have an `OR`. If both `Where` and `OnChange` filters are defined, the relationship is `(Where1 AND Where2 AND (OnChange1 OR OnChange2))`.
 
 ## Defining Rule Filters in Code
-An agenda filter can be defined as a class that implements `IAgendaFilter` interface; its `Accept` method determines if the activation is to be added to the agenda or not.
-Agenda filters are added to the `ISession.Agenda` using `AddFilter` methods. Depending on the specific overload of the method used, the filter is added either as a global or rule-specific filter.
+An agenda filter can be defined as a class that implements [IAgendaFilter](xref:NRules.AgendaFilters.IAgendaFilter) interface; its [Accept](xref:NRules.AgendaFilters.IAgendaFilter.Accept(NRules.AgendaFilters.AgendaContext,NRules.Activation)) method determines if the activation is to be added to the agenda or not.
+Agenda filters are added to the [ISession.Agenda](xref:NRules.ISession.Agenda) using [AddFilter](xref:NRules.IAgenda.AddFilter(NRules.AgendaFilters.IAgendaFilter)) methods. Depending on the specific overload of the method used, the filter is added either as a global or rule-specific filter.
 
 ```c#
 public class DisabledRuleFilter : IAgendaFilter
@@ -63,5 +63,5 @@ var session = factory.CreateSession(x =>
 ```
 
 ## Stateful Agenda Filters
-In most cases agenda filters are only concerned with the activation that is getting inserted into the agenda, and so are stateless. But there are cases where it's helpful for an agenda filter to store some state about the activation, so that the next time the same activation is inserted into the agenda, the filter can use that state information. In these cases, instead of implementing `IAgendaFilter` interface, implement `IStatefulAgendaFilter`. This is how `OnChange` filters are implemented.
-In addition to the `Accept` method, stateful agenda filters are also notified by the engine of various activation lifecycle events, so that the filter can update the state, or remove the state associated with the activation.
+In most cases agenda filters are only concerned with the activation that is getting inserted into the agenda, and so are stateless. But there are cases where it's helpful for an agenda filter to store some state about the activation, so that the next time the same activation is inserted into the agenda, the filter can use that state information. In these cases, instead of implementing [IAgendaFilter](xref:NRules.AgendaFilters.IAgendaFilter) interface, implement [IStatefulAgendaFilter](xref:NRules.AgendaFilters.IStatefulAgendaFilter). This is how `OnChange` filters are implemented.
+In addition to the [Accept](xref:NRules.AgendaFilters.IAgendaFilter.Accept(NRules.AgendaFilters.AgendaContext,NRules.Activation)) method, stateful agenda filters are also notified by the engine of various activation lifecycle events, so that the filter can update the state, or remove the state associated with the activation.

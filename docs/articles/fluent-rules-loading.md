@@ -6,8 +6,8 @@ but also to discover, instantiate and load these rules into a rule repository, s
 See [[Fluent Rules DSL]] for an overview of the fluent rules DSL.
 
 ## Loading Rules with Fluent Specification
-With the fluent rules DSL, each rule is a class, and `RuleRepository` provides a mechanism to discover and load rules classes at runtime using a fluent load specification.
-Method `Load` accepts an action delegate that instructs the repository which assemblies and/or types to scan to load the rules. 
+With the fluent rules DSL, each rule is a class, and [RuleRepository](xref:NRules.Fluent.RuleRepository) provides a mechanism to discover and load rules classes at runtime using a fluent load specification.
+Method [Load](xref:NRules.Fluent.RuleRepository.Load(System.Action{NRules.Fluent.IRuleLoadSpec})) accepts an action delegate that instructs the repository which assemblies and/or types to scan to load the rules. 
 It also provides advanced filtering capabilities using metadata associated with the rules classes.
 
 Example, load all rules from the executing assembly, where rule's name starts with "Test" or the rule is tagged with the "Test" tag. Load these rules into a rule set called "MyRuleSet".
@@ -30,11 +30,11 @@ ISessionFactory factory = compiler.Compile(ruleSets.Where(x => x.Name == "MyRule
 
 ## Rule Activation
 As part of translating rules from fluent DSL form to the canonical model, rule classes must be instantiated.
-By default NRules instantiates rule classes using `System.Activator`.
+By default NRules instantiates rule classes using [System.Activator](xref:System.Activator).
 It may be desirable to have control over the instantiation process, so that, for example, rules can be instantiated via an IoC container and injected with dependencies. 
 
-Whenever `RuleRepository` needs to instantiate a rule, it calls into a rule activator, represented by the `IRuleActivator` interface and exposed via the `RuleRepository.RuleActivator` property.
-To provide a custom rule activator, implement `IRuleActivator` interface and set it on the repository.
+Whenever [RuleRepository](xref:NRules.Fluent.RuleRepository) needs to instantiate a rule, it calls into a rule activator, represented by the [IRuleActivator](xref:NRules.Fluent.IRuleActivator) interface and exposed via the [RuleRepository.Activator](xref:NRules.Fluent.RuleRepository.Activator) property.
+To provide a custom rule activator, implement [IRuleActivator](xref:NRules.Fluent.IRuleActivator) interface and set it on the repository.
 
 For example, rules can be registered with and resolved via an Autofac IoC container.
 ```c#
