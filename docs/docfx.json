@@ -32,7 +32,8 @@
           "**/*.{md,yml}"
         ],
         "exclude": [
-          "_site/**"
+          "_site/**",
+          "apidoc/**"
         ]
       }
     ],
@@ -45,6 +46,11 @@
       }
     ],
     "output": "../build/docs",
+    "overwrite": {
+      "files": [
+        "apidoc/**.md"
+      ]
+    },
     "xref": [
       "https://learn.microsoft.com/en-us/dotnet/.xrefmap.json"
     ],
