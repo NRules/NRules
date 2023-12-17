@@ -25,7 +25,7 @@ task Init {
     $script:sourceDir = Join-Path $baseDir src
     $script:buildDir = Join-Path $baseDir build
     $script:binDir = Join-Path $buildDir bin
-    $script:pkgDir = Join-Path $buildDir pkg
+    $script:pkgDir = Join-Path $buildDir packages
     $script:toolsDir = Join-Path $baseDir tools
 
     $script:solutionDir = Join-Path $sourceDir $compName
