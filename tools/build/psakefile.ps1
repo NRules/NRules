@@ -77,6 +77,10 @@ task ResetPatch {
     }
 }
 
+task RestoreTools {
+    exec { dotnet tool restore }
+}
+
 task Restore -precondition { return $component.ContainsKey('solution_file') } {
     exec { dotnet restore $solutionFile --verbosity minimal }
 }
@@ -153,7 +157,7 @@ task Bench -depends Package -precondition { return $component.ContainsKey('bench
     }
 }
 
-task CompileDocs -precondition { return $component.ContainsKey('doc') -and $component.doc.ContainsKey('docfx') } {
+task CompileDocs -depends RestoreTools -precondition { return $component.ContainsKey('doc') -and $component.doc.ContainsKey('docfx') } {
     $docfx_project_file = Join-Path $baseDir "$($component.doc.docfx.project_file)"
     exec { dotnet tool run docfx $docfx_project_file }
 }
