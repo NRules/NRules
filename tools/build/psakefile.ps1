@@ -44,6 +44,14 @@ task Init {
 task Clean -depends Init {
     Remove-Directory $pkgOutDir
     Remove-Directory $binOutDir
+
+    if ($component.ContainsKey('output')) {
+        foreach ($output in $component.output) {
+            $outputDir = Join-Path $baseDir $output
+            Write-Host "Removing $outputDir"
+            Remove-Directory $outputDir
+        }
+    }
 }
 
 task PatchFiles {

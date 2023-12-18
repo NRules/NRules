@@ -131,6 +131,7 @@ $components = @{
                 project_file = 'docs\docfx.json'
             }
         }
+        output = @('build\docs')
     };
 }
 
