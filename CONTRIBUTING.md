@@ -29,8 +29,12 @@ By contributing to NRules, you assert that:
 
 ### Development Environment
 
-- Visual Studio 2022 (with latest patches/updates).
-- [Sandcastle Help File Builder](https://github.com/EWSoftware/SHFB)
+#### Windows
+- Visual Studio 2022 or Visual Studio Code (full Visual Studio is required for Debugger Visualizer development)
+
+#### MacOS and Linux
+- PowerShell (necessary to run build scripts)
+- Visual Studio Code or JetBrains Rider
 
 ### Dependencies
 
@@ -53,4 +57,7 @@ Unit tests are written in xUnit and Moq.
 
 ### Documentation
 
-Public types and members must have XML documentation.
+API documentation and conceptual documentation are compiled into the project documentation site as part of the build process, using [DocFX](https://github.com/dotnet/docfx).
+
+- Public types and members must have XML documentation, so that it can be included into the API documentation. 
+- Conceptual documentation must be written in [CommonMark](https://commonmark.org/)-compliant markdown format. 
