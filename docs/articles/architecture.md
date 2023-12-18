@@ -2,7 +2,7 @@
 
 NRules engine consists of several components, and is designed in a way that more components and tools will be layered on top of it, augmenting its functionality and expanding its area of applicability.
 
-![NRules Components](https://raw.githubusercontent.com/wiki/NRules/NRules/images/NRules-Components.png)
+![NRules Components](~/images/NRules-Components.png)
 
 The central part of any rules engine is rules, and they can exist in many different forms.
 First, rules exist in a form in which they are written, which in case of NRules is internal DSL that uses fluent API.
@@ -15,7 +15,7 @@ In this form rules are represented as data that can be analysed, viewed, reporte
 Executable rules model is a run-time representation of rules that can efficiently interact with the rest of the application.
 NRules is a production rules engine and its executable form is a [rete network](http://en.wikipedia.org/wiki/Rete_algorithm), that can very efficiently find matches between facts and rules.
 
-![NRules Architecture](https://raw.githubusercontent.com/wiki/NRules/NRules/images/NRules-Architecture.png)
+![NRules Architecture](~/images/NRules-Architecture.png)
 
 [NRules.Fluent](xref:NRules.Fluent) namespace contains classes that enable declaratively authoring rules using internal DSL, which is a fluent C# API.
 A [RuleRepository](xref:NRules.Fluent.RuleRepository) is then used to scan assemblies to discover rules and interact with [RuleBuilder](xref:NRules.RuleModel.Builders.RuleBuilder) to translate them into their canonical form.

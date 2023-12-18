@@ -41,8 +41,7 @@
     "resource": [
       {
         "files": [
-          "images/**",
-          "articles/images/**"
+          "images/**"
         ]
       }
     ],

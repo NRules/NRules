@@ -100,8 +100,8 @@ In addition to that, [ISession](xref:NRules.ISession) has an option of generatin
 To use it, select a drop-down list next to the magnifying glass, when hovering over the [ISession](xref:NRules.ISession) instance, and click 'NRules Session Performance Visualizer'.
 The rete graph in this mode has peformance metrics attached to the graph nodes, and the graph style reflects them. The thickness of edges reflects the volume of facts flowing through them; the color of nodes reflects the amount of time spent in that node; and the size of memory nodes reflects the number of objects stored in them.
 
-![Rete Graph](https://raw.githubusercontent.com/wiki/NRules/NRules/images/NRules-Diagnostics-Visualizer-Performance.png)
+![Rete Graph](~/images/NRules-Diagnostics-Visualizer-Performance.png)
 
 Performance properties associated with each node, including the detailed fact counts, timing information and the rules the node belongs to, can be viewed in node tooltips, or in the properties window.
 
-![Rete Graph](https://raw.githubusercontent.com/wiki/NRules/NRules/images/NRules-Diagnostics-Visualizer-Performance-Tooltip.png)
+![Rete Graph](~/images/NRules-Diagnostics-Visualizer-Performance-Tooltip.png)
