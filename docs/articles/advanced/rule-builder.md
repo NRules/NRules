@@ -1,17 +1,17 @@
 # Creating Rules at Runtime with the RuleBuilder
 
-As described on the [[Architecture]] page, rules are represented in NRules in several different forms.
+As described on the [Architecture](../architecture.md) page, rules are represented in NRules in several different forms.
 One of these forms is a canonical model (rule model) that can be compiled into the executable model.
 
 The standard way to create rules in NRules is with the internal DSL using fluent API, which requires rules to be known at compile time.
 But this is not the only way rules can be created. Rule builder is a component specifically designed to create rules at runtime, and in fact is the underlying mechanism behind fluent API.
-`RuleBuilder` class and related classes reside in the `NRules.RuleModel` namespace.
+[RuleBuilder](xref:NRules.RuleModel.Builders.RuleBuilder) class and related classes reside in the [NRules.RuleModel](xref:NRules.RuleModel) namespace.
 
 > :warning: Unlike fluent API, canonical model and rule builder are not strongly typed, so you will need to ensure type safety and correctness yourself (or face runtime errors if you don't).
 
 When building rules at runtime, you will need a place to store them.
-Such a store is represented by the `IRuleRepository` interface, so you will need to implement it to load rules from a user-defined source.
-A rule repository is an in-memory database of rule definitions, organized into rule sets (`IRuleSet`), that encapsulates the process of turning rules in whatever form to the canonical model.
+Such a store is represented by the [IRuleRepository](xref:NRules.RuleModel.IRuleRepository) interface, so you will need to implement it to load rules from a user-defined source.
+A rule repository is an in-memory database of rule definitions, organized into rule sets ([IRuleSet](xref:NRules.RuleModel.IRuleSet)), that encapsulates the process of turning rules in whatever form to the canonical model.
 ```c#
 public class CustomRuleRepository : IRuleRepository
 {
@@ -104,10 +104,10 @@ private IRuleDefinition BuildRule()
 ```
 
 A few notes about rule builder code.
-- A condition expression may only reference parameters that correspond to patterns that have been previously defined (using `Pattern` method).
+- A condition expression may only reference parameters that correspond to patterns that have been previously defined (using [Pattern](xref:NRules.RuleModel.Builders.GroupBuilder.Pattern(System.Type,System.String)) method).
 - Names and types of the lambda expression parameters matter and must match the names and types defined in the patterns.
-- The first argument of action expression must be of type `IContext`. You can use `IContext` to interact with the engine (i.e. insert new facts).
-- Lambda expressions don't have to be defined at compile time. Use various static methods on the BCL's `Expression` class to compose expression trees at runtime.
+- The first argument of action expression must be of type [IContext](xref:NRules.RuleModel.IContext). You can use [IContext](xref:NRules.RuleModel.IContext) to interact with the engine (i.e. insert new facts).
+- Lambda expressions don't have to be defined at compile time. Use various static methods on the BCL's [Expression](xref:System.Linq.Expressions.Expression) class to compose expression trees at runtime.
 
 Putting this all together, here is the test code.
 ```c#
