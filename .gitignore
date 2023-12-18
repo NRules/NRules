@@ -118,7 +118,7 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
-# Mac crap
+# Mac folder attributes
 .DS_Store
 
 # Benchmak Results

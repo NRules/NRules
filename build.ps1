@@ -127,10 +127,11 @@ $components = @{
     'Documentation' = @{
         name = 'Documentation'
         doc = @{
-            shfb = @{
-                project_file = 'doc\NRules.shfbproj'
+            docfx = @{
+                project_file = 'docs\docfx.json'
             }
         }
+        output = @('build\docs')
     };
 }
 
@@ -138,6 +139,7 @@ $core = @('NRules')
 $visualizer = @('NRules.Debugger.Visualizer')
 $integration = $components.keys | Where-Object { $_.StartsWith("NRules.Integration") }
 $samples = $components.keys | Where-Object { $_.StartsWith("Samples.") }
+$documenation = @('Documentation')
 
 $componentList = @()
 if ($component -eq "Core") {
@@ -152,6 +154,7 @@ if ($component -eq "Core") {
     $componentList += $core
     $componentList += $visualizer
     $componentList += $integration
+    $componentList += $documenation
     $componentList += $samples
 } else {
     $componentList += $component

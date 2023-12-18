@@ -1,0 +1,5 @@
+### YamlMime:ManagedReference
+apiRules:
+- exclude:
+    uidRegex: ^NRules.*\.Tests
+    type: Type
