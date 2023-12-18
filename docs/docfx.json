@@ -5,14 +5,30 @@
         {
           "src": "../src",
           "files": [
-            "NRules/**/*.csproj",
+            "NRules/NRules.RuleModel/NRules.RuleModel.csproj"
+          ]
+        },
+        {
+          "src": "../src",
+          "files": [
+            "NRules/NRules.Fluent/NRules.Fluent.csproj",
+            "NRules/NRules/NRules.csproj"
+          ]
+        },
+        {
+          "src": "../src",
+          "files": [
+            "NRules/NRules.Json/NRules.Json.csproj",
+            "NRules/NRules.Testing/NRules.Testing.csproj"
+          ]
+        },
+        {
+          "src": "../src",
+          "files": [
             "NRules.Integration/**/NRules.Integration.*.csproj"
           ],
           "exclude": [
-            "**/bin/**",
-            "**/obj/**",
-            "**/NRules*Tests/**",
-            "**/NRules.Meta/**"
+            "**/NRules*Tests/**"
           ]
         }
       ],
