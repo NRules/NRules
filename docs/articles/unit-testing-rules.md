@@ -1,84 +1,48 @@
 # Unit Testing Rules
 
-NRules is a production rules engine, which means rules are defined in a form of `When <conditions> Then <actions>`. This makes the rules easy to unit test, by creating an isolated rules session with a single rule in it, supplying test inputs by inserting facts into the session, calling the [Fire](xref:NRules.ISession.Fire) method and asserting that the rule fired or didn't fire given those inputs.  
+NRules is a production rules engine, which means rules are defined in a form of `When <conditions> Then <actions>`. This makes the rules easy to unit test, by creating an isolated rules session with a single rule in it (or a small number of coupled rules), supplying test inputs by inserting facts into the session, calling the [Fire](xref:NRules.ISession.Fire) method and asserting that the rule fired or didn't fire given those inputs.
 
-Below is an example of a test fixture that uses [xUnit](https://xunit.net/) that bootstraps the rules session for any single rule, and exposes methods for asserting the rule's firing.
+While it's possible to create your own test fixture to set up the rules engine session and assert rule firings, the [NRules.Testing](xref:NRules.Testing) library provides a set of tools to help set up the rules under test, compile them into a rules session, record rule firings, as well as configure and verify rule firing expectations.
+
+## Setting Up a Test Fixture
+[NRules.Testing](xref:NRules.Testing) library does not depend on any specific unit testing or assertion framework. In order for rule firing assertions to work, one has to implement an asserter, that uses the specific assertion mechanism.
+
+The following code uses [xUnit](https://xunit.net/) to unit test the rules.
+
 ```c#
-using NRules;
-using NRules.Fluent;
-using NRules.Fluent.Dsl;
-using Xunit;
+using NRules.Testing;
+using Xunit.Sdk;
 
-public abstract class RuleTestFixture
+public class XUnitRuleAsserter : IRuleAsserter
 {
-    protected readonly ISession Session;
-    private int _fireCount = 0;
-
-    protected abstract Rule SetUpRule();
-    
-    protected RuleTestFixture()
+    public void Assert(RuleAssertResult result)
     {
-        var rule = SetUpRule();
-        var definitionFactory = new RuleDefinitionFactory();
-        var ruleDefinition = definitionFactory.Create(rule);
-
-        var compiler = new RuleCompiler();
-        ISessionFactory factory = compiler.Compile(new []{ruleDefinition});
-        Session = factory.CreateSession();
-        Session.Events.RuleFiredEvent += (sender, args) => _fireCount++;
+        if (result.Status == RuleAssertStatus.Failed)
+        {
+            throw new XunitException(result.GetMessage());
+        }
     }
-    
-    protected void AssertFiredOnce()
-    {
-        AssertFiredTimes(1);
-    }
+}
+```
 
-    protected void AssertFiredTimes(int expected)
-    {
-        Assert.Equal(expected, _fireCount);
-    }
+With the `XUnitRuleAsserter` we can use the [RulesTestFixture](xref:NRules.Testing.RulesTestFixture) to create a base test fixture for all our rule tests.
 
-    protected void AssertDidNotFire()
+```c#
+using NRules.Testing;
+
+public abstract class BaseRulesTestFixture : RulesTestFixture
+{
+    protected MyRulesTestFixture()
     {
-        AssertFiredTimes(0);
+        Asserter = new XUnitRuleAsserter();
     }
 }
 ```
 
 With the above base test fixture, a rule can be tested in the following way:
 ```c#
-public class MyRuleTest : RuleTestFixture
+public class MyRuleTest : BaseRulesTestFixture
 {
-    [Fact]
-    public void Fire_InsertedOneMatchingFact_FiredOnce()
-    {
-        //Arrange
-        var fact = new MyFact();
-        Session.Insert(fact);
-
-        //Act
-        Session.Fire();
-
-        //Assert
-        AssertFiredOnce();
-    }
-    
-        
-    [Fact]
-    public void Fire_NoMatchingFacts_DidNotFire()
-    {
-        //Arrange - Act
-        Session.Fire();
-
-        //Assert
-        AssertDidNotFire();
-    }
-
-    protected override Rule SetUpRule()
-    {
-        return new MyRule();
-    }
-
     public class MyFact { }
 
     public class MyRule : Rule
@@ -96,10 +60,85 @@ public class MyRuleTest : RuleTestFixture
 
         private void NoOp() { }
     }
+
+    public MyRuleTest()
+    {
+        Setup.Rule<MyRule>();
+    }
+    
+    [Fact]
+    public void Fire_InsertedOneMatchingFact_FiredOnce()
+    {
+        //Arrange
+        var fact = new MyFact();
+        Session.Insert(fact);
+
+        //Act
+        Session.Fire();
+
+        //Assert
+        Verify(x => x.Rule().Fired(Times.Once));
+    }
+    
+    [Fact]
+    public void Fire_NoMatchingFacts_DidNotFire()
+    {
+        //Arrange - Act
+        Session.Fire();
+
+        //Assert
+        Verify(x => x.Rule().Fired(Times.Never));
+    }
 }
 ```
 
-If a rule uses injected dependencies, those can be mocked using any mocking framework, and the mocks can be injected into the rule during construction.
+## Verifying Matched Facts
+When configuring rule firing expectations, it's possible to configure constraints on the types and structure of the facts matched by the rule. To do this use corresponding methods on the [Matched](xref:NRules.Testing.Matched) class.
 
-This of course is just a simple example that can be extended by collecting more information about the rule's firings, including the actual matched facts. It can also be generalized for testing cooperations of multiple rules to unit test constructs such as forward chaining.
-See NRules integration tests on GitHub for examples of how to do that.
+For example, the following code verifies that the rule under test has fired, matching a `Customer` fact, where `IsPreferred` is `true`.
+```c#
+Verify(x => x.Rule().Fired(Matched.Fact<Customer>(c => c.IsPreferred)));
+```
+
+## Testing Cooperations of Multiple Rules
+To test multiple rules together in the same test fixture, more than one rule can be registered during the fixture setup. The rule firing expectations with multiple rules can be set by specifying the actual rule type for which the expectations are verified.
+
+```c#
+public class MyRuleTest : BaseRulesTestFixture
+{
+    public MyRuleTest()
+    {
+        Setup.Rule<MyRule1>();
+        Setup.Rule<MyRule2>();
+    }
+    
+    [Fact]
+    public void Fire_InsertedOneMatchingFact_FiredBothRules()
+    {
+        //Arrange
+        var fact = new MyFact();
+        Session.Insert(fact);
+
+        //Act
+        Session.Fire();
+
+        //Assert
+        Verify(x =>
+        {
+            x.Rule<MyRule1>().Fired(Times.Once);
+            x.Rule<MyRule2>().Fired(Times.Twice);
+        });
+    }
+}
+```
+
+## Testing Rules with Dependencies
+If a rule uses injected dependencies, those can be mocked using any mocking framework, and the mocks can be passed into the rule during construction as part of the test setup.
+
+```c#
+var serviceMock = new Mock<IMyService>();
+var rule = new MyRule(serviceMock.Object);
+Setup.Rule(rule);
+```
+
+[NRules.Testing](xref:NRules.Testing) is a very capable library; see NRules integration tests on GitHub for a wide range of examples.
