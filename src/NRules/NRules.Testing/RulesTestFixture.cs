@@ -43,10 +43,9 @@ public class RulesTestFixture
     /// </summary>
     public void Verify(Action<IRulesFiringVerification> buildAction)
     {
-        if (Asserter == null) throw new ArgumentNullException(nameof(Asserter), "Rule asserter is not set");
         var verification = _testHarness.Value.GetRulesVerification();
         var result = verification.Verify(buildAction);
-        Asserter.Assert(result);
+        GetAsserter().Assert(result);
     }
 
     /// <summary>
@@ -54,9 +53,10 @@ public class RulesTestFixture
     /// </summary>
     public void VerifySequence(Action<IRuleSequenceFiringVerification> buildAction)
     {
-        if (Asserter == null) throw new ArgumentNullException(nameof(Asserter), "Rule asserter is not set");
         var verification = _testHarness.Value.GetRulesVerification();
         var result = verification.VerifySequence(buildAction);
-        Asserter.Assert(result);
+        GetAsserter().Assert(result);
     }
+    
+    private IRuleAsserter GetAsserter() => Asserter ?? new DefaultRuleAsserter();
 }
