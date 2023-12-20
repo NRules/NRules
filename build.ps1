@@ -92,10 +92,6 @@ $components = @{
         name = 'SimpleRules'
         solution_file = 'samples\SimpleRules\SimpleRules.sln'
     };
-    'Samples.MissManners' = @{
-        name = 'MissManners'
-        solution_file = 'samples\MissManners\MissManners.sln'
-    };
     'Samples.RuleBuilder' = @{
         name = 'RuleBuilder'
         solution_file = 'samples\RuleBuilder\RuleBuilder.sln'
