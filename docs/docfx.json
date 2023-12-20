@@ -39,7 +39,7 @@
       "filter": "filterConfig.yml",
       "namespaceLayout": "flattened",
       "memberLayout": "samePage",
-      "EnumSortOrder": "alphabetic"
+      "EnumSortOrder": "declaringOrder"
     }
   ],
   "build": {
