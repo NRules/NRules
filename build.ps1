@@ -96,6 +96,10 @@ $components = @{
         name = 'RuleBuilder'
         solution_file = 'samples\RuleBuilder\RuleBuilder.sln'
     };
+    'Samples.JsonRules' = @{
+        name = 'JsonRules'
+        solution_file = 'samples\JsonRules\JsonRules.sln'
+    };
     'Benchmark' = @{
         name = 'NRules.Benchmark'
         solution_file = 'bench\NRules.Benchmark\NRules.Benchmark.sln'
