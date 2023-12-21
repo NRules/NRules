@@ -5,7 +5,7 @@ NRules is a production rules engine, which means rules are defined in a form of 
 While it's possible to create your own test fixture to set up the rules engine session and assert rule firings, the [NRules.Testing](xref:NRules.Testing) library provides a set of tools to help set up the rules under test, compile them into a rules session, record rule firings, as well as configure and verify rule firing expectations.
 
 ## Setting Up a Test Fixture
-[NRules.Testing](xref:NRules.Testing) library does not depend on any specific unit testing or assertion framework. In order for rule firing assertions to work, one has to implement an asserter, that uses the specific assertion mechanism.
+[NRules.Testing](xref:NRules.Testing) library does not depend on any specific unit testing or assertion framework, so by default it just throws an [Exception](xref:System.Exception) when any assertion fails. To better tailor assertions to the specific unit testing framework, implement an [asserter](xref:NRules.Testing.IRuleAsserter) that uses the specific assertion mechanism.
 
 The following code uses [xUnit](https://xunit.net/) to unit test the rules.
 
@@ -93,11 +93,11 @@ public class MyRuleTest : BaseRulesTestFixture
 ```
 
 ## Verifying Matched Facts
-When configuring rule firing expectations, it's possible to configure constraints on the types and structure of the facts matched by the rule. To do this use corresponding methods on the [Matched](xref:NRules.Testing.Matched) class.
+When configuring rule firing expectations, it's possible to set up constraints on the facts matched by the rule, to make expectations more specific. To do this, use corresponding methods on the [Matched](xref:NRules.Testing.Matched) class.
 
 For example, the following code verifies that the rule under test has fired, matching a `Customer` fact, where `IsPreferred` is `true`.
 ```c#
-Verify(x => x.Rule().Fired(Matched.Fact<Customer>(c => c.IsPreferred)));
+Verify(x => x.Rule().Fired(Times.Exactly(3), Matched.Fact<Customer>(c => c.IsPreferred)));
 ```
 
 ## Testing Cooperations of Multiple Rules
