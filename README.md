@@ -13,11 +13,16 @@ To install NRules, get it from nuget via the package manager
 
 ## Getting Started
 
-Use the following resources to get up and running with NRules.
+Use the following resources to get up and running with NRules
 
 - [Getting Started Guide](https://nrules.net/articles/getting-started.html)
 - [Documentation](https://nrules.net/index.html)
 - [API Documentation](https://nrules.net/api/index.html)
+
+## Getting Help
+
+Use the following discussion and Q&A platforms to get help with NRules
+
 - [Discussions](https://github.com/NRules/NRules/discussions)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/nrules)
 - [Gitter Chat](https://gitter.im/NRules/NRules)
