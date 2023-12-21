@@ -3,11 +3,17 @@
 This guide shows step by step how to install and use NRules rules engine.
 
 ## Installing NRules
-Create a new Visual studio Console App project and install NRules package via Package Manager Console
+Create a new Visual studio Console App project and install NRules
 
+# [CLI](#tab/cli)
+```console
+> dotnet add package NRules
+```
+# [Package Manager](#tab/pm)
 ```console
 > Install-Package NRules
 ```
+---
 
 ## Creating Domain Model
 NRules is geared towards writing rules against a domain model, so we start by creating a simple one, which describes customers and orders.
@@ -134,4 +140,9 @@ session.Insert(order2);
 
 //Start match/resolve/act cycle
 session.Fire();
+```
+
+This prints
+```console
+Customer John Doe was notified about a discount
 ```

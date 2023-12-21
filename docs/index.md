@@ -12,15 +12,15 @@ To learn more, go to the corresponding sections of the NRules documentation.
 To install NRules, get the package from nuget
 [![NuGet](https://img.shields.io/nuget/v/NRules.svg)](https://nuget.org/packages/NRules)
 
-Install the package via the dotnet CLI
+# [CLI](#tab/cli)
 ```console
 > dotnet add package NRules
 ```
-
-Or via the package manager
+# [Package Manager](#tab/pm)
 ```console
 > Install-Package NRules
 ```
+---
 
 Use the following resources to get up and running with NRules
 
