@@ -5,7 +5,8 @@ Normally, rules in NRules are written using a DSL in C#. They are then converted
 ## Serializing and Deserializing Rules
 [NRules.Json](xref:NRules.Json) uses [JsonSerializer](xref:System.Text.Json.JsonSerializer) from `System.Text.Json` for serialization, so to make it work you need to set up an instance of [JsonSerializerOptions](xref:System.Text.Json.JsonSerializerOptions), such that it knows how to serialize/deserialize NRules types.
 
-> :warning: Serialization/deserialization of code and CLR types has an associated intrinsic security risk. Care must be taken to not deserialize rules from untrusted sources.
+> [!WARNING]
+> Serialization/deserialization of code and CLR types has an associated intrinsic security risk. Care must be taken to not deserialize rules from untrusted sources.
 
 In the simplest form, serialization/deserialization code looks like this:
 ```c#

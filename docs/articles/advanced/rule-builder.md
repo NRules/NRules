@@ -7,7 +7,8 @@ The standard way to create rules in NRules is with the internal DSL using fluent
 But this is not the only way rules can be created. Rule builder is a component specifically designed to create rules at runtime, and in fact is the underlying mechanism behind fluent API.
 [RuleBuilder](xref:NRules.RuleModel.Builders.RuleBuilder) class and related classes reside in the [NRules.RuleModel](xref:NRules.RuleModel) namespace.
 
-> :warning: Unlike fluent API, canonical model and rule builder are not strongly typed, so you will need to ensure type safety and correctness yourself (or face runtime errors if you don't).
+> [!WARNING]
+> Unlike fluent API, canonical model and rule builder are not strongly typed, so you will need to ensure type safety and correctness yourself (or face runtime errors if you don't).
 
 When building rules at runtime, you will need a place to store them.
 Such a store is represented by the [IRuleRepository](xref:NRules.RuleModel.IRuleRepository) interface, so you will need to implement it to load rules from a user-defined source.

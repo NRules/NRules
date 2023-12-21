@@ -6,7 +6,8 @@ A rule is a .NET class that inherits from [Rule](xref:NRules.Fluent.Dsl.Rule).
 Rule class overrides [Define](xref:NRules.Fluent.Dsl.Rule.Define) method where the actual conditions (left-hand side, or LHS) and actions (right-hand side, or RHS) parts are specified.
 Within the [Define](xref:NRules.Fluent.Dsl.Rule.Define) method, LHS is specified by fluently chaining conditions to the [When()](xref:NRules.Fluent.Dsl.Rule.When) method; and RHS by fluently chaining actions to [Then()](xref:NRules.Fluent.Dsl.Rule.Then) method.
 
-> :warning: Make sure rule classes are public, otherwise the engine won't find them.
+> [!WARNING]
+> Make sure rule classes are public, otherwise the engine won't find them.
 
 See [Fluent Rules Loading](fluent-rules-loading.md) on how to load rules defined with the fluent rules DSL.
 
