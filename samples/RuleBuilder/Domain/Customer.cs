@@ -2,7 +2,7 @@
 
 public class Customer
 {
-    public string Name { get; private set; }
+    public string Name { get; }
     public bool IsPreferred { get; set; }
 
     public Customer(string name)

@@ -2,17 +2,14 @@
 
 public class Order
 {
-    public int Id { get; private set; }
-    public Customer Customer { get; private set; }
-    public int Quantity { get; private set; }
-    public double UnitPrice { get; private set; }
-    public double PercentDiscount { get; private set; }
-    public bool IsOpen { get; private set; }
+    public int Id { get; }
+    public Customer Customer { get; }
+    public int Quantity { get; }
+    public double UnitPrice { get; }
+    public double PercentDiscount { get; set; }
+    public bool IsOpen { get; set; }
 
-    public double Amount
-    {
-        get { return UnitPrice * Quantity * (1.0 - PercentDiscount / 100.0); }
-    }
+    public double Amount => UnitPrice * Quantity * (1.0 - PercentDiscount / 100.0);
 
     public Order(int id, Customer customer, int quantity, double unitPrice)
     {
