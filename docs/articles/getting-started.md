@@ -15,6 +15,8 @@ Create a new Visual studio Console App project and install NRules
 ```
 ---
 
+If you have rules and rules engine runtime in different projects, then instead of depending on the `NRules` package (which is a meta-package), you can fine-tune the dependencies. The rules project should depend on the `NRules.Fluent` package, while the runtime components should depend on `NRules.Runtime`.
+
 ## Creating Domain Model
 NRules is geared towards writing rules against a domain model, so we start by creating a simple one, which describes customers and orders.
 
