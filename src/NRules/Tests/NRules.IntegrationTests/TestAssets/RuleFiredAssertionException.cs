@@ -1,12 +1,11 @@
 ﻿using Xunit.Sdk;
 
-namespace NRules.IntegrationTests.TestAssets
+namespace NRules.IntegrationTests.TestAssets;
+
+public class RuleFiredAssertionException : XunitException
 {
-    public class RuleFiredAssertionException : AssertActualExpectedException
+    public RuleFiredAssertionException(string message) 
+        : base(message)
     {
-        public RuleFiredAssertionException(object expected, object actual, string ruleName) 
-            : base(expected, actual, $"Rule {ruleName}", "Expected fired times", "Actual fired times")
-        {
-        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30002.166
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Benchmark", "NRules.Benchmark\NRules.Benchmark.csproj", "{619CD7C1-6FBD-45B6-BFB1-E46340989A8F}"
 	ProjectSection(ProjectDependencies) = postProject

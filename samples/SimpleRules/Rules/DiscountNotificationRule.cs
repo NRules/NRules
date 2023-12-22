@@ -2,20 +2,19 @@
 using NRules.Fluent.Dsl;
 using NRules.Samples.SimpleRules.Domain;
 
-namespace NRules.Samples.SimpleRules.Rules
+namespace NRules.Samples.SimpleRules.Rules;
+
+public class DiscountNotificationRule : Rule
 {
-    public class DiscountNotificationRule : Rule
+    public override void Define()
     {
-        public override void Define()
-        {
-            Customer customer = default;
+        Customer customer = default;
 
-            When()
-                .Match(() => customer)
-                .Exists<Order>(o => o.Customer == customer, o => o.PercentDiscount > 0.0);
+        When()
+            .Match(() => customer)
+            .Exists<Order>(o => o.Customer == customer, o => o.PercentDiscount > 0.0);
 
-            Then()
-                .Do(_ => Console.WriteLine("Customer {0} was notified about a discount", customer.Name));
-        }
+        Then()
+            .Do(_ => Console.WriteLine("Customer {0} was notified about a discount", customer.Name));
     }
 }

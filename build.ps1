@@ -3,7 +3,7 @@ param (
     [string]$component = 'Core'
 )
 
-$version = '0.9.3'
+$version = '0.9.4'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -12,95 +12,77 @@ if (Test-Path Env:CI) { $configuration = $Env:CONFIGURATION }
 $components = @{
     'NRules' = @{
         name = 'NRules'
-        restore = @{
-            tool = 'dotnet'
-        }
-        build = @{
-            tool = 'dotnet'
-        }
-        test = @{
-            location = 'Tests'
-            frameworks = @('net48', 'netcoreapp3.1')
-        }
-        bin = @{
-            artifacts = @('netstandard2.0', 'netstandard2.1')
-            'netstandard2.0' = @{
-                include = @(
-                    "NRules\bin\$configuration\netstandard2.0",
-                    "NRules.Fluent\bin\$configuration\netstandard2.0",
-                    "NRules.RuleModel\bin\$configuration\netstandard2.0",
-                    "NRules.Json\bin\$configuration\netstandard2.0"
-                )
-            }
-            'netstandard2.1' = @{
-                include = @(
-                    "NRules\bin\$configuration\netstandard2.1",
-                    "NRules.Fluent\bin\$configuration\netstandard2.1",
-                    "NRules.RuleModel\bin\$configuration\netstandard2.1",
-                    "NRules.Json\bin\$configuration\netstandard2.1"
-                )
-            }
-        }
+        solution_file = 'src\NRules\NRules.sln'
         package = @{
+            bin = @{
+                artifacts = @('netstandard2.0', 'netstandard2.1')
+                'netstandard2.0' = @{
+                    include = @(
+                        "NRules\bin\$configuration\netstandard2.0",
+                        "NRules.Fluent\bin\$configuration\netstandard2.0",
+                        "NRules.RuleModel\bin\$configuration\netstandard2.0",
+                        "NRules.Json\bin\$configuration\netstandard2.0",
+                        "NRules.Testing\bin\$configuration\netstandard2.0"
+                    )
+                }
+                'netstandard2.1' = @{
+                    include = @(
+                        "NRules\bin\$configuration\netstandard2.1",
+                        "NRules.Fluent\bin\$configuration\netstandard2.1",
+                        "NRules.RuleModel\bin\$configuration\netstandard2.1",
+                        "NRules.Json\bin\$configuration\netstandard2.1",
+                        "NRules.Testing\bin\$configuration\netstandard2.1"
+                    )
+                }
+            }
             nuget = @(
-                'NRules.Json',
                 'NRules.RuleModel',
                 'NRules.Fluent',
                 'NRules.Runtime',
-                'NRules'
+                'NRules',
+                'NRules.Json',
+                'NRules.Testing'
             )
         }
     };
     'NRules.Debugger.Visualizer' = @{
         name = 'NRules.Debugger.Visualizer'
-        restore = @{
-            tool = 'dotnet'
-        }
-        build = @{
-            tool = 'dotnet'
-        }
-        bin = @{
-            artifacts = @('debugger-side', 'debuggee-side-netstandard2.0')
-            'debugger-side' = @{
-                include = @(
-                    "NRules.Debugger.Visualizer\bin\$configuration\net472\NRules.Debugger.Visualizer.dll"
-                )
-                output = "."
-            }
-            'debuggee-side-netstandard2.0' = @{
-                include = @(
-                    "NRules.Debugger.Visualizer.DebuggeeSide\bin\$configuration\netstandard2.0\NRules.Debugger.Visualizer.DebuggeeSide.dll"
-                )
-                output = "netstandard2.0"
+        solution_file = 'src\NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.sln'
+        package = @{
+            bin = @{
+                artifacts = @('debugger-side', 'debuggee-side-netstandard2.0')
+                'debugger-side' = @{
+                    include = @(
+                        "NRules.Debugger.Visualizer\bin\$configuration\net472\NRules.Debugger.Visualizer.dll"
+                    )
+                    output = "."
+                }
+                'debuggee-side-netstandard2.0' = @{
+                    include = @(
+                        "NRules.Debugger.Visualizer.DebuggeeSide\bin\$configuration\netstandard2.0\NRules.Debugger.Visualizer.DebuggeeSide.dll"
+                    )
+                    output = "netstandard2.0"
+                }
             }
         }
     };
     'NRules.Integration.Autofac' = @{
         name = 'NRules.Integration.Autofac'
-        src_root = 'src/NRules.Integration'
-        restore = @{
-            tool = 'dotnet'
-        }
-        build = @{
-            tool = 'dotnet'
-        }
-        test = @{
-            frameworks = @('netcoreapp3.1')
-        }
-        bin = @{
-            artifacts = @('netstandard2.0', 'netstandard2.1')
-            'netstandard2.0' = @{
-                include = @(
-                    "NRules.Integration.Autofac\bin\$configuration\netstandard2.0"
-                )
-            }
-            'netstandard2.1' = @{
-                include = @(
-                    "NRules.Integration.Autofac\bin\$configuration\netstandard2.1"
-                )
-            }
-        }
+        solution_file = 'src\NRules.Integration\NRules.Integration.Autofac\NRules.Integration.Autofac.sln'
         package = @{
+            bin = @{
+                artifacts = @('netstandard2.0', 'netstandard2.1')
+                'netstandard2.0' = @{
+                    include = @(
+                        "NRules.Integration.Autofac\bin\$configuration\netstandard2.0"
+                    )
+                }
+                'netstandard2.1' = @{
+                    include = @(
+                        "NRules.Integration.Autofac\bin\$configuration\netstandard2.1"
+                    )
+                }
+            }
             nuget = @(
                 'NRules.Integration.Autofac'
             )
@@ -108,67 +90,56 @@ $components = @{
     };
     'Samples.SimpleRules' = @{
         name = 'SimpleRules'
-        src_root = 'samples'
-        build = @{
-            tool = 'dotnet'
-        }
-    };
-    'Samples.MissManners' = @{
-        name = 'MissManners'
-        src_root = 'samples'
-        build = @{
-            tool = 'dotnet'
-        }
+        solution_file = 'samples\SimpleRules\SimpleRules.sln'
     };
     'Samples.RuleBuilder' = @{
         name = 'RuleBuilder'
-        src_root = 'samples'
-        build = @{
-            tool = 'dotnet'
-        }
+        solution_file = 'samples\RuleBuilder\RuleBuilder.sln'
+    };
+    'Samples.JsonRules' = @{
+        name = 'JsonRules'
+        solution_file = 'samples\JsonRules\JsonRules.sln'
     };
     'Benchmark' = @{
         name = 'NRules.Benchmark'
-        src_root = 'bench'
-        restore = @{
-            tool = 'dotnet'
-        }
-        build = @{
-            tool = 'dotnet'
-        }
-        bin = @{
-            artifacts = @('net48', 'netcoreapp3.1')
-            'net48' = @{
-                include = @(
-                    "NRules.Benchmark\bin\$configuration\net48"
-                )
-            }
-            'netcoreapp3.1' = @{
-                include = @(
-                    "NRules.Benchmark\bin\$configuration\netcoreapp3.1"
-                )
+        solution_file = 'bench\NRules.Benchmark\NRules.Benchmark.sln'
+        package = @{
+            bin = @{
+                artifacts = @('net6', 'net8')
+                'net6' = @{
+                    include = @(
+                        "NRules.Benchmark\bin\$configuration\net6"
+                    )
+                }
+                'net8' = @{
+                    include = @(
+                        "NRules.Benchmark\bin\$configuration\net8"
+                    )
+                }
             }
         }
         bench = @{
-            frameworks = @('net48')
-            exe = 'NRules.Benchmark.exe'
+            frameworks = @('net8')
+            runner = 'NRules.Benchmark'
             categories = @('Micro')
         }
     };
     'Documentation' = @{
         name = 'Documentation'
-        src_root = 'doc'
-        build = @{
-            tool = 'shfb'
-            solution_file = 'NRules.shfbproj'
+        doc = @{
+            docfx = @{
+                project_file = 'docs\docfx.json'
+            }
         }
+        output = @('build\docs')
     };
 }
 
 $core = @('NRules')
 $visualizer = @('NRules.Debugger.Visualizer')
-$integration = $components.keys | where { $_.StartsWith("NRules.Integration") }
-$samples = $components.keys | where { $_.StartsWith("Samples.") }
+$integration = $components.keys | Where-Object { $_.StartsWith("NRules.Integration") }
+$samples = $components.keys | Where-Object { $_.StartsWith("Samples.") }
+$documenation = @('Documentation')
 
 $componentList = @()
 if ($component -eq "Core") {
@@ -183,6 +154,7 @@ if ($component -eq "Core") {
     $componentList += $core
     $componentList += $visualizer
     $componentList += $integration
+    $componentList += $documenation
     $componentList += $samples
 } else {
     $componentList += $component
@@ -190,7 +162,7 @@ if ($component -eq "Core") {
 
 Import-Module .\tools\build\psake.psm1
 $baseDir = Resolve-Path .
-$componentList | % {
+$componentList | ForEach-Object {
     Invoke-psake .\tools\build\psakefile.ps1 $target -properties @{version=$version;configuration=$configuration;baseDir=$baseDir} -parameters @{component=$components[$_]}
     if (-not $psake.build_success) {
         break

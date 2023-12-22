@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>NRules Testing Harness</Title>
+    <Description>Rules unit testing harness for NRules.</Description>
+    <PackageId>NRules.Testing</PackageId>
+    <PackageTags>nrules;test;testing</PackageTags>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\SigningKey.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NRules.Fluent\NRules.Fluent.csproj" />
+    <ProjectReference Include="..\NRules\NRules.csproj" />
+  </ItemGroup>
+
+</Project>

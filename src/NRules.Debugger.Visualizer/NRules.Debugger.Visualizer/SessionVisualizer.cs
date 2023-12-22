@@ -19,16 +19,22 @@ using NRules.Debugger.Visualizer;
     TargetTypeName = "NRules.Session, NRules",
     Description = "NRules Session Performance Visualizer")]
 
-namespace NRules.Debugger.Visualizer
+namespace NRules.Debugger.Visualizer;
+
+public class SessionVisualizer : DialogDebuggerVisualizer
 {
-    public class SessionVisualizer : DialogDebuggerVisualizer
+    public SessionVisualizer()
+        : base(FormatterPolicy.Legacy)
     {
-        protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
-        {
-            var snapshot = (string) objectProvider.GetObject();
-            string fileName = Path.Combine(Path.GetTempPath(), "session.dgml");
-            File.WriteAllText(fileName, snapshot);
-            Process.Start(fileName);
-        }
+    }
+
+    protected override void Show(IDialogVisualizerService windowService, IVisualizerObjectProvider objectProvider)
+    {
+        var stream = objectProvider.GetData();
+        using var streamReader = new StreamReader(stream);
+        var snapshot = streamReader.ReadToEnd();
+        string fileName = Path.Combine(Path.GetTempPath(), "session.dgml");
+        File.WriteAllText(fileName, snapshot);
+        Process.Start(fileName);
     }
 }

@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 
-namespace NRules.Rete
+namespace NRules.Rete;
+
+internal interface ITupleSource
 {
-    internal interface ITupleSource
-    {
-        IEnumerable<Tuple> GetTuples(IExecutionContext context);
-        void Attach(ITupleSink sink);
-    }
+    IEnumerable<Tuple> GetTuples(IExecutionContext context);
+    void Attach(ITupleSink sink);
 }

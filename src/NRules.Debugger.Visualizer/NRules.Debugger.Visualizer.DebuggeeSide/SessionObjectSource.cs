@@ -3,17 +3,17 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 using NRules.Diagnostics;
 using NRules.Diagnostics.Dgml;
 
-namespace NRules.Debugger.Visualizer
+namespace NRules.Debugger.Visualizer;
+
+public class SessionObjectSource : VisualizerObjectSource
 {
-    public class SessionObjectSource : VisualizerObjectSource
+    public override void GetData(object target, Stream outgoingData)
     {
-        public override void GetData(object target, Stream outgoingData)
-        {
-            var session = (ISessionSchemaProvider) target;
-            var schema = session.GetSchema();
-            var dgmlWriter = new DgmlWriter(schema);
-            var contents = dgmlWriter.GetContents();
-            base.GetData(contents, outgoingData);
-        }
+        var session = (ISessionSchemaProvider)target;
+        var schema = session.GetSchema();
+        var dgmlWriter = new DgmlWriter(schema);
+        var contents = dgmlWriter.GetContents();
+        using var writer = new StreamWriter(outgoingData);
+        writer.Write(contents);
     }
 }

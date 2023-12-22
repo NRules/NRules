@@ -4,36 +4,35 @@ using System.Linq;
 using System.Linq.Expressions;
 using NRules.RuleModel;
 
-namespace NRules.Aggregators
+namespace NRules.Aggregators;
+
+/// <summary>
+/// Aggregator factory for group by aggregator.
+/// </summary>
+internal class GroupByAggregatorFactory : IAggregatorFactory
 {
-    /// <summary>
-    /// Aggregator factory for group by aggregator.
-    /// </summary>
-    internal class GroupByAggregatorFactory : IAggregatorFactory
+    private Func<IAggregator> _factory;
+
+    public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
     {
-        private Func<IAggregator> _factory;
+        var keySelector = element.Expressions[AggregateElement.KeySelectorName];
+        var elementSelector = element.Expressions[AggregateElement.ElementSelectorName];
 
-        public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
-        {
-            var keySelector = element.Expressions[AggregateElement.KeySelectorName];
-            var elementSelector = element.Expressions[AggregateElement.ElementSelectorName];
+        var sourceType = element.Source.ValueType;
+        var keyType = keySelector.Expression.ReturnType;
+        var elementType = elementSelector.Expression.ReturnType;
+        Type aggregatorType = typeof(GroupByAggregator<,,>).MakeGenericType(sourceType, keyType, elementType);
 
-            var sourceType = element.Source.ValueType;
-            var keyType = keySelector.Expression.ReturnType;
-            var elementType = elementSelector.Expression.ReturnType;
-            Type aggregatorType = typeof(GroupByAggregator<,,>).MakeGenericType(sourceType, keyType, elementType);
+        var compiledKeySelector = compiledExpressions.FindSingle(AggregateElement.KeySelectorName);
+        var compiledElementSelector = compiledExpressions.FindSingle(AggregateElement.ElementSelectorName);
+        var ctor = aggregatorType.GetConstructors().Single();
+        var factoryExpression = Expression.Lambda<Func<IAggregator>>(
+            Expression.New(ctor, Expression.Constant(compiledKeySelector), Expression.Constant(compiledElementSelector)));
+        _factory = factoryExpression.Compile();
+    }
 
-            var compiledKeySelector = compiledExpressions.FindSingle(AggregateElement.KeySelectorName);
-            var compiledElementSelector = compiledExpressions.FindSingle(AggregateElement.ElementSelectorName);
-            var ctor = aggregatorType.GetConstructors().Single();
-            var factoryExpression = Expression.Lambda<Func<IAggregator>>(
-                Expression.New(ctor, Expression.Constant(compiledKeySelector), Expression.Constant(compiledElementSelector)));
-            _factory = factoryExpression.Compile();
-        }
-
-        public IAggregator Create()
-        {
-            return _factory();
-        }
+    public IAggregator Create()
+    {
+        return _factory();
     }
 }

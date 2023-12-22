@@ -1,7 +1,7 @@
-version: 0.9.3.{build}
+version: 0.9.4.{build}
 configuration: Release
 
-image: Visual Studio 2019
+image: Visual Studio 2022
 
 skip_tags: true
 
@@ -13,7 +13,7 @@ clone_depth: 1
 test: off
 
 build_script:
-- ps: .\build.ps1 Package All
+- ps: .\build.ps1 Build All
 
 artifacts:
 - path: build\packages\**\*.nupkg

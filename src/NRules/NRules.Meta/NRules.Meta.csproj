@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>NRules Rules Engine for .NET</Title>
+    <Description>NRules is an open source rules engine for .NET that is based on the Rete matching algorithm with rules authored in C# using internal DSL.</Description>
+    <PackageId>NRules</PackageId>
+    <PackageTags>rules;engine;inference;rete;business;dsl</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NRules\NRules.csproj" />
+    <ProjectReference Include="..\NRules.Fluent\NRules.Fluent.csproj" />
+  </ItemGroup>
+
+</Project>

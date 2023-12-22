@@ -1,28 +1,27 @@
-namespace NRules.RuleModel
+namespace NRules.RuleModel;
+
+/// <summary>
+/// Existential quantifier.
+/// </summary>
+public class ExistsElement : RuleElement
 {
+    /// <inheritdoc cref="RuleElement.ElementType"/>
+    public override ElementType ElementType => ElementType.Exists;
+
     /// <summary>
-    /// Existential quantifier.
+    /// Fact source of the existential element.
     /// </summary>
-    public class ExistsElement : RuleElement
+    public RuleElement Source { get; }
+
+    internal ExistsElement(RuleElement source)
     {
-        /// <inheritdoc cref="RuleElement.ElementType"/>
-        public override ElementType ElementType => ElementType.Exists;
+        Source = source;
 
-        /// <summary>
-        /// Fact source of the existential element.
-        /// </summary>
-        public RuleElement Source { get; }
+        AddImports(source);
+    }
 
-        internal ExistsElement(RuleElement source)
-        {
-            Source = source;
-
-            AddImports(source);
-        }
-
-        internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
-        {
-            visitor.VisitExists(context, this);
-        }
+    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    {
+        visitor.VisitExists(context, this);
     }
 }

@@ -1,0 +1,32 @@
+<Project>
+
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <NoWarn>$(NoWarn);CS1591;NU5048;NU5128</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Company>NRules</Company>
+    <Product>NRules</Product>
+    <Authors>Sergiy Nikolayev</Authors>
+    <Copyright>Copyright 2012-2023 Sergiy Nikolayev. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageIconUrl>https://raw.githubusercontent.com/NRules/NRules.media/master/Logo/Logo.png</PackageIconUrl>
+    <PackageProjectUrl>https://nrules.net</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/NRules/NRules/releases/v$(Version)</PackageReleaseNotes>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+  </ItemGroup>
+
+</Project>

@@ -1,27 +1,26 @@
-﻿namespace NRules.RuleModel.Builders
+﻿namespace NRules.RuleModel.Builders;
+
+internal static class BuilderAdapter
 {
-    internal static class BuilderAdapter
-    {
-        public static BuilderAdapter<T> Create<T>(T element)
-            where T : RuleElement
-        {
-            return new BuilderAdapter<T>(element);
-        }
-    }
-    
-    internal class BuilderAdapter<T> : RuleElementBuilder, IBuilder<T>
+    public static BuilderAdapter<T> Create<T>(T element)
         where T : RuleElement
     {
-        private readonly T _element;
+        return new BuilderAdapter<T>(element);
+    }
+}
 
-        public BuilderAdapter(T element)
-        {
-            _element = element;
-        }
+internal class BuilderAdapter<T> : RuleElementBuilder, IBuilder<T>
+    where T : RuleElement
+{
+    private readonly T _element;
 
-        public T Build()
-        {
-            return _element;
-        }
+    public BuilderAdapter(T element)
+    {
+        _element = element;
+    }
+
+    public T Build()
+    {
+        return _element;
     }
 }

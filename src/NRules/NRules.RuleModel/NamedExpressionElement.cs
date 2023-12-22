@@ -1,31 +1,30 @@
 using System.Diagnostics;
 using System.Linq.Expressions;
 
-namespace NRules.RuleModel
+namespace NRules.RuleModel;
+
+/// <summary>
+/// Expression with a name used by an aggregator.
+/// </summary>
+[DebuggerDisplay("{Name}={Expression.ToString()}")]
+public class NamedExpressionElement : ExpressionElement
 {
-    /// <summary>
-    /// Expression with a name used by an aggregator.
-    /// </summary>
-    [DebuggerDisplay("{Name}={Expression.ToString()}")]
-    public class NamedExpressionElement : ExpressionElement
+    internal NamedExpressionElement(string name, LambdaExpression lambdaExpression)
+        : base(lambdaExpression)
     {
-        internal NamedExpressionElement(string name, LambdaExpression lambdaExpression)
-            : base(lambdaExpression)
-        {
-            Name = name;
-        }
+        Name = name;
+    }
 
-        /// <inheritdoc cref="RuleElement.ElementType"/>
-        public override ElementType ElementType => ElementType.NamedExpression;
+    /// <inheritdoc cref="RuleElement.ElementType"/>
+    public override ElementType ElementType => ElementType.NamedExpression;
 
-        /// <summary>
-        /// Expression name.
-        /// </summary>
-        public string Name { get; }
+    /// <summary>
+    /// Expression name.
+    /// </summary>
+    public string Name { get; }
 
-        internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
-        {
-            visitor.VisitNamedExpression(context, this);
-        }
+    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    {
+        visitor.VisitNamedExpression(context, this);
     }
 }

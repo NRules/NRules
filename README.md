@@ -6,17 +6,23 @@ NRules is an open source production rules engine for .NET, based on the [Rete](h
 
 ## Installing NRules
 
-First, [install NuGet](https://docs.microsoft.com/nuget/guides/install-nuget). Then, install [NRules](https://www.nuget.org/packages/NRules) from the Package Manager Console:
-
-    PM> Install-Package NRules
+To install NRules, get it from nuget via the package manager
+```console
+> Install-Package NRules
+```
 
 ## Getting Started
 
-Use the following resources to get up and running with NRules.
+Use the following resources to get up and running with NRules
 
-- [Getting Started Guide](https://github.com/NRules/NRules/wiki/Getting-Started)
-- [Wiki Documentation](https://github.com/NRules/NRules/wiki)
+- [Getting Started Guide](https://nrules.net/articles/getting-started.html)
+- [Documentation](https://nrules.net/index.html)
 - [API Documentation](https://nrules.net/api/index.html)
+
+## Getting Help
+
+Use the following discussion and Q&A platforms to get help with NRules
+
 - [Discussions](https://github.com/NRules/NRules/discussions)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/nrules)
 - [Gitter Chat](https://gitter.im/NRules/NRules)
@@ -26,4 +32,4 @@ Use the following resources to get up and running with NRules.
 See [Contributor Guide](CONTRIBUTING.md) for the guidelines on how to contribute to the project.
 
 ---
-Copyright &copy; 2012-2021 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).
+Copyright &copy; 2012-2023 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).

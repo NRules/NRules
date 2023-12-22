@@ -1,9 +1,11 @@
 # Build Folders
-/binaries
 /build
 
-## Visual Studio temporary files, build results, etc.
+## Visual Studio temporary files
 .vs
+
+## IntelliJ temporary files
+.idea
 
 # User-specific files
 *.suo
@@ -17,18 +19,16 @@ x64/
 [Bb]in/
 [Oo]bj/
 
-# MSTest test Results
+# Test results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
-
-# NUnit test Results
 TestResult.xml
+*.trx
 
 *_i.c
 *_p.c
 *_i.h
 *.ilk
-*.meta
 *.obj
 *.pch
 *.pdb
@@ -118,7 +118,7 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
-# Mac crap
+# Mac folder attributes
 .DS_Store
 
 # Benchmak Results

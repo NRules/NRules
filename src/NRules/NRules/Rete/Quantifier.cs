@@ -1,7 +1,6 @@
-﻿namespace NRules.Rete
+﻿namespace NRules.Rete;
+
+internal class Quantifier
 {
-    internal class Quantifier
-    {
-        public int Value { get; set; }
-    }
+    public int Value { get; set; }
 }

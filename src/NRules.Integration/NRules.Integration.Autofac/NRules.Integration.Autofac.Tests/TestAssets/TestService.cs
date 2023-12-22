@@ -1,18 +1,17 @@
-﻿namespace NRules.Integration.Autofac.Tests.TestAssets
+﻿namespace NRules.Integration.Autofac.Tests.TestAssets;
+
+public interface ITestService
 {
-    public interface ITestService
-    {
-        public string Status { get; }
-        void DoIt();
-    }
+    public string Status { get; }
+    void DoIt();
+}
 
-    public class TestService : ITestService
-    {
-        public string Status { get; set; }
+public class TestService : ITestService
+{
+    public string Status { get; set; }
 
-        public void DoIt()
-        {
-            Status = "It's done";
-        }
+    public void DoIt()
+    {
+        Status = "It's done";
     }
 }

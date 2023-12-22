@@ -1,18 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\..\Common.props" />
+  <PropertyGroup>
+    <Title>NRules Canonical Rules Model</Title>
+    <Description>Canonical rules model to define rules for the NRules rules engine.</Description>
+    <PackageId>NRules.RuleModel</PackageId>
+    <PackageTags>rules;engine;inference;rete;business;dsl</PackageTags>
+  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\SigningKey.snk</AssemblyOriginatorKeyFile>
-    <LangVersion>Latest</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-  </ItemGroup>
-  
+  <Import Project="..\InternalsVisibleTo.props" />
+
 </Project>

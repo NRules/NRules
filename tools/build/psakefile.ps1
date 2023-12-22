@@ -4,8 +4,7 @@ param (
 
 properties {
     $version = $null
-    $sdkVersion = "3.1.404"
-    $nugetVersion = "5.8.0"
+    $sdkVersion = "8.0.100"
     $configuration = "Release"
     $baseDir = $null
 }
@@ -22,29 +21,40 @@ task Init {
     Write-Host "Building $($component.name) version $version ($configuration)" -ForegroundColor Green
     
     $compName = $component.name
-    $srcRoot = if ($component.ContainsKey('src_root')) { $component.src_root } else { 'src' }
     
-    $script:binariesDir = "$baseDir\binaries\$compName"
-    $script:srcRootDir = "$baseDir\$srcRoot"
-    $script:srcDir = "$srcRootDir\$compName"
-    $script:buildDir = "$baseDir\build"
-    $script:pkgOutDir = "$buildDir\packages\$compName"
-    $script:packagesDir = "$baseDir\packages"
-    $script:toolsDir = "$baseDir\tools"
-    $script:msbuild = Get-Msbuild
+    $script:sourceDir = Join-Path $baseDir src
+    $script:buildDir = Join-Path $baseDir build
+    $script:binDir = Join-Path $buildDir bin
+    $script:pkgDir = Join-Path $buildDir packages
+    $script:toolsDir = Join-Path $baseDir tools
+
+    $script:solutionDir = Join-Path $sourceDir $compName
+    $script:binOutDir = Join-Path $binDir $compName
+    $script:pkgOutDir = Join-Path $pkgDir $compName
+    
+    $script:solutionFile = Join-Path $solutionDir "$($component.name).sln"
+    if ($component.ContainsKey('solution_file')) {
+        $script:solutionFile = Join-Path $baseDir "$($component.solution_file)"
+        $script:solutionDir = Split-Path $script:solutionFile -Parent
+    }
     
     Install-DotNetCli $toolsDir\.dotnet $sdkVersion
-    Install-NuGet $toolsDir\.nuget $nugetVersion
 }
 
 task Clean -depends Init {
-    Delete-Directory $pkgOutDir
-    Delete-Directory $binariesDir
+    Remove-Directory $pkgOutDir
+    Remove-Directory $binOutDir
+
+    if ($component.ContainsKey('output')) {
+        foreach ($output in $component.output) {
+            $outputDir = Join-Path $baseDir $output
+            Write-Host "Removing $outputDir"
+            Remove-Directory $outputDir
+        }
+    }
 }
 
 task PatchFiles {
-    Update-Version $baseDir $version
-    
     $signingKey = "$baseDir\SigningKey.snk"
     $secureKey = "$baseDir\..\SecureSigningKey.snk"
     $secureHash = "$baseDir\..\SecureSigningKey.sha1"
@@ -61,76 +71,48 @@ task PatchFiles {
 }
 
 task ResetPatch {
-    Reset-Version $baseDir
-    
     $signingKey = "$baseDir\SigningKey.snk"
+    $secureKey = "$baseDir\..\SecureSigningKey.snk"
+    $secureHash = "$baseDir\..\SecureSigningKey.sha1"
     $devKey = "$baseDir\DevSigningKey.snk"
     $devHash = "$baseDir\DevSigningKey.sha1"
     
-    $publicKey = Get-Content $devHash
-    $publicKey = $publicKey.Trim()
-    Update-InternalsVisible $baseDir $publicKey
-    Copy-Item $devKey -Destination $signingKey -Force
-}
-
-task RestoreDependencies -precondition { return $component.ContainsKey('restore') } {
-    if ($component.restore.tool -eq 'nuget') {
-        exec { nuget restore $srcDir -NonInteractive }
-    }
-    if ($component.restore.tool -eq 'dotnet') {
-        exec { dotnet restore $srcDir --verbosity minimal }
+    if ((Test-Path $secureKey) -and (Test-Path $secureHash)) {
+        $publicKey = Get-Content $devHash
+        $publicKey = $publicKey.Trim()
+        Update-InternalsVisible $baseDir $publicKey
+        Copy-Item $devKey -Destination $signingKey -Force
     }
 }
 
-task Compile -depends Init, Clean, PatchFiles, RestoreDependencies -precondition { return $component.ContainsKey('build') } { 
-    Create-Directory $buildDir
-    
-    $solutionFile = "$srcDir\$($component.name).sln"
-    if ($component.build.ContainsKey('solution_file')) {
-        $solutionFile = "$srcRootDir\$($component.build.solution_file)"
-    }
-    
-    if ($component.build.tool -eq 'msbuild') {
-        exec { &$msbuild $solutionFile /p:Configuration=$configuration /v:m /nologo }
-    }
-    if ($component.build.tool -eq 'dotnet') {
-        exec { dotnet build $solutionFile --configuration $configuration --verbosity minimal }
-    }
-    if ($component.build.tool -eq 'shfb') {
-        Assert (Test-Path Env:\SHFBROOT) 'Sandcastle root environment variable SHFBROOT is not set'
-        
-        exec { &$msbuild $solutionFile /v:m /nologo }
-    }
+task RestoreTools {
+    exec { dotnet tool restore }
 }
 
-task Test -depends Compile -precondition { return $component.ContainsKey('test') } {
-    $testsDir = $srcDir
-    if ($component.test.ContainsKey('location')) {
-        $testsDir = "$srcDir\$($component.test.location)"
-    }
-    Get-ChildItem $testsDir -recurse -filter "*.trx" | % { Delete-File $_.fullname }
+task Restore -precondition { return $component.ContainsKey('solution_file') } {
+    exec { dotnet restore $solutionFile --verbosity minimal }
+}
+
+task Compile -depends Init, Restore -precondition { return $component.ContainsKey('solution_file') } { 
+    New-Directory $buildDir
+    exec { dotnet build $solutionFile --no-restore -c $configuration -p:Version=$version -p:ContinuousIntegrationBuild=true -v minimal }
+}
+
+task Test -depends Compile -precondition { return $component.ContainsKey('solution_file') } {
+    Get-ChildItem $solutionDir -recurse -filter "*.trx" | % { Remove-File $_.fullname }
     
     $hasError = $false
-    $projects = Get-DotNetProjects $testsDir
-    foreach ($project in $projects) {
-        Push-Location $project
-        $projectName = Split-Path $project -Leaf
-        foreach ($framework in $component.test.frameworks) {
-            $result = "$($projectName)_$framework.trx"
-            try {
-                exec { dotnet test --no-build --configuration $configuration --framework $framework --verbosity minimal --logger "trx;LogFileName=$result" }
-            }
-            catch {
-                $hasError = $true
-            }
-        }
-        Pop-Location
+    try {
+        exec { dotnet test $solutionFile --no-restore --no-build -c $configuration -v minimal --logger "trx;LogFilePrefix=testResults" }
+    }
+    catch {
+        $hasError = $true
     }
     
     if (Test-Path Env:CI) {
         Write-Host "Uploading test results to CI server"
         $wc = New-Object 'System.Net.WebClient'
-        Get-ChildItem $testsDir -recurse -filter "*.trx" | % {
+        Get-ChildItem $solutionDir -recurse -filter "*.trx" | % {
             $testFile = $_.fullname
             $wc.UploadFile("https://ci.appveyor.com/api/testresults/mstest/$($Env:APPVEYOR_JOB_ID)", (Resolve-Path $testFile))
         }
@@ -141,20 +123,23 @@ task Test -depends Compile -precondition { return $component.ContainsKey('test')
     }
 }
 
-task Build -depends Compile, Test, ResetPatch -precondition { return $component.ContainsKey('build') } {
-    if (-not $component.ContainsKey('bin')) {
-        return
-    }
-    Create-Directory $binariesDir
-    foreach ($artifact in $component.bin.artifacts) {
+task PackageNuGet -depends Compile -precondition { $component.package.ContainsKey('nuget') -and $component.ContainsKey('solution_file') } {
+    New-Directory $pkgOutDir
+    exec { dotnet pack $solutionFile -c $configuration --no-restore --no-build -p:Version=$version -o $pkgOutDir -v minimal }
+}
+
+task PackageBin -depends Compile -precondition { $component.package.ContainsKey('bin') } {
+    New-Directory $binOutDir
+    $bin = $component.package.bin
+    foreach ($artifact in $bin.artifacts) {
         $outputDir = $artifact
-        if ($component.bin.$artifact.ContainsKey('output')) {
-            $outputDir = $component.bin.$artifact.output
+        if ($bin.$artifact.ContainsKey('output')) {
+            $outputDir = $bin.$artifact.output
         }
-        $destDir = "$binariesDir\$outputDir"
-        Create-Directory $destDir
-        foreach ($item in $component.bin.$artifact.include) {
-            $itemPath = "$srcDir\$item"
+        $destDir = "$binOutDir\$outputDir"
+        New-Directory $destDir
+        foreach ($item in $bin.$artifact.include) {
+            $itemPath = Join-Path $solutionDir $item
             if (Test-Path -Path $itemPath -PathType Container) {
                 $itemPath = "$itemPath\**"
             }
@@ -163,41 +148,45 @@ task Build -depends Compile, Test, ResetPatch -precondition { return $component.
     }
 }
 
-task Bench -depends Build -precondition { return $component.ContainsKey('bench') } {
-    $exe = $component.bench.exe
+task Package -depends PackageNuGet, PackageBin -precondition { return $component.ContainsKey('package') } {
+}
+
+task Bench -depends Package -precondition { return $component.ContainsKey('bench') } {
+    $benchRunner = $component.bench.runner
     $categories = $component.bench.categories -join ","
     foreach ($framework in $component.bench.frameworks) {
-        $exeFile = "$binariesDir\$framework\$exe"
-        $artifacts = "$buildDir\bench\$framework"
-        exec { &$exeFile --join --anyCategories=$categories --artifacts=$artifacts }
+        $benchRunnerFmkPath = Join-Path $binOutDir $framework
+        $benchRunnerPath = Join-Path $benchRunnerFmkPath $benchRunner
+        $benchDir = Join-Path $buildDir bench
+        $artifacts = Join-Path $benchDir $framework
+        Push-Location $solutionDir
+        exec { &$benchRunnerPath --join --anyCategories=$categories --artifacts=$artifacts }
+        Pop-Location
     }
 }
 
-task PackageNuGet -depends Build -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
-    Create-Directory $pkgOutDir
-    foreach ($package in $component.package.nuget) {
-        $nuspec = "$packagesDir\$($package).nuspec"
-        exec { nuget pack $nuspec -Version $version -OutputDirectory $pkgOutDir }
-    }
+task CompileDocs -depends RestoreTools -precondition { return $component.ContainsKey('doc') -and $component.doc.ContainsKey('docfx') } {
+    $docfx_project_file = Join-Path $baseDir "$($component.doc.docfx.project_file)"
+    exec { dotnet tool run docfx $docfx_project_file }
 }
 
-task Package -depends Build, PackageNuGet {
+task Build -depends Init, Clean, PatchFiles, Restore, Compile, Test, Bench, Package, CompileDocs, ResetPatch {
 }
 
-task PublishNuGet -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
+task PushNuGet -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
     $accessKeyFile = "$baseDir\..\Nuget-Access-Key.txt"
     if ( (Test-Path $accessKeyFile) ) {
         $accessKey = Get-Content $accessKeyFile
         $accessKey = $accessKey.Trim()
         
         foreach ($package in $component.package.nuget) {
-            $nupkg = "$pkgOutDir\$($package).$($version).nupkg"
-            exec { nuget push $nupkg $accessKey }
+            $nupkg = Join-Path $pkgOutDir "$($package).$($version).nupkg"
+            exec { dotnet nuget push $nupkg --api-key $accessKey }
         }
     } else {
         Write-Host "Nuget-Access-Key.txt does not exist. Cannot publish the nuget package." -ForegroundColor Yellow
     }
 }
 
-task Publish -depends Package, PublishNuGet {
+task Publish -depends Init, PushNuGet {
 }

@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 
-namespace NRules.Utilities
+namespace NRules.Utilities;
+
+internal class ReverseComparer<T> : IComparer<T>
 {
-    internal class ReverseComparer<T> : IComparer<T>
+    private readonly IComparer<T> _comparer;
+
+    internal ReverseComparer(IComparer<T> comparer)
     {
-        private readonly IComparer<T> _comparer;
+        _comparer = comparer;
+    }
 
-        internal ReverseComparer(IComparer<T> comparer)
-        {
-            _comparer = comparer;
-        }
-
-        public int Compare(T x, T y)
-        {
-            return _comparer.Compare(y, x);
-        }
+    public int Compare(T x, T y)
+    {
+        return _comparer.Compare(y, x);
     }
 }

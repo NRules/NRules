@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30717.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Integration.Autofac", "NRules.Integration.Autofac\NRules.Integration.Autofac.csproj", "{CDEA2301-F905-4B46-B791-2E049284D8DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRules.Integration.Autofac.Tests", "NRules.Integration.Autofac.Tests\NRules.Integration.Autofac.Tests.csproj", "{DF87699A-6B5A-4783-A22D-E3F0D46DD8E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Integration.Autofac.Tests", "NRules.Integration.Autofac.Tests\NRules.Integration.Autofac.Tests.csproj", "{DF87699A-6B5A-4783-A22D-E3F0D46DD8E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,198 +2,197 @@
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.Testing;
 using Xunit;
 
-namespace NRules.IntegrationTests
+namespace NRules.IntegrationTests;
+
+public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest : BaseRulesTestFixture
 {
-    public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest : BaseRuleTestFixture
+    [Fact]
+    public void Fire_NoMatchingFacts_FiresOnceWithEmptyCollection()
     {
-        [Fact]
-        public void Fire_NoMatchingFacts_FiresOnceWithEmptyCollection()
-        {
-            // Arrange - Act
-            Session.Fire();
+        // Arrange - Act
+        Session.Fire();
 
-            // Assert
-            AssertFiredOnce();
-            Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
-        }
+        // Assert
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(x => !x.Any())));
+    }
 
-        [Fact]
-        public void Fire_FourMatchingFactsAndOneInvalid_FiresOnceWithFourSortedFactsInCollection()
-        {
-            // Arrange
-            var fact1 = new FactType(0, null);
-            var fact2 = new FactType(50, "A");
-            var fact3 = new FactType(10, "A");
-            var fact4 = new FactType(50, "B");
-            var fact5 = new FactType(10, "B");
+    [Fact]
+    public void Fire_FourMatchingFactsAndOneInvalid_FiresOnceWithFourSortedFactsInCollection()
+    {
+        // Arrange
+        var fact1 = new FactType(0, null);
+        var fact2 = new FactType(50, "A");
+        var fact3 = new FactType(10, "A");
+        var fact4 = new FactType(50, "B");
+        var fact5 = new FactType(10, "B");
 
-            var facts = new[] { fact1, fact2, fact3, fact4, fact5 };
-            Session.InsertAll(facts);
+        var facts = new[] { fact1, fact2, fact3, fact4, fact5 };
+        Session.InsertAll(facts);
 
-            // Act
-            Session.Fire();
+        // Act
+        Session.Fire();
 
-            // Assert
-            AssertFiredOnce();
+        // Assert
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact => {
+                Assert.Equal(4, firedFact.Count());
+                Assert.Equal(fact5, firedFact.ElementAt(0));
+                Assert.Equal(fact3, firedFact.ElementAt(1));
+                Assert.Equal(fact4, firedFact.ElementAt(2));
+                Assert.Equal(fact2, firedFact.ElementAt(3));
+            })));
+    }
 
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-            Assert.Equal(4, firedFacts.Count());
-            Assert.Equal(fact5, firedFacts.ElementAt(0));
-            Assert.Equal(fact3, firedFacts.ElementAt(1));
-            Assert.Equal(fact4, firedFacts.ElementAt(2));
-            Assert.Equal(fact2, firedFacts.ElementAt(3));
-        }
+    [Fact]
+    public void Fire_TwoMatchingFactsInsertedOneUpdated_FiresOnceWithTwoSortedFactsInCollection()
+    {
+        // Arrange
+        var fact1 = new FactType(0, "B");
+        var fact2 = new FactType(10, "A");
 
-        [Fact]
-        public void Fire_TwoMatchingFactsInsertedOneUpdated_FiresOnceWithTwoSortedFactsInCollection()
-        {
-            // Arrange
-            var fact1 = new FactType(0, "B");
-            var fact2 = new FactType(10, "A");
+        var facts = new[] { fact1, fact2 };
+        Session.InsertAll(facts);
 
-            var facts = new[] { fact1, fact2 };
-            Session.InsertAll(facts);
+        fact1.TestPropertyInt = 10;
+        Session.Update(fact1);
 
-            fact1.TestPropertyInt = 10;
-            Session.Update(fact1);
+        // Act
+        Session.Fire();
 
-            // Act
-            Session.Fire();
+        // Assert
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact => {
+                Assert.Equal(2, firedFact.Count());
+                Assert.Equal(fact1, firedFact.ElementAt(0));
+                Assert.Equal(fact2, firedFact.ElementAt(1));
+            })));
+    }
 
-            // Assert
-            AssertFiredOnce();
+    [Fact]
+    public void Fire_TwoMatchingFactsInsertedOneRetracted_FiresOnceWithOneFactInCollection()
+    {
+        // Arrange
+        var fact1 = new FactType(5, "A");
+        var fact2 = new FactType(10, "A");
 
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-            Assert.Equal(2, firedFacts.Count());
-            Assert.Equal(fact1, firedFacts.ElementAt(0));
-            Assert.Equal(fact2, firedFacts.ElementAt(1));
-        }
+        var facts = new[] { fact1, fact2 };
+        Session.InsertAll(facts);
+        Session.Retract(fact2);
 
-        [Fact]
-        public void Fire_TwoMatchingFactsInsertedOneRetracted_FiresOnceWithOneFactInCollection()
-        {
-            // Arrange
-            var fact1 = new FactType(5, "A");
-            var fact2 = new FactType(10, "A");
+        // Act
+        Session.Fire();
 
-            var facts = new[] { fact1, fact2 };
-            Session.InsertAll(facts);
-            Session.Retract(fact2);
+        // Assert
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact => {
+                Assert.Single(firedFact);
+                Assert.Equal(fact1, firedFact.ElementAt(0));
+            })));
+    }
 
-            // Act
-            Session.Fire();
+    [Fact]
+    public void Fire_TwoMatchingFactsInsertedTwoRetracted_FiresOnceWithEmptyCollection()
+    {
+        // Arrange
+        var fact1 = new FactType(5, "A");
+        var fact2 = new FactType(10, "A");
 
-            // Assert
-            AssertFiredOnce();
+        var facts = new[] { fact1, fact2 };
+        Session.InsertAll(facts);
+        Session.Retract(fact1);
+        Session.Retract(fact2);
 
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-            Assert.Single(firedFacts);
-            Assert.Equal(fact1, firedFacts.ElementAt(0));
-        }
+        // Act
+        Session.Fire();
 
-        [Fact]
-        public void Fire_TwoMatchingFactsInsertedTwoRetracted_FiresOnceWithEmptyCollection()
-        {
-            // Arrange
-            var fact1 = new FactType(5, "A");
-            var fact2 = new FactType(10, "A");
+        // Assert
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(x => !x.Any())));
+    }
 
-            var facts = new[] { fact1, fact2 };
-            Session.InsertAll(facts);
-            Session.Retract(fact1);
-            Session.Retract(fact2);
+    [Fact]
+    public void Fire_TwoMatchingFactsInsertedOneUpdatedToInvalid_FiresOnceWithOneFactInCollection()
+    {
+        // Arrange
+        var fact1 = new FactType(5, "A");
+        var fact2 = new FactType(10, "A");
 
-            // Act
-            Session.Fire();
+        var facts = new[] { fact1, fact2 };
+        Session.InsertAll(facts);
 
-            // Assert
-            AssertFiredOnce();
-            Assert.Empty(GetFiredFact<IEnumerable<FactType>>());
-        }
+        fact2.TestPropertyInt = 0;
+        Session.Update(fact2);
 
-        [Fact]
-        public void Fire_TwoMatchingFactsInsertedOneUpdatedToInvalid_FiresOnceWithOneFactInCollection()
-        {
-            // Arrange
-            var fact1 = new FactType(5, "A");
-            var fact2 = new FactType(10, "A");
+        // Act
+        Session.Fire();
 
-            var facts = new[] { fact1, fact2 };
-            Session.InsertAll(facts);
+        // Assert
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact => {
+                Assert.Single(firedFact);
+                Assert.Equal(fact1, firedFact.ElementAt(0));
+            })));
+    }
 
-            fact2.TestPropertyInt = 0;
-            Session.Update(fact2);
+    [Fact]
+    public void Fire_OneMatchingFactsAndOneInvalidInsertedTheInvalidUpdatedToValid_FiresOnceWithTwoSortedFactInCollection()
+    {
+        // Arrange
+        var fact1 = new FactType(2, "A");
+        var fact2 = new FactType(0, "B");
 
-            // Act
-            Session.Fire();
+        var facts = new[] { fact1, fact2 };
+        Session.InsertAll(facts);
 
-            // Assert
-            AssertFiredOnce();
+        fact2.TestPropertyInt = 2;
+        Session.Update(fact2);
 
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-            Assert.Single(firedFacts);
-            Assert.Equal(fact1, firedFacts.ElementAt(0));
-        }
+        // Act
+        Session.Fire();
 
-        [Fact]
-        public void Fire_OneMatchingFactsAndOneInvalidInsertedTheInvalidUpdatedToValid_FiresOnceWithTwoSortedFactInCollection()
-        {
-            // Arrange
-            var fact1 = new FactType(2, "A");
-            var fact2 = new FactType(0, "B");
-
-            var facts = new[] { fact1, fact2 };
-            Session.InsertAll(facts);
-
-            fact2.TestPropertyInt = 2;
-            Session.Update(fact2);
-
-            // Act
-            Session.Fire();
-
-            // Assert
-            AssertFiredOnce();
-
-            var firedFacts = GetFiredFact<IEnumerable<FactType>>();
-            Assert.Equal(2, firedFacts.Count());
-            Assert.Equal(fact2, firedFacts.ElementAt(0));
-            Assert.Equal(fact1, firedFacts.ElementAt(1));
-        }
-
-        protected override void SetUpRules()
-        {
-            SetUpRule<TestRule>();
-        }
-
-        public class FactType
-        {
-            public FactType(int testInt, string testString)
+        // Assert
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>()
+            .Callback(firedFact =>
             {
-                TestPropertyInt = testInt;
-                TestPropertyString = testString;
-            }
+                Assert.Equal(2, firedFact.Count());
+                Assert.Equal(fact2, firedFact.ElementAt(0));
+                Assert.Equal(fact1, firedFact.ElementAt(1));
+            })));
+    }
 
-            public int TestPropertyInt { get; set; }
-            public string TestPropertyString { get; set; }
+    protected override void SetUpRules(IRulesTestSetup setup)
+    {
+        setup.Rule<TestRule>();
+    }
+
+    public class FactType
+    {
+        public FactType(int testInt, string testString)
+        {
+            TestPropertyInt = testInt;
+            TestPropertyString = testString;
         }
 
-        public class TestRule : Rule
-        {
-            public override void Define()
-            {
-                IEnumerable<FactType> collection = null;
+        public int TestPropertyInt { get; set; }
+        public string TestPropertyString { get; set; }
+    }
 
-                When()
-                    .Query(() => collection, x => x
-                        .Match<FactType>(f => f.TestPropertyInt > 0)
-                        .Collect()
-                        .OrderBy(f => f.TestPropertyInt)
-                        .ThenByDescending(f => f.TestPropertyString));
-                Then()
-                    .Do(ctx => ctx.NoOp());
-            }
+    public class TestRule : Rule
+    {
+        public override void Define()
+        {
+            IEnumerable<FactType> collection = null;
+
+            When()
+                .Query(() => collection, x => x
+                    .Match<FactType>(f => f.TestPropertyInt > 0)
+                    .Collect()
+                    .OrderBy(f => f.TestPropertyInt)
+                    .ThenByDescending(f => f.TestPropertyString));
+            Then()
+                .Do(ctx => ctx.NoOp());
         }
     }
 }

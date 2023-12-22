@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5FD32CBA-26E2-46D3-B10A-E6C4133EE341}"
 EndProject
@@ -10,6 +10,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Debugger.Visualizer.Tests", "NRules.Debugger.Visualizer.Tests\NRules.Debugger.Visualizer.Tests.csproj", "{4A9AF362-C65E-4591-9B3F-74F5921DDCD1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NRules.Debugger.Visualizer", "NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.csproj", "{057D1CD8-5E7F-4DB6-AE1A-78F51573173E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{ED00E6ED-28F8-4B4E-92ED-ADEFAFF64A0B}"
+	ProjectSection(SolutionItems) = preProject
+		VisualStudio.props = VisualStudio.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
