@@ -36,11 +36,11 @@ $components = @{
                 }
             }
             nuget = @(
-                'NRules.Json',
                 'NRules.RuleModel',
                 'NRules.Fluent',
                 'NRules.Runtime',
                 'NRules',
+                'NRules.Json',
                 'NRules.Testing'
             )
         }
