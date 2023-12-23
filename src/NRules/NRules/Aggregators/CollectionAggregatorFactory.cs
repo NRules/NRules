@@ -18,7 +18,8 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
     {
         var sourceType = element.Source.ValueType;
 
-        var sortConditions = compiledExpressions.Where(x => Equals(x.Name, AggregateElement.KeySelectorAscendingName) || Equals(x.Name, AggregateElement.KeySelectorDescendingName))
+        var sortConditions = compiledExpressions
+            .Where(x => Equals(x.Name, AggregateElement.KeySelectorAscendingName) || Equals(x.Name, AggregateElement.KeySelectorDescendingName))
             .Select(x => new SortCondition(x.Name, GetSortDirection(x.Name), x)).ToArray();
         var groupConditions = compiledExpressions.Where(x => Equals(x.Name, AggregateElement.KeySelectorName)).ToArray();
 
