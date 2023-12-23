@@ -83,7 +83,7 @@ internal class ActionContext : IActionContext
         return _session.TryRetract(fact);
     }
 
-    public IEnumerable<object> GetLinkedKeys()
+    public IReadOnlyCollection<object> GetLinkedKeys()
     {
         return _session.GetLinkedKeys(Activation);
     }

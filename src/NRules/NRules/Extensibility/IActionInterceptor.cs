@@ -24,5 +24,5 @@ public interface IActionInterceptor
     /// </summary>
     /// <param name="context">Action context, containing information about the firing rule and matched facts.</param>
     /// <param name="actions">Action invocations for rule actions being intercepted.</param>
-    void Intercept(IContext context, IEnumerable<IActionInvocation> actions);
+    void Intercept(IContext context, IReadOnlyList<IActionInvocation> actions);
 }

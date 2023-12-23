@@ -289,7 +289,7 @@ internal interface ISessionInternal : ISession
 {
     new IAgendaInternal Agenda { get; }
 
-    IEnumerable<object> GetLinkedKeys(Activation activation);
+    IReadOnlyCollection<object> GetLinkedKeys(Activation activation);
     object GetLinked(Activation activation, object key);
     void QueueInsertLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts);
     void QueueUpdateLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts);
@@ -558,7 +558,7 @@ internal sealed class Session : ISessionInternal
         return factSets;
     }
 
-    public IEnumerable<object> GetLinkedKeys(Activation activation)
+    public IReadOnlyCollection<object> GetLinkedKeys(Activation activation)
     {
         var keys = _workingMemory.GetLinkedKeys(activation);
         return keys;

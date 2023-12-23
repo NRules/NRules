@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NRules.Extensibility;
 using NRules.RuleModel;
@@ -17,7 +18,7 @@ internal class ActionInvocation : IActionInvocation
         _action = action;
     }
 
-    public object[] Arguments => _action.GetArguments(_actionContext);
+    public IReadOnlyList<object> Arguments => _action.GetArguments(_actionContext);
     public Expression Expression => _action.Expression;
     public ActionTrigger Trigger => _action.Trigger;
 

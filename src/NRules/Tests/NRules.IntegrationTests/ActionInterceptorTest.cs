@@ -110,7 +110,7 @@ public class ActionInterceptorTest : BaseRulesTestFixture
             _invoke = invoke;
         }
 
-        public void Intercept(IContext context, IEnumerable<IActionInvocation> actions)
+        public void Intercept(IContext context, IReadOnlyList<IActionInvocation> actions)
         {
             if (_invoke)
             {
