@@ -442,13 +442,21 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private IReadOnlyCollection<IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
     {
-        var declarations = context.Declarations.Concat(element.Source.Declaration).ToList();
+        var declarations = CreateDeclarationList(context.Declarations, element.Source.Declaration);
         var result = new List<IAggregateExpression>(element.Expressions.Count);
         foreach (var expression in element.Expressions)
         {
             var aggregateExpression = _ruleExpressionCompiler.CompileAggregateExpression(expression, declarations);
             result.Add(aggregateExpression);
         }
+        return result;
+    }
+
+    private static List<Declaration> CreateDeclarationList(IReadOnlyCollection<Declaration> declarations, Declaration declaration)
+    {
+        var result = new List<Declaration>(declarations.Count + 1);
+        result.AddRange(declarations);
+        result.Add(declaration);
         return result;
     }
 
