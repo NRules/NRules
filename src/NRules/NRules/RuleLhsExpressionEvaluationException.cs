@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 
 namespace NRules;
 
@@ -13,8 +15,8 @@ public class RuleLhsExpressionEvaluationException : RuleExpressionEvaluationExce
     {
     }
 
-    [System.Security.SecuritySafeCritical]
-    protected RuleLhsExpressionEvaluationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+    [SecuritySafeCritical]
+    protected RuleLhsExpressionEvaluationException(SerializationInfo info, StreamingContext context)
         : base(info, context)
     {
     }
