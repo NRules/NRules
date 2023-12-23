@@ -20,18 +20,15 @@ internal interface ICompiledRule
 [DebuggerDisplay("{Definition.Name}")]
 internal class CompiledRule : ICompiledRule
 {
-    private readonly IReadOnlyCollection<Declaration> _declarations;
-    private readonly IReadOnlyCollection<IRuleAction> _actions;
-
     public CompiledRule(IRuleDefinition definition, IReadOnlyCollection<Declaration> declarations, IReadOnlyCollection<IRuleAction> actions, IRuleFilter filter, IndexMap factMap)
     {
         Definition = definition;
         Filter = filter;
         FactMap = factMap;
-        _declarations = declarations;
-        _actions = actions;
+        Declarations = declarations;
+        Actions = actions;
 
-        foreach (var ruleAction in _actions)
+        foreach (var ruleAction in Actions)
         {
             ActionTriggers |= ruleAction.Trigger;
         }
@@ -43,7 +40,6 @@ internal class CompiledRule : ICompiledRule
     public IRuleFilter Filter { get; }
     public ActionTrigger ActionTriggers { get; }
     public IndexMap FactMap { get; }
-
-    public IReadOnlyCollection<Declaration> Declarations => _declarations;
-    public IReadOnlyCollection<IRuleAction> Actions => _actions;
+    public IReadOnlyCollection<Declaration> Declarations { get; }
+    public IReadOnlyCollection<IRuleAction> Actions { get; }
 }
