@@ -32,7 +32,7 @@ internal class Aggregation
         Count++;
     }
 
-    public void Remove(Tuple tuple, IEnumerable<Fact> aggregateFacts)
+    public void Remove(Tuple tuple, IReadOnlyCollection<Fact> aggregateFacts)
     {
         var list = GetList(AggregationAction.Removed);
         foreach (var aggregateFact in aggregateFacts)

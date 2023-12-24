@@ -127,7 +127,7 @@ public class RuleCompiler
         return Compile(rules, cancellationToken);
     }
 
-    private IEnumerable<ICompiledRule> CompileRule(IReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
+    private IReadOnlyCollection<ICompiledRule> CompileRule(IReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
     {
         var rules = new List<ICompiledRule>();
 

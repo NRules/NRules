@@ -25,7 +25,7 @@ internal class OrderedDictionary<TKey, TValue>
     }
 
     public int Count => _dictionary.Count;
-    public IEnumerable<TValue> Values => _linkedList;
+    public IReadOnlyCollection<TValue> Values => _linkedList;
 
     public bool ContainsKey(TKey key)
     {

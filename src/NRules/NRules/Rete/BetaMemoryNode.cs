@@ -5,7 +5,7 @@ namespace NRules.Rete;
 
 internal interface IBetaMemoryNode : ITupleSource, INode
 {
-    IEnumerable<ITupleSink> Sinks { get; }
+    IReadOnlyCollection<ITupleSink> Sinks { get; }
     void PropagateAssert(IExecutionContext context, TupleFactList tupleFactList);
     void PropagateUpdate(IExecutionContext context, TupleFactList tupleFactList);
     void PropagateRetract(IExecutionContext context, TupleFactList tupleFactList);
@@ -17,7 +17,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
 
     public int Id { get; set; }
     public NodeInfo NodeInfo { get; } = new();
-    public IEnumerable<ITupleSink> Sinks => _sinks;
+    public IReadOnlyCollection<ITupleSink> Sinks => _sinks;
 
     public void PropagateAssert(IExecutionContext context, TupleFactList tupleFactList)
     {
@@ -114,7 +114,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
             using (var counter = PerfCounter.Assert(context, this))
             {
                 memory.Add(tuples);
-                counter.SetCount(memory.TupleCount);
+                counter.SetCount(memory.Tuples.Count);
             }
         }
     }
@@ -137,7 +137,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
             using (var counter = PerfCounter.Retract(context, this))
             {
                 memory.Remove(tuples);
-                counter.SetCount(memory.TupleCount);
+                counter.SetCount(memory.Tuples.Count);
             }
 
             for (int i = _sinks.Count - 1; i >= 0; i--)
@@ -147,7 +147,7 @@ internal class BetaMemoryNode : IBetaMemoryNode
         }
     }
 
-    public IEnumerable<Tuple> GetTuples(IExecutionContext context)
+    public IReadOnlyCollection<Tuple> GetTuples(IExecutionContext context)
     {
         IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         return memory.Tuples;

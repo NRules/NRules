@@ -10,7 +10,7 @@ namespace NRules.Rete;
 internal interface IReteBuilder
 {
     int GetNodeId();
-    IEnumerable<ITerminal> AddRule(IRuleDefinition rule);
+    IReadOnlyCollection<ITerminal> AddRule(IRuleDefinition rule);
     INetwork Build();
 }
 
@@ -38,7 +38,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         return _nextNodeId++;
     }
 
-    public IEnumerable<ITerminal> AddRule(IRuleDefinition rule)
+    public IReadOnlyCollection<ITerminal> AddRule(IRuleDefinition rule)
     {
         var ruleDeclarations = rule.LeftHandSide.Exports;
         var terminals = new List<ITerminal>();

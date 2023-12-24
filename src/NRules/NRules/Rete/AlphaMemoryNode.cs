@@ -5,7 +5,7 @@ namespace NRules.Rete;
 
 internal interface IAlphaMemoryNode : IObjectSource
 {
-    IEnumerable<IObjectSink> Sinks { get; }
+    IReadOnlyCollection<IObjectSink> Sinks { get; }
 }
 
 internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
@@ -14,7 +14,7 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
 
     public int Id { get; set; }
     public NodeInfo NodeInfo { get; } = new();
-    public IEnumerable<IObjectSink> Sinks => _sinks;
+    public IReadOnlyCollection<IObjectSink> Sinks => _sinks;
 
     public void PropagateAssert(IExecutionContext context, List<Fact> facts)
     {
@@ -29,7 +29,7 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
             memory.Add(facts);
 
             counter.AddItems(facts.Count);
-            counter.SetCount(memory.FactCount);
+            counter.SetCount(memory.Facts.Count);
         }
     }
 
@@ -91,12 +91,12 @@ internal class AlphaMemoryNode : IObjectSink, IAlphaMemoryNode
             using (var counter = PerfCounter.Retract(context, this))
             {
                 memory.Remove(toRetract);
-                counter.SetCount(memory.FactCount);
+                counter.SetCount(memory.Facts.Count);
             }
         }
     }
 
-    public IEnumerable<Fact> GetFacts(IExecutionContext context)
+    public IReadOnlyCollection<Fact> GetFacts(IExecutionContext context)
     {
         IAlphaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         return memory.Facts;

@@ -10,7 +10,7 @@ internal class ObjectInputAdapter : ITupleSink, IAlphaMemoryNode
 
     public int Id { get; set; }
     public NodeInfo NodeInfo { get; } = new();
-    public IEnumerable<IObjectSink> Sinks => _sinks;
+    public IReadOnlyCollection<IObjectSink> Sinks => _sinks;
 
     public ObjectInputAdapter(IBetaMemoryNode source)
     {
@@ -84,7 +84,7 @@ internal class ObjectInputAdapter : ITupleSink, IAlphaMemoryNode
         }
     }
 
-    public IEnumerable<Fact> GetFacts(IExecutionContext context)
+    public IReadOnlyCollection<Fact> GetFacts(IExecutionContext context)
     {
         var sourceTuples = _source.GetTuples(context);
         var sourceFacts = new List<Fact>();

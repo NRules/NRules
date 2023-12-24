@@ -4,8 +4,7 @@ namespace NRules.Rete;
 
 internal interface IAlphaMemory
 {
-    IEnumerable<Fact> Facts { get; }
-    int FactCount { get; }
+    IReadOnlyCollection<Fact> Facts { get; }
     bool Contains(Fact fact);
     void Add(List<Fact> facts);
     void Remove(List<Fact> facts);
@@ -15,8 +14,7 @@ internal class AlphaMemory : IAlphaMemory
 {
     private readonly HashSet<Fact> _facts = new();
 
-    public IEnumerable<Fact> Facts => _facts;
-    public int FactCount => _facts.Count;
+    public IReadOnlyCollection<Fact> Facts => _facts;
 
     public bool Contains(Fact fact)
     {
