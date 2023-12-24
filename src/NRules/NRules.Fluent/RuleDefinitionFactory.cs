@@ -16,7 +16,7 @@ public class RuleDefinitionFactory
     /// </summary>
     /// <param name="rules">Fluent DSL <see cref="Rule"/> instances.</param>
     /// <returns>Corresponding instances of <see cref="IRuleDefinition"/>.</returns>
-    public IEnumerable<IRuleDefinition> Create(IEnumerable<Rule> rules)
+    public IReadOnlyCollection<IRuleDefinition> Create(IEnumerable<Rule> rules)
     {
         var ruleDefinitions = new List<IRuleDefinition>();
         foreach (var rule in rules)

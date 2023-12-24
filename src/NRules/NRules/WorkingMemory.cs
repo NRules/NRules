@@ -14,7 +14,7 @@ internal interface IWorkingMemory
     void UpdateFact(Fact fact);
     void RemoveFact(Fact fact);
 
-    IEnumerable<object> GetLinkedKeys(Activation activation);
+    IReadOnlyCollection<object> GetLinkedKeys(Activation activation);
     Fact GetLinkedFact(Activation activation, object key);
     void AddLinkedFact(Activation activation, object key, Fact fact);
     void UpdateLinkedFact(Activation activation, object key, Fact fact, object factObject);
@@ -67,7 +67,7 @@ internal class WorkingMemory : IWorkingMemory
             throw new ArgumentException("Element does not exist", nameof(fact));
     }
 
-    public IEnumerable<object> GetLinkedKeys(Activation activation)
+    public IReadOnlyCollection<object> GetLinkedKeys(Activation activation)
     {
         if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return EmptyObjectList;
         return factMap.Keys;

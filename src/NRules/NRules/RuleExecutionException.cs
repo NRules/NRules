@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 
 namespace NRules;
 
@@ -13,8 +15,8 @@ public class RuleExecutionException : Exception
     {
     }
 
-    [System.Security.SecuritySafeCritical]
-    protected RuleExecutionException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+    [SecuritySafeCritical]
+    protected RuleExecutionException(SerializationInfo info, StreamingContext context)
         : base(info, context)
     {
     }

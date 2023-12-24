@@ -49,7 +49,7 @@ public class ExpressionEventArgs : EventArgs
     /// <summary>
     /// Arguments passed to the expression during evaluation.
     /// </summary>
-    public virtual IEnumerable<object> Arguments => _lazyArguments?.GetValues() ?? _arguments;
+    public virtual IReadOnlyCollection<object> Arguments => _lazyArguments?.GetValues() ?? _arguments;
 
     /// <summary>
     /// Result of expression evaluation.

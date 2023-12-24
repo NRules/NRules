@@ -22,7 +22,7 @@ public class DependencyGroupElement : RuleElement
     /// <summary>
     /// List of dependencies the group element contains.
     /// </summary>
-    public IEnumerable<DependencyElement> Dependencies => _dependencies;
+    public IReadOnlyCollection<DependencyElement> Dependencies => _dependencies;
 
     internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {

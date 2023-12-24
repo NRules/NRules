@@ -5,6 +5,7 @@ using System.Threading;
 using NRules.Diagnostics;
 using NRules.Extensibility;
 using NRules.Rete;
+using Tuple = System.Tuple;
 
 namespace NRules;
 
@@ -288,7 +289,7 @@ internal interface ISessionInternal : ISession
 {
     new IAgendaInternal Agenda { get; }
 
-    IEnumerable<object> GetLinkedKeys(Activation activation);
+    IReadOnlyCollection<object> GetLinkedKeys(Activation activation);
     object GetLinked(Activation activation, object key);
     void QueueInsertLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts);
     void QueueUpdateLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts);
@@ -557,7 +558,7 @@ internal sealed class Session : ISessionInternal
         return factSets;
     }
 
-    public IEnumerable<object> GetLinkedKeys(Activation activation)
+    public IReadOnlyCollection<object> GetLinkedKeys(Activation activation)
     {
         var keys = _workingMemory.GetLinkedKeys(activation);
         return keys;
@@ -583,7 +584,7 @@ internal sealed class Session : ISessionInternal
             }
             factWrapper = new SyntheticFact(keyedFact.Value);
             factWrapper.Source = new LinkedFactSource(activation);
-            toAdd.Add(System.Tuple.Create(key, factWrapper));
+            toAdd.Add(Tuple.Create(key, factWrapper));
             toPropagate.Add(factWrapper);
         }
         foreach (var item in toAdd)
@@ -613,7 +614,7 @@ internal sealed class Session : ISessionInternal
                 throw new ArgumentException($"Linked fact does not exist. Key={key}");
             }
             factWrapper.Source = new LinkedFactSource(activation);
-            toUpdate.Add(System.Tuple.Create(key, factWrapper, keyedFact.Value));
+            toUpdate.Add(Tuple.Create(key, factWrapper, keyedFact.Value));
             toPropagate.Add(factWrapper);
         }
         foreach (var item in toUpdate)
@@ -643,7 +644,7 @@ internal sealed class Session : ISessionInternal
                 throw new ArgumentException($"Linked fact does not exist. Key={key}");
             }
             factWrapper.Source = new LinkedFactSource(activation);
-            toRemove.Add(System.Tuple.Create(key, factWrapper));
+            toRemove.Add(Tuple.Create(key, factWrapper));
             toPropagate.Add(factWrapper);
         }
         foreach (var item in toRemove)

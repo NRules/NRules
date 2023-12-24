@@ -8,7 +8,7 @@ Example of an action interceptor that prints out the name of the firing rule and
 ```c#
 public class ActionInterceptor : IActionInterceptor
 {
-    public void Intercept(IContext context, IEnumerable<IActionInvocation> actions)
+    public void Intercept(IContext context, IReadOnlyCollection<IActionInvocation> actions)
     {
         Console.WriteLine($"Firing rule. Name={context.Rule.Name}");
         Console.WriteLine($"Matched facts. Facts={string.Join(",", context.Match.Facts.Select(x => x.Value))}");

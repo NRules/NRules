@@ -21,7 +21,7 @@ public interface IAggregator
     /// <param name="tuple">Tuple containing preceding partial matches.</param>
     /// <param name="facts">New facts to add to the aggregate.</param>
     /// <returns>Results of the operation on the aggregate, based on the added facts.</returns>
-    IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts);
+    IReadOnlyCollection<AggregationResult> Add(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts);
 
     /// <summary>
     /// Called by the rules engine when existing facts are modified in the corresponding aggregator.
@@ -30,7 +30,7 @@ public interface IAggregator
     /// <param name="tuple">Tuple containing preceding partial matches.</param>
     /// <param name="facts">Existing facts to update in the aggregate.</param>
     /// <returns>Results of the operation on the aggregate, based on the modified facts.</returns>
-    IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts);
+    IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts);
 
     /// <summary>
     /// Called by the rules engine when existing facts are removed from the corresponding aggregator.
@@ -39,5 +39,5 @@ public interface IAggregator
     /// <param name="tuple">Tuple containing preceding partial matches.</param>
     /// <param name="facts">Existing facts to remove from the aggregate.</param>
     /// <returns>Results of the operation on the aggregate, based on the removed facts.</returns>
-    IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts);
+    IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts);
 }

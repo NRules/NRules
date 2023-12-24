@@ -8,7 +8,7 @@ namespace NRules.RuleModel;
 /// <summary>
 /// Ordered readonly collection of named expressions.
 /// </summary>
-public class ExpressionCollection : IEnumerable<NamedExpressionElement>
+public class ExpressionCollection : IReadOnlyCollection<NamedExpressionElement>
 {
     private readonly List<NamedExpressionElement> _expressions;
 

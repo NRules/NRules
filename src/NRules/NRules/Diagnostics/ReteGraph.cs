@@ -22,10 +22,10 @@ public class ReteGraph
     /// <summary>
     /// Nodes of the Rete network graph.
     /// </summary>
-    public ReteNode[] Nodes { get; }
+    public IReadOnlyCollection<ReteNode> Nodes { get; }
 
     /// <summary>
     /// Links between nodes of the Rete network graph.
     /// </summary>
-    public ReteLink[] Links { get; }
+    public IReadOnlyCollection<ReteLink> Links { get; }
 }

@@ -21,7 +21,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     {
         var symbol = alias.ToParameterExpression();
         var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
-        patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
+        patternBuilder.DslConditions(_symbolStack.Scope, conditions);
         _symbolStack.Scope.Add(patternBuilder.Declaration);
         _currentPatternBuilder = patternBuilder;
         return this;
@@ -31,7 +31,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     {
         var symbol = Expression.Parameter(typeof (TFact));
         var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
-        patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
+        patternBuilder.DslConditions(_symbolStack.Scope, conditions);
         _symbolStack.Scope.Add(patternBuilder.Declaration);
         _currentPatternBuilder = patternBuilder;
         return this;
@@ -41,7 +41,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     {
         var existsBuilder = _builder.Exists();
         var patternBuilder = existsBuilder.Pattern(typeof(TFact));
-        patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
+        patternBuilder.DslConditions(_symbolStack.Scope, conditions);
         return this;
     }
 
@@ -49,7 +49,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     {
         var notBuilder = _builder.Not();
         var patternBuilder = notBuilder.Pattern(typeof(TFact));
-        patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
+        patternBuilder.DslConditions(_symbolStack.Scope, conditions);
         return this;
     }
 
@@ -68,10 +68,10 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
         var forallBuilder = _builder.ForAll();
 
         var basePatternBuilder = forallBuilder.BasePattern(typeof(TFact));
-        basePatternBuilder.DslConditions(_symbolStack.Scope.Declarations, baseCondition);
+        basePatternBuilder.DslConditions(_symbolStack.Scope, baseCondition);
 
         var patternBuilder = forallBuilder.Pattern(typeof(TFact));
-        patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
+        patternBuilder.DslConditions(_symbolStack.Scope, conditions);
         return this;
     }
 
@@ -103,7 +103,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
         var symbol = alias.ToParameterExpression();
         var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
         var bindingBuilder = patternBuilder.Binding();
-        bindingBuilder.DslBindingExpression(_symbolStack.Scope.Declarations, expression);
+        bindingBuilder.DslBindingExpression(_symbolStack.Scope, expression);
         _symbolStack.Scope.Add(patternBuilder.Declaration);
         _currentPatternBuilder = patternBuilder;
         return this;
@@ -115,7 +115,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
         {
             throw new ArgumentException("HAVING clause can only be used on existing rule patterns");
         }
-        _currentPatternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
+        _currentPatternBuilder.DslConditions(_symbolStack.Scope, conditions);
         return this;
     }
 }

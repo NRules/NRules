@@ -52,17 +52,17 @@ public class ReteNode
     /// <summary>
     /// Properties associated with the node.
     /// </summary>
-    public KeyValuePair<string, object>[] Properties { get; }
+    public IReadOnlyCollection<KeyValuePair<string, object>> Properties { get; }
 
     /// <summary>
     /// Expressions associated with the node.
     /// </summary>
-    public KeyValuePair<string, LambdaExpression>[] Expressions { get; }
+    public IReadOnlyCollection<KeyValuePair<string, LambdaExpression>> Expressions { get; }
 
     /// <summary>
     /// Rules that this node participates in.
     /// </summary>
-    public IRuleDefinition[] Rules { get; }
+    public IReadOnlyCollection<IRuleDefinition> Rules { get; }
 
     internal static ReteNode Create(RootNode node)
     {
@@ -156,13 +156,13 @@ public class ReteNode
         Type outputType = null, 
         IEnumerable<KeyValuePair<string, object>> values = null,
         IEnumerable<KeyValuePair<string, LambdaExpression>> expressions = null, 
-        IEnumerable<IRuleDefinition> rules = null)
+        IReadOnlyCollection<IRuleDefinition> rules = null)
     {
         Id = id;
         NodeType = nodeType;
         OutputType = outputType;
         Properties = values?.ToArray() ?? Array.Empty<KeyValuePair<string, object>>();
         Expressions = expressions?.ToArray() ?? Array.Empty<KeyValuePair<string, LambdaExpression>>();
-        Rules = rules?.ToArray() ?? Array.Empty<IRuleDefinition>();
+        Rules = rules ?? Array.Empty<IRuleDefinition>();
     }
 }

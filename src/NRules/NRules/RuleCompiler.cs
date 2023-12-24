@@ -127,13 +127,13 @@ public class RuleCompiler
         return Compile(rules, cancellationToken);
     }
 
-    private IEnumerable<ICompiledRule> CompileRule(IReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
+    private IReadOnlyCollection<ICompiledRule> CompileRule(IReteBuilder reteBuilder, IRuleDefinition ruleDefinition)
     {
         var rules = new List<ICompiledRule>();
 
         var transformation = new RuleTransformation();
         var transformedRule = transformation.Transform(ruleDefinition);
-        var ruleDeclarations = transformedRule.LeftHandSide.Exports.ToList();
+        var ruleDeclarations = transformedRule.LeftHandSide.Exports;
 
         var dependencies = transformedRule.DependencyGroup.Dependencies.ToList();
         var terminals = reteBuilder.AddRule(transformedRule);
@@ -143,7 +143,7 @@ public class RuleCompiler
             IRuleFilter filter = CompileFilters(transformedRule, ruleDeclarations, terminal.FactMap);
 
             var rightHandSide = transformedRule.RightHandSide;
-            var actions = new List<IRuleAction>();
+            var actions = new List<IRuleAction>(rightHandSide.Actions.Count);
             foreach (var action in rightHandSide.Actions)
             {
                 var ruleAction = _ruleExpressionCompiler.CompileAction(action, ruleDeclarations, dependencies, terminal.FactMap);
@@ -159,7 +159,7 @@ public class RuleCompiler
         return rules;
     }
 
-    private IRuleFilter CompileFilters(IRuleDefinition ruleDefinition, List<Declaration> ruleDeclarations, IndexMap tupleFactMap)
+    private IRuleFilter CompileFilters(IRuleDefinition ruleDefinition, IReadOnlyCollection<Declaration> ruleDeclarations, IndexMap tupleFactMap)
     {
         var conditions = new List<IActivationExpression<bool>>();
         var keySelectors = new List<IActivationExpression<object>>();

@@ -22,7 +22,7 @@ public class ActionGroupElement : RuleElement
     /// <summary>
     /// List of actions the group element contains.
     /// </summary>
-    public IEnumerable<ActionElement> Actions => _actions;
+    public IReadOnlyCollection<ActionElement> Actions => _actions;
 
     internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {

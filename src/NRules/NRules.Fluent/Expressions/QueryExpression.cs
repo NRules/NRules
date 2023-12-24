@@ -30,7 +30,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(TSource), name);
-            patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
+            patternBuilder.DslConditions(_symbolStack.Scope, conditions);
             _symbolStack.Scope.Add(patternBuilder.Declaration);
             return new BuildResult(patternBuilder);
         };
@@ -43,7 +43,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
             var patternBuilder = new PatternBuilder(typeof(TSource), name);
 
             var bindingBuilder = patternBuilder.Binding();
-            bindingBuilder.DslBindingExpression(_symbolStack.Scope.Declarations, source);
+            bindingBuilder.DslBindingExpression(_symbolStack.Scope, source);
 
             _symbolStack.Scope.Add(patternBuilder.Declaration);
             return new BuildResult(patternBuilder);
@@ -56,7 +56,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
         _buildAction = (name, type) =>
         {
             var result = previousBuildAction(name, type);
-            result.Pattern.DslConditions(_symbolStack.Scope.Declarations, predicates);
+            result.Pattern.DslConditions(_symbolStack.Scope, predicates);
             return result;
         };
     }
@@ -74,7 +74,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
                 var aggregateBuilder = patternBuilder.Aggregate();
                 var previousResult = previousBuildAction(null, null);
                 var sourceBuilder = previousResult.Pattern;
-                var selectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, selector);
+                var selectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, selector);
                 aggregateBuilder.Project(selectorExpression);
                 aggregateBuilder.Pattern(sourceBuilder);
                 result = new BuildResult(patternBuilder, aggregateBuilder, sourceBuilder);
@@ -98,7 +98,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
                 var aggregateBuilder = patternBuilder.Aggregate();
                 var previousResult = previousBuildAction(null, null);
                 var sourceBuilder = previousResult.Pattern;
-                var selectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, selector);
+                var selectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, selector);
                 aggregateBuilder.Flatten(selectorExpression);
                 aggregateBuilder.Pattern(sourceBuilder);
                 result = new BuildResult(patternBuilder, aggregateBuilder, sourceBuilder);
@@ -122,8 +122,8 @@ internal class QueryExpression : IQuery, IQueryBuilder
                 var aggregateBuilder = patternBuilder.Aggregate();
                 var previousResult = previousBuildAction(null, null);
                 var sourceBuilder = previousResult.Pattern;
-                var keySelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
-                var elementSelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, elementSelector);
+                var keySelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, keySelector);
+                var elementSelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, elementSelector);
                 aggregateBuilder.GroupBy(keySelectorExpression, elementSelectorExpression);
                 aggregateBuilder.Pattern(sourceBuilder);
                 result = new BuildResult(patternBuilder, aggregateBuilder, sourceBuilder);
@@ -164,8 +164,8 @@ internal class QueryExpression : IQuery, IQueryBuilder
         _buildAction = (name, _) =>
         {
             var result = previousBuildAction(name, typeof(IKeyedLookup<TKey, TElement>));
-            var keySelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
-            var elementSelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, elementSelector);
+            var keySelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope, keySelector);
+            var elementSelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope, elementSelector);
             result.Aggregate.ToLookup(keySelectorExpression, elementSelectorExpression);
             return result;
         };
@@ -177,7 +177,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
         _buildAction = (name, type) =>
         {
             var result = previousBuildAction(name, type);
-            var keySelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
+            var keySelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope, keySelector);
             result.Aggregate.OrderBy(keySelectorExpression, sortDirection);
             return result;
         };
@@ -205,7 +205,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
                 var rewrittenExpressionCollection = new List<KeyValuePair<string, LambdaExpression>>();
                 foreach (var item in expressions)
                 {
-                    var expression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, item.Value);
+                    var expression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, item.Value);
                     rewrittenExpressionCollection.Add(new KeyValuePair<string, LambdaExpression>(item.Key, expression));
                 }
 

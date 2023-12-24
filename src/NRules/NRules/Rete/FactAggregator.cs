@@ -7,10 +7,10 @@ namespace NRules.Rete;
 
 internal interface IFactAggregator
 {
-    void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
-    void Modify(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
-    void Remove(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
-    IEnumerable<Fact> AggregateFacts { get; }
+    void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts);
+    void Modify(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts);
+    void Remove(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts);
+    IReadOnlyCollection<Fact> AggregateFacts { get; }
 }
 
 internal class FactAggregator : IFactAggregator
@@ -23,21 +23,21 @@ internal class FactAggregator : IFactAggregator
         _aggregator = aggregator;
     }
 
-    public IEnumerable<Fact> AggregateFacts => _aggregateFactMap.Values;
+    public IReadOnlyCollection<Fact> AggregateFacts => _aggregateFactMap.Values;
     
-    public void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
+    public void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts)
     {
         var results = _aggregator.Add(context, tuple, facts);
         AddAggregationResult(aggregation, tuple, results);
     }
 
-    public void Modify(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
+    public void Modify(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts)
     {
         var results = _aggregator.Modify(context, tuple, facts);
         AddAggregationResult(aggregation, tuple, results);
     }
 
-    public void Remove(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
+    public void Remove(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts)
     {
         var results = _aggregator.Remove(context, tuple, facts);
         AddAggregationResult(aggregation, tuple, results);

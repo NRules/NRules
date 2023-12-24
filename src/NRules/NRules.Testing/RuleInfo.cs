@@ -1,5 +1,5 @@
-﻿using NRules.RuleModel;
-using System;
+﻿using System;
+using NRules.RuleModel;
 
 namespace NRules.Testing;
 

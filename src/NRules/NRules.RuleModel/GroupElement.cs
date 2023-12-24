@@ -20,5 +20,5 @@ public abstract class GroupElement : RuleElement
     /// <summary>
     /// List of child elements in the grouping.
     /// </summary>
-    public IEnumerable<RuleElement> ChildElements => _childElements;
+    public IReadOnlyCollection<RuleElement> ChildElements => _childElements;
 }

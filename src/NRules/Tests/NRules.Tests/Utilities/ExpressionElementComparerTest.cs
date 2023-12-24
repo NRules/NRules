@@ -100,7 +100,7 @@ public class ExpressionElementComparerTest
         Assert.False(result);
     }
 
-    private void AssertEqual(List<Declaration> declarationsFirst, IEnumerable<NamedExpressionElement> first, List<Declaration> declarationsSecond, IEnumerable<NamedExpressionElement> second)
+    private void AssertEqual(List<Declaration> declarationsFirst, IReadOnlyCollection<NamedExpressionElement> first, List<Declaration> declarationsSecond, IReadOnlyCollection<NamedExpressionElement> second)
     {
         //Act
         var target = CreateTarget();
@@ -110,7 +110,7 @@ public class ExpressionElementComparerTest
         Assert.True(result);
     }
 
-    private void AssertNotEqual(List<Declaration> declarationsFirst, IEnumerable<NamedExpressionElement> first, List<Declaration> declarationsSecond, IEnumerable<NamedExpressionElement> second)
+    private void AssertNotEqual(List<Declaration> declarationsFirst, IReadOnlyCollection<NamedExpressionElement> first, List<Declaration> declarationsSecond, IReadOnlyCollection<NamedExpressionElement> second)
     {
         //Act
         var target = CreateTarget();

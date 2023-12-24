@@ -1,17 +1,21 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NRules.RuleModel;
 
 namespace NRules.Fluent.Expressions;
 
-internal class SymbolTable
+internal interface ISymbolLookup
 {
-    private readonly HashSet<Declaration> _declarations;
+    bool TryGetValue(string name, out Declaration declaration);
+}
+
+internal class SymbolTable : ISymbolLookup
+{
+    private readonly Dictionary<string, Declaration> _declarations;
     private readonly SymbolTable _parentScope;
 
     internal SymbolTable()
     {
-        _declarations = new HashSet<Declaration>();
+        _declarations = new Dictionary<string, Declaration>();
     }
 
     internal SymbolTable(SymbolTable parentScope)
@@ -20,10 +24,13 @@ internal class SymbolTable
         _parentScope = parentScope;
     }
 
-    public IEnumerable<Declaration> Declarations => _parentScope?.Declarations.Union(_declarations) ?? _declarations;
-
     public void Add(Declaration declaration)
     {
-        _declarations.Add(declaration);
+        _declarations[declaration.Name] = declaration;
+    }
+
+    public bool TryGetValue(string name, out Declaration declaration)
+    {
+        return _declarations.TryGetValue(name, out declaration) || _parentScope?.TryGetValue(name, out declaration) == true;
     }
 }

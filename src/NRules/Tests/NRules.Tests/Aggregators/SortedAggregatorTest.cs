@@ -230,10 +230,10 @@ public class SortedAggregatorTest : AggregatorTest
 
         // Act
         facts[0].Value = new TestFact(3);
-        target.Modify(null, EmptyTuple(), facts.Take(1)).ToArray();
+        target.Modify(null, EmptyTuple(), facts.Take(1).ToList()).ToArray();
 
         facts[1].Value = new TestFact(2);
-        var result = target.Modify(null, EmptyTuple(), facts.Skip(1).Take(1)).ToArray();
+        var result = target.Modify(null, EmptyTuple(), facts.Skip(1).Take(1).ToList()).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, 2, 3);

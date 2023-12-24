@@ -21,7 +21,7 @@ internal class FilterExpression : IFilterExpression
     {
         foreach (var keySelector in keySelectors)
         {
-            var expression = keySelector.DslExpression(_symbolStack.Scope.Declarations);
+            var expression = keySelector.DslExpression(_symbolStack.Scope);
             _builder.Filter(FilterType.KeyChange, expression);
         }
         return this;
@@ -31,7 +31,7 @@ internal class FilterExpression : IFilterExpression
     {
         foreach (var predicate in predicates)
         {
-            var expression = predicate.DslExpression(_symbolStack.Scope.Declarations);
+            var expression = predicate.DslExpression(_symbolStack.Scope);
             _builder.Filter(FilterType.Predicate, expression);
         }
         return this;

@@ -275,7 +275,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
 
     public class PassThroughActionInterceptor : IActionInterceptor
     {
-        public void Intercept(IContext context, IEnumerable<IActionInvocation> actions)
+        public void Intercept(IContext context, IReadOnlyCollection<IActionInvocation> actions)
         {
             foreach (var action in actions)
             {

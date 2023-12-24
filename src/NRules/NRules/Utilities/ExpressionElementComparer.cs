@@ -27,8 +27,8 @@ internal class ExpressionElementComparer
     }
 
     public bool AreEqual(
-        List<Declaration> firstDeclarations, IEnumerable<NamedExpressionElement> first, 
-        List<Declaration> secondDeclarations, IEnumerable<NamedExpressionElement> second)
+        List<Declaration> firstDeclarations, IReadOnlyCollection<NamedExpressionElement> first, 
+        List<Declaration> secondDeclarations, IReadOnlyCollection<NamedExpressionElement> second)
     {
         using var enumerator1 = first.GetEnumerator();
         using var enumerator2 = second.GetEnumerator();
@@ -59,8 +59,8 @@ internal class ExpressionElementComparer
     }
     
     public bool AreEqual(
-        List<Declaration> firstDeclarations, IEnumerable<ExpressionElement> x,
-        List<Declaration> secondDeclarations, IEnumerable<ExpressionElement> y)
+        List<Declaration> firstDeclarations, IReadOnlyCollection<ExpressionElement> x,
+        List<Declaration> secondDeclarations, IReadOnlyCollection<ExpressionElement> y)
     {
         return x.Count() == y.Count()
                && x.Zip(y, (first, second) => new {X = first, Y = second})

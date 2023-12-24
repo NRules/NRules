@@ -110,7 +110,7 @@ internal class CustomFirstAggregatorFactory : IAggregatorFactory
 {
     private Func<IAggregator> _factory;
 
-    public void Compile(AggregateElement element, IEnumerable<IAggregateExpression> compiledExpressions)
+    public void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions)
     {
         var elementType = element.ResultType;
         var aggregatorType = typeof(CustomFirstAggregator<>).MakeGenericType(elementType);
@@ -128,7 +128,7 @@ public class CustomFirstAggregator<TElement> : IAggregator
 {
     private readonly Dictionary<object, TElement> _firstElements = new();
 
-    public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Add(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         var results = new List<AggregationResult>();
         foreach (var fact in facts)
@@ -144,7 +144,7 @@ public class CustomFirstAggregator<TElement> : IAggregator
         return results;
     }
 
-    public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         var results = new List<AggregationResult>();
         foreach (var fact in facts)
@@ -175,7 +175,7 @@ public class CustomFirstAggregator<TElement> : IAggregator
         return results;
     }
 
-    public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         var results = new List<AggregationResult>();
         foreach (var fact in facts)

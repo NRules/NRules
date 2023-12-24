@@ -25,7 +25,7 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
         _elementSelector = elementSelector;
     }
 
-    public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Add(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         var keys = new List<TKey>();
         var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
@@ -45,7 +45,7 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
         return results;
     }
 
-    public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         var keys = new List<TKey>();
         var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
@@ -102,7 +102,7 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
         return results;
     }
 
-    public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         var keys = new List<TKey>();
         var resultLookup = new DefaultKeyMap<TKey, AggregationResult>();
@@ -168,9 +168,9 @@ internal class GroupByAggregator<TSource, TKey, TElement> : IAggregator
         return AggregationResult.Modified(group, group, group.Facts);
     }
 
-    private static IEnumerable<AggregationResult> GetResults(IEnumerable<TKey> keys, DefaultKeyMap<TKey, AggregationResult> lookup)
+    private static IReadOnlyCollection<AggregationResult> GetResults(IReadOnlyCollection<TKey> keys, DefaultKeyMap<TKey, AggregationResult> lookup)
     {
-        var results = new List<AggregationResult>();
+        var results = new List<AggregationResult>(keys.Count);
         foreach (var key in keys)
         {
             var result = lookup[key];

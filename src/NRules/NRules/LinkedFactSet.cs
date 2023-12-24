@@ -46,7 +46,7 @@ public interface ILinkedFactSet
     int FactCount { get; }
 }
 
-internal struct LinkedFactSet : ILinkedFactSet
+internal readonly struct LinkedFactSet : ILinkedFactSet
 {
     public LinkedFactAction Action { get; }
     IEnumerable<IFact> ILinkedFactSet.Facts => Facts;

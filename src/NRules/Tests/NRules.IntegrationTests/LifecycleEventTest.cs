@@ -3,7 +3,6 @@ using NRules.Diagnostics;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
-using NRules.Testing;
 using Xunit;
 
 namespace NRules.IntegrationTests;

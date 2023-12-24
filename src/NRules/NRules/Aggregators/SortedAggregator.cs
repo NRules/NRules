@@ -30,7 +30,7 @@ internal class SortedAggregator<TSource, TKey> : IAggregator
         return comparer;
     }
 
-    public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Add(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         AddFacts(context, tuple, facts);
         if (!_created)
@@ -41,19 +41,19 @@ internal class SortedAggregator<TSource, TKey> : IAggregator
         return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
     }
 
-    public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         ModifyFacts(context, tuple, facts);
         return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
     }
 
-    public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         RemoveFacts(context, tuple, facts);
         return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
     }
 
-    private void AddFacts(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    private void AddFacts(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {
@@ -62,7 +62,7 @@ internal class SortedAggregator<TSource, TKey> : IAggregator
         }
     }
 
-    private void ModifyFacts(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    private void ModifyFacts(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {
@@ -73,7 +73,7 @@ internal class SortedAggregator<TSource, TKey> : IAggregator
         }
     }
 
-    private void RemoveFacts(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    private void RemoveFacts(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {

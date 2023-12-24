@@ -4,7 +4,7 @@ namespace NRules.Collections;
 
 internal class OrderedDictionary<TKey, TValue>
 {
-    private readonly IDictionary<TKey, LinkedListNode<TValue>> _dictionary;
+    private readonly Dictionary<TKey, LinkedListNode<TValue>> _dictionary;
     private readonly LinkedList<TValue> _linkedList;
 
     public OrderedDictionary()
@@ -25,7 +25,7 @@ internal class OrderedDictionary<TKey, TValue>
     }
 
     public int Count => _dictionary.Count;
-    public IEnumerable<TValue> Values => _linkedList;
+    public IReadOnlyCollection<TValue> Values => _linkedList;
 
     public bool ContainsKey(TKey key)
     {

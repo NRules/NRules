@@ -22,7 +22,7 @@ public class FilterGroupElement : RuleElement
     /// <summary>
     /// List of filters the group element contains.
     /// </summary>
-    public IEnumerable<FilterElement> Filters => _filters;
+    public IReadOnlyCollection<FilterElement> Filters => _filters;
 
     internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {

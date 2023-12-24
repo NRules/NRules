@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using NRules.Fluent.Dsl;
 using NRules.RuleModel;
 
@@ -78,6 +79,6 @@ public class RuleMetadata : IRuleMetadata
 
     private T[] GetAttributes<T>() where T : Attribute
     {
-        return RuleType.GetCustomAttributes(true).OfType<T>().ToArray();
+        return RuleType.GetCustomAttributes<T>().ToArray();
     }
 }
