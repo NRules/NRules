@@ -11,7 +11,7 @@ The performance metrics can also be attributed to the individual parts of the ru
 There is also a Visual Studio debugger visualizer that can render a rules session as a graph representation of the underlying Rete network, which can greatly assist in understanding of what goes on in the rules engine behind the scenes in a concrete scenario.
 
 ## Execution Event Model
-Rules engine lifecycle events for a given rules session are exposed via an [IEventProvider](xref:NRules.Diagnostics.IEventProvider) accessible v through the [Events](xref:NRules.ISession.Events) property on the [ISession](xref:NRules.ISession) interface.
+Rules engine lifecycle events for a given rules session are exposed via an [IEventProvider](xref:NRules.Diagnostics.IEventProvider) accessible through the [Events](xref:NRules.ISession.Events) property on the [ISession](xref:NRules.ISession) interface.
 Also, events for all sessions are exposed via the [IEventProvider](xref:NRules.Diagnostics.IEventProvider) accessible through the [ISessionFactory](xref:NRules.ISessionFactory) interface (sender object for each event references the actual session object that raised the event).
 
 Event provider exposes the following execution events:
