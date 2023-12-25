@@ -34,7 +34,8 @@ public class DeniedClaimNotificationRule : Rule
 When declaring a dependency using rules DSL, the dependency is bound to a variable in the same exact way the patterns are bound to fact variables.
 The service variable can then be used in rule actions. The rules engine will inject the dependency when the rule fires.
 
-> :warning: Rule dependencies cannot be used in rule conditions.
+> [!WARNING]
+> Rule dependencies cannot be used in rule conditions.
 
 In order to be able to use rule dependencies, one must implement [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) interface and set resolver instance either at the [ISession](xref:NRules.ISession) or at the [ISessionFactory](xref:NRules.ISessionFactory) level.
 
