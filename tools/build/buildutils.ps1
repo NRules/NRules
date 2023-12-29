@@ -72,3 +72,20 @@ function Install-DotNetCli([string] $location, [string] $version) {
 function IsOnWindows() {
     return !(Get-Variable -Name IsWindows -ErrorAction SilentlyContinue) -or $IsWindows
 }
+
+function GetOsName() {
+    if (IsOnWindows) {
+        return "windows"
+    } elseif ($IsMacOS) {
+        return "macos"
+    } elseif ($IsLinux) {
+        return "linux"
+    } else {
+        throw "Unknown OS"
+    }
+}
+
+function IsCompatibleOs([string[]] $oslist) {
+    $osName = GetOsName
+    return ($null -eq $oslist) -or ($oslist -contains $osName)
+}

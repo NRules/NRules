@@ -47,6 +47,7 @@ $components = @{
     };
     'NRules.Debugger.Visualizer' = @{
         name = 'NRules.Debugger.Visualizer'
+        os = @('windows')
         solution_file = 'src\NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.sln'
         package = @{
             bin = @{

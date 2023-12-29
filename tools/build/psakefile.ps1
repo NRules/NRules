@@ -170,7 +170,10 @@ task CompileDocs -depends RestoreTools -precondition { return $component.Contain
     exec { dotnet tool run docfx $docfx_project_file }
 }
 
-task Build -depends Init, Clean, PatchFiles, Restore, Compile, Test, Bench, Package, CompileDocs, ResetPatch {
+task Make -depends Init, Restore, Compile, Test, Bench, Package, CompileDocs -precondition { return IsCompatibleOs $component.os } {
+}
+
+task Build -depends Init, Clean, PatchFiles, Make, ResetPatch {
 }
 
 task PushNuGet -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
