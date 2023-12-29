@@ -91,11 +91,11 @@ task ResetPatch {
 }
 
 task RestoreTools {
-    exec { dotnet tool restore }
+    exec { dotnet tool restore -v minimal }
 }
 
 task Restore -precondition { return $component.ContainsKey('solution_file') } {
-    exec { dotnet restore $solutionFile --verbosity minimal }
+    exec { dotnet restore $solutionFile -v minimal }
 }
 
 task Compile -depends Init, Restore -precondition { return $component.ContainsKey('solution_file') } { 
