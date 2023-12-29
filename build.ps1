@@ -140,6 +140,7 @@ $core = @('NRules')
 $visualizer = @('NRules.Debugger.Visualizer')
 $integration = $components.keys | Where-Object { $_.StartsWith("NRules.Integration") }
 $samples = $components.keys | Where-Object { $_.StartsWith("Samples.") }
+$benchmark = @('Benchmark')
 $documenation = @('Documentation')
 
 $componentList = @()
@@ -155,8 +156,9 @@ if ($component -eq "Core") {
     $componentList += $core
     $componentList += $visualizer
     $componentList += $integration
-    $componentList += $documenation
     $componentList += $samples
+    $componentList += $benchmark
+    $componentList += $documenation
 } else {
     $componentList += $component
 }

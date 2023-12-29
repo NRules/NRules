@@ -156,7 +156,18 @@ task PackageBin -depends Compile -precondition { $component.package.ContainsKey(
 task Package -depends PackageNuGet, PackageBin -precondition { return $component.ContainsKey('package') } {
 }
 
-task Bench -depends Package -precondition { return $component.ContainsKey('bench') } {
+task CompileDocs -depends RestoreTools -precondition { return $component.ContainsKey('doc') -and $component.doc.ContainsKey('docfx') } {
+    $docfx_project_file = Join-Path $baseDir $component.doc.docfx.project_file
+    exec { dotnet tool run docfx $docfx_project_file }
+}
+
+task Make -depends Init, Restore, Compile, Test, Package, CompileDocs -precondition { return IsCompatibleOs $component.os } {
+}
+
+task Build -depends Init, Clean, PatchFiles, Make, ResetPatch {
+}
+
+task Bench -depends Build -precondition { return $component.ContainsKey('bench') } {
     $benchRunner = $component.bench.runner
     $categories = $component.bench.categories -join ","
     foreach ($framework in $component.bench.frameworks) {
@@ -168,17 +179,6 @@ task Bench -depends Package -precondition { return $component.ContainsKey('bench
         exec { &$benchRunnerPath --join --anyCategories=$categories --artifacts=$artifacts }
         Pop-Location
     }
-}
-
-task CompileDocs -depends RestoreTools -precondition { return $component.ContainsKey('doc') -and $component.doc.ContainsKey('docfx') } {
-    $docfx_project_file = Join-Path $baseDir $component.doc.docfx.project_file
-    exec { dotnet tool run docfx $docfx_project_file }
-}
-
-task Make -depends Init, Restore, Compile, Test, Bench, Package, CompileDocs -precondition { return IsCompatibleOs $component.os } {
-}
-
-task Build -depends Init, Clean, PatchFiles, Make, ResetPatch {
 }
 
 task PushNuGet -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
