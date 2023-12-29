@@ -22,6 +22,7 @@ task Init {
     
     $compName = $component.name
     
+    $script:outsideDir = Split-Path $baseDir -Parent
     $script:sourceDir = Join-Path $baseDir src
     $script:buildDir = Join-Path $baseDir build
     $script:binDir = Join-Path $buildDir bin
@@ -55,9 +56,9 @@ task Clean -depends Init {
 }
 
 task PatchFiles {
-    $signingKey = "$baseDir\SigningKey.snk"
-    $secureKey = "$baseDir\..\SecureSigningKey.snk"
-    $secureHash = "$baseDir\..\SecureSigningKey.sha1"
+    $signingKey = Join-Path $baseDir "SigningKey.snk"
+    $secureKey = Join-Path $outsideDir "SecureSigningKey.snk"
+    $secureHash = Join-Path $outsideDir "SecureSigningKey.sha1"
     
     if ((Test-Path $secureKey) -and (Test-Path $secureHash)) {
         Write-Host "Using secure signing key." -ForegroundColor Magenta
@@ -71,11 +72,11 @@ task PatchFiles {
 }
 
 task ResetPatch {
-    $signingKey = "$baseDir\SigningKey.snk"
-    $secureKey = "$baseDir\..\SecureSigningKey.snk"
-    $secureHash = "$baseDir\..\SecureSigningKey.sha1"
-    $devKey = "$baseDir\DevSigningKey.snk"
-    $devHash = "$baseDir\DevSigningKey.sha1"
+    $signingKey = Join-Path $baseDir "SigningKey.snk"
+    $secureKey = Join-Path $outsideDir "SecureSigningKey.snk"
+    $secureHash = Join-Path $outsideDir "SecureSigningKey.sha1"
+    $devKey = Join-Path $baseDir "DevSigningKey.snk"
+    $devHash = Join-Path $baseDir "DevSigningKey.sha1"
     
     if ((Test-Path $secureKey) -and (Test-Path $secureHash)) {
         $publicKey = Get-Content $devHash
@@ -136,7 +137,7 @@ task PackageBin -depends Compile -precondition { $component.package.ContainsKey(
         if ($bin.$artifact.ContainsKey('output')) {
             $outputDir = $bin.$artifact.output
         }
-        $destDir = "$binOutDir\$outputDir"
+        $destDir = Join-Path $binOutDir $outputDir
         New-Directory $destDir
         foreach ($item in $bin.$artifact.include) {
             $itemPath = Join-Path $solutionDir $item
@@ -166,7 +167,7 @@ task Bench -depends Package -precondition { return $component.ContainsKey('bench
 }
 
 task CompileDocs -depends RestoreTools -precondition { return $component.ContainsKey('doc') -and $component.doc.ContainsKey('docfx') } {
-    $docfx_project_file = Join-Path $baseDir "$($component.doc.docfx.project_file)"
+    $docfx_project_file = Join-Path $baseDir $component.doc.docfx.project_file
     exec { dotnet tool run docfx $docfx_project_file }
 }
 
@@ -177,7 +178,7 @@ task Build -depends Init, Clean, PatchFiles, Make, ResetPatch {
 }
 
 task PushNuGet -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
-    $accessKeyFile = "$baseDir\..\Nuget-Access-Key.txt"
+    $accessKeyFile = Join-Path $outsideDir "Nuget-Access-Key.txt"
     if ( (Test-Path $accessKeyFile) ) {
         $accessKey = Get-Content $accessKeyFile
         $accessKey = $accessKey.Trim()
