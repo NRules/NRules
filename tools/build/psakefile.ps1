@@ -46,6 +46,10 @@ task Clean -depends Init {
     Remove-Directory $pkgOutDir
     Remove-Directory $binOutDir
 
+    if ($component.ContainsKey('solution_file')) {
+        exec { dotnet clean $solutionFile -c $configuration -v minimal }
+    }
+
     if ($component.ContainsKey('output')) {
         foreach ($output in $component.output) {
             $outputDir = Join-Path $baseDir $output
