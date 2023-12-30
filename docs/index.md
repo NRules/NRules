@@ -48,6 +48,21 @@ Use the following discussion and Q&A platforms to get help with NRules
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/nrules)
 - [Gitter Chat](https://gitter.im/NRules/NRules)
 
+## Building NRules from Sources
+
+To build NRules from sources, clone the repo from GitHub, make sure PowerShell is installed, then run the build script
+# [Windows](#tab/windows)
+```console
+> build.bat
+```
+# [MacOS/Linux](#tab/nix)
+```console
+> ./build.sh
+```
+---
+
+Build artifacts are found under the `build` folder.
+
 ## Contributing
 
 Clone NRules on [GitHub](https://github.com/NRules/NRules).
