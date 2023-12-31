@@ -1,8 +1,8 @@
 #!/usr/bin/env pwsh
 
 param (
-    [string]$target = $null,
-    [string]$component = $null
+    [string]$target = 'Build',
+    [string]$component = 'Core'
 )
 
 & ./build.ps1 $target $component
