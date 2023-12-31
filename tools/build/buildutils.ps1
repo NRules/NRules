@@ -35,8 +35,12 @@ function Install-DotNetCli([string] $location, [string] $version) {
     Assert ($version -ne $null) 'DotNet CLI version should not be null'
 
     $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
+
+    if (!($env:PATH -contains $installDir)) {
+        $envPathSeparator = if (IsOnWindows) { ';' } else { ':' }
+        $env:PATH = $installDir + $envPathSeparator + $env:PATH
+    }
     
-    (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     if ($null -ne (Get-Command "dotnet" -ErrorAction SilentlyContinue)) {
         $installedVersion = dotnet --version
         if ($installedVersion -eq $version) {
@@ -53,6 +57,8 @@ function Install-DotNetCli([string] $location, [string] $version) {
     $installScriptName = if (IsOnWindows) { "dotnet-install.ps1" } else { "dotnet-install.sh" }
     $installScriptPath = Join-Path $location $installScriptName
 
+    (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+
     if (!(Test-Path $installScriptPath)) {
         $url = "https://dot.net/v1/$installScriptName"
         Invoke-WebRequest $url -OutFile $installScriptPath
@@ -63,10 +69,6 @@ function Install-DotNetCli([string] $location, [string] $version) {
 
     Write-Host "Installing .NET Core SDK"
     & $installScriptPath -InstallDir "$installDir" -Version $version
-
-    if (!($env:PATH -contains $installDir)) {
-        $env:PATH = "$installDir;$env:PATH"
-    }
 }
 
 function IsOnWindows() {
