@@ -31,20 +31,15 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
     }
 }
 
-function Install-DotNetCli([string] $location, [string] $version) {
-    Assert ($version -ne $null) 'DotNet CLI version should not be null'
+function Install-DotNetCli([string] $location, [string] $version, [string[]] $runtimes) {
+    Assert ($version -ne $null) '.NET SDK version should not be null'
 
     $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
-
-    if (!($env:PATH -contains $installDir)) {
-        $envPathSeparator = if (IsOnWindows) { ';' } else { ':' }
-        $env:PATH = $installDir + $envPathSeparator + $env:PATH
-    }
     
     if ($null -ne (Get-Command "dotnet" -ErrorAction SilentlyContinue)) {
         $installedVersion = dotnet --version
         if ($installedVersion -eq $version) {
-            Write-Host ".NET Core SDK version $version is already installed"
+            Write-Host ".NET SDK version $version is already installed"
             return;
         }
     }
@@ -67,8 +62,20 @@ function Install-DotNetCli([string] $location, [string] $version) {
         }
     }
 
-    Write-Host "Installing .NET Core SDK"
-    & $installScriptPath -InstallDir "$installDir" -Version $version
+    Write-Host "Installing .NET SDK $version"
+    & $installScriptPath --install-dir "$installDir" --version $version
+
+    if ($null -ne $runtimes) {
+        foreach ($runtime in $runtimes) {
+            Write-Host "Installing .NET Runtime $runtime"
+            & $installScriptPath --install-dir "$installDir" --runtime dotnet --version $runtime
+        }
+    }
+
+    if (!($env:PATH -contains $installDir)) {
+        $envPathSeparator = if (IsOnWindows) { ';' } else { ':' }
+        $env:PATH = $installDir + $envPathSeparator + $env:PATH
+    }
 }
 
 function IsOnWindows() {

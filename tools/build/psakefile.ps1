@@ -5,6 +5,7 @@ param (
 properties {
     $version = $null
     $sdkVersion = "8.0.100"
+    $sdkRuntimes = @("8.0.0", "6.0.0")
     $configuration = "Release"
     $baseDir = $null
 }
@@ -39,7 +40,8 @@ task Init {
         $script:solutionDir = Split-Path $script:solutionFile -Parent
     }
     
-    Install-DotNetCli $toolsDir\.dotnet $sdkVersion
+    $sdkLocation = Join-Path $toolsDir ".dotnet"
+    Install-DotNetCli $sdkLocation $sdkVersion $sdkRuntimes
 }
 
 task Clean -depends Init {
