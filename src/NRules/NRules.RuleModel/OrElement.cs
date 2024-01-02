@@ -15,8 +15,14 @@ public class OrElement : GroupElement
     /// <inheritdoc cref="RuleElement.ElementType"/>
     public override ElementType ElementType => ElementType.Or;
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitOr(context, this);
+        return visitor.VisitOr(context, this);
+    }
+
+    internal OrElement Update(IReadOnlyCollection<RuleElement> childElements)
+    {
+        if (ReferenceEquals(childElements, ChildElements)) return this;
+        return new OrElement(childElements);
     }
 }

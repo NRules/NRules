@@ -10,17 +10,17 @@ namespace NRules.RuleModel;
 /// </summary>
 public class ExpressionCollection : IReadOnlyCollection<NamedExpressionElement>
 {
-    private readonly List<NamedExpressionElement> _expressions;
+    private readonly NamedExpressionElement[] _expressions;
 
     internal ExpressionCollection(IEnumerable<NamedExpressionElement> expressions)
     {
-        _expressions = new List<NamedExpressionElement>(expressions);
+        _expressions = expressions.ToArray();
     }
 
     /// <summary>
     /// Number of expressions in the collection.
     /// </summary>
-    public int Count => _expressions.Count;
+    public int Count => _expressions.Length;
 
     /// <summary>
     /// Retrieves single expression by name.
@@ -66,7 +66,7 @@ public class ExpressionCollection : IReadOnlyCollection<NamedExpressionElement>
     /// </summary>
     public IEnumerator<NamedExpressionElement> GetEnumerator()
     {
-        return _expressions.GetEnumerator();
+        return _expressions.AsEnumerable().GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

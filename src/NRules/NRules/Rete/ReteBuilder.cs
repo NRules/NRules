@@ -74,7 +74,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         return terminalNode;
     }
 
-    protected override void VisitAnd(ReteBuilderContext context, AndElement element)
+    protected override RuleElement VisitAnd(ReteBuilderContext context, AndElement element)
     {
         foreach (var childElement in element.ChildElements)
         {
@@ -84,37 +84,45 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             }
             Visit(context, childElement);
         }
+        
+        return element;
     }
 
-    protected override void VisitOr(ReteBuilderContext context, OrElement element)
+    protected override RuleElement VisitOr(ReteBuilderContext context, OrElement element)
     {
         throw new InvalidOperationException("Group Or element must be normalized");
     }
 
-    protected override void VisitForAll(ReteBuilderContext context, ForAllElement element)
+    protected override RuleElement VisitForAll(ReteBuilderContext context, ForAllElement element)
     {
         throw new InvalidOperationException("ForAll element must be normalized");
     }
 
-    protected override void VisitNot(ReteBuilderContext context, NotElement element)
+    protected override RuleElement VisitNot(ReteBuilderContext context, NotElement element)
     {
         VisitSource(context, element, element.Source);
         BuildNotNode(context, element);
+        
+        return element;
     }
 
-    protected override void VisitExists(ReteBuilderContext context, ExistsElement element)
+    protected override RuleElement VisitExists(ReteBuilderContext context, ExistsElement element)
     {
         VisitSource(context, element, element.Source);
         BuildExistsNode(context, element);
+        
+        return element;
     }
 
-    protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
+    protected override RuleElement VisitAggregate(ReteBuilderContext context, AggregateElement element)
     {
         VisitSource(context, element, element.Source);
         BuildAggregateNode(context, element);
+        
+        return element;
     }
 
-    protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
+    protected override PatternElement VisitPattern(ReteBuilderContext context, PatternElement element)
     {
         var conditions = element.Expressions.Find(PatternElement.ConditionName)
             .Cast<ExpressionElement>().ToList();
@@ -181,11 +189,15 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
                 context.RegisterDeclaration(element.Declaration);
             }
         }
+        
+        return element;
     }
 
-    protected override void VisitBinding(ReteBuilderContext context, BindingElement element)
+    protected override RuleElement VisitBinding(ReteBuilderContext context, BindingElement element)
     {
         BuildBindingNode(context, element);
+        
+        return element;
     }
 
     private void VisitSource(ReteBuilderContext context, RuleElement element, RuleElement source)

@@ -44,8 +44,14 @@ public class PatternElement : RuleElement
     /// </summary>
     public ExpressionCollection Expressions { get; }
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitPattern(context, this);
+        return visitor.VisitPattern(context, this);
+    }
+
+    internal PatternElement Update(ExpressionCollection expressions, RuleElement source)
+    {
+        if (ReferenceEquals(Expressions, expressions) && ReferenceEquals(Source, source)) return this;
+        return new PatternElement(Declaration, expressions, source);
     }
 }

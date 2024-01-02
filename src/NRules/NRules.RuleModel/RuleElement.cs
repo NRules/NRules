@@ -66,5 +66,5 @@ public abstract class RuleElement
         AddExports(new[] {declaration});
     }
 
-    internal abstract void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor);
+    internal abstract RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor);
 }

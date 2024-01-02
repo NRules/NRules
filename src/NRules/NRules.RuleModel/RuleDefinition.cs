@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace NRules.RuleModel;
 
@@ -78,7 +79,7 @@ public interface IRuleDefinition
 [DebuggerDisplay("{Name} ({Priority})")]
 internal class RuleDefinition : IRuleDefinition
 {
-    private readonly List<string> _tags;
+    private readonly string[] _tags;
 
     public static int DefaultPriority => 0;
     public static RuleRepeatability DefaultRepeatability => RuleRepeatability.Repeatable;
@@ -91,7 +92,7 @@ internal class RuleDefinition : IRuleDefinition
         Description = description;
         Repeatability = repeatability;
         Priority = priority;
-        _tags = new List<string>(tags);
+        _tags = tags.ToArray();
         Properties = new PropertyMap(properties);
 
         DependencyGroup = dependencies;

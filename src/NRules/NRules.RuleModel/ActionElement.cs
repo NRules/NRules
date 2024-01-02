@@ -57,8 +57,8 @@ public class ActionElement : ExpressionElement
     /// <inheritdoc cref="RuleElement.ElementType"/>
     public override ElementType ElementType => ElementType.Action;
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitAction(context, this);
+        return visitor.VisitAction(context, this);
     }
 }
