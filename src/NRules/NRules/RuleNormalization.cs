@@ -6,11 +6,21 @@ using NRules.RuleModel.Builders;
 
 namespace NRules;
 
-internal class RuleTransformation : RuleElementVisitor<Context>
+internal class RuleNormalization : RuleElementVisitor<Context>
 {
-    public IRuleDefinition Transform(IRuleDefinition rule)
+    public IRuleDefinition Normalize(IRuleDefinition rule)
     {
-        return Visit(Context.Empty, rule);
+        var lhs = rule.LeftHandSide;
+        var newLhs = (GroupElement) Visit(Context.Empty, lhs);
+        
+        if (!ReferenceEquals(newLhs, lhs))
+        {
+            var transformedRule = Element.RuleDefinition(rule.Name, rule.Description, rule.Priority,
+                rule.Repeatability, rule.Tags, rule.Properties, rule.DependencyGroup, 
+                newLhs, rule.FilterGroup, rule.RightHandSide);
+            return transformedRule;
+        }
+        return rule;
     }
     
     protected override RuleElement VisitAnd(Context context, AndElement element)

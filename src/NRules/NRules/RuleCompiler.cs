@@ -7,7 +7,6 @@ using NRules.Aggregators;
 using NRules.Extensibility;
 using NRules.Rete;
 using NRules.RuleModel;
-using NRules.RuleModel.Builders;
 using NRules.Utilities;
 
 namespace NRules;
@@ -131,8 +130,8 @@ public class RuleCompiler
     {
         var rules = new List<ICompiledRule>();
 
-        var transformation = new RuleTransformation();
-        var transformedRule = transformation.Transform(ruleDefinition);
+        var normalization = new RuleNormalization();
+        var transformedRule = normalization.Normalize(ruleDefinition);
         var ruleDeclarations = transformedRule.LeftHandSide.Exports;
 
         var dependencies = transformedRule.DependencyGroup.Dependencies.ToList();
