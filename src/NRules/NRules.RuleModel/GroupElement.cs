@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.RuleModel;
 
@@ -10,9 +9,9 @@ public abstract class GroupElement : RuleElement
 {
     private readonly RuleElement[] _childElements;
 
-    internal GroupElement(IEnumerable<RuleElement> childElements)
+    internal GroupElement(RuleElement[] childElements)
     {
-        _childElements = childElements.ToArray();
+        _childElements = childElements;
 
         AddExports(_childElements);
         AddImports(_childElements);
@@ -21,5 +20,5 @@ public abstract class GroupElement : RuleElement
     /// <summary>
     /// List of child elements in the grouping.
     /// </summary>
-    public IReadOnlyCollection<RuleElement> ChildElements => _childElements;
+    public IReadOnlyList<RuleElement> ChildElements => _childElements;
 }

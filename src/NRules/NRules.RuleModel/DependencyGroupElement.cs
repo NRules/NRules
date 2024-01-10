@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.RuleModel;
 
@@ -10,9 +9,9 @@ public class DependencyGroupElement : RuleElement
 {
     private readonly DependencyElement[] _dependencies;
 
-    internal DependencyGroupElement(IEnumerable<DependencyElement> dependencies)
+    internal DependencyGroupElement(DependencyElement[] dependencies)
     {
-        _dependencies = dependencies.ToArray();
+        _dependencies = dependencies;
 
         AddExports(_dependencies);
     }
@@ -23,16 +22,16 @@ public class DependencyGroupElement : RuleElement
     /// <summary>
     /// List of dependencies the group element contains.
     /// </summary>
-    public IReadOnlyCollection<DependencyElement> Dependencies => _dependencies;
+    public IReadOnlyList<DependencyElement> Dependencies => _dependencies;
 
     internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
         return visitor.VisitDependencyGroup(context, this);
     }
 
-    internal DependencyGroupElement Update(IReadOnlyCollection<DependencyElement> dependencies)
+    internal DependencyGroupElement Update(IReadOnlyList<DependencyElement> dependencies)
     {
         if (ReferenceEquals(dependencies, _dependencies)) return this;
-        return new DependencyGroupElement(dependencies);
+        return new DependencyGroupElement(dependencies.AsArray());
     }
 }

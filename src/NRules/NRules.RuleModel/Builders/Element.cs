@@ -112,7 +112,7 @@ public static class Element
         if (dependencies == null)
             throw new ArgumentNullException(nameof(dependencies), "Dependencies not provided");
 
-        var element = new DependencyGroupElement(dependencies);
+        var element = new DependencyGroupElement(dependencies.ToArray());
         ElementValidator.ValidateUniqueDeclarations(element.Dependencies);
         return element;
     }
@@ -189,7 +189,7 @@ public static class Element
         if (childElements == null)
             throw new ArgumentNullException(nameof(childElements), "Child elements not provided");
 
-        var element = new AndElement(childElements);
+        var element = new AndElement(childElements.ToArray());
         ElementValidator.ValidateGroup(element);
         ElementValidator.ValidateUniqueDeclarations(element.ChildElements);
         return element;
@@ -218,7 +218,7 @@ public static class Element
         if (childElements == null)
             throw new ArgumentNullException(nameof(childElements), "Child elements not provided");
 
-        var element = new OrElement(childElements);
+        var element = new OrElement(childElements.ToArray());
         ElementValidator.ValidateGroup(element);
         return element;
     }
@@ -268,7 +268,7 @@ public static class Element
         if (patterns == null)
             throw new ArgumentNullException(nameof(patterns), "Patterns not provided");
 
-        var element = new ForAllElement(basePattern, patterns);
+        var element = new ForAllElement(basePattern, patterns.ToArray());
         ElementValidator.ValidateForAll(element);
         return element;
     }
@@ -359,7 +359,7 @@ public static class Element
         if (expressions == null)
             throw new ArgumentNullException(nameof(expressions), "Pattern expressions not provided");
 
-        var expressionCollection = new ExpressionCollection(expressions);
+        var expressionCollection = new ExpressionCollection(expressions.ToArray());
         var element = new PatternElement(declaration, expressionCollection, source);
         declaration.Target = element;
         ElementValidator.ValidatePattern(element);
@@ -510,7 +510,7 @@ public static class Element
         if (source == null)
             throw new ArgumentNullException(nameof(source), "Aggregate source pattern not provided");
 
-        var expressionCollection = new ExpressionCollection(expressions);
+        var expressionCollection = new ExpressionCollection(expressions.ToArray());
         var element = new AggregateElement(resultType, name, expressionCollection, source, customFactoryType);
         ElementValidator.ValidateAggregate(element);
         return element;
@@ -666,7 +666,7 @@ public static class Element
     /// <seealso cref="FilterElement"/>
     public static FilterGroupElement FilterGroup(IEnumerable<FilterElement> filters)
     {
-        var element = new FilterGroupElement(filters);
+        var element = new FilterGroupElement(filters.ToArray());
         return element;
     }
 
@@ -702,9 +702,9 @@ public static class Element
     /// <seealso cref="ActionElement"/>
     public static ActionGroupElement ActionGroup(IEnumerable<ActionElement> actions)
     {
-        var element = new ActionGroupElement(actions);
-        var insertActions = element.Actions.Where(x => x.ActionTrigger.HasFlag(ActionTrigger.Activated)).ToList();
-        if (insertActions.Count == 0)
+        var element = new ActionGroupElement(actions.ToArray());
+        var insertActions = element.Actions.Where(x => x.ActionTrigger.HasFlag(ActionTrigger.Activated));
+        if (!insertActions.Any())
         {
             throw new ArgumentException("Rule must have at least one match action");
         }

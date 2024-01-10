@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.RuleModel;
 
@@ -10,10 +9,10 @@ public class ForAllElement : RuleElement
 {
     private readonly PatternElement[] _patterns;
 
-    internal ForAllElement(PatternElement source, IEnumerable<PatternElement> patterns)
+    internal ForAllElement(PatternElement source, PatternElement[] patterns)
     {
         BasePattern = source;
-        _patterns = patterns.ToArray();
+        _patterns = patterns;
 
         AddImports(source);
         AddImports(_patterns);
@@ -30,16 +29,16 @@ public class ForAllElement : RuleElement
     /// <summary>
     /// Patterns that must all match for the selected facts.
     /// </summary>
-    public IReadOnlyCollection<PatternElement> Patterns => _patterns;
+    public IReadOnlyList<PatternElement> Patterns => _patterns;
 
     internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
         return visitor.VisitForAll(context, this);
     }
 
-    internal ForAllElement Update(PatternElement basePattern, IReadOnlyCollection<PatternElement> patterns)
+    internal ForAllElement Update(PatternElement basePattern, IReadOnlyList<PatternElement> patterns)
     {
         if (ReferenceEquals(basePattern, BasePattern) && ReferenceEquals(patterns, Patterns)) return this;
-        return new ForAllElement(basePattern, patterns);
+        return new ForAllElement(basePattern, patterns.AsArray());
     }
 }

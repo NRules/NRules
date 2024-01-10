@@ -8,13 +8,13 @@ namespace NRules.RuleModel;
 /// <summary>
 /// Ordered readonly collection of named expressions.
 /// </summary>
-public class ExpressionCollection : IReadOnlyCollection<NamedExpressionElement>
+public class ExpressionCollection : IReadOnlyList<NamedExpressionElement>
 {
     private readonly NamedExpressionElement[] _expressions;
 
-    internal ExpressionCollection(IEnumerable<NamedExpressionElement> expressions)
+    internal ExpressionCollection(NamedExpressionElement[] expressions)
     {
-        _expressions = expressions.ToArray();
+        _expressions = expressions;
     }
 
     /// <summary>
@@ -52,6 +52,12 @@ public class ExpressionCollection : IReadOnlyCollection<NamedExpressionElement>
     }
 
     /// <summary>
+    /// Retrieves expression by index.
+    /// </summary>
+    /// <param name="index">Expression index.</param>
+    public NamedExpressionElement this[int index] => _expressions[index];
+
+    /// <summary>
     /// Retrieves single expression by name.
     /// </summary>
     /// <param name="name">Expression name.</param>
@@ -72,5 +78,11 @@ public class ExpressionCollection : IReadOnlyCollection<NamedExpressionElement>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    public ExpressionCollection Update(IReadOnlyList<NamedExpressionElement> expressions)
+    {
+        if (ReferenceEquals(expressions, _expressions)) return this;
+        return new ExpressionCollection(expressions.AsArray());
     }
 }

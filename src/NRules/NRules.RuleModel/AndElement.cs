@@ -7,7 +7,7 @@ namespace NRules.RuleModel;
 /// </summary>
 public class AndElement : GroupElement
 {
-    internal AndElement(IEnumerable<RuleElement> childElements)
+    internal AndElement(RuleElement[] childElements)
         : base(childElements)
     {
     }
@@ -20,9 +20,9 @@ public class AndElement : GroupElement
         return visitor.VisitAnd(context, this);
     }
 
-    internal AndElement Update(IReadOnlyCollection<RuleElement> childElements)
+    internal AndElement Update(IReadOnlyList<RuleElement> childElements)
     {
         if (ReferenceEquals(childElements, ChildElements)) return this;
-        return new AndElement(childElements);
+        return new AndElement(childElements.AsArray());
     }
 }

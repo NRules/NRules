@@ -98,6 +98,41 @@ public class RuleElementVisitor<TContext>
 
         return newElements ?? elements;
     }
+    
+    /// <summary>
+    /// Visits each element in the collection and all their descendant nodes.
+    /// If any of the elements is rewritten, a new collection is returned.
+    /// </summary>
+    /// <param name="context">Traversal context.</param>
+    /// <param name="elements">Collection of rule elements to visit.</param>
+    /// <param name="visitFunc">Concrete visitor delegate.</param>
+    /// <typeparam name="T">Type of rule elements to visit.</typeparam>
+    /// <returns>The original or a new rewritten collection of rule elements.</returns>
+    public static IReadOnlyList<T> Visit<T>(TContext context, IReadOnlyList<T> elements, Func<TContext, T, T> visitFunc)
+        where T : RuleElement
+    {
+        T[] newElements = null;
+        for (var i = 0; i < elements.Count; i++)
+        {
+            var element = elements[i];
+            var newElement = visitFunc(context, element);
+            if (newElements != null)
+            {
+                newElements[i] = newElement;
+            }
+            else if (!ReferenceEquals(newElement, element))
+            {
+                newElements = new T[elements.Count];
+                for (var j = 0; j < i; j++)
+                {
+                    newElements[j] = elements[j];
+                }
+                newElements[i] = newElement;
+            }
+        }
+        
+        return newElements ?? elements;
+    }
 
     protected internal virtual PatternElement VisitPattern(TContext context, PatternElement element)
     {
@@ -190,6 +225,6 @@ public class RuleElementVisitor<TContext>
     private ExpressionCollection VisitExpressions(TContext context, ExpressionCollection expressions)
     {
         var newExpressions = Visit(context, expressions, VisitNamedExpression);
-        return newExpressions != null ? new ExpressionCollection(newExpressions) : expressions;
+        return expressions.Update(newExpressions);
     }
 }

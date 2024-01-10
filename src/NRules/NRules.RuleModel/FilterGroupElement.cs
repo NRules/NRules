@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.RuleModel;
 
@@ -10,9 +9,9 @@ public class FilterGroupElement : RuleElement
 {
     private readonly FilterElement[] _filters;
 
-    internal FilterGroupElement(IEnumerable<FilterElement> filters)
+    internal FilterGroupElement(FilterElement[] filters)
     {
-        _filters = filters.ToArray();
+        _filters = filters;
 
         AddImports(_filters);
     }
@@ -23,16 +22,16 @@ public class FilterGroupElement : RuleElement
     /// <summary>
     /// List of filters the group element contains.
     /// </summary>
-    public IReadOnlyCollection<FilterElement> Filters => _filters;
+    public IReadOnlyList<FilterElement> Filters => _filters;
 
     internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
         return visitor.VisitFilterGroup(context, this);
     }
 
-    internal FilterGroupElement Update(IReadOnlyCollection<FilterElement> filters)
+    internal FilterGroupElement Update(IReadOnlyList<FilterElement> filters)
     {
         if (ReferenceEquals(filters, _filters)) return this;
-        return new FilterGroupElement(filters);
+        return new FilterGroupElement(filters.AsArray());
     }
 }

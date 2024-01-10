@@ -134,7 +134,7 @@ public class RuleCompiler
         var transformedRule = normalization.Normalize(ruleDefinition);
         var ruleDeclarations = transformedRule.LeftHandSide.Exports;
 
-        var dependencies = transformedRule.DependencyGroup.Dependencies.ToList();
+        var dependencies = transformedRule.DependencyGroup.Dependencies;
         var terminals = reteBuilder.AddRule(transformedRule);
 
         foreach (var terminal in terminals)

@@ -7,7 +7,7 @@ namespace NRules.RuleModel;
 /// </summary>
 public class OrElement : GroupElement
 {
-    internal OrElement(IEnumerable<RuleElement> childElements)
+    internal OrElement(RuleElement[] childElements)
         : base(childElements)
     {
     }
@@ -20,9 +20,9 @@ public class OrElement : GroupElement
         return visitor.VisitOr(context, this);
     }
 
-    internal OrElement Update(IReadOnlyCollection<RuleElement> childElements)
+    internal OrElement Update(IReadOnlyList<RuleElement> childElements)
     {
         if (ReferenceEquals(childElements, ChildElements)) return this;
-        return new OrElement(childElements);
+        return new OrElement(childElements.AsArray());
     }
 }

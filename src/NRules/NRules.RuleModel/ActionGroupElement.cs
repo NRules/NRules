@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NRules.RuleModel;
 
@@ -10,9 +9,9 @@ public class ActionGroupElement : RuleElement
 {
     private readonly ActionElement[] _actions;
 
-    internal ActionGroupElement(IEnumerable<ActionElement> actions)
+    internal ActionGroupElement(ActionElement[] actions)
     {
-        _actions = actions.ToArray();
+        _actions = actions;
 
         AddImports(_actions);
     }
@@ -23,16 +22,16 @@ public class ActionGroupElement : RuleElement
     /// <summary>
     /// List of actions the group element contains.
     /// </summary>
-    public IReadOnlyCollection<ActionElement> Actions => _actions;
+    public IReadOnlyList<ActionElement> Actions => _actions;
 
     internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
         return visitor.VisitActionGroup(context, this);
     }
 
-    internal ActionGroupElement Update(IReadOnlyCollection<ActionElement> actions)
+    internal ActionGroupElement Update(IReadOnlyList<ActionElement> actions)
     {
         if (ReferenceEquals(actions, _actions)) return this;
-        return new ActionGroupElement(actions);
+        return new ActionGroupElement(actions.AsArray());
     }
 }

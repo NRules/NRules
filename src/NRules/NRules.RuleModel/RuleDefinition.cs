@@ -48,7 +48,7 @@ public interface IRuleDefinition
     /// <summary>
     /// Tags applied to the rule.
     /// </summary>
-    IReadOnlyCollection<string> Tags { get; }
+    IReadOnlyList<string> Tags { get; }
 
     /// <summary>
     /// Properties attached to the rule.
@@ -110,5 +110,5 @@ internal class RuleDefinition : IRuleDefinition
     public FilterGroupElement FilterGroup { get; }
     public GroupElement LeftHandSide { get; }
     public ActionGroupElement RightHandSide { get; }
-    public IReadOnlyCollection<string> Tags => _tags;
+    public IReadOnlyList<string> Tags => _tags;
 }
