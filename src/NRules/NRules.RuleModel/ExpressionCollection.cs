@@ -82,7 +82,7 @@ public class ExpressionCollection : IReadOnlyList<NamedExpressionElement>
 
     public ExpressionCollection Update(IReadOnlyList<NamedExpressionElement> expressions)
     {
-        if (ReferenceEquals(expressions, _expressions)) return this;
+        if (ReferenceEquals(expressions, this)) return this;
         return new ExpressionCollection(expressions.AsArray());
     }
 }
