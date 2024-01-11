@@ -1,3 +1,5 @@
+using NRules.RuleModel.Builders;
+
 namespace NRules.RuleModel;
 
 /// <summary>
@@ -20,8 +22,14 @@ public class ExistsElement : RuleElement
         AddImports(source);
     }
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitExists(context, this);
+        return visitor.VisitExists(context, this);
+    }
+
+    internal ExistsElement Update(RuleElement source)
+    {
+        if (ReferenceEquals(Source, source)) return this;
+        return new ExistsElement(source);
     }
 }

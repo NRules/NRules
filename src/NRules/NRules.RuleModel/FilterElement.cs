@@ -37,8 +37,8 @@ public class FilterElement : ExpressionElement
     /// </summary>
     public FilterType FilterType { get; }
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitFilter(context, this);
+        return visitor.VisitFilter(context, this);
     }
 }

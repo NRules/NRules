@@ -23,8 +23,8 @@ public class NamedExpressionElement : ExpressionElement
     /// </summary>
     public string Name { get; }
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitNamedExpression(context, this);
+        return visitor.VisitNamedExpression(context, this);
     }
 }

@@ -7,12 +7,12 @@ namespace NRules.RuleModel;
 /// </summary>
 public class ForAllElement : RuleElement
 {
-    private readonly List<PatternElement> _patterns;
+    private readonly PatternElement[] _patterns;
 
-    internal ForAllElement(PatternElement source, IEnumerable<PatternElement> patterns)
+    internal ForAllElement(PatternElement source, PatternElement[] patterns)
     {
         BasePattern = source;
-        _patterns = new List<PatternElement>(patterns);
+        _patterns = patterns;
 
         AddImports(source);
         AddImports(_patterns);
@@ -29,10 +29,16 @@ public class ForAllElement : RuleElement
     /// <summary>
     /// Patterns that must all match for the selected facts.
     /// </summary>
-    public IEnumerable<PatternElement> Patterns => _patterns;
+    public IReadOnlyList<PatternElement> Patterns => _patterns;
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitForAll(context, this);
+        return visitor.VisitForAll(context, this);
+    }
+
+    internal ForAllElement Update(PatternElement basePattern, IReadOnlyList<PatternElement> patterns)
+    {
+        if (ReferenceEquals(basePattern, BasePattern) && ReferenceEquals(patterns, Patterns)) return this;
+        return new ForAllElement(basePattern, patterns.AsArray());
     }
 }

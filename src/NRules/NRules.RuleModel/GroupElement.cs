@@ -7,11 +7,11 @@ namespace NRules.RuleModel;
 /// </summary>
 public abstract class GroupElement : RuleElement
 {
-    private readonly List<RuleElement> _childElements;
+    private readonly RuleElement[] _childElements;
 
-    internal GroupElement(IEnumerable<RuleElement> childElements)
+    internal GroupElement(RuleElement[] childElements)
     {
-        _childElements = new List<RuleElement>(childElements);
+        _childElements = childElements;
 
         AddExports(_childElements);
         AddImports(_childElements);
@@ -20,5 +20,5 @@ public abstract class GroupElement : RuleElement
     /// <summary>
     /// List of child elements in the grouping.
     /// </summary>
-    public IReadOnlyCollection<RuleElement> ChildElements => _childElements;
+    public IReadOnlyList<RuleElement> ChildElements => _childElements;
 }

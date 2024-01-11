@@ -7,7 +7,7 @@ namespace NRules.RuleModel;
 /// </summary>
 public class OrElement : GroupElement
 {
-    internal OrElement(IEnumerable<RuleElement> childElements)
+    internal OrElement(RuleElement[] childElements)
         : base(childElements)
     {
     }
@@ -15,8 +15,14 @@ public class OrElement : GroupElement
     /// <inheritdoc cref="RuleElement.ElementType"/>
     public override ElementType ElementType => ElementType.Or;
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitOr(context, this);
+        return visitor.VisitOr(context, this);
+    }
+
+    internal OrElement Update(IReadOnlyList<RuleElement> childElements)
+    {
+        if (ReferenceEquals(childElements, ChildElements)) return this;
+        return new OrElement(childElements.AsArray());
     }
 }

@@ -300,8 +300,7 @@ public class SessionTest
         // Act - Assert
         Assert.Throws<ArgumentException>(() => target.RetractAll(facts));
     }
-
-
+    
     [Fact]
     public void TryRetractAll_SomeFactsDoNotExistOptionsAllOrNothing_DoesNotPropagateRetract()
     {

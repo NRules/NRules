@@ -22,8 +22,8 @@ public class BindingElement : ExpressionElement
     /// </summary>
     public Type ResultType { get; }
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitBinding(context, this);
+        return visitor.VisitBinding(context, this);
     }
 }
