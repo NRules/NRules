@@ -3,6 +3,7 @@ using System.Linq;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.RuleModel;
 using NRules.Testing;
 using Xunit;
 
@@ -17,6 +18,20 @@ public class RuleNormalizationTest : RulesTestFixture
     {
         _factory = new RuleDefinitionFactory();
         _normalization = new RuleNormalization();
+    }
+    
+    [Fact]
+    public void Visit_Rule_SameRule()
+    {
+        // Arrange
+        var rule = _factory.Create(new NoNormalizationNecessaryTestRule());
+        var visitor = new RuleElementVisitor<Context>();
+        
+        // Act
+        var visitedRule = visitor.Visit(Context.Empty, rule);
+        
+        // Assert
+        Assert.Same(rule, visitedRule);
     }
     
     [Fact]

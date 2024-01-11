@@ -30,16 +30,16 @@ public class RuleElementVisitor<TContext>
     public IRuleDefinition Visit(TContext context, IRuleDefinition rule)
     {
         var dependencyGroup = rule.DependencyGroup;
-        var newDependencyGroup = (DependencyGroupElement) Visit(context, dependencyGroup);
+        var newDependencyGroup = VisitDependencyGroup(context, dependencyGroup);
         
         var lhs = rule.LeftHandSide;
         var newLhs = (GroupElement) Visit(context, lhs);
 
         var filterGroup = rule.FilterGroup;
-        var newFilterGroup = (FilterGroupElement) Visit(context, filterGroup);
+        var newFilterGroup = VisitFilterGroup(context, filterGroup);
         
         var rhs = rule.RightHandSide;
-        var newRhs = (ActionGroupElement) Visit(context, rhs);
+        var newRhs = VisitActionGroup(context, rhs);
         
         if (!ReferenceEquals(newLhs, lhs) || !ReferenceEquals(newRhs, rhs))
         {
@@ -59,44 +59,6 @@ public class RuleElementVisitor<TContext>
     public RuleElement Visit(TContext context, RuleElement element)
     {
         return element?.Accept(context, this);
-    }
-    
-    /// <summary>
-    /// Visits each element in the collection and all their descendant nodes.
-    /// If any of the elements is rewritten, a new collection is returned.
-    /// </summary>
-    /// <param name="context">Traversal context.</param>
-    /// <param name="elements">Collection of rule elements to visit.</param>
-    /// <param name="visitFunc">Concrete visitor delegate.</param>
-    /// <typeparam name="T">Type of rule elements to visit.</typeparam>
-    /// <returns>The original or a new rewritten collection of rule elements.</returns>
-    public static IReadOnlyCollection<T> Visit<T>(TContext context, IReadOnlyCollection<T> elements, Func<TContext, T, T> visitFunc)
-        where T : RuleElement
-    {
-        T[] newElements = null;
-        var i = 0;
-        foreach (var element in elements)
-        {
-            var newElement = visitFunc(context, element);
-            if (newElements != null)
-            {
-                newElements[i] = newElement;
-            }
-            else if (!ReferenceEquals(newElement, element))
-            {
-                newElements = new T[elements.Count];
-                var j = 0;
-                foreach (var oldElement in elements)
-                {
-                    if (j == i) break;
-                    newElements[j] = oldElement;
-                }
-                newElements[i] = newElement;
-            }
-            i++;
-        }
-
-        return newElements ?? elements;
     }
     
     /// <summary>
