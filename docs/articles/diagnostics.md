@@ -71,7 +71,7 @@ session.Metrics.Reset();
 
 ## Debugger Visualizer
 Debugger visualiser is an add-on component for Visual Studio that adds visualization capabilities for certain .NET types.
-Debugger visualizer that comes with NRules adds such visualization capability for [ISession](xref:NRules.ISession) and [ISessionFactory](xref:NRules.ISessionFactory) types. It also requires a '[DGML](http://en.wikipedia.org/wiki/DGML) editor' feature, which must be enabled when installing Visual Studio.
+Debugger visualizer that comes with NRules adds such visualization capability for [ISession](xref:NRules.ISession) and [ISessionFactory](xref:NRules.ISessionFactory) types. It also requires a '[DGML](http://en.wikipedia.org/wiki/DGML) editor' feature, which must be enabled when installing Visual Studio. Ensure `.dgml` files are properly associated with Visual Studio, so that the generated Rete graph opens correctly.
 
 NRules debugger visualiser is supported for Visual Studio 2022.
 
