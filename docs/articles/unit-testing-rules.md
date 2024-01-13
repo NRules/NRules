@@ -5,43 +5,12 @@ NRules is a production rules engine, which means rules are defined in a form of 
 While it's possible to create your own test fixture to set up the rules engine session and assert rule firings, the [NRules.Testing](xref:NRules.Testing) library provides a set of tools to help set up the rules under test, compile them into a rules session, record rule firings, as well as configure and verify rule firing expectations.
 
 ## Setting Up a Test Fixture
-[NRules.Testing](xref:NRules.Testing) library does not depend on any specific unit testing or assertion framework, so by default it just throws an [Exception](xref:System.Exception) when any assertion fails. To better tailor assertions to the specific unit testing framework, implement an [asserter](xref:NRules.Testing.IRuleAsserter) that uses the specific assertion mechanism.
+[NRules.Testing](xref:NRules.Testing) library defines a [RulesTestFixture](xref:NRules.Testing.RulesTestFixture) that can be used to create test fixtures to house rules tests.
 
 The following code uses [xUnit](https://xunit.net/) to unit test the rules.
 
 ```c#
-using NRules.Testing;
-using Xunit.Sdk;
-
-public class XUnitRuleAsserter : IRuleAsserter
-{
-    public void Assert(RuleAssertResult result)
-    {
-        if (result.Status == RuleAssertStatus.Failed)
-        {
-            throw new XunitException(result.GetMessage());
-        }
-    }
-}
-```
-
-With the `XUnitRuleAsserter` we can use the [RulesTestFixture](xref:NRules.Testing.RulesTestFixture) to create a base test fixture for all our rule tests.
-
-```c#
-using NRules.Testing;
-
-public abstract class BaseRulesTestFixture : RulesTestFixture
-{
-    protected MyRulesTestFixture()
-    {
-        Asserter = new XUnitRuleAsserter();
-    }
-}
-```
-
-With the above base test fixture, a rule can be tested in the following way:
-```c#
-public class MyRuleTest : BaseRulesTestFixture
+public class MyRuleTest : RulesTestFixture
 {
     public class MyFact { }
 
@@ -104,7 +73,7 @@ Verify(x => x.Rule().Fired(Times.Exactly(3), Matched.Fact<Customer>(c => c.IsPre
 To test multiple rules together in the same test fixture, more than one rule can be registered during the fixture setup. The rule firing expectations with multiple rules can be set by specifying the actual rule type for which the expectations are verified.
 
 ```c#
-public class MyRuleTest : BaseRulesTestFixture
+public class MyRuleTest : RulesTestFixture
 {
     public MyRuleTest()
     {
@@ -139,6 +108,41 @@ If a rule uses injected dependencies, those can be mocked using any mocking fram
 var serviceMock = new Mock<IMyService>();
 var rule = new MyRule(serviceMock.Object);
 Setup.Rule(rule);
+```
+
+## Creating a Custom Asserter
+[NRules.Testing](xref:NRules.Testing) library does not depend on any specific unit testing or assertion framework, so by default it just throws an [Exception](xref:System.Exception) when any assertion fails. To better tailor assertions to the specific unit testing framework, implement an [asserter](xref:NRules.Testing.IRuleAsserter) that uses the specific assertion mechanism.
+
+Below we are defining a custom asserter for the [xUnit](https://xunit.net/) framework.
+
+```c#
+using NRules.Testing;
+using Xunit.Sdk;
+
+public class XUnitRuleAsserter : IRuleAsserter
+{
+    public void Assert(RuleAssertResult result)
+    {
+        if (result.Status == RuleAssertStatus.Failed)
+        {
+            throw new XunitException(result.GetMessage());
+        }
+    }
+}
+```
+
+We can set the asserter as part of a base test fixture and use it for all our rule tests.
+
+```c#
+using NRules.Testing;
+
+public abstract class BaseRulesTestFixture : RulesTestFixture
+{
+    protected MyRulesTestFixture()
+    {
+        Asserter = new XUnitRuleAsserter();
+    }
+}
 ```
 
 [NRules.Testing](xref:NRules.Testing) is a very capable library; see NRules integration tests on GitHub for a wide range of examples.

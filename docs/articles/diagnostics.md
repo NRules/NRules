@@ -87,7 +87,7 @@ Then build the visualizer:
 build.bat Build Visualizer
 ```
 
-After building, get the contents of `<Repo Root>\binaries\NRules.Debugger.Visualizer` folder and copy to `<Documents>\Visual Studio <Version>\Visualizers`.
+After building, get the contents of `<Repo Root>\build\bin\NRules.Debugger.Visualizer` folder and copy to `<Documents>\Visual Studio <Version>\Visualizers`.
 
 If installed correctly, any time you debug a program that uses NRules, a magnifying glass icon will appear next to the instances of [ISession](xref:NRules.ISession) and [ISessionFactory](xref:NRules.ISessionFactory) in the watch window.
 Click on the magnifying glass to open a graphical view of that instance of the rules session.
