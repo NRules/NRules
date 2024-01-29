@@ -94,7 +94,7 @@ internal class BindingNode : BetaNode
             if (!e.IsHandled)
             {
                 throw new RuleLhsExpressionEvaluationException("Failed to evaluate binding expression",
-                    e.Expression.ToString(), e.InnerException);
+                    e.Expression.ToString(), e.InnerException!);
             }
         }
     }

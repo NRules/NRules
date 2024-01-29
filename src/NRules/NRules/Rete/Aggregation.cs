@@ -6,7 +6,7 @@ namespace NRules.Rete;
 internal class Aggregation
 {
     private readonly List<AggregateList> _aggregateLists = new();
-    private AggregateList _currentList;
+    private AggregateList? _currentList;
 
     public List<AggregateList> AggregateLists => _aggregateLists;
     public int Count { get; private set; }

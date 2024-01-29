@@ -15,15 +15,15 @@ public class DgmlWriter
 {
     private readonly ReteGraph _schema;
 
-    private HashSet<string> _ruleNameFilter;
-    private IMetricsProvider _metricsProvider;
+    private HashSet<string>? _ruleNameFilter;
+    private IMetricsProvider? _metricsProvider;
     
     /// <summary>
     /// Sets a filter for Rete graph nodes, such that only nodes that belong to the given
     /// set of rules is serialized, along with the connecting graph edges.
     /// </summary>
     /// <param name="ruleNames">Set of rules to use as a filter, or <c>null</c> to remove the filter.</param>
-    public void SetRuleFilter(IEnumerable<string> ruleNames)
+    public void SetRuleFilter(IEnumerable<string>? ruleNames)
     {
         _ruleNameFilter = ruleNames == null ? null : new HashSet<string>(ruleNames);
     }
@@ -112,7 +112,8 @@ public class DgmlWriter
                 Category = reteNode.NodeType.ToString()
             };
 
-            node.Properties.Add("OutputType", reteNode.OutputType?.ToString());
+            if (reteNode.OutputType != null)
+                node.Properties.Add("OutputType", reteNode.OutputType.ToString());
 
             foreach (var valueGroup in reteNode.Properties.GroupBy(x => x.Key, x => x.Value))
             {
@@ -166,7 +167,7 @@ public class DgmlWriter
         switch (reteNode.NodeType)
         {
             case NodeType.Type:
-                labelParts.Add(reteNode.OutputType.Name);
+                labelParts.Add(reteNode.OutputType!.Name);
                 break;
             case NodeType.Selection:
                 labelParts.AddRange(reteNode.Expressions.Select(x => $"{x.Value.Body}"));
@@ -199,7 +200,7 @@ public class DgmlWriter
         foreach (var node in graph.Nodes)
         {
             var reteNode = reteNodeLookup[node.Id];
-            INodeMetrics nodeMetrics = _metricsProvider?.FindByNodeId(reteNode.Id);
+            INodeMetrics? nodeMetrics = _metricsProvider?.FindByNodeId(reteNode.Id);
             if (nodeMetrics == null) continue;
 
             var totalDuration = nodeMetrics.InsertDurationMilliseconds +
@@ -331,7 +332,7 @@ public class DgmlWriter
             .Setter(nameof(Node.Background), value: "Purple");
     }
     
-    private static IEnumerable<ReteNode> FilterNodes(HashSet<string> ruleNameFilter, IEnumerable<ReteNode> reteNodes)
+    private static IEnumerable<ReteNode> FilterNodes(HashSet<string>? ruleNameFilter, IEnumerable<ReteNode> reteNodes)
     {
         foreach (var reteNode in reteNodes)
         {

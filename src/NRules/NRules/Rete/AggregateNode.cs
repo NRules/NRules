@@ -60,7 +60,7 @@ internal class AggregateNode : BinaryBetaNode
             var joinedSets = JoinedSets(context, tuples);
             foreach (var set in joinedSets)
             {
-                IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
+                IFactAggregator? aggregator = GetFactAggregator(context, set.Tuple);
                 if (aggregator != null)
                 {
                     if (_isSubnetJoin && set.Facts.Count > 0)
@@ -93,7 +93,7 @@ internal class AggregateNode : BinaryBetaNode
         {
             foreach (var tuple in tuples)
             {
-                IFactAggregator aggregator = RemoveFactAggregator(context, tuple);
+                IFactAggregator? aggregator = RemoveFactAggregator(context, tuple);
                 if (aggregator != null)
                 {
                     aggregation.Remove(tuple, aggregator.AggregateFacts);
@@ -118,7 +118,7 @@ internal class AggregateNode : BinaryBetaNode
             {
                 if (set.Facts.Count == 0) continue;
 
-                IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
+                IFactAggregator? aggregator = GetFactAggregator(context, set.Tuple);
                 if (aggregator == null)
                 {
                     aggregator = CreateFactAggregator(context, set.Tuple);
@@ -149,7 +149,7 @@ internal class AggregateNode : BinaryBetaNode
             {
                 if (set.Facts.Count == 0) continue;
 
-                IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
+                IFactAggregator? aggregator = GetFactAggregator(context, set.Tuple);
                 if (aggregator != null)
                 {
                     UpdateInAggregate(aggregationContext, aggregator, aggregation, set.Tuple, set.Facts);
@@ -180,7 +180,7 @@ internal class AggregateNode : BinaryBetaNode
             {
                 if (set.Facts.Count == 0) continue;
 
-                IFactAggregator aggregator = GetFactAggregator(context, set.Tuple);
+                IFactAggregator? aggregator = GetFactAggregator(context, set.Tuple);
                 if (aggregator != null)
                 {
                     RetractFromAggregate(aggregationContext, aggregator, aggregation, set.Tuple, set.Facts);
@@ -210,7 +210,7 @@ internal class AggregateNode : BinaryBetaNode
             if (!e.IsHandled)
             {
                 throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
-                    e.Expression.ToString(), e.InnerException);
+                    e.Expression.ToString(), e.InnerException!);
             }
             ResetAggregator(context.ExecutionContext, aggregation, tuple, aggregator);
         }
@@ -227,7 +227,7 @@ internal class AggregateNode : BinaryBetaNode
             if (!e.IsHandled)
             {
                 throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
-                    e.Expression.ToString(), e.InnerException);
+                    e.Expression.ToString(), e.InnerException!);
             }
             ResetAggregator(context.ExecutionContext, aggregation, tuple, aggregator);
         }
@@ -244,7 +244,7 @@ internal class AggregateNode : BinaryBetaNode
             if (!e.IsHandled)
             {
                 throw new RuleLhsExpressionEvaluationException("Failed to evaluate aggregate expression",
-                    e.Expression.ToString(), e.InnerException);
+                    e.Expression.ToString(), e.InnerException!);
             }
             ResetAggregator(context.ExecutionContext, aggregation, tuple, aggregator);
         }
@@ -285,13 +285,13 @@ internal class AggregateNode : BinaryBetaNode
         return factAggregator;
     }
 
-    private IFactAggregator GetFactAggregator(IExecutionContext context, Tuple tuple)
+    private IFactAggregator? GetFactAggregator(IExecutionContext context, Tuple tuple)
     {
         var factAggregator = context.WorkingMemory.GetState<IFactAggregator>(this, tuple);
         return factAggregator;
     }
 
-    private IFactAggregator RemoveFactAggregator(IExecutionContext context, Tuple tuple)
+    private IFactAggregator? RemoveFactAggregator(IExecutionContext context, Tuple tuple)
     {
         var factAggregator = context.WorkingMemory.RemoveState<IFactAggregator>(this, tuple);
         return factAggregator;

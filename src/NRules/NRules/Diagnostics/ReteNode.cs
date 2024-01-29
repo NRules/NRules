@@ -47,7 +47,7 @@ public class ReteNode
     /// <summary>
     /// Type of elements the node produces as output.
     /// </summary>
-    public Type OutputType { get; }
+    public Type? OutputType { get; }
 
     /// <summary>
     /// Properties associated with the node.
@@ -153,10 +153,10 @@ public class ReteNode
 
     internal ReteNode(int id, 
         NodeType nodeType, 
-        Type outputType = null, 
-        IEnumerable<KeyValuePair<string, object>> values = null,
-        IEnumerable<KeyValuePair<string, LambdaExpression>> expressions = null, 
-        IReadOnlyCollection<IRuleDefinition> rules = null)
+        Type? outputType = null, 
+        IEnumerable<KeyValuePair<string, object>>? values = null,
+        IEnumerable<KeyValuePair<string, LambdaExpression>>? expressions = null, 
+        IReadOnlyCollection<IRuleDefinition>? rules = null)
     {
         Id = id;
         NodeType = nodeType;

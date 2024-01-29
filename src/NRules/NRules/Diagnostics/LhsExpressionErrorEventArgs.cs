@@ -20,12 +20,12 @@ public class LhsExpressionErrorEventArgs : LhsExpressionEventArgs, IRecoverableE
     /// <param name="tuple">Tuple related to the event.</param>
     /// <param name="fact">Fact related to the event.</param>
     /// <param name="rules">Rules that contain the expression that generated the event.</param>
-    public LhsExpressionErrorEventArgs(Expression expression, Exception exception, object[] arguments, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
+    public LhsExpressionErrorEventArgs(Expression expression, Exception? exception, object[] arguments, ITuple? tuple, IFact? fact, IEnumerable<IRuleDefinition> rules)
         : base(expression, exception, arguments, null, tuple, fact, rules)
     {
     }
     
-    internal LhsExpressionErrorEventArgs(Expression expression, Exception exception, IArguments arguments, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
+    internal LhsExpressionErrorEventArgs(Expression expression, Exception? exception, IArguments arguments, ITuple? tuple, IFact? fact, IEnumerable<IRuleDefinition> rules)
         : base(expression, exception, arguments, null, tuple, fact, rules)
     {
     }

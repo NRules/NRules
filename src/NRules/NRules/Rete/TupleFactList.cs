@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NRules.Rete;
 
@@ -7,10 +8,16 @@ namespace NRules.Rete;
 internal class TupleFactList
 {
     private readonly List<Tuple> _tuples = new(); 
-    private readonly List<Fact> _facts = new();
+    private readonly List<Fact?> _facts = new();
 
     public int Count => _tuples.Count;
 
+    public void Add(Tuple tuple)
+    {
+        _tuples.Add(tuple);
+        _facts.Add(null);
+    }
+    
     public void Add(Tuple tuple, Fact fact)
     {
         _tuples.Add(tuple);
@@ -20,17 +27,18 @@ internal class TupleFactList
     public struct Enumerator
     {
         private List<Tuple>.Enumerator _tupleEnumerator;
-        private List<Fact>.Enumerator _factEnumerator;
+        private List<Fact?>.Enumerator _factEnumerator;
 
-        public Enumerator(List<Tuple>.Enumerator tupleEnumerator, List<Fact>.Enumerator factEnumerator)
+        public Enumerator(List<Tuple>.Enumerator tupleEnumerator, List<Fact?>.Enumerator factEnumerator)
         {
             _tupleEnumerator = tupleEnumerator;
             _factEnumerator = factEnumerator;
         }
 
-        public Tuple CurrentTuple => _tupleEnumerator.Current;
-        public Fact CurrentFact => _factEnumerator.Current;
+        public Tuple CurrentTuple => _tupleEnumerator.Current!;
+        public Fact? CurrentFact => _factEnumerator.Current;
 
+        [MemberNotNullWhen(true, nameof(CurrentTuple))]
         public bool MoveNext()
         {
             bool hasNextTuple = _tupleEnumerator.MoveNext();

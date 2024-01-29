@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NRules.Aggregators.Collections;
 
@@ -10,23 +11,23 @@ namespace NRules.Aggregators.Collections;
 internal class DefaultKeyMap<TKey, TValue>
 {
     private readonly Dictionary<TKey, TValue> _map = new();
-    private readonly TKey _defaultKey = default;
-    private TValue _defaultValue;
-    private bool _hasDefault = false;
+    private readonly TKey? _defaultKey = default;
+    private TValue? _defaultValue;
+    private bool _hasDefault;
 
     public int Count => _map.Count + (_hasDefault ? 1 : 0);
     public int KeyCount => _map.Keys.Count + (_hasDefault ? 1 : 0);
 
-    public bool ContainsKey(TKey key)
+    public bool ContainsKey(TKey? key)
     {
         if (Equals(key, _defaultKey))
         {
             return _hasDefault;
         }
-        return _map.ContainsKey(key);
+        return _map.ContainsKey(key!);
     }
 
-    public void Add(TKey key, TValue value)
+    public void Add(TKey? key, TValue value)
     {
         if (Equals(key, _defaultKey))
         {
@@ -38,11 +39,11 @@ internal class DefaultKeyMap<TKey, TValue>
         }
         else
         {
-           _map.Add(key, value);
+           _map.Add(key!, value);
         }
     }
 
-    public bool Remove(TKey key)
+    public bool Remove(TKey? key)
     {
         if (Equals(key, _defaultKey))
         {
@@ -54,20 +55,20 @@ internal class DefaultKeyMap<TKey, TValue>
             }
             return false;
         }
-        return _map.Remove(key);
+        return _map.Remove(key!);
     }
 
-    public bool TryGetValue(TKey key, out TValue value)
+    public bool TryGetValue(TKey? key, [NotNullWhen(returnValue:true)]out TValue? value)
     {
         if (Equals(key, _defaultKey))
         {
             value = _defaultValue;
             return _hasDefault;
         }
-        return _map.TryGetValue(key, out value);
+        return _map.TryGetValue(key!, out value);
     }
 
-    public TValue this[TKey key]
+    public TValue this[TKey? key]
     {
         get
         {
@@ -75,9 +76,9 @@ internal class DefaultKeyMap<TKey, TValue>
             {
                 if (!_hasDefault)
                     throw new KeyNotFoundException("Default key was not found");
-                return _defaultValue;
+                return _defaultValue!;
             }
-            return _map[key];
+            return _map[key!];
         }
         set
         {
@@ -88,12 +89,12 @@ internal class DefaultKeyMap<TKey, TValue>
             }
             else
             {
-                _map[key] = value;
+                _map[key!] = value!;
             }
         }
     }
 
-    public IEnumerable<TKey> Keys
+    public IEnumerable<TKey?> Keys
     {
         get
         {
@@ -109,7 +110,7 @@ internal class DefaultKeyMap<TKey, TValue>
     {
         get
         {
-            if (_hasDefault) yield return _defaultValue;
+            if (_hasDefault) yield return _defaultValue!;
             foreach (var item in _map)
             {
                 yield return item.Value;

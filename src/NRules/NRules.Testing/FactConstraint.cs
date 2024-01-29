@@ -37,15 +37,15 @@ public abstract class FactConstraint
 /// </summary>
 public abstract class FactConstraint<TFact> : FactConstraint
 {
-    private List<Action<TFact>> _callbacks;
+    private List<Action<TFact?>>? _callbacks;
 
     /// <summary>
     /// Called with the corresponding fact when all rule firing fact constraints are satisfied.
     /// </summary>
     /// <param name="callback">The delegate to call.</param>
-    public FactConstraint<TFact> Callback(Action<TFact> callback)
+    public FactConstraint<TFact> Callback(Action<TFact?> callback)
     {
-        _callbacks ??= new List<Action<TFact>>();
+        _callbacks ??= new List<Action<TFact?>>();
         _callbacks.Add(callback);
         return this;
     }
@@ -56,7 +56,7 @@ public abstract class FactConstraint<TFact> : FactConstraint
         if (_callbacks == null) return;
         foreach (var callback in _callbacks)
         {
-            callback.Invoke((TFact)factMatch.Value);
+            callback.Invoke((TFact?)factMatch.Value);
         }
     }
 }
@@ -76,10 +76,10 @@ internal class TypedFactConstraint<TFact> : FactConstraint<TFact>
 
 internal class PredicatedFactConstraint<TFact> : FactConstraint<TFact>
 {
-    private readonly Expression<Func<TFact, bool>> _predicateExpression;
-    private readonly Func<TFact, bool> _predicate;
+    private readonly Expression<Func<TFact?, bool>> _predicateExpression;
+    private readonly Func<TFact?, bool> _predicate;
 
-    public PredicatedFactConstraint(Expression<Func<TFact, bool>> predicateExpression)
+    public PredicatedFactConstraint(Expression<Func<TFact?, bool>> predicateExpression)
     {
         _predicateExpression = predicateExpression;
         _predicate = predicateExpression.Compile();
@@ -89,7 +89,7 @@ internal class PredicatedFactConstraint<TFact> : FactConstraint<TFact>
     {
         if (typeof(TFact).IsAssignableFrom(factMatch.Declaration.Type))
         {
-            return _predicate((TFact)factMatch.Value);
+            return _predicate((TFact?)factMatch.Value);
         }
         return false;
     }

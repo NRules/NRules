@@ -9,13 +9,13 @@ internal interface IWorkingMemory
 {
     IEnumerable<Fact> Facts { get; }
 
-    Fact GetFact(object factObject);
+    Fact? GetFact(object factObject);
     void AddFact(Fact fact);
     void UpdateFact(Fact fact);
     void RemoveFact(Fact fact);
 
     IReadOnlyCollection<object> GetLinkedKeys(Activation activation);
-    Fact GetLinkedFact(Activation activation, object key);
+    Fact? GetLinkedFact(Activation activation, object key);
     void AddLinkedFact(Activation activation, object key, Fact fact);
     void UpdateLinkedFact(Activation activation, object key, Fact fact, object factObject);
     void RemoveLinkedFact(Activation activation, object key, Fact fact);
@@ -23,9 +23,9 @@ internal interface IWorkingMemory
     IAlphaMemory GetNodeMemory(IAlphaMemoryNode node);
     IBetaMemory GetNodeMemory(IBetaMemoryNode node);
 
-    T GetState<T>(INode node, Tuple tuple);
+    T? GetState<T>(INode node, Tuple tuple);
     T GetStateOrThrow<T>(INode node, Tuple tuple);
-    T RemoveState<T>(INode node, Tuple tuple);
+    T? RemoveState<T>(INode node, Tuple tuple);
     T RemoveStateOrThrow<T>(INode node, Tuple tuple);
     void SetState(INode node, Tuple tuple, object value);
 }
@@ -44,7 +44,7 @@ internal class WorkingMemory : IWorkingMemory
 
     public IEnumerable<Fact> Facts => _factMap.Values;
 
-    public Fact GetFact(object factObject)
+    public Fact? GetFact(object factObject)
     {
         _factMap.TryGetValue(factObject, out var fact);
         return fact;
@@ -52,7 +52,7 @@ internal class WorkingMemory : IWorkingMemory
 
     public void AddFact(Fact fact)
     {
-        _factMap.Add(fact.RawObject, fact);
+        _factMap.Add(fact.RawObject!, fact);
     }
 
     public void UpdateFact(Fact fact)
@@ -63,7 +63,7 @@ internal class WorkingMemory : IWorkingMemory
 
     public void RemoveFact(Fact fact)
     {
-        if (!_factMap.Remove(fact.RawObject))
+        if (!_factMap.Remove(fact.RawObject!))
             throw new ArgumentException("Element does not exist", nameof(fact));
     }
 
@@ -73,7 +73,7 @@ internal class WorkingMemory : IWorkingMemory
         return factMap.Keys;
     }
 
-    public Fact GetLinkedFact(Activation activation, object key)
+    public Fact? GetLinkedFact(Activation activation, object key)
     {
         if (!_linkedFactMap.TryGetValue(activation, out var factMap)) return null;
 
@@ -141,7 +141,7 @@ internal class WorkingMemory : IWorkingMemory
         return memory;
     }
 
-    public T GetState<T>(INode node, Tuple tuple)
+    public T? GetState<T>(INode node, Tuple tuple)
     {
         var key = new TupleStateKey(node, tuple);
         if (_tupleStateMap.TryGetValue(key, out var value))
@@ -161,7 +161,7 @@ internal class WorkingMemory : IWorkingMemory
         throw new ArgumentException($"Tuple state not found. NodeType={node.GetType()}, StateType={typeof(T)}");
     }
 
-    public T RemoveState<T>(INode node, Tuple tuple)
+    public T? RemoveState<T>(INode node, Tuple tuple)
     {
         var key = new TupleStateKey(node, tuple);
         if (_tupleStateMap.TryGetValue(key, out var value))
@@ -207,7 +207,7 @@ internal class WorkingMemory : IWorkingMemory
             return _node.Equals(other._node) && _tuple.Equals(other._tuple);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is TupleStateKey other && Equals(other);
         }

@@ -5,7 +5,7 @@ using NRules.RuleModel;
 
 namespace NRules.Aggregators.Collections;
 
-internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement>
+internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement?>
 {
     private readonly SortedDictionary<KeyContainer, LinkedList<IFact>> _items;
     private readonly Dictionary<IFact, SortedFactData> _dataMap;
@@ -55,13 +55,13 @@ internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement>
         }
     }
 
-    public IEnumerator<TElement> GetEnumerator()
+    public IEnumerator<TElement?> GetEnumerator()
     {
         foreach (var list in _items.Values)
         {
             foreach (var fact in list)
             {
-                yield return (TElement)fact.Value;
+                yield return (TElement?)fact.Value;
             }
         }
     }
@@ -97,7 +97,7 @@ internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement>
             return EqualityComparer<TKey>.Default.Equals(Key, other.Key);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is KeyContainer container && Equals(container);
         }

@@ -7,8 +7,8 @@ namespace NRules.Fluent.Expressions;
 internal class PatternExpressionRewriter : ExpressionRewriter
 {
     private readonly Declaration _patternDeclaration;
-    private ParameterExpression _originalParameter;
-    private ParameterExpression _normalizedParameter;
+    private ParameterExpression? _originalParameter;
+    private ParameterExpression? _normalizedParameter;
 
     public PatternExpressionRewriter(Declaration patternDeclaration, ISymbolLookup symbolLookup)
         : base(symbolLookup)

@@ -34,7 +34,7 @@ internal class FlatteningAggregator<TSource, TResult> : IAggregator
                 if (list.Add(item) &&
                     AddRef(item) == 1)
                 {
-                    results.Add(AggregationResult.Added(item, Enumerable.Repeat(fact, 1)));
+                    results.Add(AggregationResult.Added(item!, Enumerable.Repeat(fact, 1)));
                 }
             }
         }
@@ -61,18 +61,18 @@ internal class FlatteningAggregator<TSource, TResult> : IAggregator
                 if (!list.Contains(item) &&
                     RemoveRef(item) == 0)
                 {
-                    results.Add(AggregationResult.Removed(item));
+                    results.Add(AggregationResult.Removed(item!));
                 }
             }
             foreach (var item in list)
             {
                 if (oldList.Contains(item))
                 {
-                    results.Add(AggregationResult.Modified(item, item, Enumerable.Repeat(fact, 1)));
+                    results.Add(AggregationResult.Modified(item!, item!, Enumerable.Repeat(fact, 1)));
                 }
                 else if (AddRef(item) == 1)
                 {
-                    results.Add(AggregationResult.Added(item, Enumerable.Repeat(fact, 1)));
+                    results.Add(AggregationResult.Added(item!, Enumerable.Repeat(fact, 1)));
                 }
             }
         }
@@ -90,7 +90,7 @@ internal class FlatteningAggregator<TSource, TResult> : IAggregator
             {
                 if (RemoveRef(item) == 0)
                 {
-                    results.Add(AggregationResult.Removed(item));
+                    results.Add(AggregationResult.Removed(item!));
                 }
             }
         }

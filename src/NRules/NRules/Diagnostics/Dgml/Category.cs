@@ -10,8 +10,8 @@ internal class Category
     }
 
     public string Id { get; }
-    public string Label { get; set; }
-    public string Background { get; set; }
+    public string? Label { get; set; }
+    public string? Background { get; set; }
 
     public void WriteXml(XmlWriter writer)
     {

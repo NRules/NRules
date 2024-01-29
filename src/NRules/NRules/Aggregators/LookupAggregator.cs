@@ -83,7 +83,7 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
     {
         if (!_lookup.TryGetValue(key, out var grouping))
         {
-            grouping = new FactGrouping<TKey, TElement>(key);
+            grouping = new FactGrouping<TKey?, TElement>(key);
             _lookup.Add(key, grouping);
         }
         else

@@ -32,8 +32,8 @@ public static class Matched
     /// </summary>
     /// <typeparam name="TFact">Type of the matched fact.</typeparam>
     /// <param name="predicateExpression">Predicate that the matched fact must satisfy.</param>
-    public static FactConstraint<TFact> Fact<TFact>(Expression<Func<TFact, bool>> predicateExpression)
+    public static FactConstraint<TFact?> Fact<TFact>(Expression<Func<TFact?, bool>> predicateExpression)
     {
-        return new PredicatedFactConstraint<TFact>(predicateExpression);
+        return new PredicatedFactConstraint<TFact?>(predicateExpression);
     }
 }

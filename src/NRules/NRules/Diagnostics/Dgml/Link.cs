@@ -13,10 +13,10 @@ internal class Link
 
     public string Source { get; }
     public string Target { get; }
-    public string Category { get; set; }
-    public string Label { get; set; }
-    public string Description { get; set; }
-    public string StrokeThickness { get; set; }
+    public string? Category { get; set; }
+    public string? Label { get; set; }
+    public string? Description { get; set; }
+    public string? StrokeThickness { get; set; }
     public Dictionary<string, object> Properties { get; } = new();
 
     public void WriteXml(XmlWriter writer)

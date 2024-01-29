@@ -181,7 +181,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
     private ConstantExpression ReadConstant(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var type = reader.ReadProperty<Type>(nameof(ConstantExpression.Type), options);
-        var value = reader.ReadProperty(nameof(ConstantExpression.Value), type, options);
+        var value = reader.ReadNullableProperty(nameof(ConstantExpression.Value), type, options);
         return Expression.Constant(value, type);
     }
 
@@ -193,7 +193,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
 
     private ParameterExpression ReadParameter(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
-        var name = reader.ReadStringProperty(nameof(ParameterExpression.Name), options);
+        var name = reader.ReadNullableStringProperty(nameof(ParameterExpression.Name), options);
         var type = reader.ReadProperty<Type>(nameof(ParameterExpression.Type), options);
         return Expression.Parameter(type, name);
     }
@@ -241,7 +241,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         var left = reader.ReadProperty<Expression>(nameof(BinaryExpression.Left), options);
         var right = reader.ReadProperty<Expression>(nameof(BinaryExpression.Right), options);
 
-        MethodInfo method = default;
+        MethodInfo? method = default;
         if (reader.TryReadMethodInfo(options, out var methodRecord))
             method = methodRecord.GetMethod(new[] { left.Type, right.Type }, left.Type);
 
@@ -316,7 +316,7 @@ internal class ExpressionConverter : JsonConverter<Expression>
         var operand = reader.ReadProperty<Expression>(nameof(UnaryExpression.Operand), options);
         reader.TryReadProperty<Type>(nameof(UnaryExpression.Type), options, out var type);
 
-        MethodInfo method = default;
+        MethodInfo? method = default;
         if (reader.TryReadMethodInfo(options, out var methodRecord))
             method = methodRecord.GetMethod(new[] { operand.Type }, operand.Type);
 

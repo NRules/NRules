@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.RuleModel;
@@ -11,8 +12,9 @@ namespace NRules.Aggregators;
 /// </summary>
 internal class ProjectionAggregatorFactory : IAggregatorFactory
 {
-    private Func<IAggregator> _factory;
+    private Func<IAggregator>? _factory;
 
+    [MemberNotNull(nameof(_factory))]
     public void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions)
     {
         var selector = element.Expressions[AggregateElement.SelectorName];
@@ -29,6 +31,6 @@ internal class ProjectionAggregatorFactory : IAggregatorFactory
 
     public IAggregator Create()
     {
-        return _factory();
+        return _factory!();
     }
 }

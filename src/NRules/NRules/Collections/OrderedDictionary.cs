@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NRules.Collections;
 
@@ -40,22 +41,20 @@ internal class OrderedDictionary<TKey, TValue>
 
     public bool Remove(TKey key)
     {
-        bool found = _dictionary.TryGetValue(key, out var node);
-        if (!found) return false;
+        if (!_dictionary.TryGetValue(key, out var node)) return false;
         _dictionary.Remove(key);
         _linkedList.Remove(node);
         return true;
     }
 
-    public bool TryGetValue(TKey key, out TValue value)
+    public bool TryGetValue(TKey key, [NotNullWhen(returnValue:true)]out TValue? value)
     {
-        bool found = _dictionary.TryGetValue(key, out var node);
-        if (!found)
+        if (!_dictionary.TryGetValue(key, out var node))
         {
             value = default;
             return false;
         }
-        value = node.Value;
+        value = node.Value!;
         return true;
     }
 
@@ -68,8 +67,7 @@ internal class OrderedDictionary<TKey, TValue>
         }
         set
         {
-            bool found = _dictionary.TryGetValue(key, out var node);
-            if (!found)
+            if (!_dictionary.TryGetValue(key, out var node))
             {
                 Add(key, value);
             }

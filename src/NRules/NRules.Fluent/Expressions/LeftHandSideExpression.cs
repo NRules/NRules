@@ -9,7 +9,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
 {
     private readonly GroupBuilder _builder;
     private readonly SymbolStack _symbolStack;
-    private PatternBuilder _currentPatternBuilder;
+    private PatternBuilder? _currentPatternBuilder;
 
     public LeftHandSideExpression(GroupBuilder builder, SymbolStack symbolStack)
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using NRules.RuleModel.Builders;
 
 namespace NRules.RuleModel;
@@ -56,7 +57,8 @@ public class RuleElementVisitor<TContext>
     /// <param name="context">Traversal context.</param>
     /// <param name="element">Rule element.</param>
     /// <returns>The original or a new rewritten rule element.</returns>
-    public RuleElement Visit(TContext context, RuleElement element)
+    [return:NotNullIfNotNull("element")]
+    public RuleElement? Visit(TContext context, RuleElement? element)
     {
         return element?.Accept(context, this);
     }
@@ -73,7 +75,7 @@ public class RuleElementVisitor<TContext>
     public static IReadOnlyList<T> Visit<T>(TContext context, IReadOnlyList<T> elements, Func<TContext, T, T> visitFunc)
         where T : RuleElement
     {
-        T[] newElements = null;
+        T[]? newElements = null;
         for (var i = 0; i < elements.Count; i++)
         {
             var element = elements[i];

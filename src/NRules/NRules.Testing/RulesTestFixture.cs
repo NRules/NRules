@@ -8,6 +8,7 @@ namespace NRules.Testing;
 public class RulesTestFixture
 {
     private readonly Lazy<RulesTestHarness> _testHarness;
+    private IRuleAsserter? _asserter;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RulesTestFixture"/> class.
@@ -21,7 +22,12 @@ public class RulesTestFixture
     /// <summary>
     /// Gets or sets the framework-specific asserter to validate rule firing expectations.
     /// </summary>
-    public IRuleAsserter Asserter { get; set; }
+    /// <remarks>If asserter is not set, it's initialized to a <see cref="DefaultRuleAsserter"/> on first access.</remarks>
+    public IRuleAsserter Asserter
+    {
+        get => _asserter ??= new DefaultRuleAsserter();
+        set => _asserter = value;
+    }
 
     /// <summary>
     /// Gets the test setup to register rules under test.
@@ -45,7 +51,7 @@ public class RulesTestFixture
     {
         var verification = _testHarness.Value.GetRulesVerification();
         var result = verification.Verify(buildAction);
-        GetAsserter().Assert(result);
+        Asserter.Assert(result);
     }
 
     /// <summary>
@@ -55,8 +61,6 @@ public class RulesTestFixture
     {
         var verification = _testHarness.Value.GetRulesVerification();
         var result = verification.VerifySequence(buildAction);
-        GetAsserter().Assert(result);
+        Asserter.Assert(result);
     }
-    
-    private IRuleAsserter GetAsserter() => Asserter ?? new DefaultRuleAsserter();
 }

@@ -9,11 +9,11 @@ namespace NRules.RuleModel.Builders;
 /// </summary>
 public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
 {
-    private string _name;
-    private Type _resultType;
+    private string? _name;
+    private Type? _resultType;
     private readonly List<KeyValuePair<string, LambdaExpression>> _expressions = new();
-    private Type _customFactoryType;
-    private IBuilder<PatternElement> _sourceBuilder;
+    private Type? _customFactoryType;
+    private IBuilder<PatternElement>? _sourceBuilder;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AggregateBuilder"/>.
@@ -37,7 +37,7 @@ public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
     /// <param name="name">Name of the aggregator.</param>
     /// <param name="expressions">Named expressions used by the aggregator.</param>
     /// <param name="customFactoryType">The type of the custom aggregate factory</param>
-    public void Aggregator(string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, Type customFactoryType = null)
+    public void Aggregator(string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, Type? customFactoryType = null)
     {
         _name = name;
         _expressions.AddRange(expressions);
@@ -141,7 +141,7 @@ public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
     /// <param name="type">Type of the element the pattern matches.</param>
     /// <param name="name">Pattern name (optional).</param>
     /// <returns>Pattern builder.</returns>
-    public PatternBuilder Pattern(Type type, string name = null)
+    public PatternBuilder Pattern(Type type, string? name = null)
     {
         var declaration = Element.Declaration(type, DeclarationName(name));
         return Pattern(declaration);
@@ -162,7 +162,11 @@ public class AggregateBuilder : RuleElementBuilder, IBuilder<AggregateElement>
 
     AggregateElement IBuilder<AggregateElement>.Build()
     {
-        PatternElement sourceElement = _sourceBuilder?.Build();
+        if (_name == null) throw new ArgumentNullException(nameof(_name));
+        if (_resultType == null) throw new ArgumentNullException(nameof(_resultType));
+        if (_sourceBuilder == null) throw new ArgumentNullException(nameof(_sourceBuilder));
+        
+        PatternElement sourceElement = _sourceBuilder.Build();
         AggregateElement aggregateElement = Element.Aggregate(_resultType, _name, _expressions, sourceElement, _customFactoryType);
         return aggregateElement;
     }

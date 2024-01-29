@@ -306,7 +306,7 @@ public static class Element
     /// <param name="expressions">Expressions used by the pattern to match elements.</param>
     /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
     /// <returns>Created element.</returns>
-    public static PatternElement Pattern(Type type, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, RuleElement source)
+    public static PatternElement Pattern(Type type, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, RuleElement? source)
     {
         var declaration = Declaration(type, name);
         var element = Pattern(declaration, expressions, source);
@@ -320,7 +320,7 @@ public static class Element
     /// <param name="expressions">Expressions used by the pattern to match elements.</param>
     /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
     /// <returns>Created element.</returns>
-    public static PatternElement Pattern(Declaration declaration, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, RuleElement source)
+    public static PatternElement Pattern(Declaration declaration, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, RuleElement? source)
     {
         if (expressions == null)
             throw new ArgumentNullException(nameof(expressions), "Pattern expressions not provided");
@@ -338,7 +338,7 @@ public static class Element
     /// <param name="expressions">Expressions used by the pattern to match elements.</param>
     /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
     /// <returns>Created element.</returns>
-    public static PatternElement Pattern(Type type, string name, IEnumerable<NamedExpressionElement> expressions, RuleElement source)
+    public static PatternElement Pattern(Type type, string name, IEnumerable<NamedExpressionElement> expressions, RuleElement? source)
     {
         var declaration = Declaration(type, name);
         var element = Pattern(declaration, expressions, source);
@@ -352,7 +352,7 @@ public static class Element
     /// <param name="expressions">Expressions used by the pattern to match elements.</param>
     /// <param name="source">Source of the elements matched by the pattern. If it's <c>null</c>, the pattern matches facts in rules engine's working memory.</param>
     /// <returns>Created element.</returns>
-    public static PatternElement Pattern(Declaration declaration, IEnumerable<NamedExpressionElement> expressions, RuleElement source)
+    public static PatternElement Pattern(Declaration declaration, IEnumerable<NamedExpressionElement> expressions, RuleElement? source)
     {
         if (declaration == null)
             throw new ArgumentNullException(nameof(declaration), "Pattern declaration not provided");
@@ -422,7 +422,7 @@ public static class Element
     /// <param name="resultType">Type of the expression result.</param>
     /// <param name="expression">Binding expression.</param>
     /// <returns>Created element.</returns>
-    public static BindingElement Binding(Type resultType, LambdaExpression expression)
+    public static BindingElement Binding(Type? resultType, LambdaExpression expression)
     {
         if (expression == null)
             throw new ArgumentNullException(nameof(expression), "Binding expression not provided");
@@ -467,7 +467,7 @@ public static class Element
     /// <param name="source">Pattern that matches facts for aggregation.</param>
     /// <param name="customFactoryType">Factory type used construct aggregators for this aggregation.</param>
     /// <returns>Created element.</returns>
-    public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, PatternElement source, Type customFactoryType)
+    public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, PatternElement source, Type? customFactoryType)
     {
         if (expressions == null)
             throw new ArgumentNullException(nameof(expressions), "Aggregate expressions not provided");
@@ -499,7 +499,7 @@ public static class Element
     /// <param name="source">Pattern that matches facts for aggregation.</param>
     /// <param name="customFactoryType">Factory type used construct aggregators for this aggregation.</param>
     /// <returns>Created element.</returns>
-    public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<NamedExpressionElement> expressions, PatternElement source, Type customFactoryType)
+    public static AggregateElement Aggregate(Type resultType, string name, IEnumerable<NamedExpressionElement> expressions, PatternElement source, Type? customFactoryType)
     {
         if (resultType == null)
             throw new ArgumentNullException(nameof(resultType), "Aggregate result type not provided");
@@ -533,7 +533,7 @@ public static class Element
     /// <param name="resultType">Type of the aggregate result.</param>
     /// <param name="source">Pattern that matches facts for aggregation.</param>
     /// <returns>Created element.</returns>
-    public static AggregateElement Collect(Type resultType, PatternElement source)
+    public static AggregateElement Collect(Type? resultType, PatternElement source)
     {
         if (resultType == null)
         {
@@ -567,7 +567,7 @@ public static class Element
     /// <param name="elementSelector">Expression that extracts elements to put into resulting groups.</param>
     /// <param name="source">Pattern that matches facts for aggregation.</param>
     /// <returns>Created element.</returns>
-    public static AggregateElement GroupBy(Type resultType, LambdaExpression keySelector, LambdaExpression elementSelector, PatternElement source)
+    public static AggregateElement GroupBy(Type? resultType, LambdaExpression keySelector, LambdaExpression elementSelector, PatternElement source)
     {
         if (keySelector == null)
             throw new ArgumentNullException(nameof(keySelector), "GroupBy key selector not provided");
@@ -608,7 +608,7 @@ public static class Element
     /// <param name="selector">Expression that translates a matching element into a different element.</param>
     /// <param name="source">Pattern that matches facts for aggregation.</param>
     /// <returns>Created element.</returns>
-    public static AggregateElement Project(Type resultType, LambdaExpression selector, PatternElement source)
+    public static AggregateElement Project(Type? resultType, LambdaExpression selector, PatternElement source)
     {
         if (selector == null)
             throw new ArgumentNullException(nameof(selector), "Projection selector not provided");

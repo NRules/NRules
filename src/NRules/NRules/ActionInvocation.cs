@@ -18,7 +18,7 @@ internal class ActionInvocation : IActionInvocation
         _action = action;
     }
 
-    public IReadOnlyList<object> Arguments => _action.GetArguments(_actionContext);
+    public IReadOnlyList<object?> Arguments => _action.GetArguments(_actionContext);
     public Expression Expression => _action.Expression;
     public ActionTrigger Trigger => _action.Trigger;
 

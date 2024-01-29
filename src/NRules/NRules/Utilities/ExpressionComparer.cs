@@ -15,12 +15,12 @@ internal class ExpressionComparer
         _compilerOptions = compilerOptions;
     }
 
-    public bool AreEqual(Expression x, Expression y)
+    public bool AreEqual(Expression? x, Expression? y)
     {
         return ExpressionEqual(x, y, null, null);
     }
 
-    private bool ExpressionEqual(Expression x, Expression y, LambdaExpression rootX, LambdaExpression rootY)
+    private bool ExpressionEqual(Expression? x, Expression? y, LambdaExpression? rootX, LambdaExpression? rootY)
     {
         if (ReferenceEquals(x, y)) return true;
         if (x == null || y == null) return false;
@@ -54,7 +54,7 @@ internal class ExpressionComparer
             case ParameterExpression px:
             {
                 var py = (ParameterExpression)y;
-                return rootX.Parameters.IndexOf(px) == rootY.Parameters.IndexOf(py);
+                return rootX?.Parameters.IndexOf(px) == rootY?.Parameters.IndexOf(py);
             }
             case MethodCallExpression cx:
             {
@@ -120,7 +120,7 @@ internal class ExpressionComparer
     }
 
     private bool MemberBindingCollectionsEqual(IReadOnlyCollection<MemberBinding> x, IReadOnlyCollection<MemberBinding> y,
-        LambdaExpression rootX, LambdaExpression rootY)
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         return x.Count == y.Count
                && x.Zip(y, (first, second) => new {X = first, Y = second})
@@ -128,7 +128,7 @@ internal class ExpressionComparer
     }
 
     private bool ElementInitCollectionsEqual(IReadOnlyCollection<ElementInit> x, IReadOnlyCollection<ElementInit> y,
-        LambdaExpression rootX, LambdaExpression rootY)
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         return x.Count == y.Count
                && x.Zip(y, (first, second) => new {X = first, Y = second})
@@ -136,22 +136,22 @@ internal class ExpressionComparer
     }
 
     private bool CollectionsEqual(IReadOnlyCollection<Expression> x, IReadOnlyCollection<Expression> y,
-        LambdaExpression rootX, LambdaExpression rootY)
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         return x.Count == y.Count
                && x.Zip(y, (first, second) => new {X = first, Y = second})
                    .All(o => ExpressionEqual(o.X, o.Y, rootX, rootY));
     }
 
-    private bool ElementInitsEqual(ElementInit x, ElementInit y, LambdaExpression rootX,
-        LambdaExpression rootY)
+    private bool ElementInitsEqual(ElementInit x, ElementInit y,
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         return Equals(x.AddMethod, y.AddMethod)
                && CollectionsEqual(x.Arguments, y.Arguments, rootX, rootY);
     }
 
-    private bool MemberBindingsEqual(MemberBinding x, MemberBinding y, LambdaExpression rootX,
-        LambdaExpression rootY)
+    private bool MemberBindingsEqual(MemberBinding x, MemberBinding y,
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         if (x.BindingType != y.BindingType)
             return false;
@@ -175,7 +175,8 @@ internal class ExpressionComparer
         }
     }
 
-    private bool MemberExpressionsEqual(MemberExpression x, MemberExpression y, LambdaExpression rootX, LambdaExpression rootY)
+    private bool MemberExpressionsEqual(MemberExpression x, MemberExpression y,
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         if (x.Expression == null || y.Expression == null)
             return Equals(x.Member, y.Member);
