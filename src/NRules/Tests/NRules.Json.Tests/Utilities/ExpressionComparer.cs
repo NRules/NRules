@@ -8,12 +8,12 @@ namespace NRules.Json.Tests.Utilities;
 
 public static class ExpressionComparer
 {
-    public static bool AreEqual(Expression x, Expression y)
+    public static bool AreEqual(Expression? x, Expression? y)
     {
         return ExpressionEqual(x, y, null, null);
     }
 
-    private static bool ExpressionEqual(Expression x, Expression y, LambdaExpression rootX, LambdaExpression rootY)
+    private static bool ExpressionEqual(Expression? x, Expression? y, LambdaExpression? rootX, LambdaExpression? rootY)
     {
         if (ReferenceEquals(x, y))
             return true;
@@ -50,7 +50,7 @@ public static class ExpressionComparer
             case ParameterExpression px:
                 {
                     var py = (ParameterExpression)y;
-                    return rootX.Parameters.IndexOf(px) == rootY.Parameters.IndexOf(py) &&
+                    return rootX?.Parameters.IndexOf(px) == rootY?.Parameters.IndexOf(py) &&
                            px.Name == py.Name;
                 }
             case MethodCallExpression cx:
@@ -123,7 +123,7 @@ public static class ExpressionComparer
     }
 
     private static bool MemberBindingCollectionsEqual(IReadOnlyCollection<MemberBinding> x, IReadOnlyCollection<MemberBinding> y,
-        LambdaExpression rootX, LambdaExpression rootY)
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         return x.Count == y.Count
                && x.Zip(y, (first, second) => new { X = first, Y = second })
@@ -131,7 +131,7 @@ public static class ExpressionComparer
     }
 
     private static bool ElementInitCollectionsEqual(IReadOnlyCollection<ElementInit> x, IReadOnlyCollection<ElementInit> y,
-        LambdaExpression rootX, LambdaExpression rootY)
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         return x.Count == y.Count
                && x.Zip(y, (first, second) => new { X = first, Y = second })
@@ -139,22 +139,22 @@ public static class ExpressionComparer
     }
 
     private static bool CollectionsEqual(IReadOnlyCollection<Expression> x, IReadOnlyCollection<Expression> y,
-        LambdaExpression rootX, LambdaExpression rootY)
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         return x.Count == y.Count
                && x.Zip(y, (first, second) => new { X = first, Y = second })
                    .All(o => ExpressionEqual(o.X, o.Y, rootX, rootY));
     }
 
-    private static bool ElementInitsEqual(ElementInit x, ElementInit y, LambdaExpression rootX,
-        LambdaExpression rootY)
+    private static bool ElementInitsEqual(ElementInit x, ElementInit y, 
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         return Equals(x.AddMethod, y.AddMethod)
                && CollectionsEqual(x.Arguments, y.Arguments, rootX, rootY);
     }
 
-    private static bool MemberBindingsEqual(MemberBinding x, MemberBinding y, LambdaExpression rootX,
-        LambdaExpression rootY)
+    private static bool MemberBindingsEqual(MemberBinding x, MemberBinding y, 
+        LambdaExpression? rootX, LambdaExpression? rootY)
     {
         if (x.BindingType != y.BindingType)
             return false;
@@ -178,7 +178,7 @@ public static class ExpressionComparer
         }
     }
 
-    private static bool MemberExpressionsEqual(MemberExpression x, MemberExpression y, LambdaExpression rootX, LambdaExpression rootY)
+    private static bool MemberExpressionsEqual(MemberExpression x, MemberExpression y, LambdaExpression? rootX, LambdaExpression? rootY)
     {
         if (x.Expression == null || y.Expression == null)
             return Equals(x.Member, y.Member);
@@ -214,9 +214,9 @@ public static class ExpressionComparer
         }
     }
 
-    private static object GetValueOfConstantExpression(MemberExpression mex)
+    private static object? GetValueOfConstantExpression(MemberExpression mex)
     {
-        var o = ((ConstantExpression)mex.Expression).Value;
+        var o = ((ConstantExpression?)mex.Expression)?.Value;
         return mex.Member switch
         {
             FieldInfo fi => fi.GetValue(o),

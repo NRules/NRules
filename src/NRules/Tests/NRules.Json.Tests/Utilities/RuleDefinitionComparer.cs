@@ -7,7 +7,7 @@ namespace NRules.Json.Tests.Utilities;
 
 public static class RuleDefinitionComparer
 {
-    public static bool AreEqual(IRuleDefinition x, IRuleDefinition y)
+    public static bool AreEqual(IRuleDefinition? x, IRuleDefinition? y)
     {
         if (ReferenceEquals(x, y)) return true;
         if (x == null || y == null) return false;
@@ -25,7 +25,7 @@ public static class RuleDefinitionComparer
         return true;
     }
 
-    private static bool AreEqual(RuleElement x, RuleElement y)
+    private static bool AreEqual(RuleElement? x, RuleElement? y)
     {
         if (ReferenceEquals(x, y)) return true;
         if (x == null || y == null) return false;
@@ -133,14 +133,14 @@ public static class RuleDefinitionComparer
         }
     }
 
-    private static bool AreEqual(IEnumerable<RuleElement> x, IEnumerable<RuleElement> y)
+    private static bool AreEqual(IReadOnlyCollection<RuleElement> x, IReadOnlyCollection<RuleElement> y)
     {
-        return x.Count() == y.Count()
+        return x.Count == y.Count
                && x.Zip(y, (first, second) => new {X = first, Y = second})
                    .All(o => AreEqual(o.X, o.Y));
     }
 
-    private static bool AreEqual(Declaration x, Declaration y)
+    private static bool AreEqual(Declaration? x, Declaration? y)
     {
         if (ReferenceEquals(x, y)) return true;
         if (x == null || y == null) return false;

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Moq;
 using NRules.Aggregators;
+using NRules.Diagnostics;
 using Xunit;
 
 namespace NRules.Tests.Aggregators;
@@ -12,11 +14,12 @@ public class FlatteningAggregatorTest : AggregatorTest
     public void Add_Facts_AddedResult()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
 
         //Act
         var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         //Assert
         Assert.Equal(4, result.Length);
@@ -34,11 +37,12 @@ public class FlatteningAggregatorTest : AggregatorTest
     public void Add_FactsWithDuplicates_AddedDistinctResult()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
 
         //Act
         var facts = AsFact(new TestFact(1, "value11", "value12", "value12", "valuex"), new TestFact(2, "value21", "value21", "value22", "valuex"));
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         //Assert
         Assert.Equal(5, result.Length);
@@ -58,11 +62,12 @@ public class FlatteningAggregatorTest : AggregatorTest
     public void Add_NoFacts_EmptyResult()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
 
         //Act
-        var facts = AsFact(new TestFact[0]);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var facts = AsFact(Array.Empty<TestFact>());
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         //Assert
         Assert.Empty(result);
@@ -72,13 +77,14 @@ public class FlatteningAggregatorTest : AggregatorTest
     public void Modify_ExistingFactsSameIdentity_ModifiedResult()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         //Act
         var toUpdate = facts.Take(1).ToArray();
-        var result = target.Modify(null, EmptyTuple(), toUpdate).ToArray();
+        var result = target.Modify(context, EmptyTuple(), toUpdate).ToArray();
 
         //Assert
         Assert.Equal(2, result.Length);
@@ -92,14 +98,15 @@ public class FlatteningAggregatorTest : AggregatorTest
     public void Modify_ExistingFactsDifferentIdentity_RemovedAddedResult()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         //Act
         facts[0].Value = new TestFact(3, "value31", "value32");
         var toUpdate = facts.Take(1).ToArray();
-        var result = target.Modify(null, EmptyTuple(), toUpdate).ToArray();
+        var result = target.Modify(context, EmptyTuple(), toUpdate).ToArray();
 
         //Assert
         Assert.Equal(4, result.Length);
@@ -117,14 +124,15 @@ public class FlatteningAggregatorTest : AggregatorTest
     public void Modify_ExistingFactsHasAdditionsModificationsAndRemovals_CorrectResult()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         //Act
         facts[0].Value = new TestFact(2, "value12", "value13");
         var toUpdate = facts.Take(1).ToArray();
-        var result = target.Modify(null, EmptyTuple(), toUpdate).ToArray();
+        var result = target.Modify(context, EmptyTuple(), toUpdate).ToArray();
 
         //Assert
         Assert.Equal(3, result.Length);
@@ -140,15 +148,16 @@ public class FlatteningAggregatorTest : AggregatorTest
     public void Modify_FactsWithDuplicates_CorrectResult()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
 
         var facts = AsFact(new TestFact(1, "value11", "value12", "value12", "valuex"), new TestFact(2, "value21", "value21", "value22", "valuex"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         //Act
         facts[0].Value = new TestFact(2, "value12", "value13");
         var toUpdate = facts.Take(1).ToArray();
-        var result = target.Modify(null, EmptyTuple(), toUpdate).ToArray();
+        var result = target.Modify(context, EmptyTuple(), toUpdate).ToArray();
 
         //Assert
         Assert.Equal(3, result.Length);
@@ -164,24 +173,26 @@ public class FlatteningAggregatorTest : AggregatorTest
     public void Modify_NonExistent_Throws()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
 
         //Act - Assert
         Assert.Throws<KeyNotFoundException>(
-            () => target.Modify(null, EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))));
+            () => target.Modify(context, EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))));
     }
 
     [Fact]
     public void Remove_ExistingFacts_RemovedResult()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
         var facts = AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         //Act
         var toRemove = facts.Take(1).ToArray();
-        var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
+        var result = target.Remove(context, EmptyTuple(), toRemove).ToArray();
 
         //Assert
         Assert.Equal(2, result.Length);
@@ -195,14 +206,15 @@ public class FlatteningAggregatorTest : AggregatorTest
     public void Remove_FactsWithDuplicates_CorrectResult()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
 
         var facts = AsFact(new TestFact(1, "value11", "value12", "value12", "valuex"), new TestFact(2, "value21", "value21", "value22", "valuex"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         //Act - I
         var toRemove1 = facts.Take(1).ToArray();
-        var result1 = target.Remove(null, EmptyTuple(), toRemove1).ToArray();
+        var result1 = target.Remove(context, EmptyTuple(), toRemove1).ToArray();
 
         //Assert - I
         Assert.Equal(2, result1.Length);
@@ -213,7 +225,7 @@ public class FlatteningAggregatorTest : AggregatorTest
 
         //Act - II
         var toRemove2 = facts.Skip(1).Take(1).ToArray();
-        var result2 = target.Remove(null, EmptyTuple(), toRemove2).ToArray();
+        var result2 = target.Remove(context, EmptyTuple(), toRemove2).ToArray();
 
         //Assert - II
         Assert.Equal(3, result2.Length);
@@ -229,13 +241,20 @@ public class FlatteningAggregatorTest : AggregatorTest
     public void Remove_NonExistent_Throws()
     {
         //Arrange
+        var context = GetContext();
         var target = CreateTarget();
 
         //Act - Assert
         Assert.Throws<KeyNotFoundException>(
-            () => target.Remove(null, EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))));
+            () => target.Remove(context, EmptyTuple(), AsFact(new TestFact(1, "value11", "value12"), new TestFact(2, "value21", "value22"))));
     }
 
+    private static AggregationContext GetContext()
+    {
+        var mockExecutionContext = new Mock<IExecutionContext>();
+        return new AggregationContext(mockExecutionContext.Object, new NodeInfo());
+    }
+    
     private FlatteningAggregator<TestFact, string> CreateTarget()
     {
         var expression = new FactExpression<TestFact, IEnumerable<string>>(x => x.Values);
@@ -253,14 +272,14 @@ public class FlatteningAggregatorTest : AggregatorTest
         public int Id { get; }
         public string[] Values { get; }
 
-        public bool Equals(TestFact other)
+        public bool Equals(TestFact? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
