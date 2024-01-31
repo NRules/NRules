@@ -2,13 +2,13 @@
 
 public interface ITestService
 {
-    public string Status { get; }
+    public string? Status { get; }
     void DoIt();
 }
 
 public class TestService : ITestService
 {
-    public string Status { get; set; }
+    public string? Status { get; set; }
 
     public void DoIt()
     {
