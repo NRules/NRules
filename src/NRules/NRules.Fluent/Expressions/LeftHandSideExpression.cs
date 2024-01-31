@@ -18,6 +18,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     }
 
     public ILeftHandSideExpression Match<TFact>(Expression<Func<TFact>> alias, params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull
     {
         var symbol = alias.ToParameterExpression();
         var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
@@ -28,6 +29,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     }
 
     public ILeftHandSideExpression Match<TFact>(params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull
     {
         var symbol = Expression.Parameter(typeof (TFact));
         var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
@@ -38,6 +40,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     }
 
     public ILeftHandSideExpression Exists<TFact>(params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull
     {
         var existsBuilder = _builder.Exists();
         var patternBuilder = existsBuilder.Pattern(typeof(TFact));
@@ -46,6 +49,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     }
 
     public ILeftHandSideExpression Not<TFact>(params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull
     {
         var notBuilder = _builder.Not();
         var patternBuilder = notBuilder.Pattern(typeof(TFact));
@@ -54,16 +58,19 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     }
 
     public ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> condition)
+        where TFact : notnull
     {
         return ForAll(x => true, condition);
     }
 
     public ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> baseCondition, params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull
     {
         return ForAll(baseCondition, conditions);
     }
 
     private ILeftHandSideExpression ForAll<TFact>(Expression<Func<TFact, bool>> baseCondition, params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull
     {
         var forallBuilder = _builder.ForAll();
 

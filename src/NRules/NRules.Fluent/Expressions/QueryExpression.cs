@@ -26,6 +26,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
     public IQueryBuilder Builder { get; }
 
     public void FactQuery<TSource>(Expression<Func<TSource, bool>>[] conditions)
+        where TSource : notnull
     {
         _buildAction = (name, _) =>
         {
@@ -37,6 +38,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void From<TSource>(Expression<Func<TSource>> source)
+        where TSource : notnull
     {
         _buildAction = (name, _) =>
         {
@@ -51,6 +53,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void Where<TSource>(Expression<Func<TSource, bool>>[] predicates)
+        where TSource : notnull
     {
         var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, type) =>
@@ -63,6 +66,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void Select<TSource, TResult>(Expression<Func<TSource, TResult>> selector)
+        where TSource : notnull
     {
         var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, _) =>
@@ -87,6 +91,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void SelectMany<TSource, TResult>(Expression<Func<TSource, IEnumerable<TResult>>> selector)
+        where TSource : notnull
     {
         var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, _) =>
@@ -111,6 +116,9 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        where TSource : notnull
+        where TKey : notnull
+        where TElement : notnull
     {
         var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, _) =>
@@ -136,6 +144,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void Collect<TSource>()
+        where TSource : notnull
     {
         var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, type) =>
@@ -160,6 +169,8 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void ToLookup<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        where TSource : notnull
+        where TElement : notnull
     {
         var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, _) =>
@@ -175,6 +186,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void OrderBy<TSource, TKey>(Expression<Func<TSource, TKey>> keySelector, SortDirection sortDirection)
+        where TSource : notnull
     {
         var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, type) =>
@@ -189,11 +201,13 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions)
+        where TSource : notnull
     {
         Aggregate<TSource, TResult>(aggregateName, expressions, null);
     }
 
     public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, Type? customFactoryType)
+        where TSource : notnull
     {
         var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, _) =>

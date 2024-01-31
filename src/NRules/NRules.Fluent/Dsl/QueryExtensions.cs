@@ -16,6 +16,7 @@ public static class QueryExtensions
     /// <param name="conditions">Set of conditions the fact must satisfy.</param>
     /// <returns>Query expression builder.</returns>
     public static IQuery<TFact> Match<TFact>(this IQuery query, params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull
     {
         query.Builder.FactQuery(conditions);
         return new QueryExpression<TFact>(query.Builder);
@@ -29,6 +30,7 @@ public static class QueryExtensions
     /// <param name="source">Expression that generates source facts.</param>
     /// <returns>Query expression builder.</returns>
     public static IQuery<TFact> From<TFact>(this IQuery query, Expression<Func<TFact>> source)
+        where TFact : notnull
     {
         query.Builder.From(source);
         return new QueryExpression<TFact>(query.Builder);
@@ -43,6 +45,7 @@ public static class QueryExtensions
     /// <param name="predicates">Filter expressions.</param>
     /// <returns>Query expression builder.</returns>
     public static IQuery<TSource> Where<TSource>(this IQuery<TSource> source, params Expression<Func<TSource, bool>>[] predicates)
+        where TSource : notnull
     {
         source.Builder.Where(predicates);
         return new QueryExpression<TSource>(source.Builder);
@@ -57,6 +60,7 @@ public static class QueryExtensions
     /// <param name="selector">Projection expression.</param>
     /// <returns>Query expression builder.</returns>
     public static IQuery<TResult> Select<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, TResult>> selector)
+        where TSource : notnull
     {
         source.Builder.Select(selector);
         return new QueryExpression<TResult>(source.Builder);
@@ -71,6 +75,7 @@ public static class QueryExtensions
     /// <param name="selector">Collection flattening expression.</param>
     /// <returns>Query expression builder.</returns>
     public static IQuery<TResult> SelectMany<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, IEnumerable<TResult>>> selector)
+        where TSource : notnull
     {
         source.Builder.SelectMany(selector);
         return new QueryExpression<TResult>(source.Builder);
@@ -85,6 +90,8 @@ public static class QueryExtensions
     /// <param name="keySelector">Grouping key selection expression.</param>
     /// <returns>Query expression builder.</returns>
     public static IQuery<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IQuery<TSource> source, Expression<Func<TSource, TKey>> keySelector)
+        where TSource : notnull
+        where TKey : notnull
     {
         source.Builder.GroupBy(keySelector, x => x);
         return new QueryExpression<IGrouping<TKey, TSource>>(source.Builder);
@@ -104,6 +111,9 @@ public static class QueryExtensions
     public static IQuery<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IQuery<TSource> source,
         Expression<Func<TSource, TKey>> keySelector,
         Expression<Func<TSource, TElement>> elementSelector)
+        where TSource : notnull
+        where TKey : notnull
+        where TElement : notnull
     {
         source.Builder.GroupBy(keySelector, elementSelector);
         return new QueryExpression<IGrouping<TKey, TElement>>(source.Builder);
@@ -116,6 +126,7 @@ public static class QueryExtensions
     /// <param name="source">Query expression builder.</param>
     /// <returns>Query expression builder.</returns>
     public static ICollectQuery<IEnumerable<TSource>> Collect<TSource>(this IQuery<TSource> source)
+        where TSource : notnull
     {
         source.Builder.Collect<TSource>();
         return new QueryExpression<IEnumerable<TSource>>(source.Builder);
@@ -128,6 +139,7 @@ public static class QueryExtensions
     /// <param name="source">Query expression builder.</param>
     /// <returns>Query expression builder.</returns>
     public static IQuery<IKeyedLookup<TSource, TSource>> ToLookup<TSource>(this ICollectQuery<IEnumerable<TSource>> source)
+        where TSource : notnull
     {
         source.Builder.ToLookup<TSource, TSource, TSource>(x => x, x => x);
         return new QueryExpression<IKeyedLookup<TSource, TSource>>(source.Builder);
@@ -142,6 +154,7 @@ public static class QueryExtensions
     /// <param name="keySelector">Grouping key selection expression.</param>
     /// <returns>Query expression builder.</returns>
     public static IQuery<IKeyedLookup<TKey, TSource>> ToLookup<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        where TSource : notnull
     {
         source.Builder.ToLookup(keySelector, x => x);
         return new QueryExpression<IKeyedLookup<TKey, TSource>>(source.Builder);
@@ -159,6 +172,8 @@ public static class QueryExtensions
     /// <param name="elementSelector">Projected fact selection expression.</param>
     /// <returns>Query expression builder.</returns>
     public static IQuery<IKeyedLookup<TKey, TElement>> ToLookup<TSource, TKey, TElement>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        where TSource : notnull
+        where TElement : notnull
     {
         source.Builder.ToLookup(keySelector, elementSelector);
         return new QueryExpression<IKeyedLookup<TKey, TElement>>(source.Builder);
@@ -173,6 +188,7 @@ public static class QueryExtensions
     /// <param name="keySelector">Key selection expression used for sorting.</param>
     /// <returns>Query expression builder.</returns>
     public static IOrderedQuery<IEnumerable<TSource>> OrderBy<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        where TSource : notnull
     {
         source.Builder.OrderBy(keySelector, SortDirection.Ascending);
         return new QueryExpression<IEnumerable<TSource>>(source.Builder);
@@ -187,6 +203,7 @@ public static class QueryExtensions
     /// <param name="keySelector">Key selection expression used for sorting.</param>
     /// <returns>Query expression builder.</returns>
     public static IOrderedQuery<IEnumerable<TSource>> OrderByDescending<TSource, TKey>(this ICollectQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        where TSource : notnull
     {
         source.Builder.OrderBy(keySelector, SortDirection.Descending);
         return new QueryExpression<IEnumerable<TSource>>(source.Builder);
@@ -201,6 +218,7 @@ public static class QueryExtensions
     /// <param name="keySelector">Key selection expression used for sorting.</param>
     /// <returns>Query expression builder.</returns>
     public static IOrderedQuery<IEnumerable<TSource>> ThenBy<TSource, TKey>(this IOrderedQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        where TSource : notnull
     {
         source.Builder.OrderBy(keySelector, SortDirection.Ascending);
         return new QueryExpression<IEnumerable<TSource>>(source.Builder);
@@ -215,6 +233,7 @@ public static class QueryExtensions
     /// <param name="keySelector">Key selection expression used for sorting.</param>
     /// <returns>Query expression builder.</returns>
     public static IOrderedQuery<IEnumerable<TSource>> ThenByDescending<TSource, TKey>(this IOrderedQuery<IEnumerable<TSource>> source, Expression<Func<TSource, TKey>> keySelector)
+        where TSource : notnull
     {
         source.Builder.OrderBy(keySelector, SortDirection.Descending);
         return new QueryExpression<IEnumerable<TSource>>(source.Builder);

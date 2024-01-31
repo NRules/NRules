@@ -16,7 +16,8 @@ public interface ILeftHandSideExpression
     /// <param name="alias">Alias for the matching fact.</param>
     /// <param name="conditions">Set of conditions the fact must satisfy to trigger the rule.</param>
     /// <returns>Left hand side expression builder.</returns>
-    ILeftHandSideExpression Match<TFact>(Expression<Func<TFact>> alias, params Expression<Func<TFact, bool>>[] conditions);
+    ILeftHandSideExpression Match<TFact>(Expression<Func<TFact>> alias, params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull;
 
     /// <summary>
     /// Defines a pattern for facts matching a set of conditions.
@@ -24,7 +25,8 @@ public interface ILeftHandSideExpression
     /// </summary>
     /// <param name="conditions">Set of additional conditions the fact must satisfy to trigger the rule.</param>
     /// <returns>Left hand side expression builder.</returns>
-    ILeftHandSideExpression Match<TFact>(params Expression<Func<TFact, bool>>[] conditions);
+    ILeftHandSideExpression Match<TFact>(params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull;
 
     /// <summary>
     /// Defines a pattern that triggers the rule only if there is at least one matching fact (existential quantifier).
@@ -32,7 +34,8 @@ public interface ILeftHandSideExpression
     /// <typeparam name="TFact">Type of fact to match.</typeparam>
     /// <param name="conditions">Set of conditions the facts must satisfy to trigger the rule.</param>
     /// <returns>Left hand side expression builder.</returns>
-    ILeftHandSideExpression Exists<TFact>(params Expression<Func<TFact, bool>>[] conditions);
+    ILeftHandSideExpression Exists<TFact>(params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull;
 
     /// <summary>
     /// Defines a pattern that triggers the rule only if there are no matching facts (negation quantifier).
@@ -40,7 +43,8 @@ public interface ILeftHandSideExpression
     /// <typeparam name="TFact">Type of fact to match.</typeparam>
     /// <param name="conditions">Set of conditions the facts must not satisfy to trigger the rule.</param>
     /// <returns>Left hand side expression builder.</returns>
-    ILeftHandSideExpression Not<TFact>(params Expression<Func<TFact, bool>>[] conditions);
+    ILeftHandSideExpression Not<TFact>(params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull;
 
     /// <summary>
     /// Defines a pattern that triggers the rule only if all facts that match the base condition
@@ -50,7 +54,8 @@ public interface ILeftHandSideExpression
     /// <param name="baseCondition">Base condition that filters the facts to match the remaining conditions.</param>
     /// <param name="conditions">Set of additional conditions that all matching facts must satisfy to trigger the rule.</param>
     /// <returns>Left hand side expression builder.</returns>
-    ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> baseCondition, params Expression<Func<TFact, bool>>[] conditions);
+    ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> baseCondition, params Expression<Func<TFact, bool>>[] conditions)
+        where TFact : notnull;
 
     /// <summary>
     /// Defines a pattern that triggers the rule only if all facts of a given type match the condition.
@@ -58,7 +63,8 @@ public interface ILeftHandSideExpression
     /// <typeparam name="TFact">Type of fact to match.</typeparam>
     /// <param name="condition">Condition that all facts of a given type must satisfy to trigger the rule.</param>
     /// <returns>Left hand side expression builder.</returns>
-    ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> condition);
+    ILeftHandSideExpression All<TFact>(Expression<Func<TFact, bool>> condition)
+        where TFact : notnull;
 
     /// <summary>
     /// Queries rules engine for matching facts.
