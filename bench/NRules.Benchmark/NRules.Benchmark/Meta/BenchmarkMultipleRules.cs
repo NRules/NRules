@@ -10,7 +10,7 @@ namespace NRules.Benchmark.Meta;
 [BenchmarkCategory("Meta")]
 public class BenchmarkMultipleRules : BenchmarkBase
 {
-    private TestFact1[] _facts1;
+    private TestFact1[] _facts1 = null!;
 
     [GlobalSetup]
     public void Setup()

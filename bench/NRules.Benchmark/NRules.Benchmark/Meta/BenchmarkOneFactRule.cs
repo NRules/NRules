@@ -6,7 +6,7 @@ namespace NRules.Benchmark.Meta;
 [BenchmarkCategory("Meta")]
 public class BenchmarkOneFactRule : BenchmarkBase
 {
-    private TestFact[] _facts;
+    private TestFact[] _facts = null!;
 
     [GlobalSetup]
     public void Setup()
@@ -58,7 +58,7 @@ public class BenchmarkOneFactRule : BenchmarkBase
     {
         public override void Define()
         {
-            TestFact fact = null;
+            TestFact fact = null!;
 
             When()
                 .Match(() => fact, 
