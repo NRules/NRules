@@ -9,7 +9,7 @@ public class OrdersByCustomerRule : Rule
 {
     public override void Define()
     {
-        IGrouping<Customer, Order> group = null;
+        IGrouping<Customer, Order> group = null!;
 
         When()
             .Query(() => group, q => 

@@ -25,7 +25,7 @@ internal class Program
         File.WriteAllText("rule.json", json);
 
         //Deserialize rule from JSON
-        var ruleClone = JsonSerializer.Deserialize<IRuleDefinition>(json, options);
+        var ruleClone = JsonSerializer.Deserialize<IRuleDefinition>(json, options)!;
         
         //Compile rule
         var compiler = new RuleCompiler();
@@ -101,7 +101,7 @@ internal class Program
         var ctxParameter = Expression.Parameter(typeof(IContext), "ctx");
         var action = Expression.Lambda(
             Expression.Call(
-                typeof(Console).GetMethod(nameof(Console.WriteLine), new[] { typeof(string) }),
+                typeof(Console).GetMethod(nameof(Console.WriteLine), new[] { typeof(string) })!,
                 Expression.Constant("Found large order")),
             ctxParameter
         );

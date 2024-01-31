@@ -5,6 +5,7 @@
     <TargetFramework>net8</TargetFramework>
     <RootNamespace>NRules.Samples.SimpleRules</RootNamespace>
     <AssemblyName>NRules.Samples.SimpleRules</AssemblyName>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

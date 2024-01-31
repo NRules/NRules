@@ -8,7 +8,7 @@ public class DiscountNotificationRule : Rule
 {
     public override void Define()
     {
-        Customer customer = default;
+        Customer customer = default!;
 
         When()
             .Match(() => customer)

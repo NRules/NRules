@@ -5,6 +5,7 @@
     <TargetFramework>net8</TargetFramework>
     <RootNamespace>NRules.Samples.JsonRules</RootNamespace>
     <AssemblyName>NRules.Samples.JsonRules</AssemblyName>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
