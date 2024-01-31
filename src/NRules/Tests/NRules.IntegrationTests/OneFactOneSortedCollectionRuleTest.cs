@@ -16,7 +16,7 @@ public class OneFactOneSortedCollectionRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         // Assert
-        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(x => !x.Any())));
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(f => !f.Any())));
     }
 
     [Fact]
@@ -205,7 +205,7 @@ public class OneFactOneSortedCollectionRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<FactType> collection = null;
+            IEnumerable<FactType> collection = null!;
 
             When()
                 .Query(() => collection, x => x

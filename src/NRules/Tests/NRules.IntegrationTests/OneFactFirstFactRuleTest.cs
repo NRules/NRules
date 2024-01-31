@@ -94,7 +94,7 @@ public class OneFactFirstFactRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType fact = null!;
 
             When()
                 .Query(() => fact, x => x

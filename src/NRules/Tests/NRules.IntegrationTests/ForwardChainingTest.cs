@@ -1,4 +1,5 @@
-﻿using NRules.Fluent.Dsl;
+﻿using System.Diagnostics.CodeAnalysis;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.Testing;
 using Xunit;
@@ -67,21 +68,25 @@ public class ForwardChainingTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        [NotNull]
+        public string? JoinProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        [NotNull]
+        public string? JoinProperty { get; set; }
     }
 
     public class ForwardChainingFirstRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
+            FactType1 fact1 = null!;
 
             When()
                 .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"));
@@ -98,7 +103,7 @@ public class ForwardChainingTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType2 fact2 = null;
+            FactType2 fact2 = null!;
 
             When()
                 .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"));

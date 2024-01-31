@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -28,19 +29,19 @@ public class FromQueryDoubleReferenceTest : BaseRulesTestFixture
         Session.Fire();
 
         // Assert
-        IEnumerable<Fact> factsAllActual = null;
-        IEnumerable<Fact> factsOneActual = null;
-        IEnumerable<Fact> factsTwoActual = null;
-        IEnumerable<Fact> factsOneTwoActual = null;
+        IEnumerable<Fact> factsAllActual = null!;
+        IEnumerable<Fact> factsOneActual = null!;
+        IEnumerable<Fact> factsTwoActual = null!;
+        IEnumerable<Fact> factsOneTwoActual = null!;
         Verify(x => x.Rule().Fired(
             Matched.Fact<IEnumerable<Fact>>()
-                .Callback(x => factsAllActual = x),
+                .Callback(f => factsAllActual = f),
             Matched.Fact<IEnumerable<Fact>>()
-                .Callback(x => factsOneActual = x),
+                .Callback(f => factsOneActual = f),
             Matched.Fact<IEnumerable<Fact>>()
-                .Callback(x => factsTwoActual = x),
+                .Callback(f => factsTwoActual = f),
             Matched.Fact<IEnumerable<Fact>>()
-                .Callback(x => factsOneTwoActual = x)));
+                .Callback(f => factsOneTwoActual = f)));
 
         var factsAllExpected = facts;
         var factsOneExpected = facts.Where(f => f.Key == 1).ToArray();
@@ -61,17 +62,18 @@ public class FromQueryDoubleReferenceTest : BaseRulesTestFixture
     public class Fact
     {
         public int Key { get; set; }
-        public string Value { get; set; }
+        [NotNull]
+        public string? Value { get; set; }
     }
 
     public class FromQueryDoubleReferenceRule : Rule
     {
         public override void Define()
         {
-            IEnumerable<Fact> factsAll = null;
-            IEnumerable<Fact> factsOne = null;
-            IEnumerable<Fact> factsTwo = null;
-            IEnumerable<Fact> factsOneTwo = null;
+            IEnumerable<Fact> factsAll = null!;
+            IEnumerable<Fact> factsOne = null!;
+            IEnumerable<Fact> factsTwo = null!;
+            IEnumerable<Fact> factsOneTwo = null!;
 
             When()
                 .Query(() => factsAll, q => q

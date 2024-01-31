@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -91,27 +92,28 @@ public class ThreeFactGroupByCollectMatchRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string Key { get; set; }
-        public string Join { get; set; }
+        [NotNull]
+        public string? Key { get; set; }
+        public string? Join { get; set; }
     }
 
     public class FactType2
     {
-        public string Join { get; set; }
+        public string? Join { get; set; }
     }
 
     public class FactType3
     {
-        public string Join { get; set; }
+        public string? Join { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            IGrouping<string, FactType1> group = default;
-            IEnumerable<FactType2> facts2 = default;
-            FactType3 fact3 = default;
+            IGrouping<string, FactType1> group = default!;
+            IEnumerable<FactType2> facts2 = default!;
+            FactType3 fact3 = default!;
 
             When()
                 .Query(() => group, x => x

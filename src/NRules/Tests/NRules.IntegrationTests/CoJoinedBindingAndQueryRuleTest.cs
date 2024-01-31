@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -143,21 +144,23 @@ public class CoJoinedBindingAndQueryRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string Value { get; set; }
+        [NotNull]
+        public string? Value { get; set; }
     }
 
     public class FactType2
     {
-        public string GroupKey { get; set; }
+        [NotNull]
+        public string? GroupKey { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact = null;
-            IEnumerable<FactType1> collection = null;
-            IGrouping<string, FactType2> group = null;
+            FactType1 fact = null!;
+            IEnumerable<FactType1> collection = null!;
+            IGrouping<string, FactType2> group = null!;
 
             When()
                 .Query(() => collection, q => q

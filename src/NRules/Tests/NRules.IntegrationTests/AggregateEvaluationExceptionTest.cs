@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
@@ -18,8 +19,8 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
         //Arrange
         _testRule.Grouping = ThrowGrouping;
 
-        Expression expression = null;
-        IList<IFact> facts = null;
+        Expression? expression = null;
+        IList<IFact>? facts = null;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
@@ -31,6 +32,7 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact21));
         Assert.NotNull(expression);
+        Assert.NotNull(facts);
         Assert.Equal(2, facts.Count);
         Assert.Same(fact11, facts.First().Value);
         Assert.Same(fact21, facts.Skip(1).First().Value);
@@ -376,17 +378,20 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 
     private static readonly Func<FactType2, object> SuccessfulGrouping = x => x.GroupProperty;
     private static readonly Func<FactType2, object> ThrowGrouping = x => throw new InvalidOperationException("Grouping failed");
-    private TestRule _testRule;
+    private TestRule _testRule = null!;
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string JoinProperty { get; set; }
-        public string GroupProperty { get; set; }
+        [NotNull]
+        public string? JoinProperty { get; set; }
+        [NotNull]
+        public string? GroupProperty { get; set; }
     }
 
     public class TestRule : Rule
@@ -395,8 +400,8 @@ public class AggregateEvaluationExceptionTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType1 fact1 = null;
-            IEnumerable<FactType2> fact2Group = null;
+            FactType1 fact1 = null!;
+            IEnumerable<FactType2> fact2Group = null!;
 
             When()
                 .Match(() => fact1)

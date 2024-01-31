@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -32,21 +33,21 @@ public class ForwardChainingLinkedTest : BaseRulesTestFixture
     public void Fire_OneMatchingFactInsertedThenUpdated_FiresFirstRuleAndChainsSecondLinkedFactsUpdated()
     {
         //Arrange
-        FactType2 matchedFact2 = null;
-        FactType3 matchedFact3 = null;
-        Session.Events.FactInsertedEvent += (sender, args) =>
+        FactType2? matchedFact2 = null;
+        FactType3? matchedFact3 = null;
+        Session.Events.FactInsertedEvent += (_, args) =>
         {
             if (args.Fact.Type == typeof(FactType2))
-                matchedFact2 = (FactType2)args.Fact.Value;
+                matchedFact2 = (FactType2?)args.Fact.Value;
             if (args.Fact.Type == typeof(FactType3))
-                matchedFact3 = (FactType3)args.Fact.Value;
+                matchedFact3 = (FactType3?)args.Fact.Value;
         };
-        Session.Events.FactUpdatedEvent += (sender, args) =>
+        Session.Events.FactUpdatedEvent += (_, args) =>
         {
             if (args.Fact.Type == typeof(FactType2))
-                matchedFact2 = (FactType2)args.Fact.Value;
+                matchedFact2 = (FactType2?)args.Fact.Value;
             if (args.Fact.Type == typeof(FactType3))
-                matchedFact3 = (FactType3)args.Fact.Value;
+                matchedFact3 = (FactType3?)args.Fact.Value;
         };
 
         var fact1 = new FactType1 { TestProperty = "Valid Value 1", ChainProperty = "Valid Value 1" };
@@ -61,6 +62,8 @@ public class ForwardChainingLinkedTest : BaseRulesTestFixture
             x.Rule<ForwardChainingFirstRule>().Fired();
             x.Rule<ForwardChainingSecondRule>().Fired();
         });
+        Assert.NotNull(matchedFact2);
+        Assert.NotNull(matchedFact3);
         Assert.Equal(1, matchedFact2.UpdateCount);
         Assert.Equal("Valid Value 1", matchedFact2.TestProperty);
         Assert.Equal("Valid Value 1", matchedFact3.TestProperty);
@@ -115,9 +118,9 @@ public class ForwardChainingLinkedTest : BaseRulesTestFixture
     public void Fire_OneMatchingFact_LinkedFactHasSource()
     {
         //Arrange
-        IFact matchedFact2 = null;
-        IFact matchedFact3 = null;
-        Session.Events.FactInsertedEvent += (sender, args) =>
+        IFact? matchedFact2 = null;
+        IFact? matchedFact3 = null;
+        Session.Events.FactInsertedEvent += (_, args) =>
         {
             if (args.Fact.Type == typeof(FactType2))
                 matchedFact2 = args.Fact;
@@ -179,26 +182,29 @@ public class ForwardChainingLinkedTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
-        public string ChainProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        public string? ChainProperty { get; set; }
     }
 
     public class FactType2
     {
         public int UpdateCount { get; set; } = 1;
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType3
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class ForwardChainingFirstRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
+            FactType1 fact1 = null!;
 
             When()
                 .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"));
@@ -225,8 +231,8 @@ public class ForwardChainingLinkedTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType2 fact2 = null;
-            FactType3 fact3 = null;
+            FactType2 fact2 = null!;
+            FactType3 fact3 = null!;
 
             When()
                 .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"))

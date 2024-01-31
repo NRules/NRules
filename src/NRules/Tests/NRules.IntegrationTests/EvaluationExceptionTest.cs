@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.Extensibility;
@@ -19,8 +20,8 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Arrange
         _testRule.Condition = ThrowCondition;
 
-        Expression expression = null;
-        IList<IFact> facts = null;
+        Expression? expression = null;
+        IList<IFact>? facts = null;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
@@ -29,6 +30,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<RuleLhsExpressionEvaluationException>(() => Session.Insert(fact));
         Assert.NotNull(expression);
+        Assert.NotNull(facts);
         Assert.Single(facts);
         Assert.Same(fact, facts.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
@@ -145,8 +147,8 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Arrange
         _testRule.FilterCondition = ThrowFilter;
 
-        Expression expression = null;
-        IList<IFactMatch> facts = null;
+        Expression? expression = null;
+        IList<IFactMatch>? facts = null;
         Session.Events.AgendaExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.AgendaExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
@@ -155,6 +157,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<AgendaExpressionEvaluationException>(() => Session.Insert(fact));
         Assert.NotNull(expression);
+        Assert.NotNull(facts);
         Assert.Single(facts);
         Assert.Same(fact, facts.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
@@ -183,8 +186,8 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Arrange
         _testRule.Action = ThrowAction;
 
-        Expression expression = null;
-        IList<IFactMatch> facts = null;
+        Expression? expression = null;
+        IList<IFactMatch>? facts = null;
         Session.Events.RhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.RhsExpressionFailedEvent += (sender, args) => facts = args.Match.Facts.ToList();
 
@@ -194,6 +197,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         //Act - Assert
         var ex = Assert.Throws<RuleRhsExpressionEvaluationException>(() => Session.Fire());
         Assert.NotNull(expression);
+        Assert.NotNull(facts);
         Assert.Single(facts);
         Assert.Same(fact, facts.First().Value);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
@@ -221,8 +225,8 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
         Session.ActionInterceptor = new PassThroughActionInterceptor();
         _testRule.Action = ThrowAction;
 
-        Expression expression = null;
-        IList<IFactMatch> facts = null;
+        Expression? expression = null;
+        IList<IFactMatch>? facts = null;
         Session.Events.RhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.RhsExpressionFailedEvent += (sender, args) => facts = args.Match.Facts.ToList();
 
@@ -245,11 +249,12 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
     private static readonly Func<FactType, bool> ThrowCondition = f => throw new InvalidOperationException("Condition failed");
     private static readonly Func<FactType, bool> SuccessfulFilter = f => true;
     private static readonly Func<FactType, bool> ThrowFilter = f => throw new InvalidOperationException("Filter failed");
-    private TestRule _testRule;
+    private TestRule _testRule = null!;
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
@@ -260,7 +265,7 @@ public class EvaluationExceptionTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType fact = null;
+            FactType fact = null!;
 
             When()
                 .Match(() => fact, f => f.TestProperty.StartsWith("Valid") && Condition(f));

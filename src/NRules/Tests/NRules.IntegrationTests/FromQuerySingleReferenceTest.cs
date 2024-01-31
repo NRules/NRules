@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -76,15 +77,16 @@ public class FromQuerySingleReferenceTest : BaseRulesTestFixture
 
     public class Fact
     {
-        public string Value { get; set; }
+        [NotNull]
+        public string? Value { get; set; }
     }
 
     public class FromQuerySingleReferenceRule : Rule
     {
         public override void Define()
         {
-            IEnumerable<Fact> factsAll = null;
-            IGrouping<string, Fact> factsGrouped = null;
+            IEnumerable<Fact> factsAll = null!;
+            IGrouping<string, Fact> factsGrouped = null!;
 
             When()
                 .Query(() => factsAll, q => q

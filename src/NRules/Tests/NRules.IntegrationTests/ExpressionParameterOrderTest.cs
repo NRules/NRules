@@ -63,10 +63,10 @@ public class ExpressionParameterOrderTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType0 f0 = null;
-            FactType1 f1 = null;
-            FactType2 f2 = null;
-            FactType3 f3 = null;
+            FactType0 f0 = null!;
+            FactType1 f1 = null!;
+            FactType2 f2 = null!;
+            FactType3 f3 = null!;
 
             When()
                 .Or(x => x

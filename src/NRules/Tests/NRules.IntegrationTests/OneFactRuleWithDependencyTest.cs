@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using NRules.Extensibility;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -10,7 +11,7 @@ namespace NRules.IntegrationTests;
 
 public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 {
-    private TestRule _testRule;
+    private TestRule _testRule = null!;
 
     [Fact]
     public void Fire_DefaultResolver_Throws()
@@ -30,11 +31,11 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
         //Arrange
         var service1 = new TestService1();
         bool service1Called = false;
-        service1.ServiceCalled += (sender, args) => service1Called = true;
+        service1.ServiceCalled += (_, _) => service1Called = true;
 
         var service2 = new TestService2();
         bool service2Called = false;
-        service2.ServiceCalled += (sender, args) => service2Called = true;
+        service2.ServiceCalled += (_, _) => service2Called = true;
 
         Session.DependencyResolver = new TestDependencyResolver(service1, service2);
 
@@ -61,7 +62,7 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
         var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
-        ITestService1 resolvedService1 = null;
+        ITestService1? resolvedService1 = null;
         _testRule.Action = ctx =>
         {
             resolvedService1 = ctx.Resolve<ITestService1>();
@@ -88,7 +89,7 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 
     private class TestService1 : ITestService1
     {
-        public event EventHandler ServiceCalled;
+        public event EventHandler? ServiceCalled;
 
         public void Action(string value)
         {
@@ -103,7 +104,7 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 
     private class TestService2 : ITestService2
     {
-        public event EventHandler ServiceCalled;
+        public event EventHandler? ServiceCalled;
 
         public void Action(string value)
         {
@@ -134,7 +135,8 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
@@ -143,9 +145,9 @@ public class OneFactRuleWithDependencyTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType fact = null;
-            ITestService1 service1 = null;
-            ITestService2 service2 = null;
+            FactType fact = null!;
+            ITestService1 service1 = null!;
+            ITestService2 service2 = null!;
 
             Dependency()
                 .Resolve(() => service1)

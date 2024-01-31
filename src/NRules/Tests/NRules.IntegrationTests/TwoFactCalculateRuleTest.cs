@@ -1,4 +1,5 @@
-﻿using NRules.Fluent.Dsl;
+﻿using System.Diagnostics.CodeAnalysis;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.Testing;
 using Xunit;
@@ -177,7 +178,8 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
         public int Counter { get; set; }
         public bool ShouldProduceNull3 { get; set; }
         public bool ShouldProduceNull4 { get; set; }
@@ -185,9 +187,10 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
         public int Counter { get; set; }
-        public string JoinProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class CalculatedFact3
@@ -214,10 +217,10 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
-            FactType2 fact2 = null;
-            CalculatedFact3 fact3 = null;
-            CalculatedFact4 fact4 = null;
+            FactType1 fact1 = null!;
+            FactType2 fact2 = null!;
+            CalculatedFact3? fact3 = null;
+            CalculatedFact4? fact4 = null;
 
             When()
                 .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
@@ -230,14 +233,14 @@ public class TwoFactCalculateRuleTest : BaseRulesTestFixture
                 .Do(ctx => ctx.NoOp());
         }
 
-        private static CalculatedFact3 CreateFact3(FactType1 fact1, FactType2 fact2)
+        private static CalculatedFact3? CreateFact3(FactType1 fact1, FactType2 fact2)
         {
             if (fact1.ShouldProduceNull3)
                 return null;
             return new CalculatedFact3(fact1, fact2);
         }
 
-        private static CalculatedFact4 CreateFact4(FactType1 fact1, FactType2 fact2)
+        private static CalculatedFact4? CreateFact4(FactType1 fact1, FactType2 fact2)
         {
             if (fact1.ShouldProduceNull4)
                 return null;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.Testing;
@@ -143,7 +144,8 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactProjection : IEquatable<FactProjection>
@@ -155,7 +157,7 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
 
         public string Value { get; }
 
-        public bool Equals(FactProjection other)
+        public bool Equals(FactProjection? other)
         {
             if (other is null)
                 return false;
@@ -164,7 +166,7 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
             return string.Equals(Value, other.Value);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -177,7 +179,7 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
 
         public override int GetHashCode()
         {
-            return (Value != null ? Value.GetHashCode() : 0);
+            return Value.GetHashCode();
         }
     }
 
@@ -185,7 +187,7 @@ public class OneFactOneSelectRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactProjection projection = null;
+            FactProjection projection = null!;
 
             When()
                 .Query(() => projection, x => x

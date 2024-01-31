@@ -102,7 +102,7 @@ public class OneFactOneMultiKeySortedCollectionManyChainedThenByRuleTest : BaseR
     {
         public override void Define()
         {
-            IEnumerable<FactType> collection = null;
+            IEnumerable<FactType> collection = null!;
 
             When()
                 .Query(() => collection, x => x

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.Aggregators;
@@ -67,7 +68,8 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactProjection : IEquatable<FactProjection>
@@ -77,9 +79,9 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
             Value = fact.TestProperty;
         }
 
-        public string Value { get; }
+        public string? Value { get; }
 
-        public bool Equals(FactProjection other)
+        public bool Equals(FactProjection? other)
         {
             if (other is null)
                 return false;
@@ -88,7 +90,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
             return string.Equals(Value, other.Value);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -109,13 +111,13 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactProjection projection = null;
+            FactProjection projection = null!;
 
             When()
                 .Query(() => projection, q => q
                     .Match<FactType>()
                     .CustomSelect(f => new FactProjection(f))
-                    .Where(p => p.Value.StartsWith("Valid")));
+                    .Where(p => p.Value!.StartsWith("Valid")));
             Then()
                 .Do(ctx => ctx.NoOp());
         }
@@ -125,6 +127,7 @@ public class CustomSelectAggregatorTest : BaseRulesTestFixture
 public static class CustomSelectQuery
 {
     public static IQuery<TResult> CustomSelect<TSource, TResult>(this IQuery<TSource> source, Expression<Func<TSource, TResult>> selector)
+        where TSource : notnull
     {
         var expressions = new List<KeyValuePair<string, LambdaExpression>>
         {
@@ -137,7 +140,7 @@ public static class CustomSelectQuery
 
 internal class CustomSelectAggregateFactory : IAggregatorFactory
 {
-    private Func<IAggregator> _factory;
+    private Func<IAggregator>? _factory;
 
     public void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions)
     {
@@ -155,7 +158,7 @@ internal class CustomSelectAggregateFactory : IAggregatorFactory
 
     public IAggregator Create()
     {
-        return _factory();
+        return _factory!();
     }
 }
 
@@ -187,7 +190,7 @@ public class CustomSelectAggregator<TSource, TResult> : IAggregator
         foreach (var fact in facts)
         {
             var value = _selector.Invoke(context, tuple, fact);
-            var oldValue = (TResult)_sourceToValue[fact];
+            var oldValue = (TResult)_sourceToValue[fact]!;
             _sourceToValue[fact] = value;
             results.Add(AggregationResult.Modified(value, oldValue, Enumerable.Repeat(fact, 1)));
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -54,10 +55,12 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
     {
         public long Id { get; set; }
         public int TestCount { get; set; }
-        public string GroupingProperty { get; set; }
-        public string GroupingProperty2 { get; set; }
+        [NotNull]
+        public string? GroupingProperty { get; set; }
+        [NotNull]
+        public string? GroupingProperty2 { get; set; }
 
-        public bool Equals(FactType other)
+        public bool Equals(FactType? other)
         {
             if (other is null)
                 return false;
@@ -66,7 +69,7 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
             return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -87,7 +90,7 @@ public class OneFactOneGroupByFlattenWithIdentityRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<FactType> facts = null;
+            IEnumerable<FactType> facts = null!;
 
             When()
                 .Query(() => facts, q => q

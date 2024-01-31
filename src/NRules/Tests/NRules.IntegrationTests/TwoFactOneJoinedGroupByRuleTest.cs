@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.Testing;
@@ -265,12 +266,12 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        FactType1 firedFact1 = null;
-        FactType1 firedFact2 = null;
-        FactType1 firedFact3 = null;
-        IGrouping<string, GroupElement> firedGroup1 = null;
-        IGrouping<string, GroupElement> firedGroup2 = null;
-        IGrouping<string, GroupElement> firedGroup3 = null;
+        FactType1? firedFact1 = null;
+        FactType1? firedFact2 = null;
+        FactType1? firedFact3 = null;
+        IGrouping<string, GroupElement>? firedGroup1 = null;
+        IGrouping<string, GroupElement>? firedGroup2 = null;
+        IGrouping<string, GroupElement>? firedGroup3 = null;
 
         VerifySequence(s =>
         {
@@ -288,8 +289,11 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Assert.Equal(fact11, firedFact1);
         Assert.Equal(fact11, firedFact2);
         Assert.Equal(fact12, firedFact3);
+        Assert.NotNull(firedGroup1);
         Assert.Equal(2, firedGroup1.Count());
+        Assert.NotNull(firedGroup2);
         Assert.Single(firedGroup2);
+        Assert.NotNull(firedGroup3);
         Assert.Single(firedGroup3);
     }
 
@@ -311,12 +315,12 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        FactType1 firedFact1 = null;
-        FactType1 firedFact2 = null;
-        FactType1 firedFact3 = null;
-        IGrouping<string, GroupElement> firedGroup1 = null;
-        IGrouping<string, GroupElement> firedGroup2 = null;
-        IGrouping<string, GroupElement> firedGroup3 = null;
+        FactType1? firedFact1 = null;
+        FactType1? firedFact2 = null;
+        FactType1? firedFact3 = null;
+        IGrouping<string, GroupElement>? firedGroup1 = null;
+        IGrouping<string, GroupElement>? firedGroup2 = null;
+        IGrouping<string, GroupElement>? firedGroup3 = null;
 
         VerifySequence(s =>
         {
@@ -334,8 +338,11 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Assert.Equal(fact11, firedFact1);
         Assert.Equal(fact11, firedFact2);
         Assert.Equal(fact12, firedFact3);
+        Assert.NotNull(firedGroup1);
         Assert.Equal(2, firedGroup1.Count());
+        Assert.NotNull(firedGroup2);
         Assert.Single(firedGroup2);
+        Assert.NotNull(firedGroup3);
         Assert.Single(firedGroup3);
     }
 
@@ -359,12 +366,12 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Session.Fire();
 
         //Assert
-        FactType1 firedFact1 = null;
-        FactType1 firedFact2 = null;
-        FactType1 firedFact3 = null;
-        IGrouping<string, GroupElement> firedGroup1 = null;
-        IGrouping<string, GroupElement> firedGroup2 = null;
-        IGrouping<string, GroupElement> firedGroup3 = null;
+        FactType1? firedFact1 = null;
+        FactType1? firedFact2 = null;
+        FactType1? firedFact3 = null;
+        IGrouping<string, GroupElement>? firedGroup1 = null;
+        IGrouping<string, GroupElement>? firedGroup2 = null;
+        IGrouping<string, GroupElement>? firedGroup3 = null;
 
         VerifySequence(s =>
         {
@@ -382,8 +389,11 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
         Assert.Equal(fact12, firedFact1);
         Assert.Equal(fact11, firedFact2);
         Assert.Equal(fact11, firedFact3);
+        Assert.NotNull(firedGroup1);
         Assert.Single(firedGroup1);
+        Assert.NotNull(firedGroup2);
         Assert.Single(firedGroup2);
+        Assert.NotNull(firedGroup3);
         Assert.Equal(2, firedGroup3.Count());
     }
 
@@ -511,15 +521,19 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string GroupKey { get; set; }
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? GroupKey { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string GroupKey { get; set; }
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        [NotNull]
+        public string? GroupKey { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class GroupElement
@@ -536,8 +550,8 @@ public class TwoFactOneJoinedGroupByRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1 fact = null;
-            IGrouping<string, GroupElement> group = null;
+            FactType1 fact = null!;
+            IGrouping<string, GroupElement> group = null!;
 
             When()
                 .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Diagnostics;
 using NRules.Fluent.Dsl;
@@ -96,33 +97,38 @@ public class NodeSharingTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        [NotNull]
+        public string? JoinProperty { get; set; }
     }
 
     public class FactType3
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType4
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class TwinRuleOne : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
-            string joinValue = null;
-            FactType2 fact2 = null;
-            IEnumerable<FactType4> group = null;
+            FactType1 fact1 = null!;
+            string joinValue = null!;
+            FactType2 fact2 = null!;
+            IEnumerable<FactType4> group = null!;
 
             When()
                 .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
@@ -147,10 +153,10 @@ public class NodeSharingTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
-            string joinValue = null;
-            FactType2 fact2 = null;
-            IEnumerable<FactType4> group = null;
+            FactType1 fact1 = null!;
+            string joinValue = null!;
+            FactType2 fact2 = null!;
+            IEnumerable<FactType4> group = null!;
 
             When()
                 .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
