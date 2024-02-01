@@ -73,7 +73,8 @@ public interface ILeftHandSideExpression
     /// <param name="alias">Alias for the query results.</param>
     /// <param name="queryExpression">Query expression.</param>
     /// <returns>Left hand side expression builder.</returns>
-    ILeftHandSideExpression Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryExpression);
+    ILeftHandSideExpression Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryExpression)
+        where TResult : notnull;
 
     /// <summary>
     /// Defines a group of patterns joined by an AND operator.

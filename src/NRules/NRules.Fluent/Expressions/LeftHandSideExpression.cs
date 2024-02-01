@@ -83,6 +83,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     }
 
     public ILeftHandSideExpression Query<TResult>(Expression<Func<TResult>> alias, Func<IQuery, IQuery<TResult>> queryAction)
+        where TResult : notnull
     {
         var symbol = alias.ToParameterExpression();
         var queryBuilder = new QueryExpression(symbol, _symbolStack, _builder);
