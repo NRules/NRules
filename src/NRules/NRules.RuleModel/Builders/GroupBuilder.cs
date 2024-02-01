@@ -25,7 +25,7 @@ public enum GroupType
 public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
 {
     private readonly List<IBuilder<RuleElement>> _nestedBuilders = new();
-    private GroupType _groupType;
+    private GroupType _groupType = Builders.GroupType.And;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GroupBuilder"/>.
@@ -68,7 +68,7 @@ public class GroupBuilder : RuleElementBuilder, IBuilder<GroupElement>
     /// <param name="type">Pattern type.</param>
     /// <param name="name">Pattern name (optional).</param>
     /// <returns>Pattern builder.</returns>
-    public PatternBuilder Pattern(Type type, string name = null)
+    public PatternBuilder Pattern(Type type, string? name = null)
     {
         var declaration = Element.Declaration(type, DeclarationName(name));
         return Pattern(declaration);

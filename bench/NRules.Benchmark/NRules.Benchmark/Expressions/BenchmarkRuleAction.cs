@@ -26,7 +26,7 @@ public class BenchmarkRuleAction : BenchmarkBase
         var map = IndexMap.CreateMap(element.Imports, element.Imports);
         _ruleAction = ruleExpressionCompiler.CompileAction(element, element.Imports.ToList(), new List<DependencyElement>(), map);
 
-        var compiledRule = new CompiledRule(null, element.Imports, new []{_ruleAction}, null, map);
+        var compiledRule = new CompiledRule(null!, element.Imports, new []{_ruleAction}, null!, map);
         var tuple = ToTuple("abcd", 4, 1.0m);
         var activation = new Activation(compiledRule, tuple);
         _actionContext = new ActionContext(Context.Session, activation, CancellationToken.None);

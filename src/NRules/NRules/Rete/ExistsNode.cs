@@ -21,7 +21,7 @@ internal class ExistsNode : BinaryBetaNode
                 quantifier.Value += set.Facts.Count;
                 if (quantifier.Value > 0)
                 {
-                    toAssert.Add(set.Tuple, null);
+                    toAssert.Add(set.Tuple);
                 }
             }
 
@@ -41,7 +41,7 @@ internal class ExistsNode : BinaryBetaNode
             {
                 if (context.GetQuantifier(this, tuple).Value > 0)
                 {
-                    toUpdate.Add(tuple, null);
+                    toUpdate.Add(tuple);
                 }
             }
 
@@ -61,7 +61,7 @@ internal class ExistsNode : BinaryBetaNode
             {
                 if (context.RemoveQuantifier(this, tuple).Value > 0)
                 {
-                    toRetract.Add(tuple, null);
+                    toRetract.Add(tuple);
                 }
             }
 
@@ -85,7 +85,7 @@ internal class ExistsNode : BinaryBetaNode
                 quantifier.Value += set.Facts.Count;
                 if (startingCount == 0 && quantifier.Value > 0)
                 {
-                    toAssert.Add(set.Tuple, null);
+                    toAssert.Add(set.Tuple);
                 }
             }
 
@@ -114,7 +114,7 @@ internal class ExistsNode : BinaryBetaNode
                 quantifier.Value -= set.Facts.Count;
                 if (startingCount > 0 && quantifier.Value == 0)
                 {
-                    toRetract.Add(set.Tuple, null);
+                    toRetract.Add(set.Tuple);
                 }
             }
 

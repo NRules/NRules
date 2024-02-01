@@ -11,7 +11,7 @@ internal interface ISymbolLookup
 internal class SymbolTable : ISymbolLookup
 {
     private readonly Dictionary<string, Declaration> _declarations;
-    private readonly SymbolTable _parentScope;
+    private readonly SymbolTable? _parentScope;
 
     internal SymbolTable()
     {

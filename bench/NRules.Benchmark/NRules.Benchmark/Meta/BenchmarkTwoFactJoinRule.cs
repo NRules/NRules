@@ -6,8 +6,8 @@ namespace NRules.Benchmark.Meta;
 [BenchmarkCategory("Meta")]
 public class BenchmarkTwoFactJoinRule : BenchmarkBase
 {
-    private TestFact1[] _facts1;
-    private TestFact2[] _facts2;
+    private TestFact1[] _facts1 = null!;
+    private TestFact2[] _facts2 = null!;
 
     [GlobalSetup]
     public void Setup()
@@ -78,8 +78,8 @@ public class BenchmarkTwoFactJoinRule : BenchmarkBase
     {
         public override void Define()
         {
-            TestFact1 fact1 = null;
-            TestFact2 fact2 = null;
+            TestFact1 fact1 = null!;
+            TestFact2 fact2 = null!;
 
             When()
                 .Match(() => fact1, 

@@ -42,7 +42,8 @@ internal static class JsonExtensions
         if (reader.TokenType != JsonTokenType.PropertyName)
             throw new JsonException($"Expected property. Name={name}, Actual={reader.TokenType}");
 
-        var propertyName = reader.GetString();
+        var propertyName = reader.GetString()
+            ?? throw new JsonException($"Property not found. Name={name}");
         if (!name.NameEquals(propertyName, options))
             return false;
 
@@ -54,8 +55,19 @@ internal static class JsonExtensions
     public static string ReadStringProperty(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
     {
         reader.ReadPropertyName(name, options);
+
+        string value = reader.GetString()
+            ?? throw new JsonException($"Unable to deserialize string property. Name={name}");
+        reader.Read();
         
-        string value = reader.GetString();
+        return value;
+    }
+    
+    public static string? ReadNullableStringProperty(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
+    {
+        reader.ReadPropertyName(name, options);
+
+        string? value = reader.GetString();
         reader.Read();
         
         return value;
@@ -63,11 +75,12 @@ internal static class JsonExtensions
 
     public static bool TryReadStringProperty(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out string value)
     {
-        value = default;
+        value = string.Empty;
         if (!reader.TryReadPropertyName(name, options))
             return false;
         
-        value = reader.GetString();
+        value = reader.GetString()
+            ?? throw new JsonException($"Unable to deserialize string property. Name={name}");
         reader.Read();
         
         return true;
@@ -192,7 +205,8 @@ internal static class JsonExtensions
         var elements = new List<string>();
         while (reader.TokenType != JsonTokenType.EndArray)
         {
-            var element = reader.GetString();
+            var element = reader.GetString()
+                ?? throw new JsonException($"Unable to deserialize array element. Type={typeof(string)}");
             elements.Add(element);
             reader.Read();
         }
@@ -209,7 +223,8 @@ internal static class JsonExtensions
         var elements = new List<TElement>();
         while (reader.TokenType != JsonTokenType.EndArray)
         {
-            var element = JsonSerializer.Deserialize<TElement>(ref reader, options);
+            var element = JsonSerializer.Deserialize<TElement>(ref reader, options)
+                ?? throw new JsonException($"Unable to deserialize array element. Type={typeof(TElement)}");
             elements.Add(element);
             reader.Read();
         }
@@ -222,13 +237,14 @@ internal static class JsonExtensions
     {
         reader.ReadPropertyName(name, options);
 
-        var value = JsonSerializer.Deserialize<TElement>(ref reader, options);
+        var value = JsonSerializer.Deserialize<TElement>(ref reader, options)
+            ?? throw new JsonException($"Unable to deserialize property. Name={name}, Type={typeof(TElement)}");
         reader.Read();
 
         return value;
     }
 
-    public static object ReadProperty(this ref Utf8JsonReader reader, string name, Type type, JsonSerializerOptions options)
+    public static object? ReadNullableProperty(this ref Utf8JsonReader reader, string name, Type type, JsonSerializerOptions options)
     {
         reader.ReadPropertyName(name, options);
 
@@ -237,8 +253,19 @@ internal static class JsonExtensions
 
         return value;
     }
+    
+    public static object ReadProperty(this ref Utf8JsonReader reader, string name, Type type, JsonSerializerOptions options)
+    {
+        reader.ReadPropertyName(name, options);
 
-    public static bool TryReadProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out TElement value)
+        var value = JsonSerializer.Deserialize(ref reader, type, options)
+            ?? throw new JsonException($"Unable to deserialize property. Name={name}, Type={type}");
+        reader.Read();
+
+        return value;
+    }
+
+    public static bool TryReadProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options, out TElement? value)
     {
         value = default;
         if (!reader.TryReadPropertyName(name, options))
@@ -309,12 +336,12 @@ internal static class JsonExtensions
         JsonSerializer.Serialize(writer, value, valueType, options);
     }
 
-    private static string ToName(this string name, JsonSerializerOptions options)
+    private static string ToName(this string name, JsonSerializerOptions? options)
     {
         return options?.PropertyNamingPolicy?.ConvertName(name) ?? name;
     }
 
-    private static bool NameEquals(this string rawExpectedName, string rawActualName, JsonSerializerOptions options)
+    private static bool NameEquals(this string rawExpectedName, string rawActualName, JsonSerializerOptions? options)
     {
         var comparisonType = options?.PropertyNameCaseInsensitive ?? false
             ? StringComparison.CurrentCultureIgnoreCase

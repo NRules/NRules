@@ -8,8 +8,8 @@ public class ActiveCustomerAccountRule : Rule
 {
     public override void Define()
     {
-        Customer customer = default;
-        Account account = default;
+        Customer customer = default!;
+        Account account = default!;
 
         When()
             .Match(() => customer, c => c.IsPreferred)

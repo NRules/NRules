@@ -40,6 +40,7 @@ internal class RightHandSideExpression : IRightHandSideExpression
     }
 
     public IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yield)
+        where TFact : notnull
     {
         var context = yield.Parameters[0];
         var linkedFact = Expression.Parameter(typeof(TFact));
@@ -49,6 +50,7 @@ internal class RightHandSideExpression : IRightHandSideExpression
     }
 
     public IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yieldInsert, Expression<Func<IContext, TFact, TFact>> yieldUpdate)
+        where TFact : notnull
     {
         var action = CreateYieldAction(yieldInsert, yieldUpdate);
         return Do(action);

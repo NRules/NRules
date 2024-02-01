@@ -10,8 +10,8 @@ public class LargeTotalRule : Rule
 {
     public override void Define()
     {
-        Customer customer = default;
-        IEnumerable<Order> orders = default;
+        Customer customer = default!;
+        IEnumerable<Order> orders = default!;
         double total = default;
 
         When()

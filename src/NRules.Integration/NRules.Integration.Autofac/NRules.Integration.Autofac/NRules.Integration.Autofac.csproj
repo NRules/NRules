@@ -30,5 +30,7 @@
       <HintPath>..\..\..\..\build\bin\NRules\$(TargetFramework)\NRules.RuleModel.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
+
+  <Import Project="..\..\..\Nullable.props" />
+
 </Project>

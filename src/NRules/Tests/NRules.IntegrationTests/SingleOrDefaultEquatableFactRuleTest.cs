@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -137,10 +138,12 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
         }
 
         public int Id { get; }
-        public string TestProperty { get; set; }
-        public string ValueProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        [NotNull]
+        public string? ValueProperty { get; set; }
 
-        public bool Equals(FactType other)
+        public bool Equals(FactType? other)
         {
             if (other is null)
                 return false;
@@ -149,7 +152,7 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
             return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -170,7 +173,7 @@ public class SingleOrDefaultEquatableFactRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType fact = null!;
 
             When()
                 .Query(() => fact, q => q

@@ -6,7 +6,7 @@ public class RuleWithActionDependency : Rule
 {
     public override void Define()
     {
-        TestFact1 fact1 = default;
+        TestFact1 fact1 = default!;
 
         When()
             .Match(() => fact1);

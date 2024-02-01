@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Diagnostics;
 using NRules.Fluent;
@@ -221,13 +222,16 @@ public class EvaluationEventTest
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string JoinProperty { get; set; }
-        public string SelectProperty { get; set; }
+        [NotNull]
+        public string? JoinProperty { get; set; }
+        [NotNull]
+        public string? SelectProperty { get; set; }
     }
 
     [Name("Test Rule")]
@@ -235,8 +239,8 @@ public class EvaluationEventTest
     {
         public override void Define()
         {
-            FactType1 fact = null;
-            string value = null;
+            FactType1 fact = null!;
+            string value = null!;
             int length = 0;
 
             When()

@@ -13,6 +13,7 @@ public static class Matched
     /// </summary>
     /// <typeparam name="TFact">Type of the matched fact.</typeparam>
     public static FactConstraint<TFact> Fact<TFact>()
+        where TFact : notnull
     {
         return new TypedFactConstraint<TFact>();
     }
@@ -23,6 +24,7 @@ public static class Matched
     /// <typeparam name="TFact">Type of the matched fact.</typeparam>
     /// <param name="factValue">Value that the matched fact must be equal to.</param>
     public static FactConstraint<TFact> Fact<TFact>(TFact factValue)
+        where TFact : notnull
     {
         return new EqualFactConstraint<TFact>(factValue);
     }
@@ -33,6 +35,7 @@ public static class Matched
     /// <typeparam name="TFact">Type of the matched fact.</typeparam>
     /// <param name="predicateExpression">Predicate that the matched fact must satisfy.</param>
     public static FactConstraint<TFact> Fact<TFact>(Expression<Func<TFact, bool>> predicateExpression)
+        where TFact : notnull
     {
         return new PredicatedFactConstraint<TFact>(predicateExpression);
     }

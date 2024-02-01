@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -124,8 +125,10 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        [NotNull]
+        public string? JoinProperty { get; set; }
         public int EvalCount { get; set; }
     }
 
@@ -137,23 +140,26 @@ public class GroupJoinSeveralQueriesTest : BaseRulesTestFixture
         }
 
         public int Id { get; }
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType3
     {
-        public string TestProperty { get; set; }
-        public string GroupProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        [NotNull]
+        public string? GroupProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
-            FactType2 fact21 = null;
-            FactType2 fact22 = null;
-            IEnumerable<FactType3> group = null;
+            FactType1 fact1 = null!;
+            FactType2 fact21 = null!;
+            FactType2 fact22 = null!;
+            IEnumerable<FactType3> group = null!;
 
             When()
                 .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))

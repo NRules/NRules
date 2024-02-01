@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.Testing;
@@ -358,21 +359,24 @@ public class TwoFactOneGroupByRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string GroupKey { get; set; }
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? GroupKey { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact = null;
-            IGrouping<string, FactType2> group = null;
+            FactType1 fact = null!;
+            IGrouping<string, FactType2> group = null!;
 
             When()
                 .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))

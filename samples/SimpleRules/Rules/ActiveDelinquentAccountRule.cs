@@ -8,7 +8,7 @@ public class ActiveDelinquentAccountRule : Rule
 {
     public override void Define()
     {
-        Customer customer = default;
+        Customer customer = default!;
 
         When()
             .Match(() => customer, c => c.IsPreferred)

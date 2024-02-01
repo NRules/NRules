@@ -62,7 +62,7 @@ internal class Agenda : IAgendaInternal
     private readonly List<IStatefulAgendaFilter> _globalStatefulFilters = new();
     private readonly Dictionary<IRuleDefinition, List<IAgendaFilter>> _ruleFilters = new();
     private readonly Dictionary<IRuleDefinition, List<IStatefulAgendaFilter>> _ruleStatefulFilters = new();
-    private AgendaContext _context;
+    private AgendaContext _context = null!;
 
     public bool IsEmpty => !_activationQueue.HasActive();
 
@@ -181,7 +181,7 @@ internal class Agenda : IAgendaInternal
             if (!e.IsHandled)
             {
                 throw new AgendaExpressionEvaluationException("Failed to evaluate agenda filter expression",
-                    activation.Rule.Name, e.Expression.ToString(), e.InnerException);
+                    activation.Rule.Name, e.Expression.ToString(), e.InnerException!);
             }
             return false;
         }

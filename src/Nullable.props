@@ -1,0 +1,11 @@
+<Project>
+
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)/Nullable.cs" />
+  </ItemGroup>
+
+</Project>

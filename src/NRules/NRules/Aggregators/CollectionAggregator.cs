@@ -10,7 +10,7 @@ namespace NRules.Aggregators;
 /// <typeparam name="TElement">Type of elements to collect.</typeparam>
 internal class CollectionAggregator<TElement> : IAggregator
 {
-    private readonly FactCollection<TElement> _items = new();
+    private readonly FactCollection<TElement?> _items = new();
     private bool _created = false;
 
     public IReadOnlyCollection<AggregationResult> Add(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
@@ -40,7 +40,7 @@ internal class CollectionAggregator<TElement> : IAggregator
     {
         foreach (var fact in facts)
         {
-            var item = (TElement)fact.Value;
+            var item = (TElement?)fact.Value;
             _items.Add(fact, item);
         }
     }
@@ -49,7 +49,7 @@ internal class CollectionAggregator<TElement> : IAggregator
     {
         foreach (var fact in facts)
         {
-            var item = (TElement)fact.Value;
+            var item = (TElement?)fact.Value;
             _items.Modify(fact, item);
         }
     }

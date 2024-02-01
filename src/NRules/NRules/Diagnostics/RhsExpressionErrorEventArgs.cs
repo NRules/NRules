@@ -17,12 +17,12 @@ public class RhsExpressionErrorEventArgs : RhsExpressionEventArgs, IRecoverableE
     /// <param name="exception">Exception related to the event.</param>
     /// <param name="arguments">Expression arguments.</param>
     /// <param name="match">Rule match related to the event.</param>
-    public RhsExpressionErrorEventArgs(Expression expression, Exception exception, object[] arguments, IMatch match)
+    public RhsExpressionErrorEventArgs(Expression expression, Exception? exception, object[] arguments, IMatch match)
         : base(expression, exception, arguments, match)
     {
     }
     
-    internal RhsExpressionErrorEventArgs(Expression expression, Exception exception, IArguments arguments, IMatch match)
+    internal RhsExpressionErrorEventArgs(Expression expression, Exception? exception, IArguments arguments, IMatch match)
         : base(expression, exception, arguments, match)
     {
     }

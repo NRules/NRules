@@ -8,7 +8,7 @@ internal class AggregateFactSource : IFactSource
 {
     private static readonly IEnumerable<IFact> Empty = Array.Empty<IFact>();
 
-    public AggregateFactSource(IEnumerable<IFact> facts)
+    public AggregateFactSource(IEnumerable<IFact>? facts)
     {
         Facts = facts ?? Empty;
     }

@@ -84,7 +84,7 @@ internal class FactAggregator : IFactAggregator
         fact.Source = new AggregateFactSource(result.Source);
         if (!ReferenceEquals(fact.RawObject, result.Aggregate))
         {
-            _aggregateFactMap.Remove(fact.RawObject);
+            _aggregateFactMap.Remove(fact.RawObject!);
             fact.RawObject = result.Aggregate;
             _aggregateFactMap.Add(fact.RawObject, fact);
         }
@@ -99,7 +99,7 @@ internal class FactAggregator : IFactAggregator
                 $"Fact for aggregate object does not exist. AggregatorType={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
         }
 
-        _aggregateFactMap.Remove(fact.RawObject);
+        _aggregateFactMap.Remove(fact.RawObject!);
         fact.RawObject = result.Aggregate;
         fact.Source = null;
         return fact;

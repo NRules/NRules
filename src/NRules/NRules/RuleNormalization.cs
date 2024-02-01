@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.RuleModel;
@@ -84,7 +85,7 @@ internal class RuleNormalization : RuleElementVisitor<Context>
         return result;
     }
 
-    private bool CollapseSingleGroup(IReadOnlyCollection<RuleElement> childElements, out RuleElement result)
+    private bool CollapseSingleGroup(IReadOnlyCollection<RuleElement> childElements, [NotNullWhen(returnValue: true)]out RuleElement? result)
     {
         if (childElements.Count == 1 &&
             childElements.Single() is GroupElement ge)
@@ -97,7 +98,7 @@ internal class RuleNormalization : RuleElementVisitor<Context>
         return false;
     }
 
-    private bool SplitOrGroup(IReadOnlyCollection<RuleElement> childElements, out RuleElement result)
+    private bool SplitOrGroup(IReadOnlyCollection<RuleElement> childElements, [NotNullWhen(returnValue: true)]out RuleElement? result)
     {
         if (!childElements.OfType<OrElement>().Any())
         {
@@ -114,7 +115,7 @@ internal class RuleNormalization : RuleElementVisitor<Context>
         return true;
     }
 
-    private bool MergeOrGroups(IReadOnlyCollection<RuleElement> childElements, out RuleElement result)
+    private bool MergeOrGroups(IReadOnlyCollection<RuleElement> childElements, [NotNullWhen(returnValue: true)]out RuleElement? result)
     {
         if (!childElements.OfType<OrElement>().Any())
         {

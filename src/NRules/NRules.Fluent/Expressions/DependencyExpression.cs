@@ -17,6 +17,7 @@ internal class DependencyExpression : IDependencyExpression
     }
 
     public IDependencyExpression Resolve<TDependency>(Expression<Func<TDependency>> alias)
+        where TDependency : notnull
     {
         var symbol = alias.ToParameterExpression();
         var declaration = _builder.Dependency(symbol.Type, symbol.Name);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
@@ -101,28 +102,29 @@ public class RuleNormalizationTest : RulesTestFixture
     
     public class FactType1
     {
-        public string Key { get; set; }
-        public string Join { get; set; }
+        [NotNull]
+        public string? Key { get; set; }
+        public string? Join { get; set; }
     }
 
     public class FactType2
     {
-        public string Join { get; set; }
+        public string? Join { get; set; }
     }
 
     public class FactType3
     {
-        public string Join { get; set; }
+        public string? Join { get; set; }
     }
 
     public class NoNormalizationNecessaryTestRule : Rule
     {
         public override void Define()
         {
-            IGrouping<string, FactType1> group = default;
-            IEnumerable<FactType2> facts2 = default;
-            FactType3 fact3 = default;
-            string calc4 = default;
+            IGrouping<string, FactType1> group = default!;
+            IEnumerable<FactType2> facts2 = default!;
+            FactType3 fact3 = default!;
+            string calc4 = default!;
 
             When()
                 .Query(() => group, x => x
@@ -145,9 +147,9 @@ public class RuleNormalizationTest : RulesTestFixture
     {
         public override void Define()
         {
-            FactType1 fact1 = default;
-            FactType2 fact2 = default;
-            FactType3 fact3 = default;
+            FactType1 fact1 = default!;
+            FactType2 fact2 = default!;
+            FactType3 fact3 = default!;
 
             When()
                 .Or(x => x
@@ -165,8 +167,8 @@ public class RuleNormalizationTest : RulesTestFixture
     {
         public override void Define()
         {
-            FactType1 fact1 = default;
-            FactType2 fact2 = default;
+            FactType1 fact1 = default!;
+            FactType2 fact2 = default!;
 
             When()
                 .And(x => x
@@ -183,9 +185,9 @@ public class RuleNormalizationTest : RulesTestFixture
     {
         public override void Define()
         {
-            FactType1 fact1 = default;
-            FactType2 fact2 = default;
-            FactType3 fact3 = default;
+            FactType1 fact1 = default!;
+            FactType2 fact2 = default!;
+            FactType3 fact3 = default!;
 
             When()
                 .Or(x => x

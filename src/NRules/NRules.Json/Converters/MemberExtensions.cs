@@ -8,9 +8,9 @@ namespace NRules.Json.Converters;
 internal readonly struct MethodRecord
 {
     public readonly string Name;
-    public readonly Type DeclaringType;
+    public readonly Type? DeclaringType;
 
-    public MethodRecord(string name, Type declaringType)
+    public MethodRecord(string name, Type? declaringType)
     {
         Name = name;
         DeclaringType = declaringType;
@@ -19,7 +19,7 @@ internal readonly struct MethodRecord
 
 internal static class MemberExtensions
 {
-    public static MemberInfo ReadMemberInfo(this ref Utf8JsonReader reader, JsonSerializerOptions options, Type impliedType = null)
+    public static MemberInfo ReadMemberInfo(this ref Utf8JsonReader reader, JsonSerializerOptions options, Type? impliedType = null)
     {
         var memberType = reader.ReadEnumProperty<MemberTypes>(nameof(MemberInfo.MemberType), options);
         var name = reader.ReadStringProperty(nameof(MemberInfo.Name), options);
@@ -42,7 +42,7 @@ internal static class MemberExtensions
         }
     }
 
-    public static void WriteMemberInfo(this Utf8JsonWriter writer, JsonSerializerOptions options, MemberInfo value, Type impliedType = null)
+    public static void WriteMemberInfo(this Utf8JsonWriter writer, JsonSerializerOptions options, MemberInfo value, Type? impliedType = null)
     {
         writer.WriteEnumProperty(nameof(value.MemberType), value.MemberType, options);
         writer.WriteStringProperty(nameof(value.Name), value.Name, options);
@@ -69,14 +69,14 @@ internal static class MemberExtensions
         return true;
     }
 
-    public static void WriteMethodInfo(this Utf8JsonWriter writer, JsonSerializerOptions options, MethodInfo value, Type impliedType = null)
+    public static void WriteMethodInfo(this Utf8JsonWriter writer, JsonSerializerOptions options, MethodInfo value, Type? impliedType = null)
     {
         writer.WriteStringProperty("MethodName", value.Name, options);
         if (impliedType != value.DeclaringType)
             writer.WriteProperty(nameof(value.DeclaringType), value.DeclaringType, options);
     }
 
-    public static MethodInfo GetMethod(this MethodRecord methodRecord, Type[] argumentTypes, Type impliedType = null)
+    public static MethodInfo GetMethod(this MethodRecord methodRecord, Type[] argumentTypes, Type? impliedType = null)
     {
         var type = methodRecord.DeclaringType ?? impliedType;
         if (type == null)

@@ -124,7 +124,7 @@ public class ExpressionSerializerTest
     [Fact]
     public void Roundtrip_UnaryExpressionTypeAs_Equals()
     {
-        Expression<Func<object, string>> expression = o => o as string;
+        Expression<Func<object, string?>> expression = o => o as string;
         TestRoundtrip(expression);
     }
 
@@ -243,6 +243,7 @@ public class ExpressionSerializerTest
         //System.IO.File.WriteAllText(@"C:\temp\expression.json", jsonString);
         var deserialized = JsonSerializer.Deserialize<TExpression>(jsonString, _options);
 
+        Assert.NotNull(deserialized);
         Assert.True(ExpressionComparer.AreEqual(expression, deserialized));
     }
 }

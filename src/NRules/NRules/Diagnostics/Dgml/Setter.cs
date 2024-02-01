@@ -4,9 +4,14 @@ namespace NRules.Diagnostics.Dgml;
 
 internal class Setter
 {
-    public string Property { get; set; }
-    public string Value { get; set; }
-    public string Expression{ get; set; }
+    public Setter(string property)
+    {
+        Property = property;
+    }
+    
+    public string Property { get; }
+    public string? Value { get; set; }
+    public string? Expression{ get; set; }
 
     public void WriteXml(XmlWriter writer)
     {

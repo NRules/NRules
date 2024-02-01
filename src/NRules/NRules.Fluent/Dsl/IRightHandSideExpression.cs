@@ -40,7 +40,8 @@ public interface IRightHandSideExpression
     /// <typeparam name="TFact">Type of fact to yield.</typeparam>
     /// <param name="yield">Action expression that yields the linked fact.</param>
     /// <returns>Right hand side expression builder.</returns>
-    IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yield);
+    IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yield)
+        where TFact : notnull;
 
     /// <summary>
     /// Defines rule's action that yields a linked fact when the rule fires.
@@ -50,5 +51,6 @@ public interface IRightHandSideExpression
     /// <param name="yieldInsert">Action expression that yields a new linked fact.</param>
     /// <param name="yieldUpdate">Action expression that yields an updated linked fact.</param>
     /// <returns>Right hand side expression builder.</returns>
-    IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yieldInsert, Expression<Func<IContext, TFact, TFact>> yieldUpdate);
+    IRightHandSideExpression Yield<TFact>(Expression<Func<IContext, TFact>> yieldInsert, Expression<Func<IContext, TFact, TFact>> yieldUpdate)
+        where TFact : notnull;
 }

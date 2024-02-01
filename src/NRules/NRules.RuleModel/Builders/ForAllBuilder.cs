@@ -8,7 +8,7 @@ namespace NRules.RuleModel.Builders;
 /// </summary>
 public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
 {
-    private IBuilder<PatternElement> _sourceBuilder;
+    private IBuilder<PatternElement>? _sourceBuilder;
     private readonly List<IBuilder<PatternElement>> _patternBuilders = new();
 
     /// <summary>
@@ -86,7 +86,9 @@ public class ForAllBuilder : RuleElementBuilder, IBuilder<ForAllElement>
 
     ForAllElement IBuilder<ForAllElement>.Build()
     {
-        PatternElement basePatternElement = _sourceBuilder?.Build();
+        if (_sourceBuilder == null) throw new ArgumentNullException(nameof(_sourceBuilder));
+        
+        PatternElement basePatternElement = _sourceBuilder.Build();
 
         var patternElements = new List<PatternElement>();
         foreach (var patternBuilder in _patternBuilders)

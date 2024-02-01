@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.Testing;
@@ -60,16 +61,19 @@ public class GroupWithGroupFilterRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
-        public string GroupTestProperty { get; set; }
-        public string GroupProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        [NotNull]
+        public string? GroupTestProperty { get; set; }
+        [NotNull]
+        public string? GroupProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            IGrouping<string, FactType> group = null;
+            IGrouping<string, FactType> group = null!;
 
             When()
                 .Query(() => group, x => x

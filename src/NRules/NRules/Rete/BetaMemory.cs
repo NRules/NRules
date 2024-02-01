@@ -8,7 +8,7 @@ internal interface IBetaMemory
     IReadOnlyCollection<Tuple> Tuples { get; }
     void Add(List<Tuple> tuples);
     void Remove(List<Tuple> tuples);
-    Tuple FindTuple(Tuple leftTuple, Fact rightFact);
+    Tuple? FindTuple(Tuple leftTuple, Fact? rightFact);
 }
 
 internal class BetaMemory : IBetaMemory
@@ -36,7 +36,7 @@ internal class BetaMemory : IBetaMemory
         }
     }
 
-    public Tuple FindTuple(Tuple leftTuple, Fact rightFact)
+    public Tuple? FindTuple(Tuple leftTuple, Fact? rightFact)
     {
         var key = new TupleFactKey(leftTuple, rightFact);
         _parentToChildMap.TryGetValue(key, out var childTuple);
@@ -60,9 +60,9 @@ internal class BetaMemory : IBetaMemory
     private readonly struct TupleFactKey : IEquatable<TupleFactKey>
     {
         private readonly Tuple _tuple;
-        private readonly Fact _fact;
+        private readonly Fact? _fact;
 
-        public TupleFactKey(Tuple tuple, Fact fact)
+        public TupleFactKey(Tuple tuple, Fact? fact)
         {
             _tuple = tuple;
             _fact = fact;
@@ -73,7 +73,7 @@ internal class BetaMemory : IBetaMemory
             return ReferenceEquals(_tuple, other._tuple) && ReferenceEquals(_fact, other._fact);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is TupleFactKey other && Equals(other);
         }

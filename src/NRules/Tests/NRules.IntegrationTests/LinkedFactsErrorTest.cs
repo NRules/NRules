@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -36,20 +37,22 @@ public class LinkedFactsErrorTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string ChainProperty { get; set; }
+        [NotNull]
+        public string? ChainProperty { get; set; }
         public bool ShouldThrow { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class ForwardChainingFirstRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
+            FactType1 fact1 = null!;
 
             When()
                 .Match(() => fact1);

@@ -10,8 +10,8 @@ public class MultipleOrdersRule : Rule
 {
     public override void Define()
     {
-        Customer customer = default;
-        IEnumerable<Order> orders = default;
+        Customer customer = default!;
+        IEnumerable<Order> orders = default!;
 
         When()
             .Match(() => customer, c => c.IsPreferred)

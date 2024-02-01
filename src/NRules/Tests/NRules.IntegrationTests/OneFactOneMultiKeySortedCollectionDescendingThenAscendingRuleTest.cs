@@ -16,7 +16,7 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
         Session.Fire();
 
         // Assert
-        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(x => !x.Any())));
+        Verify(x => x.Rule().Fired(Matched.Fact<IEnumerable<FactType>>(f => !f.Any())));
     }
 
     [Fact]
@@ -169,21 +169,21 @@ public class OneFactOneMultiKeySortedCollectionAscendingThenDescendingRuleTest :
 
     public class FactType
     {
-        public FactType(int testInt, string testString)
+        public FactType(int testInt, string? testString)
         {
             TestPropertyInt = testInt;
             TestPropertyString = testString;
         }
 
         public int TestPropertyInt { get; set; }
-        public string TestPropertyString { get; set; }
+        public string? TestPropertyString { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            IEnumerable<FactType> collection = null;
+            IEnumerable<FactType> collection = null!;
 
             When()
                 .Query(() => collection, x => x

@@ -104,7 +104,7 @@ public interface IContext
     /// </summary>
     /// <param name="key">Key for the linked fact.</param>
     /// <returns>Linked fact if it exists, <c>null</c> otherwise.</returns>
-    object GetLinked(object key);
+    object? GetLinked(object key);
 
     /// <summary>
     /// Inserts a new fact and links it to the current rule activation.

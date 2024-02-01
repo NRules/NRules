@@ -88,7 +88,7 @@ internal class ActionContext : IActionContext
         return _session.GetLinkedKeys(Activation);
     }
 
-    public object GetLinked(object key)
+    public object? GetLinked(object key)
     {
         return _session.GetLinked(Activation, key);
     }

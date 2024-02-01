@@ -60,7 +60,7 @@ public class RuleSerializerTest
         Expression<Func<FactType1, bool>> filter1 = (fact1) => fact1.BooleanProperty;
         builder.Filters()
             .Filter(FilterType.Predicate, filter1);
-        Expression<Func<FactType1, object>> filter2 = (fact1) => fact1.StringProperty;
+        Expression<Func<FactType1, object?>> filter2 = (fact1) => fact1.StringProperty;
         builder.Filters()
             .Filter(FilterType.KeyChange, filter2);
 
@@ -177,7 +177,7 @@ public class RuleSerializerTest
         var bindingPattern = builder.LeftHandSide().Pattern(typeof(int), "length");
 
         var binding = bindingPattern.Binding();
-        Expression<Func<FactType1, int>> expression = fact1 => fact1.StringProperty.Length;
+        Expression<Func<FactType1, int>> expression = fact1 => fact1.StringProperty!.Length;
         binding.BindingExpression(expression);
 
         Expression<Action<IContext, int>> action = (ctx, length)
@@ -258,18 +258,18 @@ public class RuleSerializerTest
                     Expression.Assign(linkedFact,
                         Expression.Convert(
                             Expression.Call(context,
-                                typeof(IContext).GetMethod(nameof(IContext.GetLinked)),
+                                typeof(IContext).GetMethod(nameof(IContext.GetLinked))!,
                                 linkedKey),
                             typeof(TFact))),
                     Expression.IfThenElse(
                         Expression.Equal(linkedFact, Expression.Constant(null)),
                         Expression.Call(context,
-                            typeof(IContext).GetMethod(nameof(IContext.InsertLinked)), linkedKey,
+                            typeof(IContext).GetMethod(nameof(IContext.InsertLinked))!, linkedKey,
                             yieldInsert.Body),
                         Expression.Block(
                             Expression.Assign(linkedFact, Expression.Invoke(yieldUpdate, context, linkedFact)),
                             Expression.Call(context,
-                                typeof(IContext).GetMethod(nameof(IContext.UpdateLinked)),
+                                typeof(IContext).GetMethod(nameof(IContext.UpdateLinked))!,
                                 linkedKey, linkedFact)))
                 ),
                 context);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -10,7 +11,7 @@ namespace NRules.IntegrationTests;
 
 public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
 {
-    private TestRule _testRule;
+    private TestRule _testRule = null!;
 
     [Fact]
     public void Fire_MatchingFacts_FiresOnce()
@@ -56,7 +57,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
         Session.Insert(fact1);
         Session.Insert(fact2);
 
-        IFactMatch[] matches = null;
+        IFactMatch[]? matches = null;
         _testRule.Action = ctx =>
         {
             matches = ctx.Match.Facts.ToArray();
@@ -67,6 +68,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify(x => x.Rule().Fired());
+        Assert.NotNull(matches);
         Assert.Single(matches);
         Assert.Equal("fact", matches[0].Declaration.Name);
         Assert.Same(fact1, matches[0].Value);
@@ -309,13 +311,15 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class TestRule : Rule
@@ -324,7 +328,7 @@ public class TwoFactOneExistsCheckRuleTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType1 fact = null;
+            FactType1 fact = null!;
 
             When()
                 .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))

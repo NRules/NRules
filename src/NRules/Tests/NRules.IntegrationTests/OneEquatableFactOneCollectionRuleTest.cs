@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -157,9 +158,10 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
         }
 
         public int Id { get; }
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
 
-        public bool Equals(FactType other)
+        public bool Equals(FactType? other)
         {
             if (other is null)
                 return false;
@@ -168,7 +170,7 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
             return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -189,7 +191,7 @@ public class OneEquatableFactOneCollectionRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IEnumerable<FactType> collection = null;
+            IEnumerable<FactType> collection = null!;
 
             When()
                 .Query(() => collection, q => q

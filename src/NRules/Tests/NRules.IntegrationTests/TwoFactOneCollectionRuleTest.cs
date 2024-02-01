@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -11,7 +12,7 @@ namespace NRules.IntegrationTests;
 
 public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 {
-    private TestRule _testRule;
+    private TestRule _testRule = null!;
 
     [Fact]
     public void Fire_OneMatchingFactOfOneKindAndTwoOfAnother_FiresOnceWithTwoFactsInCollection()
@@ -59,7 +60,7 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
         Session.Insert(fact1);
         Session.Insert(fact2);
 
-        IFactMatch[] matches = null;
+        IFactMatch[]? matches = null;
         _testRule.Action = ctx =>
         {
             matches = ctx.Match.Facts.ToArray();
@@ -70,11 +71,12 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify(x => x.Rule().Fired());
+        Assert.NotNull(matches);
         Assert.Equal(2, matches.Length);
         Assert.Equal("fact", matches[0].Declaration.Name);
         Assert.Same(fact1, matches[0].Value);
         Assert.Equal("collection", matches[1].Declaration.Name);
-        Assert.Equal(new[] { fact2 }, (IEnumerable<FactType2>)matches[1].Value);
+        Assert.Equal(new[] { fact2 }, (IEnumerable<FactType2>?)matches[1].Value);
     }
 
     [Fact]
@@ -350,13 +352,15 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public class TestRule : Rule
@@ -365,8 +369,8 @@ public class TwoFactOneCollectionRuleTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType1 fact = null;
-            IEnumerable<FactType2> collection = null;
+            FactType1 fact = null!;
+            IEnumerable<FactType2> collection = null!;
 
             When()
                 .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))

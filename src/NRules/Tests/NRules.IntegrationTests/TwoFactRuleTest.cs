@@ -1,4 +1,5 @@
-﻿using NRules.Fluent.Dsl;
+﻿using System.Diagnostics.CodeAnalysis;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.Testing;
 using Xunit;
@@ -313,19 +314,24 @@ public class TwoFactRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        [NotNull]
+        public string? JoinProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
-        public FactType1 Fact1 { get; set; }
-        public FactType2 Fact2;
+        [NotNull]
+        public FactType1? Fact1 { get; set; }
+        [NotNull]
+        public FactType2? Fact2 = null!;
 
         public override void Define()
         {

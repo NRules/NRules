@@ -38,7 +38,7 @@ public abstract class RuleElement
         _imports.UnionWith(imports);
     }
 
-    internal void AddImports(RuleElement element)
+    internal void AddImports(RuleElement? element)
     {
         if (element != null)
             AddImports(new[] {element});

@@ -396,7 +396,7 @@ public class ActionTriggerRepeatableTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType fact = null!;
 
             When()
                 .Match(() => fact);
@@ -802,7 +802,7 @@ public class ActionTriggerNonRepeatableTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType fact = null!;
 
             When()
                 .Match(() => fact);
@@ -1185,7 +1185,7 @@ public class ActionTriggerNoUpdateRepeatableTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType fact = null!;
 
             When()
                 .Match(() => fact);
@@ -1568,7 +1568,7 @@ public class ActionTriggerNoUpdateNonRepeatableTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType fact = null!;
 
             When()
                 .Match(() => fact);

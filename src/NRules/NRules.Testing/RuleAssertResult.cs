@@ -15,7 +15,7 @@ public sealed class RuleAssertResult
     /// <param name="assertionText">Text that describes the assertion.</param>
     /// <param name="expected">Expected outcome.</param>
     /// <param name="actual">Actual outcome.</param>
-    public RuleAssertResult(string ruleName, RuleAssertStatus status, string assertionText, object expected, object actual)
+    public RuleAssertResult(string? ruleName, RuleAssertStatus status, string assertionText, object expected, object actual)
     {
         RuleName = ruleName;
         Status = status;
@@ -27,7 +27,7 @@ public sealed class RuleAssertResult
     /// <summary>
     /// Gets the name of the rule corresponding to the assertion.
     /// </summary>
-    public string RuleName { get; }
+    public string? RuleName { get; }
 
     /// <summary>
     /// Gets the rule assertion outcome.

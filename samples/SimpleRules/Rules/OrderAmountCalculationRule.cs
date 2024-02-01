@@ -8,7 +8,7 @@ public class OrderAmountCalculationRule : Rule
 {
     public override void Define()
     {
-        Order order = null;
+        Order order = null!;
 
         When()
             .Match(() => order);

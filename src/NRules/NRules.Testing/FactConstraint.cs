@@ -36,8 +36,9 @@ public abstract class FactConstraint
 /// Represents a strongly-typed constraint on facts matched by a rule.
 /// </summary>
 public abstract class FactConstraint<TFact> : FactConstraint
+    where TFact : notnull
 {
-    private List<Action<TFact>> _callbacks;
+    private List<Action<TFact>>? _callbacks;
 
     /// <summary>
     /// Called with the corresponding fact when all rule firing fact constraints are satisfied.
@@ -56,12 +57,14 @@ public abstract class FactConstraint<TFact> : FactConstraint
         if (_callbacks == null) return;
         foreach (var callback in _callbacks)
         {
-            callback.Invoke((TFact)factMatch.Value);
+            if (factMatch.Value != null)
+                callback.Invoke((TFact)factMatch.Value);
         }
     }
 }
 
 internal class TypedFactConstraint<TFact> : FactConstraint<TFact>
+    where TFact : notnull
 {
     internal override bool IsSatisfied(IFactMatch factMatch)
     {
@@ -75,6 +78,7 @@ internal class TypedFactConstraint<TFact> : FactConstraint<TFact>
 }
 
 internal class PredicatedFactConstraint<TFact> : FactConstraint<TFact>
+    where TFact : notnull
 {
     private readonly Expression<Func<TFact, bool>> _predicateExpression;
     private readonly Func<TFact, bool> _predicate;
@@ -89,7 +93,7 @@ internal class PredicatedFactConstraint<TFact> : FactConstraint<TFact>
     {
         if (typeof(TFact).IsAssignableFrom(factMatch.Declaration.Type))
         {
-            return _predicate((TFact)factMatch.Value);
+            return _predicate((TFact)factMatch.Value!);
         }
         return false;
     }
@@ -100,18 +104,19 @@ internal class PredicatedFactConstraint<TFact> : FactConstraint<TFact>
     }
 }
 
-internal class EqualFactConstraint<T> : FactConstraint<T>
+internal class EqualFactConstraint<TFact> : FactConstraint<TFact>
+    where TFact : notnull
 {
-    private readonly T _factValue;
+    private readonly TFact _factValue;
 
-    public EqualFactConstraint(T factValue)
+    public EqualFactConstraint(TFact factValue)
     {
         _factValue = factValue;
     }
 
     internal override bool IsSatisfied(IFactMatch factMatch)
     {
-        if (typeof(T).IsAssignableFrom(factMatch.Declaration.Type))
+        if (typeof(TFact).IsAssignableFrom(factMatch.Declaration.Type))
         {
             return Equals(_factValue, factMatch.Value);
         }
@@ -120,6 +125,6 @@ internal class EqualFactConstraint<T> : FactConstraint<T>
 
     internal override string GetText()
     {
-        return $"Fact {typeof(T)} equal to {_factValue}";
+        return $"Fact {typeof(TFact)} equal to {_factValue}";
     }
 }
