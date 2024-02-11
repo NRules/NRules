@@ -16,6 +16,7 @@ To install NRules, get it from nuget via the package manager
 Use the following resources to get up and running with NRules
 
 - [Getting Started Guide](https://nrules.net/articles/getting-started.html)
+- [GPT Rules Writer](https://chat.openai.com/g/g-RgoE8sL4r-nrules-rule-writer)
 - [Documentation](https://nrules.net/index.html)
 - [API Documentation](https://nrules.net/api/index.html)
 
