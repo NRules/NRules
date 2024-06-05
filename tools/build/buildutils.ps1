@@ -63,12 +63,20 @@ function Install-DotNetCli([string] $location, [string] $version, [string[]] $ru
     }
 
     Write-Host "Installing .NET SDK $version"
-    & $installScriptPath --install-dir "$installDir" --version $version
+    if (IsOnWindows) {
+        & $installScriptPath -InstallDir "$installDir" -Version $version
+    } else {
+        & $installScriptPath --install-dir "$installDir" --version $version
+    }
 
     if ($null -ne $runtimes) {
         foreach ($runtime in $runtimes) {
             Write-Host "Installing .NET Runtime $runtime"
-            & $installScriptPath --install-dir "$installDir" --runtime dotnet --version $runtime
+            if (IsOnWindows) {
+                & $installScriptPath -InstallDir "$installDir" -Runtime dotnet -Version $runtime
+            } else {
+                & $installScriptPath --install-dir "$installDir" --runtime dotnet --version $runtime
+            }
         }
     }
 
