@@ -138,7 +138,7 @@ using NRules.Testing;
 
 public abstract class BaseRulesTestFixture : RulesTestFixture
 {
-    protected MyRulesTestFixture()
+    protected BaseRulesTestFixture()
     {
         Asserter = new XUnitRuleAsserter();
     }
