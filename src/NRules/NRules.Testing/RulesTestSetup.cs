@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
+using NRules.RuleModel;
 
 namespace NRules.Testing;
 
@@ -40,6 +41,12 @@ public interface IRulesTestSetup
     /// </summary>
     /// <param name="ruleInstance">Rule instance to add.</param>
     void Rule(Rule ruleInstance);
+    
+    /// <summary>
+    /// Adds specific rule under test to the setup.
+    /// </summary>
+    /// <param name="ruleDefinition">Rule definition to add.</param>
+    void Rule(IRuleDefinition ruleDefinition);
 }
 
 internal sealed class RulesTestSetup : IRulesTestSetup
@@ -66,6 +73,12 @@ internal sealed class RulesTestSetup : IRulesTestSetup
     {
         var definition = _ruleDefinitionFactory.Create(ruleInstance);
         var ruleInfo = new RuleInfo(ruleInstance.GetType(), ruleInstance, definition);
+        _rules.Add(ruleInfo);
+    }
+
+    public void Rule(IRuleDefinition ruleDefinition)
+    {
+        var ruleInfo = new RuleInfo(ruleDefinition);
         _rules.Add(ruleInfo);
     }
 }

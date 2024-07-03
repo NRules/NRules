@@ -31,6 +31,14 @@ public interface IRulesFiringVerification<out TVerification>
     /// <param name="ruleType"><see cref="Type"/> of the rule to look for.</param>
     /// <returns>Specific rule verification builder.</returns>
     TVerification Rule(Type ruleType);
+    
+    /// <summary>
+    /// Registered rule under test with the specifies name.
+    /// Call this if you have multiple registered rules under test, or want to be specific.
+    /// </summary>
+    /// <param name="ruleName">Name of the rule to look for.</param>
+    /// <returns>Specific rule verification builder.</returns>
+    TVerification Rule(string ruleName);
 }
 
 /// <summary>
@@ -70,6 +78,11 @@ internal abstract class RulesFiringVerification<TVerification> : IRulesFiringVer
     public TVerification Rule(Type ruleType)
     {
         return Rule(_rulesUnderTest.GetRuleInfo(ruleType));
+    }
+
+    public TVerification Rule(string ruleName)
+    {
+        return Rule(_rulesUnderTest.GetRuleInfo(ruleName));
     }
 
     protected void AddVerification(RuleFiringVerification verification)
