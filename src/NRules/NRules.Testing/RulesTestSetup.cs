@@ -26,14 +26,19 @@ public interface IRulesTestSetup
     /// Adds specific rule under test to the setup.
     /// </summary>
     /// <typeparam name="T">Type of the rule to add.</typeparam>
-    /// <remarks>If <typeparamref name="T"/> is not concrete, it will be ignored</remarks>
+    /// <remarks>
+    /// If <typeparamref name="T"/> is not concrete, it will be ignored.
+    /// </remarks>
     void Rule<T>() where T : Rule;
 
     /// <summary>
     /// Adds specific rule under test to the setup.
     /// </summary>
     /// <param name="ruleType"><see cref="Type"/> of the rule to add.</param>
-    /// <remarks>If <paramref name="ruleType"/> is not derived from <see cref="Fluent.Dsl.Rule"/> or is not concrete, it will be ignored.</remarks>
+    /// <remarks>
+    /// If <paramref name="ruleType"/> is not derived from <see cref="Fluent.Dsl.Rule"/> or is not concrete,
+    /// it will be ignored.
+    /// </remarks>
     void Rule(Type ruleType);
 
     /// <summary>
@@ -46,6 +51,10 @@ public interface IRulesTestSetup
     /// Adds specific rule under test to the setup.
     /// </summary>
     /// <param name="ruleDefinition">Rule definition to add.</param>
+    /// <remarks>
+    /// Rules registered as <see cref="IRuleDefinition"/> cannot participate in assertions
+    /// that use Fluent DSL information, such as the rule CLR type.
+    /// </remarks>
     void Rule(IRuleDefinition ruleDefinition);
 }
 

@@ -33,13 +33,13 @@ public struct RuleInfo
 
     /// <summary>
     /// CLR type that contains rule's definition using Fluent DSL.
-    /// This is null if the rule is defined using just a canonical <see cref="IRuleDefinition"/>.
+    /// This is null if the rule is not defined using Fluent DSL.
     /// </summary>
     public Type? Type { get; }
 
     /// <summary>
     /// Instance of the <see cref="Rule"/> class that contains the rule's definition using Fluent DSL.
-    /// This is null if the rule is defined using just a canonical <see cref="IRuleDefinition"/>.
+    /// This is null if the rule is not defined using Fluent DSL.
     /// </summary>
     public object? Instance { get; }
 
