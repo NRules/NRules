@@ -73,12 +73,22 @@ internal sealed class RulesTestSetup : IRulesTestSetup
     {
         var definition = _ruleDefinitionFactory.Create(ruleInstance);
         var ruleInfo = new RuleInfo(ruleInstance.GetType(), ruleInstance, definition);
-        _rules.Add(ruleInfo);
+        AddRule(ruleInfo);
     }
-
+    
     public void Rule(IRuleDefinition ruleDefinition)
     {
         var ruleInfo = new RuleInfo(ruleDefinition);
+        AddRule(ruleInfo);
+    }
+    
+    private void AddRule(RuleInfo ruleInfo)
+    {
+        if (ruleInfo.Type != null && _rules.Any(x => x.Type == ruleInfo.Type))
+            throw new ArgumentException($"Rule with type {ruleInfo.Type} is already registered");
+        if (_rules.Any(x => string.Equals(x.Definition.Name, ruleInfo.Definition.Name)))
+            throw new ArgumentException($"Rule with name {ruleInfo.Definition.Name} is already registered");
+        
         _rules.Add(ruleInfo);
     }
 }
