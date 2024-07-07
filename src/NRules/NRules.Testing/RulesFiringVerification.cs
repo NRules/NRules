@@ -6,42 +6,50 @@ using NRules.Fluent.Dsl;
 namespace NRules.Testing;
 
 /// <summary>
-/// Fluent interface to build rules verification.
+/// Fluent interface to build rules firing verification.
 /// </summary>
 public interface IRulesFiringVerification<out TVerification>
 {
     /// <summary>
-    /// Single registered rule under test.
+    /// Firing verification for a single registered rule under test.
     /// </summary>
-    /// <returns>Specific rule verification builder.</returns>
+    /// <returns>Specific rule firing verification builder.</returns>
     TVerification Rule();
 
     /// <summary>
-    /// Registered rule under test with the specifies rule type.
+    /// Firing verification for a registered rule under test with the specified rule type.
     /// Call this if you have multiple registered rules under test, or want to be specific.
     /// </summary>
-    /// <typeparam name="TRule">Type of the rule to look for.</typeparam>
-    /// <returns>Specific rule verification builder.</returns>
+    /// <typeparam name="TRule">Type of the rule to verify its firing.</typeparam>
+    /// <returns>Specific rule firing verification builder.</returns>
     TVerification Rule<TRule>() where TRule : Rule;
 
     /// <summary>
-    /// Registered rule under test with the specifies rule type.
+    /// Firing verification for a registered rule under test with the specified rule type.
     /// Call this if you have multiple registered rules under test, or want to be specific.
     /// </summary>
-    /// <param name="ruleType"><see cref="Type"/> of the rule to look for.</param>
-    /// <returns>Specific rule verification builder.</returns>
+    /// <param name="ruleType"><see cref="Type"/> of the rule to verify its firing.</param>
+    /// <returns>Specific rule firing verification builder.</returns>
     TVerification Rule(Type ruleType);
+    
+    /// <summary>
+    /// Firing verification for a registered rule under test with the specified name.
+    /// Call this if you have multiple registered rules under test, or want to be specific.
+    /// </summary>
+    /// <param name="ruleName">Name of the rule to verify its firing.</param>
+    /// <returns>Specific rule firing verification builder.</returns>
+    TVerification Rule(string ruleName);
 }
 
 /// <summary>
-/// Fluent interface to build specific rule invocation verification.
+/// Fluent interface to build specific rule firing verification.
 /// </summary>
 public interface IRulesFiringVerification : IRulesFiringVerification<IQualifiedRuleFiringVerification>
 {
 }
 
 /// <summary>
-/// Fluent interface to build specific rule invocation verification.
+/// Fluent interface to build exact rule sequence firing verification.
 /// </summary>
 public interface IRuleSequenceFiringVerification : IRulesFiringVerification<IRuleFiringVerification>
 {
@@ -70,6 +78,11 @@ internal abstract class RulesFiringVerification<TVerification> : IRulesFiringVer
     public TVerification Rule(Type ruleType)
     {
         return Rule(_rulesUnderTest.GetRuleInfo(ruleType));
+    }
+
+    public TVerification Rule(string ruleName)
+    {
+        return Rule(_rulesUnderTest.GetRuleInfo(ruleName));
     }
 
     protected void AddVerification(RuleFiringVerification verification)
