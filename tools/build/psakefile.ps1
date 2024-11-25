@@ -19,7 +19,7 @@ task Init {
     Assert ($component -ne $null) 'Component should not be null'
     Assert ($baseDir -ne $null) 'Base directory should not be null'
     
-    Write-Host "Running '$target' target for $($component.name) version $version ($configuration)" -ForegroundColor Green
+    Write-Host "Running '$taskList' target for $($component.name) version $version ($configuration)" -ForegroundColor Green
     
     $compName = $component.name
     
