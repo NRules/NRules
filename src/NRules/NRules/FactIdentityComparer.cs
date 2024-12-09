@@ -25,7 +25,7 @@ namespace NRules;
 public interface IFactIdentityComparer : IEqualityComparer<object>
 {
     /// <summary>
-    /// Strongly typed fact identity comparer for a specific fact type.
+    /// Retrieves a strongly typed fact identity comparer for a specific fact type.
     /// </summary>
     /// <typeparam name="TFact">Type of fact to get an identity comparer for.</typeparam>
     /// <returns>Strongly typed fact identity comparer.</returns>
