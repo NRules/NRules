@@ -40,16 +40,6 @@ public class RuleCompiler
     }
     
     /// <summary>
-    /// Default equality comparer used to compare fact identity, when inserting, updating, removing
-    /// facts within the rules session.
-    /// </summary>
-    /// <remarks>
-    /// Built-in implementation uses <see cref="IIdentityProvider"/> if implemented by the fact,
-    /// to determine fact identity.
-    /// </remarks>
-    public IEqualityComparer<object> DefaultFactIdentityComparer { get; set; } = new DefaultFactIdentityComparer();
-    
-    /// <summary>
     /// Equality comparers for specific fact types, used to compare fact identity, when inserting, updating, removing
     /// facts within the rules session.
     /// </summary>
@@ -114,7 +104,9 @@ public class RuleCompiler
         }
 
         INetwork network = reteBuilder.Build();
-        var factIdentityComparer = new FactIdentityComparer(DefaultFactIdentityComparer, FactIdentityComparerRegistry.GetComparers());
+        var factIdentityComparer = new FactIdentityComparer(
+            FactIdentityComparerRegistry.DefaultFactIdentityComparer,
+            FactIdentityComparerRegistry.GetComparers());
         var factory = new SessionFactory(network, compiledRules, factIdentityComparer);
         return factory;
     }

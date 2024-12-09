@@ -299,7 +299,7 @@ public class FactIdentityComparerTest
     public void Equals_CustomDefaultComparer_CustomWithSameIdentityDifferentEquality_True()
     {
         // Arrange
-        var target = CreateTarget(new CustomFactIdentityComparer());
+        var target = CreateTarget(x => x.DefaultFactIdentityComparer = new CustomFactIdentityComparer());
 
         // Act
         var result = target.Equals(new FactWithCustomIdentity(1, "20"), new FactWithCustomIdentity(1, "21"));
@@ -312,7 +312,7 @@ public class FactIdentityComparerTest
     public void Equals_CustomDefaultComparer_CustomWithDifferentIdentitySameEquality_False()
     {
         // Arrange
-        var target = CreateTarget(new CustomFactIdentityComparer());
+        var target = CreateTarget(x => x.DefaultFactIdentityComparer = new CustomFactIdentityComparer());
 
         // Act
         var result = target.Equals(new FactWithCustomIdentity(1, "20"), new FactWithCustomIdentity(2, "20"));
@@ -325,7 +325,8 @@ public class FactIdentityComparerTest
     public void Equals_StronglyTypedCustomDefaultComparer_CustomWithSameIdentityDifferentEquality_True()
     {
         // Arrange
-        var target = CreateTarget(new CustomFactIdentityComparer()).GetComparer<FactWithCustomIdentity>();
+        var target = CreateTarget(x => x.DefaultFactIdentityComparer = new CustomFactIdentityComparer())
+            .GetComparer<FactWithCustomIdentity>();
 
         // Act
         var result = target.Equals(new FactWithCustomIdentity(1, "20"), new FactWithCustomIdentity(1, "21"));
@@ -338,7 +339,8 @@ public class FactIdentityComparerTest
     public void Equals_StronglyTypedCustomDefaultComparer_CustomWithDifferentIdentitySameEquality_False()
     {
         // Arrange
-        var target = CreateTarget(new CustomFactIdentityComparer()).GetComparer<FactWithCustomIdentity>();
+        var target = CreateTarget(x => x.DefaultFactIdentityComparer = new CustomFactIdentityComparer())
+            .GetComparer<FactWithCustomIdentity>();
 
         // Act
         var result = target.Equals(new FactWithCustomIdentity(1, "20"), new FactWithCustomIdentity(2, "20"));
@@ -364,7 +366,7 @@ public class FactIdentityComparerTest
     public void Equals_DefaultComparerPlusCustomFactComparer_FactsWithSameOpaqueIdentity_True()
     {
         // Arrange
-        var target = CreateTargetWithCustomComparer(new FactWithOpaqueIdentityComparer());
+        var target = CreateTarget(x => x.RegisterComparer(new FactWithOpaqueIdentityComparer()));
 
         // Act
         var result = target.Equals(new FactWithOpaqueIdentity(1), new FactWithOpaqueIdentity(1));
@@ -377,7 +379,7 @@ public class FactIdentityComparerTest
     public void Equals_DefaultComparerPlusCustomFactComparer_FactsWithDifferentOpaqueIdentity_False()
     {
         // Arrange
-        var target = CreateTargetWithCustomComparer(new FactWithOpaqueIdentityComparer());
+        var target = CreateTarget(x => x.RegisterComparer(new FactWithOpaqueIdentityComparer()));
 
         // Act
         var result = target.Equals(new FactWithOpaqueIdentity(1), new FactWithOpaqueIdentity(2));
@@ -390,7 +392,7 @@ public class FactIdentityComparerTest
     public void Equals_StronglyTypedCustomFactComparer_Nulls_True()
     {
         // Arrange
-        var target = CreateTargetWithCustomComparer(new FactWithOpaqueIdentityComparer())
+        var target = CreateTarget(x => x.RegisterComparer(new FactWithOpaqueIdentityComparer()))
             .GetComparer<FactWithOpaqueIdentity>();
 
         // Act
@@ -404,7 +406,7 @@ public class FactIdentityComparerTest
     public void Equals_StronglyTypedCustomFactComparer_NullAndObject_False()
     {
         // Arrange
-        var target = CreateTargetWithCustomComparer(new FactWithOpaqueIdentityComparer())
+        var target = CreateTarget(x => x.RegisterComparer(new FactWithOpaqueIdentityComparer()))
             .GetComparer<FactWithOpaqueIdentity>();
 
         // Act
@@ -418,7 +420,7 @@ public class FactIdentityComparerTest
     public void Equals_StronglyTypedCustomFactComparer_ObjectAndNull_False()
     {
         // Arrange
-        var target = CreateTargetWithCustomComparer(new FactWithOpaqueIdentityComparer())
+        var target = CreateTarget(x => x.RegisterComparer(new FactWithOpaqueIdentityComparer()))
             .GetComparer<FactWithOpaqueIdentity>();
 
         // Act
@@ -432,7 +434,7 @@ public class FactIdentityComparerTest
     public void Equals_StronglyTypedCustomFactComparer_DifferentTypesInOneOrder_False()
     {
         // Arrange
-        var target = CreateTargetWithCustomComparer(new FactWithOpaqueIdentityComparer())
+        var target = CreateTarget(x => x.RegisterComparer(new FactWithOpaqueIdentityComparer()))
             .GetComparer<FactWithOpaqueIdentity>();
 
         // Act
@@ -446,7 +448,7 @@ public class FactIdentityComparerTest
     public void Equals_StronglyTypedCustomFactComparer_DifferentTypesInAnotherOrder_False()
     {
         // Arrange
-        var target = CreateTargetWithCustomComparer(new FactWithOpaqueIdentityComparer())
+        var target = CreateTarget(x => x.RegisterComparer(new FactWithOpaqueIdentityComparer()))
             .GetComparer<FactWithOpaqueIdentity>();
 
         // Act
@@ -460,7 +462,7 @@ public class FactIdentityComparerTest
     public void Equals_StronglyTypedCustomFactComparer_FactsWithSameOpaqueIdentity_True()
     {
         // Arrange
-        var target = CreateTargetWithCustomComparer(new FactWithOpaqueIdentityComparer())
+        var target = CreateTarget(x => x.RegisterComparer(new FactWithOpaqueIdentityComparer()))
             .GetComparer<FactWithOpaqueIdentity>();
 
         // Act
@@ -474,7 +476,7 @@ public class FactIdentityComparerTest
     public void Equals_StronglyTypedCustomFactComparer_FactsWithDifferentOpaqueIdentity_False()
     {
         // Arrange
-        var target = CreateTargetWithCustomComparer(new FactWithOpaqueIdentityComparer())
+        var target = CreateTarget(x => x.RegisterComparer(new FactWithOpaqueIdentityComparer()))
             .GetComparer<FactWithOpaqueIdentity>();
 
         // Act
@@ -484,20 +486,13 @@ public class FactIdentityComparerTest
         Assert.False(result);
     }
 
-    private static IFactIdentityComparer CreateTarget(IEqualityComparer<object>? defaultComparer = null, 
-        IReadOnlyCollection<FactIdentityComparerRegistry.Entry>? customComparers = null)
-    {
-        var target = new FactIdentityComparer(
-            defaultComparer ?? new DefaultFactIdentityComparer(),
-            customComparers ?? []);
-        return target;
-    }
-    
-    private static IFactIdentityComparer CreateTargetWithCustomComparer<T>(IEqualityComparer<T> comparer)
+    private static IFactIdentityComparer CreateTarget(Action<FactIdentityComparerRegistry>? action = default)
     {
         var registry = new FactIdentityComparerRegistry();
-        registry.RegisterComparer(comparer);
-        var target = CreateTarget(customComparers: registry.GetComparers());
+        action?.Invoke(registry);
+        var target = new FactIdentityComparer(
+            registry.DefaultFactIdentityComparer,
+            registry.GetComparers());
         return target;
     }
 
@@ -598,7 +593,7 @@ public class FactIdentityComparerTest
             if (obj1 is IHaveCustomIdentity provider1 && obj2 is IHaveCustomIdentity provider2)
                 return provider1.GetIdentity() == provider2.GetIdentity();
 
-            return object.Equals(obj1, obj2);
+            return Equals(obj1, obj2);
         }
 
         int IEqualityComparer<object>.GetHashCode(object? obj)

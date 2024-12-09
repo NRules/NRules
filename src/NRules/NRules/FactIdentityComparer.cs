@@ -14,11 +14,12 @@ namespace NRules;
 /// <list type="bullet">
 /// <item>If both facts are the same reference, they are considered identical.</item>
 /// <item>If facts are of different types, they are considered not identical.</item>
-/// <item>If custom comparer is registered for the fact type in <see cref="RuleCompiler.FactIdentityComparerRegistry"/>,
+/// <item>If custom comparer is registered for the fact type in <see cref="FactIdentityComparerRegistry"/>,
 /// it is used to compare the identity of the facts.</item>
-/// <item><see cref="RuleCompiler.DefaultFactIdentityComparer"/> is used to compare the identity of the facts.
-/// Built-in implementation compares returned identity objects if facts implement <see cref="IIdentityProvider"/>.</item>
-/// <item>Otherwise, the objects are compared using their equality.</item>
+/// <item>In all other cases <see cref="FactIdentityComparerRegistry.DefaultFactIdentityComparer"/> is used
+/// to compare the identity of the facts.
+/// It checks if facts implement <see cref="IIdentityProvider"/> and compares the identity objects in this case.
+/// Otherwise, the facts are compared using their equality.</item>
 /// </list>
 /// </remarks>
 public interface IFactIdentityComparer : IEqualityComparer<object>
