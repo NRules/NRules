@@ -7,6 +7,7 @@ namespace NRules;
 
 internal interface IWorkingMemory
 {
+    IFactIdentityComparer FactIdentityComparer { get; }
     IEnumerable<Fact> Facts { get; }
 
     Fact? GetFact(object factObject);
@@ -32,7 +33,7 @@ internal interface IWorkingMemory
 
 internal class WorkingMemory : IWorkingMemory
 {
-    private readonly Dictionary<object, Fact> _factMap = new();
+    private readonly Dictionary<object, Fact> _factMap;
     private readonly Dictionary<Activation, Dictionary<object, Fact>> _linkedFactMap = new();
     private readonly Dictionary<TupleStateKey, object> _tupleStateMap = new();
 
@@ -40,8 +41,15 @@ internal class WorkingMemory : IWorkingMemory
 
     private readonly Dictionary<IBetaMemoryNode, IBetaMemory> _betaMap = new();
 
+    public WorkingMemory(IFactIdentityComparer factIdentityComparer)
+    {
+        FactIdentityComparer = factIdentityComparer;
+        _factMap = new Dictionary<object, Fact>(factIdentityComparer);
+    }
+
     private static readonly object[] EmptyObjectList = Array.Empty<object>();
 
+    public IFactIdentityComparer FactIdentityComparer { get; }
     public IEnumerable<Fact> Facts => _factMap.Values;
 
     public Fact? GetFact(object factObject)

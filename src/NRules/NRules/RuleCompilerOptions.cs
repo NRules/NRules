@@ -25,6 +25,11 @@ public enum RuleCompilerUnsupportedExpressionsHandling
 public class RuleCompilerOptions
 {
     /// <summary>
+    /// Default options for the rule compiler.
+    /// </summary>
+    public static RuleCompilerOptions Default => new();
+    
+    /// <summary>
     /// Determines compiler behavior when it finds an unsupported type of lambda expressions
     /// while comparing them for the purpose of node sharing in the Rete graph.
     /// </summary>

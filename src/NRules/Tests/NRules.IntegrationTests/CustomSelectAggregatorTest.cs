@@ -156,7 +156,7 @@ internal class CustomSelectAggregateFactory : IAggregatorFactory
         _factory = factoryExpression.Compile();
     }
 
-    public IAggregator Create()
+    public IAggregator Create(AggregationContext context)
     {
         return _factory!();
     }

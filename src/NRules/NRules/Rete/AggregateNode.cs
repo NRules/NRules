@@ -40,7 +40,7 @@ internal class AggregateNode : BinaryBetaNode
             var joinedSets = JoinedSets(context, tuples);
             foreach (var set in joinedSets)
             {
-                IFactAggregator aggregator = CreateFactAggregator(context, set.Tuple);
+                IFactAggregator aggregator = CreateFactAggregator(aggregationContext, set.Tuple);
                 AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, set.Facts);
             }
 
@@ -74,7 +74,7 @@ internal class AggregateNode : BinaryBetaNode
                 else
                 {
                     var matchingFacts = set.Facts;
-                    aggregator = CreateFactAggregator(context, set.Tuple);
+                    aggregator = CreateFactAggregator(aggregationContext, set.Tuple);
                     AddToAggregate(aggregationContext, aggregator, aggregation, set.Tuple, matchingFacts);
                 }
             }
@@ -121,7 +121,7 @@ internal class AggregateNode : BinaryBetaNode
                 IFactAggregator? aggregator = GetFactAggregator(context, set.Tuple);
                 if (aggregator == null)
                 {
-                    aggregator = CreateFactAggregator(context, set.Tuple);
+                    aggregator = CreateFactAggregator(aggregationContext, set.Tuple);
 
                     var originalSet = JoinedSet(context, set.Tuple);
                     var matchingOriginalFacts = originalSet.Facts;
@@ -157,7 +157,7 @@ internal class AggregateNode : BinaryBetaNode
                 else
                 {
                     var fullSet = JoinedSet(context, set.Tuple);
-                    aggregator = CreateFactAggregator(context, fullSet.Tuple);
+                    aggregator = CreateFactAggregator(aggregationContext, fullSet.Tuple);
                     AddToAggregate(aggregationContext, aggregator, aggregation, fullSet.Tuple, fullSet.Facts);
                 }
             }
@@ -277,11 +277,11 @@ internal class AggregateNode : BinaryBetaNode
         }
     }
 
-    private IFactAggregator CreateFactAggregator(IExecutionContext context, Tuple tuple)
+    private IFactAggregator CreateFactAggregator(AggregationContext context, Tuple tuple)
     {
-        var aggregator = _aggregatorFactory.Create();
-        var factAggregator = new FactAggregator(aggregator);
-        context.WorkingMemory.SetState(this, tuple, factAggregator);
+        var aggregator = _aggregatorFactory.Create(context);
+        var factAggregator = new FactAggregator(aggregator, context);
+        context.ExecutionContext.WorkingMemory.SetState(this, tuple, factAggregator);
         return factAggregator;
     }
 

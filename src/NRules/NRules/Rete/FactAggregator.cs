@@ -16,11 +16,12 @@ internal interface IFactAggregator
 internal class FactAggregator : IFactAggregator
 {
     private readonly IAggregator _aggregator;
-    private readonly OrderedDictionary<object, Fact> _aggregateFactMap = new();
+    private readonly OrderedDictionary<object, Fact> _aggregateFactMap;
 
-    public FactAggregator(IAggregator aggregator)
+    public FactAggregator(IAggregator aggregator, AggregationContext context)
     {
         _aggregator = aggregator;
+        _aggregateFactMap = new OrderedDictionary<object, Fact>(context.FactIdentityComparer);
     }
 
     public IReadOnlyCollection<Fact> AggregateFacts => _aggregateFactMap.Values;

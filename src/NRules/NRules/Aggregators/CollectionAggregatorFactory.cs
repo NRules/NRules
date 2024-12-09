@@ -46,7 +46,7 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
         }
     }
 
-    public IAggregator Create()
+    public IAggregator Create(AggregationContext context)
     {
         return _factory!();
     }

@@ -7,6 +7,11 @@ namespace NRules.Aggregators;
 /// </summary>
 public class AggregationContext
 {
+    /// <summary>
+    /// Identity comparer for aggregated facts.
+    /// </summary>
+    public IFactIdentityComparer FactIdentityComparer => ExecutionContext.FactIdentityComparer;
+    
     internal IExecutionContext ExecutionContext { get; }
     internal NodeInfo NodeInfo { get; }
 

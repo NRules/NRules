@@ -103,7 +103,7 @@ public static class FirstQueryExtensions
 {
     public static IQuery<TSource> First<TSource>(this IQuery<IEnumerable<TSource>> source)
     {
-        var expressions = new List<KeyValuePair<string, LambdaExpression>>();
+        var expressions = Array.Empty<KeyValuePair<string, LambdaExpression>>();
         source.Builder.Aggregate<IEnumerable<TSource>, TSource>("First", expressions, typeof(CustomFirstAggregatorFactory));
         return new QueryExpression<TSource>(source.Builder);
     }
@@ -111,7 +111,7 @@ public static class FirstQueryExtensions
 
 internal class CustomFirstAggregatorFactory : IAggregatorFactory
 {
-    private Func<IAggregator> _factory = null!;
+    private Func<IAggregator>? _factory;
     
     public void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions)
     {
@@ -121,9 +121,9 @@ internal class CustomFirstAggregatorFactory : IAggregatorFactory
         _factory = factoryExpression.Compile();
     }
 
-    public IAggregator Create()
+    public IAggregator Create(AggregationContext context)
     {
-        return _factory();
+        return _factory!();
     }
 }
 
