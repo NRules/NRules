@@ -43,7 +43,10 @@ internal class FactIdentityComparer : IFactIdentityComparer
     {
         _defaultComparer = defaultComparer;
         if (customComparers.Any())
-            _customComparers = customComparers.ToDictionary(x => x.FactType, x => (x.Comparer, x.WrappedComparer));
+        {
+            var comparers = customComparers.ToDictionary(x => x.FactType, x => (x.Comparer, x.WrappedComparer));
+            _customComparers = new(comparers, TypeEqualityComparer.Instance);
+        }
     }
     
     public IEqualityComparer<TFact> GetComparer<TFact>()
@@ -141,6 +144,21 @@ internal class FactIdentityComparer : IFactIdentityComparer
             if (obj == null)
                 return 0;
             return _comparer.GetHashCode(obj);
+        }
+    }
+    
+    private class TypeEqualityComparer : IEqualityComparer<Type>
+    {
+        public static TypeEqualityComparer Instance { get; } = new();
+        
+        public bool Equals(Type x, Type y)
+        {
+            return x == y;
+        }
+
+        public int GetHashCode(Type obj)
+        {
+            return obj.GetHashCode();
         }
     }
 }
