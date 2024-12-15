@@ -6,7 +6,6 @@ To address these scenarios, NRules provides mechanisms to customize fact identit
 
 NRules engine uses the following rules for fact identity comparison:
 * If both facts are the same reference, they are considered identical.
-* If either fact is `null` (though this should not be possible), they are considered not identical.
 * If facts are of different types, they are considered not identical.
 * If custom comparer is registered for the fact type, it is used to compare the identity of the facts.
 * In all other cases default comparer is used to compare the identity of the facts.
@@ -37,7 +36,7 @@ Session.Update(new FactType(1, "New Value"));
 
 ## Custom Equality Comparer
 
-Additionally, NRules allows the use of custom [IEqualityComparer&lt;T&gt;](xref:System.Collections.Generic.IEqualityComparer`1) implementations for given fact types. This approach provides even more flexibility in defining how facts are compared for identity.
+Additionally, NRules allows the use of custom [IEqualityComparer&lt;T&gt;](xref:System.Collections.Generic.IEqualityComparer`1) implementations for given fact types. There is a slight performance penalty for using custom fact comparers, as the engine has to find the correct comparer by type.
 
 Below is an example of a custom [IEqualityComparer&lt;T&gt;](xref:System.Collections.Generic.IEqualityComparer`1) implementation. While normally, equality comparers must handle special cases of `null` arguments and equality by reference, these are checked by NRules before giving control to the equality comparer, so the arguments can be assumed not `null` and not equal by reference.
 
