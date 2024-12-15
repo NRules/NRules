@@ -25,7 +25,7 @@ public class RuleCompiler
     /// using the default <see cref="RuleCompilerOptions"/>.
     /// </summary>
     public RuleCompiler()
-        : this(new RuleCompilerOptions())
+        : this(RuleCompilerOptions.Default)
     {
     }
 
@@ -33,11 +33,17 @@ public class RuleCompiler
     /// Initializes a new instance of the <see cref="RuleCompiler"/> class
     /// using the specified <see cref="RuleCompilerOptions"/>.
     /// </summary>
-    /// <param name="options"></param>
+    /// <param name="options">Compiler options to use.</param>
     public RuleCompiler(RuleCompilerOptions options)
     {
         _options = options;
     }
+    
+    /// <summary>
+    /// Equality comparers for specific fact types, used to compare fact identity, when inserting, updating, removing
+    /// facts within the rules session.
+    /// </summary>
+    public FactIdentityComparerRegistry FactIdentityComparerRegistry { get; } = new();
 
     /// <summary>
     /// Registry of custom aggregator factories.
@@ -98,7 +104,10 @@ public class RuleCompiler
         }
 
         INetwork network = reteBuilder.Build();
-        var factory = new SessionFactory(network, compiledRules);
+        var factIdentityComparer = new FactIdentityComparer(
+            FactIdentityComparerRegistry.DefaultFactIdentityComparer,
+            FactIdentityComparerRegistry.GetComparers());
+        var factory = new SessionFactory(network, compiledRules, factIdentityComparer);
         return factory;
     }
 

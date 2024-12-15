@@ -11,6 +11,7 @@ internal interface IExecutionContext
     IEventAggregator EventAggregator { get; }
     IMetricsAggregator MetricsAggregator { get; }
     IIdGenerator IdGenerator { get; }
+    IFactIdentityComparer FactIdentityComparer { get; }
 }
 
 internal class ExecutionContext : IExecutionContext
@@ -37,5 +38,6 @@ internal class ExecutionContext : IExecutionContext
     public IEventAggregator EventAggregator { get; }
     public IMetricsAggregator MetricsAggregator { get; }
     public IIdGenerator IdGenerator { get; }
+    public IFactIdentityComparer FactIdentityComparer => WorkingMemory.FactIdentityComparer;
     public Queue<Activation> UnlinkQueue { get; }
 }

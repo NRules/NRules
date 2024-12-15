@@ -25,6 +25,7 @@ public interface IAggregatorFactory
     /// This method is called by the engine for each new combination of preceding partial matches, 
     /// so that a new instance of the aggregator is created to accumulate the results.
     /// </summary>
+    /// <param name="context">Aggregation context.</param>
     /// <returns>Aggregator instance.</returns>
-    IAggregator Create();
+    IAggregator Create(AggregationContext context);
 }

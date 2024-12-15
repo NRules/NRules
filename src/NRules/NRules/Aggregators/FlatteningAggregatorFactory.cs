@@ -12,7 +12,7 @@ namespace NRules.Aggregators;
 /// </summary>
 internal class FlatteningAggregatorFactory : IAggregatorFactory
 {
-    private Func<IAggregator>? _factory;
+    private Func<IFactIdentityComparer, IAggregator>? _factory;
 
     [MemberNotNull(nameof(_factory))]
     public void Compile(AggregateElement element, IReadOnlyCollection<IAggregateExpression> compiledExpressions)
@@ -24,13 +24,15 @@ internal class FlatteningAggregatorFactory : IAggregatorFactory
 
         var compiledSelector = compiledExpressions.FindSingle(AggregateElement.SelectorName);
         var ctor = aggregatorType.GetConstructors().Single();
-        var factoryExpression = Expression.Lambda<Func<IAggregator>>(
-            Expression.New(ctor, Expression.Constant(compiledSelector)));
+        var comparerParameter = Expression.Parameter(typeof(IFactIdentityComparer), "identityComparer");
+        var factoryExpression = Expression.Lambda<Func<IFactIdentityComparer, IAggregator>>(
+            Expression.New(ctor, comparerParameter, Expression.Constant(compiledSelector)),
+            comparerParameter);
         _factory = factoryExpression.Compile();
     }
 
-    public IAggregator Create()
+    public IAggregator Create(AggregationContext context)
     {
-        return _factory!();
+        return _factory!(context.FactIdentityComparer);
     }
 }

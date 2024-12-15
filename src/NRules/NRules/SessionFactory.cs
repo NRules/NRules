@@ -77,12 +77,15 @@ public interface ISessionFactory : ISessionSchemaProvider
 internal sealed class SessionFactory : ISessionFactory
 {
     private readonly INetwork _network;
+    private readonly IFactIdentityComparer _factIdentityComparer;
     private readonly List<ICompiledRule> _compiledRules;
     private readonly IEventAggregator _eventAggregator = new EventAggregator();
 
-    public SessionFactory(INetwork network, IEnumerable<ICompiledRule> compiledRules)
+    public SessionFactory(INetwork network, IEnumerable<ICompiledRule> compiledRules,
+        IFactIdentityComparer factIdentityComparer)
     {
         _network = network;
+        _factIdentityComparer = factIdentityComparer;
         _compiledRules = new List<ICompiledRule>(compiledRules);
         DependencyResolver = new DependencyResolver();
     }
@@ -99,7 +102,7 @@ internal sealed class SessionFactory : ISessionFactory
     public ISession CreateSession(Action<ISession>? initializationAction)
     {
         var agenda = CreateAgenda();
-        var workingMemory = new WorkingMemory();
+        var workingMemory = new WorkingMemory(_factIdentityComparer);
         var eventAggregator = new EventAggregator(_eventAggregator);
         var metricsAggregator = new MetricsAggregator();
         var actionExecutor = new ActionExecutor();
