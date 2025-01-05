@@ -33,4 +33,4 @@ Use the following discussion and Q&A platforms to get help with NRules
 See [Contributor Guide](CONTRIBUTING.md) for the guidelines on how to contribute to the project.
 
 ---
-Copyright &copy; 2012-2024 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).
+Copyright &copy; 2012-2025 [Sergiy Nikolayev](https://github.com/snikolayev) under the [MIT license](LICENSE.txt).
