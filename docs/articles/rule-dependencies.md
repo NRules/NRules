@@ -39,6 +39,19 @@ The service variable can then be used in rule actions. The rules engine will inj
 
 In order to be able to use rule dependencies, one must implement [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) interface and set resolver instance either at the [ISession](xref:NRules.ISession) or at the [ISessionFactory](xref:NRules.ISessionFactory) level.
 
+## .NET Dependency Injection Integration
+NRules ships with the implementation of [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) as well as [IRuleActivator](xref:NRules.Fluent.IRuleActivator) for .NET built-in IoC container in a separate integration assembly (see [NRules.Integration.DependencyInjection](xref:NRules.Integration.DependencyInjection)).
+With the integration package, the following fully bootstraps and registers NRules with the .NET services collection. 
+
+```c#
+Host.CreateDefaultBuilder(args)  
+    .ConfigureServices((context, services) =>
+    {
+        services.AddNRules(x => x.AssemblyOf(typeof(MyRule)));
+    });
+```
+
+## Autofac Integration
 NRules ships with the implementation of [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) as well as [IRuleActivator](xref:NRules.Fluent.IRuleActivator) for Autofac IoC container in a separate integration assembly (see [NRules.Integration.Autofac](xref:NRules.Integration.Autofac)).
 With the integration package, the following fully bootstraps and registers NRules with Autofac container. Registration extensions return registration builders that allow customization of individual registrations.
 
