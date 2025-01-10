@@ -36,7 +36,7 @@ public static class RegistrationExtensions
             .OnActivating(e =>
             {
                 e.Instance.Activator = e.Context.Resolve<IRuleActivator>();
-                e.Instance.Load(s => s.From(scanAction));
+                e.Instance.Load(s => s.From(s => s.Type(ruleTypes)));
             });
     }
 

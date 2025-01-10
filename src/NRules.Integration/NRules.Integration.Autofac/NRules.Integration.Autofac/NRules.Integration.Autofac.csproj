@@ -4,7 +4,7 @@
     <Title>NRules Autofac Integration</Title>
     <Description>Autofac integration for NRules</Description>
     <PackageId>NRules.Integration.Autofac</PackageId>
-    <PackageTags>nrules;autofac</PackageTags>
+    <PackageTags>nrules;autofac;di;ioc</PackageTags>
   </PropertyGroup>
   
   <PropertyGroup>
