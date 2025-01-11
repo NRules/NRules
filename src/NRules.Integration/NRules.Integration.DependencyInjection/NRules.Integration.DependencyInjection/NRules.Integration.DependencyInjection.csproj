@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>NRules Autofac Integration</Title>
-    <Description>Autofac integration for NRules</Description>
-    <PackageId>NRules.Integration.Autofac</PackageId>
-    <PackageTags>nrules;autofac;di;ioc</PackageTags>
+    <Title>NRules Dependency Injection Integration</Title>
+    <Description>.NET dependency injection integration for NRules</Description>
+    <PackageId>NRules.Integration.DependencyInjection</PackageId>
+    <PackageTags>nrules;di;ioc</PackageTags>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="NRules" />
   </ItemGroup>
 

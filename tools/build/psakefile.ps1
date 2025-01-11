@@ -4,7 +4,7 @@ param (
 
 properties {
     $version = $null
-    $sdkVersion = "8.0.100"
+    $sdkVersion = "8.0.404"
     $sdkRuntimes = @("8.0.0", "6.0.0")
     $configuration = "Release"
     $baseDir = $null
@@ -97,6 +97,7 @@ task RestoreTools {
 }
 
 task Restore -precondition { return $component.ContainsKey('solution_file') } {
+    New-Directory $pkgOutDir
     exec { dotnet restore $solutionFile -v minimal }
 }
 

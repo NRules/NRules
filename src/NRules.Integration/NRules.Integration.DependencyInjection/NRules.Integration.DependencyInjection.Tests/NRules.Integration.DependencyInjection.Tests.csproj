@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NRules.Integration.Autofac\NRules.Integration.Autofac.csproj" />
+    <ProjectReference Include="..\NRules.Integration.DependencyInjection\NRules.Integration.DependencyInjection.csproj" />
   </ItemGroup>
 
 </Project>

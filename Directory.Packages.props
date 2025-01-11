@@ -1,10 +1,14 @@
 <Project>
+
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageFloatingVersionsEnabled>true</CentralPackageFloatingVersionsEnabled>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageVersion Include="System.Text.Json" Version="5.0.2" />
     <PackageVersion Include="Autofac" Version="4.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageVersion Include="Moq" Version="4.18.4" />
     <PackageVersion Include="xunit" Version="2.9.2" />
@@ -12,4 +16,12 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
+
+  <!-- Locally built packages -->
+  <ItemGroup>
+    <PackageVersion Include="NRules" Version="*" />
+    <PackageVersion Include="NRules.Json" Version="*" />
+    <PackageVersion Include="NRules.Integration.DependencyInjection" Version="*" />
+  </ItemGroup>
+  
 </Project>
