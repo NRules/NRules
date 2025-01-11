@@ -8,6 +8,21 @@ namespace NRules.Integration.DependencyInjection.Tests;
 public class RuleDependencyInjectionTests
 {
     [Fact]
+    public void Activate_Default_Returns()
+    {
+        //Arrange
+        var services = new ServiceCollection();
+        var container = services.BuildServiceProvider();
+        var activator = new RuleActivator(container);
+        
+        //Act
+        var rule = activator.Activate(typeof(RuleWithoutDependencies));
+        
+        //Assert
+        Assert.NotNull(rule);
+    }
+    
+    [Fact]
     public void RuleRepository_Resolved_Returns()
     {
         //Arrange
