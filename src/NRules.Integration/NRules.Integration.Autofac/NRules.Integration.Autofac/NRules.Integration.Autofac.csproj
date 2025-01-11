@@ -17,18 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="NRules">
-      <HintPath>..\..\..\..\build\bin\NRules\$(TargetFramework)\NRules.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\..\build\bin\NRules\$(TargetFramework)\NRules.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\..\build\bin\NRules\$(TargetFramework)\NRules.RuleModel.dll</HintPath>
-    </Reference>
+    <PackageReference Include="NRules" />
   </ItemGroup>
 
   <Import Project="..\..\..\Nullable.props" />

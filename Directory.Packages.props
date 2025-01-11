@@ -1,7 +1,10 @@
 <Project>
+
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageFloatingVersionsEnabled>true</CentralPackageFloatingVersionsEnabled>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageVersion Include="System.Text.Json" Version="5.0.2" />
     <PackageVersion Include="Autofac" Version="4.0.0" />
@@ -13,4 +16,9 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="NRules" Version="*" />
+  </ItemGroup>
+  
 </Project>
