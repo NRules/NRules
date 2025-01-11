@@ -14,17 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NRules" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers">
       <HintPath>$(VisualStudioLocation)\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules">
-      <HintPath>..\..\..\build\bin\NRules\netstandard2.0\NRules.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.Fluent">
-      <HintPath>..\..\..\build\bin\NRules\netstandard2.0\NRules.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\..\build\bin\NRules\netstandard2.0\NRules.RuleModel.dll</HintPath>
     </Reference>
   </ItemGroup>
 
