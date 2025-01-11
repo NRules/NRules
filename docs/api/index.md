@@ -6,10 +6,10 @@ Use the navigation bar to find the specific types and namespaces from the NRules
 API | Description
 --- | ---
 [NRules](xref:NRules) | Rules engine runtime
-[NRules.Fluent](xref:NRules.Fluent) | Rules fluent DSL
-[NRules.RuleModel](xref:NRules.RuleModel) | Rules canonical model
-[NRules.Json](xref:NRules.Json) | Rules serialization to/from JSON
-[NRules.Testing](xref:NRules.Testing) | Rules unit testing
+[NRules.Fluent](xref:NRules.Fluent) | Fluent DSL for NRules
+[NRules.RuleModel](xref:NRules.RuleModel) | Canonical rules model
+[NRules.Json](xref:NRules.Json) | Rules serialization to and from JSON
+[NRules.Testing](xref:NRules.Testing) | Rules unit testing and expectations assertion
 
 ## Integration Libraries
 API | Description
