@@ -12,11 +12,11 @@ namespace NRules.Integration.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds necessary NRules components to the services collection.
+    /// Adds necessary components for the Rules Engine to the .NET service collection.
     /// </summary>
-    /// <param name="services">Services collection to add NRules components to.</param>
+    /// <param name="services">Service collection to add NRules components to.</param>
     /// <param name="scanAction">Configuration action on the rule type scanner.</param>
-    public static void AddNRules(this IServiceCollection services, Action<IRuleTypeScanner> scanAction)
+    public static void AddRules(this IServiceCollection services, Action<IRuleTypeScanner> scanAction)
     {
         var scanner = new RuleTypeScanner();
         scanAction(scanner);

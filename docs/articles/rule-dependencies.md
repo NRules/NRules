@@ -41,13 +41,13 @@ In order to be able to use rule dependencies, one must implement [IDependencyRes
 
 ## .NET Dependency Injection Integration
 NRules ships with the implementation of [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) as well as [IRuleActivator](xref:NRules.Fluent.IRuleActivator) for .NET built-in IoC container in a separate integration assembly (see [NRules.Integration.DependencyInjection](xref:NRules.Integration.DependencyInjection)).
-With the integration package, the following fully bootstraps and registers NRules with the .NET services collection. 
+With the integration package, the following fully bootstraps and registers NRules with the .NET service collection. 
 
 ```c#
 Host.CreateDefaultBuilder(args)  
     .ConfigureServices((context, services) =>
     {
-        services.AddNRules(x => x.AssemblyOf(typeof(MyRule)));
+        services.AddRules(x => x.AssemblyOf(typeof(MyRule)));
     });
 ```
 

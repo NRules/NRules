@@ -12,7 +12,7 @@ public class RuleDependencyInjectionTests
     {
         //Arrange
         var services = new ServiceCollection();
-        services.AddNRules(x => x.Type(typeof(RuleWithConstructorDependency)));
+        services.AddRules(x => x.Type(typeof(RuleWithConstructorDependency)));
         services.AddSingleton<ITestService, TestService>();
 
         var container = services.BuildServiceProvider();
@@ -30,7 +30,7 @@ public class RuleDependencyInjectionTests
     {
         //Arrange
         var services = new ServiceCollection();
-        services.AddNRules(x => x.Type(typeof(RuleWithConstructorDependency)));
+        services.AddRules(x => x.Type(typeof(RuleWithConstructorDependency)));
         services.AddSingleton<ITestService, TestService>();
 
         var container = services.BuildServiceProvider();
@@ -47,7 +47,7 @@ public class RuleDependencyInjectionTests
     {
         //Arrange
         var services = new ServiceCollection();
-        services.AddNRules(x => x.Type(typeof(RuleWithConstructorDependency)));
+        services.AddRules(x => x.Type(typeof(RuleWithConstructorDependency)));
         services.AddSingleton<ITestService, TestService>();
 
         var container = services.BuildServiceProvider();
@@ -64,7 +64,7 @@ public class RuleDependencyInjectionTests
     {
         //Arrange
         var services = new ServiceCollection();
-        services.AddNRules(x => x.Type(typeof(RuleWithConstructorDependency)));
+        services.AddRules(x => x.Type(typeof(RuleWithConstructorDependency)));
         services.AddSingleton<ITestService, TestService>();
 
         var container = services.BuildServiceProvider();
@@ -84,7 +84,7 @@ public class RuleDependencyInjectionTests
     {
         //Arrange
         var services = new ServiceCollection();
-        services.AddNRules(x => x.Type(typeof(RuleWithActionDependency)));
+        services.AddRules(x => x.Type(typeof(RuleWithActionDependency)));
         services.AddSingleton<ITestService, TestService>();
 
         var container = services.BuildServiceProvider();
@@ -104,7 +104,7 @@ public class RuleDependencyInjectionTests
     {
         //Arrange
         var services = new ServiceCollection();
-        services.AddNRules(x => x.Type(typeof(RuleWithActionDependency)));
+        services.AddRules(x => x.Type(typeof(RuleWithActionDependency)));
         services.AddScoped<ITestService, TestService>();
 
         var container = services.BuildServiceProvider();

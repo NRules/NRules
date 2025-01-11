@@ -16,7 +16,7 @@ internal class Program
             {
                 services.AddHostedService<RulesWorker>();
                 services.AddSingleton<INotificationService, NotificationService>();
-                services.AddNRules(scan => scan.Type(typeof(TestRule)));
+                services.AddRules(scan => scan.Type(typeof(TestRule)));
             })
             .Build();
 
