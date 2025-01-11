@@ -17,8 +17,11 @@
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 
+  <!-- Locally built packages -->
   <ItemGroup>
     <PackageVersion Include="NRules" Version="*" />
+    <PackageVersion Include="NRules.Json" Version="*" />
+    <PackageVersion Include="NRules.Integration.DependencyInjection" Version="*" />
   </ItemGroup>
   
 </Project>

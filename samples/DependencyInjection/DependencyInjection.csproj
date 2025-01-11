@@ -10,21 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="NRules">
-      <HintPath>..\..\build\bin\NRules\netstandard2.1\NRules.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.Fluent">
-      <HintPath>..\..\build\bin\NRules\netstandard2.1\NRules.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\build\bin\NRules\netstandard2.1\NRules.RuleModel.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.Integration.DependencyInjection">
-      <HintPath>..\..\build\bin\NRules.Integration.DependencyInjection\netstandard2.1\NRules.Integration.DependencyInjection.dll</HintPath>
-    </Reference>
+    <PackageReference Include="NRules.Integration.DependencyInjection" />
+    <PackageReference Include="NRules" />
   </ItemGroup>
 
 </Project>
