@@ -7,6 +7,9 @@ using NRules.RuleModel;
 
 namespace NRules.Integration.Autofac;
 
+/// <summary>
+/// Extension methods on <see cref="ContainerBuilder"/> to register NRules components with Autofac container.
+/// </summary>
 public static class RegistrationExtensions
 {
     /// <summary>

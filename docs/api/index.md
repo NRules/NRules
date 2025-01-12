@@ -14,5 +14,5 @@ API | Description
 ## Integration Libraries
 API | Description
 --- | ---
-[NRules.Integration.DependencyInjection](xref:NRules.Integration.DependencyInjection) | Integration for .NET built-in IoC container
-[NRules.Integration.Autofac](xref:NRules.Integration.Autofac) | Integration for Autofac IoC container
+[NRules.Integration.DependencyInjection](xref:NRules.Integration.DependencyInjection) | Integration with .NET built-in IoC container
+[NRules.Integration.Autofac](xref:NRules.Integration.Autofac) | Integration with Autofac IoC container

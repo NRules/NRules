@@ -7,7 +7,7 @@ Instead, inference engine figures out which rules should be activated based on t
 
 To learn more, go to the corresponding sections of the NRules documentation.
 
-## Getting Started with NRules
+## Getting Started
 
 To install NRules, get the package from nuget
 
@@ -47,20 +47,31 @@ NRules.RuleModel | [![NuGet](https://img.shields.io/nuget/v/NRules.RuleModel.svg
 NRules.Json | [![NuGet](https://img.shields.io/nuget/v/NRules.Json.svg)](https://nuget.org/packages/NRules.Json) | Rules serialization to and from JSON. Reference this package from the projects that handle rules serialization. | [Guide](articles/advanced/json-serialization.md) [API](xref:NRules.Json)
 NRules.Testing | [![NuGet](https://img.shields.io/nuget/v/NRules.Testing.svg)](https://nuget.org/packages/NRules.Testing) | Rules unit testing and expectations assertion. Reference this package from the projects that implement rules unit tests. | [Guide](articles/unit-testing-rules.md) [API](xref:NRules.Testing)
 
-## Building NRules from Sources
+## Building from Source
 
-To build NRules from sources, clone the repo from GitHub, make sure [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell) is installed, then run the build script
+To build NRules from the source code, clone the repo from GitHub, make sure [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell) is installed, then run the build script
 # [Windows](#tab/windows)
 ```console
-> build.bat
+> .\build.bat [Target] [Component]
 ```
 # [MacOS/Linux](#tab/nix)
 ```console
-> ./build.sh
+> ./build.sh [Target] [Component]
 ```
 ---
 
-Build artifacts are found under the `build` folder.
+Default target is `Build`.
+
+Default component is `Core`. Use the following components to build other parts of the engine
+* `All` - build everything
+* `Core` - build the rules engine, NRules.Testing and NRules.Json
+* `Visualizer` - build debugger visualizer (Windows only)
+* `Integration` - build integration libraries
+* `Samples` - build samples
+* `Benchmark` - build performance benchmarks
+* `Documentation` - build documentation
+
+Built artifacts are found under the `build` folder.
 
 ## Contributing
 
