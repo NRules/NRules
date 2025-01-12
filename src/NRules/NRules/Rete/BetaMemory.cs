@@ -9,6 +9,7 @@ internal interface IBetaMemory
     void Add(List<Tuple> tuples);
     void Remove(List<Tuple> tuples);
     Tuple? FindTuple(Tuple leftTuple, Fact? rightFact);
+    bool Contains(Tuple leftTuple, Fact? rightFact);
 }
 
 internal class BetaMemory : IBetaMemory
@@ -41,6 +42,12 @@ internal class BetaMemory : IBetaMemory
         var key = new TupleFactKey(leftTuple, rightFact);
         _parentToChildMap.TryGetValue(key, out var childTuple);
         return childTuple;
+    }
+
+    public bool Contains(Tuple leftTuple, Fact? rightFact)
+    {
+        var key = new TupleFactKey(leftTuple, rightFact);
+        return _parentToChildMap.ContainsKey(key);
     }
 
     private void AddMapping(Tuple tuple)

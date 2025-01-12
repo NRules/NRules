@@ -36,9 +36,7 @@ internal class JoinNode : BinaryBetaNode
             foreach (var fact in set.Facts)
             {
                 if (MatchesConditions(context, set.Tuple, fact))
-                {
                     toAssert.Add(set.Tuple, fact);
-                }
             }
 
             counter.AddInputs(tuples.Count);
@@ -56,18 +54,15 @@ internal class JoinNode : BinaryBetaNode
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Update(context, this))
         {
+            var memory = context.WorkingMemory.GetNodeMemory(MemoryNode);
             var joinedSets = JoinedSets(context, tuples);
             foreach (var set in joinedSets)
             foreach (var fact in set.Facts)
             {
                 if (MatchesConditions(context, set.Tuple, fact))
-                {
                     toUpdate.Add(set.Tuple, fact);
-                }
-                else
-                {
+                else if (memory.Contains(set.Tuple, fact))
                     toRetract.Add(set.Tuple, fact);
-                }
             }
 
             counter.AddInputs(tuples.Count);
@@ -83,11 +78,13 @@ internal class JoinNode : BinaryBetaNode
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Retract(context, this))
         {
+            var memory = context.WorkingMemory.GetNodeMemory(MemoryNode);
             var joinedSets = JoinedSets(context, tuples);
             foreach (var set in joinedSets)
             foreach (var fact in set.Facts)
             {
-                toRetract.Add(set.Tuple, fact);
+                if (memory.Contains(set.Tuple, fact))
+                    toRetract.Add(set.Tuple, fact);
             }
          
             counter.AddInputs(tuples.Count);
@@ -107,9 +104,7 @@ internal class JoinNode : BinaryBetaNode
             foreach (var fact in set.Facts)
             {
                 if (MatchesConditions(context, set.Tuple, fact))
-                {
                     toAssert.Add(set.Tuple, fact);
-                }
             }
 
             counter.AddInputs(facts.Count);
@@ -125,13 +120,14 @@ internal class JoinNode : BinaryBetaNode
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Update(context, this))
         {
+            var memory = context.WorkingMemory.GetNodeMemory(MemoryNode);
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
             foreach (var fact in set.Facts)
             {
                 if (MatchesConditions(context, set.Tuple, fact))
                     toUpdate.Add(set.Tuple, fact);
-                else
+                else if (memory.Contains(set.Tuple, fact))
                     toRetract.Add(set.Tuple, fact);
             }
 
@@ -148,11 +144,13 @@ internal class JoinNode : BinaryBetaNode
         var toRetract = new TupleFactList();
         using (var counter = PerfCounter.Retract(context, this))
         {
+            var memory = context.WorkingMemory.GetNodeMemory(MemoryNode);
             var joinedSets = JoinedSets(context, facts);
             foreach (var set in joinedSets)
             foreach (var fact in set.Facts)
             {
-                toRetract.Add(set.Tuple, fact);
+                if (memory.Contains(set.Tuple, fact))
+                    toRetract.Add(set.Tuple, fact);
             }
 
             counter.AddInputs(facts.Count);
