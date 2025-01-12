@@ -49,7 +49,12 @@ task Clean -depends Init {
     Remove-Directory $binOutDir
 
     if ($component.ContainsKey('solution_file')) {
-        exec { dotnet clean $solutionFile -c $configuration -v minimal }
+        try {
+            exec { dotnet clean $solutionFile -c $configuration -v minimal } | Out-Null
+        }
+        catch {
+            Write-Host "Clean failed for $solutionFile" -ForegroundColor Yellow
+        }
     }
 
     if ($component.ContainsKey('output')) {
