@@ -26,7 +26,6 @@ Use the following discussion and Q&A platforms to get help with NRules
 
 - [Discussions](https://github.com/NRules/NRules/discussions)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/nrules)
-- [Gitter Chat](https://gitter.im/NRules/NRules)
 
 ## Contributing
 
