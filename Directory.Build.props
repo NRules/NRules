@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Version>1.0.0</Version>
-    <NoWarn>$(NoWarn);CS1591;NU5048;NU5128</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;NU5128</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -19,11 +19,15 @@
     <Copyright>Copyright 2012-2025 Sergiy Nikolayev. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageIconUrl>https://raw.githubusercontent.com/NRules/NRules.media/master/Logo/Logo.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://nrules.net</PackageProjectUrl>
     <PackageReleaseNotes>https://github.com/NRules/NRules/releases/v$(Version)</PackageReleaseNotes>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)src/icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
