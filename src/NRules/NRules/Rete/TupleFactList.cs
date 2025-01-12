@@ -1,56 +1,74 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace NRules.Rete;
 
 [DebuggerDisplay("TupleFactList ({Count})")]
 internal class TupleFactList
 {
-    private readonly List<Tuple> _tuples = new(); 
+    private readonly List<TupleItem> _tuples = new(); 
     private readonly List<Fact?> _facts = new();
 
     public int Count => _tuples.Count;
 
     public void Add(Tuple tuple)
     {
-        _tuples.Add(tuple);
+        AddTuple(tuple);
         _facts.Add(null);
     }
-    
+
     public void Add(Tuple tuple, Fact fact)
     {
-        _tuples.Add(tuple);
+        AddTuple(tuple);
         _facts.Add(fact);
     }
 
-    public struct Enumerator
+    private void AddTuple(Tuple tuple)
     {
-        private List<Tuple>.Enumerator _tupleEnumerator;
-        private List<Fact?>.Enumerator _factEnumerator;
+        if (_tuples.Count > 0 &&
+            _tuples[_tuples.Count - 1].Tuple == tuple)
+            _tuples[_tuples.Count - 1].Count++;
+        else
+            _tuples.Add(new TupleItem(tuple));
+    }
 
-        public Enumerator(List<Tuple>.Enumerator tupleEnumerator, List<Fact?>.Enumerator factEnumerator)
-        {
-            _tupleEnumerator = tupleEnumerator;
-            _factEnumerator = factEnumerator;
-        }
+    public class TupleItem(Tuple tuple)
+    {
+        public Tuple Tuple { get; } = tuple;
+        public int Count { get; set; } = 1;
+    }
 
-        public Tuple CurrentTuple => _tupleEnumerator.Current!;
-        public Fact? CurrentFact => _factEnumerator.Current;
+    public struct Enumerator(List<TupleItem> tuples, List<Fact?> facts)
+    {
+        private int _factIndex = -1;
+        private int _tupleIndex = -1;
+        private int _tupleItemIndex = 0;
 
-        [MemberNotNullWhen(true, nameof(CurrentTuple))]
+        public Tuple CurrentTuple => tuples[_tupleIndex].Tuple;
+        public Fact? CurrentFact => facts[_factIndex];
+
         public bool MoveNext()
         {
-            bool hasNextTuple = _tupleEnumerator.MoveNext();
-            bool hasNextFact = _factEnumerator.MoveNext();
-            return hasNextTuple && hasNextFact;
+            _factIndex++;
+            if (_factIndex >= facts.Count)
+                return false;
+
+            if (_tupleIndex < 0 || _tupleItemIndex == tuples[_tupleIndex].Count - 1)
+            {
+                _tupleIndex++;
+                _tupleItemIndex = 0;
+            }
+            else
+            {
+                _tupleItemIndex++;
+            }
+
+            return true;
         }
     }
 
     public Enumerator GetEnumerator()
     {
-        var tupleEnumerator = _tuples.GetEnumerator();
-        var factEnumerator = _facts.GetEnumerator();
-        return new Enumerator(tupleEnumerator, factEnumerator);
+        return new Enumerator(_tuples, _facts);
     }
 }
