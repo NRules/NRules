@@ -97,7 +97,7 @@ task RestoreTools {
 }
 
 task Restore -precondition { return $component.ContainsKey('solution_file') } {
-    New-Directory $pkgOutDir
+    New-Directory $pkgDir
     exec { dotnet restore $solutionFile -v minimal }
 }
 
