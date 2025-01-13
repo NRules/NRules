@@ -9,7 +9,7 @@ public class PatternElement : RuleElement
 {
     public const string ConditionName = "Condition";
 
-    internal PatternElement(Declaration declaration, ExpressionCollection expressions, RuleElement source)
+    internal PatternElement(Declaration declaration, ExpressionCollection expressions, RuleElement? source)
     {
         Declaration = declaration;
         ValueType = declaration.Type;
@@ -32,7 +32,7 @@ public class PatternElement : RuleElement
     /// <summary>
     /// Optional pattern source element.
     /// </summary>
-    public RuleElement Source { get; }
+    public RuleElement? Source { get; }
 
     /// <summary>
     /// Type of the values that the pattern matches.
@@ -44,8 +44,14 @@ public class PatternElement : RuleElement
     /// </summary>
     public ExpressionCollection Expressions { get; }
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitPattern(context, this);
+        return visitor.VisitPattern(context, this);
+    }
+
+    internal PatternElement Update(ExpressionCollection expressions, RuleElement? source)
+    {
+        if (ReferenceEquals(Expressions, expressions) && ReferenceEquals(Source, source)) return this;
+        return new PatternElement(Declaration, expressions, source);
     }
 }

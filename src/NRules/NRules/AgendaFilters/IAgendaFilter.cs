@@ -5,7 +5,8 @@
 /// Agenda filters are applied to rule matches (activations) before they are added to the agenda.
 /// If activation does not pass all the filters, it is not added to the agenda, and so the rule will not fire.
 /// </summary>
-public interface IAgendaFilter  {
+public interface IAgendaFilter
+{
     /// <summary>
     /// Tests rule activation whether it should be added to the agenda.
     /// </summary>

@@ -9,7 +9,7 @@ namespace NRules.Testing;
 public interface IRuleFiringVerification
 {
     /// <summary>
-    /// Asserts that a given rule under test fired with a set of facts matching the specified expectations.
+    /// Asserts that a given rule under test fired with a set of facts matching the specified constraints.
     /// </summary>
     /// <param name="constraints">Constraints narrowing down the rule firing expectation.</param>
     void Fired(params FactConstraint[] constraints);
@@ -21,7 +21,7 @@ public interface IRuleFiringVerification
 public interface IQualifiedRuleFiringVerification : IRuleFiringVerification
 {
     /// <summary>
-    /// Asserts that a given rule under test fired the given number of times with a set of facts matching the specified expectations.
+    /// Asserts that a given rule under test fired the given number of times with a set of facts matching the specified constraints.
     /// </summary>
     /// <param name="times">Expected number of rule firings.</param>
     /// <param name="constraints">Constraints narrowing down the rule firing expectation.</param>

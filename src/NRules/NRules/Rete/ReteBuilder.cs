@@ -10,7 +10,7 @@ namespace NRules.Rete;
 internal interface IReteBuilder
 {
     int GetNodeId();
-    IEnumerable<ITerminal> AddRule(IRuleDefinition rule);
+    IReadOnlyCollection<ITerminal> AddRule(IRuleDefinition rule);
     INetwork Build();
 }
 
@@ -38,9 +38,9 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         return _nextNodeId++;
     }
 
-    public IEnumerable<ITerminal> AddRule(IRuleDefinition rule)
+    public IReadOnlyCollection<ITerminal> AddRule(IRuleDefinition rule)
     {
-        var ruleDeclarations = rule.LeftHandSide.Exports.ToList();
+        var ruleDeclarations = rule.LeftHandSide.Exports;
         var terminals = new List<ITerminal>();
         rule.LeftHandSide.Match(
             and =>
@@ -74,7 +74,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         return terminalNode;
     }
 
-    protected override void VisitAnd(ReteBuilderContext context, AndElement element)
+    protected override RuleElement VisitAnd(ReteBuilderContext context, AndElement element)
     {
         foreach (var childElement in element.ChildElements)
         {
@@ -84,37 +84,45 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             }
             Visit(context, childElement);
         }
+        
+        return element;
     }
 
-    protected override void VisitOr(ReteBuilderContext context, OrElement element)
+    protected override RuleElement VisitOr(ReteBuilderContext context, OrElement element)
     {
         throw new InvalidOperationException("Group Or element must be normalized");
     }
 
-    protected override void VisitForAll(ReteBuilderContext context, ForAllElement element)
+    protected override RuleElement VisitForAll(ReteBuilderContext context, ForAllElement element)
     {
         throw new InvalidOperationException("ForAll element must be normalized");
     }
 
-    protected override void VisitNot(ReteBuilderContext context, NotElement element)
+    protected override RuleElement VisitNot(ReteBuilderContext context, NotElement element)
     {
         VisitSource(context, element, element.Source);
         BuildNotNode(context, element);
+        
+        return element;
     }
 
-    protected override void VisitExists(ReteBuilderContext context, ExistsElement element)
+    protected override RuleElement VisitExists(ReteBuilderContext context, ExistsElement element)
     {
         VisitSource(context, element, element.Source);
         BuildExistsNode(context, element);
+        
+        return element;
     }
 
-    protected override void VisitAggregate(ReteBuilderContext context, AggregateElement element)
+    protected override RuleElement VisitAggregate(ReteBuilderContext context, AggregateElement element)
     {
         VisitSource(context, element, element.Source);
         BuildAggregateNode(context, element);
+        
+        return element;
     }
 
-    protected override void VisitPattern(ReteBuilderContext context, PatternElement element)
+    protected override PatternElement VisitPattern(ReteBuilderContext context, PatternElement element)
     {
         var conditions = element.Expressions.Find(PatternElement.ConditionName)
             .Cast<ExpressionElement>().ToList();
@@ -181,11 +189,15 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
                 context.RegisterDeclaration(element.Declaration);
             }
         }
+        
+        return element;
     }
 
-    protected override void VisitBinding(ReteBuilderContext context, BindingElement element)
+    protected override RuleElement VisitBinding(ReteBuilderContext context, BindingElement element)
     {
         BuildBindingNode(context, element);
+        
+        return element;
     }
 
     private void VisitSource(ReteBuilderContext context, RuleElement element, RuleElement source)
@@ -205,7 +217,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private void BuildSubnet(ReteBuilderContext context, PatternElement element)
     {
-        var isJoined = element.Source.Imports.Any();
+        var isJoined = element.Source!.Imports.Any();
         var subnetContext = isJoined ? new ReteBuilderContext(context) : new ReteBuilderContext(context.Rule, _dummyNode);
 
         Visit(subnetContext, element.Source);
@@ -232,7 +244,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         context.AlphaSource = adapter;
     }
 
-    private void BuildJoinNode(ReteBuilderContext context, List<ExpressionElement> conditions = null)
+    private void BuildJoinNode(ReteBuilderContext context, List<ExpressionElement>? conditions = null)
     {
         var expressionElements = conditions ?? new List<ExpressionElement>();
         var node = context.BetaSource
@@ -251,7 +263,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
                 var compiledExpression = _ruleExpressionCompiler.CompileLhsExpression<bool>(expressionElement, context.Declarations);
                 compiledExpressions.Add(compiledExpression);
             }
-            node = new JoinNode(context.BetaSource, context.AlphaSource, context.Declarations.ToList(), expressionElements, compiledExpressions, context.HasSubnet);
+            node = new JoinNode(context.BetaSource, context.AlphaSource!, context.Declarations.ToList(), expressionElements, compiledExpressions, context.HasSubnet);
             node.Id = GetNodeId();
         }
         node.NodeInfo.Add(context.Rule);
@@ -261,7 +273,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private void BuildNotNode(ReteBuilderContext context, RuleElement element)
     {
-        var node = context.AlphaSource
+        var node = context.AlphaSource!
             .Sinks.OfType<NotNode>()
             .FirstOrDefault(x =>
                 x.RightSource == context.AlphaSource &&
@@ -278,7 +290,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private void BuildExistsNode(ReteBuilderContext context, RuleElement element)
     {
-        var node = context.AlphaSource
+        var node = context.AlphaSource!
             .Sinks.OfType<ExistsNode>()
             .FirstOrDefault(x =>
                 x.RightSource == context.AlphaSource &&
@@ -295,7 +307,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private void BuildAggregateNode(ReteBuilderContext context, AggregateElement element)
     {
-        var node = context.AlphaSource
+        var node = context.AlphaSource!
             .Sinks.OfType<AggregateNode>()
             .FirstOrDefault(x =>
                 x.RightSource == context.AlphaSource &&
@@ -337,20 +349,20 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private void BuildBetaMemoryNode(ReteBuilderContext context, BetaNode betaNode)
     {
-        BetaMemoryNode memoryNode = betaNode.MemoryNode;
+        BetaMemoryNode? memoryNode = betaNode.MemoryNode;
         if (memoryNode == null)
         {
             memoryNode = new BetaMemoryNode();
             memoryNode.Id = GetNodeId();
             betaNode.MemoryNode = memoryNode;
         }
-        betaNode.MemoryNode.NodeInfo.Add(context.Rule);
+        betaNode.MemoryNode!.NodeInfo.Add(context.Rule);
         context.BetaSource = betaNode.MemoryNode;
     }
 
     private void BuildTypeNode(ReteBuilderContext context, RuleElement element, Type declarationType)
     {
-        TypeNode node = context.CurrentAlphaNode
+        TypeNode? node = context.CurrentAlphaNode!
             .ChildNodes.OfType<TypeNode>()
             .FirstOrDefault(tn => tn.FilterType == declarationType);
 
@@ -367,7 +379,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private void BuildSelectionNode(ReteBuilderContext context, ExpressionElement element)
     {
-        SelectionNode node = context.CurrentAlphaNode
+        SelectionNode? node = context.CurrentAlphaNode!
             .ChildNodes.OfType<SelectionNode>()
             .FirstOrDefault(sn => _expressionComparer.AreEqual(sn.ExpressionElement, element));
 
@@ -385,7 +397,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private void BuildAlphaMemoryNode(ReteBuilderContext context)
     {
-        AlphaMemoryNode memoryNode = context.CurrentAlphaNode.MemoryNode;
+        AlphaMemoryNode? memoryNode = context.CurrentAlphaNode!.MemoryNode;
         if (memoryNode == null)
         {
             memoryNode = new AlphaMemoryNode();
@@ -425,7 +437,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     private IAggregatorFactory GetCustomFactory(AggregateElement element)
     {
-        Type factoryType = element.CustomFactoryType;
+        Type? factoryType = element.CustomFactoryType;
         if (factoryType == null)
         {
             factoryType = _aggregatorRegistry[element.Name];
@@ -440,15 +452,23 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         return factory;
     }
 
-    private IEnumerable<IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
+    private IReadOnlyCollection<IAggregateExpression> CompileExpressions(ReteBuilderContext context, AggregateElement element)
     {
-        var declarations = context.Declarations.Concat(element.Source.Declaration).ToList();
+        var declarations = CreateDeclarationList(context.Declarations, element.Source.Declaration);
         var result = new List<IAggregateExpression>(element.Expressions.Count);
         foreach (var expression in element.Expressions)
         {
             var aggregateExpression = _ruleExpressionCompiler.CompileAggregateExpression(expression, declarations);
             result.Add(aggregateExpression);
         }
+        return result;
+    }
+
+    private static List<Declaration> CreateDeclarationList(IReadOnlyCollection<Declaration> declarations, Declaration declaration)
+    {
+        var result = new List<Declaration>(declarations.Count + 1);
+        result.AddRange(declarations);
+        result.Add(declaration);
         return result;
     }
 

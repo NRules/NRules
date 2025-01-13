@@ -40,14 +40,14 @@ public class AggregateElement : RuleElement
     /// <summary>
     /// The type of custom aggregator factory.
     /// </summary>
-    public Type CustomFactoryType { get; }
+    public Type? CustomFactoryType { get; }
 
     /// <summary>
     /// Expressions used by the aggregate.
     /// </summary>
     public ExpressionCollection Expressions { get; }
 
-    internal AggregateElement(Type resultType, string name, ExpressionCollection expressions, PatternElement source, Type customFactoryType)
+    internal AggregateElement(Type resultType, string name, ExpressionCollection expressions, PatternElement source, Type? customFactoryType)
     {
         ResultType = resultType;
         Name = name;
@@ -59,8 +59,14 @@ public class AggregateElement : RuleElement
         AddImports(expressions.SelectMany(x => x.Imports.Except(source.Exports)));
     }
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitAggregate(context, this);
+        return visitor.VisitAggregate(context, this);
+    }
+
+    internal AggregateElement Update(ExpressionCollection expressions, PatternElement source)
+    {
+        if (ReferenceEquals(expressions, Expressions) && ReferenceEquals(source, Source)) return this;
+        return new AggregateElement(ResultType, Name, expressions, source, CustomFactoryType);
     }
 }

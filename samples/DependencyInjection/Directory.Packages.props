@@ -1,0 +1,6 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove(Directory.Packages.props, $(MSBuildThisFileDirectory)../..))" />
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+  </ItemGroup>
+</Project>

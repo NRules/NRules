@@ -1,8 +1,9 @@
-﻿using Moq;
-using NRules.Fluent;
-using NRules.RuleModel;
+﻿using System;
 using System.Linq;
 using System.Threading;
+using Moq;
+using NRules.Fluent;
+using NRules.RuleModel;
 using Xunit;
 
 namespace NRules.Tests;
@@ -22,7 +23,7 @@ public class RuleCompilerTest
             rule2.Setup(r => r.LeftHandSide).Returns(() =>
                 {
                     cancellationSource.Cancel();
-                    return new AndElement(Enumerable.Empty<RuleElement>());
+                    return new AndElement(Array.Empty<RuleElement>());
                 });
 
             var rule3 = CreateRuleDefinitionMock();
@@ -52,7 +53,7 @@ public class RuleCompilerTest
             rule2_2.Setup(r => r.LeftHandSide).Returns(() =>
             {
                 cancellationSource.Cancel();
-                return new AndElement(Enumerable.Empty<RuleElement>());
+                return new AndElement(Array.Empty<RuleElement>());
             });
 
             var rule2_3 = CreateRuleDefinitionMock();
@@ -94,7 +95,7 @@ public class RuleCompilerTest
             rule2.Setup(r => r.LeftHandSide).Returns(() =>
             {
                 cancellationSource.Cancel();
-                return new AndElement(Enumerable.Empty<RuleElement>());
+                return new AndElement(Array.Empty<RuleElement>());
             });
 
             var rule3 = CreateRuleDefinitionMock();
@@ -118,10 +119,10 @@ public class RuleCompilerTest
     {
         var rule = new Mock<IRuleDefinition>();
         rule.Setup(r => r.Name).Returns("Rule");
-        rule.Setup(r => r.LeftHandSide).Returns(new AndElement(Enumerable.Empty<RuleElement>()));
-        rule.Setup(r => r.DependencyGroup).Returns(new DependencyGroupElement(Enumerable.Empty<DependencyElement>()));
-        rule.Setup(r => r.RightHandSide).Returns(new ActionGroupElement(Enumerable.Empty<ActionElement>()));
-        rule.Setup(r => r.FilterGroup).Returns(new FilterGroupElement(Enumerable.Empty<FilterElement>()));
+        rule.Setup(r => r.LeftHandSide).Returns(new AndElement(Array.Empty<RuleElement>()));
+        rule.Setup(r => r.DependencyGroup).Returns(new DependencyGroupElement(Array.Empty<DependencyElement>()));
+        rule.Setup(r => r.RightHandSide).Returns(new ActionGroupElement(Array.Empty<ActionElement>()));
+        rule.Setup(r => r.FilterGroup).Returns(new FilterGroupElement(Array.Empty<FilterElement>()));
         return rule;
     }
 }

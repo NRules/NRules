@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
@@ -213,7 +214,7 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
     public void Fire_TwoFactsOneGroupAnotherFactFilteredOut_FiresOnceAggregateHasSource()
     {
         //Arrange
-        IFact matchedGroup = null;
+        IFact? matchedGroup = null;
         Session.Events.RuleFiredEvent += (_, args) =>
         {
             matchedGroup = args.Facts.Single();
@@ -247,14 +248,15 @@ public class OneFactOneCollectToLookupRuleTest : BaseRulesTestFixture
     public class FactType
     {
         public long GroupProperty { get; set; }
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            IKeyedLookup<long, string> lookup = null;
+            IKeyedLookup<long, string> lookup = null!;
 
             When()
                 .Query(() => lookup, x => x

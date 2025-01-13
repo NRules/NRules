@@ -25,8 +25,8 @@ internal class ActivationExpression<TResult> : IActivationExpression<TResult>
 
     public TResult Invoke(AgendaContext context, Activation activation)
     {
-        Exception exception = null;
-        TResult result = default;
+        Exception? exception = null;
+        TResult? result = default;
         try
         {
             result = _compiledExpression.Invoke(activation.Tuple);

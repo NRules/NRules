@@ -35,8 +35,8 @@ internal sealed class LhsExpression<TResult> : ILhsExpression<TResult>
 
     public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
     {
-        Exception exception = null;
-        TResult result = default;
+        Exception? exception = null;
+        TResult? result = default;
         try
         {
             result = _compiledExpression(tuple, fact);
@@ -75,10 +75,10 @@ internal sealed class LhsFactExpression<TResult> : ILhsFactExpression<TResult>
         return Invoke(context, nodeInfo, null, fact);
     }
 
-    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple? tuple, Fact fact)
     {
-        Exception exception = null;
-        TResult result = default;
+        Exception? exception = null;
+        TResult? result = default;
         try
         {
             result = _compiledExpression(fact);
@@ -117,10 +117,10 @@ internal sealed class LhsTupleExpression<TResult> : ILhsTupleExpression<TResult>
         return Invoke(context, nodeInfo, tuple, null);
     }
 
-    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact fact)
+    public TResult Invoke(IExecutionContext context, NodeInfo nodeInfo, Tuple tuple, Fact? fact)
     {
-        Exception exception = null;
-        TResult result = default;
+        Exception? exception = null;
+        TResult? result = default;
         try
         {
             result = _compiledExpression(tuple);

@@ -4,25 +4,25 @@ namespace NRules.Utilities;
 
 internal interface IArguments
 {
-    object[] GetValues();
+    object?[] GetValues();
 }
 
 internal class LhsExpressionArguments : IArguments
 {
     private readonly IArgumentMap _argumentMap;
-    private readonly Tuple _tuple;
-    private readonly Fact _fact;
+    private readonly Tuple? _tuple;
+    private readonly Fact? _fact;
 
-    public LhsExpressionArguments(IArgumentMap argumentMap, Tuple tuple, Fact fact)
+    public LhsExpressionArguments(IArgumentMap argumentMap, Tuple? tuple, Fact? fact)
     {
         _argumentMap = argumentMap;
         _tuple = tuple;
         _fact = fact;
     }
 
-    public object[] GetValues()
+    public object?[] GetValues()
     {
-        var args = new object[_argumentMap.Count];
+        var args = new object?[_argumentMap.Count];
 
         if (_tuple != null)
         {
@@ -60,9 +60,9 @@ internal class ActivationExpressionArguments : IArguments
         _activation = activation;
     }
 
-    public object[] GetValues()
+    public object?[] GetValues()
     {
-        var args = new object[_argumentMap.Count];
+        var args = new object?[_argumentMap.Count];
 
         var index = _activation.Tuple.Count - 1;
         var enumerable = _activation.Tuple.GetEnumerator();

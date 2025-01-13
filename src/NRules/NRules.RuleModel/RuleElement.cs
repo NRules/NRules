@@ -19,12 +19,12 @@ public abstract class RuleElement
     /// <summary>
     /// Rule element declarations exported to the outer scope.
     /// </summary>
-    public IEnumerable<Declaration> Exports => _exports;
+    public IReadOnlyCollection<Declaration> Exports => _exports;
 
     /// <summary>
     /// Rule element declarations imported from the outer scope.
     /// </summary>
-    public IEnumerable<Declaration> Imports => _imports;
+    public IReadOnlyCollection<Declaration> Imports => _imports;
 
     internal RuleElement()
     {
@@ -38,7 +38,7 @@ public abstract class RuleElement
         _imports.UnionWith(imports);
     }
 
-    internal void AddImports(RuleElement element)
+    internal void AddImports(RuleElement? element)
     {
         if (element != null)
             AddImports(new[] {element});
@@ -66,5 +66,5 @@ public abstract class RuleElement
         AddExports(new[] {declaration});
     }
 
-    internal abstract void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor);
+    internal abstract RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor);
 }

@@ -14,6 +14,8 @@
   href: forward-chaining.md
 - name: Agenda Filters
   href: agenda-filters.md
+- name: Fact Equality and Identity
+  href: fact-equality-and-identity.md
 - name: Unit Testing Rules
   href: unit-testing-rules.md
 - name: Diagnostics

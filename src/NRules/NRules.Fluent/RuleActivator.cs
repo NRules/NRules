@@ -19,7 +19,7 @@ public interface IRuleActivator
     /// <returns>Rule instances.</returns>
     /// <remarks>
     /// The same rule type may be instantiated multiple times with different parameters. 
-    /// Each instance is considered as separate rule, and should have a unique name.
+    /// Each instance is considered a separate rule, and should have a unique name.
     /// </remarks>
     IEnumerable<Rule> Activate(Type type);
 }

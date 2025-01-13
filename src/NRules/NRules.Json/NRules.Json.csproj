@@ -23,4 +23,6 @@
     <ProjectReference Include="..\NRules.RuleModel\NRules.RuleModel.csproj" />
   </ItemGroup>
 
+  <Import Project="..\..\Nullable.props" />
+  
 </Project>

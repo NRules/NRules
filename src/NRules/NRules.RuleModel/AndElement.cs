@@ -7,7 +7,7 @@ namespace NRules.RuleModel;
 /// </summary>
 public class AndElement : GroupElement
 {
-    internal AndElement(IEnumerable<RuleElement> childElements)
+    internal AndElement(RuleElement[] childElements)
         : base(childElements)
     {
     }
@@ -15,8 +15,14 @@ public class AndElement : GroupElement
     /// <inheritdoc cref="RuleElement.ElementType"/>
     public override ElementType ElementType => ElementType.And;
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitAnd(context, this);
+        return visitor.VisitAnd(context, this);
+    }
+
+    internal AndElement Update(IReadOnlyList<RuleElement> childElements)
+    {
+        if (ReferenceEquals(childElements, ChildElements)) return this;
+        return new AndElement(childElements.AsArray());
     }
 }

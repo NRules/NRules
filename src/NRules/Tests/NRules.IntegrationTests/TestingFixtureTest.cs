@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
+using NRules.RuleModel;
+using NRules.RuleModel.Builders;
 using NRules.Testing;
 using Xunit;
 
@@ -37,6 +42,26 @@ public class TestingFixtureTest : RulesTestFixture
 
         //Act
         Verify(x => x.Rule<TestRule1>().Fired());
+
+        //Assert
+        var result = _asserter.GetLastResult();
+        Assert.NotNull(result);
+        Assert.Equal(RuleAssertStatus.Passed, result.Status);
+        Assert.Equal(1, result.Expected);
+        Assert.Equal(1, result.Actual);
+    }
+    
+    [Fact]
+    public void Verify_FiresDynamicRuleOnceExpectedOnce_Passes()
+    {
+        //Arrange
+        var fact = new FactType3 { TestProperty = "Valid Value 1" };
+        Session.Insert(fact);
+
+        Session.Fire();
+
+        //Act
+        Verify(x => x.Rule("Test Rule 3").Fired());
 
         //Assert
         var result = _asserter.GetLastResult();
@@ -283,24 +308,33 @@ public class TestingFixtureTest : RulesTestFixture
     {
         setup.Rule<TestRule1>();
         setup.Rule<TestRule2>();
+        setup.Rule(BuildTestRule3());
     }
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
+    public class FactType3
+    {
+        [NotNull]
+        public string? TestProperty { get; set; }
+    }
+    
     [Name("Test Rule 1")]
     public class TestRule1 : Rule
     {
         public override void Define()
         {
-            FactType1 fact = null;
+            FactType1 fact = null!;
 
             When()
                 .Match(() => fact, f => f.TestProperty.StartsWith("Valid"));
@@ -314,8 +348,8 @@ public class TestingFixtureTest : RulesTestFixture
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
-            FactType2 fact2 = null;
+            FactType1 fact1 = null!;
+            FactType2 fact2 = null!;
 
             When()
                 .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))
@@ -323,6 +357,27 @@ public class TestingFixtureTest : RulesTestFixture
             Then()
                 .Do(ctx => ctx.NoOp());
         }
+    }
+    
+    private IRuleDefinition BuildTestRule3()
+    {
+        //rule "Test Rule 3"
+        //when
+        //    fact = FactType3(x => x.TestProperty.StartsWith("Valid"));
+        //then
+        //    Context.NoOp();
+
+        var builder = new RuleBuilder();
+        builder.Name("Test Rule 3");
+
+        PatternBuilder factPattern = builder.LeftHandSide().Pattern(typeof (FactType3), "fact");
+        Expression<Func<FactType3, bool>> customerCondition = fact => fact.TestProperty.StartsWith("Valid");
+        factPattern.Condition(customerCondition);
+
+        Expression<Action<IContext>> action = ctx => ctx.NoOp();
+        builder.RightHandSide().Action(action);
+
+        return builder.Build();
     }
 
     private readonly RecordingAsserter _asserter;
@@ -339,7 +394,7 @@ public class TestingFixtureTest : RulesTestFixture
         private readonly List<RuleAssertResult> _results = new ();
 
         public IReadOnlyCollection<RuleAssertResult> Results => _results;
-        public RuleAssertResult GetLastResult() => _results.Any() ? _results.Last() : null;
+        public RuleAssertResult? GetLastResult() => _results.Any() ? _results.Last() : null;
 
         public void Assert(RuleAssertResult result)
         {

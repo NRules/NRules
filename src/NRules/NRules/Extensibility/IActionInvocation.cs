@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NRules.RuleModel;
 
 namespace NRules.Extensibility;
@@ -14,7 +15,7 @@ public interface IActionInvocation
     /// </summary>
     /// <remarks>Action arguments also include dependencies that are passed to the action method.</remarks>
     /// <remarks>Action arguments don't include <c>IContext</c>.</remarks>
-    object[] Arguments { get; }
+    IReadOnlyList<object?> Arguments { get; }
 
     /// <summary>
     /// Invokes the action.

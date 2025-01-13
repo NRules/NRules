@@ -7,11 +7,11 @@ namespace NRules.RuleModel;
 /// </summary>
 public class FilterGroupElement : RuleElement
 {
-    private readonly List<FilterElement> _filters;
+    private readonly FilterElement[] _filters;
 
-    internal FilterGroupElement(IEnumerable<FilterElement> filters)
+    internal FilterGroupElement(FilterElement[] filters)
     {
-        _filters = new List<FilterElement>(filters);
+        _filters = filters;
 
         AddImports(_filters);
     }
@@ -22,10 +22,16 @@ public class FilterGroupElement : RuleElement
     /// <summary>
     /// List of filters the group element contains.
     /// </summary>
-    public IEnumerable<FilterElement> Filters => _filters;
+    public IReadOnlyList<FilterElement> Filters => _filters;
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitFilterGroup(context, this);
+        return visitor.VisitFilterGroup(context, this);
+    }
+
+    internal FilterGroupElement Update(IReadOnlyList<FilterElement> filters)
+    {
+        if (ReferenceEquals(filters, _filters)) return this;
+        return new FilterGroupElement(filters.AsArray());
     }
 }

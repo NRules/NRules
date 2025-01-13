@@ -8,19 +8,19 @@ namespace NRules.RuleModel;
 /// <summary>
 /// Ordered readonly collection of named expressions.
 /// </summary>
-public class ExpressionCollection : IEnumerable<NamedExpressionElement>
+public class ExpressionCollection : IReadOnlyList<NamedExpressionElement>
 {
-    private readonly List<NamedExpressionElement> _expressions;
+    private readonly NamedExpressionElement[] _expressions;
 
-    internal ExpressionCollection(IEnumerable<NamedExpressionElement> expressions)
+    internal ExpressionCollection(NamedExpressionElement[] expressions)
     {
-        _expressions = new List<NamedExpressionElement>(expressions);
+        _expressions = expressions;
     }
 
     /// <summary>
     /// Number of expressions in the collection.
     /// </summary>
-    public int Count => _expressions.Count;
+    public int Count => _expressions.Length;
 
     /// <summary>
     /// Retrieves single expression by name.
@@ -52,6 +52,12 @@ public class ExpressionCollection : IEnumerable<NamedExpressionElement>
     }
 
     /// <summary>
+    /// Retrieves expression by index.
+    /// </summary>
+    /// <param name="index">Expression index.</param>
+    public NamedExpressionElement this[int index] => _expressions[index];
+
+    /// <summary>
     /// Retrieves single expression by name.
     /// </summary>
     /// <param name="name">Expression name.</param>
@@ -66,11 +72,17 @@ public class ExpressionCollection : IEnumerable<NamedExpressionElement>
     /// </summary>
     public IEnumerator<NamedExpressionElement> GetEnumerator()
     {
-        return _expressions.GetEnumerator();
+        return _expressions.AsEnumerable().GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    public ExpressionCollection Update(IReadOnlyList<NamedExpressionElement> expressions)
+    {
+        if (ReferenceEquals(expressions, this)) return this;
+        return new ExpressionCollection(expressions.AsArray());
     }
 }

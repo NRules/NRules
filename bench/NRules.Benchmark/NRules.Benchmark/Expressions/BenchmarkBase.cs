@@ -11,7 +11,7 @@ public abstract class BenchmarkBase
 
     protected BenchmarkBase()
     {
-        Context = new ExecutionContext(null, null, null, new EventAggregator(), null, null);
+        Context = new ExecutionContext(null!, null!, null!, new EventAggregator(), null!, null!);
     }
 
     internal static Tuple ToTuple(params object[] values)

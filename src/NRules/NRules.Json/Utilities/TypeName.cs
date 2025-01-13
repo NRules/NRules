@@ -7,21 +7,17 @@ internal class TypeName
 {
     public TypeName(Type type)
     {
-        FullName = type.FullName;
+        FullName = type.FullName 
+            ?? throw new ArgumentException($"Unable to get type name. Type={type}");
         AssemblyName = type.Assembly.GetName();
     }
 
-    public TypeName(string typeFullName)
-        : this(typeFullName, null)
-    {
-    }
-
-    public TypeName(string typeFullName, AssemblyName assemblyName)
+    public TypeName(string typeFullName, AssemblyName? assemblyName = null)
     {
         FullName = typeFullName;
         AssemblyName = assemblyName;
     }
 
     public string FullName { get; }
-    public AssemblyName AssemblyName { get; }
+    public AssemblyName? AssemblyName { get; }
 }

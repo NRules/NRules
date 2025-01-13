@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Moq;
 using NRules.Aggregators;
+using NRules.Diagnostics;
 using NRules.RuleModel;
 using Xunit;
 
@@ -13,114 +15,121 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Add_NewInstance_AddedResult_AscendingThenAscending()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndInt2(SortDirection.Ascending, SortDirection.Ascending);
-        var fact1_2 = new TestFact(1, 2);
-        var fact1_1 = new TestFact(1, 1);
-        var fact2_3 = new TestFact(2, 3);
+        var fact12 = new TestFact(1, 2);
+        var fact11 = new TestFact(1, 1);
+        var fact23 = new TestFact(2, 3);
 
         // Act
-        var facts = AsFact(fact2_3, fact1_2, fact1_1);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var facts = AsFact(fact23, fact12, fact11);
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         // Assert
-        AssertAggregationResult(result, AggregationAction.Added, fact1_1, fact1_2, fact2_3);
+        AssertAggregationResult(result, AggregationAction.Added, fact11, fact12, fact23);
     }
 
     [Fact]
     public void Add_NewInstance_AddedResult_AscendingThenDescending()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndInt2(SortDirection.Ascending, SortDirection.Descending);
-        var fact1_2 = new TestFact(1, 2);
-        var fact1_1 = new TestFact(1, 1);
-        var fact2_3 = new TestFact(2, 3);
+        var fact12 = new TestFact(1, 2);
+        var fact11 = new TestFact(1, 1);
+        var fact23 = new TestFact(2, 3);
 
         // Act
         
-        var facts = AsFact(fact2_3, fact1_2, fact1_1);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var facts = AsFact(fact23, fact12, fact11);
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         // Assert
-        AssertAggregationResult(result, AggregationAction.Added, fact1_2, fact1_1, fact2_3);
+        AssertAggregationResult(result, AggregationAction.Added, fact12, fact11, fact23);
     }
 
     [Fact]
     public void Add_NewInstance_AddedResult_DescendingThenAscending()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndInt2(SortDirection.Descending, SortDirection.Ascending);
-        var fact1_2 = new TestFact(1, 2);
-        var fact1_1 = new TestFact(1, 1);
-        var fact2_3 = new TestFact(2, 3);
+        var fact12 = new TestFact(1, 2);
+        var fact11 = new TestFact(1, 1);
+        var fact23 = new TestFact(2, 3);
 
         // Act
-        var facts = AsFact(fact2_3, fact1_2, fact1_1);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var facts = AsFact(fact23, fact12, fact11);
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         // Assert
-        AssertAggregationResult(result, AggregationAction.Added, fact2_3, fact1_1, fact1_2);
+        AssertAggregationResult(result, AggregationAction.Added, fact23, fact11, fact12);
     }
 
     [Fact]
     public void Add_NewInstance_AddedResult_DescendingThenDescending()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndInt2(SortDirection.Descending, SortDirection.Descending);
-        var fact1_2 = new TestFact(1, 2);
-        var fact1_1 = new TestFact(1, 1);
-        var fact2_3 = new TestFact(2, 3);
+        var fact12 = new TestFact(1, 2);
+        var fact11 = new TestFact(1, 1);
+        var fact23 = new TestFact(2, 3);
 
         // Act
-        var facts = AsFact(fact2_3, fact1_2, fact1_1);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var facts = AsFact(fact23, fact12, fact11);
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         // Assert
-        AssertAggregationResult(result, AggregationAction.Added, fact2_3, fact1_2, fact1_1);
+        AssertAggregationResult(result, AggregationAction.Added, fact23, fact12, fact11);
     }
 
     [Fact]
     public void Add_NewInstance_AddedResult_IntThenString_DescendingThenAscending()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Descending, SortDirection.Ascending);
-        var fact1_B = new TestFact(1, "B");
-        var fact1_A = new TestFact(1, "A");
-        var fact2_C = new TestFact(2, "C");
+        var fact1B = new TestFact(1, "B");
+        var fact1A = new TestFact(1, "A");
+        var fact2C = new TestFact(2, "C");
 
         // Act
-        var facts = AsFact(fact2_C, fact1_B, fact1_A);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var facts = AsFact(fact2C, fact1B, fact1A);
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         // Assert
-        AssertAggregationResult(result, AggregationAction.Added, fact2_C, fact1_A, fact1_B);
+        AssertAggregationResult(result, AggregationAction.Added, fact2C, fact1A, fact1B);
     }
 
     [Fact]
     public void Add_NewInstance_AddedResult_IntThenString_DescendingThenDescending()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Descending, SortDirection.Descending);
-        var fact1_B = new TestFact(1, "B");
-        var fact1_A = new TestFact(1, "A");
-        var fact2_C = new TestFact(2, "C");
+        var fact1B = new TestFact(1, "B");
+        var fact1A = new TestFact(1, "A");
+        var fact2C = new TestFact(2, "C");
 
         // Act
-        var facts = AsFact(fact2_C, fact1_B, fact1_A);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var facts = AsFact(fact2C, fact1B, fact1A);
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         // Assert
-        AssertAggregationResult(result, AggregationAction.Added, fact2_C, fact1_B, fact1_A);
+        AssertAggregationResult(result, AggregationAction.Added, fact2C, fact1B, fact1A);
     }
 
     [Fact]
     public void Add_NoFacts_AddedResultEmptyCollection()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndInt2(SortDirection.Descending, SortDirection.Descending);
 
         // Act
-        var facts = AsFact(new TestFact[0]);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var facts = AsFact(Array.Empty<TestFact>());
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Added);
@@ -130,13 +139,14 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Add_NewInstanceDuplicateFacts_AddedResult()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Descending, SortDirection.Ascending);
         var duplicateFact1 = new TestFact(1, "A");
         var duplicateFact2 = new TestFact(1, "A");
 
         // Act
         var facts = AsFact(duplicateFact1, duplicateFact2);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Added, duplicateFact1, duplicateFact2);
@@ -146,15 +156,16 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Add_OldInstanceNewFacts_ModifiedResult_AscendingThenDescending()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Descending);
         var fact1 = new TestFact(1, "B");
         var fact3 = new TestFact(2, "C");
-        target.Add(null, EmptyTuple(), AsFact(fact1, fact3));
+        target.Add(context, EmptyTuple(), AsFact(fact1, fact3));
 
         // Act
         var fact2 = new TestFact(1, "A");
         var facts = AsFact(fact2);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact1, fact2, fact3);
@@ -164,15 +175,16 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Add_OldInstanceNewFacts_ModifiedResult_DescendingThenAscending()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Descending);
         var fact1 = new TestFact(1, "B");
         var fact2 = new TestFact(1, "A");
         var fact3 = new TestFact(2, "C");
-        target.Add(null, EmptyTuple(), AsFact(fact1, fact3));
+        target.Add(context, EmptyTuple(), AsFact(fact1, fact3));
 
         // Act
         var facts = AsFact(fact2);
-        var result = target.Add(null, EmptyTuple(), facts).ToArray();
+        var result = target.Add(context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact1, fact2, fact3);
@@ -182,16 +194,17 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Add_OldInstanceDuplicateFacts_ModifiedResult()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var duplicateFact1 = new TestFact(1, "A");
         var duplicateFact2 = new TestFact(1, "A");
 
         // Act
         var facts1 = AsFact(duplicateFact1);
-        target.Add(null, EmptyTuple(), facts1).ToArray();
+        target.Add(context, EmptyTuple(), facts1);
 
         var facts2 = AsFact(duplicateFact2);
-        var result = target.Add(null, EmptyTuple(), facts2).ToArray();
+        var result = target.Add(context, EmptyTuple(), facts2).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, duplicateFact1, duplicateFact2);
@@ -201,15 +214,16 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Modify_ExistingFactsSameValues_ModifiedResult()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var fact1 = new TestFact(1, "A");
         var fact2 = new TestFact(2, "B");
 
         var facts = AsFact(fact1, fact2);
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act
-        var result = target.Modify(null, EmptyTuple(), facts).ToArray();
+        var result = target.Modify(context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact1, fact2);
@@ -219,16 +233,17 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Modify_ExistingFactsDifferentValues_ModifiedResult_AscendingThenAscending()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var fact1 = new TestFact(1, "A");
         var fact2 = new TestFact(1, "B");
         var facts = AsFact(fact1, fact2);
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act
         facts[0].Value = new TestFact(1, "D");
         facts[1].Value = new TestFact(1, "C");
-        var result = target.Modify(null, EmptyTuple(), facts).ToArray();
+        var result = target.Modify(context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, new TestFact(1, "C"), new TestFact(1, "D"));
@@ -238,17 +253,18 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Modify_ExistingFactsDifferentValues_ModifiedResult_AscendingThenDescending()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Descending);
         var fact1 = new TestFact(1, "A");
         var fact2 = new TestFact(1, "B");
 
         var facts = AsFact(fact1, fact1);
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act
         facts[0].Value = new TestFact(1, "D");
         facts[1].Value = new TestFact(1, "C");
-        var result = target.Modify(null, EmptyTuple(), facts).ToArray();
+        var result = target.Modify(context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, new TestFact(1, "D"), new TestFact(1, "C"));
@@ -258,14 +274,15 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Modify_ExistingDuplicateFacts_ModifiedResult()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var fact1 = new TestFact(1, "A");
         var fact2 = new TestFact(1, "A");
         var facts = AsFact(fact1, fact2);
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act
-        var result = target.Modify(null, EmptyTuple(), facts).ToArray();
+        var result = target.Modify(context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact1, fact2);
@@ -275,16 +292,17 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Modify_ExistingDuplicateFactsDeduplicated_ModifiedResult()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var fact1 = new TestFact(1, "A");
         var fact2 = new TestFact(1, "A");
         var facts = AsFact(fact1, fact2);
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act
         fact1 = new TestFact(1, "B");
         facts[0].Value = fact1;
-        var result = target.Modify(null, EmptyTuple(), facts).ToArray();
+        var result = target.Modify(context, EmptyTuple(), facts).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact2, fact1);
@@ -294,18 +312,19 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Modify_ExistingDuplicateFactsDeduplicatedOneByOne_ModifiedResult()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var facts = AsFact(new TestFact(1, "A"), new TestFact(1, "A"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act
         var fact1 = new TestFact(1, "B");
         facts[0].Value = fact1;
-        target.Modify(null, EmptyTuple(), facts.Take(1)).ToArray();
+        target.Modify(context, EmptyTuple(), facts.Take(1).ToList());
 
         var fact2 = new TestFact(1, "C");
         facts[1].Value = fact2;
-        var result = target.Modify(null, EmptyTuple(), facts.Skip(1).Take(1)).ToArray();
+        var result = target.Modify(context, EmptyTuple(), facts.Skip(1).Take(1).ToList()).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact1, fact2);
@@ -315,29 +334,31 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Modify_NonExistent_Throws()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var facts = AsFact(new TestFact(1, "A"), new TestFact(1, "B"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act - Assert
         Assert.Throws<KeyNotFoundException>(
-            () => target.Modify(null, EmptyTuple(), AsFact(new TestFact(1, "A"), new TestFact(1, "B"))));
+            () => target.Modify(context, EmptyTuple(), AsFact(new TestFact(1, "A"), new TestFact(1, "B"))));
     }
 
     [Fact]
     public void Remove_ExistingFactsSameValues_ModifiedResult()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var fact1 = new TestFact(1, "A");
         var fact2 = new TestFact(1, "B");
         var fact3 = new TestFact(1, "C");
         var facts = AsFact(fact1, fact2, fact3);
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act
         var toRemove = new[] { facts.ElementAt(1) };
-        var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
+        var result = target.Remove(context, EmptyTuple(), toRemove).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact1, fact3);
@@ -347,18 +368,19 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Remove_ExistingFactsDifferentValues_ModifiedResult()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var fact1 = new TestFact(1, "A");
         var fact2 = new TestFact(1, "B");
         var fact3 = new TestFact(1, "C");
         var facts = AsFact(fact1, fact2, fact3);
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act
         facts[0].Value = new TestFact(2, "A");
         facts[1].Value = new TestFact(2, "B");
         var toRemove = facts.Take(2).ToArray();
-        var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
+        var result = target.Remove(context, EmptyTuple(), toRemove).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact3);
@@ -368,16 +390,17 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Remove_ExistingDuplicateFacts_ModifiedResult()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var fact1 = new TestFact(1, "A");
         var fact2 = new TestFact(1, "B");
         var fact3 = new TestFact(1, "B");
         var facts = AsFact(fact1, fact2, fact3);
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act
         var toRemove = facts.Take(2).ToArray();
-        var result = target.Remove(null, EmptyTuple(), toRemove).ToArray();
+        var result = target.Remove(context, EmptyTuple(), toRemove).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact3);
@@ -387,16 +410,17 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Remove_ExistingDuplicateFactsRemovedOneByOne_ModifiedResult()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var fact1 = new TestFact(1, "A");
         var fact2 = new TestFact(1, "B");
         var fact3 = new TestFact(1, "B");
         var facts = AsFact(fact1, fact2, fact3);
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act
-        target.Remove(null, EmptyTuple(), facts.Skip(1).Take(1).ToArray()).ToArray();
-        var result = target.Remove(null, EmptyTuple(), facts.Skip(2).Take(1).ToArray()).ToArray();
+        target.Remove(context, EmptyTuple(), facts.Skip(1).Take(1).ToArray());
+        var result = target.Remove(context, EmptyTuple(), facts.Skip(2).Take(1).ToArray()).ToArray();
 
         // Assert
         AssertAggregationResult(result, AggregationAction.Modified, fact1);
@@ -406,15 +430,22 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     public void Remove_NonExistent_Throws()
     {
         // Arrange
+        var context = GetContext();
         var target = CreateTarget_SortWithInt1AndString(SortDirection.Ascending, SortDirection.Ascending);
         var facts = AsFact(new TestFact(1, "A"), new TestFact(1, "B"));
-        target.Add(null, EmptyTuple(), facts);
+        target.Add(context, EmptyTuple(), facts);
 
         // Act - Assert
         Assert.Throws<KeyNotFoundException>(
-            () => target.Remove(null, EmptyTuple(), AsFact(new TestFact(1, "A"), new TestFact(1, "B"))));
+            () => target.Remove(context, EmptyTuple(), AsFact(new TestFact(1, "A"), new TestFact(1, "B"))));
     }
 
+    private static AggregationContext GetContext()
+    {
+        var mockExecutionContext = new Mock<IExecutionContext>();
+        return new AggregationContext(mockExecutionContext.Object, new NodeInfo());
+    }
+    
     private static MultiKeySortedAggregator<TestFact> CreateTarget_SortWithInt1AndInt2(SortDirection sortDirection1, SortDirection sortDirection2)
     {
         var expression1 = new FactExpression<TestFact, int>(x => x.Int1);
@@ -427,7 +458,7 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
     private static MultiKeySortedAggregator<TestFact> CreateTarget_SortWithInt1AndString(SortDirection sortDirectionInt, SortDirection sortDirectionString)
     {
         var expressionInt = new FactExpression<TestFact, int>(x => x.Int1);
-        var expressionString = new FactExpression<TestFact, string>(x => x.String);
+        var expressionString = new FactExpression<TestFact, string?>(x => x.String);
         var sortCondition1 = new SortCondition(AggregateElement.KeySelectorAscendingName, sortDirectionInt, expressionInt);
         var sortCondition2 = new SortCondition(AggregateElement.KeySelectorAscendingName, sortDirectionString, expressionString);
         return new MultiKeySortedAggregator<TestFact>(new[] { sortCondition1, sortCondition2 });
@@ -441,11 +472,12 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
         Assert.Equal(action, result.Action);
 
         var aggregate = (IEnumerable<TestFact>)result.Aggregate;
-        Assert.Equal(action == AggregationAction.Added ? null : aggregate, result.Previous);
 
         var actualAggregateFacts = aggregate.ToArray();
-        var actualSourceFacts = result.Source.Select(f => (TestFact)f.Value).ToArray();
-        Assert.Equal(orderedFacts.Length, actualSourceFacts.Length);
+        var actualSourceFacts = result.Source?.Select(f => (TestFact?)f.Value).ToArray();
+        Assert.Equal(action == AggregationAction.Added ? null : actualAggregateFacts, result.Previous);
+        Assert.Equal(orderedFacts.Length, actualSourceFacts?.Length);
+        Assert.NotNull(actualSourceFacts);
         for (var i = 0; i < orderedFacts.Length; i++)
         {
             Assert.Equal(orderedFacts[i], actualAggregateFacts[i]);
@@ -469,16 +501,16 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
 
         public int Int1 { get; }
         public int Int2 { get; }
-        public string String { get; }
+        public string? String { get; }
 
-        public bool Equals(TestFact other)
+        public bool Equals(TestFact? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Int1 == other.Int1 && Int2 == other.Int2 && String == other.String;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -488,7 +520,7 @@ public class MultiKeySortedAggregatorTest : AggregatorTest
 
         public override int GetHashCode()
         {
-            return Int1.GetHashCode() ^ Int2.GetHashCode() ^ String.GetHashCode();
+            return Int1.GetHashCode() ^ Int2.GetHashCode() ^ (String == null ? 0 : String.GetHashCode());
         }
     }
 }

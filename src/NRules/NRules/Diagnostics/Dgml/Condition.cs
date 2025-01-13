@@ -4,7 +4,12 @@ namespace NRules.Diagnostics.Dgml;
 
 internal class Condition
 {
-    public string Expression { get; set; }
+    public Condition(string expression)
+    {
+        Expression = expression;
+    }
+    
+    public string Expression { get; }
 
     public void WriteXml(XmlWriter writer)
     {

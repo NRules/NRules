@@ -20,5 +20,6 @@
   </ItemGroup>
 
   <Import Project="..\InternalsVisibleTo.props" />
+  <Import Project="..\..\Nullable.props" />
 
 </Project>

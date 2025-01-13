@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
+using NRules.RuleModel;
 
 namespace NRules.Testing;
 
@@ -25,14 +26,19 @@ public interface IRulesTestSetup
     /// Adds specific rule under test to the setup.
     /// </summary>
     /// <typeparam name="T">Type of the rule to add.</typeparam>
-    /// <remarks>If <typeparamref name="T"/> is not concrete, it will be ignored</remarks>
+    /// <remarks>
+    /// If <typeparamref name="T"/> is not concrete, it will be ignored.
+    /// </remarks>
     void Rule<T>() where T : Rule;
 
     /// <summary>
     /// Adds specific rule under test to the setup.
     /// </summary>
     /// <param name="ruleType"><see cref="Type"/> of the rule to add.</param>
-    /// <remarks>If <paramref name="ruleType"/> is not derived from <see cref="Fluent.Dsl.Rule"/> or is not concrete, it will be ignored.</remarks>
+    /// <remarks>
+    /// If <paramref name="ruleType"/> is not derived from <see cref="Fluent.Dsl.Rule"/> or is not concrete,
+    /// it will be ignored.
+    /// </remarks>
     void Rule(Type ruleType);
 
     /// <summary>
@@ -40,6 +46,16 @@ public interface IRulesTestSetup
     /// </summary>
     /// <param name="ruleInstance">Rule instance to add.</param>
     void Rule(Rule ruleInstance);
+    
+    /// <summary>
+    /// Adds specific rule under test to the setup.
+    /// </summary>
+    /// <param name="ruleDefinition">Rule definition to add.</param>
+    /// <remarks>
+    /// Rules registered as <see cref="IRuleDefinition"/> cannot participate in assertions
+    /// that use Fluent DSL information, such as the rule CLR type.
+    /// </remarks>
+    void Rule(IRuleDefinition ruleDefinition);
 }
 
 internal sealed class RulesTestSetup : IRulesTestSetup
@@ -66,6 +82,22 @@ internal sealed class RulesTestSetup : IRulesTestSetup
     {
         var definition = _ruleDefinitionFactory.Create(ruleInstance);
         var ruleInfo = new RuleInfo(ruleInstance.GetType(), ruleInstance, definition);
+        AddRule(ruleInfo);
+    }
+    
+    public void Rule(IRuleDefinition ruleDefinition)
+    {
+        var ruleInfo = new RuleInfo(ruleDefinition);
+        AddRule(ruleInfo);
+    }
+    
+    private void AddRule(RuleInfo ruleInfo)
+    {
+        if (ruleInfo.Type != null && _rules.Any(x => x.Type == ruleInfo.Type))
+            throw new ArgumentException($"Rule with type {ruleInfo.Type} is already registered");
+        if (_rules.Any(x => string.Equals(x.Definition.Name, ruleInfo.Definition.Name)))
+            throw new ArgumentException($"Rule with name {ruleInfo.Definition.Name} is already registered");
+        
         _rules.Add(ruleInfo);
     }
 }

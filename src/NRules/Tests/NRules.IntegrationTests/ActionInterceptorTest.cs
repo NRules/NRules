@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using NRules.Extensibility;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -11,7 +12,7 @@ namespace NRules.IntegrationTests;
 
 public class ActionInterceptorTest : BaseRulesTestFixture
 {
-    private TestRule _testRule;
+    private TestRule _testRule = null!;
 
     [Fact]
     public void Fire_ConditionsMatchNoInterceptor_ExecutesAction()
@@ -110,7 +111,7 @@ public class ActionInterceptorTest : BaseRulesTestFixture
             _invoke = invoke;
         }
 
-        public void Intercept(IContext context, IEnumerable<IActionInvocation> actions)
+        public void Intercept(IContext context, IReadOnlyCollection<IActionInvocation> actions)
         {
             if (_invoke)
             {
@@ -136,8 +137,8 @@ public class ActionInterceptorTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType1 fact = null;
-            IEnumerable<FactType2> collection = null;
+            FactType1 fact = null!;
+            IEnumerable<FactType2> collection = null!;
 
             When()
                 .Match(() => fact)

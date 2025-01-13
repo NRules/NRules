@@ -10,14 +10,14 @@ namespace NRules.RuleModel.Builders;
 public class PatternBuilder : RuleElementBuilder, IBuilder<PatternElement>
 {
     private readonly List<KeyValuePair<string, LambdaExpression>> _expressions = new();
-    private IBuilder<RuleElement> _sourceBuilder;
+    private IBuilder<RuleElement>? _sourceBuilder;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PatternBuilder"/>.
     /// </summary>
     /// <param name="type">Pattern type.</param>
     /// <param name="name">Pattern name.</param>
-    public PatternBuilder(Type type, string name)
+    public PatternBuilder(Type type, string? name)
     {
         Declaration = Element.Declaration(type, name ?? "$this$");
     }

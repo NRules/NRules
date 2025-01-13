@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.RuleModel;
@@ -8,11 +7,11 @@ namespace NRules.Fluent.Expressions;
 internal class PatternExpressionRewriter : ExpressionRewriter
 {
     private readonly Declaration _patternDeclaration;
-    private ParameterExpression _originalParameter;
-    private ParameterExpression _normalizedParameter;
+    private ParameterExpression? _originalParameter;
+    private ParameterExpression? _normalizedParameter;
 
-    public PatternExpressionRewriter(Declaration patternDeclaration, IEnumerable<Declaration> declarations)
-        : base(declarations)
+    public PatternExpressionRewriter(Declaration patternDeclaration, ISymbolLookup symbolLookup)
+        : base(symbolLookup)
     {
         _patternDeclaration = patternDeclaration;
     }

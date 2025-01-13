@@ -3,7 +3,7 @@ param (
     [string]$component = 'Core'
 )
 
-$version = '0.9.4'
+$version = '1.0.1'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -47,6 +47,7 @@ $components = @{
     };
     'NRules.Debugger.Visualizer' = @{
         name = 'NRules.Debugger.Visualizer'
+        os = @('windows')
         solution_file = 'src\NRules.Debugger.Visualizer\NRules.Debugger.Visualizer.sln'
         package = @{
             bin = @{
@@ -88,6 +89,28 @@ $components = @{
             )
         }
     };
+    'NRules.Integration.DependencyInjection' = @{
+        name = 'NRules.Integration.DependencyInjection'
+        solution_file = 'src\NRules.Integration\NRules.Integration.DependencyInjection\NRules.Integration.DependencyInjection.sln'
+        package = @{
+            bin = @{
+                artifacts = @('netstandard2.0', 'netstandard2.1')
+                'netstandard2.0' = @{
+                    include = @(
+                        "NRules.Integration.DependencyInjection\bin\$configuration\netstandard2.0"
+                    )
+                }
+                'netstandard2.1' = @{
+                    include = @(
+                        "NRules.Integration.DependencyInjection\bin\$configuration\netstandard2.1"
+                    )
+                }
+            }
+            nuget = @(
+                'NRules.Integration.DependencyInjection'
+            )
+        }
+    };
     'Samples.SimpleRules' = @{
         name = 'SimpleRules'
         solution_file = 'samples\SimpleRules\SimpleRules.sln'
@@ -99,6 +122,10 @@ $components = @{
     'Samples.JsonRules' = @{
         name = 'JsonRules'
         solution_file = 'samples\JsonRules\JsonRules.sln'
+    };
+    'Samples.DependencyInjection' = @{
+        name = 'DependencyInjection'
+        solution_file = 'samples\DependencyInjection\DependencyInjection.sln'
     };
     'Benchmark' = @{
         name = 'NRules.Benchmark'
@@ -139,6 +166,7 @@ $core = @('NRules')
 $visualizer = @('NRules.Debugger.Visualizer')
 $integration = $components.keys | Where-Object { $_.StartsWith("NRules.Integration") }
 $samples = $components.keys | Where-Object { $_.StartsWith("Samples.") }
+$benchmark = @('Benchmark')
 $documenation = @('Documentation')
 
 $componentList = @()
@@ -154,8 +182,9 @@ if ($component -eq "Core") {
     $componentList += $core
     $componentList += $visualizer
     $componentList += $integration
-    $componentList += $documenation
     $componentList += $samples
+    $componentList += $benchmark
+    $componentList += $documenation
 } else {
     $componentList += $component
 }

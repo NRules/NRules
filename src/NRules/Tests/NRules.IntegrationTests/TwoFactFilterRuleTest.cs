@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.Testing;
@@ -167,13 +168,15 @@ public class TwoFactFilterRuleTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
         public bool Allow { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
         public bool Allow { get; set; }
     }
 
@@ -181,8 +184,8 @@ public class TwoFactFilterRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
-            FactType2 fact2 = null;
+            FactType1 fact1 = null!;
+            FactType2 fact2 = null!;
 
             When()
                 .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"))

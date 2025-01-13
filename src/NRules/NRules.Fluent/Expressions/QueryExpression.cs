@@ -13,7 +13,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
     private readonly ParameterExpression _symbol;
     private readonly SymbolStack _symbolStack;
     private readonly GroupBuilder _groupBuilder;
-    private Func<string, Type, BuildResult> _buildAction;
+    private Func<string?, Type?, BuildResult>? _buildAction;
 
     public QueryExpression(ParameterExpression symbol, SymbolStack symbolStack, GroupBuilder groupBuilder)
     {
@@ -26,24 +26,26 @@ internal class QueryExpression : IQuery, IQueryBuilder
     public IQueryBuilder Builder { get; }
 
     public void FactQuery<TSource>(Expression<Func<TSource, bool>>[] conditions)
+        where TSource : notnull
     {
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(TSource), name);
-            patternBuilder.DslConditions(_symbolStack.Scope.Declarations, conditions);
+            patternBuilder.DslConditions(_symbolStack.Scope, conditions);
             _symbolStack.Scope.Add(patternBuilder.Declaration);
             return new BuildResult(patternBuilder);
         };
     }
 
     public void From<TSource>(Expression<Func<TSource>> source)
+        where TSource : notnull
     {
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(TSource), name);
 
             var bindingBuilder = patternBuilder.Binding();
-            bindingBuilder.DslBindingExpression(_symbolStack.Scope.Declarations, source);
+            bindingBuilder.DslBindingExpression(_symbolStack.Scope, source);
 
             _symbolStack.Scope.Add(patternBuilder.Declaration);
             return new BuildResult(patternBuilder);
@@ -51,19 +53,22 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void Where<TSource>(Expression<Func<TSource, bool>>[] predicates)
+        where TSource : notnull
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, type) =>
         {
             var result = previousBuildAction(name, type);
-            result.Pattern.DslConditions(_symbolStack.Scope.Declarations, predicates);
+            var patternBuilder = result.Pattern ?? throw new ArgumentException("Query source pattern is not specified");
+            patternBuilder.DslConditions(_symbolStack.Scope, predicates);
             return result;
         };
     }
 
     public void Select<TSource, TResult>(Expression<Func<TSource, TResult>> selector)
+        where TSource : notnull
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(TResult), name);
@@ -73,8 +78,8 @@ internal class QueryExpression : IQuery, IQueryBuilder
             {
                 var aggregateBuilder = patternBuilder.Aggregate();
                 var previousResult = previousBuildAction(null, null);
-                var sourceBuilder = previousResult.Pattern;
-                var selectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, selector);
+                var sourceBuilder = previousResult.Pattern ?? throw new ArgumentException("Query source pattern is not specified");
+                var selectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, selector);
                 aggregateBuilder.Project(selectorExpression);
                 aggregateBuilder.Pattern(sourceBuilder);
                 result = new BuildResult(patternBuilder, aggregateBuilder, sourceBuilder);
@@ -86,8 +91,9 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void SelectMany<TSource, TResult>(Expression<Func<TSource, IEnumerable<TResult>>> selector)
+        where TSource : notnull
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(TResult), name);
@@ -97,8 +103,8 @@ internal class QueryExpression : IQuery, IQueryBuilder
             {
                 var aggregateBuilder = patternBuilder.Aggregate();
                 var previousResult = previousBuildAction(null, null);
-                var sourceBuilder = previousResult.Pattern;
-                var selectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, selector);
+                var sourceBuilder = previousResult.Pattern ?? throw new ArgumentException("Query source pattern is not specified");
+                var selectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, selector);
                 aggregateBuilder.Flatten(selectorExpression);
                 aggregateBuilder.Pattern(sourceBuilder);
                 result = new BuildResult(patternBuilder, aggregateBuilder, sourceBuilder);
@@ -110,8 +116,11 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void GroupBy<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        where TSource : notnull
+        where TKey : notnull
+        where TElement : notnull
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(IGrouping<TKey, TElement>), name);
@@ -121,9 +130,9 @@ internal class QueryExpression : IQuery, IQueryBuilder
             {
                 var aggregateBuilder = patternBuilder.Aggregate();
                 var previousResult = previousBuildAction(null, null);
-                var sourceBuilder = previousResult.Pattern;
-                var keySelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
-                var elementSelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, elementSelector);
+                var sourceBuilder = previousResult.Pattern ?? throw new ArgumentException("Query source pattern is not specified");
+                var keySelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, keySelector);
+                var elementSelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, elementSelector);
                 aggregateBuilder.GroupBy(keySelectorExpression, elementSelectorExpression);
                 aggregateBuilder.Pattern(sourceBuilder);
                 result = new BuildResult(patternBuilder, aggregateBuilder, sourceBuilder);
@@ -135,8 +144,9 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void Collect<TSource>()
+        where TSource : notnull
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, type) =>
         {
             var patternBuilder = new PatternBuilder(type ?? typeof(IEnumerable<TSource>), name);
@@ -146,7 +156,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
             {
                 var aggregateBuilder = patternBuilder.Aggregate();
                 var previousResult = previousBuildAction(null, null);
-                var sourceBuilder = previousResult.Pattern;
+                var sourceBuilder = previousResult.Pattern ?? throw new ArgumentException("Query source pattern is not specified");
                 aggregateBuilder.Collect();
                 aggregateBuilder.Pattern(sourceBuilder);
 
@@ -159,38 +169,47 @@ internal class QueryExpression : IQuery, IQueryBuilder
     }
 
     public void ToLookup<TSource, TKey, TElement>(Expression<Func<TSource, TKey>> keySelector, Expression<Func<TSource, TElement>> elementSelector)
+        where TSource : notnull
+        where TElement : notnull
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, _) =>
         {
             var result = previousBuildAction(name, typeof(IKeyedLookup<TKey, TElement>));
-            var keySelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
-            var elementSelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, elementSelector);
-            result.Aggregate.ToLookup(keySelectorExpression, elementSelectorExpression);
+            var sourceBuilder = result.Source ?? throw new ArgumentException("Query source is not specified");
+            var keySelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, keySelector);
+            var elementSelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, elementSelector);
+            var aggregateBuilder = result.Aggregate ?? throw new ArgumentException("Query aggregate is not specified");
+            aggregateBuilder.ToLookup(keySelectorExpression, elementSelectorExpression);
             return result;
         };
     }
 
     public void OrderBy<TSource, TKey>(Expression<Func<TSource, TKey>> keySelector, SortDirection sortDirection)
+        where TSource : notnull
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, type) =>
         {
             var result = previousBuildAction(name, type);
-            var keySelectorExpression = result.Source.DslPatternExpression(_symbolStack.Scope.Declarations, keySelector);
-            result.Aggregate.OrderBy(keySelectorExpression, sortDirection);
+            var sourceBuilder = result.Source ?? throw new ArgumentException("Query source is not specified");
+            var keySelectorExpression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, keySelector);
+            var aggregateBuilder = result.Aggregate ?? throw new ArgumentException("Query aggregate is not specified");
+            aggregateBuilder.OrderBy(keySelectorExpression, sortDirection);
             return result;
         };
     }
 
     public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions)
+        where TSource : notnull
     {
         Aggregate<TSource, TResult>(aggregateName, expressions, null);
     }
 
-    public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, Type customFactoryType)
+    public void Aggregate<TSource, TResult>(string aggregateName, IEnumerable<KeyValuePair<string, LambdaExpression>> expressions, Type? customFactoryType)
+        where TSource : notnull
     {
-        var previousBuildAction = _buildAction;
+        var previousBuildAction = _buildAction ?? throw new ArgumentNullException(nameof(_buildAction));
         _buildAction = (name, _) =>
         {
             var patternBuilder = new PatternBuilder(typeof(TResult), name);
@@ -200,12 +219,12 @@ internal class QueryExpression : IQuery, IQueryBuilder
             {
                 var aggregateBuilder = patternBuilder.Aggregate();
                 var previousResult = previousBuildAction(null, null);
-                var sourceBuilder = previousResult.Pattern;
+                var sourceBuilder = previousResult.Pattern ?? throw new ArgumentException("Query source pattern is not specified");
 
                 var rewrittenExpressionCollection = new List<KeyValuePair<string, LambdaExpression>>();
                 foreach (var item in expressions)
                 {
-                    var expression = sourceBuilder.DslPatternExpression(_symbolStack.Scope.Declarations, item.Value);
+                    var expression = sourceBuilder.DslPatternExpression(_symbolStack.Scope, item.Value);
                     rewrittenExpressionCollection.Add(new KeyValuePair<string, LambdaExpression>(item.Key, expression));
                 }
 
@@ -222,9 +241,10 @@ internal class QueryExpression : IQuery, IQueryBuilder
 
     public PatternBuilder Build()
     {
-        var patternBuilder = _buildAction(_symbol.Name, null);
-        _groupBuilder.Pattern(patternBuilder.Pattern);
-        return patternBuilder.Pattern;
+        if (_buildAction == null) throw new ArgumentException("Query build action is not specified");
+        var patternBuilder = _buildAction(_symbol.Name, null).Pattern ?? throw new ArgumentException("Query source pattern is not specified");
+        _groupBuilder.Pattern(patternBuilder);
+        return patternBuilder;
     }
     
     private class BuildResult
@@ -241,8 +261,8 @@ internal class QueryExpression : IQuery, IQueryBuilder
             Pattern = pattern;
         }
 
-        public PatternBuilder Pattern { get; }
-        public AggregateBuilder Aggregate { get; }
-        public PatternBuilder Source { get; }
+        public PatternBuilder? Pattern { get; }
+        public AggregateBuilder? Aggregate { get; }
+        public PatternBuilder? Source { get; }
     }
 }

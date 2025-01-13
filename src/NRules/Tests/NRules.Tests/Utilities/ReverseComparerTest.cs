@@ -52,8 +52,8 @@ public class ReverseComparerTest
     public void ReverseDefaultStringComparer_WithNull_LessThan()
     {
         // Arrange
-        var comparer = Comparer<string>.Default;
-        var reversedComparer = new ReverseComparer<string>(comparer);
+        var comparer = Comparer<string?>.Default;
+        var reversedComparer = new ReverseComparer<string?>(comparer);
 
         // Act-Assert (Precondition)
         Assert.Equal(-1, comparer.Compare(null, "A"));
@@ -66,8 +66,8 @@ public class ReverseComparerTest
     public void ReverseDefaultStringComparer_WithNull_LessEqual()
     {
         // Arrange
-        var comparer = Comparer<string>.Default;
-        var reversedComparer = new ReverseComparer<string>(comparer);
+        var comparer = Comparer<string?>.Default;
+        var reversedComparer = new ReverseComparer<string?>(comparer);
 
         // Act-Assert (Precondition)
         Assert.Equal(0, comparer.Compare(null, null));
@@ -80,8 +80,8 @@ public class ReverseComparerTest
     public void ReverseDefaultStringComparer_WithNull_GreaterThan()
     {
         // Arrange
-        var comparer = Comparer<string>.Default;
-        var reversedComparer = new ReverseComparer<string>(comparer);
+        var comparer = Comparer<string?>.Default;
+        var reversedComparer = new ReverseComparer<string?>(comparer);
 
         // Act-Assert (Precondition)
         Assert.Equal(1, comparer.Compare("A", null));

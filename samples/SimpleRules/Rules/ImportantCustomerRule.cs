@@ -8,7 +8,7 @@ public class ImportantCustomerRule : Rule
 {
     public override void Define()
     {
-        Customer customer = default;
+        Customer customer = default!;
 
         When()
         .Or(x => x

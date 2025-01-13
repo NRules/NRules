@@ -8,8 +8,8 @@ internal class DummyNode : IBetaMemoryNode
     private readonly List<ITupleSink> _sinks = new();
 
     public int Id { get; set; }
-    public NodeInfo NodeInfo { get; } = new NodeInfo();
-    public IEnumerable<ITupleSink> Sinks => _sinks;
+    public NodeInfo NodeInfo { get; } = new();
+    public IReadOnlyCollection<ITupleSink> Sinks => _sinks;
 
     public void Activate(IExecutionContext context)
     {
@@ -25,7 +25,7 @@ internal class DummyNode : IBetaMemoryNode
         memory.Add(tupleList);
     }
 
-    public IEnumerable<Tuple> GetTuples(IExecutionContext context)
+    public IReadOnlyCollection<Tuple> GetTuples(IExecutionContext context)
     {
         IBetaMemory memory = context.WorkingMemory.GetNodeMemory(this);
         return memory.Tuples;

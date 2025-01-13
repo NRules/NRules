@@ -10,7 +10,7 @@ public abstract class AggregatorTest
 {
     protected Fact[] AsFact<T>(params T[] value)
     {
-        return value.Select(x => new Fact(x)).ToArray();
+        return value.Select(x => new Fact(x, typeof(T))).ToArray();
     }
 
     protected ITuple EmptyTuple()
@@ -20,7 +20,7 @@ public abstract class AggregatorTest
 
     private class NullTuple : ITuple
     {
-        public IEnumerable<IFact> Facts => new IFact[0];
+        public IEnumerable<IFact> Facts => Array.Empty<IFact>();
         public int Count => 0;
     }
 
@@ -31,10 +31,16 @@ public abstract class AggregatorTest
             Type = value.GetType();
             Value = value;
         }
+        
+        public Fact(object? value, Type type)
+        {
+            Type = type;
+            Value = value;
+        }
 
         public Type Type { get; }
-        public object Value { get; set; }
-        public IFactSource Source { get; set; }
+        public object? Value { get; set; }
+        public IFactSource? Source { get; set; }
     }
 }
 
@@ -44,6 +50,7 @@ public class FactExpression<TFact, TResult> : IAggregateExpression
 
     public FactExpression(Func<TFact, TResult> func)
     {
+        Name = String.Empty;
         _func = func;
     }
 
@@ -51,6 +58,7 @@ public class FactExpression<TFact, TResult> : IAggregateExpression
 
     public object Invoke(AggregationContext context, ITuple tuple, IFact fact)
     {
-        return _func((TFact)fact.Value);
+        var factValue = (TFact)fact.Value!;
+        return _func(factValue)!;
     }
 }

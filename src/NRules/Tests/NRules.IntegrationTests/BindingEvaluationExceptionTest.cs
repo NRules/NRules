@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.Fluent.Dsl;
@@ -18,8 +19,8 @@ public class BindingEvaluationExceptionTest : BaseRulesTestFixture
         //Arrange
         _testRule.Binding = ThrowBinding;
 
-        Expression expression = null;
-        IList<IFact> facts = null;
+        Expression expression = null!;
+        IList<IFact> facts = null!;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => expression = args.Expression;
         Session.Events.LhsExpressionFailedEvent += (sender, args) => facts = args.Facts.ToList();
 
@@ -150,11 +151,12 @@ public class BindingEvaluationExceptionTest : BaseRulesTestFixture
 
     private static readonly Func<FactType, string> SuccessfulBinding = f => "value";
     private static readonly Func<FactType, string> ThrowBinding = f => throw new InvalidOperationException("Binding failed");
-    private TestRule _testRule;
+    private TestRule _testRule = null!;
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
@@ -163,8 +165,8 @@ public class BindingEvaluationExceptionTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType fact = null;
-            string binding = null;
+            FactType fact = null!;
+            string binding = null!;
 
             When()
                 .Match(() => fact, f => f.TestProperty.StartsWith("Valid"))

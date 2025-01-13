@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using NRules.RuleModel;
@@ -175,13 +176,15 @@ public class RuleBuilderTest
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class FactType2
     {
-        public string TestProperty { get; set; }
-        public string JoinProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        public string? JoinProperty { get; set; }
     }
 
     public interface ITestService

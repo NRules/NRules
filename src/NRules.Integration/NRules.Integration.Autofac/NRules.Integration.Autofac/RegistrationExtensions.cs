@@ -7,6 +7,9 @@ using NRules.RuleModel;
 
 namespace NRules.Integration.Autofac;
 
+/// <summary>
+/// Extension methods on <see cref="ContainerBuilder"/> to register NRules components with Autofac container.
+/// </summary>
 public static class RegistrationExtensions
 {
     /// <summary>
@@ -36,7 +39,7 @@ public static class RegistrationExtensions
             .OnActivating(e =>
             {
                 e.Instance.Activator = e.Context.Resolve<IRuleActivator>();
-                e.Instance.Load(s => s.From(scanAction));
+                e.Instance.Load(s => s.From(ruleTypes));
             });
     }
 

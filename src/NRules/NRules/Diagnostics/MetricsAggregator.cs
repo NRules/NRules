@@ -20,7 +20,7 @@ public interface IMetricsProvider
     /// Retries performance metrics for all nodes in the Rete network.
     /// </summary>
     /// <returns>Collection of Rete network node metrics.</returns>
-    IEnumerable<INodeMetrics> GetAll();
+    IReadOnlyCollection<INodeMetrics> GetAll();
 
     /// <summary>
     /// Resets cumulative performance metrics associated with all nodes in the network.
@@ -43,7 +43,7 @@ internal class MetricsAggregator : IMetricsAggregator
         return nodeMetrics;
     }
 
-    public IEnumerable<INodeMetrics> GetAll()
+    public IReadOnlyCollection<INodeMetrics> GetAll()
     {
         return _metrics.Values;
     }

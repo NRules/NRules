@@ -383,8 +383,8 @@ public class ExpressionComparerTest
     public void AreEqual_EquivalentMemberCall_True()
     {
         //Arrange
-        Expression<Func<SomeClass, bool>> first = x => x.NestedValue1().Values == null;
-        Expression<Func<SomeClass, bool>> second = y => y.NestedValue1().Values == null;
+        Expression<Func<SomeClass, bool>> first = x => x.NestedValue1().NullableValues == null;
+        Expression<Func<SomeClass, bool>> second = y => y.NestedValue1().NullableValues == null;
 
         //Act - Assert
         AssertEqual(first, second);
@@ -394,8 +394,8 @@ public class ExpressionComparerTest
     public void AreEqual_NonEquivalentMemberCall_False()
     {
         //Arrange
-        Expression<Func<SomeClass, bool>> first = x => x.NestedValue1().Values == null;
-        Expression<Func<SomeClass, bool>> second = x => x.NestedValue2().Values == null;
+        Expression<Func<SomeClass, bool>> first = x => x.NestedValue1().NullableValues == null;
+        Expression<Func<SomeClass, bool>> second = x => x.NestedValue2().NullableValues == null;
 
         //Act - Assert
         AssertNotEqual(first, second);
@@ -711,7 +711,7 @@ public class ExpressionComparerTest
         AssertNotEqual(first, second, throwOnUnsupported: false);
     }
 
-    private static void AssertEqual(Expression first, Expression second)
+    private static void AssertEqual(Expression? first, Expression? second)
     {
         //Act
         var target = CreateTarget();
@@ -782,6 +782,7 @@ public class ExpressionComparerTest
     public class SomeClass
     {
         public readonly string[] Values = { "blop" };
+        public readonly string[]? NullableValues = null;
 
         public SomeClass NestedValue1()
         {
@@ -796,7 +797,7 @@ public class ExpressionComparerTest
 
     public class SomeClassWithProperty
     {
-        public string Value { get; set; }
+        public string? Value { get; set; }
     }
 
     public class SomeClassWithListProperty

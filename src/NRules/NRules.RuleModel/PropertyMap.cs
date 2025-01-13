@@ -9,7 +9,7 @@ namespace NRules.RuleModel;
 /// <summary>
 /// Readonly map of rule properties.
 /// </summary>
-public class PropertyMap : IEnumerable<RuleProperty>
+public class PropertyMap : IReadOnlyCollection<RuleProperty>
 {
     [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
     private readonly Dictionary<string, RuleProperty> _properties;
@@ -20,7 +20,7 @@ public class PropertyMap : IEnumerable<RuleProperty>
     /// <param name="properties">Rule properties to put in the map.</param>
     public PropertyMap(IEnumerable<RuleProperty> properties)
     {
-        _properties = new Dictionary<string, RuleProperty>(properties.ToDictionary(x => x.Name));
+        _properties = properties.ToDictionary(x => x.Name);
     }
 
     /// <summary>

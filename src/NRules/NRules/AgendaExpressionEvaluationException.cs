@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 
 namespace NRules;
 
@@ -14,15 +16,15 @@ public class AgendaExpressionEvaluationException : RuleExpressionEvaluationExcep
         RuleName = ruleName;
     }
 
-    [System.Security.SecuritySafeCritical]
-    protected AgendaExpressionEvaluationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+    [SecuritySafeCritical]
+    protected AgendaExpressionEvaluationException(SerializationInfo info, StreamingContext context)
         : base(info, context)
     {
         RuleName = info.GetString("RuleName");
     }
 
-    [System.Security.SecurityCritical]
-    public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+    [SecurityCritical]
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         if (info == null)
         {

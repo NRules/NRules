@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -71,14 +72,15 @@ public class CollectionWithConditionsRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            IEnumerable<FactType> collection = null;
+            IEnumerable<FactType> collection = null!;
 
             When()
                 .Query(() => collection, x => x

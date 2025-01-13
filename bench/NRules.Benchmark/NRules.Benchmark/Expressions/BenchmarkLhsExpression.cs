@@ -37,7 +37,7 @@ public class BenchmarkLhsExpression : BenchmarkBase
     }
 
     [Benchmark]
-    public bool EvaluateTupleFactExpression() => _lhsExpression.Invoke(Context, _nodeInfo, _tuple.LeftTuple, _tuple.RightFact);
+    public bool EvaluateTupleFactExpression() => _lhsExpression.Invoke(Context, _nodeInfo, _tuple.LeftTuple!, _tuple.RightFact!);
 
     [Benchmark]
     public bool EvaluateTupleExpression() => _lhsTupleExpression.Invoke(Context, _nodeInfo, _tuple); 

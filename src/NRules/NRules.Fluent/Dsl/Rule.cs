@@ -132,5 +132,4 @@ public abstract class Rule
 
         public bool IsEmpty => Builder is null;
     }
-
 }

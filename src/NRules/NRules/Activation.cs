@@ -89,12 +89,13 @@ public class Activation : IMatch
         public FactMatch(Declaration declaration)
         {
             Declaration = declaration;
+            Type = declaration.Type;
         }
 
         public Declaration Declaration { get; }
         public Type Type { get; private set; }
-        public object Value { get; private set; }
-        public IFactSource Source { get; private set; }
+        public object? Value { get; private set; }
+        public IFactSource? Source { get; private set; }
 
         public void SetFact(Fact fact)
         {

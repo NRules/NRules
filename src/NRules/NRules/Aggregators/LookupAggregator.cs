@@ -26,7 +26,7 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
         _elementSelector = elementSelector;
     }
 
-    public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Add(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {
@@ -46,7 +46,7 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
         return new[] {AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)};
     }
 
-    public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {
@@ -68,7 +68,7 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
         return new[] {AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)};
     }
 
-    public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {
@@ -83,7 +83,7 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
     {
         if (!_lookup.TryGetValue(key, out var grouping))
         {
-            grouping = new FactGrouping<TKey, TElement>(key);
+            grouping = new FactGrouping<TKey?, TElement>(key);
             _lookup.Add(key, grouping);
         }
         else

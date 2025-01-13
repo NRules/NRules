@@ -1,6 +1,6 @@
-﻿using NRules.Diagnostics;
+﻿using System.Collections.Generic;
+using NRules.Diagnostics;
 using NRules.RuleModel;
-using System.Collections.Generic;
 
 namespace NRules.Testing;
 

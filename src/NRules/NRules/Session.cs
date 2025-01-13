@@ -5,6 +5,7 @@ using System.Threading;
 using NRules.Diagnostics;
 using NRules.Extensibility;
 using NRules.Rete;
+using Tuple = System.Tuple;
 
 namespace NRules;
 
@@ -77,7 +78,7 @@ public interface ISession : ISessionSchemaProvider
     /// Action interceptor for the current rules session.
     /// If provided, invocation of rule actions is delegated to the interceptor.
     /// </summary>
-    IActionInterceptor ActionInterceptor { get; set; }
+    IActionInterceptor? ActionInterceptor { get; set; }
 
     /// <summary>
     /// Inserts new facts to the rules engine memory.
@@ -288,8 +289,8 @@ internal interface ISessionInternal : ISession
 {
     new IAgendaInternal Agenda { get; }
 
-    IEnumerable<object> GetLinkedKeys(Activation activation);
-    object GetLinked(Activation activation, object key);
+    IReadOnlyCollection<object> GetLinkedKeys(Activation activation);
+    object? GetLinked(Activation activation, object key);
     void QueueInsertLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts);
     void QueueUpdateLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts);
     void QueueRetractLinked(Activation activation, IEnumerable<KeyValuePair<object, object>> keyedFacts);
@@ -318,7 +319,7 @@ internal sealed class Session : ISessionInternal
         IActionExecutor actionExecutor,
         IIdGenerator idGenerator,
         IDependencyResolver dependencyResolver,
-        IActionInterceptor actionInterceptor)
+        IActionInterceptor? actionInterceptor)
     {
         _network = network;
         _workingMemory = workingMemory;
@@ -337,7 +338,7 @@ internal sealed class Session : ISessionInternal
     public IEventProvider Events => _eventAggregator;
     public IMetricsProvider Metrics => _metricsAggregator;
     public IDependencyResolver DependencyResolver { get; set; }
-    public IActionInterceptor ActionInterceptor { get; set; }
+    public IActionInterceptor? ActionInterceptor { get; set; }
 
     IAgendaInternal ISessionInternal.Agenda => _agenda;
 
@@ -557,13 +558,13 @@ internal sealed class Session : ISessionInternal
         return factSets;
     }
 
-    public IEnumerable<object> GetLinkedKeys(Activation activation)
+    public IReadOnlyCollection<object> GetLinkedKeys(Activation activation)
     {
         var keys = _workingMemory.GetLinkedKeys(activation);
         return keys;
     }
 
-    public object GetLinked(Activation activation, object key)
+    public object? GetLinked(Activation activation, object key)
     {
         var factWrapper = _workingMemory.GetLinkedFact(activation, key);
         return factWrapper?.Object;
@@ -583,7 +584,7 @@ internal sealed class Session : ISessionInternal
             }
             factWrapper = new SyntheticFact(keyedFact.Value);
             factWrapper.Source = new LinkedFactSource(activation);
-            toAdd.Add(System.Tuple.Create(key, factWrapper));
+            toAdd.Add(Tuple.Create(key, factWrapper));
             toPropagate.Add(factWrapper);
         }
         foreach (var item in toAdd)
@@ -613,7 +614,7 @@ internal sealed class Session : ISessionInternal
                 throw new ArgumentException($"Linked fact does not exist. Key={key}");
             }
             factWrapper.Source = new LinkedFactSource(activation);
-            toUpdate.Add(System.Tuple.Create(key, factWrapper, keyedFact.Value));
+            toUpdate.Add(Tuple.Create(key, factWrapper, keyedFact.Value));
             toPropagate.Add(factWrapper);
         }
         foreach (var item in toUpdate)
@@ -643,7 +644,7 @@ internal sealed class Session : ISessionInternal
                 throw new ArgumentException($"Linked fact does not exist. Key={key}");
             }
             factWrapper.Source = new LinkedFactSource(activation);
-            toRemove.Add(System.Tuple.Create(key, factWrapper));
+            toRemove.Add(Tuple.Create(key, factWrapper));
             toPropagate.Add(factWrapper);
         }
         foreach (var item in toRemove)
@@ -668,7 +669,7 @@ internal sealed class Session : ISessionInternal
         foreach (var key in linkedKeys)
         {
             var linkedFact = GetLinked(activation, key);
-            keyedFacts.Add(new KeyValuePair<object, object>(key, linkedFact));
+            keyedFacts.Add(new KeyValuePair<object, object>(key, linkedFact!));
         }
         QueueRetractLinked(activation, keyedFacts);
     }

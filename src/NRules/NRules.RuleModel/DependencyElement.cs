@@ -28,8 +28,8 @@ public class DependencyElement : RuleElement
     /// </summary>
     public Type ServiceType { get; }
 
-    internal override void Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
+    internal override RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor)
     {
-        visitor.VisitDependency(context, this);
+        return visitor.VisitDependency(context, this);
     }
 }

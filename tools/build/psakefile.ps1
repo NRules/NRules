@@ -4,7 +4,8 @@ param (
 
 properties {
     $version = $null
-    $sdkVersion = "8.0.100"
+    $sdkVersion = "8.0.404"
+    $sdkRuntimes = @("8.0.0", "6.0.0")
     $configuration = "Release"
     $baseDir = $null
 }
@@ -18,10 +19,11 @@ task Init {
     Assert ($component -ne $null) 'Component should not be null'
     Assert ($baseDir -ne $null) 'Base directory should not be null'
     
-    Write-Host "Building $($component.name) version $version ($configuration)" -ForegroundColor Green
+    Write-Host "Running '$taskList' target for $($component.name) version $version ($configuration)" -ForegroundColor Green
     
     $compName = $component.name
     
+    $script:outsideDir = Split-Path $baseDir -Parent
     $script:sourceDir = Join-Path $baseDir src
     $script:buildDir = Join-Path $baseDir build
     $script:binDir = Join-Path $buildDir bin
@@ -38,12 +40,22 @@ task Init {
         $script:solutionDir = Split-Path $script:solutionFile -Parent
     }
     
-    Install-DotNetCli $toolsDir\.dotnet $sdkVersion
+    $sdkLocation = Join-Path $toolsDir ".dotnet"
+    Install-DotNetCli $sdkLocation $sdkVersion $sdkRuntimes
 }
 
 task Clean -depends Init {
     Remove-Directory $pkgOutDir
     Remove-Directory $binOutDir
+
+    if ($component.ContainsKey('solution_file')) {
+        try {
+            exec { dotnet clean $solutionFile -c $configuration -v minimal } | Out-Null
+        }
+        catch {
+            Write-Host "Clean failed for $solutionFile" -ForegroundColor Yellow
+        }
+    }
 
     if ($component.ContainsKey('output')) {
         foreach ($output in $component.output) {
@@ -55,9 +67,9 @@ task Clean -depends Init {
 }
 
 task PatchFiles {
-    $signingKey = "$baseDir\SigningKey.snk"
-    $secureKey = "$baseDir\..\SecureSigningKey.snk"
-    $secureHash = "$baseDir\..\SecureSigningKey.sha1"
+    $signingKey = Join-Path $baseDir "SigningKey.snk"
+    $secureKey = Join-Path $outsideDir "SecureSigningKey.snk"
+    $secureHash = Join-Path $outsideDir "SecureSigningKey.sha1"
     
     if ((Test-Path $secureKey) -and (Test-Path $secureHash)) {
         Write-Host "Using secure signing key." -ForegroundColor Magenta
@@ -71,11 +83,11 @@ task PatchFiles {
 }
 
 task ResetPatch {
-    $signingKey = "$baseDir\SigningKey.snk"
-    $secureKey = "$baseDir\..\SecureSigningKey.snk"
-    $secureHash = "$baseDir\..\SecureSigningKey.sha1"
-    $devKey = "$baseDir\DevSigningKey.snk"
-    $devHash = "$baseDir\DevSigningKey.sha1"
+    $signingKey = Join-Path $baseDir "SigningKey.snk"
+    $secureKey = Join-Path $outsideDir "SecureSigningKey.snk"
+    $secureHash = Join-Path $outsideDir "SecureSigningKey.sha1"
+    $devKey = Join-Path $baseDir "DevSigningKey.snk"
+    $devHash = Join-Path $baseDir "DevSigningKey.sha1"
     
     if ((Test-Path $secureKey) -and (Test-Path $secureHash)) {
         $publicKey = Get-Content $devHash
@@ -86,11 +98,12 @@ task ResetPatch {
 }
 
 task RestoreTools {
-    exec { dotnet tool restore }
+    exec { dotnet tool restore -v minimal }
 }
 
 task Restore -precondition { return $component.ContainsKey('solution_file') } {
-    exec { dotnet restore $solutionFile --verbosity minimal }
+    New-Directory $pkgDir
+    exec { dotnet restore $solutionFile -v minimal }
 }
 
 task Compile -depends Init, Restore -precondition { return $component.ContainsKey('solution_file') } { 
@@ -136,7 +149,7 @@ task PackageBin -depends Compile -precondition { $component.package.ContainsKey(
         if ($bin.$artifact.ContainsKey('output')) {
             $outputDir = $bin.$artifact.output
         }
-        $destDir = "$binOutDir\$outputDir"
+        $destDir = Join-Path $binOutDir $outputDir
         New-Directory $destDir
         foreach ($item in $bin.$artifact.include) {
             $itemPath = Join-Path $solutionDir $item
@@ -151,7 +164,18 @@ task PackageBin -depends Compile -precondition { $component.package.ContainsKey(
 task Package -depends PackageNuGet, PackageBin -precondition { return $component.ContainsKey('package') } {
 }
 
-task Bench -depends Package -precondition { return $component.ContainsKey('bench') } {
+task CompileDocs -depends RestoreTools -precondition { return $component.ContainsKey('doc') -and $component.doc.ContainsKey('docfx') } {
+    $docfx_project_file = Join-Path $baseDir $component.doc.docfx.project_file
+    exec { dotnet tool run docfx $docfx_project_file }
+}
+
+task Make -depends Init, Restore, Compile, Test, Package, CompileDocs -precondition { return IsCompatibleOs $component.os } {
+}
+
+task Build -depends Init, Clean, PatchFiles, Make, ResetPatch {
+}
+
+task Bench -depends Build -precondition { return $component.ContainsKey('bench') } {
     $benchRunner = $component.bench.runner
     $categories = $component.bench.categories -join ","
     foreach ($framework in $component.bench.frameworks) {
@@ -165,16 +189,8 @@ task Bench -depends Package -precondition { return $component.ContainsKey('bench
     }
 }
 
-task CompileDocs -depends RestoreTools -precondition { return $component.ContainsKey('doc') -and $component.doc.ContainsKey('docfx') } {
-    $docfx_project_file = Join-Path $baseDir "$($component.doc.docfx.project_file)"
-    exec { dotnet tool run docfx $docfx_project_file }
-}
-
-task Build -depends Init, Clean, PatchFiles, Restore, Compile, Test, Bench, Package, CompileDocs, ResetPatch {
-}
-
 task PushNuGet -precondition { return $component.ContainsKey('package') -and $component.package.ContainsKey('nuget') } {
-    $accessKeyFile = "$baseDir\..\Nuget-Access-Key.txt"
+    $accessKeyFile = Join-Path $outsideDir "Nuget-Access-Key.txt"
     if ( (Test-Path $accessKeyFile) ) {
         $accessKey = Get-Content $accessKeyFile
         $accessKey = $accessKey.Trim()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -34,12 +35,14 @@ public class ForwardChainingLinkedToSelfTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string GroupKey { get; set; }
+        [NotNull]
+        public string? GroupKey { get; set; }
     }
 
     public class FactType2
     {
-        public string Key { get; set; }
+        [NotNull]
+        public string? Key { get; set; }
     }
 
     public class FactType3
@@ -56,9 +59,9 @@ public class ForwardChainingLinkedToSelfTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            IGrouping<string, FactType1> facts = null;
-            IEnumerable<FactType2> otherFacts = null;
-            FactType4 projection = null;
+            IGrouping<string, FactType1> facts = null!;
+            IEnumerable<FactType2> otherFacts = null!;
+            FactType4 projection = null!;
 
             When()
                 .Query(() => facts, q => q

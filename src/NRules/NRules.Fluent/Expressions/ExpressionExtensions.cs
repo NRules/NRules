@@ -10,7 +10,7 @@ internal static class ExpressionExtensions
         if (alias == null)
             throw new ArgumentNullException(nameof(alias), "Pattern alias is null");
 
-        if (!(alias.Body is MemberExpression fieldMember))
+        if (alias.Body is not MemberExpression fieldMember)
         {
             throw new ArgumentException(
                 $"Invalid pattern alias expression. Expected={typeof(MemberExpression)}, Actual={alias.Body.GetType()}");

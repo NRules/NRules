@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -173,7 +174,7 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
     public void Fire_TwoFactsOneGroupAnotherFactFilteredOut_FiresOnceAggregateHasSource()
     {
         //Arrange
-        IFact matchedGroup = null;
+        IFact? matchedGroup = null;
         Session.Events.RuleFiredEvent += (sender, args) =>
         {
             matchedGroup = args.Facts.Single();
@@ -207,14 +208,15 @@ public class OneFactOneGroupByRuleTest : BaseRulesTestFixture
     public class FactType
     {
         public long GroupProperty { get; set; }
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule
     {
         public override void Define()
         {
-            IEnumerable<string> group = null;
+            IEnumerable<string> group = null!;
 
             When()
                 .Query(() => group, x => x

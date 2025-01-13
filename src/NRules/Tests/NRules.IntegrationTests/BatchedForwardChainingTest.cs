@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -350,21 +351,24 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
 
     public class FactType1
     {
-        public string TestProperty { get; set; }
-        public string ChainProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
+        [NotNull]
+        public string? ChainProperty { get; set; }
     }
 
     public class FactType2
     {
         public int UpdateCount { get; set; } = 1;
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class ForwardChainingFirstRule : Rule
     {
         public override void Define()
         {
-            FactType1 fact1 = null;
+            FactType1 fact1 = null!;
 
             When()
                 .Match(() => fact1, f => f.TestProperty.StartsWith("Valid"));
@@ -375,7 +379,7 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
 
         private void YieldIfValid(IContext ctx, FactType1 fact1)
         {
-            var fact2 = (FactType2)ctx.GetLinked("key");
+            var fact2 = (FactType2?)ctx.GetLinked("key");
             if (fact1.ChainProperty.StartsWith("Valid"))
             {
                 if (fact2 == null)
@@ -410,7 +414,7 @@ public class BatchedForwardChainingTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType2 fact2 = null;
+            FactType2 fact2 = null!;
 
             When()
                 .Match(() => fact2, f => f.TestProperty.StartsWith("Valid"));

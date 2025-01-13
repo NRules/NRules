@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
@@ -10,7 +11,7 @@ namespace NRules.IntegrationTests;
 
 public class OneFactNoBindingRuleTest : BaseRulesTestFixture
 {
-    private TestRule _testRule;
+    private TestRule _testRule = null!;
 
     [Fact]
     public void Fire_OneMatchingFact_FiresOnce()
@@ -33,7 +34,7 @@ public class OneFactNoBindingRuleTest : BaseRulesTestFixture
         var fact = new FactType { TestProperty = "Valid Value 1" };
         Session.Insert(fact);
 
-        IFactMatch[] matches = null;
+        IFactMatch[]? matches = null;
         _testRule.Action = ctx =>
         {
             matches = ctx.Match.Facts.ToArray();
@@ -44,6 +45,7 @@ public class OneFactNoBindingRuleTest : BaseRulesTestFixture
 
         //Assert
         Verify(x => x.Rule().Fired());
+        Assert.NotNull(matches);
         Assert.Single(matches);
         Assert.Same(fact, matches[0].Value);
     }
@@ -56,7 +58,8 @@ public class OneFactNoBindingRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule

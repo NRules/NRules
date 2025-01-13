@@ -6,6 +6,7 @@ using NRules.Diagnostics;
 using NRules.Extensibility;
 using NRules.Rete;
 using Xunit;
+using Tuple = NRules.Rete.Tuple;
 
 namespace NRules.Tests;
 
@@ -75,7 +76,7 @@ public class SessionTest
     {
         // Arrange
         var facts = new[] { new object(), new object() };
-        var factWrappers = new Dictionary<object, Fact>
+        var factWrappers = new Dictionary<object, Fact?>
         {
             {facts[0], new Fact(facts[0])},
             {facts[1], null}
@@ -92,7 +93,7 @@ public class SessionTest
     {
         // Arrange
         var facts = new[] { new object(), new object() };
-        var factWrappers = new Dictionary<object, Fact>
+        var factWrappers = new Dictionary<object, Fact?>
         {
             {facts[0], new Fact(facts[0])},
             {facts[1], null}
@@ -116,7 +117,7 @@ public class SessionTest
     {
         // Arrange
         var facts = new[] { new object(), new object() };
-        var factWrappers = new Dictionary<object, Fact>
+        var factWrappers = new Dictionary<object, Fact?>
         {
             {facts[0], new Fact(facts[0])},
             {facts[1], null}
@@ -182,7 +183,7 @@ public class SessionTest
     {
         // Arrange
         var facts = new[] {new object(), new object()};
-        var factWrappers = new Dictionary<object, Fact>
+        var factWrappers = new Dictionary<object, Fact?>
         {
             {facts[0], new Fact(facts[0])},
             {facts[1], null}
@@ -199,7 +200,7 @@ public class SessionTest
     {
         // Arrange
         var facts = new[] { new object(), new object() };
-        var factWrappers = new Dictionary<object, Fact>
+        var factWrappers = new Dictionary<object, Fact?>
         {
             {facts[0], new Fact(facts[0])},
             {facts[1], null}
@@ -223,7 +224,7 @@ public class SessionTest
     {
         // Arrange
         var facts = new[] { new object(), new object() };
-        var factWrappers = new Dictionary<object, Fact>
+        var factWrappers = new Dictionary<object, Fact?>
         {
             {facts[0], new Fact(facts[0])},
             {facts[1], null}
@@ -289,7 +290,7 @@ public class SessionTest
     {
         // Arrange
         var facts = new[] { new object(), new object() };
-        var factWrappers = new Dictionary<object, Fact>
+        var factWrappers = new Dictionary<object, Fact?>
         {
             {facts[0], new Fact(facts[0])},
             {facts[1], null}
@@ -300,14 +301,13 @@ public class SessionTest
         // Act - Assert
         Assert.Throws<ArgumentException>(() => target.RetractAll(facts));
     }
-
-
+    
     [Fact]
     public void TryRetractAll_SomeFactsDoNotExistOptionsAllOrNothing_DoesNotPropagateRetract()
     {
         // Arrange
         var facts = new[] { new object(), new object() };
-        var factWrappers = new Dictionary<object, Fact>
+        var factWrappers = new Dictionary<object, Fact?>
         {
             {facts[0], new Fact(facts[0])},
             {facts[1], null}
@@ -331,7 +331,7 @@ public class SessionTest
     {
         // Arrange
         var facts = new[] { new object(), new object() };
-        var factWrappers = new Dictionary<object, Fact>
+        var factWrappers = new Dictionary<object, Fact?>
         {
             {facts[0], new Fact(facts[0])},
             {facts[1], null}
@@ -399,101 +399,93 @@ public class SessionTest
     [Fact]
     public void Fire_CancellationRequested()
     {
-        using (var cancellationSource = new CancellationTokenSource())
-        {
-            // Arrange
-            var hitCount = 0;
-            var target = CreateTarget();
-            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
-            _agenda
-                .Setup(x => x.IsEmpty)
-                .Returns(() =>
+        using var cancellationSource = new CancellationTokenSource();
+        // Arrange
+        var hitCount = 0;
+        var target = CreateTarget();
+        _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+        _agenda
+            .Setup(x => x.IsEmpty)
+            .Returns(() =>
+            {
+                if (++hitCount == 2)
                 {
-                    if (++hitCount == 2)
-                    {
-                        cancellationSource.Cancel();
-                    }
+                    cancellationSource.Cancel();
+                }
 
-                    return hitCount >= 5;
-                });
+                return hitCount >= 5;
+            });
 
-            // Act
-            var actual = target.Fire(cancellationSource.Token);
+        // Act
+        var actual = target.Fire(cancellationSource.Token);
 
-            // Assert
-            Assert.Equal(2, actual);
-            _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
-        }
+        // Assert
+        Assert.Equal(2, actual);
+        _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
     }
 
     [Fact]
     public void Fire_CancellationRequested_WithMaxRules()
     {
-        using (var cancellationSource = new CancellationTokenSource())
-        {
-            // Arrange
-            var hitCount = 0;
-            var target = CreateTarget();
-            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
-            _agenda
-                .Setup(x => x.IsEmpty)
-                .Returns(() =>
+        using var cancellationSource = new CancellationTokenSource();
+        // Arrange
+        var hitCount = 0;
+        var target = CreateTarget();
+        _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+        _agenda
+            .Setup(x => x.IsEmpty)
+            .Returns(() =>
+            {
+                if (++hitCount == 2)
                 {
-                    if (++hitCount == 2)
-                    {
-                        cancellationSource.Cancel();
-                    }
+                    cancellationSource.Cancel();
+                }
 
-                    return hitCount >= 5;
-                });
+                return hitCount >= 5;
+            });
 
-            // Act
-            var actual = target.Fire(5, cancellationSource.Token);
+        // Act
+        var actual = target.Fire(5, cancellationSource.Token);
 
-            // Assert
-            Assert.Equal(2, actual);
-            _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
-        }
+        // Assert
+        Assert.Equal(2, actual);
+        _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
     }
 
     [Fact]
     public void Fire_PassesCancellationTokenToActionContext()
     {
-        using (var cancellationSource = new CancellationTokenSource())
-        {
-            // Arrange
-            var target = CreateTarget();
-            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
-            _agenda.SetupSequence(x => x.IsEmpty)
-                .Returns(false).Returns(true);
+        using var cancellationSource = new CancellationTokenSource();
+        // Arrange
+        var target = CreateTarget();
+        _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+        _agenda.SetupSequence(x => x.IsEmpty)
+            .Returns(false).Returns(true);
 
-            // Act
-            var actual = target.Fire(cancellationSource.Token);
+        // Act
+        var actual = target.Fire(cancellationSource.Token);
 
-            // Assert
-            Assert.Equal(1, actual);
-            _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
-        }
+        // Assert
+        Assert.Equal(1, actual);
+        _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
     }
 
     [Fact]
     public void Fire_PassesCancellationTokenToActionContext_WithMaxRules()
     {
-        using (var cancellationSource = new CancellationTokenSource())
-        {
-            // Arrange
-            var target = CreateTarget();
-            _agenda.Setup(x => x.Pop()).Returns(StubActivation());
-            _agenda.SetupSequence(x => x.IsEmpty)
-                .Returns(false).Returns(true);
+        using var cancellationSource = new CancellationTokenSource();
+        // Arrange
+        var target = CreateTarget();
+        _agenda.Setup(x => x.Pop()).Returns(StubActivation());
+        _agenda.SetupSequence(x => x.IsEmpty)
+            .Returns(false).Returns(true);
 
-            // Act
-            var actual = target.Fire(2, cancellationSource.Token);
+        // Act
+        var actual = target.Fire(2, cancellationSource.Token);
 
-            // Assert
-            Assert.Equal(1, actual);
-            _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
-        }
+        // Assert
+        Assert.Equal(1, actual);
+        _actionExecutor.Verify(ae => ae.Execute(It.IsAny<IExecutionContext>(), It.Is<IActionContext>(ac => ac.CancellationToken == cancellationSource.Token)));
     }
 
     private Session CreateTarget()
@@ -507,8 +499,8 @@ public class SessionTest
     private static Activation StubActivation()
     {
         var rule = new Mock<ICompiledRule>();
-        rule.Setup(x => x.Actions).Returns(new IRuleAction[0]);
-        var activation = new Activation(rule.Object, null);
+        rule.Setup(x => x.Actions).Returns(Array.Empty<IRuleAction>());
+        var activation = new Activation(rule.Object, new Tuple(0));
         return activation;
     }
 }

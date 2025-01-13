@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using NRules.AgendaFilters;
 using NRules.Diagnostics;
 using NRules.Extensibility;
@@ -59,7 +58,7 @@ public interface ISessionFactory : ISessionSchemaProvider
     /// Action interceptor for all rules sessions.
     /// If provided, invocation of rule actions is delegated to the interceptor.
     /// </summary>
-    IActionInterceptor ActionInterceptor { get; set; }
+    IActionInterceptor? ActionInterceptor { get; set; }
 
     /// <summary>
     /// Creates a new rules session.
@@ -78,29 +77,32 @@ public interface ISessionFactory : ISessionSchemaProvider
 internal sealed class SessionFactory : ISessionFactory
 {
     private readonly INetwork _network;
+    private readonly IFactIdentityComparer _factIdentityComparer;
     private readonly List<ICompiledRule> _compiledRules;
     private readonly IEventAggregator _eventAggregator = new EventAggregator();
 
-    public SessionFactory(INetwork network, IEnumerable<ICompiledRule> compiledRules)
+    public SessionFactory(INetwork network, IEnumerable<ICompiledRule> compiledRules,
+        IFactIdentityComparer factIdentityComparer)
     {
         _network = network;
+        _factIdentityComparer = factIdentityComparer;
         _compiledRules = new List<ICompiledRule>(compiledRules);
         DependencyResolver = new DependencyResolver();
     }
 
     public IEventProvider Events => _eventAggregator;
     public IDependencyResolver DependencyResolver { get; set; }
-    public IActionInterceptor ActionInterceptor { get; set; }
+    public IActionInterceptor? ActionInterceptor { get; set; }
 
     public ISession CreateSession()
     {
         return CreateSession(null);
     }
 
-    public ISession CreateSession(Action<ISession> initializationAction)
+    public ISession CreateSession(Action<ISession>? initializationAction)
     {
         var agenda = CreateAgenda();
-        var workingMemory = new WorkingMemory();
+        var workingMemory = new WorkingMemory(_factIdentityComparer);
         var eventAggregator = new EventAggregator(_eventAggregator);
         var metricsAggregator = new MetricsAggregator();
         var actionExecutor = new ActionExecutor();
@@ -116,7 +118,7 @@ internal sealed class SessionFactory : ISessionFactory
         var agenda = new Agenda();
         foreach (var compiledRule in _compiledRules)
         {
-            var ruleFilters = CreateRuleFilters(compiledRule).ToArray();
+            var ruleFilters = CreateRuleFilters(compiledRule);
             foreach (var filter in ruleFilters)
             {
                 agenda.AddFilter(compiledRule.Definition, filter);
@@ -127,14 +129,14 @@ internal sealed class SessionFactory : ISessionFactory
 
     private static IEnumerable<IAgendaFilter> CreateRuleFilters(ICompiledRule compiledRule)
     {
-        var filterConditions = compiledRule.Filter.Conditions.ToList();
-        if (filterConditions.Any())
+        var filterConditions = compiledRule.Filter.Conditions;
+        if (filterConditions.Count > 0)
         {
             var filter = new PredicateAgendaFilter(filterConditions);
             yield return filter;
         }
-        var filterKeySelectors = compiledRule.Filter.KeySelectors.ToList();
-        if (filterKeySelectors.Any())
+        var filterKeySelectors = compiledRule.Filter.KeySelectors;
+        if (filterKeySelectors.Count > 0)
         {
             var filter = new KeyChangeAgendaFilter(filterKeySelectors);
             yield return filter;

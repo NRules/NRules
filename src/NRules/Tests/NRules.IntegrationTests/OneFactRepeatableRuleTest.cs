@@ -1,4 +1,5 @@
-﻿using NRules.Fluent.Dsl;
+﻿using System.Diagnostics.CodeAnalysis;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.RuleModel;
 using NRules.Testing;
@@ -43,7 +44,8 @@ public class OneFactRepeatableRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
         public int TestCount { get; set; }
 
         public void IncrementCount()
@@ -57,7 +59,7 @@ public class OneFactRepeatableRuleTest : BaseRulesTestFixture
     {
         public override void Define()
         {
-            FactType fact = null;
+            FactType fact = null!;
 
             When()
                 .Match(() => fact, f => f.TestProperty.StartsWith("Valid"), f => f.TestCount <= 2);

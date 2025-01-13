@@ -15,7 +15,7 @@ public interface IFactResult
     /// <summary>
     /// Facts on which the operation failed.
     /// </summary>
-    IEnumerable<object> Failed { get; }
+    IReadOnlyCollection<object> Failed { get; }
 }
 
 internal class FactResult : IFactResult
@@ -28,5 +28,5 @@ internal class FactResult : IFactResult
     }
 
     public int FailedCount => _failed.Count;
-    public IEnumerable<object> Failed => _failed;
+    public IReadOnlyCollection<object> Failed => _failed;
 }

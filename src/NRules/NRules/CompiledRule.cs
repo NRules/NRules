@@ -10,8 +10,8 @@ internal interface ICompiledRule
     int Priority { get; }
     RuleRepeatability Repeatability { get; }
     IRuleDefinition Definition { get; }
-    IEnumerable<Declaration> Declarations { get; }
-    IEnumerable<IRuleAction> Actions { get; }
+    IReadOnlyCollection<Declaration> Declarations { get; }
+    IReadOnlyCollection<IRuleAction> Actions { get; }
     IRuleFilter Filter { get; }
     ActionTrigger ActionTriggers { get; }
     IndexMap FactMap { get; }
@@ -20,18 +20,15 @@ internal interface ICompiledRule
 [DebuggerDisplay("{Definition.Name}")]
 internal class CompiledRule : ICompiledRule
 {
-    private readonly List<Declaration> _declarations;
-    private readonly List<IRuleAction> _actions;
-
-    public CompiledRule(IRuleDefinition definition, IEnumerable<Declaration> declarations, IEnumerable<IRuleAction> actions, IRuleFilter filter, IndexMap factMap)
+    public CompiledRule(IRuleDefinition definition, IReadOnlyCollection<Declaration> declarations, IReadOnlyCollection<IRuleAction> actions, IRuleFilter filter, IndexMap factMap)
     {
         Definition = definition;
         Filter = filter;
         FactMap = factMap;
-        _declarations = new List<Declaration>(declarations);
-        _actions = new List<IRuleAction>(actions);
+        Declarations = declarations;
+        Actions = actions;
 
-        foreach (var ruleAction in _actions)
+        foreach (var ruleAction in Actions)
         {
             ActionTriggers |= ruleAction.Trigger;
         }
@@ -43,7 +40,6 @@ internal class CompiledRule : ICompiledRule
     public IRuleFilter Filter { get; }
     public ActionTrigger ActionTriggers { get; }
     public IndexMap FactMap { get; }
-
-    public IEnumerable<Declaration> Declarations => _declarations;
-    public IEnumerable<IRuleAction> Actions => _actions;
+    public IReadOnlyCollection<Declaration> Declarations { get; }
+    public IReadOnlyCollection<IRuleAction> Actions { get; }
 }

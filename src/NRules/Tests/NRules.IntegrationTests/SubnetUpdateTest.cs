@@ -23,7 +23,7 @@ public class SubnetUpdateTest : BaseRulesTestFixture
         Session.InsertAll(new[] { fact21, fact22 });
 
         int evaluations = 0;
-        Session.Events.LhsExpressionEvaluatedEvent += (sender, args) => evaluations++;
+        Session.Events.LhsExpressionEvaluatedEvent += (_, _) => evaluations++;
 
         //Act
         Session.UpdateAll(new[] { fact11, fact12 });
@@ -53,8 +53,8 @@ public class SubnetUpdateTest : BaseRulesTestFixture
 
         public override void Define()
         {
-            FactType1 fact = null;
-            IEnumerable<FactType2> collection = null;
+            FactType1 fact = null!;
+            IEnumerable<FactType2> collection = null!;
 
             When()
                 .Match(() => fact)

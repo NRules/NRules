@@ -12,8 +12,8 @@ namespace NRules.Diagnostics;
 /// </summary>
 public class LhsExpressionEventArgs : ExpressionEventArgs
 {
-    private readonly ITuple _tuple;
-    private readonly IFact _fact;
+    private readonly ITuple? _tuple;
+    private readonly IFact? _fact;
 
     /// <summary>
     /// Initializes a new instance of the <c>LhsExpressionEventArgs</c> class.
@@ -25,7 +25,7 @@ public class LhsExpressionEventArgs : ExpressionEventArgs
     /// <param name="tuple">Tuple related to the event.</param>
     /// <param name="fact">Fact related to the event.</param>
     /// <param name="rules">Rules that contain the expression that generated the event.</param>
-    public LhsExpressionEventArgs(Expression expression, Exception exception, object[] arguments, object result, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
+    public LhsExpressionEventArgs(Expression expression, Exception? exception, object[] arguments, object? result, ITuple? tuple, IFact? fact, IEnumerable<IRuleDefinition> rules)
         : base(expression, exception, arguments, result)
     {
         _tuple = tuple;
@@ -33,7 +33,7 @@ public class LhsExpressionEventArgs : ExpressionEventArgs
         Rules = rules;
     }
 
-    internal LhsExpressionEventArgs(Expression expression, Exception exception, IArguments arguments, object result, ITuple tuple, IFact fact, IEnumerable<IRuleDefinition> rules)
+    internal LhsExpressionEventArgs(Expression expression, Exception? exception, IArguments arguments, object? result, ITuple? tuple, IFact? fact, IEnumerable<IRuleDefinition> rules)
         : base(expression, exception, arguments, result)
     {
         _tuple = tuple;

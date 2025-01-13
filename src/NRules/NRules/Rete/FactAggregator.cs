@@ -7,37 +7,38 @@ namespace NRules.Rete;
 
 internal interface IFactAggregator
 {
-    void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
-    void Modify(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
-    void Remove(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts);
-    IEnumerable<Fact> AggregateFacts { get; }
+    void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts);
+    void Modify(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts);
+    void Remove(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts);
+    IReadOnlyCollection<Fact> AggregateFacts { get; }
 }
 
 internal class FactAggregator : IFactAggregator
 {
     private readonly IAggregator _aggregator;
-    private readonly OrderedDictionary<object, Fact> _aggregateFactMap = new();
+    private readonly OrderedDictionary<object, Fact> _aggregateFactMap;
 
-    public FactAggregator(IAggregator aggregator)
+    public FactAggregator(IAggregator aggregator, AggregationContext context)
     {
         _aggregator = aggregator;
+        _aggregateFactMap = new OrderedDictionary<object, Fact>(context.FactIdentityComparer);
     }
 
-    public IEnumerable<Fact> AggregateFacts => _aggregateFactMap.Values;
+    public IReadOnlyCollection<Fact> AggregateFacts => _aggregateFactMap.Values;
     
-    public void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
+    public void Add(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts)
     {
         var results = _aggregator.Add(context, tuple, facts);
         AddAggregationResult(aggregation, tuple, results);
     }
 
-    public void Modify(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
+    public void Modify(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts)
     {
         var results = _aggregator.Modify(context, tuple, facts);
         AddAggregationResult(aggregation, tuple, results);
     }
 
-    public void Remove(AggregationContext context, Aggregation aggregation, Tuple tuple, IEnumerable<Fact> facts)
+    public void Remove(AggregationContext context, Aggregation aggregation, Tuple tuple, List<Fact> facts)
     {
         var results = _aggregator.Remove(context, tuple, facts);
         AddAggregationResult(aggregation, tuple, results);
@@ -84,7 +85,7 @@ internal class FactAggregator : IFactAggregator
         fact.Source = new AggregateFactSource(result.Source);
         if (!ReferenceEquals(fact.RawObject, result.Aggregate))
         {
-            _aggregateFactMap.Remove(fact.RawObject);
+            _aggregateFactMap.Remove(fact.RawObject!);
             fact.RawObject = result.Aggregate;
             _aggregateFactMap.Add(fact.RawObject, fact);
         }
@@ -99,7 +100,7 @@ internal class FactAggregator : IFactAggregator
                 $"Fact for aggregate object does not exist. AggregatorType={_aggregator.GetType()}, FactType={result.Aggregate.GetType()}");
         }
 
-        _aggregateFactMap.Remove(fact.RawObject);
+        _aggregateFactMap.Remove(fact.RawObject!);
         fact.RawObject = result.Aggregate;
         fact.Source = null;
         return fact;

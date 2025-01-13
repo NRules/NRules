@@ -5,21 +5,12 @@
     <TargetFramework>net8</TargetFramework>
     <RootNamespace>NRules.Samples.JsonRules</RootNamespace>
     <AssemblyName>NRules.Samples.JsonRules</AssemblyName>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="NRules">
-      <HintPath>..\..\build\bin\NRules\netstandard2.1\NRules.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.Fluent">
-      <HintPath>..\..\build\bin\NRules\netstandard2.1\NRules.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\build\bin\NRules\netstandard2.1\NRules.RuleModel.dll</HintPath>
-    </Reference>
-    <Reference Include="NRules.RuleModel">
-      <HintPath>..\..\build\bin\NRules\netstandard2.1\NRules.Json.dll</HintPath>
-    </Reference>
+    <PackageReference Include="NRules" />
+    <PackageReference Include="NRules.Json" />
   </ItemGroup>
 
 </Project>

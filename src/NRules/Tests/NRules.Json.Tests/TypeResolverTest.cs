@@ -12,7 +12,7 @@ public class TypeResolverTest
     {
         TestRoundtrip(
             typeof(string),
-            typeof(string).FullName);
+            typeof(string).FullName!);
     }
 
     [Fact]
@@ -20,7 +20,7 @@ public class TypeResolverTest
     {
         TestRoundtrip(
             typeof(FactType1),
-            typeof(FactType1).AssemblyQualifiedName);
+            typeof(FactType1).AssemblyQualifiedName!);
     }
     
     [Fact]

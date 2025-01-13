@@ -5,12 +5,12 @@ namespace NRules.AgendaFilters;
 
 internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
 {
-    private readonly List<IActivationExpression<object>> _keySelectors;
+    private readonly IReadOnlyList<IActivationExpression<object>> _keySelectors;
     private readonly Dictionary<Activation, ChangeKeys> _changeKeys = new();
 
-    public KeyChangeAgendaFilter(IEnumerable<IActivationExpression<object>> keySelectors)
+    public KeyChangeAgendaFilter(IReadOnlyList<IActivationExpression<object>> keySelectors)
     {
-        _keySelectors = new List<IActivationExpression<object>>(keySelectors);
+        _keySelectors = keySelectors;
     }
 
     public bool Accept(AgendaContext context, Activation activation)

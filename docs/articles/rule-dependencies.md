@@ -34,10 +34,24 @@ public class DeniedClaimNotificationRule : Rule
 When declaring a dependency using rules DSL, the dependency is bound to a variable in the same exact way the patterns are bound to fact variables.
 The service variable can then be used in rule actions. The rules engine will inject the dependency when the rule fires.
 
-> :warning: Rule dependencies cannot be used in rule conditions.
+> [!WARNING]
+> Rule dependencies cannot be used in rule conditions.
 
 In order to be able to use rule dependencies, one must implement [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) interface and set resolver instance either at the [ISession](xref:NRules.ISession) or at the [ISessionFactory](xref:NRules.ISessionFactory) level.
 
+## .NET Dependency Injection Integration
+NRules ships with the implementation of [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) as well as [IRuleActivator](xref:NRules.Fluent.IRuleActivator) for .NET built-in IoC container in a separate integration assembly (see [NRules.Integration.DependencyInjection](xref:NRules.Integration.DependencyInjection)).
+With the integration package, the following fully bootstraps and registers NRules with the .NET service collection. 
+
+```c#
+Host.CreateDefaultBuilder(args)  
+    .ConfigureServices((context, services) =>
+    {
+        services.AddRules(x => x.AssemblyOf(typeof(MyRule)));
+    });
+```
+
+## Autofac Integration
 NRules ships with the implementation of [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) as well as [IRuleActivator](xref:NRules.Fluent.IRuleActivator) for Autofac IoC container in a separate integration assembly (see [NRules.Integration.Autofac](xref:NRules.Integration.Autofac)).
 With the integration package, the following fully bootstraps and registers NRules with Autofac container. Registration extensions return registration builders that allow customization of individual registrations.
 

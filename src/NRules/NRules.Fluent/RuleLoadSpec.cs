@@ -83,14 +83,14 @@ internal class RuleLoadSpec : IRuleLoadSpec
 {
     private readonly IRuleActivator _activator;
     private readonly RuleTypeScanner _typeScanner = new();
-    private Func<IRuleMetadata, bool> _filter;
+    private Func<IRuleMetadata, bool>? _filter;
 
     public RuleLoadSpec(IRuleActivator activator)
     {
         _activator = activator;
     }
 
-    public string RuleSetName { get; private set; }
+    public string? RuleSetName { get; private set; }
 
     public IRuleLoadSpec PrivateTypes(bool include = true)
     {
@@ -136,7 +136,7 @@ internal class RuleLoadSpec : IRuleLoadSpec
 
     public IRuleLoadSpec Where(Func<IRuleMetadata, bool> filter)
     {
-        if (IsFilterSet())
+        if (_filter != null)
             throw new InvalidOperationException("Rule load specification can only have a single 'Where' clause");
         
         _filter = filter;
@@ -163,17 +163,17 @@ internal class RuleLoadSpec : IRuleLoadSpec
 
     private IEnumerable<Type> GetRuleTypes()
     {
-        var ruleTypes = _typeScanner.GetRuleTypes();
-        if (IsFilterSet())
+        if (_filter != null)
         {
-            var metadata = ruleTypes.Select(ruleType => new RuleMetadata(ruleType));
-            var filteredTypes = metadata.Where(x => _filter(x)).Select(x => x.RuleType);
-            ruleTypes = filteredTypes.ToArray();
+            return _typeScanner.GetRuleTypes()
+                .Select(ruleType => new RuleMetadata(ruleType))
+                .Where(x => _filter(x))
+                .Select(x => x.RuleType);
         }
-        return ruleTypes;
+        return _typeScanner.GetRuleTypes();
     }
 
-    private IEnumerable<Rule> Activate(Type type)
+    private IReadOnlyCollection<Rule> Activate(Type type)
     {
         try
         {
@@ -184,10 +184,5 @@ internal class RuleLoadSpec : IRuleLoadSpec
         {
             throw new RuleActivationException("Failed to activate rule type", type, e);
         }
-    }
-
-    private bool IsFilterSet()
-    {
-        return _filter != null;
     }
 }

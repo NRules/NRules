@@ -1,4 +1,5 @@
-﻿using NRules.Fluent.Dsl;
+﻿using System.Diagnostics.CodeAnalysis;
+using NRules.Fluent.Dsl;
 using NRules.IntegrationTests.TestAssets;
 using NRules.Testing;
 using Xunit;
@@ -74,7 +75,8 @@ public class OneFactOneNotRuleTest : BaseRulesTestFixture
 
     public class FactType
     {
-        public string TestProperty { get; set; }
+        [NotNull]
+        public string? TestProperty { get; set; }
     }
 
     public class TestRule : Rule

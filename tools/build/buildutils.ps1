@@ -31,16 +31,15 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
     }
 }
 
-function Install-DotNetCli([string] $location, [string] $version) {
-    Assert ($version -ne $null) 'DotNet CLI version should not be null'
+function Install-DotNetCli([string] $location, [string] $version, [string[]] $runtimes) {
+    Assert ($version -ne $null) '.NET SDK version should not be null'
 
     $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
     
-    (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     if ($null -ne (Get-Command "dotnet" -ErrorAction SilentlyContinue)) {
         $installedVersion = dotnet --version
         if ($installedVersion -eq $version) {
-            Write-Host ".NET Core SDK version $version is already installed"
+            Write-Host ".NET SDK version $version is already installed"
             return;
         }
     }
@@ -53,6 +52,8 @@ function Install-DotNetCli([string] $location, [string] $version) {
     $installScriptName = if (IsOnWindows) { "dotnet-install.ps1" } else { "dotnet-install.sh" }
     $installScriptPath = Join-Path $location $installScriptName
 
+    (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+
     if (!(Test-Path $installScriptPath)) {
         $url = "https://dot.net/v1/$installScriptName"
         Invoke-WebRequest $url -OutFile $installScriptPath
@@ -61,14 +62,47 @@ function Install-DotNetCli([string] $location, [string] $version) {
         }
     }
 
-    Write-Host "Installing .NET Core SDK"
-    & $installScriptPath -InstallDir "$installDir" -Version $version
+    Write-Host "Installing .NET SDK $version"
+    if (IsOnWindows) {
+        & $installScriptPath -InstallDir "$installDir" -Version $version
+    } else {
+        & $installScriptPath --install-dir "$installDir" --version $version
+    }
+
+    if ($null -ne $runtimes) {
+        foreach ($runtime in $runtimes) {
+            Write-Host "Installing .NET Runtime $runtime"
+            if (IsOnWindows) {
+                & $installScriptPath -InstallDir "$installDir" -Runtime dotnet -Version $runtime
+            } else {
+                & $installScriptPath --install-dir "$installDir" --runtime dotnet --version $runtime
+            }
+        }
+    }
 
     if (!($env:PATH -contains $installDir)) {
-        $env:PATH = "$installDir;$env:PATH"
+        $envPathSeparator = if (IsOnWindows) { ';' } else { ':' }
+        $env:PATH = $installDir + $envPathSeparator + $env:PATH
     }
 }
 
 function IsOnWindows() {
     return !(Get-Variable -Name IsWindows -ErrorAction SilentlyContinue) -or $IsWindows
+}
+
+function GetOsName() {
+    if (IsOnWindows) {
+        return "windows"
+    } elseif ($IsMacOS) {
+        return "macos"
+    } elseif ($IsLinux) {
+        return "linux"
+    } else {
+        throw "Unknown OS"
+    }
+}
+
+function IsCompatibleOs([string[]] $oslist) {
+    $osName = GetOsName
+    return ($null -eq $oslist) -or ($oslist -contains $osName)
 }

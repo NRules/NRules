@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NRules.Aggregators.Collections;
 using NRules.RuleModel;
 using NRules.Utilities;
@@ -16,16 +15,16 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
     private readonly SortedFactCollection<TSource, object[]> _sortedFactCollection;
     private bool _created = false;
 
-    public MultiKeySortedAggregator(IEnumerable<SortCondition> sortConditions)
+    public MultiKeySortedAggregator(SortCondition[] sortConditions)
     {
-        _sortConditions = sortConditions.ToArray();
+        _sortConditions = sortConditions;
         var comparer = CreateComparer(_sortConditions);
         _sortedFactCollection = new SortedFactCollection<TSource, object[]>(comparer);
     }
 
-    private static IComparer<object[]> CreateComparer(IEnumerable<SortCondition> sortConditions)
+    private static IComparer<object[]> CreateComparer(IReadOnlyCollection<SortCondition> sortConditions)
     {
-        var comparers = new List<IComparer<object>>();
+        var comparers = new List<IComparer<object>>(sortConditions.Count);
         foreach (var sortCondition in sortConditions)
         {
             var defaultComparer = (IComparer<object>)Comparer<object>.Default;
@@ -46,7 +45,7 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
         return key;
     }
 
-    public IEnumerable<AggregationResult> Add(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Add(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         AddFacts(context, tuple, facts);
         if (!_created)
@@ -57,19 +56,19 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
         return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
     }
 
-    public IEnumerable<AggregationResult> Modify(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         ModifyFacts(context, tuple, facts);
         return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
     }
 
-    public IEnumerable<AggregationResult> Remove(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         RemoveFacts(context, tuple, facts);
         return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
     }
 
-    private void AddFacts(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    private void AddFacts(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {
@@ -78,7 +77,7 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
         }
     }
 
-    private void ModifyFacts(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    private void ModifyFacts(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {
@@ -89,7 +88,7 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
         }
     }
 
-    private void RemoveFacts(AggregationContext context, ITuple tuple, IEnumerable<IFact> facts)
+    private void RemoveFacts(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {
@@ -99,18 +98,18 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
 
     private class MultiKeyComparer : IComparer<object[]>
     {
-        private readonly IComparer<object>[] _comparers;
+        private readonly IReadOnlyList<IComparer<object>> _comparers;
 
-        public MultiKeyComparer(IEnumerable<IComparer<object>> comparers)
+        public MultiKeyComparer(IReadOnlyList<IComparer<object>> comparers)
         {
-            _comparers = comparers.ToArray();
+            _comparers = comparers;
         }
 
         public int Compare(object[] x, object[] y)
         {
-            var result = 0;
+            int result = 0;
 
-            for (int i = 0; i < _comparers.Length; i++)
+            for (int i = 0; i < _comparers.Count; i++)
             {
                 result = _comparers[i].Compare(x[i], y[i]);
                 if (result != 0) break;

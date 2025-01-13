@@ -8,7 +8,7 @@ namespace NRules.Benchmark.Meta;
 [ShortRunJob, WarmupCount(1)]
 public abstract class BenchmarkBase
 {
-    protected ISessionFactory Factory { get; set; }
+    protected ISessionFactory Factory { get; set; } = null!;
 
     protected void SetupRule<T>() where T : Rule
     {
