@@ -59,8 +59,8 @@ public class PreferredCustomerActiveAccountsRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
-        Account account = null;
+        Customer customer = default!;
+        Account account = default!;
 
         When()
             .Match<Customer>(() => customer, c => c.IsPreferred)
@@ -81,7 +81,7 @@ public class PreferredCustomerActiveAccountsRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
+        Customer customer = default!;
 
         When()
             .Match<Customer>(() => customer, c => c.IsPreferred)
@@ -102,7 +102,7 @@ public class PreferredCustomerNotDelinquentRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
+        Customer customer = default!;
 
         When()
             .Match<Customer>(() => customer, c => c.IsPreferred)
@@ -123,7 +123,7 @@ public class PreferredCustomerAllAccountsActiveRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
+        Customer customer = default!;
 
         When()
             .Match<Customer>(() => customer, c => c.IsPreferred)
@@ -144,7 +144,7 @@ public class PreferredCustomerOrHasLargeOrderRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
+        Customer customer = default!;
 
         When()
             .Or(x => x
@@ -173,8 +173,8 @@ public class LargeTotalRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
-        IEnumerable<Order> orders = null;
+        Customer customer = default!;
+        IEnumerable<Order> orders = default!;
         double total = 0;
 
         When()

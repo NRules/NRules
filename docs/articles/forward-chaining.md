@@ -23,8 +23,8 @@ public class PreferredCustomerDiscountRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
-        IEnumerable<Order> orders = null;
+        Customer customer = default!;
+        IEnumerable<Order> orders = default!;
         Double total = Double.NaN;
 
         When()
@@ -46,7 +46,7 @@ public class PrintInstantDiscountRule : Rule
 {
     public override void Define()
     {
-        InstantDiscount discount = null;
+        InstantDiscount discount = default!;
 
         When()
             .Match(() => discount);

@@ -16,8 +16,8 @@ public class DeniedClaimNotificationRule : Rule
 {
     public override void Define()
     {
-        INotificationService service = null;
-        Claim claim = null;
+        INotificationService service = default!;
+        Claim claim = default!;
 
         Dependency()
             .Resolve(() => service);

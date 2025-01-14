@@ -66,8 +66,8 @@ public class PreferredCustomerDiscountRule : Rule
 {
     public override void Define()
     {
-        Customer customer = default;
-        IEnumerable<Order> orders = default;
+        Customer customer = default!;
+        IEnumerable<Order> orders = default!;
 
         When()
             .Match<Customer>(() => customer, c => c.IsPreferred)
@@ -100,7 +100,7 @@ public class DiscountNotificationRule : Rule
 {
     public override void Define()
     {
-        Customer customer = default;
+        Customer customer = default!;
 
         When()
             .Match<Customer>(() => customer)

@@ -18,7 +18,7 @@ public class MyRuleTest : RulesTestFixture
     {
         public override void Define()
         {
-            MyFact fact = default;
+            MyFact fact = default!;
 
             When()
                 .Match(() => fact);

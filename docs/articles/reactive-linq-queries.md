@@ -25,8 +25,8 @@ public class PreferredCustomerDiscountRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
-        IEnumerable<Order> orders = null;
+        Customer customer = default!;
+        IEnumerable<Order> orders = default!;
 
         When()
             .Match<Customer>(() => customer, c => c.IsPreferred)
