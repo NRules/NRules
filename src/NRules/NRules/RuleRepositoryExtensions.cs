@@ -5,6 +5,9 @@ using NRules.RuleModel;
 
 namespace NRules;
 
+/// <summary>
+/// Extension methods on <see cref="IRuleRepository"/> to simplify working with rules.
+/// </summary>
 public static class RuleRepositoryExtensions
 {
     /// <summary>

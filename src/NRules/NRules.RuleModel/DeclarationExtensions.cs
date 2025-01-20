@@ -3,6 +3,9 @@ using NRules.RuleModel.Builders;
 
 namespace NRules.RuleModel;
 
+/// <summary>
+/// Extension methods to convert between <see cref="Declaration"/> and <see cref="ParameterExpression"/>.
+/// </summary>
 public static class DeclarationExtensions
 {
     /// <summary>

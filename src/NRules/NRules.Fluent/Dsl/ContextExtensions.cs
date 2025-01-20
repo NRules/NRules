@@ -3,6 +3,10 @@ using NRules.RuleModel;
 
 namespace NRules.Fluent.Dsl;
 
+/// <summary>
+/// Extension methods on <see cref="IContext"/> to simplify working with the rules engine
+/// from the rule actions.
+/// </summary>
 public static class ContextExtensions
 {
     /// <summary>

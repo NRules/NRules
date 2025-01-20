@@ -2,6 +2,9 @@ using System.Linq;
 
 namespace NRules.Fluent;
 
+/// <summary>
+/// Extension methods on <see cref="IRuleMetadata"/> to simplify rule metadata access.
+/// </summary>
 public static class RuleMetadataExtensions
 {
     /// <summary>

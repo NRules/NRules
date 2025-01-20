@@ -2,6 +2,9 @@ using System.Linq;
 
 namespace NRules.RuleModel;
 
+/// <summary>
+/// Extension methods on <see cref="IRuleSet"/>.
+/// </summary>
 public static class RuleSetExtensions
 {
     /// <summary>
