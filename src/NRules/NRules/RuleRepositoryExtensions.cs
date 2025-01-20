@@ -29,7 +29,7 @@ public static class RuleRepositoryExtensions
     /// <seealso cref="RuleCompiler"/>
     public static ISessionFactory Compile(this IRuleRepository repository)
     {
-        return repository.Compile(default);
+        return repository.Compile(CancellationToken.None);
     }
 
     /// <summary>

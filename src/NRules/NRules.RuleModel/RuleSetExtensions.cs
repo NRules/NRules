@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace NRules.RuleModel;
 
 /// <summary>
@@ -14,6 +12,6 @@ public static class RuleSetExtensions
     /// <param name="ruleDefinition">Rule definition to add.</param>
     public static void Add(this IRuleSet ruleSet, IRuleDefinition ruleDefinition)
     {
-        ruleSet.Add(Enumerable.Repeat(ruleDefinition, 1));
+        ruleSet.Add([ruleDefinition]);
     }
 }
