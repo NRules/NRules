@@ -53,12 +53,7 @@ internal class Aggregation
     }
 }
 
-internal class AggregateList : TupleFactList
+internal class AggregateList(AggregationAction action) : TupleFactList
 {
-    public AggregationAction Action { get; }
-
-    public AggregateList(AggregationAction action)
-    {
-        Action = action;
-    }
+    public AggregationAction Action { get; } = action;
 }

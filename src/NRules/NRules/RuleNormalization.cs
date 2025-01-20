@@ -85,7 +85,7 @@ internal class RuleNormalization : RuleElementVisitor<Context>
         return result;
     }
 
-    private bool CollapseSingleGroup(IReadOnlyCollection<RuleElement> childElements, [NotNullWhen(returnValue: true)]out RuleElement? result)
+    private static bool CollapseSingleGroup(IReadOnlyCollection<RuleElement> childElements, [NotNullWhen(returnValue: true)]out RuleElement? result)
     {
         if (childElements.Count == 1 &&
             childElements.Single() is GroupElement ge)
@@ -115,7 +115,7 @@ internal class RuleNormalization : RuleElementVisitor<Context>
         return true;
     }
 
-    private bool MergeOrGroups(IReadOnlyCollection<RuleElement> childElements, [NotNullWhen(returnValue: true)]out RuleElement? result)
+    private static bool MergeOrGroups(IReadOnlyCollection<RuleElement> childElements, [NotNullWhen(returnValue: true)]out RuleElement? result)
     {
         if (!childElements.OfType<OrElement>().Any())
         {
@@ -154,7 +154,7 @@ internal class RuleNormalization : RuleElementVisitor<Context>
             {
                 int offset = groups.Count;
                 var orElementChildren = orElement.ChildElements.ToList();
-                var firstChild = orElementChildren.First();
+                var firstChild = orElementChildren[0];
                 var restChildren = orElementChildren.Skip(1).ToList();
                 for (int j = 0; j < restChildren.Count; j++)
                 {

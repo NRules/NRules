@@ -247,7 +247,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
         return patternBuilder;
     }
     
-    private class BuildResult
+    private sealed class BuildResult(PatternBuilder pattern)
     {
         public BuildResult(PatternBuilder pattern, AggregateBuilder aggregate, PatternBuilder source)
             : this(pattern)
@@ -256,12 +256,7 @@ internal class QueryExpression : IQuery, IQueryBuilder
             Source = source;
         }
 
-        public BuildResult(PatternBuilder pattern)
-        {
-            Pattern = pattern;
-        }
-
-        public PatternBuilder? Pattern { get; }
+        public PatternBuilder? Pattern { get; } = pattern;
         public AggregateBuilder? Aggregate { get; }
         public PatternBuilder? Source { get; }
     }

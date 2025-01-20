@@ -40,30 +40,38 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     public IReadOnlyCollection<ITerminal> AddRule(IRuleDefinition rule)
     {
-        var ruleDeclarations = rule.LeftHandSide.Exports;
+        var lhs = rule.LeftHandSide;
+        var ruleDeclarations = lhs.Exports;
         var terminals = new List<ITerminal>();
-        rule.LeftHandSide.Match(
-            and =>
+        switch (lhs.ElementType)
+        {
+            case ElementType.And:
             {
                 var context = new ReteBuilderContext(rule, _dummyNode);
-                Visit(context, and);
-                var terminal = BuildTerminal(context, and, ruleDeclarations);
+                Visit(context, lhs);
+                var terminal = BuildTerminal(context, ruleDeclarations);
                 terminals.Add(terminal);
-            },
-            or =>
+            }
+                break;
+            case ElementType.Or:
             {
-                foreach (var childElement in or.ChildElements)
+                foreach (var childElement in lhs.ChildElements)
                 {
                     var context = new ReteBuilderContext(rule, _dummyNode);
                     Visit(context, childElement);
-                    var terminal = BuildTerminal(context, childElement, ruleDeclarations);
+                    var terminal = BuildTerminal(context, ruleDeclarations);
                     terminals.Add(terminal);
                 }
-            });
+            }
+                break;
+            default:
+                throw new ArgumentException($"Unrecognized group element type. Type={lhs.ElementType}");
+        }
+
         return terminals;
     }
 
-    private Terminal BuildTerminal(ReteBuilderContext context, RuleElement element, IEnumerable<Declaration> ruleDeclarations)
+    private Terminal BuildTerminal(ReteBuilderContext context, IEnumerable<Declaration> ruleDeclarations)
     {
         if (context.AlphaSource != null)
         {
@@ -100,23 +108,23 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
 
     protected override RuleElement VisitNot(ReteBuilderContext context, NotElement element)
     {
-        VisitSource(context, element, element.Source);
-        BuildNotNode(context, element);
+        VisitSource(context, element.Source);
+        BuildNotNode(context);
         
         return element;
     }
 
     protected override RuleElement VisitExists(ReteBuilderContext context, ExistsElement element)
     {
-        VisitSource(context, element, element.Source);
-        BuildExistsNode(context, element);
+        VisitSource(context, element.Source);
+        BuildExistsNode(context);
         
         return element;
     }
 
     protected override RuleElement VisitAggregate(ReteBuilderContext context, AggregateElement element)
     {
-        VisitSource(context, element, element.Source);
+        VisitSource(context, element.Source);
         BuildAggregateNode(context, element);
         
         return element;
@@ -131,13 +139,13 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
             context.CurrentAlphaNode = _root;
             context.RegisterDeclaration(element.Declaration);
 
-            BuildTypeNode(context, element, element.ValueType);
+            BuildTypeNode(context, element.ValueType);
 
             var alphaConditions = new List<ExpressionElement>();
             var betaConditions = new List<ExpressionElement>();
             foreach (var condition in conditions)
             {
-                if (condition.Imports.Count() == 1 &&
+                if (condition.Imports.Count == 1 &&
                     Equals(condition.Imports.Single(), element.Declaration))
                     alphaConditions.Add(condition);
                 else
@@ -200,7 +208,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         return element;
     }
 
-    private void VisitSource(ReteBuilderContext context, RuleElement element, RuleElement source)
+    private void VisitSource(ReteBuilderContext context, RuleElement source)
     {
         var isJoined = source.Imports.Any();
         var subnetContext = isJoined ? new ReteBuilderContext(context) : new ReteBuilderContext(context.Rule, _dummyNode);
@@ -271,7 +279,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         context.ResetAlphaSource();
     }
 
-    private void BuildNotNode(ReteBuilderContext context, RuleElement element)
+    private void BuildNotNode(ReteBuilderContext context)
     {
         var node = context.AlphaSource!
             .Sinks.OfType<NotNode>()
@@ -288,7 +296,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         context.ResetAlphaSource();
     }
 
-    private void BuildExistsNode(ReteBuilderContext context, RuleElement element)
+    private void BuildExistsNode(ReteBuilderContext context)
     {
         var node = context.AlphaSource!
             .Sinks.OfType<ExistsNode>()
@@ -360,7 +368,7 @@ internal class ReteBuilder : RuleElementVisitor<ReteBuilderContext>, IReteBuilde
         context.BetaSource = betaNode.MemoryNode;
     }
 
-    private void BuildTypeNode(ReteBuilderContext context, RuleElement element, Type declarationType)
+    private void BuildTypeNode(ReteBuilderContext context, Type declarationType)
     {
         TypeNode? node = context.CurrentAlphaNode!
             .ChildNodes.OfType<TypeNode>()

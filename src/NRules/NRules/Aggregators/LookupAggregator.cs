@@ -41,9 +41,9 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
         if (!_created)
         {
             _created = true;
-            return new[] {AggregationResult.Added(_lookup, _lookup.Facts)};
+            return [AggregationResult.Added(_lookup, _lookup.Facts)];
         }
-        return new[] {AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)};
+        return [AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)];
     }
 
     public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
@@ -65,7 +65,7 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
             }
         }
 
-        return new[] {AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)};
+        return [AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)];
     }
 
     public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
@@ -76,7 +76,7 @@ internal class LookupAggregator<TSource, TKey, TElement> : IAggregator
             RemoveFact(fact, key);
         }
 
-        return new[] {AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)};
+        return [AggregationResult.Modified(_lookup, _lookup, _lookup.Facts)];
     }
 
     private void AddFact(IFact fact, TKey key, TElement element)

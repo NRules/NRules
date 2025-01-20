@@ -11,12 +11,7 @@ namespace NRules.Fluent.Dsl;
 /// unless that combination was previously deactivated (i.e. through retraction).
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-public sealed class RepeatabilityAttribute : Attribute
+public sealed class RepeatabilityAttribute(RuleRepeatability value) : Attribute
 {
-    public RepeatabilityAttribute(RuleRepeatability value)
-    {
-        Value = value;
-    }
-
-    internal RuleRepeatability Value { get; }
+    internal RuleRepeatability Value { get; } = value;
 }

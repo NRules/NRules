@@ -43,7 +43,7 @@ internal class ActionExecutor : IActionExecutor
         executionContext.EventAggregator.RaiseRuleFired(session, activation);
     }
 
-    private List<ActionInvocation> CreateInvocations(IExecutionContext executionContext, IActionContext actionContext)
+    private static List<ActionInvocation> CreateInvocations(IExecutionContext executionContext, IActionContext actionContext)
     {
         ICompiledRule compiledRule = actionContext.CompiledRule;
         MatchTrigger trigger = actionContext.Activation.Trigger;

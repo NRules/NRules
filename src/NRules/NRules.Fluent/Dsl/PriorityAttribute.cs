@@ -9,12 +9,7 @@ namespace NRules.Fluent.Dsl;
 /// Default priority is zero.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-public sealed class PriorityAttribute : Attribute
+public sealed class PriorityAttribute(int value) : Attribute
 {
-    public PriorityAttribute(int value)
-    {
-        Value = value;
-    }
-
-    internal int Value { get; }
+    internal int Value { get; } = value;
 }

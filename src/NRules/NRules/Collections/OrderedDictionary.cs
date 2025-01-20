@@ -3,21 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace NRules.Collections;
 
-internal class OrderedDictionary<TKey, TValue>
+internal class OrderedDictionary<TKey, TValue>(IEqualityComparer<TKey> comparer)
 {
-    private readonly Dictionary<TKey, LinkedListNode<TValue>> _dictionary;
-    private readonly LinkedList<TValue> _linkedList;
-
-    public OrderedDictionary()
-        : this(EqualityComparer<TKey>.Default)
-    {
-    }
-
-    public OrderedDictionary(IEqualityComparer<TKey> comparer)
-    {
-        _dictionary = new Dictionary<TKey, LinkedListNode<TValue>>(comparer);
-        _linkedList = new LinkedList<TValue>();
-    }
+    private readonly Dictionary<TKey, LinkedListNode<TValue>> _dictionary = new(comparer);
+    private readonly LinkedList<TValue> _linkedList = new();
 
     public void Clear()
     {

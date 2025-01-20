@@ -24,20 +24,13 @@ internal static class PerfCounter
     }
 }
 
-internal readonly struct AssertPerfCounter : IDisposable
+internal readonly struct AssertPerfCounter(NodeMetrics nodeMetrics) : IDisposable
 {
-    private readonly NodeMetrics _nodeMetrics;
-    private readonly long _startTicks;
-
-    public AssertPerfCounter(NodeMetrics nodeMetrics)
-    {
-        _nodeMetrics = nodeMetrics;
-        _startTicks = Environment.TickCount;
-    }
+    private readonly long _startTicks = Environment.TickCount;
 
     public void Dispose()
     {
-        _nodeMetrics.InsertDurationMilliseconds += unchecked(Environment.TickCount - _startTicks);
+        nodeMetrics.InsertDurationMilliseconds += unchecked(Environment.TickCount - _startTicks);
     }
 
     public void AddItems(int count)
@@ -46,25 +39,18 @@ internal readonly struct AssertPerfCounter : IDisposable
         AddOutputs(count);
     }
 
-    public void AddInputs(int count) => _nodeMetrics.InsertInputCount += count;
-    public void AddOutputs(int count) => _nodeMetrics.InsertOutputCount += count;
-    public void SetCount(int count) => _nodeMetrics.ElementCount = count;
+    public void AddInputs(int count) => nodeMetrics.InsertInputCount += count;
+    public void AddOutputs(int count) => nodeMetrics.InsertOutputCount += count;
+    public void SetCount(int count) => nodeMetrics.ElementCount = count;
 }
 
-internal readonly struct UpdatePerfCounter : IDisposable
+internal readonly struct UpdatePerfCounter(NodeMetrics nodeMetrics) : IDisposable
 {
-    private readonly NodeMetrics _nodeMetrics;
-    private readonly long _startTicks;
-
-    public UpdatePerfCounter(NodeMetrics nodeMetrics)
-    {
-        _nodeMetrics = nodeMetrics;
-        _startTicks = Environment.TickCount;
-    }
+    private readonly long _startTicks = Environment.TickCount;
 
     public void Dispose()
     {
-        _nodeMetrics.UpdateDurationMilliseconds += unchecked(Environment.TickCount - _startTicks);
+        nodeMetrics.UpdateDurationMilliseconds += unchecked(Environment.TickCount - _startTicks);
     }
 
     public void AddItems(int count)
@@ -73,25 +59,18 @@ internal readonly struct UpdatePerfCounter : IDisposable
         AddOutputs(count);
     }
 
-    public void AddInputs(int count) => _nodeMetrics.UpdateInputCount += count;
-    public void AddOutputs(int count) => _nodeMetrics.UpdateOutputCount += count;
-    public void SetCount(int count) => _nodeMetrics.ElementCount = count;
+    public void AddInputs(int count) => nodeMetrics.UpdateInputCount += count;
+    public void AddOutputs(int count) => nodeMetrics.UpdateOutputCount += count;
+    public void SetCount(int count) => nodeMetrics.ElementCount = count;
 }
 
-internal readonly struct RetractPerfCounter : IDisposable
+internal readonly struct RetractPerfCounter(NodeMetrics nodeMetrics) : IDisposable
 {
-    private readonly NodeMetrics _nodeMetrics;
-    private readonly long _startTicks;
-
-    public RetractPerfCounter(NodeMetrics nodeMetrics)
-    {
-        _nodeMetrics = nodeMetrics;
-        _startTicks = Environment.TickCount;
-    }
+    private readonly long _startTicks = Environment.TickCount;
 
     public void Dispose()
     {
-        _nodeMetrics.RetractDurationMilliseconds += unchecked(Environment.TickCount - _startTicks);
+        nodeMetrics.RetractDurationMilliseconds += unchecked(Environment.TickCount - _startTicks);
     }
 
     public void AddItems(int count)
@@ -100,7 +79,7 @@ internal readonly struct RetractPerfCounter : IDisposable
         AddOutputs(count);
     }
 
-    public void AddInputs(int count) => _nodeMetrics.RetractInputCount += count;
-    public void AddOutputs(int count) => _nodeMetrics.RetractOutputCount += count;
-    public void SetCount(int count) => _nodeMetrics.ElementCount = count;
+    public void AddInputs(int count) => nodeMetrics.RetractInputCount += count;
+    public void AddOutputs(int count) => nodeMetrics.RetractOutputCount += count;
+    public void SetCount(int count) => nodeMetrics.ElementCount = count;
 }

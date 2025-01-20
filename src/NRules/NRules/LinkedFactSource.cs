@@ -14,16 +14,9 @@ public interface ILinkedFactSource : IFactSource
     IRuleDefinition Rule { get; }
 }
 
-internal class LinkedFactSource : ILinkedFactSource
+internal class LinkedFactSource(Activation activation) : ILinkedFactSource
 {
-    private readonly Activation _activation;
-
-    public LinkedFactSource(Activation activation)
-    {
-        _activation = activation;
-    }
-
     public FactSourceType SourceType => FactSourceType.Linked;
-    public IEnumerable<IFact> Facts => _activation.Facts;
-    public IRuleDefinition Rule => _activation.Rule;
+    public IEnumerable<IFact> Facts => activation.Facts;
+    public IRuleDefinition Rule => activation.Rule;
 }

@@ -6,14 +6,9 @@ using NRules.Diagnostics;
 namespace NRules.Rete;
 
 [DebuggerDisplay("Type {FilterType.FullName,nq}")]
-internal class TypeNode : AlphaNode
+internal class TypeNode(Type filterType) : AlphaNode
 {
-    public TypeNode(Type filterType)
-    {
-        FilterType = filterType;
-    }
-
-    public Type FilterType { get; }
+    public Type FilterType { get; } = filterType;
 
     public override bool IsSatisfiedBy(IExecutionContext context, Fact fact)
     {

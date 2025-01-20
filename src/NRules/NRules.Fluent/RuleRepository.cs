@@ -77,7 +77,7 @@ public class RuleRepository : IRuleRepository
 
     private IRuleSet GetRuleSet(string ruleSetName)
     {
-        IRuleSet ruleSet = _ruleSets.SingleOrDefault(rs => rs.Name == ruleSetName);
+        IRuleSet? ruleSet = _ruleSets.SingleOrDefault(rs => rs.Name == ruleSetName);
         if (ruleSet == null)
         {
             ruleSet = new RuleSet(ruleSetName);

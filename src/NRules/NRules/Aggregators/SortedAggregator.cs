@@ -36,21 +36,21 @@ internal class SortedAggregator<TSource, TKey> : IAggregator
         if (!_created)
         {
             _created = true;
-            return new[] { AggregationResult.Added(_sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
+            return [AggregationResult.Added(_sortedFactCollection, _sortedFactCollection.GetFactEnumerable())];
         }
-        return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
+        return [AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable())];
     }
 
     public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         ModifyFacts(context, tuple, facts);
-        return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
+        return [AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable())];
     }
 
     public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
-        RemoveFacts(context, tuple, facts);
-        return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
+        RemoveFacts(facts);
+        return [AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable())];
     }
 
     private void AddFacts(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
@@ -73,7 +73,7 @@ internal class SortedAggregator<TSource, TKey> : IAggregator
         }
     }
 
-    private void RemoveFacts(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
+    private void RemoveFacts(IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {

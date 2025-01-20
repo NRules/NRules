@@ -51,7 +51,7 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
         return _factory!();
     }
 
-    private Func<IAggregator> CreateCollectAggregator(Type sourceType)
+    private static Func<IAggregator> CreateCollectAggregator(Type sourceType)
     {
         var aggregatorType = typeof(CollectionAggregator<>).MakeGenericType(sourceType);
 
@@ -92,7 +92,7 @@ internal class CollectionAggregatorFactory : IAggregatorFactory
             ? SortDirection.Ascending : SortDirection.Descending;
     }
 
-    private Func<IAggregator> CreateLookupAggregator(Type sourceType, IReadOnlyCollection<IAggregateExpression> compiledExpressions, ExpressionCollection elementExpressions)
+    private static Func<IAggregator> CreateLookupAggregator(Type sourceType, IReadOnlyCollection<IAggregateExpression> compiledExpressions, ExpressionCollection elementExpressions)
     {
         var keySelector = compiledExpressions.SingleOrDefault(x => x.Name == AggregateElement.KeySelectorName);
         var elementSelector = compiledExpressions.SingleOrDefault(x => x.Name == AggregateElement.ElementSelectorName);

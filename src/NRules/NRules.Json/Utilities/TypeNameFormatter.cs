@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
@@ -7,7 +6,7 @@ namespace NRules.Json.Utilities;
 
 internal static class TypeNameFormatter
 {
-    private static readonly HashSet<string> SystemAssemblyNames = new() { "mscorlib", "System.Core", "System.Private.CoreLib" };
+    private static readonly HashSet<string> SystemAssemblyNames = ["mscorlib", "System.Core", "System.Private.CoreLib"];
 
     public static string ConstructAssemblyQualifiedTypeName(TypeName typeName)
     {

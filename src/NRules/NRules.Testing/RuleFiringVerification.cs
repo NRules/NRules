@@ -28,18 +28,10 @@ public interface IQualifiedRuleFiringVerification : IRuleFiringVerification
     void Fired(Times times, params FactConstraint[] constraints);
 }
 
-internal class RuleFiringVerification : IQualifiedRuleFiringVerification
+internal class RuleFiringVerification(IRuleDefinition rule, bool isExact) : IQualifiedRuleFiringVerification
 {
-    private readonly IRuleDefinition _rule;
-    private readonly bool _isExact;
-    private FactConstraint[] _constraints = Array.Empty<FactConstraint>();
+    private FactConstraint[] _constraints = [];
     private Times _times = Times.Once;
-
-    public RuleFiringVerification(IRuleDefinition rule, bool isExact)
-    {
-        _rule = rule;
-        _isExact = isExact;
-    }
 
     public void Fired(params FactConstraint[] constraints)
     {
@@ -54,7 +46,7 @@ internal class RuleFiringVerification : IQualifiedRuleFiringVerification
 
     public IRuleExpectation Build()
     {
-        var expectation = new SingleRuleExpectation(_rule, _constraints, _times, _isExact);
+        var expectation = new SingleRuleExpectation(rule, _constraints, _times, isExact);
         return expectation;
     }
 }

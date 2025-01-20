@@ -27,16 +27,11 @@ public interface IRuleSet
 /// <summary>
 /// Default implementation of a rule set.
 /// </summary>
-public class RuleSet : IRuleSet
+public class RuleSet(string name) : IRuleSet
 {
     private readonly List<IRuleDefinition> _rules = new();
 
-    public RuleSet(string name)
-    {
-        Name = name;
-    }
-
-    public string Name { get; }
+    public string Name { get; } = name;
     public IEnumerable<IRuleDefinition> Rules => _rules;
 
     public void Add(IEnumerable<IRuleDefinition> ruleDefinitions)

@@ -2,12 +2,7 @@ using System.Linq;
 
 namespace NRules.Aggregators.Collections;
 
-internal class FactGrouping<TKey, TElement> : FactCollection<TElement>, IGrouping<TKey, TElement>
+internal class FactGrouping<TKey, TElement>(TKey key) : FactCollection<TElement>, IGrouping<TKey, TElement>
 {
-    public FactGrouping(TKey key)
-    {
-        Key = key;
-    }
-
-    public TKey Key { get; set; }
+    public TKey Key { get; set; } = key;
 }

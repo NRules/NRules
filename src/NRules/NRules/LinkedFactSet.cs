@@ -46,17 +46,10 @@ public interface ILinkedFactSet
     int FactCount { get; }
 }
 
-internal readonly struct LinkedFactSet : ILinkedFactSet
+internal readonly struct LinkedFactSet(LinkedFactAction action) : ILinkedFactSet
 {
-    public LinkedFactAction Action { get; }
+    public LinkedFactAction Action { get; } = action;
     IEnumerable<IFact> ILinkedFactSet.Facts => Facts;
     int ILinkedFactSet.FactCount => Facts.Count;
-
-    public List<Fact> Facts { get; }
-
-    public LinkedFactSet(LinkedFactAction action)
-    {
-        Action = action;
-        Facts = new List<Fact>();
-    }
+    public List<Fact> Facts { get; } = new();
 }

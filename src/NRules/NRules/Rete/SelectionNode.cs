@@ -25,7 +25,7 @@ internal class SelectionNode : AlphaNode
             if (!e.IsHandled)
             {
                 throw new RuleLhsExpressionEvaluationException(
-                    "Failed to evaluate condition", e.Expression.ToString(), e.InnerException);
+                    "Failed to evaluate condition", e.Expression.ToString(), e.InnerException!);
             }
 
             return false;

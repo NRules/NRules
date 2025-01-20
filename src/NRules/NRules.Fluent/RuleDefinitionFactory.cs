@@ -58,7 +58,7 @@ public class RuleDefinitionFactory
         return builder.Build();
     }
 
-    private void ApplyMetadata(RuleBuilder builder, RuleMetadata metadata)
+    private static void ApplyMetadata(RuleBuilder builder, RuleMetadata metadata)
     {
         builder.Name(metadata.Name);
         builder.Description(metadata.Description);

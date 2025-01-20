@@ -31,6 +31,7 @@ internal class SymbolTable : ISymbolLookup
 
     public bool TryGetValue(string name, out Declaration declaration)
     {
-        return _declarations.TryGetValue(name, out declaration) || _parentScope?.TryGetValue(name, out declaration) == true;
+        return _declarations.TryGetValue(name, out declaration) || 
+               _parentScope?.TryGetValue(name, out declaration) == true;
     }
 }

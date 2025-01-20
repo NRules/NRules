@@ -13,24 +13,15 @@ internal interface IActionContext : IContext
     bool IsHalted { get; }
 }
 
-internal class ActionContext : IActionContext
+internal class ActionContext(ISessionInternal session, Activation activation, CancellationToken cancellationToken)
+    : IActionContext
 {
-    private readonly ISessionInternal _session;
-
-    public ActionContext(ISessionInternal session, Activation activation, CancellationToken cancellationToken)
-    {
-        _session = session;
-        Activation = activation;
-        CancellationToken = cancellationToken;
-        IsHalted = false;
-    }
-
     public IRuleDefinition Rule => CompiledRule.Definition;
     public IMatch Match => Activation;
     public ICompiledRule CompiledRule => Activation.CompiledRule;
 
-    public Activation Activation { get; }
-    public CancellationToken CancellationToken { get; }
+    public Activation Activation { get; } = activation;
+    public CancellationToken CancellationToken { get; } = cancellationToken;
     public bool IsHalted { get; private set; }
 
     public void Halt()
@@ -40,57 +31,57 @@ internal class ActionContext : IActionContext
 
     public void Insert(object fact)
     {
-        _session.Insert(fact);
+        session.Insert(fact);
     }
 
     public void InsertAll(IEnumerable<object> facts)
     {
-        _session.InsertAll(facts);
+        session.InsertAll(facts);
     }
 
     public bool TryInsert(object fact)
     {
-        return _session.TryInsert(fact);
+        return session.TryInsert(fact);
     }
 
     public void Update(object fact)
     {
-        _session.Update(fact);
+        session.Update(fact);
     }
 
     public void UpdateAll(IEnumerable<object> facts)
     {
-        _session.UpdateAll(facts);
+        session.UpdateAll(facts);
     }
 
     public bool TryUpdate(object fact)
     {
-        return _session.TryUpdate(fact);
+        return session.TryUpdate(fact);
     }
 
     public void Retract(object fact)
     {
-        _session.Retract(fact);
+        session.Retract(fact);
     }
 
     public void RetractAll(IEnumerable<object> facts)
     {
-        _session.RetractAll(facts);
+        session.RetractAll(facts);
     }
 
     public bool TryRetract(object fact)
     {
-        return _session.TryRetract(fact);
+        return session.TryRetract(fact);
     }
 
     public IReadOnlyCollection<object> GetLinkedKeys()
     {
-        return _session.GetLinkedKeys(Activation);
+        return session.GetLinkedKeys(Activation);
     }
 
     public object? GetLinked(object key)
     {
-        return _session.GetLinked(Activation, key);
+        return session.GetLinked(Activation, key);
     }
 
     public void InsertLinked(object key, object fact)
@@ -106,7 +97,7 @@ internal class ActionContext : IActionContext
 
     public void InsertAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
     {
-        _session.QueueInsertLinked(Activation, keyedFacts);
+        session.QueueInsertLinked(Activation, keyedFacts);
     }
 
     public void UpdateLinked(object key, object fact)
@@ -122,7 +113,7 @@ internal class ActionContext : IActionContext
 
     public void UpdateAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
     {
-        _session.QueueUpdateLinked(Activation, keyedFacts);
+        session.QueueUpdateLinked(Activation, keyedFacts);
     }
 
     public void RetractLinked(object key, object fact)
@@ -138,13 +129,13 @@ internal class ActionContext : IActionContext
 
     public void RetractAllLinked(IEnumerable<KeyValuePair<object, object>> keyedFacts)
     {
-        _session.QueueRetractLinked(Activation, keyedFacts);
+        session.QueueRetractLinked(Activation, keyedFacts);
     }
 
     public object Resolve(Type serviceType)
     {
-        var resolutionContext = new ResolutionContext(_session, Rule);
-        var service = _session.DependencyResolver.Resolve(resolutionContext, serviceType);
+        var resolutionContext = new ResolutionContext(session, Rule);
+        var service = session.DependencyResolver.Resolve(resolutionContext, serviceType);
         return service;
     }
 }

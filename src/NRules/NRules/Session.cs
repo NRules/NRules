@@ -235,9 +235,9 @@ public interface ISession : ISessionSchemaProvider
     /// <remarks>
     /// Bulk session operations are more performant than individual operations on a set of facts.
     /// </remarks>
-    /// <param name="facts">Fact to remove.</param>
+    /// <param name="fact">Fact to remove.</param>
     /// <returns>Whether the fact was retracted or not.</returns>
-    bool TryRetract(object facts);
+    bool TryRetract(object fact);
 
     /// <summary>
     /// Propagates all queued linked facts.
@@ -398,12 +398,12 @@ internal sealed class Session : ISessionInternal
 
     public void Insert(object fact)
     {
-        InsertAll(new[] { fact });
+        InsertAll([fact]);
     }
 
     public bool TryInsert(object fact)
     {
-        var result = TryInsertAll(new[] {fact});
+        var result = TryInsertAll([fact]);
         return result.FailedCount == 0;
     }
 
@@ -457,12 +457,12 @@ internal sealed class Session : ISessionInternal
 
     public void Update(object fact)
     {
-        UpdateAll(new[] {fact});
+        UpdateAll([fact]);
     }
 
     public bool TryUpdate(object fact)
     {
-        var result = TryUpdateAll(new[] {fact});
+        var result = TryUpdateAll([fact]);
         return result.FailedCount == 0;
     }
 
@@ -515,12 +515,12 @@ internal sealed class Session : ISessionInternal
 
     public void Retract(object fact)
     {
-        RetractAll(new[] {fact});
+        RetractAll([fact]);
     }
 
     public bool TryRetract(object fact)
     {
-        var result = TryRetractAll(new[] {fact});
+        var result = TryRetractAll([fact]);
         return result.FailedCount == 0;
     }
 
@@ -676,7 +676,7 @@ internal sealed class Session : ISessionInternal
 
     public int Fire()
     {
-        return Fire(default(CancellationToken));
+        return Fire(CancellationToken.None);
     }
 
     public int Fire(CancellationToken cancellationToken)
@@ -686,7 +686,7 @@ internal sealed class Session : ISessionInternal
 
     public int Fire(int maxRulesNumber)
     {
-        return Fire(maxRulesNumber, default);
+        return Fire(maxRulesNumber, CancellationToken.None);
     }
 
     public int Fire(int maxRulesNumber, CancellationToken cancellationToken)

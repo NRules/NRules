@@ -64,16 +64,10 @@ internal class BetaMemory : IBetaMemory
         _parentToChildMap.Remove(key);
     }
 
-    private readonly struct TupleFactKey : IEquatable<TupleFactKey>
+    private readonly struct TupleFactKey(Tuple tuple, Fact? fact) : IEquatable<TupleFactKey>
     {
-        private readonly Tuple _tuple;
-        private readonly Fact? _fact;
-
-        public TupleFactKey(Tuple tuple, Fact? fact)
-        {
-            _tuple = tuple;
-            _fact = fact;
-        }
+        private readonly Tuple _tuple = tuple;
+        private readonly Fact? _fact = fact;
 
         public bool Equals(TupleFactKey other)
         {

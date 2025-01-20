@@ -2,14 +2,9 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Category
+internal class Category(string id)
 {
-    public Category(string id)
-    {
-        Id = id;
-    }
-
-    public string Id { get; }
+    public string Id { get; } = id;
     public string? Label { get; set; }
     public string? Background { get; set; }
 

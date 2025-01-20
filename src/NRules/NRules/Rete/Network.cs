@@ -13,17 +13,8 @@ internal interface INetwork
     ReteGraph GetSchema();
 }
 
-internal class Network : INetwork
+internal class Network(RootNode root, DummyNode dummyNode) : INetwork
 {
-    private readonly RootNode _root;
-    private readonly DummyNode _dummyNode;
-
-    public Network(RootNode root, DummyNode dummyNode)
-    {
-        _root = root;
-        _dummyNode = dummyNode;
-    }
-
     public void PropagateAssert(IExecutionContext context, List<Fact> facts)
     {
         foreach (var fact in facts)
@@ -31,7 +22,7 @@ internal class Network : INetwork
             context.EventAggregator.RaiseFactInserting(context.Session, fact);
         }
 
-        _root.PropagateAssert(context, facts);
+        root.PropagateAssert(context, facts);
 
         foreach (var fact in facts)
         {
@@ -46,7 +37,7 @@ internal class Network : INetwork
             context.EventAggregator.RaiseFactUpdating(context.Session, fact);
         }
 
-        _root.PropagateUpdate(context, facts);
+        root.PropagateUpdate(context, facts);
 
         foreach (var fact in facts)
         {
@@ -61,7 +52,7 @@ internal class Network : INetwork
             context.EventAggregator.RaiseFactRetracting(context.Session, fact);
         }
 
-        _root.PropagateRetract(context, facts);
+        root.PropagateRetract(context, facts);
 
         foreach (var fact in facts)
         {
@@ -71,13 +62,13 @@ internal class Network : INetwork
 
     public void Activate(IExecutionContext context)
     {
-        _dummyNode.Activate(context);
+        dummyNode.Activate(context);
     }
 
     public void Visit<TContext>(TContext context, ReteNodeVisitor<TContext> visitor)
     {
-        visitor.Visit(context, _root);
-        visitor.Visit(context, _dummyNode);
+        visitor.Visit(context, root);
+        visitor.Visit(context, dummyNode);
     }
 
     public ReteGraph GetSchema()

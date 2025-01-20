@@ -22,10 +22,10 @@ public class RulesTestFixture
     /// <summary>
     /// Gets or sets the framework-specific asserter to validate rule firing expectations.
     /// </summary>
-    /// <remarks>If asserter is not set, it's initialized to a <see cref="DefaultRuleAsserter"/> on first access.</remarks>
+    /// <remarks>If asserter is not set, it's initialized to a <see cref="RuleAsserter"/> on first access.</remarks>
     public IRuleAsserter Asserter
     {
-        get => _asserter ??= new DefaultRuleAsserter();
+        get => _asserter ??= new RuleAsserter();
         set => _asserter = value;
     }
 

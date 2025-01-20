@@ -5,23 +5,14 @@ using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Expressions;
 
-internal class DependencyExpression : IDependencyExpression
+internal class DependencyExpression(DependencyGroupBuilder builder, SymbolStack symbolStack) : IDependencyExpression
 {
-    private readonly DependencyGroupBuilder _builder;
-    private readonly SymbolStack _symbolStack;
-
-    public DependencyExpression(DependencyGroupBuilder builder, SymbolStack symbolStack)
-    {
-        _builder = builder;
-        _symbolStack = symbolStack;
-    }
-
     public IDependencyExpression Resolve<TDependency>(Expression<Func<TDependency>> alias)
         where TDependency : notnull
     {
         var symbol = alias.ToParameterExpression();
-        var declaration = _builder.Dependency(symbol.Type, symbol.Name);
-        _symbolStack.Scope.Add(declaration);
+        var declaration = builder.Dependency(symbol.Type, symbol.Name);
+        symbolStack.Scope.Add(declaration);
         return this;
     }
 }

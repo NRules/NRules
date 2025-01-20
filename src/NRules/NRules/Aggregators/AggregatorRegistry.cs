@@ -19,7 +19,7 @@ public class AggregatorRegistry
     /// </summary>
     /// <param name="name">Name of the custom aggregator.</param>
     /// <returns>Custom aggregator type or <c>null</c> if a given aggregator type is not registered.</returns>
-    internal Type this[string name]
+    internal Type? this[string name]
     {
         get
         {

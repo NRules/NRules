@@ -73,7 +73,7 @@ public class RuleCompiler
     /// <seealso cref="IRuleRepository"/>
     public ISessionFactory Compile(IEnumerable<IRuleDefinition> ruleDefinitions)
     {
-        return Compile(ruleDefinitions, default);
+        return Compile(ruleDefinitions, CancellationToken.None);
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public class RuleCompiler
     /// <exception cref="RuleCompilationException">Any fatal error during rules compilation.</exception>
     public ISessionFactory Compile(IEnumerable<IRuleSet> ruleSets)
     {
-        return Compile(ruleSets, default);
+        return Compile(ruleSets, CancellationToken.None);
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public class RuleCompiler
         return compiledFilter;
     }
 
-    private RuleNode BuildRuleNode(ICompiledRule compiledRule, ITerminal terminal)
+    private static RuleNode BuildRuleNode(ICompiledRule compiledRule, ITerminal terminal)
     {
         var ruleNode = new RuleNode(compiledRule);
         ruleNode.NodeInfo.Add(compiledRule.Definition);

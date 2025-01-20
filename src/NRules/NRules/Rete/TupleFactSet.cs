@@ -4,14 +4,8 @@ using System.Diagnostics;
 namespace NRules.Rete;
 
 [DebuggerDisplay("TupleFactSet Tuple({Tuple.Count}) Facts({Facts.Count})")]
-internal class TupleFactSet
+internal class TupleFactSet(Tuple tuple, List<Fact> facts)
 {
-    public Tuple Tuple { get; }
-    public List<Fact> Facts { get; }
-
-    public TupleFactSet(Tuple tuple, List<Fact> facts)
-    {
-        Tuple = tuple;
-        Facts = facts;
-    }
+    public Tuple Tuple { get; } = tuple;
+    public List<Fact> Facts { get; } = facts;
 }

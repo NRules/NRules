@@ -54,7 +54,7 @@ internal sealed class Tuple : ITuple
 
     public Enumerator GetEnumerator() => new(this);
 
-    internal class TupleDebugView
+    internal sealed class TupleDebugView
     {
         public readonly string Facts;
 
@@ -65,16 +65,9 @@ internal sealed class Tuple : ITuple
         }
     }
 
-    internal class Enumerable : IEnumerable<Fact>, IEnumerator<Fact>
+    private sealed class Enumerable(Tuple tuple) : IEnumerable<Fact>, IEnumerator<Fact>
     {
-        private readonly Tuple _tuple;
-        private Enumerator _enumerator;
-
-        public Enumerable(Tuple tuple)
-        {
-            _tuple = tuple;
-            _enumerator = new Enumerator(tuple);
-        }
+        private Enumerator _enumerator = new(tuple);
 
         public IEnumerator<Fact> GetEnumerator()
         {
@@ -88,22 +81,16 @@ internal sealed class Tuple : ITuple
 
         public void Dispose() {}
         public bool MoveNext() => _enumerator.MoveNext();
-        public void Reset() => _enumerator = new Enumerator(_tuple);
+        public void Reset() => _enumerator = new Enumerator(tuple);
 
         public Fact Current => _enumerator.Current ??
                                throw new InvalidOperationException("Enumerated past the end of the tuple");
         object IEnumerator.Current => Current;
     }
 
-    internal struct Enumerator
+    internal struct Enumerator(Tuple tuple)
     {
-        private Tuple? _tuple;
-
-        public Enumerator(Tuple tuple)
-        {
-            _tuple = tuple;
-            Current = null;
-        }
+        private Tuple? _tuple = tuple;
 
         [MemberNotNullWhen(true, nameof(Current))]
         public bool MoveNext()
@@ -116,6 +103,6 @@ internal sealed class Tuple : ITuple
             return Current != null;
         }
 
-        public Fact? Current { get; private set; }
+        public Fact? Current { get; private set; } = null;
     }
 }
