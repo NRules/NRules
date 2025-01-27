@@ -111,6 +111,10 @@ $components = @{
             )
         }
     };
+    'Samples.GettingStarted' = @{
+        name = 'GettingStarted'
+        solution_file = 'samples\GettingStarted\GettingStarted.sln'
+    };
     'Samples.SimpleRules' = @{
         name = 'SimpleRules'
         solution_file = 'samples\SimpleRules\SimpleRules.sln'

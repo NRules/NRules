@@ -20,7 +20,11 @@
   <!-- Locally built packages -->
   <ItemGroup>
     <PackageVersion Include="NRules" Version="*" />
+    <PackageVersion Include="NRules.Fluent" Version="*" />
+    <PackageVersion Include="NRules.RuleModel" Version="*" />
+    <PackageVersion Include="NRules.Runtime" Version="*" />
     <PackageVersion Include="NRules.Json" Version="*" />
+    <PackageVersion Include="NRules.Testing" Version="*" />
     <PackageVersion Include="NRules.Integration.DependencyInjection" Version="*" />
   </ItemGroup>
   
