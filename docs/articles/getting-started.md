@@ -211,3 +211,74 @@ Fired rule: Rules.TrafficViolationSurchargeRule
 Base premium for John Doe: 1000
 Final premium for John Doe: 1140
 ```
+
+## Testing Rules
+To unit test rules we can use `NRules.Testing` package. It provides the mechanism for bootstrapping a test instance of the rules engine, loading specified rules into it, and asserting rules firing with the provided facts. See [Unit Testing Rules](unit-testing-rules.md) for more details.
+In terminal, run the following commands to add the unit tests project to the solution.
+
+# [Windows](#tab/windows)
+```console
+dotnet new classlib -o Rules.Tests
+dotnet sln GettingStarted.sln add Rules.Tests\Rules.Tests.csproj
+dotnet add Rules.Tests\Rules.Tests.csproj reference Rules\Rules.csproj
+dotnet add Rules.Tests\Rules.Tests.csproj package Microsoft.NET.Test.Sdk
+dotnet add Rules.Tests\Rules.Tests.csproj package NRules.Testing
+dotnet add Rules.Tests\Rules.Tests.csproj package xunit
+dotnet add Rules.Tests\Rules.Tests.csproj package xunit.runner.visualstudio
+```
+# [MacOS/Linux](#tab/nix)
+```console
+dotnet new classlib -o Rules.Tests
+dotnet sln GettingStarted.sln add Rules.Tests/Rules.Tests.csproj
+dotnet add Rules.Tests/Rules.Tests.csproj reference Rules/Rules.csproj
+dotnet add Rules.Tests/Rules.Tests.csproj package Microsoft.NET.Test.Sdk
+dotnet add Rules.Tests/Rules.Tests.csproj package NRules.Testing
+dotnet add Rules.Tests/Rules.Tests.csproj package xunit
+dotnet add Rules.Tests/Rules.Tests.csproj package xunit.runner.visualstudio
+```
+---
+
+A test fixture for rules unit tests inherits from `RulesTestFixture`, and uses the `Setup` object to add rules under test. Each test method in the fixture can follow the AAA pattern (Arrange, Act, Assert) of setting up facts under test, inserting them into session, calling `Fire` method, and asserting the rules firing expectations.
+
+In the IDE, add the following test class to the `Rules.Tests` project.
+
+```c#
+public class YoungDriverSurchargeRuleTest : RulesTestFixture
+{
+    [Fact]
+    public void Fire_QuoteWithDriverAt25_DoesNotFire()
+    {
+        // Arrange
+        var driver = new Driver("John Do", 25, 6);
+        var quote = new InsuranceQuote(driver, 1000);
+
+        // Act
+        Session.Insert(quote);
+        Session.Fire();
+
+        // Assert
+        Verify(x => x.Rule().Fired(Times.Never));
+    }
+    
+    [Fact]
+    public void Fire_QuoteWithDriverUnder25_Fires()
+    {
+        // Arrange
+        var driver = new Driver("John Do", 24, 6);
+        var quote = new InsuranceQuote(driver, 1000);
+
+        // Act
+        Session.Insert(quote);
+        Session.Fire();
+
+        // Assert
+        Verify(x => x.Rule().Fired(Matched.Fact(quote)));
+        Assert.Equal(1100, quote.FinalPremium);
+    }
+    
+    public YoungDriverSurchargeRuleTest()
+    {
+        Setup.Rule<YoungDriverSurchargeRule>();
+    }
+}
+```

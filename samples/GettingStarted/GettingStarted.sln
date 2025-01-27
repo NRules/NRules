@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rules", "Rules\Rules.csproj", "{229BC0D5-0EA0-4C99-AE50-5ADD01E5BEDC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rules.Tests", "Rules.Tests\Rules.Tests.csproj", "{7D9C2530-8AD9-408D-B3FC-D3BC4B24190A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{229BC0D5-0EA0-4C99-AE50-5ADD01E5BEDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{229BC0D5-0EA0-4C99-AE50-5ADD01E5BEDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{229BC0D5-0EA0-4C99-AE50-5ADD01E5BEDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D9C2530-8AD9-408D-B3FC-D3BC4B24190A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D9C2530-8AD9-408D-B3FC-D3BC4B24190A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D9C2530-8AD9-408D-B3FC-D3BC4B24190A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D9C2530-8AD9-408D-B3FC-D3BC4B24190A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
