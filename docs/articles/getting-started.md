@@ -125,7 +125,9 @@ var repository = new RuleRepository();
 repository.Load(x => x.From(typeof(PreferredCustomerDiscountRule).Assembly));
 
 //Compile rules
-var factory = repository.Compile();
+var ruleSets = repository.GetRuleSets();
+var compiler = new RuleCompiler();
+ISessionFactory factory = compiler.Compile(ruleSets);
 
 //Create a working session
 var session = factory.CreateSession();
