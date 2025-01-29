@@ -20,6 +20,6 @@ internal class RuleAsserter : IRuleAsserter
     public void Assert(RuleAssertResult result)
     {
         if (result.Status != RuleAssertStatus.Passed)
-            throw new Exception(result.GetMessage());
+            throw new RuleAssertionException(result.GetMessage());
     }
 }
