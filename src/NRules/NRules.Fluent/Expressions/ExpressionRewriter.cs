@@ -27,7 +27,8 @@ internal class ExpressionRewriter(ISymbolLookup symbolLookup) : ExpressionVisito
 
     protected override Expression VisitMember(MemberExpression node)
     {
-        if (SymbolLookup.TryGetValue(node.Member.Name, out var declaration))
+        if (node.Expression is ConstantExpression &&
+            SymbolLookup.TryGetValue(node.Member.Name, out var declaration))
         {
             ParameterExpression? parameter = Parameters.FirstOrDefault(p => p.Name == declaration.Name);
             if (parameter == null)
@@ -35,7 +36,8 @@ internal class ExpressionRewriter(ISymbolLookup symbolLookup) : ExpressionVisito
                 parameter = declaration.ToParameterExpression();
                 Parameters.Add(parameter);
             }
-            else if (parameter.Type != declaration.Type)
+            
+            if (parameter.Type != declaration.Type)
             {
                 throw new ArgumentException(
                     $"Expression parameter type mismatch. Name={declaration.Name}, ExpectedType={declaration.Type}, FoundType={parameter.Type}");
