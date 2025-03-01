@@ -10,12 +10,7 @@ namespace NRules.IntegrationTests;
 
 public class RuleMetadataTest
 {
-    private readonly RuleRepository _repository;
-
-    public RuleMetadataTest()
-    {
-        _repository = new RuleRepository();
-    }
+    private readonly RuleRepository _repository = new();
 
     [Fact]
     public void Property_RuleClrType_Same()
