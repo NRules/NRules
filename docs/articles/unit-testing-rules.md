@@ -111,7 +111,7 @@ Setup.Rule(rule);
 ```
 
 ## Creating a Custom Asserter
-[NRules.Testing](xref:NRules.Testing) library does not depend on any specific unit testing or assertion framework, so by default it just throws an [Exception](xref:System.Exception) when any assertion fails. To better tailor assertions to the specific unit testing framework, implement an [asserter](xref:NRules.Testing.IRuleAsserter) that uses the specific assertion mechanism.
+[NRules.Testing](xref:NRules.Testing) library does not depend on any specific unit testing or assertion framework, so by default it just throws a [RuleAssertionException](xref:NRules.Testing.RuleAssertionException) when any assertion fails. To better tailor assertions to the specific unit testing framework, implement an [asserter](xref:NRules.Testing.IRuleAsserter) that uses the specific assertion mechanism.
 
 Below we are defining a custom asserter for the [xUnit](https://xunit.net/) framework.
 
