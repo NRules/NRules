@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NRules.Collections;
 using NRules.RuleModel;
@@ -123,7 +122,7 @@ internal class FlatteningAggregator<TSource, TResult> : IAggregator
         return counter.Value;
     }
 
-    private class Counter
+    private sealed class Counter
     {
         public int Value { get; set; }
     }

@@ -9,14 +9,11 @@ internal interface IRuleFilter
     IReadOnlyList<IActivationExpression<object>> KeySelectors { get; }
 }
 
-internal class RuleFilter : IRuleFilter
+internal class RuleFilter(
+    IReadOnlyList<IActivationExpression<bool>> conditions,
+    IReadOnlyList<IActivationExpression<object>> keySelectors)
+    : IRuleFilter
 {
-    public RuleFilter(IReadOnlyList<IActivationExpression<bool>> conditions, IReadOnlyList<IActivationExpression<object>> keySelectors)
-    {
-        Conditions = conditions;
-        KeySelectors = keySelectors;
-    }
-
-    public IReadOnlyList<IActivationExpression<bool>> Conditions { get; }
-    public IReadOnlyList<IActivationExpression<object>> KeySelectors { get; }
+    public IReadOnlyList<IActivationExpression<bool>> Conditions { get; } = conditions;
+    public IReadOnlyList<IActivationExpression<object>> KeySelectors { get; } = keySelectors;
 }

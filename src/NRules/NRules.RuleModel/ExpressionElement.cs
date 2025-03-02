@@ -9,7 +9,7 @@ namespace NRules.RuleModel;
 /// </summary>
 public abstract class ExpressionElement : RuleElement
 {
-    internal ExpressionElement(LambdaExpression expression, IEnumerable<ParameterExpression> parameters)
+    private protected ExpressionElement(LambdaExpression expression, IEnumerable<ParameterExpression> parameters)
     {
         Expression = expression;
 
@@ -17,7 +17,7 @@ public abstract class ExpressionElement : RuleElement
         AddImports(imports);
     }
 
-    internal ExpressionElement(LambdaExpression expression)
+    private protected  ExpressionElement(LambdaExpression expression)
         : this(expression, expression.Parameters)
     {
     }

@@ -2,16 +2,9 @@
 
 namespace NRules.Aggregators;
 
-internal class SortCondition
+internal class SortCondition(string name, SortDirection direction, IAggregateExpression expression)
 {
-    public SortCondition(string name, SortDirection direction, IAggregateExpression expression)
-    {
-        Name = name;
-        Direction = direction;
-        Expression = expression;
-    }
-
-    public string Name { get; }
-    public SortDirection Direction { get; }
-    public IAggregateExpression Expression { get; }
+    public string Name { get; } = name;
+    public SortDirection Direction { get; } = direction;
+    public IAggregateExpression Expression { get; } = expression;
 }

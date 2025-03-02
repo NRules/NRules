@@ -6,22 +6,16 @@ using NRules.RuleModel;
 
 namespace NRules.Fluent.Expressions;
 
-internal class ExpressionRewriter : ExpressionVisitor
+internal class ExpressionRewriter(ISymbolLookup symbolLookup) : ExpressionVisitor
 {
-    private ISymbolLookup SymbolLookup { get; }
-    protected List<ParameterExpression> Parameters { get; }
-
-    public ExpressionRewriter(ISymbolLookup symbolLookup)
-    {
-        SymbolLookup = symbolLookup;
-        Parameters = new List<ParameterExpression>();
-    }
+    private ISymbolLookup SymbolLookup { get; } = symbolLookup;
+    protected List<ParameterExpression> Parameters { get; } = new();
 
     public LambdaExpression Rewrite(LambdaExpression expression)
     {
         Parameters.Clear();
         InitParameters(expression);
-        Expression body = Visit(expression.Body);
+        Expression body = Visit(expression.Body)!;
         return Expression.Lambda(body, expression.TailCall, Parameters);
     }
 
@@ -31,17 +25,19 @@ internal class ExpressionRewriter : ExpressionVisitor
         Parameters.AddRange(expression.Parameters);
     }
 
-    protected override Expression VisitMember(MemberExpression member)
+    protected override Expression VisitMember(MemberExpression node)
     {
-        if (SymbolLookup.TryGetValue(member.Member.Name, out var declaration))
+        if (node.Expression is ConstantExpression &&
+            SymbolLookup.TryGetValue(node.Member.Name, out var declaration))
         {
-            ParameterExpression parameter = Parameters.FirstOrDefault(p => p.Name == declaration.Name);
+            ParameterExpression? parameter = Parameters.FirstOrDefault(p => p.Name == declaration.Name);
             if (parameter == null)
             {
                 parameter = declaration.ToParameterExpression();
                 Parameters.Add(parameter);
             }
-            else if (parameter.Type != declaration.Type)
+            
+            if (parameter.Type != declaration.Type)
             {
                 throw new ArgumentException(
                     $"Expression parameter type mismatch. Name={declaration.Name}, ExpectedType={declaration.Type}, FoundType={parameter.Type}");
@@ -49,6 +45,6 @@ internal class ExpressionRewriter : ExpressionVisitor
             return parameter;
         }
 
-        return base.VisitMember(member);
+        return base.VisitMember(node);
     }
 }

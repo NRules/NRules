@@ -82,9 +82,9 @@ public interface INodeMetrics
     void Reset();
 }
 
-internal class NodeMetrics : INodeMetrics
+internal class NodeMetrics(int nodeId) : INodeMetrics
 {
-    public int NodeId { get; }
+    public int NodeId { get; } = nodeId;
     public int? ElementCount { get; set; }
     public int InsertInputCount { get; set; }
     public int UpdateInputCount { get; set; }
@@ -95,11 +95,6 @@ internal class NodeMetrics : INodeMetrics
     public long InsertDurationMilliseconds { get; set; }
     public long UpdateDurationMilliseconds { get; set; }
     public long RetractDurationMilliseconds { get; set; }
-
-    public NodeMetrics(int nodeId)
-    {
-        NodeId = nodeId;
-    }
 
     public void Reset()
     {

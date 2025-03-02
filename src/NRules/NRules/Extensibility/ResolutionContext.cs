@@ -18,14 +18,8 @@ public interface IResolutionContext
     IRuleDefinition Rule { get; }
 }
 
-internal class ResolutionContext : IResolutionContext
+internal class ResolutionContext(ISession session, IRuleDefinition rule) : IResolutionContext
 {
-    public ResolutionContext(ISession session, IRuleDefinition rule)
-    {
-        Session = session;
-        Rule = rule;
-    }
-
-    public ISession Session { get; }
-    public IRuleDefinition Rule { get; }
+    public ISession Session { get; } = session;
+    public IRuleDefinition Rule { get; } = rule;
 }

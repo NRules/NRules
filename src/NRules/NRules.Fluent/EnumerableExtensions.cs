@@ -9,7 +9,7 @@ internal static class EnumerableExtensions
     public static TValue? SingleNullable<T, TValue>(this IEnumerable<T> sequence, Func<T, TValue> projection)
         where T : Attribute where TValue : struct
     {
-        T element = sequence.SingleOrDefault();
+        T? element = sequence.SingleOrDefault();
         if (element == null)
         {
             return null;

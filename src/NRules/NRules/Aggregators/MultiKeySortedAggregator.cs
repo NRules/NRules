@@ -19,7 +19,7 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
     {
         _sortConditions = sortConditions;
         var comparer = CreateComparer(_sortConditions);
-        _sortedFactCollection = new SortedFactCollection<TSource, object[]>(comparer);
+        _sortedFactCollection = new(comparer);
     }
 
     private static IComparer<object[]> CreateComparer(IReadOnlyCollection<SortCondition> sortConditions)
@@ -51,21 +51,21 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
         if (!_created)
         {
             _created = true;
-            return new[] { AggregationResult.Added(_sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
+            return [AggregationResult.Added(_sortedFactCollection, _sortedFactCollection.GetFactEnumerable())];
         }
-        return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
+        return [AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable())];
     }
 
     public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         ModifyFacts(context, tuple, facts);
-        return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
+        return [AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable())];
     }
 
     public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
-        RemoveFacts(context, tuple, facts);
-        return new[] { AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable()) };
+        RemoveFacts(facts);
+        return [AggregationResult.Modified(_sortedFactCollection, _sortedFactCollection, _sortedFactCollection.GetFactEnumerable())];
     }
 
     private void AddFacts(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
@@ -88,7 +88,7 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
         }
     }
 
-    private void RemoveFacts(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
+    private void RemoveFacts(IReadOnlyCollection<IFact> facts)
     {
         foreach (var fact in facts)
         {
@@ -96,22 +96,15 @@ internal class MultiKeySortedAggregator<TSource> : IAggregator
         }
     }
 
-    private class MultiKeyComparer : IComparer<object[]>
+    private sealed class MultiKeyComparer(IReadOnlyList<IComparer<object>> comparers) : IComparer<object[]>
     {
-        private readonly IReadOnlyList<IComparer<object>> _comparers;
-
-        public MultiKeyComparer(IReadOnlyList<IComparer<object>> comparers)
-        {
-            _comparers = comparers;
-        }
-
         public int Compare(object[] x, object[] y)
         {
             int result = 0;
 
-            for (int i = 0; i < _comparers.Count; i++)
+            for (int i = 0; i < comparers.Count; i++)
             {
-                result = _comparers[i].Compare(x[i], y[i]);
+                result = comparers[i].Compare(x[i], y[i]);
                 if (result != 0) break;
             }
 

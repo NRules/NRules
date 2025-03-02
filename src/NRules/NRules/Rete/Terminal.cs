@@ -6,14 +6,8 @@ internal interface ITerminal
     IndexMap FactMap { get; }
 }
 
-internal class Terminal : ITerminal
+internal class Terminal(ITupleSource source, IndexMap factMap) : ITerminal
 {
-    public ITupleSource Source { get; }
-    public IndexMap FactMap { get; }
-
-    public Terminal(ITupleSource source, IndexMap factMap)
-    {
-        Source = source;
-        FactMap = factMap;
-    }
+    public ITupleSource Source { get; } = source;
+    public IndexMap FactMap { get; } = factMap;
 }

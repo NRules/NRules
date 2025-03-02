@@ -50,23 +50,17 @@ public class FactIdentityComparerRegistry
         public IEqualityComparer<object> WrappedComparer { get; } = wrappedComparer;
     }
 
-    private class SpecificComparerWrapper<TFact> : IEqualityComparer<object>
+    private sealed class SpecificComparerWrapper<TFact>(IEqualityComparer<TFact> comparer)
+        : IEqualityComparer<object>
     {
-        private readonly IEqualityComparer<TFact> _comparer;
-
-        public SpecificComparerWrapper(IEqualityComparer<TFact> comparer)
-        {
-            _comparer = comparer;
-        }
-
         bool IEqualityComparer<object>.Equals(object x, object y)
         {
-            return _comparer.Equals((TFact)x, (TFact)y);
+            return comparer.Equals((TFact)x, (TFact)y);
         }
 
         int IEqualityComparer<object>.GetHashCode(object obj)
         {
-            return _comparer.GetHashCode((TFact)obj);
+            return comparer.GetHashCode((TFact)obj);
         }
     }
 }

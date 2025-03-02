@@ -6,6 +6,9 @@ using NRules.RuleModel;
 
 namespace NRules.Fluent.Dsl;
 
+/// <summary>
+/// Extension methods to build queries using the fluent DSL.
+/// </summary>
 public static class QueryExtensions
 {
     /// <summary>

@@ -14,26 +14,6 @@ namespace NRules;
 /// Each session has its own working memory, and exposes operations that 
 /// manipulate facts in it, as well as fire matching rules.
 /// </summary>
-/// <event cref="IEventProvider.FactInsertingEvent">Before processing fact insertion.</event>
-/// <event cref="IEventProvider.FactInsertedEvent">After processing fact insertion.</event>
-/// <event cref="IEventProvider.FactUpdatingEvent">Before processing fact update.</event>
-/// <event cref="IEventProvider.FactUpdatedEvent">After processing fact update.</event>
-/// <event cref="IEventProvider.FactRetractingEvent">Before processing fact retraction.</event>
-/// <event cref="IEventProvider.FactRetractedEvent">After processing fact retraction.</event>
-/// <event cref="IEventProvider.ActivationCreatedEvent">When a set of facts matches a rule.</event>
-/// <event cref="IEventProvider.ActivationUpdatedEvent">When a set of facts is updated and re-matches a rule.</event>
-/// <event cref="IEventProvider.ActivationDeletedEvent">When a set of facts no longer matches a rule.</event>
-/// <event cref="IEventProvider.RuleFiringEvent">Before rule's actions are executed.</event>
-/// <event cref="IEventProvider.RuleFiredEvent">After rule's actions are executed.</event>
-/// <event cref="IEventProvider.LhsExpressionEvaluatedEvent">When an left-hand side expression was evaluated.</event>
-/// <event cref="IEventProvider.LhsExpressionFailedEvent">When there is an error during left-hand side expression evaluation,
-/// before throwing exception to the client.</event>
-/// <event cref="IEventProvider.AgendaExpressionEvaluatedEvent">When an agenda expression was evaluated.</event>
-/// <event cref="IEventProvider.AgendaExpressionFailedEvent">When there is an error during agenda expression evaluation,
-/// before throwing exception to the client.</event>
-/// <event cref="IEventProvider.RhsExpressionEvaluatedEvent">When an right-hand side expression was evaluated.</event>
-/// <event cref="IEventProvider.RhsExpressionFailedEvent">When there is an error during right-hand side expression evaluation,
-/// before throwing exception to the client.</event>
 /// <exception cref="RuleLhsExpressionEvaluationException">Error while evaluating any of the rules' left-hand side expressons.
 /// This exception can also be observed as an event <see cref="IEventProvider.LhsExpressionEvaluatedEvent"/>.</exception>
 /// <exception cref="AgendaExpressionEvaluationException">Error while evaluating any of the agenda expressions.
@@ -235,9 +215,9 @@ public interface ISession : ISessionSchemaProvider
     /// <remarks>
     /// Bulk session operations are more performant than individual operations on a set of facts.
     /// </remarks>
-    /// <param name="facts">Fact to remove.</param>
+    /// <param name="fact">Fact to remove.</param>
     /// <returns>Whether the fact was retracted or not.</returns>
-    bool TryRetract(object facts);
+    bool TryRetract(object fact);
 
     /// <summary>
     /// Propagates all queued linked facts.
@@ -398,12 +378,12 @@ internal sealed class Session : ISessionInternal
 
     public void Insert(object fact)
     {
-        InsertAll(new[] { fact });
+        InsertAll([fact]);
     }
 
     public bool TryInsert(object fact)
     {
-        var result = TryInsertAll(new[] {fact});
+        var result = TryInsertAll([fact]);
         return result.FailedCount == 0;
     }
 
@@ -457,12 +437,12 @@ internal sealed class Session : ISessionInternal
 
     public void Update(object fact)
     {
-        UpdateAll(new[] {fact});
+        UpdateAll([fact]);
     }
 
     public bool TryUpdate(object fact)
     {
-        var result = TryUpdateAll(new[] {fact});
+        var result = TryUpdateAll([fact]);
         return result.FailedCount == 0;
     }
 
@@ -515,12 +495,12 @@ internal sealed class Session : ISessionInternal
 
     public void Retract(object fact)
     {
-        RetractAll(new[] {fact});
+        RetractAll([fact]);
     }
 
     public bool TryRetract(object fact)
     {
-        var result = TryRetractAll(new[] {fact});
+        var result = TryRetractAll([fact]);
         return result.FailedCount == 0;
     }
 
@@ -676,7 +656,7 @@ internal sealed class Session : ISessionInternal
 
     public int Fire()
     {
-        return Fire(default(CancellationToken));
+        return Fire(CancellationToken.None);
     }
 
     public int Fire(CancellationToken cancellationToken)
@@ -686,7 +666,7 @@ internal sealed class Session : ISessionInternal
 
     public int Fire(int maxRulesNumber)
     {
-        return Fire(maxRulesNumber, default);
+        return Fire(maxRulesNumber, CancellationToken.None);
     }
 
     public int Fire(int maxRulesNumber, CancellationToken cancellationToken)

@@ -14,30 +14,21 @@ internal interface IExecutionContext
     IFactIdentityComparer FactIdentityComparer { get; }
 }
 
-internal class ExecutionContext : IExecutionContext
+internal class ExecutionContext(
+    ISessionInternal session,
+    IWorkingMemory workingMemory,
+    IAgendaInternal agenda,
+    IEventAggregator eventAggregator,
+    IMetricsAggregator metricsAggregator,
+    IIdGenerator idGenerator)
+    : IExecutionContext
 {
-    public ExecutionContext(ISessionInternal session, 
-        IWorkingMemory workingMemory, 
-        IAgendaInternal agenda, 
-        IEventAggregator eventAggregator, 
-        IMetricsAggregator metricsAggregator, 
-        IIdGenerator idGenerator)
-    {
-        Session = session;
-        WorkingMemory = workingMemory;
-        Agenda = agenda;
-        EventAggregator = eventAggregator;
-        MetricsAggregator = metricsAggregator;
-        IdGenerator = idGenerator;
-        UnlinkQueue = new Queue<Activation>();
-    }
-
-    public ISessionInternal Session { get; }
-    public IWorkingMemory WorkingMemory { get; }
-    public IAgendaInternal Agenda { get; }
-    public IEventAggregator EventAggregator { get; }
-    public IMetricsAggregator MetricsAggregator { get; }
-    public IIdGenerator IdGenerator { get; }
+    public ISessionInternal Session { get; } = session;
+    public IWorkingMemory WorkingMemory { get; } = workingMemory;
+    public IAgendaInternal Agenda { get; } = agenda;
+    public IEventAggregator EventAggregator { get; } = eventAggregator;
+    public IMetricsAggregator MetricsAggregator { get; } = metricsAggregator;
+    public IIdGenerator IdGenerator { get; } = idGenerator;
     public IFactIdentityComparer FactIdentityComparer => WorkingMemory.FactIdentityComparer;
-    public Queue<Activation> UnlinkQueue { get; }
+    public Queue<Activation> UnlinkQueue { get; } = new();
 }

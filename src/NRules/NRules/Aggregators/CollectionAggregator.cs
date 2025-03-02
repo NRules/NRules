@@ -19,21 +19,21 @@ internal class CollectionAggregator<TElement> : IAggregator
         if (!_created)
         {
             _created = true;
-            return new[] {AggregationResult.Added(_items, _items.Facts)};
+            return [AggregationResult.Added(_items, _items.Facts)];
         }
-        return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
+        return [AggregationResult.Modified(_items, _items, _items.Facts)];
     }
 
     public IReadOnlyCollection<AggregationResult> Modify(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         ModifyFacts(facts);
-        return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
+        return [AggregationResult.Modified(_items, _items, _items.Facts)];
     }
 
     public IReadOnlyCollection<AggregationResult> Remove(AggregationContext context, ITuple tuple, IReadOnlyCollection<IFact> facts)
     {
         RemoveFacts(facts);
-        return new[] {AggregationResult.Modified(_items, _items, _items.Facts)};
+        return [AggregationResult.Modified(_items, _items, _items.Facts)];
     }
 
     private void AddFacts(IReadOnlyCollection<IFact> facts)

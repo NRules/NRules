@@ -2,14 +2,9 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Condition
+internal class Condition(string expression)
 {
-    public Condition(string expression)
-    {
-        Expression = expression;
-    }
-    
-    public string Expression { get; }
+    public string Expression { get; } = expression;
 
     public void WriteXml(XmlWriter writer)
     {

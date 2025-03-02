@@ -233,22 +233,22 @@ internal static class JsonExtensions
         return elements;
     }
 
-    public static TElement ReadProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
-    {
-        reader.ReadPropertyName(name, options);
-
-        var value = JsonSerializer.Deserialize<TElement>(ref reader, options)
-            ?? throw new JsonException($"Unable to deserialize property. Name={name}, Type={typeof(TElement)}");
-        reader.Read();
-
-        return value;
-    }
-
     public static object? ReadNullableProperty(this ref Utf8JsonReader reader, string name, Type type, JsonSerializerOptions options)
     {
         reader.ReadPropertyName(name, options);
 
         var value = JsonSerializer.Deserialize(ref reader, type, options);
+        reader.Read();
+
+        return value;
+    }
+    
+    public static TElement ReadProperty<TElement>(this ref Utf8JsonReader reader, string name, JsonSerializerOptions options)
+    {
+        reader.ReadPropertyName(name, options);
+
+        var value = JsonSerializer.Deserialize<TElement>(ref reader, options)
+                    ?? throw new JsonException($"Unable to deserialize property. Name={name}, Type={typeof(TElement)}");
         reader.Read();
 
         return value;

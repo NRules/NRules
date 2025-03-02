@@ -12,26 +12,12 @@ namespace NRules.Utilities;
 
 internal static class ExpressionOptimizer
 {
-    private static readonly MethodInfo GetEnumeratorMethod;
-    private static readonly MethodInfo MoveNextMethod;
-    private static readonly PropertyInfo CurrentProperty;
-    private static readonly PropertyInfo FactValueProperty;
-    private static readonly MethodInfo ResolveMethod;
-
-    static ExpressionOptimizer()
-    {
-        GetEnumeratorMethod = typeof(Tuple)
-            .GetMethod(nameof(Tuple.GetEnumerator));
-        MoveNextMethod = typeof(Tuple.Enumerator)
-            .GetMethod(nameof(Tuple.Enumerator.MoveNext));
-        CurrentProperty = typeof(Tuple.Enumerator)
-            .GetProperty(nameof(Tuple.Enumerator.Current));
-        FactValueProperty = typeof(Fact)
-            .GetProperty(nameof(Fact.Object));
-        ResolveMethod = typeof(IDependencyResolver)
-            .GetMethod(nameof(IDependencyResolver.Resolve));
-    }
-
+    private static readonly MethodInfo GetEnumeratorMethod = typeof(Tuple).GetMethod(nameof(Tuple.GetEnumerator))!;
+    private static readonly MethodInfo MoveNextMethod = typeof(Tuple.Enumerator).GetMethod(nameof(Tuple.Enumerator.MoveNext))!;
+    private static readonly PropertyInfo CurrentProperty = typeof(Tuple.Enumerator).GetProperty(nameof(Tuple.Enumerator.Current))!;
+    private static readonly PropertyInfo FactValueProperty = typeof(Fact).GetProperty(nameof(Fact.Object))!;
+    private static readonly MethodInfo ResolveMethod = typeof(IDependencyResolver).GetMethod(nameof(IDependencyResolver.Resolve))!;
+    
     public static Expression<TDelegate> Optimize<TDelegate>(LambdaExpression expression,
         IndexMap indexMap, bool tupleInput, bool factInput)
     {

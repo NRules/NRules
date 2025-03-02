@@ -12,21 +12,10 @@ internal interface IPriorityQueue<in TPriority, TValue>
     void Clear();
 }
 
-internal class PriorityQueue<TPriority, TValue> : IPriorityQueue<TPriority, TValue>
+internal class PriorityQueue<TPriority, TValue>(IComparer<TPriority> comparer) : IPriorityQueue<TPriority, TValue>
 {
-    private readonly List<KeyValuePair<TPriority, TValue>> _baseHeap;
-    private readonly IComparer<TPriority> _comparer;
-
-    public PriorityQueue()
-        : this(Comparer<TPriority>.Default)
-    {
-    }
-
-    public PriorityQueue(IComparer<TPriority> comparer)
-    {
-        _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
-        _baseHeap = new List<KeyValuePair<TPriority, TValue>>();
-    }
+    private readonly List<KeyValuePair<TPriority, TValue>> _baseHeap = new();
+    private readonly IComparer<TPriority> _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
 
     public void Enqueue(TPriority priority, TValue value)
     {

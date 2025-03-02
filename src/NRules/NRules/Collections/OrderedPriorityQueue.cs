@@ -41,32 +41,19 @@ internal class OrderedPriorityQueue<TPriority, TValue> : IPriorityQueue<TPriorit
         _priorityQueue.Clear();
     }
 
-    private readonly struct OrderedKey<T>
+    private readonly struct OrderedKey<T>(T key, int order)
     {
-        public T Key { get; }
-        public int Order { get; }
-
-        public OrderedKey(T key, int order)
-        {
-            Key = key;
-            Order = order;
-        }
+        public T Key { get; } = key;
+        public int Order { get; } = order;
     }
 
-    private class OrderedKeyComparer<T> : IComparer<OrderedKey<T>>
+    private sealed class OrderedKeyComparer<T>(IComparer<T> comparer) : IComparer<OrderedKey<T>>
     {
-        private readonly IComparer<T> _keyComparer;
-        private readonly IComparer<int> _orderComparer;
-
-        public OrderedKeyComparer(IComparer<T> comparer)
-        {
-            _keyComparer = comparer;
-            _orderComparer = Comparer<int>.Default;
-        }
+        private readonly IComparer<int> _orderComparer = Comparer<int>.Default;
 
         public int Compare(OrderedKey<T> x, OrderedKey<T> y)
         {
-            int result = _keyComparer.Compare(x.Key, y.Key);
+            int result = comparer.Compare(x.Key, y.Key);
             if (result == 0)
             {
                 result = -1*_orderComparer.Compare(x.Order, y.Order); //min first - FIFO

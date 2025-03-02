@@ -3,16 +3,10 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Link
+internal class Link(string source, string target)
 {
-    public Link(string source, string target)
-    {
-        Source = source;
-        Target = target;
-    }
-
-    public string Source { get; }
-    public string Target { get; }
+    public string Source { get; } = source;
+    public string Target { get; } = target;
     public string? Category { get; set; }
     public string? Label { get; set; }
     public string? Description { get; set; }

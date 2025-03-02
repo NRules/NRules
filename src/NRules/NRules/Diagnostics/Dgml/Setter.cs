@@ -2,14 +2,9 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Setter
+internal class Setter(string property)
 {
-    public Setter(string property)
-    {
-        Property = property;
-    }
-    
-    public string Property { get; }
+    public string Property { get; } = property;
     public string? Value { get; set; }
     public string? Expression{ get; set; }
 

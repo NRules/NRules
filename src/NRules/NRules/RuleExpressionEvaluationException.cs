@@ -10,7 +10,7 @@ namespace NRules;
 [Serializable]
 public abstract class RuleExpressionEvaluationException : RuleExecutionException
 {
-    internal RuleExpressionEvaluationException(string message, string expression, Exception innerException)
+    private protected RuleExpressionEvaluationException(string message, string expression, Exception innerException)
         : base(message, innerException)
     {
         Expression = expression;

@@ -3,16 +3,12 @@
 As described on the [Architecture](../architecture.md) page, rules are represented in NRules in several different forms.
 One of these forms is a canonical model (rule model) that can be compiled into the executable model.
 
-The standard way to create rules in NRules is with the internal DSL using fluent API, which requires rules to be known at compile time.
-But this is not the only way rules can be created. Rule builder is a component specifically designed to create rules at runtime, and in fact is the underlying mechanism behind fluent API.
-[RuleBuilder](xref:NRules.RuleModel.Builders.RuleBuilder) class and related classes reside in the [NRules.RuleModel](xref:NRules.RuleModel) namespace.
+The standard way to create rules in NRules is with the internal DSL using fluent API, which requires rules to be known at compile time. But this is not the only way rules can be created. Rule builder is a component specifically designed to create rules at runtime, and in fact is the underlying mechanism behind fluent API. [RuleBuilder](xref:NRules.RuleModel.Builders.RuleBuilder) class and related classes reside in the [NRules.RuleModel](xref:NRules.RuleModel) namespace.
 
 > [!WARNING]
 > Unlike fluent API, canonical model and rule builder are not strongly typed, so you will need to ensure type safety and correctness yourself (or face runtime errors if you don't).
 
-When building rules at runtime, you will need a place to store them.
-Such a store is represented by the [IRuleRepository](xref:NRules.RuleModel.IRuleRepository) interface, so you will need to implement it to load rules from a user-defined source.
-A rule repository is an in-memory database of rule definitions, organized into rule sets ([IRuleSet](xref:NRules.RuleModel.IRuleSet)), that encapsulates the process of turning rules in whatever form to the canonical model.
+When building rules at runtime, you will need a place to store them. Such a store is represented by the [IRuleRepository](xref:NRules.RuleModel.IRuleRepository) interface, so you will need to implement it to load rules from a user-defined source. A rule repository is an in-memory database of rule definitions, organized into rule sets ([IRuleSet](xref:NRules.RuleModel.IRuleSet)), that encapsulates the process of turning rules in whatever form to the canonical model.
 ```c#
 public class CustomRuleRepository : IRuleRepository
 {

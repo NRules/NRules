@@ -5,25 +5,17 @@ using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Expressions;
 
-internal class LeftHandSideExpression : ILeftHandSideExpression
+internal class LeftHandSideExpression(GroupBuilder builder, SymbolStack symbolStack) : ILeftHandSideExpression
 {
-    private readonly GroupBuilder _builder;
-    private readonly SymbolStack _symbolStack;
     private PatternBuilder? _currentPatternBuilder;
-
-    public LeftHandSideExpression(GroupBuilder builder, SymbolStack symbolStack)
-    {
-        _builder = builder;
-        _symbolStack = symbolStack;
-    }
 
     public ILeftHandSideExpression Match<TFact>(Expression<Func<TFact>> alias, params Expression<Func<TFact, bool>>[] conditions)
         where TFact : notnull
     {
         var symbol = alias.ToParameterExpression();
-        var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
-        patternBuilder.DslConditions(_symbolStack.Scope, conditions);
-        _symbolStack.Scope.Add(patternBuilder.Declaration);
+        var patternBuilder = builder.Pattern(symbol.Type, symbol.Name);
+        patternBuilder.DslConditions(symbolStack.Scope, conditions);
+        symbolStack.Scope.Add(patternBuilder.Declaration);
         _currentPatternBuilder = patternBuilder;
         return this;
     }
@@ -32,9 +24,9 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
         where TFact : notnull
     {
         var symbol = Expression.Parameter(typeof (TFact));
-        var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
-        patternBuilder.DslConditions(_symbolStack.Scope, conditions);
-        _symbolStack.Scope.Add(patternBuilder.Declaration);
+        var patternBuilder = builder.Pattern(symbol.Type, symbol.Name);
+        patternBuilder.DslConditions(symbolStack.Scope, conditions);
+        symbolStack.Scope.Add(patternBuilder.Declaration);
         _currentPatternBuilder = patternBuilder;
         return this;
     }
@@ -42,18 +34,18 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     public ILeftHandSideExpression Exists<TFact>(params Expression<Func<TFact, bool>>[] conditions)
         where TFact : notnull
     {
-        var existsBuilder = _builder.Exists();
+        var existsBuilder = builder.Exists();
         var patternBuilder = existsBuilder.Pattern(typeof(TFact));
-        patternBuilder.DslConditions(_symbolStack.Scope, conditions);
+        patternBuilder.DslConditions(symbolStack.Scope, conditions);
         return this;
     }
 
     public ILeftHandSideExpression Not<TFact>(params Expression<Func<TFact, bool>>[] conditions)
         where TFact : notnull
     {
-        var notBuilder = _builder.Not();
+        var notBuilder = builder.Not();
         var patternBuilder = notBuilder.Pattern(typeof(TFact));
-        patternBuilder.DslConditions(_symbolStack.Scope, conditions);
+        patternBuilder.DslConditions(symbolStack.Scope, conditions);
         return this;
     }
 
@@ -72,13 +64,13 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     private ILeftHandSideExpression ForAll<TFact>(Expression<Func<TFact, bool>> baseCondition, params Expression<Func<TFact, bool>>[] conditions)
         where TFact : notnull
     {
-        var forallBuilder = _builder.ForAll();
+        var forallBuilder = builder.ForAll();
 
         var basePatternBuilder = forallBuilder.BasePattern(typeof(TFact));
-        basePatternBuilder.DslConditions(_symbolStack.Scope, baseCondition);
+        basePatternBuilder.DslConditions(symbolStack.Scope, baseCondition);
 
         var patternBuilder = forallBuilder.Pattern(typeof(TFact));
-        patternBuilder.DslConditions(_symbolStack.Scope, conditions);
+        patternBuilder.DslConditions(symbolStack.Scope, conditions);
         return this;
     }
 
@@ -86,7 +78,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
         where TResult : notnull
     {
         var symbol = alias.ToParameterExpression();
-        var queryBuilder = new QueryExpression(symbol, _symbolStack, _builder);
+        var queryBuilder = new QueryExpression(symbol, symbolStack, builder);
         queryAction(queryBuilder);
         _currentPatternBuilder = queryBuilder.Build();
         return this;
@@ -94,14 +86,14 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
 
     public ILeftHandSideExpression And(Action<ILeftHandSideExpression> builderAction)
     {
-        var expressionBuilder = new LeftHandSideExpression(_builder.Group(GroupType.And), _symbolStack);
+        var expressionBuilder = new LeftHandSideExpression(builder.Group(GroupType.And), symbolStack);
         builderAction(expressionBuilder);
         return this;
     }
 
     public ILeftHandSideExpression Or(Action<ILeftHandSideExpression> builderAction)
     {
-        var expressionBuilder = new LeftHandSideExpression(_builder.Group(GroupType.Or), _symbolStack);
+        var expressionBuilder = new LeftHandSideExpression(builder.Group(GroupType.Or), symbolStack);
         builderAction(expressionBuilder);
         return this;
     }
@@ -109,10 +101,10 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
     public ILeftHandSideExpression Let<TResult>(Expression<Func<TResult>> alias, Expression<Func<TResult>> expression)
     {
         var symbol = alias.ToParameterExpression();
-        var patternBuilder = _builder.Pattern(symbol.Type, symbol.Name);
+        var patternBuilder = builder.Pattern(symbol.Type, symbol.Name);
         var bindingBuilder = patternBuilder.Binding();
-        bindingBuilder.DslBindingExpression(_symbolStack.Scope, expression);
-        _symbolStack.Scope.Add(patternBuilder.Declaration);
+        bindingBuilder.DslBindingExpression(symbolStack.Scope, expression);
+        symbolStack.Scope.Add(patternBuilder.Declaration);
         _currentPatternBuilder = patternBuilder;
         return this;
     }
@@ -123,7 +115,7 @@ internal class LeftHandSideExpression : ILeftHandSideExpression
         {
             throw new ArgumentException("HAVING clause can only be used on existing rule patterns");
         }
-        _currentPatternBuilder.DslConditions(_symbolStack.Scope, conditions);
+        _currentPatternBuilder.DslConditions(symbolStack.Scope, conditions);
         return this;
     }
 }

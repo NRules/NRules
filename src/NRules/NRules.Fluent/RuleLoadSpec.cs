@@ -79,16 +79,10 @@ public interface IRuleLoadSpec
     IRuleLoadSpec To(string ruleSetName);
 }
 
-internal class RuleLoadSpec : IRuleLoadSpec
+internal class RuleLoadSpec(IRuleActivator activator) : IRuleLoadSpec
 {
-    private readonly IRuleActivator _activator;
     private readonly RuleTypeScanner _typeScanner = new();
     private Func<IRuleMetadata, bool>? _filter;
-
-    public RuleLoadSpec(IRuleActivator activator)
-    {
-        _activator = activator;
-    }
 
     public string? RuleSetName { get; private set; }
 
@@ -177,7 +171,7 @@ internal class RuleLoadSpec : IRuleLoadSpec
     {
         try
         {
-            var ruleInstances = _activator.Activate(type);
+            var ruleInstances = activator.Activate(type);
             return ruleInstances.ToList();
         }
         catch (Exception e)

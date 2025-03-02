@@ -46,7 +46,7 @@ public abstract class FactConstraint<TFact> : FactConstraint
     /// <param name="callback">The delegate to call.</param>
     public FactConstraint<TFact> Callback(Action<TFact> callback)
     {
-        _callbacks ??= new List<Action<TFact>>();
+        _callbacks ??= [];
         _callbacks.Add(callback);
         return this;
     }
@@ -77,17 +77,11 @@ internal class TypedFactConstraint<TFact> : FactConstraint<TFact>
     }
 }
 
-internal class PredicatedFactConstraint<TFact> : FactConstraint<TFact>
+internal class PredicatedFactConstraint<TFact>(Expression<Func<TFact, bool>> predicateExpression)
+    : FactConstraint<TFact>
     where TFact : notnull
 {
-    private readonly Expression<Func<TFact, bool>> _predicateExpression;
-    private readonly Func<TFact, bool> _predicate;
-
-    public PredicatedFactConstraint(Expression<Func<TFact, bool>> predicateExpression)
-    {
-        _predicateExpression = predicateExpression;
-        _predicate = predicateExpression.Compile();
-    }
+    private readonly Func<TFact, bool> _predicate = predicateExpression.Compile();
 
     internal override bool IsSatisfied(IFactMatch factMatch)
     {
@@ -100,31 +94,24 @@ internal class PredicatedFactConstraint<TFact> : FactConstraint<TFact>
 
     internal override string GetText()
     {
-        return $"Fact {typeof(TFact)} where {_predicateExpression}";
+        return $"Fact {typeof(TFact)} where {predicateExpression}";
     }
 }
 
-internal class EqualFactConstraint<TFact> : FactConstraint<TFact>
+internal class EqualFactConstraint<TFact>(TFact factValue) : FactConstraint<TFact>
     where TFact : notnull
 {
-    private readonly TFact _factValue;
-
-    public EqualFactConstraint(TFact factValue)
-    {
-        _factValue = factValue;
-    }
-
     internal override bool IsSatisfied(IFactMatch factMatch)
     {
         if (typeof(TFact).IsAssignableFrom(factMatch.Declaration.Type))
         {
-            return Equals(_factValue, factMatch.Value);
+            return Equals(factValue, factMatch.Value);
         }
         return false;
     }
 
     internal override string GetText()
     {
-        return $"Fact {typeof(TFact)} equal to {_factValue}";
+        return $"Fact {typeof(TFact)} equal to {factValue}";
     }
 }

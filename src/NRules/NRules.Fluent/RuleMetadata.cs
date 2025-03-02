@@ -40,7 +40,7 @@ public class RuleMetadata : IRuleMetadata
     public RuleMetadata(Type ruleType)
     {
         RuleType = ruleType;
-        Name = GetAttributes<NameAttribute>().Select(a => a.Value).SingleOrDefault() ?? RuleType.FullName;
+        Name = GetAttributes<NameAttribute>().Select(a => a.Value).SingleOrDefault() ?? RuleType.FullName!;
         Description = GetAttributes<DescriptionAttribute>().Select(a => a.Value).SingleOrDefault() ?? string.Empty;
         Tags = GetAttributes<TagAttribute>().Select(a => a.Value).ToArray();
         Priority = GetAttributes<PriorityAttribute>().SingleNullable(a => a.Value);

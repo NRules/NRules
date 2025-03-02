@@ -4,15 +4,10 @@ using NRules.RuleModel;
 
 namespace NRules.Rete;
 
-internal class AggregateFactSource : IFactSource
+internal class AggregateFactSource(IEnumerable<IFact>? facts) : IFactSource
 {
     private static readonly IEnumerable<IFact> Empty = Array.Empty<IFact>();
 
-    public AggregateFactSource(IEnumerable<IFact>? facts)
-    {
-        Facts = facts ?? Empty;
-    }
-
     public FactSourceType SourceType => FactSourceType.Aggregate;
-    public IEnumerable<IFact> Facts { get; }
+    public IEnumerable<IFact> Facts { get; } = facts ?? Empty;
 }

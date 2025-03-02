@@ -27,32 +27,24 @@ public interface IRulesVerification
     RuleAssertResult Verify(Action<IRulesFiringVerification> action);
 }
 
-internal class RulesVerification : IRulesVerification
+internal class RulesVerification(IRulesUnderTest rulesUnderTest, IReadOnlyList<IMatch> invocations)
+    : IRulesVerification
 {
-    private readonly IRulesUnderTest _rulesUnderTest;
-    private readonly IReadOnlyList<IMatch> _invocations;
-
-    public RulesVerification(IRulesUnderTest rulesUnderTest, IReadOnlyList<IMatch> invocations)
-    {
-        _rulesUnderTest = rulesUnderTest;
-        _invocations = invocations;
-    }
-
     public RuleAssertResult VerifySequence(Action<IRuleSequenceFiringVerification> action)
     {
-        var verification = new RuleSequenceFiringVerification(_rulesUnderTest);
+        var verification = new RuleSequenceFiringVerification(rulesUnderTest);
         action(verification);
         var expectation = verification.Build();
-        var result = expectation.Verify(_invocations);
+        var result = expectation.Verify(invocations);
         return result;
     }
 
     public RuleAssertResult Verify(Action<IRulesFiringVerification> action)
     {
-        var verification = new RulesFiringVerification(_rulesUnderTest);
+        var verification = new RulesFiringVerification(rulesUnderTest);
         action(verification);
         var expectation = verification.Build();
-        var result = expectation.Verify(_invocations);
+        var result = expectation.Verify(invocations);
         return result;
     }
 }

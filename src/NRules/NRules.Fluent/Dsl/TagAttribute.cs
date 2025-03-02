@@ -11,12 +11,7 @@ namespace NRules.Fluent.Dsl;
 /// A custom tag attribute class could be inherited from the <see cref="TagAttribute"/> to provide strongly-typed version of a tag.
 /// </remarks>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-public class TagAttribute : Attribute
+public class TagAttribute(string value) : Attribute
 {
-    public TagAttribute(string value)
-    {
-        Value = value;
-    }
-
-    internal string Value { get; }
+    internal string Value { get; } = value;
 }

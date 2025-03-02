@@ -4,6 +4,7 @@ The standard way to define rules in NRules is with the internal DSL using fluent
 
 A rule is a .NET class that inherits from [Rule](xref:NRules.Fluent.Dsl.Rule).
 Rule class overrides [Define](xref:NRules.Fluent.Dsl.Rule.Define) method where the actual conditions (left-hand side, or LHS) and actions (right-hand side, or RHS) parts are specified.
+
 Within the [Define](xref:NRules.Fluent.Dsl.Rule.Define) method, LHS is specified by fluently chaining conditions to the [When()](xref:NRules.Fluent.Dsl.Rule.When) method; and RHS by fluently chaining actions to [Then()](xref:NRules.Fluent.Dsl.Rule.Then) method.
 
 > [!WARNING]
@@ -50,17 +51,15 @@ Pattern matching is also polymorphic, which means it matches all facts of a give
 
 If a given pattern matches multiple facts in the engine’s working memory, each match will result in a separate firing of the rule.
 
-Optionally, a pattern can be bound to a variable, in which case that variable can be used in subsequent patterns to specify inter-fact conditions. 
-Also, the variable can be used inside actions to update or retract the corresponding fact, or use it in the expression.
-Do not use or otherwise manipulate the binding variable anywhere outside of the condition/action expressions.
+Optionally, a pattern can be bound to a variable, in which case that variable can be used in subsequent patterns to specify inter-fact conditions. Also, the variable can be used inside actions to update or retract the corresponding fact, or use it in the expression. Do not use or otherwise manipulate the binding variable anywhere outside of the condition/action expressions.
 
 ```c#
 public class PreferredCustomerActiveAccountsRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
-        Account account = null;
+        Customer customer = default!;
+        Account account = default!;
 
         When()
             .Match<Customer>(() => customer, c => c.IsPreferred)
@@ -74,6 +73,7 @@ public class PreferredCustomerActiveAccountsRule : Rule
 
 ## Existential Rules
 Existential rules test for presence of facts that match a particular set of conditions. An existential quantifier is defined using [Exists](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.Exists``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}}[])) method.
+
 An existential quantifier cannot be bound to a variable, since it does not match any single fact.
 
 ```c#
@@ -81,7 +81,7 @@ public class PreferredCustomerActiveAccountsRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
+        Customer customer = default!;
 
         When()
             .Match<Customer>(() => customer, c => c.IsPreferred)
@@ -95,6 +95,7 @@ public class PreferredCustomerActiveAccountsRule : Rule
 
 ## Negative Rules
 Opposite to existential rules, negative rules test for absence of facts that match a particular set of conditions. A negative existential quantifier is defined using [Not](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.Not``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}}[])) method.
+
 A negative existential quantifier cannot be bound to a variable, since it does not match any single fact.
 
 ```c#
@@ -102,7 +103,7 @@ public class PreferredCustomerNotDelinquentRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
+        Customer customer = default!;
 
         When()
             .Match<Customer>(() => customer, c => c.IsPreferred)
@@ -116,6 +117,7 @@ public class PreferredCustomerNotDelinquentRule : Rule
 
 ## Universal Quantifier
 Universal quantifier ensures that all facts that match a particular condition also match all subsequent conditions defined by the quantifier. A universal quantifier is defined using [All](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.All``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}}[])) method.
+
 A universal quantifier cannot be bound to a variable, since it does not match any single fact.
 
 ```c#
@@ -123,7 +125,7 @@ public class PreferredCustomerAllAccountsActiveRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
+        Customer customer = default!;
 
         When()
             .Match<Customer>(() => customer, c => c.IsPreferred)
@@ -137,6 +139,7 @@ public class PreferredCustomerAllAccountsActiveRule : Rule
 
 ## Grouping Patterns
 By default all patterns on the left-hand side of the rule are connected using AND operator. This means that all patterns must match for the rule to activate.
+
 Patterns can also be connected using OR operator, as well as combined into nested groups.
 
 ```c#
@@ -144,7 +147,7 @@ public class PreferredCustomerOrHasLargeOrderRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
+        Customer customer = default!;
 
         When()
             .Or(x => x
@@ -173,8 +176,8 @@ public class LargeTotalRule : Rule
 {
     public override void Define()
     {
-        Customer customer = null;
-        IEnumerable<Order> orders = null;
+        Customer customer = default!;
+        IEnumerable<Order> orders = default!;
         double total = 0;
 
         When()

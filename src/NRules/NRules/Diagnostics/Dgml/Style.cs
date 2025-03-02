@@ -3,14 +3,9 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Style
+internal class Style(string targetType)
 {
-    public Style(string targetType)
-    {
-        TargetType = targetType;
-    }
-
-    public string TargetType { get; }
+    public string TargetType { get; } = targetType;
     public string? GroupLabel { get; set; }
     public string? ValueLabel { get; set; }
     public List<Condition> Conditions { get; } = new();

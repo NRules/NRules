@@ -151,7 +151,7 @@ public class ReteNode
         return new ReteNode(node.Id, NodeType.Dummy);
     }
 
-    internal ReteNode(int id, 
+    private ReteNode(int id, 
         NodeType nodeType, 
         Type? outputType = null, 
         IEnumerable<KeyValuePair<string, object>>? values = null,
@@ -161,8 +161,8 @@ public class ReteNode
         Id = id;
         NodeType = nodeType;
         OutputType = outputType;
-        Properties = values?.ToArray() ?? Array.Empty<KeyValuePair<string, object>>();
-        Expressions = expressions?.ToArray() ?? Array.Empty<KeyValuePair<string, LambdaExpression>>();
+        Properties = values?.ToArray() ?? [];
+        Expressions = expressions?.ToArray() ?? [];
         Rules = rules ?? Array.Empty<IRuleDefinition>();
     }
 }

@@ -14,7 +14,7 @@ public interface IMetricsProvider
     /// </summary>
     /// <param name="nodeId">Id of the node for which to retrieve the metrics.</param>
     /// <returns>Rete network node performance metrics or <c>null</c>.</returns>
-    INodeMetrics FindByNodeId(int nodeId);
+    INodeMetrics? FindByNodeId(int nodeId);
 
     /// <summary>
     /// Retries performance metrics for all nodes in the Rete network.
@@ -37,7 +37,7 @@ internal class MetricsAggregator : IMetricsAggregator
 {
     private readonly Dictionary<int, NodeMetrics> _metrics = new();
 
-    public INodeMetrics FindByNodeId(int nodeId)
+    public INodeMetrics? FindByNodeId(int nodeId)
     {
         _metrics.TryGetValue(nodeId, out var nodeMetrics);
         return nodeMetrics;

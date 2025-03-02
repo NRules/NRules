@@ -6,23 +6,14 @@ using NRules.RuleModel.Builders;
 
 namespace NRules.Fluent.Expressions;
 
-internal class FilterExpression : IFilterExpression
+internal class FilterExpression(FilterGroupBuilder builder, SymbolStack symbolStack) : IFilterExpression
 {
-    private readonly FilterGroupBuilder _builder;
-    private readonly SymbolStack _symbolStack;
-
-    public FilterExpression(FilterGroupBuilder builder, SymbolStack symbolStack)
-    {
-        _builder = builder;
-        _symbolStack = symbolStack;
-    }
-
     public IFilterExpression OnChange(params Expression<Func<object>>[] keySelectors)
     {
         foreach (var keySelector in keySelectors)
         {
-            var expression = keySelector.DslExpression(_symbolStack.Scope);
-            _builder.Filter(FilterType.KeyChange, expression);
+            var expression = keySelector.DslExpression(symbolStack.Scope);
+            builder.Filter(FilterType.KeyChange, expression);
         }
         return this;
     }
@@ -31,8 +22,8 @@ internal class FilterExpression : IFilterExpression
     {
         foreach (var predicate in predicates)
         {
-            var expression = predicate.DslExpression(_symbolStack.Scope);
-            _builder.Filter(FilterType.Predicate, expression);
+            var expression = predicate.DslExpression(symbolStack.Scope);
+            builder.Filter(FilterType.Predicate, expression);
         }
         return this;
     }

@@ -71,7 +71,7 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         return CrossJoin(tuples, facts);
     }
 
-    private List<TupleFactSet> JoinByGroupId(IEnumerable<Tuple> tuples, Dictionary<long, List<Fact>> factGroups)
+    private static List<TupleFactSet> JoinByGroupId(IEnumerable<Tuple> tuples, Dictionary<long, List<Fact>> factGroups)
     {
         var sets = new List<TupleFactSet>();
         foreach (var tuple in tuples)
@@ -90,7 +90,7 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         return tupleFactSet;
     }
 
-    private List<TupleFactSet> CrossJoin(List<Tuple> tuples, List<Fact> facts)
+    private static List<TupleFactSet> CrossJoin(List<Tuple> tuples, List<Fact> facts)
     {
         var sets = new List<TupleFactSet>(tuples.Count);
         foreach (var tuple in tuples)
@@ -100,7 +100,7 @@ internal abstract class BinaryBetaNode : BetaNode, IObjectSink
         return sets;
     }
 
-    private Dictionary<long, List<Fact>> GroupFacts(List<Fact> facts, int level)
+    private static Dictionary<long, List<Fact>> GroupFacts(List<Fact> facts, int level)
     {
         if (facts.Count == 0 || !facts[0].IsWrapperFact) return EmptyGroups;
 

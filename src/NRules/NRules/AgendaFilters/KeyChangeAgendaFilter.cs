@@ -3,15 +3,10 @@ using System.Collections.Generic;
 
 namespace NRules.AgendaFilters;
 
-internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
+internal class KeyChangeAgendaFilter(IReadOnlyList<IActivationExpression<object>> keySelectors) 
+    : IStatefulAgendaFilter
 {
-    private readonly IReadOnlyList<IActivationExpression<object>> _keySelectors;
     private readonly Dictionary<Activation, ChangeKeys> _changeKeys = new();
-
-    public KeyChangeAgendaFilter(IReadOnlyList<IActivationExpression<object>> keySelectors)
-    {
-        _keySelectors = keySelectors;
-    }
 
     public bool Accept(AgendaContext context, Activation activation)
     {
@@ -19,13 +14,13 @@ internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
         if (!_changeKeys.TryGetValue(activation, out var keys))
         {
             initial = true;
-            keys = new ChangeKeys(_keySelectors.Count);
+            keys = new ChangeKeys(keySelectors.Count);
             _changeKeys[activation] = keys;
         }
 
-        for (int i = 0; i < _keySelectors.Count; i++)
+        for (int i = 0; i < keySelectors.Count; i++)
         {
-            keys.New[i] = _keySelectors[i].Invoke(context, activation);
+            keys.New[i] = keySelectors[i].Invoke(context, activation);
         }
         bool accept = true;
 
@@ -58,15 +53,9 @@ internal class KeyChangeAgendaFilter : IStatefulAgendaFilter
         _changeKeys.Remove(activation);
     }
 
-    private readonly struct ChangeKeys
+    private readonly struct ChangeKeys(int size)
     {
-        public ChangeKeys(int size)
-        {
-            Current = new object[size];
-            New = new object[size];
-        }
-
-        public object[] Current { get; }
-        public object[] New { get; }
+        public object[] Current { get; } = new object[size];
+        public object[] New { get; } = new object[size];
     }
 }

@@ -3,14 +3,9 @@ using System.Xml;
 
 namespace NRules.Diagnostics.Dgml;
 
-internal class Node
+internal class Node(string id)
 {
-    public Node(string id)
-    {
-        Id = id;
-    }
-
-    public string Id { get; }
+    public string Id { get; } = id;
     public string? Label { get; set; }
     public string? Category { get; set; }
     public string? Group { get; set; }

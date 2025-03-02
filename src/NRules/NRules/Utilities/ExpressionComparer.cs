@@ -6,15 +6,8 @@ using System.Reflection;
 
 namespace NRules.Utilities;
 
-internal class ExpressionComparer
+internal class ExpressionComparer(RuleCompilerOptions compilerOptions)
 {
-    private readonly RuleCompilerOptions _compilerOptions;
-
-    public ExpressionComparer(RuleCompilerOptions compilerOptions)
-    {
-        _compilerOptions = compilerOptions;
-    }
-
     public bool AreEqual(Expression? x, Expression? y)
     {
         return ExpressionEqual(x, y, null, null);
@@ -225,7 +218,7 @@ internal class ExpressionComparer
 
     private bool HandleUnsupportedExpression(string message)
     {
-        switch (_compilerOptions.UnsupportedExpressionHandling)
+        switch (compilerOptions.UnsupportedExpressionHandling)
         {
             case RuleCompilerUnsupportedExpressionsHandling.FailFast:
                 throw new NotImplementedException(message);

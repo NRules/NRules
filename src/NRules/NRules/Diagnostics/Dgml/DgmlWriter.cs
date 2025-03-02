@@ -144,7 +144,7 @@ public class DgmlWriter
         }
     }
 
-    private IEnumerable<Link> CreateLinks(IEnumerable<ReteLink> reteLinks)
+    private static IEnumerable<Link> CreateLinks(IEnumerable<ReteLink> reteLinks)
     {
         foreach (var linkInfo in reteLinks)
         {
@@ -219,24 +219,7 @@ public class DgmlWriter
             CreatePerformanceStyles(minDuration, maxDuration));
     }
 
-    private IEnumerable<Property> CreatePerformanceProperties()
-    {
-        yield return new Property("PerfElementCount") {DataType = "System.Int32"};
-        yield return new Property("PerfInsertInputCount") {DataType = "System.Int32"};
-        yield return new Property("PerfInsertOutputCount") {DataType = "System.Int32"};
-        yield return new Property("PerfUpdateInputCount") {DataType = "System.Int32"};
-        yield return new Property("PerfUpdateOutputCount") {DataType = "System.Int32"};
-        yield return new Property("PerfRetractInputCount") {DataType = "System.Int32"};
-        yield return new Property("PerfRetractOutputCount") {DataType = "System.Int32"};
-        yield return new Property("PerfInsertDurationMilliseconds") {DataType = "System.Int64"};
-        yield return new Property("PerfUpdateDurationMilliseconds") {DataType = "System.Int64"};
-        yield return new Property("PerfRetractDurationMilliseconds") {DataType = "System.Int64"};
-        yield return new Property("PerfTotalInputCount") {DataType = "System.Int32"};
-        yield return new Property("PerfTotalOutputCount") {DataType = "System.Int32"};
-        yield return new Property("PerfTotalDurationMilliseconds") {DataType = "System.Int64"};
-    }
-
-    private void AddPerformanceMetrics(Node node, INodeMetrics nodeMetrics)
+    private static void AddPerformanceMetrics(Node node, INodeMetrics nodeMetrics)
     {
         if (nodeMetrics.ElementCount.HasValue)
             node.Properties.Add("PerfElementCount", nodeMetrics.ElementCount.Value);
@@ -257,7 +240,24 @@ public class DgmlWriter
             nodeMetrics.InsertDurationMilliseconds + nodeMetrics.UpdateDurationMilliseconds + nodeMetrics.RetractDurationMilliseconds);
     }
     
-    private IEnumerable<Style> CreatePerformanceStyles(long minDuration, long maxDuration)
+    private static IEnumerable<Property> CreatePerformanceProperties()
+    {
+        yield return new Property("PerfElementCount") {DataType = "System.Int32"};
+        yield return new Property("PerfInsertInputCount") {DataType = "System.Int32"};
+        yield return new Property("PerfInsertOutputCount") {DataType = "System.Int32"};
+        yield return new Property("PerfUpdateInputCount") {DataType = "System.Int32"};
+        yield return new Property("PerfUpdateOutputCount") {DataType = "System.Int32"};
+        yield return new Property("PerfRetractInputCount") {DataType = "System.Int32"};
+        yield return new Property("PerfRetractOutputCount") {DataType = "System.Int32"};
+        yield return new Property("PerfInsertDurationMilliseconds") {DataType = "System.Int64"};
+        yield return new Property("PerfUpdateDurationMilliseconds") {DataType = "System.Int64"};
+        yield return new Property("PerfRetractDurationMilliseconds") {DataType = "System.Int64"};
+        yield return new Property("PerfTotalInputCount") {DataType = "System.Int32"};
+        yield return new Property("PerfTotalOutputCount") {DataType = "System.Int32"};
+        yield return new Property("PerfTotalDurationMilliseconds") {DataType = "System.Int64"};
+    }
+    
+    private static IEnumerable<Style> CreatePerformanceStyles(long minDuration, long maxDuration)
     {
         var flowProperty = "Source.PerfTotalOutputCount";
         yield return new Style("Link")
@@ -289,7 +289,7 @@ public class DgmlWriter
                 expression: $"Color.FromRgb({maxRed},{maxGreen},{maxBlue})");
     }
     
-    private IEnumerable<Style> CreateSchemaStyles()
+    private static IEnumerable<Style> CreateSchemaStyles()
     {
         yield return new Style(nameof(Node))
             .HasCategory($"{NodeType.Root}")
@@ -355,12 +355,12 @@ public class DgmlWriter
         }
     }
 
-    private string Id(ReteNode reteNode)
+    private static string Id(ReteNode reteNode)
     {
         return $"{reteNode.Id}";
     }
 
-    private class Utf8StringWriter : StringWriter
+    private sealed class Utf8StringWriter : StringWriter
     {
         public override Encoding Encoding => Encoding.UTF8;
     }

@@ -8,14 +8,8 @@ internal interface IArgumentMap
     int Count { get; }
 }
 
-internal class ArgumentMap : IArgumentMap
+internal class ArgumentMap(IndexMap factMap, int count) : IArgumentMap
 {
-    public ArgumentMap(IndexMap factMap, int count)
-    {
-        FactMap = factMap;
-        Count = count;
-    }
-
-    public IndexMap FactMap { get; }
-    public int Count { get; }
+    public IndexMap FactMap { get; } = factMap;
+    public int Count { get; } = count;
 }

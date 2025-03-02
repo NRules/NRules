@@ -9,8 +9,8 @@ public class SelfInsuredNameValidationRule : Rule
 {
     public override void Define()
     {
-        Claim claim = null;
-        Patient patient = null;
+        Claim claim = default!;
+        Patient patient = default!;
 
         When()
             .Match<Claim>(() => claim)
@@ -45,8 +45,8 @@ public class SelfInsuredNameValidationRule : Rule
 {
     public override void Define()
     {
-        Claim claim = null;
-        Patient patient = null;
+        Claim claim = default!;
+        Patient patient = default!;
 
         When()
             .Claim(() => claim)

@@ -3,7 +3,7 @@ param (
     [string]$component = 'Core'
 )
 
-$version = '1.0.1'
+$version = '1.0.2'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -110,6 +110,10 @@ $components = @{
                 'NRules.Integration.DependencyInjection'
             )
         }
+    };
+    'Samples.GettingStarted' = @{
+        name = 'GettingStarted'
+        solution_file = 'samples\GettingStarted\GettingStarted.sln'
     };
     'Samples.SimpleRules' = @{
         name = 'SimpleRules'

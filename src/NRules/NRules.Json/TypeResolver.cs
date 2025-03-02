@@ -53,7 +53,7 @@ public class TypeResolver : ITypeResolver
         
         if (type.IsArray)
         {
-            var elementType = type.GetElementType();
+            var elementType = type.GetElementType()!;
             var elementTypeName = InternalGetTypeName(elementType);
             return TypeNameFormatter.ConstructArrayTypeName(elementTypeName, type.GetArrayRank());
         }
@@ -90,7 +90,7 @@ public class TypeResolver : ITypeResolver
         return type;
     }
 
-    private Type ResolveType(Assembly assembly, string typeName, bool ignoreCase)
+    private Type? ResolveType(Assembly? assembly, string typeName, bool ignoreCase)
     {
         if (_aliasResolver.TryGetTypeByAlias(typeName, out var type))
             return type;

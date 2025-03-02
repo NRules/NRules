@@ -26,7 +26,7 @@ public abstract class RuleElement
     /// </summary>
     public IReadOnlyCollection<Declaration> Imports => _imports;
 
-    internal RuleElement()
+    private protected RuleElement()
     {
         _exports = new HashSet<Declaration>();
         _imports = new HashSet<Declaration>();
@@ -41,7 +41,7 @@ public abstract class RuleElement
     internal void AddImports(RuleElement? element)
     {
         if (element != null)
-            AddImports(new[] {element});
+            AddImports([element]);
     }
 
     internal void AddImports(IEnumerable<RuleElement> elements)
@@ -63,7 +63,7 @@ public abstract class RuleElement
 
     internal void AddExport(Declaration declaration)
     {
-        AddExports(new[] {declaration});
+        AddExports([declaration]);
     }
 
     internal abstract RuleElement Accept<TContext>(TContext context, RuleElementVisitor<TContext> visitor);

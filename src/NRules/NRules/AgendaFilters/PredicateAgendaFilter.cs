@@ -2,18 +2,12 @@ using System.Collections.Generic;
 
 namespace NRules.AgendaFilters;
 
-internal class PredicateAgendaFilter : IAgendaFilter
+internal class PredicateAgendaFilter(IReadOnlyCollection<IActivationExpression<bool>> conditions)
+    : IAgendaFilter
 {
-    private readonly IReadOnlyCollection<IActivationExpression<bool>> _conditions;
-
-    public PredicateAgendaFilter(IReadOnlyCollection<IActivationExpression<bool>> conditions)
-    {
-        _conditions = conditions;
-    }
-
     public bool Accept(AgendaContext context, Activation activation)
     {
-        foreach (var condition in _conditions)
+        foreach (var condition in conditions)
         {
             if (!condition.Invoke(context, activation)) return false;
         }

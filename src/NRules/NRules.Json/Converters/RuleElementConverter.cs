@@ -87,7 +87,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         writer.WriteEndObject();
     }
     
-    private GroupElement ReadGroup(ref Utf8JsonReader reader, JsonSerializerOptions options, GroupType groupType)
+    private static GroupElement ReadGroup(ref Utf8JsonReader reader, JsonSerializerOptions options, GroupType groupType)
     {
         var children = reader.ReadArrayProperty<RuleElement>(nameof(GroupElement.ChildElements), options);
         return Element.Group(groupType, children);
@@ -98,7 +98,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         writer.WriteArrayProperty(nameof(GroupElement.ChildElements), value.ChildElements, options);
     }
 
-    private ExistsElement ReadExists(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static ExistsElement ReadExists(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var source = reader.ReadProperty<RuleElement>(nameof(ExistsElement.Source), options);
         return Element.Exists(source);
@@ -109,7 +109,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         writer.WriteProperty(nameof(ExistsElement.Source), value.Source, options);
     }
 
-    private NotElement ReadNot(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static NotElement ReadNot(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var source = reader.ReadProperty<RuleElement>(nameof(NotElement.Source), options);
         return Element.Not(source);
@@ -120,7 +120,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         writer.WriteProperty(nameof(NotElement.Source), value.Source, options);
     }
     
-    private AggregateElement ReadAggregate(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static AggregateElement ReadAggregate(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var name = reader.ReadStringProperty(nameof(AggregateElement.Name), options);
         var resultType = reader.ReadProperty<Type>(nameof(AggregateElement.ResultType), options);
@@ -144,7 +144,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         writer.WriteProperty(nameof(AggregateElement.Source), value.Source, options);
     }
 
-    private BindingElement ReadBinding(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static BindingElement ReadBinding(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var resultType = reader.ReadProperty<Type>(nameof(BindingElement.ResultType), options);
         var expression = reader.ReadProperty<LambdaExpression>(nameof(BindingElement.Expression), options);
@@ -157,7 +157,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         writer.WriteProperty(nameof(BindingElement.Expression), value.Expression, options);
     }
 
-    private PatternElement ReadPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static PatternElement ReadPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var name = reader.ReadStringProperty(nameof(Declaration.Name), options);
         var type = reader.ReadProperty<Type>(nameof(Declaration.Type), options);
@@ -187,7 +187,7 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         return Element.Dependency(declaration, serviceType ?? type);
     }
     
-    private void WriteDependency(Utf8JsonWriter writer, JsonSerializerOptions options, DependencyElement value)
+    private static void WriteDependency(Utf8JsonWriter writer, JsonSerializerOptions options, DependencyElement value)
     {
         writer.WriteStringProperty(nameof(Declaration.Name), value.Declaration.Name, options);
         writer.WriteProperty(nameof(Declaration.Type), value.Declaration.Type, options);
@@ -203,13 +203,13 @@ internal class RuleElementConverter : JsonConverter<RuleElement>
         return Element.Filter(filterType, expression);
     }
     
-    private void WriteFilter(Utf8JsonWriter writer, JsonSerializerOptions options, FilterElement value)
+    private static void WriteFilter(Utf8JsonWriter writer, JsonSerializerOptions options, FilterElement value)
     {
         writer.WriteEnumProperty(nameof(value.FilterType), value.FilterType, options);
         writer.WriteProperty(nameof(value.Expression), value.Expression, options);
     }
 
-    private ForAllElement ReadForAll(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static ForAllElement ReadForAll(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var basePattern = reader.ReadProperty<PatternElement>(nameof(ForAllElement.BasePattern), options);
         var patterns = reader.ReadArrayProperty<PatternElement>(nameof(ForAllElement.Patterns), options);

@@ -9,7 +9,7 @@ public abstract class GroupElement : RuleElement
 {
     private readonly RuleElement[] _childElements;
 
-    internal GroupElement(RuleElement[] childElements)
+    private protected GroupElement(RuleElement[] childElements)
     {
         _childElements = childElements;
 

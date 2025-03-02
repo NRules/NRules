@@ -50,7 +50,9 @@ private static void OnRuleFiringEvent(object sender, AgendaEventArgs e)
 
 ## Performance Metrics
 In NRules, rules are compiled into a Rete network for efficient fact matching. As the rules session is going through the execution cycles, it collects performance statistics for each node in the Rete graph. This information could be handy in rules performance profiling.
+
 These metrics are used to feed the performance view in the debugger visualizer, but can also be queried programmatically via the [IMetricsProvider](xref:NRules.Diagnostics.IMetricsProvider) accessible through the [Metrics](xref:NRules.ISession.Metrics) property on the [ISession](xref:NRules.ISession) interface.
+
 Metrics accessible via the metrics provider correspond to the nodes in the Rete graph, which represents the compiled rules. This Rete graph can be retrieved from the [ISession](xref:NRules.ISession) or [ISessionFactory](xref:NRules.ISessionFactory) using the [GetSchema()](xref:NRules.Diagnostics.ISessionSchemaProvider.GetSchema) method. Each node in the Rete graph contains the information such as the node type, contained expressions, etc., as well as an Id that corresponds to the node Id used by the metrics provider.
 
 ```c#
@@ -98,6 +100,7 @@ Both [ISession](xref:NRules.ISession) and [ISessionFactory](xref:NRules.ISession
 
 In addition to that, [ISession](xref:NRules.ISession) has an option of generating a visualization for the Rete graph with the embedded performance metrics and styling that helps pinpoint performance bottlenecks.
 To use it, select a drop-down list next to the magnifying glass, when hovering over the [ISession](xref:NRules.ISession) instance, and click 'NRules Session Performance Visualizer'.
+
 The rete graph in this mode has peformance metrics attached to the graph nodes, and the graph style reflects them. The thickness of edges reflects the volume of facts flowing through them; the color of nodes reflects the amount of time spent in that node; and the size of memory nodes reflects the number of objects stored in them.
 
 ![Rete Graph](../images/NRules-Diagnostics-Visualizer-Performance.png)

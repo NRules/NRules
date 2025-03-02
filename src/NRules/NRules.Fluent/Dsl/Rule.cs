@@ -17,10 +17,6 @@ public abstract class Rule
 {
     private RuleBuildContext _context = RuleBuildContext.Empty;
 
-    protected Rule()
-    {
-    }
-
     /// <summary>
     /// Sets rule's name.
     /// Name value set at this level overrides the values specified via <see cref="NameAttribute"/> attribute.
@@ -116,19 +112,13 @@ public abstract class Rule
             throw new InvalidOperationException("Use Define(RuleBuildContext context) method");
     }
 
-    private readonly struct RuleBuildContext
+    private readonly struct RuleBuildContext(RuleBuilder builder)
     {
-        public RuleBuildContext(RuleBuilder builder)
-        {
-            Builder = builder;
-            SymbolStack = new();
-        }
+        public static readonly RuleBuildContext Empty = new();
 
-        public static RuleBuildContext Empty = new();
+        public SymbolStack SymbolStack { get; } = new();
 
-        public SymbolStack SymbolStack { get; }
-
-        public RuleBuilder Builder { get; }
+        public RuleBuilder Builder { get; } = builder;
 
         public bool IsEmpty => Builder is null;
     }

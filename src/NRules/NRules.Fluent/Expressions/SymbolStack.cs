@@ -31,18 +31,11 @@ internal class SymbolStack
         _frames.Pop();
     }
 
-    private class StackGuard : IDisposable
+    private sealed class StackGuard(SymbolStack symbolStack) : IDisposable
     {
-        private readonly SymbolStack _symbolStack;
-
-        public StackGuard(SymbolStack symbolStack)
-        {
-            _symbolStack = symbolStack;
-        }
-
         public void Dispose()
         {
-            _symbolStack.PopFrame();
+            symbolStack.PopFrame();
         }
     }
 }

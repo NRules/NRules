@@ -5,16 +5,10 @@ using NRules.RuleModel;
 
 namespace NRules.Aggregators.Collections;
 
-internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement?>
+internal class SortedFactCollection<TElement, TKey>(IComparer<TKey> comparer) : IEnumerable<TElement?>
 {
-    private readonly SortedDictionary<KeyContainer, LinkedList<IFact>> _items;
-    private readonly Dictionary<IFact, SortedFactData> _dataMap;
-
-    public SortedFactCollection(IComparer<TKey> comparer)
-    {
-        _dataMap = new Dictionary<IFact, SortedFactData>();
-        _items = new SortedDictionary<KeyContainer, LinkedList<IFact>>(new KeyComparer(comparer));
-    }
+    private readonly SortedDictionary<KeyContainer, LinkedList<IFact>> _items = new(new KeyComparer(comparer));
+    private readonly Dictionary<IFact, SortedFactData> _dataMap = new();
 
     public void AddFact(TKey key, IFact fact)
     {
@@ -71,7 +65,7 @@ internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement?>
         return GetEnumerator();
     }
 
-    private class SortedFactData
+    private sealed class SortedFactData
     {
         internal SortedFactData(TKey key, LinkedListNode<IFact> linkedListNode)
         {
@@ -83,14 +77,9 @@ internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement?>
         public LinkedListNode<IFact> LinkedListNode { get; }
     }
 
-    private readonly struct KeyContainer : IEquatable<KeyContainer>
+    private readonly struct KeyContainer(TKey key) : IEquatable<KeyContainer>
     {
-        public KeyContainer(TKey key)
-        {
-            Key = key;
-        }
-
-        public TKey Key { get; }
+        public TKey Key { get; } = key;
 
         public bool Equals(KeyContainer other)
         {
@@ -108,18 +97,11 @@ internal class SortedFactCollection<TElement, TKey> : IEnumerable<TElement?>
         }
     }
 
-    private class KeyComparer : IComparer<KeyContainer>
+    private sealed class KeyComparer(IComparer<TKey> keyComparer) : IComparer<KeyContainer>
     {
-        private readonly IComparer<TKey> _keyComparer;
-
-        public KeyComparer(IComparer<TKey> keyComparer)
-        {
-            _keyComparer = keyComparer;
-        }
-
         public int Compare(KeyContainer x, KeyContainer y)
         {
-            return _keyComparer.Compare(x.Key, y.Key);
+            return keyComparer.Compare(x.Key, y.Key);
         }
     }
 }
