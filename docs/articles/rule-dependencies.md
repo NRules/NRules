@@ -1,7 +1,6 @@
 # Rule Dependecies
 
-In a production rules engine rules consist of conditions that match facts in the rules engine's memory, and actions that insert, update or retract facts.
-In a real software project, however, this is not enough. Rules also need ability to interact with the rest of the application. This can be achieved in several ways. 
+In a production rules engine rules consist of conditions that match facts in the rules engine's memory, and actions that insert, update or retract facts. In a real software project, however, this is not enough. Rules also need ability to interact with the rest of the application. This can be achieved in several ways. 
 
 Since rules are regular .NET classes, they could just access various singleton and static services. This is obviously less than desirable, since the use of singletons results in tightly-coupled designs and is generally discouraged.
 
@@ -31,8 +30,7 @@ public class DeniedClaimNotificationRule : Rule
 }
 ```
 
-When declaring a dependency using rules DSL, the dependency is bound to a variable in the same exact way the patterns are bound to fact variables.
-The service variable can then be used in rule actions. The rules engine will inject the dependency when the rule fires.
+When declaring a dependency using rules DSL, the dependency is bound to a variable in the same exact way the patterns are bound to fact variables. The service variable can then be used in rule actions. The rules engine will inject the dependency when the rule fires.
 
 > [!WARNING]
 > Rule dependencies cannot be used in rule conditions.
@@ -40,8 +38,7 @@ The service variable can then be used in rule actions. The rules engine will inj
 In order to be able to use rule dependencies, one must implement [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) interface and set resolver instance either at the [ISession](xref:NRules.ISession) or at the [ISessionFactory](xref:NRules.ISessionFactory) level.
 
 ## .NET Dependency Injection Integration
-NRules ships with the implementation of [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) as well as [IRuleActivator](xref:NRules.Fluent.IRuleActivator) for .NET built-in IoC container in a separate integration assembly (see [NRules.Integration.DependencyInjection](xref:NRules.Integration.DependencyInjection)).
-With the integration package, the following fully bootstraps and registers NRules with the .NET service collection. 
+NRules ships with the implementation of [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) as well as [IRuleActivator](xref:NRules.Fluent.IRuleActivator) for .NET built-in IoC container in a separate integration assembly (see [NRules.Integration.DependencyInjection](xref:NRules.Integration.DependencyInjection)). With the integration package, the following fully bootstraps and registers NRules with the .NET service collection. 
 
 ```c#
 Host.CreateDefaultBuilder(args)  
@@ -52,8 +49,7 @@ Host.CreateDefaultBuilder(args)
 ```
 
 ## Autofac Integration
-NRules ships with the implementation of [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) as well as [IRuleActivator](xref:NRules.Fluent.IRuleActivator) for Autofac IoC container in a separate integration assembly (see [NRules.Integration.Autofac](xref:NRules.Integration.Autofac)).
-With the integration package, the following fully bootstraps and registers NRules with Autofac container. Registration extensions return registration builders that allow customization of individual registrations.
+NRules ships with the implementation of [IDependencyResolver](xref:NRules.Extensibility.IDependencyResolver) as well as [IRuleActivator](xref:NRules.Fluent.IRuleActivator) for Autofac IoC container in a separate integration assembly (see [NRules.Integration.Autofac](xref:NRules.Integration.Autofac)). With the integration package, the following fully bootstraps and registers NRules with Autofac container. Registration extensions return registration builders that allow customization of individual registrations.
 
 ```c#
 var types = builder.RegisterRules(x => x.AssemblyOf(typeof(MyRule)));

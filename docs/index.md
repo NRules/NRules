@@ -2,8 +2,7 @@
 
 NRules is an open source rules engine for .NET that is based on the [Rete](http://en.wikipedia.org/wiki/Rete_algorithm) matching algorithm. Rules are authored in C# using internal DSL.
 
-NRules is also an inference engine, where, unlike with scripting engines, there is no predefined order in which rules are executed.
-Instead, inference engine figures out which rules should be activated based on the facts given to it, and then executes them according to a conflict resolution algorithm. Among other features, NRules supports forward chaining, complex fact queries, negative, existential and universal quantifiers. 
+NRules is also an inference engine, where, unlike with scripting engines, there is no predefined order in which rules are executed. Instead, inference engine figures out which rules should be activated based on the facts given to it, and then executes them according to a conflict resolution algorithm. Among other features, NRules supports forward chaining, complex fact queries, negative, existential and universal quantifiers. 
 
 To learn more, go to the corresponding sections of the NRules documentation.
 
@@ -46,7 +45,7 @@ NRules.Fluent | [![NuGet](https://img.shields.io/nuget/v/NRules.Fluent)](https:/
 NRules.RuleModel | [![NuGet](https://img.shields.io/nuget/v/NRules.RuleModel)](https://nuget.org/packages/NRules.RuleModel) | Canonical rules model. Reference this package from the projects that deal with the intermediate rules representation. This package is transitively referenced by most other NRules packages. | [API](xref:NRules.RuleModel)
 NRules.Json | [![NuGet](https://img.shields.io/nuget/v/NRules.Json)](https://nuget.org/packages/NRules.Json) | Rules serialization to and from JSON. Reference this package from the projects that handle rules serialization. | [Guide](articles/advanced/json-serialization.md) [API](xref:NRules.Json)
 NRules.Testing | [![NuGet](https://img.shields.io/nuget/v/NRules.Testing)](https://nuget.org/packages/NRules.Testing) | Rules unit testing and expectations assertion. Reference this package from the projects that implement rules unit tests. | [Guide](articles/unit-testing-rules.md) [API](xref:NRules.Testing)
-NRules.RuleSharp | [![NuGet](https://img.shields.io/nuget/v/NRules.RuleSharp)](https://nuget.org/packages/NRules.RuleSharp) | Business rules language for NRules. | [Repo](https://github.com/NRules/NRules.Language)
+NRules.RuleSharp | [![NuGet](https://img.shields.io/nuget/v/NRules.RuleSharp)](https://nuget.org/packages/NRules.RuleSharp) | Business rules language for NRules - R#. | [Repo](https://github.com/NRules/NRules.Language)
 
 ## Building from Source
 
@@ -65,7 +64,7 @@ Default target is `Build`.
 
 Default component is `Core`. Use the following components to build other parts of the engine
 * `All` - build everything
-* `Core` - build the rules engine, NRules.Testing and NRules.Json
+* `Core` - build the rules engine, NRules.Testing and NRules.Json (must build Core first, in order to build anything else)
 * `Visualizer` - build debugger visualizer (Windows only)
 * `Integration` - build integration libraries
 * `Samples` - build samples

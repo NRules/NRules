@@ -2,10 +2,12 @@
 
 This guide shows step by step how to install and use `NRules` rules engine to create an auto insurance quote calculator that has its logic encoded as standalone rules, separated from the application logic.
 
+You can also find this complete example under the `samples` folder.
+
 This guide shows how to use `NRules` with the fluent DSL in C#. To see how to use `NRules` with externalized rules, written in R# rules language, see [NRules.Languange](https://github.com/NRules/NRules.Language).
 
 ## Creating Project Structure
-In terminal, create a new Visual Studio solution and project structure.
+Use .NET CLI in a terminal to create a new Visual Studio solution and project structure.
 
 # [Windows](#tab/windows)
 ```console
@@ -47,7 +49,8 @@ dotnet add Rules/Rules.csproj reference Domain/Domain.csproj
 
 ## Installing NRules
 Add NRules package references to the corresponding projects. In this sample application, we are keeping rules in a separate project, so this project only needs to reference the `NRules.Fluent` package. The domain model project will contain plain c# objects (POCO), so no additional references are necessary. Finally, the application project will need to use rules engine runtime, as well as load rules from the rules assembly, so it's best to reference the meta package `NRules` that brings all the necessary components.
-In terminal, run the following commands.
+
+In the terminal, run the following commands.
 
 # [Windows](#tab/windows)
 ```console
@@ -93,9 +96,9 @@ public class TrafficViolation(Driver driver, DateTime date, string violationType
 ```
 
 ## Creating Rules
-When using NRules internal DSL, a rule is a class that inherits from [Rule](xref:NRules.Fluent.Dsl.Rule). A rule consists of a set of conditions (patterns that match facts in the rules engine's memory) and a set of actions executed by the engine should the rule fire.
+When using NRules fluent DSL, a rule is a class that inherits from [Rule](xref:NRules.Fluent.Dsl.Rule). A rule consists of a set of conditions (patterns that match facts in the rules engine's memory) and a set of actions executed by the engine should the rule fire.
 
-Add the following rule classes to the `Rules` project.
+Add the rule classes mentioned below to the `Rules` project.
 
 Let's look at a couple of simple rules. We want to match an `InsuranceQuote`, and, depending on driver's age and years of experience, apply a discount or a surcharge.
 Each pattern in the [When](xref:NRules.Fluent.Dsl.Rule.When) part of the rule is bound to a variable via an expression, and then can be used in the [Then](xref:NRules.Fluent.Dsl.Rule.Then) part of the rule.
@@ -131,7 +134,8 @@ public class ExperiencedDriverDiscountRule : Rule
 ```
 
 A more complicated rule below matches multiple different facts. Note that if there is more than one pattern in the rule, the patterns must be joined to avoid a Cartesian Product between the matching facts. In this example, the `TrafficViolation` facts are joined with the driver from the `InsuranceQuote` fact, so that the rule only considers vilations pertaining to the matched quote.
-This rule adds a surcharge for any recent traffic violation, except those related to parking, privided there is more than one such violation. This rule also demonstrates a mechanism for calculating intermediate values, which can later be used in the downstream patterns and in the rule's actions.
+
+This rule adds a surcharge for any recent traffic violation, except those related to parking, provided there is more than one such violation. This rule also demonstrates a mechanism for calculating intermediate values, which can later be used in the downstream patterns and in the rule's actions.
 
 ```c#
 public class TrafficViolationSurchargeRule : Rule
@@ -161,9 +165,14 @@ public class TrafficViolationSurchargeRule : Rule
 
 ## Running Rules
 NRules is an inference engine. It means there is no predefined order in which rules are executed, and it runs a match/resolve/act cycle to figure it out. It first matches facts (instances of domain entities) with the rules and determines which rules can fire. The rules that matched facts are said to be activated. It then resolves the conflict by choosing a single rule that will actually fire. And, finally, it fires the chosen rule by executing its actions. The cycle is repeated until there are no more rules to fire.
+
 We need to do several things for the engine to enter the match/resolve/act cycle.
-First, we need to load the rules and compile them into an internal structure (Rete network), so that the engine knows what the rules are and can efficiently match facts. We do this by creating a [RuleRepository](xref:NRules.Fluent.RuleRepository) and letting it scan an assembly to find the rule classes. Then we compile the rules into an [ISessionFactory](xref:NRules.ISessionFactory) - this should only be done once per the application lifetime.
-Next, we need to create a working session with the engine ([ISession](xref:NRules.ISession)) and insert facts into it.
+
+First, we need to load the rules and translate them into an intermediate rules model. We do this by creating a [RuleRepository](xref:NRules.Fluent.RuleRepository) and letting it scan an assembly to find and instantitate the rule classes.
+
+Then we need to compile the rules into an execution model (Rete network), so that the engine can efficiently match facts. This is achieved by compiling the rules into an [ISessionFactory](xref:NRules.ISessionFactory) - this should only be done once per the application lifetime.
+
+Next, we need to create a working session with the engine ([ISession](xref:NRules.ISession)) and insert facts into it - this can be done multipel times, e.g. per request or per workflow.
 Finally we tell the engine to start the match/resolve/act cycle and fire matching rules.
 
 ```c#
@@ -214,7 +223,8 @@ Final premium for John Doe: 1140
 
 ## Testing Rules
 To unit test rules we can use `NRules.Testing` package. It provides the mechanism for bootstrapping a test instance of the rules engine, loading specified rules into it, and asserting rules firing with the provided facts. See [Unit Testing Rules](unit-testing-rules.md) for more details.
-In terminal, run the following commands to add the unit tests project to the solution.
+
+In the terminal, run the following commands to add the unit tests project to the solution.
 
 # [Windows](#tab/windows)
 ```console
@@ -238,7 +248,7 @@ dotnet add Rules.Tests/Rules.Tests.csproj package xunit.runner.visualstudio
 ```
 ---
 
-A test fixture for rules unit tests inherits from `RulesTestFixture`, and uses the `Setup` object to add rules under test. Each test method in the fixture can follow the AAA pattern (Arrange, Act, Assert) of setting up facts under test, inserting them into session, calling `Fire` method, and asserting the rules firing expectations.
+A test fixture for rules unit tests inherits from [RulesTestFixture](xref:NRules.Testing.RulesTestFixture), and uses the `Setup` object to add rules under test. Each test method in the fixture can follow the AAA pattern (Arrange, Act, Assert) of setting up facts under test, inserting them into session, calling `Fire` method, and asserting the rules firing expectations.
 
 In the IDE, add the following test class to the `Rules.Tests` project.
 
@@ -282,3 +292,5 @@ public class YoungDriverSurchargeRuleTest : RulesTestFixture
     }
 }
 ```
+
+Please read NRules documentation to learn more about various features and capabilities of the engine.

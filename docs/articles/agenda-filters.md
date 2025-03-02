@@ -10,6 +10,7 @@ Agenda filters only apply to activations that are about to be placed on the agen
 
 ## Fluent Rule Filters
 Rule-specific agenda filters can be added declaratively, using fluent DSL. There are two kinds of filters that can be defined with the fluent DSL - predicate filters that test rule activation against a set of conditions, and change filters that only accept activations where a particular set of keys changed.
+
 Change filters in particular are extremely useful for rule chaining and recursion control. One rule may change one field in the fact and another rule may change a different field in that same fact. Without a change filter, each rule would chain the other one, causing infinite recursion. With change filters both rules can only accept fact changes they care about, thus improving rules composability and eliminating unwanted recursion.
 
 ```c#
@@ -43,6 +44,7 @@ Multiple `Where` filters are always interpreted to have an `AND` relationship, w
 
 ## Defining Rule Filters in Code
 An agenda filter can be defined as a class that implements [IAgendaFilter](xref:NRules.AgendaFilters.IAgendaFilter) interface; its [Accept](xref:NRules.AgendaFilters.IAgendaFilter.Accept(NRules.AgendaFilters.AgendaContext,NRules.Activation)) method determines if the activation is to be added to the agenda or not.
+
 Agenda filters are added to the [ISession.Agenda](xref:NRules.ISession.Agenda) using [AddFilter](xref:NRules.IAgenda.AddFilter(NRules.AgendaFilters.IAgendaFilter)) methods. Depending on the specific overload of the method used, the filter is added either as a global or rule-specific filter.
 
 ```c#
@@ -64,4 +66,5 @@ var session = factory.CreateSession(x =>
 
 ## Stateful Agenda Filters
 In most cases agenda filters are only concerned with the activation that is getting inserted into the agenda, and so are stateless. But there are cases where it's helpful for an agenda filter to store some state about the activation, so that the next time the same activation is inserted into the agenda, the filter can use that state information. In these cases, instead of implementing [IAgendaFilter](xref:NRules.AgendaFilters.IAgendaFilter) interface, implement [IStatefulAgendaFilter](xref:NRules.AgendaFilters.IStatefulAgendaFilter). This is how `OnChange` filters are implemented.
+
 In addition to the [Accept](xref:NRules.AgendaFilters.IAgendaFilter.Accept(NRules.AgendaFilters.AgendaContext,NRules.Activation)) method, stateful agenda filters are also notified by the engine of various activation lifecycle events, so that the filter can update the state, or remove the state associated with the activation.
