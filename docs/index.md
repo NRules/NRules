@@ -45,7 +45,7 @@ NRules.Fluent | [![NuGet](https://img.shields.io/nuget/v/NRules.Fluent)](https:/
 NRules.RuleModel | [![NuGet](https://img.shields.io/nuget/v/NRules.RuleModel)](https://nuget.org/packages/NRules.RuleModel) | Canonical rules model. Reference this package from the projects that deal with the intermediate rules representation. This package is transitively referenced by most other NRules packages. | [API](xref:NRules.RuleModel)
 NRules.Json | [![NuGet](https://img.shields.io/nuget/v/NRules.Json)](https://nuget.org/packages/NRules.Json) | Rules serialization to and from JSON. Reference this package from the projects that handle rules serialization. | [Guide](articles/advanced/json-serialization.md) [API](xref:NRules.Json)
 NRules.Testing | [![NuGet](https://img.shields.io/nuget/v/NRules.Testing)](https://nuget.org/packages/NRules.Testing) | Rules unit testing and expectations assertion. Reference this package from the projects that implement rules unit tests. | [Guide](articles/unit-testing-rules.md) [API](xref:NRules.Testing)
-NRules.RuleSharp | [![NuGet](https://img.shields.io/nuget/v/NRules.RuleSharp)](https://nuget.org/packages/NRules.RuleSharp) | Business rules language for NRules - R#. | [Repo](https://github.com/NRules/NRules.Language)
+NRules.RuleSharp | [![NuGet](https://img.shields.io/nuget/v/NRules.RuleSharp)](https://nuget.org/packages/NRules.RuleSharp) | Business rules language for NRules - Rule#. | [Repo](https://github.com/NRules/NRules.Language)
 
 ## Building from Source
 
