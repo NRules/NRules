@@ -1,6 +1,6 @@
 using NRules.Integration.SimpleInjector.Tests.TestAssets;
-using NRules.RuleModel;
 using SimpleInjector;
+using Xunit;
 
 namespace NRules.Integration.SimpleInjector.Tests
 {
@@ -12,17 +12,19 @@ namespace NRules.Integration.SimpleInjector.Tests
             //Arrange
             var builder = new Container();
             builder.Register<ITestService, TestService>(Lifestyle.Singleton);
-            builder.RegisterRuleRepository(x => x.Type(typeof(RuleWithConstructorDependency)));
+            builder.RegisterNamedRuleRepository(x => x.Type(typeof(RuleWithConstructorDependency)));
 
             builder.Verify();
             var container = builder;
 
             //Act
-            var repository = container.GetInstance<IRuleRepository>();
+            var repository = container.GetNamedRuleRepository();
             var rules = repository.GetRules();
 
             //Assert
             Assert.Single(rules);
         }
+
+
     }
 }

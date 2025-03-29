@@ -89,6 +89,28 @@ $components = @{
             )
         }
     };
+    'NRules.Integration.SimpleInjector' = @{
+        name = 'NRules.Integration.SimpleInjector'
+        solution_file = 'src\NRules.Integration\NRules.Integration.SimpleInjector\NRules.Integration.SimpleInjector.sln'
+        package = @{
+            bin = @{
+                artifacts = @('netstandard2.0', 'netstandard2.1')
+                'netstandard2.0' = @{
+                    include = @(
+                        "NRules.Integration.SimpleInjector\bin\$configuration\netstandard2.0"
+                    )
+                }
+                'netstandard2.1' = @{
+                    include = @(
+                        "NRules.Integration.SimpleInjector\bin\$configuration\netstandard2.1"
+                    )
+                }
+            }
+            nuget = @(
+                'NRules.Integration.SimpleInjector'
+            )
+        }
+    };
     'NRules.Integration.DependencyInjection' = @{
         name = 'NRules.Integration.DependencyInjection'
         solution_file = 'src\NRules.Integration\NRules.Integration.DependencyInjection\NRules.Integration.DependencyInjection.sln'

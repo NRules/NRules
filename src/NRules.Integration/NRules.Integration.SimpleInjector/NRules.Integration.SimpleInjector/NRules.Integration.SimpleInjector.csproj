@@ -17,12 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NRules" Version="1.0.3" />
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="SimpleInjector" Version="5.5.0" />
+    <PackageReference Include="SimpleInjector" />
+    <PackageReference Include="NRules" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NRules.Fluent;
 using NRules.Fluent.Dsl;
@@ -25,18 +26,19 @@ namespace NRules.Integration.SimpleInjector
 
         public IEnumerable<Rule> Activate(Type type)
         {
-            if (_container.GetRegistration(type) != null)
+            var rules = new List<Rule>();
+            var instance = (_container.GetInstance(type) ?? Activator.CreateInstance(type)) as Rule;
+            if (instance != null)
             {
-                var collectionType = typeof(IEnumerable<>).MakeGenericType(type);
-                return (IEnumerable<Rule>)_container.GetInstance(collectionType);
+                rules.Add(instance);
             }
 
-            return ActivateDefault(type);
+            return rules.AsEnumerable();
         }
 
-        private static IEnumerable<Rule> ActivateDefault(Type type)
+        private static Rule ActivateDefault(Type type)
         {
-            yield return (Rule) Activator.CreateInstance(type);
+            return (Rule) Activator.CreateInstance(type);
         }
     }
 }

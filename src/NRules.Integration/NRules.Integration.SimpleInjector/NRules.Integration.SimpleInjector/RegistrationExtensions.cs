@@ -1,26 +1,41 @@
 ﻿using System;
 using NRules.Fluent;
-using NRules.Fluent.Dsl;
 using NRules.RuleModel;
 using SimpleInjector;
+using Container = SimpleInjector.Container;
 
 namespace NRules.Integration.SimpleInjector;
 
 public static class RegistrationExtensions
 {
-    public static void RegisterRuleRepository(
-        this Container builder,
-        Action<IRuleTypeScanner> scanAction)
+    private static SimpleInjectorRuleRepositoryFactory? Factory { get; set; }
+    
+    public static void RegisterNamedRuleRepository(
+        this Container container,
+        Action<IRuleTypeScanner> scanAction,
+        string name = "default",
+        Lifestyle? lifestyle = null,
+        bool compileRules = true)
     {
-        var scanner = new RuleTypeScanner();
-        scanAction(scanner);
-        var ruleTypes = scanner.GetRuleTypes();
+        lifestyle ??= Lifestyle.Singleton;
 
-        builder.Collection.CreateRegistration<Rule>(ruleTypes);
+        if (Factory == null)
+        {
+            Factory = new SimpleInjectorRuleRepositoryFactory(container);
+        }
         
-        builder.Register<IRuleActivator, SimpleInjectorRuleActivator>(Lifestyle.Transient);
+        Factory.RegisterNamedRuleRepository(name, scanAction, lifestyle, compileRules);
+    }
 
-        //builder.RegisterInitializer<IRuleRepository>((rr) => new RuleRepository(new SimpleInjectorRuleActivator(builder)));
-        builder.Register<IRuleRepository>(() => new RuleRepository(), Lifestyle.Singleton);
+    public static IRuleRepository GetNamedRuleRepository(
+        this Container container,
+        string name = "default")
+    {
+        if (Factory == null)
+        {
+            throw new InvalidOperationException("Call RegisterNamedRuleRepository to register a rule repository first!");
+        }
+        
+        return Factory.CreateNew(name);
     }
 }
