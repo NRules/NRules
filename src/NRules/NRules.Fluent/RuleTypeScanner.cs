@@ -54,6 +54,13 @@ public interface IRuleTypeScanner
     /// <param name="types">Types to scan.</param>
     /// <returns>Rule type scanner to continue scanning specification.</returns>
     IRuleTypeScanner Type(params Type[] types);
+   
+    /// <summary>
+    /// Filters rule types using a predicate.
+    /// </summary>
+    /// <param name="predicate">The filter to use.</param>
+    /// <returns>Rule type scanner to continue scanning specification.</returns>
+    IRuleTypeScanner Where(Func<Type, bool> predicate);
 }
 
 /// <summary>
@@ -131,6 +138,19 @@ public class RuleTypeScanner : IRuleTypeScanner
         var ruleTypes = types
             .Where(IsRuleType);
         _ruleTypes.AddRange(ruleTypes);
+        return this;
+    }
+
+    /// <summary>
+    /// Filters rule types using a predicate.
+    /// </summary>
+    /// <param name="predicate">The filter to use.</param>
+    /// <returns>Rule type scanner to continue scanning specification.</returns>
+    public IRuleTypeScanner Where(Func<Type, bool> predicate)
+    {
+        var ruleTypesToKeep = _ruleTypes.Where(predicate);
+        var ruleTypesToRemove = _ruleTypes.Except(ruleTypesToKeep);
+        _ruleTypes.RemoveAll(x => ruleTypesToRemove.Contains(x));
         return this;
     }
 
