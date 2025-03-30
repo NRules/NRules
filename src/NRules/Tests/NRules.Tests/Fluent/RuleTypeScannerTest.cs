@@ -17,12 +17,13 @@ namespace NRules.Tests.Fluent
             //Act
             var scanner02 = new RuleTypeScanner();
             scanner02.AssemblyOf<RuleTypeScannerTest>()
-                .Where(ruleType => ruleType.Namespace == "NRules.Tests.Fluent.SubNsA");
+                .Where(ruleType => ruleType.Namespace!.StartsWith("NRules.Tests.Fluent.SubNsA"));
             var subNsARules = scanner02.GetRuleTypes();
            
             //Assert
-            Assert.Equal(3, allRules.Length);
-            Assert.Single(subNsARules);
+            Assert.Equal(4, allRules.Length);
+            Assert.Equal(2, subNsARules.Length);
+            Assert.Contains(subNsARules, ruleType => ruleType.FullName == "NRules.Tests.Fluent.SubNsA.SubNsAa.TestRule002");
         }
     }
 
@@ -39,6 +40,16 @@ namespace NRules.Tests.Fluent
         {
             public override void Define()
             {
+            }
+        }
+
+        namespace SubNsAa
+        {
+            public class TestRule002 : Rule
+            {
+                public override void Define()
+                {
+                }
             }
         }
     }

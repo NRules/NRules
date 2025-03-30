@@ -71,7 +71,8 @@ public class RuleTypeScanner : IRuleTypeScanner
     private readonly List<Type> _ruleTypes = new();
     private bool _nestedTypes = false;
     private bool _privateTypes = false;
-
+    private Func<Type, bool>? _filterFunc = null;
+    
     /// <summary>
     /// Enables/disables discovery of private rule classes.
     /// Default is off.
@@ -148,9 +149,7 @@ public class RuleTypeScanner : IRuleTypeScanner
     /// <returns>Rule type scanner to continue scanning specification.</returns>
     public IRuleTypeScanner Where(Func<Type, bool> predicate)
     {
-        var ruleTypesToKeep = _ruleTypes.Where(predicate);
-        var ruleTypesToRemove = _ruleTypes.Except(ruleTypesToKeep);
-        _ruleTypes.RemoveAll(x => ruleTypesToRemove.Contains(x));
+        _filterFunc = predicate;
         return this;
     }
 
@@ -163,6 +162,10 @@ public class RuleTypeScanner : IRuleTypeScanner
         var ruleTypes = _ruleTypes
             .Where(t => _privateTypes || !t.IsNotPublic)
             .Where(t => _nestedTypes || !t.IsNested);
+        if (_filterFunc != null)
+        {
+            ruleTypes = ruleTypes.Where(_filterFunc);
+        }
         return ruleTypes.ToArray();
     }
 
