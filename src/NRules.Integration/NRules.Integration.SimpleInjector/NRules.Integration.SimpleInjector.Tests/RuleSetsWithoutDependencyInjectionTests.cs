@@ -44,9 +44,9 @@ public class RuleSetsWithoutDependencyInjectionTests
         Assert.Single(subSet02!.Rules);
         Assert.Single(subSet03!.Rules);
 
-        var person02A = session02A.Query<TestPerson>().SingleOrDefault();
-        Assert.Equal("Brat Pitt", session02A.Query<TestPerson>().Single().FullName);
-        var person03A = session03A.Query<TestPerson>().SingleOrDefault();
-        Assert.Equal("Pitt, Brat", session03A.Query<TestPerson>().Single().FullName);
+        var person02A = session02A.Query<TestPerson>().Single();
+        Assert.Equal("Brat Pitt", person02A.FullName);
+        var person03A = session03A.Query<TestPerson>().Single();
+        Assert.Equal("Pitt, Brat", person03A.FullName);
     }
 }
