@@ -10,25 +10,16 @@ namespace NRules.Integration.SimpleInjector;
 public static class RegistrationExtensions
 {
     /// <summary>
-    /// The Default interface tag. Used by Register functions without Generic Type Parameter.
-    /// </summary>
-    public interface IDefaultRuleRepository: IRuleRepository<IDefaultRuleRepository>
-    {
-    }
-    
-    /// <summary>
-    /// RegisterRuleRepository the generic version for custom IRuleRepository.
+    /// RegisterRuleRepository the IRuleRepository.
     /// </summary>
     /// <param name="container">The SimpleInjector container.</param>
     /// <param name="scanAction">The RuleTypeScanner action.</param>
     /// <param name="lifestyle">The SimpleInjector lifestyle. Default Singleton.</param>
-    /// <typeparam name="TService">The Interface Service to use as "Tag"</typeparam>
     /// <returns></returns>
-    public static Container RegisterRuleRepository<TService>(
+    public static Container RegisterRuleRepository(
         this Container container,
         Action<IRuleTypeScanner> scanAction,
         Lifestyle? lifestyle = null)
-        where TService : class, IRuleRepository<TService>
     {
         lifestyle ??= Lifestyle.Singleton;
         
@@ -46,11 +37,17 @@ public static class RegistrationExtensions
             }
         }
 
-        // Register TService with custom RuleRepository scan as concrete type
-        container.Register(typeof(IRuleRepository<TService>),
+        // Regsiter IRuleActivator
+        container.RegisterRuleActivator();
+        
+        // Register IDependencyResolver
+        container.RegisterDependencyResolver();
+
+        // Register RuleRepository
+        container.Register(typeof(IRuleRepository),
             () =>
             {
-                var repo = new RuleRepositoryWrapper<TService>(new SimpleInjectorRuleActivator(container)); 
+                var repo = new RuleRepository(container.GetInstance<IRuleActivator>()); 
                 repo.Load(s => s.From(ruleTypes));
 
                 return repo;
@@ -59,46 +56,8 @@ public static class RegistrationExtensions
         
         return container;
     }
-    /// <summary>
-    /// RegisterRuleRepository the default version using IDefaultRuleRepository interface type.
-    /// </summary>
-    /// <param name="container">The SimpleInjector container.</param>
-    /// <param name="scanAction">The RuleTypeScanner action.</param>
-    /// <param name="lifestyle">The SimpleInjector lifestyle. Default Singleton.</param>
-    /// <returns></returns>
-    public static Container RegisterRuleRepository(
-        this Container container,
-        Action<IRuleTypeScanner> scanAction,
-        Lifestyle? lifestyle = null)
-    {
-        return container.RegisterRuleRepository<IDefaultRuleRepository>(scanAction, lifestyle);
-    }
 
 
-    /// <summary>
-    /// Resolve RuleRepository with custom IRuleRepository generic type parameter from SimpleInjector.
-    /// </summary>
-    /// <param name="container">The SimpleInjector container.</param>
-    /// <typeparam name="TService">The interface service tag type parameter.</typeparam>
-    /// <returns></returns>
-    public static IRuleRepository<TService> ResolveRuleRepository<TService>(
-        this Container container)
-        where TService : class, IRuleRepository<TService>
-    {
-        return container.GetInstance<IRuleRepository<TService>>();
-    }
-    /// <summary>
-    /// Resolve RuleRepository with default IDefaultRuleRepository type parameter from SimpleInjector.
-    /// </summary>
-    /// <param name="container">The SimpleInjector container.</param>
-    /// <returns></returns>
-    public static IRuleRepository ResolveRuleRepository(
-        this Container container)
-    {
-        return container.GetInstance<IRuleRepository<IDefaultRuleRepository>>();
-    }
-    
-   
     /// <summary>
     /// Register IRuleActivator using SimpleInjector as backing Container.
     /// </summary>
@@ -112,20 +71,11 @@ public static class RegistrationExtensions
         lifestyle ??= Lifestyle.Transient;
         if (container.GetRegistration(typeof(IRuleActivator)) == null)
         {
-            container.Register<IRuleActivator>(() => new SimpleInjectorRuleActivator(container), lifestyle);
+            container.Register<IRuleActivator, SimpleInjectorRuleActivator>(lifestyle);
         }
         return container; 
     }
 
-    /// <summary>
-    /// Resolve the rule activator registered with SimnpleInjector.
-    /// </summary>
-    /// <param name="container">The SimpleInjector container.</param>
-    /// <returns>The IRuleActivator object.</returns>
-    public static IRuleActivator ResolveRuleActivator(this Container container)
-    {
-        return container.GetInstance<IRuleActivator>();
-    }
     
      /// <summary>
      /// Register the IDependencyResolver with SimpleInjector as backing Container.
@@ -140,46 +90,13 @@ public static class RegistrationExtensions
         lifestyle ??= Lifestyle.Transient;
         if (container.GetRegistration(typeof(IDependencyResolver)) == null)
         {
-            container.Register<IDependencyResolver>(() => new SimpleInjectorDependencyResolver(container), lifestyle);
+            container.Register<IDependencyResolver, SimpleInjectorDependencyResolver>(lifestyle);
         }
         return container; 
     }
 
      /// <summary>
-     /// Resolve the DependencyResolver registered with SimpleInjector container.
-     /// </summary>
-     /// <param name="container">The SimpleInjector container.</param>
-     /// <returns>The DependencyResolver object.</returns>
-    public static IDependencyResolver ResolveDependencyResolver(this Container container)
-    {
-        return container.GetInstance<IDependencyResolver>();
-    }
-
-
-     /// <summary>
-     /// Register the generic version of SessionFactory.
-     /// </summary>
-     /// <param name="container">The SimpleInjector container.</param>
-     /// <param name="lifestyle">The lifestyle scope. Default Singleton.</param>
-     /// <typeparam name="TService">The interface service tag.</typeparam>
-     /// <returns></returns>
-    public static Container RegisterSessionFactory<TService>(
-        this Container container,
-        Lifestyle? lifestyle = null)
-        where TService : class, IRuleRepository<TService>
-    {
-        lifestyle ??= Lifestyle.Singleton;
-        if (container.GetRegistration(typeof(ISessionFactory<TService>)) == null)
-        {
-            container.Register<ISessionFactory<TService>>(() =>
-            {
-                return new SessionFactoryWrapper<TService>(container);
-            }, lifestyle);
-        }
-        return container;
-    }
-     /// <summary>
-     /// Register the default version of SessionFactory using IDefaultRuleRepository as service tag.
+     /// Register the SessionFactory.
      /// </summary>
      /// <param name="container">The SimpleInjector container.</param>
      /// <param name="lifestyle">The lifestyle scope. Default Singleton.</param>
@@ -188,28 +105,33 @@ public static class RegistrationExtensions
         this Container container,
         Lifestyle? lifestyle = null)
     {
-        return container.RegisterSessionFactory<IDefaultRuleRepository>(lifestyle);
+        lifestyle ??= Lifestyle.Singleton;
+        if (container.GetRegistration(typeof(ISessionFactory)) == null)
+        {
+            container.Register<ISessionFactory>(() =>
+            {
+                var ruleRepository = container.GetInstance<IRuleRepository>();
+                var factory = ruleRepository.Compile();
+                factory.DependencyResolver = container.GetInstance<IDependencyResolver>();
+                return factory;
+            }, lifestyle);
+        }
+        return container;
     }
 
-   
-     /// <summary>
-     /// Resolve the generic version of the registered SessionFactory.
-     /// </summary>
-     /// <param name="container">The SimpleInjector container.</param>
-     /// <typeparam name="TService">The interface service tag type parameter.</typeparam>
-     /// <returns></returns>
-    public static ISessionFactory<TService> ResolveSessionFactory<TService>(this Container container)
-        where TService : class, IRuleRepository<TService>
+    /// <summary>
+    /// Register ISession through using instance of ISessionFactory.
+    /// </summary>
+    /// <param name="container">The SimpleInjector container.</param>
+    /// <param name="lifestyle">The Lifestyle for this Session object. Default Scoped.</param>
+    /// <returns></returns>
+    public static Container RegisterSession(
+        this Container container,
+        Lifestyle? lifestyle = null)
     {
-        return container.GetInstance<ISessionFactory<TService>>();
+        lifestyle ??= Lifestyle.Scoped;
+        container.Register<ISession>(() => container.GetInstance<ISessionFactory>().CreateSession(), lifestyle);
+        return container;
     }
-     /// <summary>
-     /// Resolve the default version of the registered SessionFactory.
-     /// </summary>
-     /// <param name="container">The SimpleInjector container.</param>
-     /// <returns></returns>
-    public static ISessionFactory ResolveSessionFactory(this Container container)
-    {
-        return container.GetInstance<ISessionFactory<IDefaultRuleRepository>>();
-    }
+
 }
