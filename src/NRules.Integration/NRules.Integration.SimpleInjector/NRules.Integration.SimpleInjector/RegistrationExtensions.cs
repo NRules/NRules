@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using NRules.Extensibility;
 using NRules.Fluent;
 using NRules.RuleModel;
@@ -134,4 +135,35 @@ public static class RegistrationExtensions
         return container;
     }
 
+
+    public static Container RegisterCompiledRuleSets<T>(
+        this Container container)
+        where T : class, ICompiledRuleSets<T>
+    {
+        container
+            .RegisterRuleActivator()
+            .RegisterDependencyResolver();
+        
+        
+        var compiledRuleSets = Activator.CreateInstance<T>();
+        compiledRuleSets.RuleActivator = new SimpleInjectorRuleActivator(container);
+        var ruleTypes = compiledRuleSets.GetOrDefine().GetRuleTypes();
+        foreach (var ruleType in ruleTypes)
+        {
+            container.Register(ruleType, ruleType, Lifestyle.Transient);
+        }
+        
+        container.Register<ICompiledRuleSets<T>>(() =>
+        {
+            return compiledRuleSets;
+        }, Lifestyle.Scoped);
+        return container;
+    }
+
+    public static ICompiledRuleSets<T> GetCompiledRuleSets<T>(
+        this Container container)
+    {
+        return container.GetInstance<ICompiledRuleSets<T>>();
+    }
+    
 }
