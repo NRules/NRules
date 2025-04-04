@@ -4,6 +4,9 @@ using SimpleInjector;
 
 namespace NRules.Integration.SimpleInjector
 {
+    /// <summary>
+    /// The NRules Dependency resolver with SimpleInjector as backing DI Container.
+    /// </summary>
     public class SimpleInjectorDependencyResolver : IDependencyResolver
     {
         private readonly Container _container;
@@ -17,6 +20,7 @@ namespace NRules.Integration.SimpleInjector
             _container = container;
         }
 
+        /// <inheritdoc cref="IDependencyResolver.Resolve"/>
         public object Resolve(IResolutionContext context, Type serviceType)
         {
             return _container.GetInstance(serviceType);

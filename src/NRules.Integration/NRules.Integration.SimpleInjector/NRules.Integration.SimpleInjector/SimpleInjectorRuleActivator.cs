@@ -15,14 +15,15 @@ namespace NRules.Integration.SimpleInjector
         private readonly Container _container;
 
         /// <summary>
-        /// 
+        /// Creates the SimpleInjector specific RuleActivator instance.
         /// </summary>
-        /// <param name="container"></param>
+        /// <param name="container">The SimpleInjector container.</param>
         public SimpleInjectorRuleActivator(Container container)
         {
             _container = container;
         }
 
+        /// <inheritdoc cref="IRuleActivator.Activate"/>>
         public IEnumerable<Rule> Activate(Type type)
         {
             var rules = new List<Rule>();

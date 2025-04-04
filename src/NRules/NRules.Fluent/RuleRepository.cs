@@ -63,19 +63,6 @@ public class RuleRepository : IRuleRepository
     }
 
     /// <summary>
-    /// Loads sets of rules into this repository. (Bulk loader overload)
-    /// <seealso cref="IRuleBulkLoadSpec"/>
-    /// </summary>
-    /// <param name="bulkSpec">Rule bulk loader specification.</param>
-    public void BulkLoad(IRuleBulkLoadSpec bulkSpec)
-    {
-        foreach (var ruleSet in bulkSpec.GetRuleSets())
-        {
-            Add(ruleSet);
-        }
-    }
-
-    /// <summary>
     /// Adds a new rule set to the rule repository.
     /// </summary>
     /// <param name="ruleSet">Rule set to add.</param>
