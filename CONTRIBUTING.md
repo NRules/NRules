@@ -11,7 +11,7 @@ Contributions to NRules, whether new features or bug fixes, are welcome and are 
 - **Implementation.** Fork the repository, implement and test the change.
 - **Pull request.** Create a pull request on the `develop` branch of the repository to submit changes. Pull requests need to pass the CI build and follow coding standards. All pull requests should include accompanying unit tests to verify the work.
 - **Code review.** Some iteration may take place requiring updates to the pull request.
-- **Pull request acceptance.** The pull request will be accepted into the `develop` branch and pushed to `master` with the next release.
+- **Pull request acceptance.** The pull request will be accepted into the `develop` branch and pushed to `main` with the next release.
 
 ### Questions
 
