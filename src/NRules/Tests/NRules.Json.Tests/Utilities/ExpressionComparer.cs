@@ -118,7 +118,8 @@ public static class ExpressionComparer
                         && CollectionsEqual(bx.Expressions, by.Expressions, rootX, rootY);
                 }
             default:
-                throw new NotImplementedException(x.ToString());
+                throw new NotImplementedException(
+                    $"Unsupported expression type. Type={x.GetType()}, Expression={x}");
         }
     }
 
@@ -174,7 +175,8 @@ public static class ExpressionComparer
                 var mlby = (MemberListBinding)y;
                 return ElementInitCollectionsEqual(mlbx.Initializers, mlby.Initializers, rootX, rootY);
             default:
-                throw new ArgumentOutOfRangeException($"Unsupported binding type. BindingType={x.BindingType}");
+                throw new ArgumentOutOfRangeException(
+                    $"Unsupported binding type in member binding. BindingType={x.BindingType}, MemberBinding={x}");
         }
     }
 
@@ -211,7 +213,8 @@ public static class ExpressionComparer
             case ExpressionType.New:
                 return ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
             default:
-                throw new NotImplementedException(x.ToString());
+                throw new NotImplementedException(
+                    $"Unsupported node type in member expression. NodeType={x.Expression.NodeType}, MemberExpression={x}");
         }
     }
 
@@ -222,7 +225,8 @@ public static class ExpressionComparer
         {
             FieldInfo fi => fi.GetValue(o),
             PropertyInfo pi => pi.GetValue(o, null),
-            _ => throw new ArgumentException($"Unsupported member type. MemberType={mex.Member.GetType()}")
+            _ => throw new ArgumentException(
+                $"Unsupported member type in member expression. MemberType={mex.Member.GetType()}, MemberExpression={mex}")
         };
     }
 }
