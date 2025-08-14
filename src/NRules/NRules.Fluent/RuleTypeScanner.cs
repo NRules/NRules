@@ -54,6 +54,13 @@ public interface IRuleTypeScanner
     /// <param name="types">Types to scan.</param>
     /// <returns>Rule type scanner to continue scanning specification.</returns>
     IRuleTypeScanner Type(params Type[] types);
+   
+    /// <summary>
+    /// Filters rule types using a predicate.
+    /// </summary>
+    /// <param name="predicate">The filter to use.</param>
+    /// <returns>Rule type scanner to continue scanning specification.</returns>
+    IRuleTypeScanner Where(Func<Type, bool> predicate);
 }
 
 /// <summary>
@@ -64,7 +71,8 @@ public class RuleTypeScanner : IRuleTypeScanner
     private readonly List<Type> _ruleTypes = new();
     private bool _nestedTypes = false;
     private bool _privateTypes = false;
-
+    private Func<Type, bool>? _filterFunc = null;
+    
     /// <summary>
     /// Enables/disables discovery of private rule classes.
     /// Default is off.
@@ -135,6 +143,17 @@ public class RuleTypeScanner : IRuleTypeScanner
     }
 
     /// <summary>
+    /// Filters rule types using a predicate.
+    /// </summary>
+    /// <param name="predicate">The filter to use.</param>
+    /// <returns>Rule type scanner to continue scanning specification.</returns>
+    public IRuleTypeScanner Where(Func<Type, bool> predicate)
+    {
+        _filterFunc = predicate;
+        return this;
+    }
+
+    /// <summary>
     /// Retrieves found types.
     /// </summary>
     /// <returns>Rule types.</returns>
@@ -143,6 +162,10 @@ public class RuleTypeScanner : IRuleTypeScanner
         var ruleTypes = _ruleTypes
             .Where(t => _privateTypes || !t.IsNotPublic)
             .Where(t => _nestedTypes || !t.IsNested);
+        if (_filterFunc != null)
+        {
+            ruleTypes = ruleTypes.Where(_filterFunc);
+        }
         return ruleTypes.ToArray();
     }
 

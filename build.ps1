@@ -3,7 +3,7 @@ param (
     [string]$component = 'Core'
 )
 
-$version = '1.0.2'
+$version = '1.0.3'
 $configuration = 'Release'
 
 if (Test-Path Env:CI) { $version = $Env:APPVEYOR_BUILD_VERSION }
@@ -86,6 +86,28 @@ $components = @{
             }
             nuget = @(
                 'NRules.Integration.Autofac'
+            )
+        }
+    };
+    'NRules.Integration.SimpleInjector' = @{
+        name = 'NRules.Integration.SimpleInjector'
+        solution_file = 'src\NRules.Integration\NRules.Integration.SimpleInjector\NRules.Integration.SimpleInjector.sln'
+        package = @{
+            bin = @{
+                artifacts = @('netstandard2.0', 'netstandard2.1')
+                'netstandard2.0' = @{
+                    include = @(
+                        "NRules.Integration.SimpleInjector\bin\$configuration\netstandard2.0"
+                    )
+                }
+                'netstandard2.1' = @{
+                    include = @(
+                        "NRules.Integration.SimpleInjector\bin\$configuration\netstandard2.1"
+                    )
+                }
+            }
+            nuget = @(
+                'NRules.Integration.SimpleInjector'
             )
         }
     };

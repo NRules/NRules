@@ -108,7 +108,8 @@ internal class ExpressionComparer(RuleCompilerOptions compilerOptions)
                 return dx.Type == dy.Type;
             }
             default:
-                return HandleUnsupportedExpression(x.ToString());
+                return HandleUnsupportedExpression(
+                    $"Unsupported expression type. Type={x.GetType()}, Expression={x}");
         }
     }
 
@@ -164,7 +165,8 @@ internal class ExpressionComparer(RuleCompilerOptions compilerOptions)
                 var mlby = (MemberListBinding)y;
                 return ElementInitCollectionsEqual(mlbx.Initializers, mlby.Initializers, rootX, rootY);
             default:
-                return HandleUnsupportedExpression($"Unsupported binding type. BindingType={x.BindingType}");
+                return HandleUnsupportedExpression(
+                    $"Unsupported binding type in member binding. BindingType={x.BindingType}, MemberBinding={x}");
         }
     }
 
@@ -197,11 +199,13 @@ internal class ExpressionComparer(RuleCompilerOptions compilerOptions)
             case ExpressionType.Power:
             case ExpressionType.Conditional:
             case ExpressionType.Call:
+            case ExpressionType.TypeAs:
                 return Equals(x.Member, y.Member) && ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
             case ExpressionType.New:
                 return ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
             default:
-                return HandleUnsupportedExpression(x.ToString());
+                return HandleUnsupportedExpression(
+                    $"Unsupported node type in member expression. NodeType={x.Expression.NodeType}, MemberExpression={x}");
         }
     }
 
@@ -212,7 +216,8 @@ internal class ExpressionComparer(RuleCompilerOptions compilerOptions)
         {
             FieldInfo fi => fi.GetValue(o),
             PropertyInfo pi => pi.GetValue(o, null),
-            _ => throw new ArgumentException($"Unsupported member type. MemberType={mex.Member.GetType()}")
+            _ => throw new ArgumentException(
+                $"Unsupported member type in member expression. MemberType={mex.Member.GetType()}, MemberExpression={mex}")
         };
     }
 

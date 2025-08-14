@@ -4,7 +4,7 @@ This guide shows step by step how to install and use `NRules` rules engine to cr
 
 You can also find this complete example under the `samples` folder.
 
-This guide shows how to use `NRules` with the fluent DSL in C#. To see how to use `NRules` with externalized rules, written in R# rules language, see [NRules.Languange](https://github.com/NRules/NRules.Language).
+This guide shows how to use `NRules` with the fluent DSL in C#. To see how to use `NRules` with externalized rules, written in Rule# rules language, see [NRules.Languange](https://github.com/NRules/NRules.Language).
 
 ## Creating Project Structure
 Use .NET CLI in a terminal to create a new Visual Studio solution and project structure.

@@ -15,6 +15,7 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+    <PackageVersion Include="SimpleInjector" Version="5.5.0" />
   </ItemGroup>
 
   <!-- Locally built packages -->

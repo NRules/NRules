@@ -20,6 +20,7 @@ public class AutofacDependencyResolver : IDependencyResolver
         _container = container;
     }
 
+    /// <inheritdoc cref="IDependencyResolver.Resolve"/>
     public object Resolve(IResolutionContext context, Type serviceType)
     {
         return _container.Resolve(serviceType);

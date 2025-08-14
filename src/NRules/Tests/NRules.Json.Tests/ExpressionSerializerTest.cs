@@ -215,6 +215,13 @@ public class ExpressionSerializerTest
             parameter);
         TestRoundtrip(expression);
     }
+    
+    [Fact]
+    public void Roundtrip_TypeAsExpression_Equals()
+    {
+        Expression<Func<object, int>> expression = o => (o as string)!.Length;
+        TestRoundtrip(expression);
+    }
 
     [Fact]
     public void Deserialize_WrongPropertyPosition_Throws()

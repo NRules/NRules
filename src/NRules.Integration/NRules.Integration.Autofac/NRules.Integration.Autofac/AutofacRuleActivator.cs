@@ -22,6 +22,7 @@ public class AutofacRuleActivator : IRuleActivator
         _container = container;
     }
 
+    /// <inheritdoc cref="IRuleActivator.Activate"/>
     public IEnumerable<Rule> Activate(Type type)
     {
         if (_container.IsRegistered(type))

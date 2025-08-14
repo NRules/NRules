@@ -7,7 +7,7 @@ NRules engine consists of several components, and is designed in a way that more
 The central part of any rules engine is rules, and they can exist in many different forms.
 First, rules exist in a form in which they are written, which in case of NRules is internal DSL that uses fluent API.
 One of the design goals behind NRules is to support more than one rules language, and so internal DSL is translated into a canonical form.
-Other languages can be translated to the same canonical form, e.g. [NRules.RuleSharp](https://github.com/NRules/NRules.Language) can translate rules written in a business rules language R#.
+Other languages can be translated to the same canonical form, e.g. [NRules.RuleSharp](https://github.com/NRules/NRules.Language) can translate rules written in a business rules language Rule#.
 
 The canonical rules model is akin to an abstract syntax tree (AST) in the world of compilers/DSL design.
 In this form rules are represented as data that can be analysed, viewed, reported on and, most importantly, compiled to an executable form.

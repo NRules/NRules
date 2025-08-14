@@ -11,11 +11,11 @@ Contributions to NRules, whether new features or bug fixes, are welcome and are 
 - **Implementation.** Fork the repository, implement and test the change.
 - **Pull request.** Create a pull request on the `develop` branch of the repository to submit changes. Pull requests need to pass the CI build and follow coding standards. All pull requests should include accompanying unit tests to verify the work.
 - **Code review.** Some iteration may take place requiring updates to the pull request.
-- **Pull request acceptance.** The pull request will be accepted into the `develop` branch and pushed to `master` with the next release.
+- **Pull request acceptance.** The pull request will be accepted into the `develop` branch and pushed to `main` with the next release.
 
 ### Questions
 
-If you just want to ask a question about how to use NRules, instead of creating an issue, consider asking your question on [Stack Overflow](https://stackoverflow.com/questions/tagged/nrules), starting a discussion on GitHub [Discussions](https://github.com/NRules/NRules/discussions) or kicking off a conversation on the [Gitter Chat](https://gitter.im/NRules/NRules).
+If you just want to ask a question about how to use NRules, consider asking it on [Stack Overflow](https://stackoverflow.com/questions/tagged/nrules) or starting a discussion on GitHub [Discussions](https://github.com/NRules/NRules/discussions), instead of creating an issue.
 
 ## License
 

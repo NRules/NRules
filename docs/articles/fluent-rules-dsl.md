@@ -53,6 +53,8 @@ If a given pattern matches multiple facts in the engine’s working memory, each
 
 Optionally, a pattern can be bound to a variable, in which case that variable can be used in subsequent patterns to specify inter-fact conditions. Also, the variable can be used inside actions to update or retract the corresponding fact, or use it in the expression. Do not use or otherwise manipulate the binding variable anywhere outside of the condition/action expressions.
 
+In the example below, the rule will match once for every combination of Customer and Account that match the conditions. If a customer has multiple active accounts, the rule will fire once for each such account.
+
 ```c#
 public class PreferredCustomerActiveAccountsRule : Rule
 {
@@ -76,6 +78,8 @@ Existential rules test for presence of facts that match a particular set of cond
 
 An existential quantifier cannot be bound to a variable, since it does not match any single fact.
 
+In the example below, the rule will match at most once for a given customer, even if they have multiple accounts.
+
 ```c#
 public class PreferredCustomerActiveAccountsRule : Rule
 {
@@ -98,6 +102,8 @@ Opposite to existential rules, negative rules test for absence of facts that mat
 
 A negative existential quantifier cannot be bound to a variable, since it does not match any single fact.
 
+In the example below, the rule will match at most once for a given customer.
+
 ```c#
 public class PreferredCustomerNotDelinquentRule : Rule
 {
@@ -119,6 +125,8 @@ public class PreferredCustomerNotDelinquentRule : Rule
 Universal quantifier ensures that all facts that match a particular condition also match all subsequent conditions defined by the quantifier. A universal quantifier is defined using [All](xref:NRules.Fluent.Dsl.ILeftHandSideExpression.All``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}}[])) method.
 
 A universal quantifier cannot be bound to a variable, since it does not match any single fact.
+
+In the example below, the rule will match at most once for a given customer, even if they have multiple accounts that satisfy the universal quantifier conditions.
 
 ```c#
 public class PreferredCustomerAllAccountsActiveRule : Rule

@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <Title>NRules SimpleInjector Integration</Title>
+    <Description>SimpleInjector integration for NRules</Description>
+    <PackageId>NRules.Integration.SimpleInjector</PackageId>
+    <PackageTags>nrules;simpleinjector;di;ioc</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\..\SigningKey.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SimpleInjector" />
+    <PackageReference Include="NRules" />
+  </ItemGroup>
+
+</Project>
