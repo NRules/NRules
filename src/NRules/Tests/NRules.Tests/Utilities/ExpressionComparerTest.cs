@@ -688,7 +688,29 @@ public class ExpressionComparerTest
         //Act - Assert
         AssertNotEqual(first, second);
     }
+    
+    [Fact]
+    public void AreEqual_EquivalentTypeAsExpression_True()
+    {
+        //Arrange
+        Expression<Func<object, int>> first = x => (x as ISomeFact)!.Value;
+        Expression<Func<object, int>> second = x => (x as ISomeFact)!.Value;
 
+        //Act - Assert
+        AssertEqual(first, second);
+    }
+
+    [Fact]
+    public void AreEqual_NonEquivalentTypeAsExpression_False()
+    {
+        //Arrange
+        Expression<Func<object, int>> first = x => (x as ISomeFact)!.Value;
+        Expression<Func<object, int>> second = x => (x as SomeFact)!.Value;
+
+        //Act - Assert
+        AssertNotEqual(first, second);
+    }
+    
     [Fact]
     public void AreEqual_UnsupportedExpressionOptionIsFailFast_Throws()
     {

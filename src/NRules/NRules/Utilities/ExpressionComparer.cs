@@ -197,6 +197,7 @@ internal class ExpressionComparer(RuleCompilerOptions compilerOptions)
             case ExpressionType.Power:
             case ExpressionType.Conditional:
             case ExpressionType.Call:
+            case ExpressionType.TypeAs:
                 return Equals(x.Member, y.Member) && ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
             case ExpressionType.New:
                 return ExpressionEqual(x.Expression, y.Expression, rootX, rootY);
