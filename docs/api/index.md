@@ -16,3 +16,4 @@ API | Description
 --- | ---
 [NRules.Integration.DependencyInjection](xref:NRules.Integration.DependencyInjection) | Integration with .NET built-in IoC container
 [NRules.Integration.Autofac](xref:NRules.Integration.Autofac) | Integration with Autofac IoC container
+[NRules.Integration.SimpleInjector](xref:NRules.Integration.SimpleInjector) | Integration with Simple Injector DI container
