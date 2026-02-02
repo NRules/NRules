@@ -36,10 +36,10 @@ internal static class MemberExtensions
         {
             case MemberTypes.Field:
                 return type.GetField(name) ??
-                    throw new ArgumentException($"Unknown field. DeclaringType={type}, Name={name}", nameof(name));
+                    throw new ArgumentException($"Unknown field. DeclaringType={type}, Name={name}");
             case MemberTypes.Property:
                 return type.GetProperty(name) ??
-                    throw new ArgumentException($"Unknown property. DeclaringType={type}, Name={name}", nameof(name));
+                    throw new ArgumentException($"Unknown property. DeclaringType={type}, Name={name}");
             default:
                 throw new NotSupportedException($"MemberType={memberType}");
         }
@@ -124,7 +124,7 @@ internal static class MemberExtensions
 
         throw new ArgumentException(
             $"Unknown generic method. DeclaringType={type}, Name={name}, " +
-            $"GenericTypeArguments=[{string.Join(", ", genericTypeArguments.Select(t => t.FullName))}], " +
-            $"ArgumentTypes=[{string.Join(", ", argumentTypes.Select(t => t.FullName))}]");
+            $"GenericTypeArguments=[{string.Join(", ", genericTypeArguments.AsEnumerable())}], " +
+            $"ArgumentTypes=[{string.Join(", ", argumentTypes.AsEnumerable())}]");
     }
 }
