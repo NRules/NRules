@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json;
 using NRules.Json.Tests.TestAssets;
@@ -220,6 +221,41 @@ public class ExpressionSerializerTest
     public void Roundtrip_TypeAsExpression_Equals()
     {
         Expression<Func<object, int>> expression = o => (o as string)!.Length;
+        TestRoundtrip(expression);
+    }
+
+    [Fact]
+    public void Roundtrip_GenericExtensionMethod_SingleTypeParam_Equals()
+    {
+        Expression<Func<IEnumerable<string>, bool>> expression = s => s.Contains("test");
+        TestRoundtrip(expression);
+    }
+
+    [Fact]
+    public void Roundtrip_GenericStaticMethodWithPredicate_Equals()
+    {
+        Expression<Func<IEnumerable<string>, bool>> expression = s => s.Any(x => x.Length > 0);
+        TestRoundtrip(expression);
+    }
+
+    [Fact]
+    public void Roundtrip_GenericMethodWithMultipleTypeParams_Equals()
+    {
+        Expression<Func<IEnumerable<string>, Dictionary<int, string>>> expression = s => s.ToDictionary(x => x.Length);
+        TestRoundtrip(expression);
+    }
+
+    [Fact]
+    public void Roundtrip_GenericMethodOnValueType_Equals()
+    {
+        Expression<Func<IEnumerable<int>, bool>> expression = s => s.Contains(42);
+        TestRoundtrip(expression);
+    }
+
+    [Fact]
+    public void Roundtrip_GenericMethodWithNestedGenericTypes_Equals()
+    {
+        Expression<Func<IEnumerable<string>, IEnumerable<string>>> expression = s => s.Where(x => x.Length > 0);
         TestRoundtrip(expression);
     }
 
