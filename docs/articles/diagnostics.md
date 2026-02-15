@@ -71,11 +71,28 @@ There are two types of node metrics: those that reflect the current state of the
 session.Metrics.Reset();
 ``` 
 
-## Debugger Visualizer
+## Debugger Visualizer for VS Code
+Debugger visualizer is a Visual Studio Code extension that visualizes the NRules Rete network as an interactive graph during debugging. It retrieves DGML graph data from the NRules runtime via the Debug Adapter Protocol (DAP) and renders it using Cytoscape.js with automatic hierarchical layout.
+
+The extension is available at the VS Code marketplace: [NRules Visualizer](https://marketplace.visualstudio.com/items?itemName=nrules.vscode-nrules-visualizer). Sources are located at [NRules.VSCode](https://github.com/NRules/NRules.VSCode).
+
+To use debugger vsualizer, after installing the extension:
+1. Start a debug session for your .NET application that uses NRules.
+2. Set a breakpoint where an NRules.ISession variable is in scope.
+3. When the debugger pauses, open the Command Palette (Ctrl+Shift+P / Cmd+Shift+P) and run one of:
+  - NRules Visualizer — to view the Rete network schema
+  - NRules Performance Visualizer — to view the Rete network with performance metrics
+4. The extension automatically finds the NRules session variable in the current stack frame, extracts the DGML graph, and renders it in a webview panel.
+
+![Rete Graph](../images/NRules-Diagnostics-VSCodeVisualizer-Schema.png)
+
+![Rete Graph](../images/NRules-Diagnostics-VSCodeVisualizer-Tooltip.png)
+
+## Debugger Visualizer for Visual Studio
 Debugger visualiser is an add-on component for Visual Studio that adds visualization capabilities for certain .NET types.
 Debugger visualizer that comes with NRules adds such visualization capability for [ISession](xref:NRules.ISession) and [ISessionFactory](xref:NRules.ISessionFactory) types. It also requires a '[DGML](http://en.wikipedia.org/wiki/DGML) editor' feature, which must be enabled when installing Visual Studio. Ensure `.dgml` files are properly associated with Visual Studio, so that the generated Rete graph opens correctly.
 
-NRules debugger visualiser is supported for Visual Studio 2022.
+NRules debugger visualiser is supported for Visual Studio 2022 and therefore is Windows only.
 
 NRules debugger visualizer is not packaged, so you need to clone NRules git repository from GitHub and build it yourself. Make sure to clone exactly the same version of the repo as the version of NRules library you are using in your project.
 To build NRules debugger visualizer, first build NRules:
