@@ -158,21 +158,21 @@ $components = @{
         solution_file = 'bench\NRules.Benchmark\NRules.Benchmark.sln'
         package = @{
             bin = @{
-                artifacts = @('net6', 'net8')
-                'net6' = @{
+                artifacts = @('net8.0', 'net10.0')
+                'net8.0' = @{
                     include = @(
-                        "NRules.Benchmark\bin\$configuration\net6"
+                        "NRules.Benchmark\bin\$configuration\net8.0"
                     )
                 }
-                'net8' = @{
+                'net10.0' = @{
                     include = @(
-                        "NRules.Benchmark\bin\$configuration\net8"
+                        "NRules.Benchmark\bin\$configuration\net10.0"
                     )
                 }
             }
         }
         bench = @{
-            frameworks = @('net8')
+            frameworks = @('net8.0')
             runner = 'NRules.Benchmark'
             categories = @('Micro')
         }
