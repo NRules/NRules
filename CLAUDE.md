@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NRules is an open-source cross-platform production rules engine for .NET, based on the Rete matching algorithm. Rules are authored in C# using a fluent DSL. The core libraries target netstandard2.0/netstandard2.1; tests target net6/net8.
+NRules is an open-source cross-platform production rules engine for .NET, based on the Rete matching algorithm. Rules are authored in C# using a fluent DSL. The core libraries target netstandard2.0/netstandard2.1; tests target net8.0/net10.0.
 
 ## Build Commands
 
