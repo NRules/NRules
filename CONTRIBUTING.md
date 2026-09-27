@@ -32,7 +32,7 @@ By contributing to NRules, you assert that:
 All platforms require .NET SDK 10.0 and .NET Runtime 8.0 to be installed. The build scripts verify that these are present but do not install them.
 
 #### Windows
-- Visual Studio 2022 or Visual Studio Code (full Visual Studio is required for Debugger Visualizer development)
+- Visual Studio 2026 or Visual Studio Code (full Visual Studio is required for Debugger Visualizer development)
 
 #### MacOS and Linux
 - PowerShell (necessary to run build scripts)
