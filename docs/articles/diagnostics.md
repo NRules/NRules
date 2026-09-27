@@ -92,7 +92,7 @@ To use debugger vsualizer, after installing the extension:
 Debugger visualiser is an add-on component for Visual Studio that adds visualization capabilities for certain .NET types.
 Debugger visualizer that comes with NRules adds such visualization capability for [ISession](xref:NRules.ISession) and [ISessionFactory](xref:NRules.ISessionFactory) types. It also requires a '[DGML](http://en.wikipedia.org/wiki/DGML) editor' feature, which must be enabled when installing Visual Studio. Ensure `.dgml` files are properly associated with Visual Studio, so that the generated Rete graph opens correctly.
 
-NRules debugger visualiser is supported for Visual Studio 2022 and therefore is Windows only.
+NRules debugger visualiser is supported for Visual Studio 2026 and therefore is Windows only.
 
 NRules debugger visualizer is not packaged, so you need to clone NRules git repository from GitHub and build it yourself. Make sure to clone exactly the same version of the repo as the version of NRules library you are using in your project.
 To build NRules debugger visualizer, first build NRules:
