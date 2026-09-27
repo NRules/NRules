@@ -72,7 +72,8 @@
     ],
     "template": [
       "default",
-      "modern"
+      "modern",
+      "template"
     ],
     "globalMetadata": {
       "_appName": "NRules",
