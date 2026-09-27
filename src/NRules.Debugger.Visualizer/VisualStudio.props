@@ -1,14 +1,13 @@
 <Project>
 
   <PropertyGroup>
+    <VisualStudioRoot2026>$(ProgramFiles)\Microsoft Visual Studio\18</VisualStudioRoot2026>
     <VisualStudioRoot2022>$(ProgramFiles)\Microsoft Visual Studio\2022</VisualStudioRoot2022>
-    <VisualStudioRoot2019>$(MSBuildProgramFiles32)\Microsoft Visual Studio\2019</VisualStudioRoot2019>
+    <VisualStudioTarget Condition="'$(BuildingInsideVisualStudio)' == 'true' and '$(VisualStudioVersion)' == '18.0'">2026</VisualStudioTarget>
     <VisualStudioTarget Condition="'$(BuildingInsideVisualStudio)' == 'true' and '$(VisualStudioVersion)' == '17.0'">2022</VisualStudioTarget>
-    <VisualStudioTarget Condition="'$(BuildingInsideVisualStudio)' == 'true' and '$(VisualStudioVersion)' == '16.0'">2019</VisualStudioTarget>
-    <VisualStudioTarget Condition="'$(VisualStudioTarget)' == '' and Exists('$(VisualStudioRoot2022)')">2022</VisualStudioTarget>
-    <VisualStudioTarget Condition="'$(VisualStudioTarget)' == '' and Exists('$(VisualStudioRoot2019)')">2019</VisualStudioTarget>
+    <VisualStudioTarget Condition="'$(VisualStudioTarget)' == '' and Exists('$(VisualStudioRoot2026)')">2026</VisualStudioTarget>    <VisualStudioTarget Condition="'$(VisualStudioTarget)' == '' and Exists('$(VisualStudioRoot2022)')">2022</VisualStudioTarget>
+    <VisualStudioRoot Condition="'$(VisualStudioTarget)' == '2026'">$(VisualStudioRoot2026)</VisualStudioRoot>
     <VisualStudioRoot Condition="'$(VisualStudioTarget)' == '2022'">$(VisualStudioRoot2022)</VisualStudioRoot>
-    <VisualStudioRoot Condition="'$(VisualStudioTarget)' == '2019'">$(VisualStudioRoot2019)</VisualStudioRoot>
     <VisualStudioLocation Condition="Exists('$(VisualStudioRoot)\Enterprise')">$(VisualStudioRoot)\Enterprise</VisualStudioLocation>
     <VisualStudioLocation Condition="Exists('$(VisualStudioRoot)\Professional')">$(VisualStudioRoot)\Professional</VisualStudioLocation>
     <VisualStudioLocation Condition="Exists('$(VisualStudioRoot)\Community')">$(VisualStudioRoot)\Community</VisualStudioLocation>
