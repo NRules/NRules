@@ -31,58 +31,23 @@ function Update-InternalsVisible([string] $path, [string] $publicKey, [string] $
     }
 }
 
-function Install-DotNetCli([string] $location, [string] $version, [string[]] $runtimes) {
-    Assert ($version -ne $null) '.NET SDK version should not be null'
+function Assert-DotNetSdk([string] $sdkVersion, [string[]] $runtimes) {
+    Assert ($sdkVersion -ne $null) '.NET SDK version should not be null'
 
     $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
-    
-    if ($null -ne (Get-Command "dotnet" -ErrorAction SilentlyContinue)) {
-        $installedVersion = dotnet --version
-        if ($installedVersion -eq $version) {
-            Write-Host ".NET SDK version $version is already installed"
-            return;
-        }
-    }
 
-    $installDir = Join-Path -Path $location -ChildPath "cli"
-    if (!(Test-Path $installDir)) {
-        New-Directory $installDir
-    }
+    Assert ($null -ne (Get-Command "dotnet" -ErrorAction SilentlyContinue)) ".NET SDK not found. Install .NET SDK $sdkVersion"
 
-    $installScriptName = if (IsOnWindows) { "dotnet-install.ps1" } else { "dotnet-install.sh" }
-    $installScriptPath = Join-Path $location $installScriptName
+    $installedSdks = dotnet --list-sdks | % { ($_ -split ' ')[0] }
+    $matchingSdks = @($installedSdks | ? { $_.StartsWith("$sdkVersion.") })
+    Assert ($matchingSdks.Count -gt 0) ".NET SDK $sdkVersion not found. Install .NET SDK $sdkVersion"
+    Write-Host "Found .NET SDK $($matchingSdks -join ', ')"
 
-    (New-Object System.Net.WebClient).Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
-
-    if (!(Test-Path $installScriptPath)) {
-        $url = "https://dot.net/v1/$installScriptName"
-        Invoke-WebRequest $url -OutFile $installScriptPath
-        if (!(IsOnWindows)) {
-            & chmod +x $installScriptPath
-        }
-    }
-
-    Write-Host "Installing .NET SDK $version"
-    if (IsOnWindows) {
-        & $installScriptPath -InstallDir "$installDir" -Version $version
-    } else {
-        & $installScriptPath --install-dir "$installDir" --version $version
-    }
-
-    if ($null -ne $runtimes) {
-        foreach ($runtime in $runtimes) {
-            Write-Host "Installing .NET Runtime $runtime"
-            if (IsOnWindows) {
-                & $installScriptPath -InstallDir "$installDir" -Runtime dotnet -Version $runtime
-            } else {
-                & $installScriptPath --install-dir "$installDir" --runtime dotnet --version $runtime
-            }
-        }
-    }
-
-    if (!($env:PATH -contains $installDir)) {
-        $envPathSeparator = if (IsOnWindows) { ';' } else { ':' }
-        $env:PATH = $installDir + $envPathSeparator + $env:PATH
+    $installedRuntimes = dotnet --list-runtimes | ? { $_.StartsWith("Microsoft.NETCore.App ") } | % { ($_ -split ' ')[1] }
+    foreach ($runtime in $runtimes) {
+        $matchingRuntimes = @($installedRuntimes | ? { $_.StartsWith("$runtime.") })
+        Assert ($matchingRuntimes.Count -gt 0) ".NET Runtime $runtime not found. Install .NET Runtime $runtime"
+        Write-Host "Found .NET Runtime $($matchingRuntimes -join ', ')"
     }
 }
 
