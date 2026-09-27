@@ -21,6 +21,12 @@
         "ms-vscode.powershell",
         "EditorConfig.EditorConfig"
       ]
+    },
+    "jetbrains": {
+      "backend": "Rider",
+      "plugins": [
+        "com.intellij.powershell"
+      ]
     }
   },
   "remoteUser": "vscode"
