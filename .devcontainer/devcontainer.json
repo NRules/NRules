@@ -1,0 +1,33 @@
+{
+  "name": "NRules",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/dotnet:2": {
+      "version": "10.0",
+      "dotnetRuntimeVersions": "8.0"
+    },
+    "ghcr.io/devcontainers/features/powershell:1": {
+      "version": "latest"
+    }
+  },
+  "containerEnv": {
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_NOLOGO": "1"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-vscode.powershell",
+        "EditorConfig.EditorConfig"
+      ]
+    },
+    "jetbrains": {
+      "backend": "Rider",
+      "plugins": [
+        "com.intellij.powershell"
+      ]
+    }
+  },
+  "remoteUser": "vscode"
+}

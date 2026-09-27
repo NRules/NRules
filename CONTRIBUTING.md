@@ -29,12 +29,17 @@ By contributing to NRules, you assert that:
 
 ### Development Environment
 
+All platforms require .NET SDK 10.0 and .NET Runtime 8.0 to be installed. The build scripts verify that these are present but do not install them.
+
 #### Windows
-- Visual Studio 2022 or Visual Studio Code (full Visual Studio is required for Debugger Visualizer development)
+- Visual Studio 2026 or Visual Studio Code (full Visual Studio is required for Debugger Visualizer development)
 
 #### MacOS and Linux
 - PowerShell (necessary to run build scripts)
 - Visual Studio Code or JetBrains Rider
+
+#### Dev Container
+- The repository includes a [dev container](https://containers.dev/) configuration (`.devcontainer/devcontainer.json`) based on Ubuntu, with the correct .NET SDK, .NET Runtimes and PowerShell preinstalled. Open the repository in Visual Studio Code with the Dev Containers extension, in GitHub Codespaces, or in JetBrains Rider via File → Remote Development → Dev Containers.
 
 ### Dependencies
 
